@@ -276,7 +276,7 @@ void X3DVrmlParser::statement(
           std::vector<node_ptr> & nodes,
           const boost::shared_ptr<openvrml::scope> & scope
 ) {
-#line 385 "expandedX3DVrmlParser.g"
+#line 403 "expandedX3DVrmlParser.g"
 	
 	node_ptr node;
 	boost::shared_ptr<node_type> nodeType;
@@ -289,7 +289,7 @@ void X3DVrmlParser::statement(
 	case KEYWORD_USE:
 	{
 		node=nodeStatement(browser, scope, std::string());
-#line 395 "expandedX3DVrmlParser.g"
+#line 413 "expandedX3DVrmlParser.g"
 		
 		//
 		// If we are unable to parse a node, node will be null.
@@ -318,7 +318,7 @@ void X3DVrmlParser::statement(
 }
 
 int32  X3DVrmlParser::intValue() {
-#line 1637 "expandedX3DVrmlParser.g"
+#line 1678 "expandedX3DVrmlParser.g"
 	int32 val;
 #line 324 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  i0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
@@ -329,7 +329,7 @@ int32  X3DVrmlParser::intValue() {
 	{
 		i0 = LT(1);
 		match(INTEGER);
-#line 1641 "expandedX3DVrmlParser.g"
+#line 1682 "expandedX3DVrmlParser.g"
 		
 		std::istringstream(i0->getText()) >> val;
 		
@@ -340,7 +340,7 @@ int32  X3DVrmlParser::intValue() {
 	{
 		i1 = LT(1);
 		match(HEX_INTEGER);
-#line 1644 "expandedX3DVrmlParser.g"
+#line 1685 "expandedX3DVrmlParser.g"
 		
 		std::istringstream(i1->getText()) >> std::hex >> val;
 		
@@ -356,14 +356,14 @@ int32  X3DVrmlParser::intValue() {
 }
 
 std::string  X3DVrmlParser::stringValue() {
-#line 1819 "expandedX3DVrmlParser.g"
+#line 1887 "expandedX3DVrmlParser.g"
 	std::string str;
 #line 362 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  s = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
 	s = LT(1);
 	match(STRING);
-#line 1824 "expandedX3DVrmlParser.g"
+#line 1892 "expandedX3DVrmlParser.g"
 	
 	using std::string;
 	const string & token_text(s->getText());
@@ -733,51 +733,51 @@ boost::shared_ptr<field_value>  X3DVrmlParser::nonNodeFieldValue(
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfBoolValue() {
-#line 1466 "expandedX3DVrmlParser.g"
+#line 1489 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> sbv;
 #line 739 "X3DVrmlParser.cpp"
-#line 1466 "expandedX3DVrmlParser.g"
+#line 1489 "expandedX3DVrmlParser.g"
 	
 	bool val(false);
 	
 #line 744 "X3DVrmlParser.cpp"
 	
 	val=boolValue();
-#line 1473 "expandedX3DVrmlParser.g"
+#line 1496 "expandedX3DVrmlParser.g"
 	sbv.reset(new sfbool(val));
 #line 749 "X3DVrmlParser.cpp"
 	return sbv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfColorValue() {
-#line 1486 "expandedX3DVrmlParser.g"
+#line 1509 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> scv;
 #line 756 "X3DVrmlParser.cpp"
-#line 1486 "expandedX3DVrmlParser.g"
+#line 1509 "expandedX3DVrmlParser.g"
 	
 	color c;
 	
 #line 761 "X3DVrmlParser.cpp"
 	
 	colorValue(c);
-#line 1493 "expandedX3DVrmlParser.g"
+#line 1516 "expandedX3DVrmlParser.g"
 	scv.reset(new sfcolor(c));
 #line 766 "X3DVrmlParser.cpp"
 	return scv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfFloatValue() {
-#line 1542 "expandedX3DVrmlParser.g"
+#line 1571 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> sfv;
 #line 773 "X3DVrmlParser.cpp"
-#line 1542 "expandedX3DVrmlParser.g"
+#line 1571 "expandedX3DVrmlParser.g"
 	
 	float f;
 	
 #line 778 "X3DVrmlParser.cpp"
 	
 	f=floatValue();
-#line 1549 "expandedX3DVrmlParser.g"
+#line 1578 "expandedX3DVrmlParser.g"
 	sfv.reset(new sffloat(f));
 #line 783 "X3DVrmlParser.cpp"
 	return sfv;
@@ -801,10 +801,10 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfDoubleValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfImageValue() {
-#line 1576 "expandedX3DVrmlParser.g"
+#line 1611 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> siv;
 #line 807 "X3DVrmlParser.cpp"
-#line 1576 "expandedX3DVrmlParser.g"
+#line 1611 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	size_t x, y, comp;
@@ -816,7 +816,7 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfImageValue() {
 	x=intValue();
 	y=intValue();
 	comp=intValue();
-#line 1586 "expandedX3DVrmlParser.g"
+#line 1621 "expandedX3DVrmlParser.g"
 	
 	image img(x, y, comp);
 	
@@ -825,7 +825,7 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfImageValue() {
 	for (;;) {
 		if ((LA(1) == INTEGER || LA(1) == HEX_INTEGER)) {
 			pixel=intValue();
-#line 1589 "expandedX3DVrmlParser.g"
+#line 1624 "expandedX3DVrmlParser.g"
 			
 			if (!(pixel_index < x * y)) {
 			throw SemanticException("Too many pixel values for "
@@ -845,7 +845,7 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfImageValue() {
 	}
 	_loop94:;
 	} // ( ... )*
-#line 1599 "expandedX3DVrmlParser.g"
+#line 1634 "expandedX3DVrmlParser.g"
 	
 	if (pixel_index != x * y) {
 	throw antlr::SemanticException("Insufficient pixel values for "
@@ -861,165 +861,172 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfImageValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfInt32Value() {
-#line 1612 "expandedX3DVrmlParser.g"
+#line 1647 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> siv;
 #line 867 "X3DVrmlParser.cpp"
-#line 1612 "expandedX3DVrmlParser.g"
+#line 1647 "expandedX3DVrmlParser.g"
 	
 	long i;
 	
 #line 872 "X3DVrmlParser.cpp"
 	
 	i=intValue();
-#line 1619 "expandedX3DVrmlParser.g"
+#line 1654 "expandedX3DVrmlParser.g"
 	siv.reset(new sfint32(i));
 #line 877 "X3DVrmlParser.cpp"
 	return siv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfRotationValue() {
-#line 1747 "expandedX3DVrmlParser.g"
+#line 1802 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> srv;
 #line 884 "X3DVrmlParser.cpp"
-#line 1747 "expandedX3DVrmlParser.g"
+#line 1802 "expandedX3DVrmlParser.g"
 	rotation r;
 #line 887 "X3DVrmlParser.cpp"
 	
 	rotationValue(r);
-#line 1752 "expandedX3DVrmlParser.g"
+#line 1807 "expandedX3DVrmlParser.g"
 	srv.reset(new sfrotation(r));
 #line 892 "X3DVrmlParser.cpp"
 	return srv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfStringValue() {
-#line 1796 "expandedX3DVrmlParser.g"
+#line 1857 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> ssv;
 #line 899 "X3DVrmlParser.cpp"
-#line 1796 "expandedX3DVrmlParser.g"
+#line 1857 "expandedX3DVrmlParser.g"
 	std::string s;
 #line 902 "X3DVrmlParser.cpp"
 	
 	s=stringValue();
-#line 1801 "expandedX3DVrmlParser.g"
+#line 1862 "expandedX3DVrmlParser.g"
 	ssv.reset(new sfstring(s));
 #line 907 "X3DVrmlParser.cpp"
 	return ssv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfTimeValue() {
-#line 1845 "expandedX3DVrmlParser.g"
+#line 1913 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> stv;
 #line 914 "X3DVrmlParser.cpp"
-#line 1845 "expandedX3DVrmlParser.g"
+#line 1913 "expandedX3DVrmlParser.g"
 	double t(0.0);
 #line 917 "X3DVrmlParser.cpp"
 	
 	t=doubleValue();
-#line 1850 "expandedX3DVrmlParser.g"
+#line 1918 "expandedX3DVrmlParser.g"
 	stv.reset(new sftime(t));
 #line 922 "X3DVrmlParser.cpp"
 	return stv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfVec2fValue() {
-#line 1876 "expandedX3DVrmlParser.g"
+#line 1951 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> svv;
 #line 929 "X3DVrmlParser.cpp"
-#line 1876 "expandedX3DVrmlParser.g"
+#line 1951 "expandedX3DVrmlParser.g"
 	vec2f v;
 #line 932 "X3DVrmlParser.cpp"
 	
 	vec2fValue(v);
-#line 1881 "expandedX3DVrmlParser.g"
+#line 1956 "expandedX3DVrmlParser.g"
 	svv.reset(new sfvec2f(v));
 #line 937 "X3DVrmlParser.cpp"
 	return svv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfVec2dValue() {
-#line 311 "expandedX3DVrmlParser.g"
+#line 317 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> svv;
 #line 944 "X3DVrmlParser.cpp"
-#line 311 "expandedX3DVrmlParser.g"
+#line 317 "expandedX3DVrmlParser.g"
 	
 	vec2d v;
 	
 #line 949 "X3DVrmlParser.cpp"
 	
 	vec2dValue(v);
-#line 318 "expandedX3DVrmlParser.g"
+#line 324 "expandedX3DVrmlParser.g"
 	svv.reset(new sfvec2d(v));
 #line 954 "X3DVrmlParser.cpp"
 	return svv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfVec3fValue() {
-#line 1911 "expandedX3DVrmlParser.g"
+#line 1992 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> svv;
 #line 961 "X3DVrmlParser.cpp"
-#line 1911 "expandedX3DVrmlParser.g"
+#line 1992 "expandedX3DVrmlParser.g"
 	
 	vec3f v;
 	
 #line 966 "X3DVrmlParser.cpp"
 	
 	vec3fValue(v);
-#line 1918 "expandedX3DVrmlParser.g"
+#line 1999 "expandedX3DVrmlParser.g"
 	svv.reset(new sfvec3f(v));
 #line 971 "X3DVrmlParser.cpp"
 	return svv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::sfVec3dValue() {
-#line 347 "expandedX3DVrmlParser.g"
+#line 359 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> svv;
 #line 978 "X3DVrmlParser.cpp"
-#line 347 "expandedX3DVrmlParser.g"
+#line 359 "expandedX3DVrmlParser.g"
 	
 	vec3d v;
 	
 #line 983 "X3DVrmlParser.cpp"
 	
 	vec3dValue(v);
-#line 354 "expandedX3DVrmlParser.g"
+#line 366 "expandedX3DVrmlParser.g"
 	svv.reset(new sfvec3d(v));
 #line 988 "X3DVrmlParser.cpp"
 	return svv;
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfColorValue() {
-#line 1497 "expandedX3DVrmlParser.g"
+#line 1520 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mcv =
             boost::shared_ptr<field_value>(new mfcolor);
 #line 996 "X3DVrmlParser.cpp"
-#line 1497 "expandedX3DVrmlParser.g"
+#line 1520 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	color c;
 	mfcolor & colors = static_cast<mfcolor &>(*mcv);
 	
-#line 1002 "X3DVrmlParser.cpp"
+#line 1004 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		colorValue(c);
-#line 1506 "expandedX3DVrmlParser.g"
-		colors.value.push_back(c);
-#line 1011 "X3DVrmlParser.cpp"
+#line 1531 "expandedX3DVrmlParser.g"
+		colors.value(vector<color>(1, c));
+#line 1013 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1532 "expandedX3DVrmlParser.g"
+		
+		vector<color> value;
+		
+#line 1023 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				colorValue(c);
-#line 1507 "expandedX3DVrmlParser.g"
-				colors.value.push_back(c);
-#line 1023 "X3DVrmlParser.cpp"
+#line 1534 "expandedX3DVrmlParser.g"
+				value.push_back(c);
+#line 1030 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop84;
@@ -1029,6 +1036,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfColorValue() {
 		_loop84:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1534 "expandedX3DVrmlParser.g"
+		
+		colors.value(value);
+		
+#line 1044 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1040,37 +1052,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfColorValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfFloatValue() {
-#line 1553 "expandedX3DVrmlParser.g"
+#line 1582 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mfv =
             boost::shared_ptr<field_value>(new mffloat);
-#line 1047 "X3DVrmlParser.cpp"
-#line 1553 "expandedX3DVrmlParser.g"
+#line 1059 "X3DVrmlParser.cpp"
+#line 1582 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	float f;
 	mffloat & floats = static_cast<mffloat &>(*mfv);
 	
-#line 1053 "X3DVrmlParser.cpp"
+#line 1067 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		f=floatValue();
-#line 1562 "expandedX3DVrmlParser.g"
-		floats.value.push_back(f);
-#line 1062 "X3DVrmlParser.cpp"
+#line 1593 "expandedX3DVrmlParser.g"
+		floats.value(vector<float>(1, f));
+#line 1076 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1594 "expandedX3DVrmlParser.g"
+		
+		vector<float> value;
+		
+#line 1086 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				f=floatValue();
-#line 1563 "expandedX3DVrmlParser.g"
-				floats.value.push_back(f);
-#line 1074 "X3DVrmlParser.cpp"
+#line 1596 "expandedX3DVrmlParser.g"
+				value.push_back(f);
+#line 1093 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop90;
@@ -1080,6 +1099,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfFloatValue() {
 		_loop90:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1596 "expandedX3DVrmlParser.g"
+		
+		floats.value(value);
+		
+#line 1107 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1093,35 +1117,42 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfFloatValue() {
 boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 #line 298 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mfv =
-            boost::shared_ptr<field_value>(new mfdouble);
-#line 1098 "X3DVrmlParser.cpp"
+         boost::shared_ptr<field_value>(new mfdouble);
+#line 1122 "X3DVrmlParser.cpp"
 #line 298 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	double d;
 	mfdouble & doubles = static_cast<mfdouble &>(*mfv);
 	
-#line 1104 "X3DVrmlParser.cpp"
+#line 1130 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		d=doubleValue();
-#line 307 "expandedX3DVrmlParser.g"
-		doubles.value.push_back(d);
-#line 1113 "X3DVrmlParser.cpp"
+#line 309 "expandedX3DVrmlParser.g"
+		doubles.value(vector<double>(1, d));
+#line 1139 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 310 "expandedX3DVrmlParser.g"
+		
+		vector<double> value;
+		
+#line 1149 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				d=doubleValue();
-#line 308 "expandedX3DVrmlParser.g"
-				doubles.value.push_back(d);
-#line 1125 "X3DVrmlParser.cpp"
+#line 312 "expandedX3DVrmlParser.g"
+				value.push_back(d);
+#line 1156 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop16;
@@ -1131,6 +1162,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 		_loop16:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 312 "expandedX3DVrmlParser.g"
+		
+		doubles.value(value);
+		
+#line 1170 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1142,37 +1178,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfInt32Value() {
-#line 1623 "expandedX3DVrmlParser.g"
+#line 1658 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> miv =
             boost::shared_ptr<field_value>(new mfint32);
-#line 1149 "X3DVrmlParser.cpp"
-#line 1623 "expandedX3DVrmlParser.g"
+#line 1185 "X3DVrmlParser.cpp"
+#line 1658 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	long i;
 	mfint32 & int32s = static_cast<mfint32 &>(*miv);
 	
-#line 1155 "X3DVrmlParser.cpp"
+#line 1193 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case HEX_INTEGER:
 	{
 		i=intValue();
-#line 1632 "expandedX3DVrmlParser.g"
-		int32s.value.push_back(i);
-#line 1164 "X3DVrmlParser.cpp"
+#line 1669 "expandedX3DVrmlParser.g"
+		int32s.value(vector<int32>(1, i));
+#line 1202 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1670 "expandedX3DVrmlParser.g"
+		
+		vector<int32> value;
+		
+#line 1212 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == HEX_INTEGER)) {
 				i=intValue();
-#line 1633 "expandedX3DVrmlParser.g"
-				int32s.value.push_back(i);
-#line 1176 "X3DVrmlParser.cpp"
+#line 1672 "expandedX3DVrmlParser.g"
+				value.push_back(i);
+#line 1219 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop98;
@@ -1182,6 +1225,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfInt32Value() {
 		_loop98:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1672 "expandedX3DVrmlParser.g"
+		
+		int32s.value(value);
+		
+#line 1233 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1193,37 +1241,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfInt32Value() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfRotationValue() {
-#line 1756 "expandedX3DVrmlParser.g"
+#line 1811 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mrv =
          boost::shared_ptr<field_value>(new mfrotation);
-#line 1200 "X3DVrmlParser.cpp"
-#line 1756 "expandedX3DVrmlParser.g"
+#line 1248 "X3DVrmlParser.cpp"
+#line 1811 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	rotation r;
 	mfrotation & rotations = static_cast<mfrotation &>(*mrv);
 	
-#line 1206 "X3DVrmlParser.cpp"
+#line 1256 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		rotationValue(r);
-#line 1765 "expandedX3DVrmlParser.g"
-		rotations.value.push_back(r);
-#line 1215 "X3DVrmlParser.cpp"
+#line 1822 "expandedX3DVrmlParser.g"
+		rotations.value(vector<rotation>(1, r));
+#line 1265 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1823 "expandedX3DVrmlParser.g"
+		
+		vector<rotation> value;
+		
+#line 1275 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				rotationValue(r);
-#line 1766 "expandedX3DVrmlParser.g"
-				rotations.value.push_back(r);
-#line 1227 "X3DVrmlParser.cpp"
+#line 1825 "expandedX3DVrmlParser.g"
+				value.push_back(r);
+#line 1282 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop111;
@@ -1233,6 +1288,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfRotationValue() {
 		_loop111:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1825 "expandedX3DVrmlParser.g"
+		
+		rotations.value(value);
+		
+#line 1296 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1244,36 +1304,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfRotationValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfStringValue() {
-#line 1805 "expandedX3DVrmlParser.g"
+#line 1866 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> msv =
          boost::shared_ptr<field_value>(new mfstring);
-#line 1251 "X3DVrmlParser.cpp"
-#line 1805 "expandedX3DVrmlParser.g"
+#line 1311 "X3DVrmlParser.cpp"
+#line 1866 "expandedX3DVrmlParser.g"
 	
-	std::string s;
+	using std::string;
+	using std::vector;
+	
+	string s;
 	mfstring & strings = static_cast<mfstring &>(*msv);
 	
-#line 1257 "X3DVrmlParser.cpp"
+#line 1320 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case STRING:
 	{
 		s=stringValue();
-#line 1814 "expandedX3DVrmlParser.g"
-		strings.value.push_back(s);
-#line 1265 "X3DVrmlParser.cpp"
+#line 1878 "expandedX3DVrmlParser.g"
+		strings.value(vector<string>(1, s));
+#line 1328 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1879 "expandedX3DVrmlParser.g"
+		
+		vector<string> value;
+		
+#line 1338 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == STRING)) {
 				s=stringValue();
-#line 1815 "expandedX3DVrmlParser.g"
-				strings.value.push_back(s);
-#line 1277 "X3DVrmlParser.cpp"
+#line 1881 "expandedX3DVrmlParser.g"
+				value.push_back(s);
+#line 1345 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop116;
@@ -1283,6 +1351,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfStringValue() {
 		_loop116:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1881 "expandedX3DVrmlParser.g"
+		
+		strings.value(value);
+		
+#line 1359 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1294,36 +1367,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfStringValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfTimeValue() {
-#line 1854 "expandedX3DVrmlParser.g"
-	boost::shared_ptr<field_value> mtv = boost::shared_ptr<field_value>(new mftime);
-#line 1300 "X3DVrmlParser.cpp"
-#line 1854 "expandedX3DVrmlParser.g"
+#line 1922 "expandedX3DVrmlParser.g"
+	boost::shared_ptr<field_value> mtv =
+         boost::shared_ptr<field_value>(new mftime);
+#line 1374 "X3DVrmlParser.cpp"
+#line 1922 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	double t;
 	mftime & times = static_cast<mftime &>(*mtv);
 	
-#line 1306 "X3DVrmlParser.cpp"
+#line 1382 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		t=doubleValue();
-#line 1862 "expandedX3DVrmlParser.g"
-		times.value.push_back(t);
-#line 1315 "X3DVrmlParser.cpp"
+#line 1933 "expandedX3DVrmlParser.g"
+		times.value(vector<double>(1, t));
+#line 1391 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1934 "expandedX3DVrmlParser.g"
+		
+		vector<double> value;
+		
+#line 1401 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				t=doubleValue();
-#line 1863 "expandedX3DVrmlParser.g"
-				times.value.push_back(t);
-#line 1327 "X3DVrmlParser.cpp"
+#line 1936 "expandedX3DVrmlParser.g"
+				value.push_back(t);
+#line 1408 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop121;
@@ -1333,6 +1414,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfTimeValue() {
 		_loop121:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1936 "expandedX3DVrmlParser.g"
+		
+		times.value(value);
+		
+#line 1422 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1344,37 +1430,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfTimeValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2fValue() {
-#line 1885 "expandedX3DVrmlParser.g"
+#line 1960 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec2f);
-#line 1351 "X3DVrmlParser.cpp"
-#line 1885 "expandedX3DVrmlParser.g"
+#line 1437 "X3DVrmlParser.cpp"
+#line 1960 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	vec2f v;
 	mfvec2f & vec2fs = static_cast<mfvec2f &>(*mvv);
 	
-#line 1357 "X3DVrmlParser.cpp"
+#line 1445 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec2fValue(v);
-#line 1894 "expandedX3DVrmlParser.g"
-		vec2fs.value.push_back(v);
-#line 1366 "X3DVrmlParser.cpp"
+#line 1971 "expandedX3DVrmlParser.g"
+		vec2fs.value(vector<vec2f>(1, v));
+#line 1454 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1972 "expandedX3DVrmlParser.g"
+		
+		vector<vec2f> value;
+		
+#line 1464 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec2fValue(v);
-#line 1895 "expandedX3DVrmlParser.g"
-				vec2fs.value.push_back(v);
-#line 1378 "X3DVrmlParser.cpp"
+#line 1974 "expandedX3DVrmlParser.g"
+				value.push_back(v);
+#line 1471 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop126;
@@ -1384,6 +1477,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2fValue() {
 		_loop126:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1974 "expandedX3DVrmlParser.g"
+		
+		vec2fs.value(value);
+		
+#line 1485 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1395,37 +1493,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2fValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2dValue() {
-#line 321 "expandedX3DVrmlParser.g"
+#line 327 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec2d);
-#line 1402 "X3DVrmlParser.cpp"
-#line 321 "expandedX3DVrmlParser.g"
+#line 1500 "X3DVrmlParser.cpp"
+#line 327 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	vec2d v;
 	mfvec2d & vec2ds = static_cast<mfvec2d &>(*mvv);
 	
-#line 1408 "X3DVrmlParser.cpp"
+#line 1508 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec2dValue(v);
-#line 330 "expandedX3DVrmlParser.g"
-		vec2ds.value.push_back(v);
-#line 1417 "X3DVrmlParser.cpp"
+#line 338 "expandedX3DVrmlParser.g"
+		vec2ds.value(vector<vec2d>(1, v));
+#line 1517 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 339 "expandedX3DVrmlParser.g"
+		
+		vector<vec2d> value;
+		
+#line 1527 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec2dValue(v);
-#line 331 "expandedX3DVrmlParser.g"
-				vec2ds.value.push_back(v);
-#line 1429 "X3DVrmlParser.cpp"
+#line 341 "expandedX3DVrmlParser.g"
+				value.push_back(v);
+#line 1534 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop20;
@@ -1435,6 +1540,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2dValue() {
 		_loop20:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 341 "expandedX3DVrmlParser.g"
+		
+		vec2ds.value(value);
+		
+#line 1548 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1446,37 +1556,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec2dValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3fValue() {
-#line 1922 "expandedX3DVrmlParser.g"
+#line 2003 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec3f);
-#line 1453 "X3DVrmlParser.cpp"
-#line 1922 "expandedX3DVrmlParser.g"
+#line 1563 "X3DVrmlParser.cpp"
+#line 2003 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	vec3f v;
 	mfvec3f & vec3fs = static_cast<mfvec3f &>(*mvv);
 	
-#line 1459 "X3DVrmlParser.cpp"
+#line 1571 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec3fValue(v);
-#line 1931 "expandedX3DVrmlParser.g"
-		vec3fs.value.push_back(v);
-#line 1468 "X3DVrmlParser.cpp"
+#line 2014 "expandedX3DVrmlParser.g"
+		vec3fs.value(vector<vec3f>(1, v));
+#line 1580 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 2015 "expandedX3DVrmlParser.g"
+		
+		vector<vec3f> value;
+		
+#line 1590 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec3fValue(v);
-#line 1932 "expandedX3DVrmlParser.g"
-				vec3fs.value.push_back(v);
-#line 1480 "X3DVrmlParser.cpp"
+#line 2017 "expandedX3DVrmlParser.g"
+				value.push_back(v);
+#line 1597 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop131;
@@ -1486,6 +1603,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3fValue() {
 		_loop131:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 2017 "expandedX3DVrmlParser.g"
+		
+		vec3fs.value(value);
+		
+#line 1611 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1497,37 +1619,44 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3fValue() {
 }
 
 boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3dValue() {
-#line 357 "expandedX3DVrmlParser.g"
+#line 369 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec3d);
-#line 1504 "X3DVrmlParser.cpp"
-#line 357 "expandedX3DVrmlParser.g"
+#line 1626 "X3DVrmlParser.cpp"
+#line 369 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	vec3d v;
 	mfvec3d & vec3ds = static_cast<mfvec3d &>(*mvv);
 	
-#line 1510 "X3DVrmlParser.cpp"
+#line 1634 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case INTEGER:
 	case REAL:
 	{
 		vec3dValue(v);
-#line 366 "expandedX3DVrmlParser.g"
-		vec3ds.value.push_back(v);
-#line 1519 "X3DVrmlParser.cpp"
+#line 380 "expandedX3DVrmlParser.g"
+		vec3ds.value(vector<vec3d>(1, v));
+#line 1643 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 381 "expandedX3DVrmlParser.g"
+		
+		vector<vec3d> value;
+		
+#line 1653 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				vec3dValue(v);
-#line 367 "expandedX3DVrmlParser.g"
-				vec3ds.value.push_back(v);
-#line 1531 "X3DVrmlParser.cpp"
+#line 383 "expandedX3DVrmlParser.g"
+				value.push_back(v);
+#line 1660 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop25;
@@ -1537,6 +1666,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3dValue() {
 		_loop25:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 383 "expandedX3DVrmlParser.g"
+		
+		vec3ds.value(value);
+		
+#line 1674 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1548,9 +1682,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfVec3dValue() {
 }
 
 double  X3DVrmlParser::doubleValue() {
-#line 1867 "expandedX3DVrmlParser.g"
+#line 1942 "expandedX3DVrmlParser.g"
 	double val = 0.0;
-#line 1554 "X3DVrmlParser.cpp"
+#line 1688 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  d1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -1559,18 +1693,18 @@ double  X3DVrmlParser::doubleValue() {
 	{
 		d0 = LT(1);
 		match(REAL);
-#line 1871 "expandedX3DVrmlParser.g"
+#line 1946 "expandedX3DVrmlParser.g"
 		std::istringstream(d0->getText()) >> val;
-#line 1565 "X3DVrmlParser.cpp"
+#line 1699 "X3DVrmlParser.cpp"
 		break;
 	}
 	case INTEGER:
 	{
 		d1 = LT(1);
 		match(INTEGER);
-#line 1872 "expandedX3DVrmlParser.g"
+#line 1947 "expandedX3DVrmlParser.g"
 		std::istringstream(d1->getText()) >> val;
-#line 1574 "X3DVrmlParser.cpp"
+#line 1708 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -1584,41 +1718,41 @@ double  X3DVrmlParser::doubleValue() {
 void X3DVrmlParser::vec2dValue(
 	vec2d & v
 ) {
-#line 334 "expandedX3DVrmlParser.g"
+#line 346 "expandedX3DVrmlParser.g"
 	
 	double x, y;
 	
-#line 1592 "X3DVrmlParser.cpp"
+#line 1726 "X3DVrmlParser.cpp"
 	
 	x=doubleValue();
 	y=doubleValue();
-#line 341 "expandedX3DVrmlParser.g"
+#line 353 "expandedX3DVrmlParser.g"
 	
 	v.x(x);
 	v.y(y);
 	
-#line 1601 "X3DVrmlParser.cpp"
+#line 1735 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::vec3dValue(
 	vec3d & v
 ) {
-#line 370 "expandedX3DVrmlParser.g"
+#line 388 "expandedX3DVrmlParser.g"
 	
 	double x, y, z;
 	
-#line 1611 "X3DVrmlParser.cpp"
+#line 1745 "X3DVrmlParser.cpp"
 	
 	x=doubleValue();
 	y=doubleValue();
 	z=doubleValue();
-#line 377 "expandedX3DVrmlParser.g"
+#line 395 "expandedX3DVrmlParser.g"
 	
 	v.x(x);
 	v.y(y);
 	v.z(z);
 	
-#line 1622 "X3DVrmlParser.cpp"
+#line 1756 "X3DVrmlParser.cpp"
 }
 
 node_ptr  X3DVrmlParser::nodeStatement(
@@ -1626,9 +1760,9 @@ node_ptr  X3DVrmlParser::nodeStatement(
               const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id
 ) {
-#line 406 "expandedX3DVrmlParser.g"
+#line 424 "expandedX3DVrmlParser.g"
 	node_ptr n;
-#line 1632 "X3DVrmlParser.cpp"
+#line 1766 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -1646,7 +1780,7 @@ node_ptr  X3DVrmlParser::nodeStatement(
 		match(KEYWORD_USE);
 		id1 = LT(1);
 		match(ID);
-#line 413 "expandedX3DVrmlParser.g"
+#line 431 "expandedX3DVrmlParser.g"
 		
 		if (id1->getText() == script_node_id) {
 		//
@@ -1667,7 +1801,7 @@ node_ptr  X3DVrmlParser::nodeStatement(
 		}
 		}
 		
-#line 1671 "X3DVrmlParser.cpp"
+#line 1805 "X3DVrmlParser.cpp"
 		break;
 	}
 	case ID:
@@ -1725,7 +1859,7 @@ void X3DVrmlParser::routeStatement(
 	match(PERIOD);
 	eventin_id = LT(1);
 	match(ID);
-#line 809 "expandedX3DVrmlParser.g"
+#line 832 "expandedX3DVrmlParser.g"
 	
 	using std::runtime_error;
 	using antlr::SemanticException;
@@ -1766,7 +1900,7 @@ void X3DVrmlParser::routeStatement(
 	from_node_id->getColumn());
 	}
 	
-#line 1770 "X3DVrmlParser.cpp"
+#line 1904 "X3DVrmlParser.cpp"
 }
 
 node_ptr  X3DVrmlParser::node(
@@ -1774,12 +1908,12 @@ node_ptr  X3DVrmlParser::node(
      const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id
 ) {
-#line 938 "expandedX3DVrmlParser.g"
+#line 961 "expandedX3DVrmlParser.g"
 	node_ptr n;
-#line 1780 "X3DVrmlParser.cpp"
+#line 1914 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 938 "expandedX3DVrmlParser.g"
+#line 961 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	
@@ -1787,7 +1921,7 @@ node_ptr  X3DVrmlParser::node(
 	node_interface_set interfaces;
 	boost::shared_ptr<node_type> nodeType;
 	
-#line 1791 "X3DVrmlParser.cpp"
+#line 1925 "X3DVrmlParser.cpp"
 	
 	try {      // for error handling
 		if (((LA(1) == ID))&&( !LT(1)->getText().compare("Script") )) {
@@ -1828,7 +1962,7 @@ node_ptr  X3DVrmlParser::node(
 			_loop55:;
 			} // ( ... )*
 			match(RBRACE);
-#line 961 "expandedX3DVrmlParser.g"
+#line 984 "expandedX3DVrmlParser.g"
 			
 			n.reset(new script_node(browser.script_node_class_,
 			scope,
@@ -1836,12 +1970,12 @@ node_ptr  X3DVrmlParser::node(
 			initial_values));
 			if (!node_id.empty()) { n->id(node_id); }
 			
-#line 1840 "X3DVrmlParser.cpp"
+#line 1974 "X3DVrmlParser.cpp"
 		}
 		else if ((LA(1) == ID)) {
 			nodeTypeId = LT(1);
 			match(ID);
-#line 968 "expandedX3DVrmlParser.g"
+#line 991 "expandedX3DVrmlParser.g"
 			
 			nodeType = scope->find_type(nodeTypeId->getText());
 			if (!nodeType) {
@@ -1853,7 +1987,7 @@ node_ptr  X3DVrmlParser::node(
 			}
 			
 			
-#line 1857 "X3DVrmlParser.cpp"
+#line 1991 "X3DVrmlParser.cpp"
 			match(LBRACE);
 			{ // ( ... )*
 			for (;;) {
@@ -1871,13 +2005,13 @@ node_ptr  X3DVrmlParser::node(
 			_loop57:;
 			} // ( ... )*
 			match(RBRACE);
-#line 982 "expandedX3DVrmlParser.g"
+#line 1005 "expandedX3DVrmlParser.g"
 			
 			n = node_ptr(nodeType->create_node(scope, initial_values));
 			
 			if (!node_id.empty()) { n->id(node_id); }
 			
-#line 1881 "X3DVrmlParser.cpp"
+#line 2015 "X3DVrmlParser.cpp"
 		}
 		else {
 			throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -1885,27 +2019,27 @@ node_ptr  X3DVrmlParser::node(
 		
 	}
 	catch (std::invalid_argument & ex) {
-#line 989 "expandedX3DVrmlParser.g"
+#line 1012 "expandedX3DVrmlParser.g"
 		
 		throw SemanticException(ex.what(),
 		this->uri,
 		LT(1)->getLine(),
 		LT(1)->getColumn());
 		
-#line 1896 "X3DVrmlParser.cpp"
+#line 2030 "X3DVrmlParser.cpp"
 	}
 	catch (unsupported_interface & ex) {
-#line 995 "expandedX3DVrmlParser.g"
+#line 1018 "expandedX3DVrmlParser.g"
 		
 		throw SemanticException(ex.what(),
 		this->uri,
 		LT(1)->getLine(),
 		LT(1)->getColumn());
 		
-#line 1906 "X3DVrmlParser.cpp"
+#line 2040 "X3DVrmlParser.cpp"
 	}
 	catch (std::bad_cast & ex) {
-#line 1001 "expandedX3DVrmlParser.g"
+#line 1024 "expandedX3DVrmlParser.g"
 		
 		throw SemanticException("Incorrect value type for field or "
 		"exposedField.",
@@ -1913,7 +2047,7 @@ node_ptr  X3DVrmlParser::node(
 		LT(1)->getLine(),
 		LT(1)->getColumn());
 		
-#line 1917 "X3DVrmlParser.cpp"
+#line 2051 "X3DVrmlParser.cpp"
 	}
 	return n;
 }
@@ -1923,13 +2057,13 @@ void X3DVrmlParser::externproto(
             const boost::shared_ptr<openvrml::scope> & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 705 "expandedX3DVrmlParser.g"
+#line 723 "expandedX3DVrmlParser.g"
 	
 	openvrml::node_interface_set interfaces;
 	openvrml::mfstring url_list;
 	boost::shared_ptr<node_type> node_type;
 	
-#line 1933 "X3DVrmlParser.cpp"
+#line 2067 "X3DVrmlParser.cpp"
 	
 	match(KEYWORD_EXTERNPROTO);
 	id = LT(1);
@@ -1949,11 +2083,11 @@ void X3DVrmlParser::externproto(
 	} // ( ... )*
 	match(RBRACKET);
 	url_list=externprotoUrlList();
-#line 717 "expandedX3DVrmlParser.g"
+#line 735 "expandedX3DVrmlParser.g"
 	
-	for (size_t i = 0; i < url_list.value.size(); ++i) {
+	for (size_t i = 0; i < url_list.value().size(); ++i) {
 	boost::shared_ptr<openvrml::node_class> node_class =
-	browser.node_class_map_.find(url_list.value[i]);
+	browser.node_class_map_.find(url_list.value()[i]);
 	if (node_class) {
 	node_type = node_class->create_type(id->getText(),
 	interfaces);
@@ -1980,14 +2114,14 @@ void X3DVrmlParser::externproto(
 	}
 	}
 	
-#line 1984 "X3DVrmlParser.cpp"
+#line 2118 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::proto(
 	openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 446 "expandedX3DVrmlParser.g"
+#line 464 "expandedX3DVrmlParser.g"
 	
 	using std::vector;
 	
@@ -1997,17 +2131,17 @@ void X3DVrmlParser::proto(
 	proto_node_class::is_map_t is_map;
 	proto_node_class::routes_t routes;
 	
-#line 2001 "X3DVrmlParser.cpp"
+#line 2135 "X3DVrmlParser.cpp"
 	
 	match(KEYWORD_PROTO);
 	id = LT(1);
 	match(ID);
-#line 459 "expandedX3DVrmlParser.g"
+#line 477 "expandedX3DVrmlParser.g"
 	
 	boost::shared_ptr<openvrml::scope>
 	proto_scope(new openvrml::scope(id->getText(), scope));
 	
-#line 2011 "X3DVrmlParser.cpp"
+#line 2145 "X3DVrmlParser.cpp"
 	match(LBRACKET);
 	{ // ( ... )*
 	for (;;) {
@@ -2034,7 +2168,7 @@ void X3DVrmlParser::proto(
                          is_map,
                          routes);
 	match(RBRACE);
-#line 472 "expandedX3DVrmlParser.g"
+#line 490 "expandedX3DVrmlParser.g"
 	
 	boost::shared_ptr<openvrml::node_class>
 	node_class(new proto_node_class(browser,
@@ -2073,7 +2207,7 @@ void X3DVrmlParser::proto(
 	id->getColumn());
 	}
 	
-#line 2077 "X3DVrmlParser.cpp"
+#line 2211 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::protoInterfaceDeclaration(
@@ -2086,7 +2220,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 513 "expandedX3DVrmlParser.g"
+#line 531 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	
@@ -2094,7 +2228,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 	field_value::type_id ft;
 	boost::shared_ptr<field_value> fv;
 	
-#line 2098 "X3DVrmlParser.cpp"
+#line 2232 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -2104,7 +2238,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 		ft=fieldType();
 		id0 = LT(1);
 		match(ID);
-#line 529 "expandedX3DVrmlParser.g"
+#line 547 "expandedX3DVrmlParser.g"
 		
 		const node_interface interface(it, ft, id0->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -2120,7 +2254,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 		id0->getColumn());
 		}
 		
-#line 2124 "X3DVrmlParser.cpp"
+#line 2258 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_EXPOSEDFIELD:
@@ -2130,7 +2264,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 		ft=fieldType();
 		id1 = LT(1);
 		match(ID);
-#line 545 "expandedX3DVrmlParser.g"
+#line 563 "expandedX3DVrmlParser.g"
 		
 		//
 		// The field value declaration should have access to the node
@@ -2139,9 +2273,9 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 		const boost::shared_ptr<openvrml::scope> field_decl_scope(
 		new scope(proto_id + '.' + id1->getText(), outer_scope));
 		
-#line 2143 "X3DVrmlParser.cpp"
+#line 2277 "X3DVrmlParser.cpp"
 		fv=fieldValue(browser, field_decl_scope, ft, std::string());
-#line 553 "expandedX3DVrmlParser.g"
+#line 571 "expandedX3DVrmlParser.g"
 		
 		assert(fv);
 		
@@ -2162,7 +2296,7 @@ void X3DVrmlParser::protoInterfaceDeclaration(
 		default_value_map.insert(make_pair(id1->getText(), fv)).second;
 		assert(succeeded);
 		
-#line 2166 "X3DVrmlParser.cpp"
+#line 2300 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -2180,7 +2314,7 @@ void X3DVrmlParser::protoBody(
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes
 ) {
-#line 594 "expandedX3DVrmlParser.g"
+#line 612 "expandedX3DVrmlParser.g"
 	
 	assert(scope);
 	assert(impl_nodes.empty());
@@ -2189,7 +2323,7 @@ void X3DVrmlParser::protoBody(
 	
 	node_ptr n;
 	
-#line 2193 "X3DVrmlParser.cpp"
+#line 2327 "X3DVrmlParser.cpp"
 	
 	{ // ( ... )*
 	for (;;) {
@@ -2209,12 +2343,12 @@ void X3DVrmlParser::protoBody(
                                  is_map,
                                  routes,
                                  std::string());
-#line 618 "expandedX3DVrmlParser.g"
+#line 636 "expandedX3DVrmlParser.g"
 	
 	assert(n);
 	impl_nodes.push_back(n);
 	
-#line 2218 "X3DVrmlParser.cpp"
+#line 2352 "X3DVrmlParser.cpp"
 	{ // ( ... )*
 	for (;;) {
 		if ((_tokenSet_0.member(LA(1)))) {
@@ -2235,25 +2369,25 @@ void X3DVrmlParser::protoBody(
 }
 
 node_interface::type_id  X3DVrmlParser::eventInterfaceType() {
-#line 576 "expandedX3DVrmlParser.g"
+#line 594 "expandedX3DVrmlParser.g"
 	node_interface::type_id it;
-#line 2241 "X3DVrmlParser.cpp"
+#line 2375 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
 	{
 		match(KEYWORD_EVENTIN);
-#line 580 "expandedX3DVrmlParser.g"
+#line 598 "expandedX3DVrmlParser.g"
 		it = node_interface::eventin_id;
-#line 2249 "X3DVrmlParser.cpp"
+#line 2383 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_EVENTOUT:
 	{
 		match(KEYWORD_EVENTOUT);
-#line 581 "expandedX3DVrmlParser.g"
+#line 599 "expandedX3DVrmlParser.g"
 		it = node_interface::eventout_id;
-#line 2257 "X3DVrmlParser.cpp"
+#line 2391 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -2265,25 +2399,25 @@ node_interface::type_id  X3DVrmlParser::eventInterfaceType() {
 }
 
 node_interface::type_id  X3DVrmlParser::fieldInterfaceType() {
-#line 585 "expandedX3DVrmlParser.g"
+#line 603 "expandedX3DVrmlParser.g"
 	node_interface::type_id it;
-#line 2271 "X3DVrmlParser.cpp"
+#line 2405 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_FIELD:
 	{
 		match(KEYWORD_FIELD);
-#line 589 "expandedX3DVrmlParser.g"
+#line 607 "expandedX3DVrmlParser.g"
 		it = node_interface::field_id;
-#line 2279 "X3DVrmlParser.cpp"
+#line 2413 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_EXPOSEDFIELD:
 	{
 		match(KEYWORD_EXPOSEDFIELD);
-#line 590 "expandedX3DVrmlParser.g"
+#line 608 "expandedX3DVrmlParser.g"
 		it = node_interface::exposedfield_id;
-#line 2287 "X3DVrmlParser.cpp"
+#line 2421 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -2300,9 +2434,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::fieldValue(
            const openvrml::field_value::type_id ft,
            const std::string & node_id
 ) {
-#line 1388 "expandedX3DVrmlParser.g"
+#line 1411 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> fv;
-#line 2306 "X3DVrmlParser.cpp"
+#line 2440 "X3DVrmlParser.cpp"
 	
 	if (((_tokenSet_5.member(LA(1))))&&( (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) )) {
 		fv=nodeFieldValue(browser, scope, ft, node_id);
@@ -2325,16 +2459,16 @@ node_ptr  X3DVrmlParser::protoNodeStatement(
                    proto_node_class::routes_t & routes,
                    const std::string & script_node_id
 ) {
-#line 660 "expandedX3DVrmlParser.g"
+#line 678 "expandedX3DVrmlParser.g"
 	node_ptr n;
-#line 2331 "X3DVrmlParser.cpp"
+#line 2465 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 660 "expandedX3DVrmlParser.g"
+#line 678 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	
-#line 2338 "X3DVrmlParser.cpp"
+#line 2472 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_DEF:
@@ -2355,7 +2489,7 @@ node_ptr  X3DVrmlParser::protoNodeStatement(
 		match(KEYWORD_USE);
 		id1 = LT(1);
 		match(ID);
-#line 678 "expandedX3DVrmlParser.g"
+#line 696 "expandedX3DVrmlParser.g"
 		
 		if (id1->getText() == script_node_id) {
 		//
@@ -2374,7 +2508,7 @@ node_ptr  X3DVrmlParser::protoNodeStatement(
 		}
 		}
 		
-#line 2378 "X3DVrmlParser.cpp"
+#line 2512 "X3DVrmlParser.cpp"
 		break;
 	}
 	case ID:
@@ -2403,14 +2537,14 @@ void X3DVrmlParser::protoBodyStatement(
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes
 ) {
-#line 631 "expandedX3DVrmlParser.g"
+#line 649 "expandedX3DVrmlParser.g"
 	
 	assert(scope);
 	assert(!impl_nodes.empty());
 	
 	node_ptr n;
 	
-#line 2414 "X3DVrmlParser.cpp"
+#line 2548 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
@@ -2423,12 +2557,12 @@ void X3DVrmlParser::protoBodyStatement(
                              is_map,
                              routes,
                              std::string());
-#line 651 "expandedX3DVrmlParser.g"
+#line 669 "expandedX3DVrmlParser.g"
 		
 		assert(n);
 		impl_nodes.push_back(n);
 		
-#line 2432 "X3DVrmlParser.cpp"
+#line 2566 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_EXTERNPROTO:
@@ -2470,7 +2604,7 @@ void X3DVrmlParser::protoRouteStatement(
 	match(PERIOD);
 	eventin_id = LT(1);
 	match(ID);
-#line 859 "expandedX3DVrmlParser.g"
+#line 882 "expandedX3DVrmlParser.g"
 	
 	using std::runtime_error;
 	using antlr::SemanticException;
@@ -2547,7 +2681,7 @@ void X3DVrmlParser::protoRouteStatement(
 	*to_node, eventin_id->getText());
 	routes.push_back(r);
 	
-#line 2551 "X3DVrmlParser.cpp"
+#line 2685 "X3DVrmlParser.cpp"
 }
 
 node_ptr  X3DVrmlParser::protoNode(
@@ -2558,12 +2692,12 @@ node_ptr  X3DVrmlParser::protoNode(
           proto_node_class::routes_t & routes,
           const std::string & node_id
 ) {
-#line 1137 "expandedX3DVrmlParser.g"
+#line 1160 "expandedX3DVrmlParser.g"
 	node_ptr n;
-#line 2564 "X3DVrmlParser.cpp"
+#line 2698 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  scriptId = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  nodeTypeId = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1137 "expandedX3DVrmlParser.g"
+#line 1160 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	
@@ -2572,7 +2706,7 @@ node_ptr  X3DVrmlParser::protoNode(
 	is_list is_mappings;
 	boost::shared_ptr<node_type> nodeType;
 	
-#line 2576 "X3DVrmlParser.cpp"
+#line 2710 "X3DVrmlParser.cpp"
 	
 	{
 	if (((LA(1) == ID))&&( !LT(1)->getText().compare("Script") )) {
@@ -2621,7 +2755,7 @@ node_ptr  X3DVrmlParser::protoNode(
 		_loop64:;
 		} // ( ... )*
 		match(RBRACE);
-#line 1173 "expandedX3DVrmlParser.g"
+#line 1196 "expandedX3DVrmlParser.g"
 		
 		n.reset(new script_node(browser.script_node_class_,
 		scope,
@@ -2629,12 +2763,12 @@ node_ptr  X3DVrmlParser::protoNode(
 		initial_values));
 		if (!node_id.empty()) { n->id(node_id); }
 		
-#line 2633 "X3DVrmlParser.cpp"
+#line 2767 "X3DVrmlParser.cpp"
 	}
 	else if ((LA(1) == ID)) {
 		nodeTypeId = LT(1);
 		match(ID);
-#line 1181 "expandedX3DVrmlParser.g"
+#line 1204 "expandedX3DVrmlParser.g"
 		
 		nodeType = scope->find_type(nodeTypeId->getText());
 		if (!nodeType) {
@@ -2645,7 +2779,7 @@ node_ptr  X3DVrmlParser::protoNode(
 		nodeTypeId->getColumn());
 		}
 		
-#line 2649 "X3DVrmlParser.cpp"
+#line 2783 "X3DVrmlParser.cpp"
 		match(LBRACE);
 		{ // ( ... )*
 		for (;;) {
@@ -2667,19 +2801,19 @@ node_ptr  X3DVrmlParser::protoNode(
 		_loop66:;
 		} // ( ... )*
 		match(RBRACE);
-#line 1198 "expandedX3DVrmlParser.g"
+#line 1221 "expandedX3DVrmlParser.g"
 		
 		n = nodeType->create_node(scope, initial_values);
 		if (!node_id.empty()) { n->id(node_id); }
 		
-#line 2676 "X3DVrmlParser.cpp"
+#line 2810 "X3DVrmlParser.cpp"
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
 	}
 	
 	}
-#line 1202 "expandedX3DVrmlParser.g"
+#line 1225 "expandedX3DVrmlParser.g"
 	
 	for (is_list::const_iterator is_mapping = is_mappings.begin();
 	is_mapping != is_mappings.end();
@@ -2689,7 +2823,7 @@ node_ptr  X3DVrmlParser::protoNode(
 	is_target(*n, is_mapping->first)));
 	}
 	
-#line 2693 "X3DVrmlParser.cpp"
+#line 2827 "X3DVrmlParser.cpp"
 	return n;
 }
 
@@ -2697,7 +2831,7 @@ void X3DVrmlParser::externInterfaceDeclaration(
 	openvrml::node_interface_set & interfaces
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 750 "expandedX3DVrmlParser.g"
+#line 768 "expandedX3DVrmlParser.g"
 	
 	using openvrml::node_interface;
 	using openvrml::field_value;
@@ -2705,13 +2839,13 @@ void X3DVrmlParser::externInterfaceDeclaration(
 	node_interface::type_id it(node_interface::invalid_type_id);
 	field_value::type_id ft(field_value::invalid_type_id);
 	
-#line 2709 "X3DVrmlParser.cpp"
+#line 2843 "X3DVrmlParser.cpp"
 	
 	it=interfaceType();
 	ft=fieldType();
 	id = LT(1);
 	match(ID);
-#line 761 "expandedX3DVrmlParser.g"
+#line 779 "expandedX3DVrmlParser.g"
 	
 	const node_interface interface(it, ft, id->getText());
 	bool succeeded = interfaces.insert(interface).second;
@@ -2727,41 +2861,47 @@ void X3DVrmlParser::externInterfaceDeclaration(
 	id->getColumn());
 	}
 	
-#line 2731 "X3DVrmlParser.cpp"
+#line 2865 "X3DVrmlParser.cpp"
 }
 
 mfstring  X3DVrmlParser::externprotoUrlList() {
-#line 788 "expandedX3DVrmlParser.g"
+#line 806 "expandedX3DVrmlParser.g"
 	mfstring urlList;
-#line 2737 "X3DVrmlParser.cpp"
-#line 788 "expandedX3DVrmlParser.g"
+#line 2871 "X3DVrmlParser.cpp"
+#line 806 "expandedX3DVrmlParser.g"
 	
 	using std::string;
+	using std::vector;
 	using openvrml::mfstring;
 	
 	string s;
 	
-#line 2745 "X3DVrmlParser.cpp"
+#line 2880 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case STRING:
 	{
 		s=stringValue();
-#line 798 "expandedX3DVrmlParser.g"
-		urlList.value.push_back(s);
-#line 2753 "X3DVrmlParser.cpp"
+#line 817 "expandedX3DVrmlParser.g"
+		urlList.value(vector<string>(1, s));
+#line 2888 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 818 "expandedX3DVrmlParser.g"
+		
+		vector<string> value;
+		
+#line 2898 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == STRING)) {
 				s=stringValue();
-#line 799 "expandedX3DVrmlParser.g"
-				urlList.value.push_back(s);
-#line 2765 "X3DVrmlParser.cpp"
+#line 820 "expandedX3DVrmlParser.g"
+				value.push_back(s);
+#line 2905 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop50;
@@ -2771,6 +2911,11 @@ mfstring  X3DVrmlParser::externprotoUrlList() {
 		_loop50:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 820 "expandedX3DVrmlParser.g"
+		
+		urlList.value(value);
+		
+#line 2919 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -2782,9 +2927,9 @@ mfstring  X3DVrmlParser::externprotoUrlList() {
 }
 
 node_interface::type_id  X3DVrmlParser::interfaceType() {
-#line 779 "expandedX3DVrmlParser.g"
+#line 797 "expandedX3DVrmlParser.g"
 	node_interface::type_id interface_type;
-#line 2788 "X3DVrmlParser.cpp"
+#line 2933 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -2814,7 +2959,7 @@ void X3DVrmlParser::nodeBodyElement(
                 initial_value_map & initial_values
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1010 "expandedX3DVrmlParser.g"
+#line 1033 "expandedX3DVrmlParser.g"
 	
 	using std::find_if;
 	using std::bind2nd;
@@ -2822,14 +2967,14 @@ void X3DVrmlParser::nodeBodyElement(
 	field_value::type_id ft = field_value::invalid_type_id;
 	boost::shared_ptr<field_value> fv;
 	
-#line 2826 "X3DVrmlParser.cpp"
+#line 2971 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	{
 		id = LT(1);
 		match(ID);
-#line 1024 "expandedX3DVrmlParser.g"
+#line 1047 "expandedX3DVrmlParser.g"
 		
 		node_interface_set::const_iterator interface =
 		find_if(interfaces.begin(), interfaces.end(),
@@ -2850,9 +2995,9 @@ void X3DVrmlParser::nodeBodyElement(
 		}
 		ft = interface->field_type;
 		
-#line 2854 "X3DVrmlParser.cpp"
+#line 2999 "X3DVrmlParser.cpp"
 		fv=fieldValue(b, scope, ft, std::string());
-#line 1043 "expandedX3DVrmlParser.g"
+#line 1066 "expandedX3DVrmlParser.g"
 		
 		assert(fv);
 		const bool succeeded =
@@ -2865,7 +3010,7 @@ void X3DVrmlParser::nodeBodyElement(
 		id->getColumn());
 		}
 		
-#line 2869 "X3DVrmlParser.cpp"
+#line 3014 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_ROUTE:
@@ -2894,13 +3039,13 @@ void X3DVrmlParser::scriptInterfaceDeclaration(
                            const std::string & node_id
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1060 "expandedX3DVrmlParser.g"
+#line 1083 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	node_interface::type_id it(node_interface::invalid_type_id);
 	field_value::type_id ft(field_value::invalid_type_id);
 	
-#line 2904 "X3DVrmlParser.cpp"
+#line 3049 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -2910,7 +3055,7 @@ void X3DVrmlParser::scriptInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-#line 1073 "expandedX3DVrmlParser.g"
+#line 1096 "expandedX3DVrmlParser.g"
 		
 		const node_interface interface(it, ft, id->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -2926,7 +3071,7 @@ void X3DVrmlParser::scriptInterfaceDeclaration(
 		id->getColumn());
 		}
 		
-#line 2930 "X3DVrmlParser.cpp"
+#line 3075 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_FIELD:
@@ -2954,7 +3099,7 @@ void X3DVrmlParser::scriptFieldInterfaceDeclaration(
     const std::string & script_node_id
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1096 "expandedX3DVrmlParser.g"
+#line 1119 "expandedX3DVrmlParser.g"
 	
 	using std::find_if;
 	using antlr::SemanticException;
@@ -2962,7 +3107,7 @@ void X3DVrmlParser::scriptFieldInterfaceDeclaration(
 	field_value::type_id ft = field_value::invalid_type_id;
 	boost::shared_ptr<field_value> fv;
 	
-#line 2966 "X3DVrmlParser.cpp"
+#line 3111 "X3DVrmlParser.cpp"
 	
 	match(KEYWORD_FIELD);
 	ft=fieldType();
@@ -2972,7 +3117,7 @@ void X3DVrmlParser::scriptFieldInterfaceDeclaration(
                                                        scope,
                                                        ft,
                                                        script_node_id);
-#line 1115 "expandedX3DVrmlParser.g"
+#line 1138 "expandedX3DVrmlParser.g"
 	
 	assert(fv);
 	bool succeeded =
@@ -2992,7 +3137,7 @@ void X3DVrmlParser::scriptFieldInterfaceDeclaration(
 	.second;
 	assert(succeeded);
 	
-#line 2996 "X3DVrmlParser.cpp"
+#line 3141 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::protoNodeBodyElement(
@@ -3006,21 +3151,21 @@ void X3DVrmlParser::protoNodeBodyElement(
                      is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  interface_id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1214 "expandedX3DVrmlParser.g"
+#line 1237 "expandedX3DVrmlParser.g"
 	
 	using std::string;
 	using antlr::SemanticException;
 	
 	boost::shared_ptr<field_value> fv;
 	
-#line 3017 "X3DVrmlParser.cpp"
+#line 3162 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
 	{
 		interface_id = LT(1);
 		match(ID);
-#line 1231 "expandedX3DVrmlParser.g"
+#line 1254 "expandedX3DVrmlParser.g"
 		
 		const node_interface_set::const_iterator impl_node_interface =
 		find_interface(node_interfaces, interface_id->getText());
@@ -3032,7 +3177,7 @@ void X3DVrmlParser::protoNodeBodyElement(
 		interface_id->getColumn());
 		}
 		
-#line 3036 "X3DVrmlParser.cpp"
+#line 3181 "X3DVrmlParser.cpp"
 		{
 		if (((_tokenSet_7.member(LA(1))))&&(impl_node_interface->type == node_interface::field_id
             || impl_node_interface->type == node_interface::exposedfield_id)) {
@@ -3057,7 +3202,7 @@ void X3DVrmlParser::protoNodeBodyElement(
                                    routes,
                                    impl_node_interface->field_type,
                                    std::string());
-#line 1250 "expandedX3DVrmlParser.g"
+#line 1273 "expandedX3DVrmlParser.g"
 				
 				assert(fv);
 				bool succeeded =
@@ -3065,7 +3210,7 @@ void X3DVrmlParser::protoNodeBodyElement(
 				make_pair(interface_id->getText(), fv)).second;
 				assert(succeeded);
 				
-#line 3069 "X3DVrmlParser.cpp"
+#line 3214 "X3DVrmlParser.cpp"
 				break;
 			}
 			case KEYWORD_IS:
@@ -3120,13 +3265,13 @@ void X3DVrmlParser::protoScriptInterfaceDeclaration(
                                 is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1278 "expandedX3DVrmlParser.g"
+#line 1301 "expandedX3DVrmlParser.g"
 	
 	using antlr::SemanticException;
 	node_interface::type_id it;
 	field_value::type_id ft;
 	
-#line 3130 "X3DVrmlParser.cpp"
+#line 3275 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_EVENTIN:
@@ -3136,7 +3281,7 @@ void X3DVrmlParser::protoScriptInterfaceDeclaration(
 		ft=fieldType();
 		id = LT(1);
 		match(ID);
-#line 1295 "expandedX3DVrmlParser.g"
+#line 1318 "expandedX3DVrmlParser.g"
 		
 		const node_interface interface(it, ft, id->getText());
 		const bool succeeded = interfaces.insert(interface).second;
@@ -3152,7 +3297,7 @@ void X3DVrmlParser::protoScriptInterfaceDeclaration(
 		id->getColumn());
 		}
 		
-#line 3156 "X3DVrmlParser.cpp"
+#line 3301 "X3DVrmlParser.cpp"
 		{
 		switch ( LA(1)) {
 		case KEYWORD_IS:
@@ -3208,9 +3353,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoFieldValue(
                 const field_value::type_id ft,
                 const std::string & script_node_id
 ) {
-#line 1401 "expandedX3DVrmlParser.g"
+#line 1424 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> fv;
-#line 3214 "X3DVrmlParser.cpp"
+#line 3359 "X3DVrmlParser.cpp"
 	
 	if (((_tokenSet_5.member(LA(1))))&&( (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) )) {
 		fv=protoNodeFieldValue(browser,
@@ -3220,17 +3365,17 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoFieldValue(
                                routes,
                                ft,
                                script_node_id);
-#line 1418 "expandedX3DVrmlParser.g"
+#line 1441 "expandedX3DVrmlParser.g"
 		
 		assert(fv);
 		
-#line 3228 "X3DVrmlParser.cpp"
+#line 3373 "X3DVrmlParser.cpp"
 	}
 	else if ((_tokenSet_6.member(LA(1)))) {
 		fv=nonNodeFieldValue(ft);
-#line 1421 "expandedX3DVrmlParser.g"
+#line 1444 "expandedX3DVrmlParser.g"
 		assert(fv);
-#line 3234 "X3DVrmlParser.cpp"
+#line 3379 "X3DVrmlParser.cpp"
 	}
 	else {
 		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
@@ -3248,12 +3393,12 @@ void X3DVrmlParser::isStatement(
 	match(KEYWORD_IS);
 	id = LT(1);
 	match(ID);
-#line 1271 "expandedX3DVrmlParser.g"
+#line 1294 "expandedX3DVrmlParser.g"
 	
 	is_mappings.insert(make_pair(impl_node_interface_id,
 	id->getText()));
 	
-#line 3257 "X3DVrmlParser.cpp"
+#line 3402 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::protoScriptFieldInterfaceDeclaration(
@@ -3269,19 +3414,19 @@ void X3DVrmlParser::protoScriptFieldInterfaceDeclaration(
     is_list & is_mappings
 ) {
 	ANTLR_USE_NAMESPACE(antlr)RefToken  id = ANTLR_USE_NAMESPACE(antlr)nullToken;
-#line 1322 "expandedX3DVrmlParser.g"
+#line 1345 "expandedX3DVrmlParser.g"
 	
 	field_value::type_id ft;
 	boost::shared_ptr<field_value> fv;
 	bool succeeded;
 	
-#line 3279 "X3DVrmlParser.cpp"
+#line 3424 "X3DVrmlParser.cpp"
 	
 	match(KEYWORD_FIELD);
 	ft=fieldType();
 	id = LT(1);
 	match(ID);
-#line 1340 "expandedX3DVrmlParser.g"
+#line 1363 "expandedX3DVrmlParser.g"
 	
 	succeeded =
 	interfaces.insert(node_interface(node_interface::field_id,
@@ -3298,7 +3443,7 @@ void X3DVrmlParser::protoScriptFieldInterfaceDeclaration(
 	id->getColumn());
 	}
 	
-#line 3302 "X3DVrmlParser.cpp"
+#line 3447 "X3DVrmlParser.cpp"
 	{
 	switch ( LA(1)) {
 	case LBRACKET:
@@ -3320,20 +3465,20 @@ void X3DVrmlParser::protoScriptFieldInterfaceDeclaration(
                                routes,
                                ft,
                                script_node_id);
-#line 1362 "expandedX3DVrmlParser.g"
+#line 1385 "expandedX3DVrmlParser.g"
 		
 		assert(fv);
 		succeeded = initial_values.insert(make_pair(id->getText(), fv))
 		.second;
 		assert(succeeded);
 		
-#line 3331 "X3DVrmlParser.cpp"
+#line 3476 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_IS:
 	{
 		isStatement(id->getText(), is_mappings);
-#line 1368 "expandedX3DVrmlParser.g"
+#line 1391 "expandedX3DVrmlParser.g"
 		
 		using std::auto_ptr;
 		using boost::shared_ptr;
@@ -3350,7 +3495,7 @@ void X3DVrmlParser::protoScriptFieldInterfaceDeclaration(
 		.second;
 		assert(succeeded);
 		
-#line 3354 "X3DVrmlParser.cpp"
+#line 3499 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3367,14 +3512,14 @@ boost::shared_ptr<field_value>  X3DVrmlParser::nodeFieldValue(
                openvrml::field_value::type_id ft,
                const std::string & script_node_id
 ) {
-#line 1425 "expandedX3DVrmlParser.g"
+#line 1448 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> fv;
-#line 3373 "X3DVrmlParser.cpp"
-#line 1425 "expandedX3DVrmlParser.g"
+#line 3518 "X3DVrmlParser.cpp"
+#line 1448 "expandedX3DVrmlParser.g"
 	
 	using openvrml::field_value;
 	
-#line 3378 "X3DVrmlParser.cpp"
+#line 3523 "X3DVrmlParser.cpp"
 	
 	if (((_tokenSet_8.member(LA(1))))&&( ft == field_value::sfnode_id )) {
 		fv=sfNodeValue(browser, scope, script_node_id);
@@ -3398,9 +3543,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoNodeFieldValue(
                     field_value::type_id ft,
                     const std::string & script_node_id
 ) {
-#line 1441 "expandedX3DVrmlParser.g"
+#line 1464 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> fv;
-#line 3404 "X3DVrmlParser.cpp"
+#line 3549 "X3DVrmlParser.cpp"
 	
 	if (((_tokenSet_8.member(LA(1))))&&( ft == field_value::sfnode_id )) {
 		fv=protoSfNodeValue(browser,
@@ -3429,14 +3574,14 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfNodeValue(
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id
 ) {
-#line 1650 "expandedX3DVrmlParser.g"
+#line 1691 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> snv;
-#line 3435 "X3DVrmlParser.cpp"
-#line 1650 "expandedX3DVrmlParser.g"
+#line 3580 "X3DVrmlParser.cpp"
+#line 1691 "expandedX3DVrmlParser.g"
 	
 	openvrml::node_ptr n;
 	
-#line 3440 "X3DVrmlParser.cpp"
+#line 3585 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
@@ -3444,19 +3589,19 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfNodeValue(
 	case KEYWORD_USE:
 	{
 		n=nodeStatement(browser, scope, script_node_id);
-#line 1659 "expandedX3DVrmlParser.g"
+#line 1700 "expandedX3DVrmlParser.g"
 		
 		snv.reset(new sfnode(n));
 		
-#line 3452 "X3DVrmlParser.cpp"
+#line 3597 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_NULL:
 	{
 		match(KEYWORD_NULL);
-#line 1662 "expandedX3DVrmlParser.g"
+#line 1703 "expandedX3DVrmlParser.g"
 		snv.reset(new sfnode);
-#line 3460 "X3DVrmlParser.cpp"
+#line 3605 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3472,15 +3617,18 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfNodeValue(
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id
 ) {
-#line 1692 "expandedX3DVrmlParser.g"
-	boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode);
-#line 3478 "X3DVrmlParser.cpp"
-#line 1692 "expandedX3DVrmlParser.g"
+#line 1733 "expandedX3DVrmlParser.g"
+	boost::shared_ptr<field_value> mnv =
+         boost::shared_ptr<field_value>(new mfnode);
+#line 3624 "X3DVrmlParser.cpp"
+#line 1733 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	openvrml::node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3484 "X3DVrmlParser.cpp"
+#line 3632 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
@@ -3488,25 +3636,30 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfNodeValue(
 	case KEYWORD_USE:
 	{
 		n=nodeStatement(browser, scope, script_node_id);
-#line 1702 "expandedX3DVrmlParser.g"
+#line 1746 "expandedX3DVrmlParser.g"
 		
-		if (n) { nodes.value.push_back(n); }
+		if (n) { nodes.value(vector<node_ptr>(1, n)); }
 		
-#line 3496 "X3DVrmlParser.cpp"
+#line 3644 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1749 "expandedX3DVrmlParser.g"
+		
+		vector<node_ptr> value;
+		
+#line 3654 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == ID || LA(1) == KEYWORD_DEF || LA(1) == KEYWORD_USE)) {
 				n=nodeStatement(browser, scope, script_node_id);
-#line 1706 "expandedX3DVrmlParser.g"
+#line 1752 "expandedX3DVrmlParser.g"
 				
-				if (n) { nodes.value.push_back(n); }
+				if (n) { value.push_back(n); }
 				
-#line 3510 "X3DVrmlParser.cpp"
+#line 3663 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop104;
@@ -3516,6 +3669,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfNodeValue(
 		_loop104:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1755 "expandedX3DVrmlParser.g"
+		
+		nodes.value(value);
+		
+#line 3677 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3534,14 +3692,14 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoSfNodeValue(
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id
 ) {
-#line 1666 "expandedX3DVrmlParser.g"
+#line 1707 "expandedX3DVrmlParser.g"
 	boost::shared_ptr<field_value> snv;
-#line 3540 "X3DVrmlParser.cpp"
-#line 1666 "expandedX3DVrmlParser.g"
+#line 3698 "X3DVrmlParser.cpp"
+#line 1707 "expandedX3DVrmlParser.g"
 	
 	node_ptr n;
 	
-#line 3545 "X3DVrmlParser.cpp"
+#line 3703 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
@@ -3554,21 +3712,21 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoSfNodeValue(
                              is_map,
                              routes,
                              script_node_id);
-#line 1683 "expandedX3DVrmlParser.g"
+#line 1724 "expandedX3DVrmlParser.g"
 		
 		snv.reset(new sfnode(n));
 		
-#line 3562 "X3DVrmlParser.cpp"
+#line 3720 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_NULL:
 	{
 		match(KEYWORD_NULL);
-#line 1686 "expandedX3DVrmlParser.g"
+#line 1727 "expandedX3DVrmlParser.g"
 		
 		snv.reset(new sfnode);
 		
-#line 3572 "X3DVrmlParser.cpp"
+#line 3730 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3587,15 +3745,18 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoMfNodeValue(
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id
 ) {
-#line 1713 "expandedX3DVrmlParser.g"
-	boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode);
-#line 3593 "X3DVrmlParser.cpp"
-#line 1713 "expandedX3DVrmlParser.g"
+#line 1761 "expandedX3DVrmlParser.g"
+	boost::shared_ptr<field_value> mnv =
+         boost::shared_ptr<field_value>(new mfnode);
+#line 3752 "X3DVrmlParser.cpp"
+#line 1761 "expandedX3DVrmlParser.g"
+	
+	using std::vector;
 	
 	node_ptr n;
 	mfnode & nodes = static_cast<mfnode &>(*mnv);
 	
-#line 3599 "X3DVrmlParser.cpp"
+#line 3760 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case ID:
@@ -3608,16 +3769,21 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoMfNodeValue(
                              is_map,
                              routes,
                              script_node_id);
-#line 1731 "expandedX3DVrmlParser.g"
+#line 1782 "expandedX3DVrmlParser.g"
 		
-		if (n) { nodes.value.push_back(n); }
+		if (n) { nodes.value(vector<node_ptr>(1, n)); }
 		
-#line 3616 "X3DVrmlParser.cpp"
+#line 3777 "X3DVrmlParser.cpp"
 		break;
 	}
 	case LBRACKET:
 	{
 		match(LBRACKET);
+#line 1785 "expandedX3DVrmlParser.g"
+		
+		vector<node_ptr> value;
+		
+#line 3787 "X3DVrmlParser.cpp"
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == ID || LA(1) == KEYWORD_DEF || LA(1) == KEYWORD_USE)) {
@@ -3627,11 +3793,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoMfNodeValue(
                                  is_map,
                                  routes,
                                  script_node_id);
-#line 1740 "expandedX3DVrmlParser.g"
+#line 1793 "expandedX3DVrmlParser.g"
 				
-				if (n) { nodes.value.push_back(n); }
+				if (n) { value.push_back(n); }
 				
-#line 3635 "X3DVrmlParser.cpp"
+#line 3801 "X3DVrmlParser.cpp"
 			}
 			else {
 				goto _loop107;
@@ -3641,6 +3807,11 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoMfNodeValue(
 		_loop107:;
 		} // ( ... )*
 		match(RBRACKET);
+#line 1796 "expandedX3DVrmlParser.g"
+		
+		nodes.value(value);
+		
+#line 3815 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3652,25 +3823,25 @@ boost::shared_ptr<field_value>  X3DVrmlParser::protoMfNodeValue(
 }
 
 bool  X3DVrmlParser::boolValue() {
-#line 1477 "expandedX3DVrmlParser.g"
+#line 1500 "expandedX3DVrmlParser.g"
 	bool val = false;
-#line 3658 "X3DVrmlParser.cpp"
+#line 3829 "X3DVrmlParser.cpp"
 	
 	switch ( LA(1)) {
 	case KEYWORD_TRUE:
 	{
 		match(KEYWORD_TRUE);
-#line 1481 "expandedX3DVrmlParser.g"
+#line 1504 "expandedX3DVrmlParser.g"
 		val = true;
-#line 3666 "X3DVrmlParser.cpp"
+#line 3837 "X3DVrmlParser.cpp"
 		break;
 	}
 	case KEYWORD_FALSE:
 	{
 		match(KEYWORD_FALSE);
-#line 1482 "expandedX3DVrmlParser.g"
+#line 1505 "expandedX3DVrmlParser.g"
 		val = false;
-#line 3674 "X3DVrmlParser.cpp"
+#line 3845 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3684,29 +3855,29 @@ bool  X3DVrmlParser::boolValue() {
 void X3DVrmlParser::colorValue(
 	color & c
 ) {
-#line 1511 "expandedX3DVrmlParser.g"
+#line 1540 "expandedX3DVrmlParser.g"
 	
 	float r, g, b;
 	
-#line 3692 "X3DVrmlParser.cpp"
+#line 3863 "X3DVrmlParser.cpp"
 	
 	r=colorComponent();
 	g=colorComponent();
 	b=colorComponent();
-#line 1518 "expandedX3DVrmlParser.g"
+#line 1547 "expandedX3DVrmlParser.g"
 	c.r(r);
 	c.g(g);
 	c.b(b);
-#line 3701 "X3DVrmlParser.cpp"
+#line 3872 "X3DVrmlParser.cpp"
 }
 
 float  X3DVrmlParser::colorComponent() {
-#line 1524 "expandedX3DVrmlParser.g"
+#line 1553 "expandedX3DVrmlParser.g"
 	float val = 0.0f;
-#line 3707 "X3DVrmlParser.cpp"
+#line 3878 "X3DVrmlParser.cpp"
 	
 	val=floatValue();
-#line 1528 "expandedX3DVrmlParser.g"
+#line 1557 "expandedX3DVrmlParser.g"
 	
 	if (val < 0.0 || val > 1.0) {
 	this->reportWarning("Color component values must be from 0 to "
@@ -3718,14 +3889,14 @@ float  X3DVrmlParser::colorComponent() {
 	}
 	}
 	
-#line 3722 "X3DVrmlParser.cpp"
+#line 3893 "X3DVrmlParser.cpp"
 	return val;
 }
 
 float  X3DVrmlParser::floatValue() {
-#line 1567 "expandedX3DVrmlParser.g"
+#line 1602 "expandedX3DVrmlParser.g"
 	float val;
-#line 3729 "X3DVrmlParser.cpp"
+#line 3900 "X3DVrmlParser.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f0 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	ANTLR_USE_NAMESPACE(antlr)RefToken  f1 = ANTLR_USE_NAMESPACE(antlr)nullToken;
 	
@@ -3734,18 +3905,18 @@ float  X3DVrmlParser::floatValue() {
 	{
 		f0 = LT(1);
 		match(REAL);
-#line 1571 "expandedX3DVrmlParser.g"
+#line 1606 "expandedX3DVrmlParser.g"
 		std::istringstream(f0->getText()) >> val;
-#line 3740 "X3DVrmlParser.cpp"
+#line 3911 "X3DVrmlParser.cpp"
 		break;
 	}
 	case INTEGER:
 	{
 		f1 = LT(1);
 		match(INTEGER);
-#line 1572 "expandedX3DVrmlParser.g"
+#line 1607 "expandedX3DVrmlParser.g"
 		std::istringstream(f1->getText()) >> val;
-#line 3749 "X3DVrmlParser.cpp"
+#line 3920 "X3DVrmlParser.cpp"
 		break;
 	}
 	default:
@@ -3759,18 +3930,18 @@ float  X3DVrmlParser::floatValue() {
 void X3DVrmlParser::rotationValue(
 	rotation & r
 ) {
-#line 1770 "expandedX3DVrmlParser.g"
+#line 1831 "expandedX3DVrmlParser.g"
 	
 	using openvrml_::fequal;
 	float x, y, z, angle;
 	
-#line 3768 "X3DVrmlParser.cpp"
+#line 3939 "X3DVrmlParser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
 	angle=floatValue();
-#line 1778 "expandedX3DVrmlParser.g"
+#line 1839 "expandedX3DVrmlParser.g"
 	
 	vec3f axis(x, y, z);
 	
@@ -3786,43 +3957,43 @@ void X3DVrmlParser::rotationValue(
 	}
 	r = rotation(axis, angle);
 	
-#line 3790 "X3DVrmlParser.cpp"
+#line 3961 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::vec2fValue(
 	vec2f & v
 ) {
-#line 1899 "expandedX3DVrmlParser.g"
+#line 1980 "expandedX3DVrmlParser.g"
 	
 	float x, y;
 	
-#line 3800 "X3DVrmlParser.cpp"
+#line 3971 "X3DVrmlParser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
-#line 1906 "expandedX3DVrmlParser.g"
+#line 1987 "expandedX3DVrmlParser.g"
 	v.x(x);
 	v.y(y);
-#line 3807 "X3DVrmlParser.cpp"
+#line 3978 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::vec3fValue(
 	vec3f & v
 ) {
-#line 1936 "expandedX3DVrmlParser.g"
+#line 2023 "expandedX3DVrmlParser.g"
 	
 	float x, y, z;
 	
-#line 3817 "X3DVrmlParser.cpp"
+#line 3988 "X3DVrmlParser.cpp"
 	
 	x=floatValue();
 	y=floatValue();
 	z=floatValue();
-#line 1943 "expandedX3DVrmlParser.g"
+#line 2030 "expandedX3DVrmlParser.g"
 	v.x(x);
 	v.y(y);
 	v.z(z);
-#line 3826 "X3DVrmlParser.cpp"
+#line 3997 "X3DVrmlParser.cpp"
 }
 
 void X3DVrmlParser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& )

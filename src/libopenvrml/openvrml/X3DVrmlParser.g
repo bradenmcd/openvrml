@@ -320,14 +320,20 @@ options { defaultErrorHandler=false; }
 
 mfDoubleValue
 returns [boost::shared_ptr<field_value> mfv =
-            boost::shared_ptr<field_value>(new mfdouble)]
+         boost::shared_ptr<field_value>(new mfdouble)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     double d;
     mfdouble & doubles = static_cast<mfdouble &>(*mfv);
 }
-    :   d=doubleValue { doubles.value.push_back(d); }
-    |   LBRACKET (d=doubleValue { doubles.value.push_back(d); })* RBRACKET
+    :   d=doubleValue { doubles.value(vector<double>(1, d)); }
+    |   LBRACKET {
+            vector<double> value;
+        } (d=doubleValue { value.push_back(d); })* RBRACKET {
+            doubles.value(value);
+        }
     ;
 
 sfVec2dValue returns [boost::shared_ptr<field_value> svv]
@@ -343,11 +349,17 @@ returns [boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec2d)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     vec2d v;
     mfvec2d & vec2ds = static_cast<mfvec2d &>(*mvv);
 }
-    :   vec2dValue[v] { vec2ds.value.push_back(v); }
-    |   LBRACKET (vec2dValue[v] { vec2ds.value.push_back(v); })* RBRACKET
+    :   vec2dValue[v] { vec2ds.value(vector<vec2d>(1, v)); }
+    |   LBRACKET {
+            vector<vec2d> value;
+        } (vec2dValue[v] { value.push_back(v); })* RBRACKET {
+            vec2ds.value(value);
+        }
     ;
 
 vec2dValue[vec2d & v]
@@ -374,11 +386,17 @@ returns [boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec3d)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     vec3d v;
     mfvec3d & vec3ds = static_cast<mfvec3d &>(*mvv);
 }
-    :   vec3dValue[v] { vec3ds.value.push_back(v); }
-    |   LBRACKET (vec3dValue[v] { vec3ds.value.push_back(v); })* RBRACKET
+    :   vec3dValue[v] { vec3ds.value(vector<vec3d>(1, v)); }
+    |   LBRACKET {
+            vector<vec3d> value;
+        } (vec3dValue[v] { value.push_back(v); })* RBRACKET {
+            vec3ds.value(value);
+        }
     ;
 
 vec3dValue[vec3d & v]

@@ -1,5 +1,21 @@
 2005-10-23 Braden McDaniel  <braden@endoframe.com>
 
+	Gave field_value classes copy-on-write semantics.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/X3DVrmlParser.cpp
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2005-10-23 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Doxyfile:  Ignore X3DVrmlParser source files.
 
 2005-10-23 Braden McDaniel  <braden@endoframe.com>

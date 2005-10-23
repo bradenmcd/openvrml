@@ -71,11 +71,7 @@ namespace openvrml {
                        const initial_value_map & initial_values) const
             throw ();
     };
-}
 
-namespace {
-
-    using namespace openvrml;
 
     class proto_node;
     class proto_impl_cloner;
@@ -399,13 +395,15 @@ namespace {
     class OPENVRML_LOCAL node_path_element {
     public:
         std::vector<node_ptr>::size_type index;
+        field_value::type_id field_type;
         std::string field_id;
 
         node_path_element();
     };
 
     node_path_element::node_path_element():
-        index(0)
+        index(0),
+        field_type(field_value::invalid_type_id)
     {}
 
     typedef std::list<node_path_element> node_path_t;
@@ -481,22 +479,20 @@ namespace {
             if (interface->type == node_interface::field_id
                 || interface->type == node_interface::exposedfield_id) {
                 if (interface->field_type == field_value::sfnode_id) {
+                    back.field_type = field_value::sfnode_id;
                     back.field_id = interface->id;
                     try {
-                        const sfnode & value =
-                            static_cast<const sfnode &>(
-                                n.field(interface->id));
-                        this->get_path_from(value.value);
+                        const sfnode value = n.field<sfnode>(interface->id);
+                        this->get_path_from(value.value());
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
                 } else if (interface->field_type == field_value::mfnode_id) {
+                    back.field_type = field_value::mfnode_id;
                     back.field_id = interface->id;
                     try {
-                        const mfnode & value =
-                            static_cast<const mfnode &>(
-                                n.field(interface->id));
-                        this->get_path_from(value.value);
+                        const mfnode value = n.field<mfnode>(interface->id);
+                        this->get_path_from(value.value());
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
@@ -527,15 +523,15 @@ namespace {
              ++path_element) {
             assert(result);
             try {
-                const field_value & field_val =
-                    result->field(path_element->field_id);
-                const field_value::type_id type = field_val.type();
-                if (type == field_value::sfnode_id) {
-                    result =
-                        static_cast<const sfnode &>(field_val).value.get();
-                } else if (type == field_value::mfnode_id) {
-                    result = static_cast<const mfnode &>(field_val)
-                        .value[next(path_element)->index].get();
+                if (path_element->field_type == field_value::sfnode_id) {
+                    result = result->field<sfnode>(path_element->field_id)
+                        .value().get();
+                } else if (path_element->field_type == field_value::mfnode_id)
+                {
+                    result = result->field<mfnode>(path_element->field_id)
+                        .value()[next(path_element)->index].get();
+                } else {
+                    assert(!"invalid path_element->field_type");
                 }
             } catch (unsupported_interface & ex) {
                 OPENVRML_PRINT_EXCEPTION_(ex);
@@ -616,13 +612,14 @@ namespace {
                         || type == node_interface::field_id) {
                         using std::auto_ptr;
                         using boost::shared_ptr;
-                        auto_ptr<field_value> val =
+                        auto_ptr<field_value> src = n->field(id);
+                        auto_ptr<field_value> dest =
                             field_value::create(interface->field_type);
-                        assert(val->type() == n->field(id).type());
-                        this->clone_field_value(n, n->field(id), *val);
+                        assert(src->type() == dest->type());
+                        this->clone_field_value(n, *src, *dest);
                         bool succeeded =
                             initial_values.insert(
-                                make_pair(id, shared_ptr<field_value>(val)))
+                                make_pair(id, shared_ptr<field_value>(dest)))
                             .second;
                         assert(succeeded);
                     }
@@ -639,9 +636,9 @@ namespace {
                           sfnode & dest)
             throw (std::bad_alloc)
         {
-            dest.value = (src.value == src_node)
+            dest.value((src.value() == src_node)
                        ? node_ptr::self
-                       : this->clone_node(src.value);
+                       : this->clone_node(src.value()));
         }
 
         void clone_mfnode(const node_ptr & src_node,
@@ -651,15 +648,15 @@ namespace {
         {
             using std::swap;
             using std::vector;
-            mfnode result(src.value.size());
+            std::vector<node_ptr> result(src.value().size());
             for (vector<node_ptr>::size_type i = 0;
-                 i < src.value.size();
+                 i < src.value().size();
                  ++i) {
-                result.value[i] = (src.value[i] == src_node)
-                                ? node_ptr::self
-                                : this->clone_node(src.value[i]);
+                result[i] = (src.value()[i] == src_node)
+                          ? node_ptr::self
+                          : this->clone_node(src.value()[i]);
             }
-            swap(dest, result);
+            dest.value(result);
         }
     };
 
@@ -749,10 +746,9 @@ namespace {
                         using std::auto_ptr;
                         using std::find_if;
                         using boost::shared_ptr;
-                        const field_value * src_val = 0;
+                        auto_ptr<const field_value> src_val;
                         auto_ptr<field_value> dest_val =
                             field_value::create(interface->field_type);
-                        assert(dest_val->type() == n->field(id).type());
 
                         //
                         // If the field/exposedField is IS'd, get the value
@@ -800,7 +796,7 @@ namespace {
                                         is_mapping->first);
                                 if (initial_value
                                     != this->initial_values_.end()) {
-                                    src_val = initial_value->second.get();
+                                    src_val = initial_value->second->clone();
                                 } else {
                                     default_value_map::const_iterator
                                         default_value =
@@ -809,16 +805,16 @@ namespace {
                                     assert(default_value
                                            != this->node_class
                                            .default_value_map.end());
-                                    src_val = default_value->second.get();
+                                    src_val = default_value->second->clone();
                                 }
                             } else {
-                                src_val = &n->field(id);
+                                src_val = n->field(id);
                             }
                         } else {
-                            src_val = &n->field(id);
+                            src_val = n->field(id);
                         }
 
-                        assert(src_val);
+                        assert(src_val.get());
                         this->clone_field_value(n, *src_val, *dest_val);
 
                         bool succeeded =
@@ -839,7 +835,7 @@ namespace {
         void clone_sfnode(const sfnode & src, sfnode & dest)
             throw (std::bad_alloc)
         {
-            dest.value = this->clone_node(src.value);
+            dest.value(this->clone_node(src.value()));
         }
 
         void clone_mfnode(const mfnode & src, mfnode & dest)
@@ -847,13 +843,13 @@ namespace {
         {
             using std::swap;
             using std::vector;
-            mfnode result(src.value.size());
+            vector<node_ptr> result(src.value().size());
             for (vector<node_ptr>::size_type i = 0;
-                 i < src.value.size();
+                 i < src.value().size();
                  ++i) {
-                result.value[i] = this->clone_node(src.value[i]);
+                result[i] = this->clone_node(src.value()[i]);
             }
-            swap(dest, result);
+            dest.value(result);
         }
     };
 
@@ -2251,9 +2247,9 @@ namespace {
             node * const impl_node = resolve_node_path(path, this->impl_nodes);
 
             //
-            // Set the field value for the implementation node.
+            // Get the field value for the implementation node.
             //
-            return impl_node->field(is_mapping->second.impl_node_interface);
+            return impl_node->do_field(is_mapping->second.impl_node_interface);
         } else {
             //
             // If there are no IS mappings for the field, then return the
@@ -2648,14 +2644,18 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        return boost::shared_ptr<node_type>(new proto_node_type(*this, id, interfaces));
+        return boost::shared_ptr<node_type>(
+            new proto_node_type(*this, id, interfaces));
     }
+} // namespace openvrml
 
+namespace {
 
     class OPENVRML_LOCAL default_navigation_info :
-        public navigation_info_node {
+        public openvrml::navigation_info_node {
     public:
-        explicit default_navigation_info(const null_node_type & type) throw ();
+        explicit default_navigation_info(const openvrml::null_node_type & type)
+            throw ();
         virtual ~default_navigation_info() throw ();
 
         virtual const std::vector<float> & avatar_size() const throw ();
@@ -2666,23 +2666,25 @@ namespace {
 
     private:
         virtual void do_field(const std::string & id,
-                              const field_value & value)
+                              const openvrml::field_value & value)
             throw ();
-        virtual const field_value & do_field(const std::string & id) const
+        virtual const openvrml::field_value &
+        do_field(const std::string & id) const
             throw ();
         virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
+                                      const openvrml::field_value & value,
                                       double timestamp)
             throw ();
-        virtual const field_value & do_eventout(const std::string & id) const
+        virtual const openvrml::field_value &
+        do_eventout(const std::string & id) const
             throw ();
 
         virtual openvrml::event_listener &
         do_event_listener(const std::string & id)
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
     };
 
     const boost::shared_ptr<openvrml::scope> null_scope_ptr;
@@ -2692,11 +2694,12 @@ namespace {
      *
      * @param t node type.
      */
-    default_navigation_info::default_navigation_info(const null_node_type & t)
+    default_navigation_info::
+    default_navigation_info(const openvrml::null_node_type & t)
         throw ():
-        node(t, null_scope_ptr),
-        bounded_volume_node(t, null_scope_ptr),
-        child_node(t, null_scope_ptr),
+        openvrml::node(t, null_scope_ptr),
+        openvrml::bounded_volume_node(t, null_scope_ptr),
+        openvrml::child_node(t, null_scope_ptr),
         openvrml::navigation_info_node(t, null_scope_ptr)
     {}
 
@@ -2763,88 +2766,93 @@ namespace {
     }
 
     void default_navigation_info::do_field(const std::string &,
-                                           const field_value &)
+                                           const openvrml::field_value &)
         throw ()
     {
         assert(false);
     }
 
-    const field_value &
+    const openvrml::field_value &
     default_navigation_info::do_field(const std::string &) const
         throw ()
     {
         assert(false);
-        static const sfbool value;
+        static const openvrml::sfbool value;
         return value;
     }
 
-    void default_navigation_info::do_process_event(const std::string &,
-                                                   const field_value &,
-                                                   double)
+    void
+    default_navigation_info::do_process_event(const std::string &,
+                                              const openvrml::field_value &,
+                                              double)
         throw ()
     {
         assert(false);
     }
 
-    const field_value &
+    const openvrml::field_value &
     default_navigation_info::do_eventout(const std::string &) const throw ()
     {
         assert(false);
-        static const sfbool value;
+        static const openvrml::sfbool value;
         return value;
     }
 
-    event_listener &
+    openvrml::event_listener &
     default_navigation_info::do_event_listener(const std::string & id)
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->node::type(), id);
+        throw openvrml::unsupported_interface(this->node::type(), id);
         return *static_cast<openvrml::event_listener *>(0);
     }
 
-    event_emitter &
+    openvrml::event_emitter &
     default_navigation_info::do_event_emitter(const std::string & id)
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->node::type(), id);
+        throw openvrml::unsupported_interface(this->node::type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
 
-    class OPENVRML_LOCAL default_viewpoint : public viewpoint_node {
-        mat4f userViewTransform;
+    class OPENVRML_LOCAL default_viewpoint : public openvrml::viewpoint_node {
+        openvrml::mat4f userViewTransform;
 
     public:
-        explicit default_viewpoint(const null_node_type & type) throw ();
+        explicit default_viewpoint(const openvrml::null_node_type & type)
+            throw ();
         virtual ~default_viewpoint() throw ();
 
-        virtual const mat4f & transformation() const throw ();
-        virtual const mat4f & user_view_transform() const throw ();
-        virtual void user_view_transform(const mat4f & transform) throw ();
+        virtual const openvrml::mat4f & transformation() const throw ();
+        virtual const openvrml::mat4f & user_view_transform() const throw ();
+        virtual void user_view_transform(const openvrml::mat4f & transform)
+            throw ();
         virtual const std::string & description() const throw ();
         virtual float field_of_view() const throw ();
 
     private:
         virtual void do_field(const std::string & id,
-                              const field_value & value)
+                              const openvrml::field_value & value)
             throw ();
-        virtual const field_value & do_field(const std::string & id) const
+        virtual const openvrml::field_value &
+        do_field(const std::string & id) const
             throw ();
         virtual void do_process_event(const std::string & id,
-                                      const field_value & value,
+                                      const openvrml::field_value & value,
                                       double timestamp)
             throw ();
-        virtual const field_value & do_eventout(const std::string & id) const
+        virtual const openvrml::field_value &
+        do_eventout(const std::string & id) const
             throw ();
 
         virtual openvrml::event_listener &
         do_event_listener(const std::string & id)
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
+            throw (openvrml::unsupported_interface);
     };
 
     /**
@@ -2852,12 +2860,12 @@ namespace {
      *
      * @param type  the browser's null_node_type instance.
      */
-    default_viewpoint::default_viewpoint(const null_node_type & type)
+    default_viewpoint::default_viewpoint(const openvrml::null_node_type & type)
         throw ():
-        node(type, null_scope_ptr),
-        bounded_volume_node(type, null_scope_ptr),
-        child_node(type, null_scope_ptr),
-        viewpoint_node(type, null_scope_ptr)
+        openvrml::node(type, null_scope_ptr),
+        openvrml::bounded_volume_node(type, null_scope_ptr),
+        openvrml::child_node(type, null_scope_ptr),
+        openvrml::viewpoint_node(type, null_scope_ptr)
     {}
 
     /**
@@ -2866,8 +2874,11 @@ namespace {
     default_viewpoint::~default_viewpoint() throw ()
     {}
 
-    const mat4f & default_viewpoint::transformation() const throw ()
+    const openvrml::mat4f & default_viewpoint::transformation() const throw ()
     {
+        using openvrml::mat4f;
+        using openvrml::rotation;
+        using openvrml::vec3f;
         static const vec3f position(0.0, 0.0, 10.0);
         static const rotation orientation;
         static const vec3f scale(1.0, 1.0, 1.0);
@@ -2881,12 +2892,14 @@ namespace {
         return t;
     }
 
-    const mat4f & default_viewpoint::user_view_transform() const throw ()
+    const openvrml::mat4f & default_viewpoint::user_view_transform() const
+        throw ()
     {
         return this->userViewTransform;
     }
 
-    void default_viewpoint::user_view_transform(const mat4f & transform)
+    void
+    default_viewpoint::user_view_transform(const openvrml::mat4f & transform)
         throw ()
     {
         this->userViewTransform = transform;
@@ -2905,52 +2918,52 @@ namespace {
     }
 
     void default_viewpoint::do_field(const std::string &,
-                                     const field_value &)
+                                     const openvrml::field_value &)
         throw ()
     {
         assert(false);
     }
 
-    const field_value &
+    const openvrml::field_value &
     default_viewpoint::do_field(const std::string &) const
         throw ()
     {
         assert(false);
-        static const sfbool value;
+        static const openvrml::sfbool value;
         return value;
     }
 
     void default_viewpoint::do_process_event(const std::string &,
-                                             const field_value &,
+                                             const openvrml::field_value &,
                                              double)
         throw ()
     {
         assert(false);
     }
 
-    const field_value &
+    const openvrml::field_value &
     default_viewpoint::do_eventout(const std::string &) const throw ()
     {
         assert(false);
-        static const sfbool value;
+        static const openvrml::sfbool value;
         return value;
     }
 
-    event_listener &
+    openvrml::event_listener &
     default_viewpoint::do_event_listener(const std::string & id)
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->type(), id);
+        throw openvrml::unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_listener *>(0);
     }
 
-    event_emitter &
+    openvrml::event_emitter &
     default_viewpoint::do_event_emitter(const std::string & id)
-        throw (unsupported_interface)
+        throw (openvrml::unsupported_interface)
     {
         assert(false);
-        throw unsupported_interface(this->type(), id);
+        throw openvrml::unsupported_interface(this->type(), id);
         return *static_cast<openvrml::event_emitter *>(0);
     }
 
@@ -3694,6 +3707,7 @@ namespace {
             while (*this->in_) {
                 std::vector<unsigned char> data;
                 while (this->in_->data_available()) {
+                    using openvrml::resource_istream;
                     const resource_istream::int_type c = this->in_->get();
                     if (c != resource_istream::traits_type::eof()) {
                         data.push_back(
@@ -3979,7 +3993,7 @@ openvrml::invalid_profile::~invalid_profile() throw ()
  */
 
 /**
- * @var openvrml::browser::node_class_map::map_t browser::node_class_map::map_
+ * @var openvrml::browser::node_class_map::map_t openvrml::browser::node_class_map::map_
  *
  * @brief Map.
  */
@@ -4068,7 +4082,7 @@ openvrml::browser::node_class_map::init(viewpoint_node * initial_viewpoint,
  *
  * @return the element in the node_class_map corresponding to @p id.
  */
-const boost::shared_ptr<node_class>
+const boost::shared_ptr<openvrml::node_class>
 openvrml::browser::node_class_map::
 insert(const std::string & id,
        const boost::shared_ptr<node_class> & node_class)
@@ -6399,7 +6413,7 @@ openvrml::browser::get_resource(const std::string & uri)
  *
  * @return the requested resource as a stream.
  *
- * @fn std::auto_ptr<openvrml::resource_istream> browser::do_get_resource(const std::string & uri)
+ * @fn std::auto_ptr<openvrml::resource_istream> openvrml::browser::do_get_resource(const std::string & uri)
  */
 
 /**
@@ -6690,7 +6704,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
                 this->browser_->scene_->get_resource(*this->url_);
             if (!(*in)) { throw unreachable_url(); }
             mfnode nodes;
-            nodes.value = this->browser_->create_vrml_from_stream(*in);
+            nodes.value(this->browser_->create_vrml_from_stream(*in));
             this->listener_->process_event(nodes, browser::current_time());
         } catch (std::exception & ex) {
             this->browser_->err << ex.what() << std::endl;
@@ -7343,7 +7357,7 @@ namespace {
 
             result_uri = uri(result);
 
-        } catch (invalid_url &) {
+        } catch (openvrml::invalid_url &) {
             assert(false); // If we constructed a bad URI, something is wrong.
         }
 
@@ -7544,7 +7558,7 @@ void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
  *
  * @return the root nodes for the scene.
  */
-const std::vector<node_ptr> & scene::nodes() const throw()
+const std::vector<openvrml::node_ptr> & openvrml::scene::nodes() const throw()
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     return this->nodes_;
@@ -7698,7 +7712,7 @@ void openvrml::scene::load_url(const std::vector<std::string> & url,
  *                                  resolved.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-std::auto_ptr<resource_istream>
+std::auto_ptr<openvrml::resource_istream>
 openvrml::scene::get_resource(const std::vector<std::string> & url) const
     throw (no_alternative_url, std::bad_alloc)
 {

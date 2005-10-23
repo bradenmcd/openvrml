@@ -183,6 +183,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
+    class proto_node;
 
     class OPENVRML_API node_class : boost::noncopyable {
         openvrml::browser * browser_;
@@ -290,10 +291,14 @@ namespace openvrml {
     class event_emitter;
 
     template <typename FieldValue> class field_value_listener;
+    template <typename FieldValue> class field_value_emitter;
     template <typename FieldValue> class exposedfield;
 
     class OPENVRML_API node : boost::noncopyable {
+        friend class proto_node;
+
         friend std::ostream & operator<<(std::ostream & out, const node & n);
+
         friend script_node * node_cast<script_node *>(node * n) throw ();
         friend appearance_node * node_cast<appearance_node *>(node * n)
             throw ();
@@ -404,12 +409,28 @@ namespace openvrml {
 
         void initialize(openvrml::scene & scene, double timestamp)
             throw (std::bad_alloc);
-        const field_value & field(const std::string & id) const
-            throw (unsupported_interface);
+
+        std::auto_ptr<field_value> field(const std::string & id) const
+            throw (unsupported_interface, std::bad_alloc);
+
+        template <typename FieldValue>
+        const FieldValue field(const std::string & id) const
+            throw (unsupported_interface, std::bad_cast);
+
         openvrml::event_listener & event_listener(const std::string & id)
             throw (unsupported_interface);
+
+        template <typename FieldValue>
+        field_value_listener<FieldValue> &
+        event_listener(const std::string & id)
+            throw (unsupported_interface, std::bad_cast);
+
         openvrml::event_emitter & event_emitter(const std::string & id)
             throw (unsupported_interface);
+
+        template <typename FieldValue>
+        field_value_emitter<FieldValue> & event_emitter(const std::string & id)
+            throw (unsupported_interface, std::bad_cast);
         void shutdown(double timestamp) throw ();
 
         virtual bool modified() const;
@@ -478,6 +499,42 @@ namespace openvrml {
         return this->mutex_;
     }
 
+    template <typename FieldValue>
+    const FieldValue
+    node::field(const std::string & id) const
+        throw (unsupported_interface, std::bad_cast)
+    {
+        boost::function_requires<FieldValueConcept<FieldValue> >();
+
+        boost::recursive_mutex::scoped_lock lock(this->mutex_);
+        return dynamic_cast<const FieldValue &>(this->do_field(id));
+    }
+
+    template <typename FieldValue>
+    field_value_listener<FieldValue> &
+    node::event_listener(const std::string & id)
+        throw (unsupported_interface, std::bad_cast)
+    {
+        //
+        // No need to lock here; the set of event listeners for a node instance
+        // cannot change.
+        //
+        return dynamic_cast<field_value_listener<FieldValue> &>(
+            this->do_event_listener(id));
+    }
+
+    template <typename FieldValue>
+    field_value_emitter<FieldValue> &
+    node::event_emitter(const std::string & id)
+        throw (unsupported_interface, std::bad_cast)
+    {
+        //
+        // No need to lock here; the set of event emitters for a node instance
+        // cannot change.
+        //
+        return dynamic_cast<field_value_emitter<FieldValue> &>(
+            this->do_event_emitter(id));
+    }
 
     OPENVRML_API bool add_route(node & from, const std::string & eventout,
                                 node & to, const std::string & eventin)

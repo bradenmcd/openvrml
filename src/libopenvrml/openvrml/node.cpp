@@ -334,12 +334,12 @@ std::istream & openvrml::operator>>(std::istream & in,
  *   - the node_interface's @a id is lexicographically equal to the eventIn
  *     identifier
  *   - or the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier with the string "set_" prepended.
+ *     identifier with the string &ldquo;set_&rdquo; prepended.
  * - or, the node_interface's @a type is node_interface::exposedfield_id and
  *   - the node_interface's @a id is lexicographically equal to the eventIn
  *     identifier
- *   - or the node_interface's @a id with the string "set_" prepended is
- *     lexicographically equal to the eventIn identifier.
+ *   - or the node_interface's @a id with the string &ldquo;set_&rdquo;
+ *     prepended is lexicographically equal to the eventIn identifier.
  *
  * @param interface     node_interface.
  * @param eventin_id    eventIn identifier.
@@ -372,12 +372,12 @@ std::istream & openvrml::operator>>(std::istream & in,
  *   - the node_interface's @a id is lexicographically equal to the eventOut
  *     identifier
  *   - or the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier with the string "_changed" appended.
+ *     identifier with the string &ldquo;_changed&rdquo; appended.
  * - or, the node_interface's @a type is node_interface::exposedfield_id and
  *   - the node_interface's @a id is lexicographically equal to the eventOut
  *     identifier
- *   - or the node_interface's @a id with the string "_changed" appended is
- *     lexicographically equal to the eventOut identifier.
+ *   - or the node_interface's @a id with the string &ldquo;_changed&rdquo;
+ *     appended is lexicographically equal to the eventOut identifier.
  *
  * @param interface     node_interface.
  * @param eventout_id   eventOut identifier.
@@ -391,7 +391,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a node_interface matches an exposedField identifier.
+ * @brief Determine if a <code>node_interface</code> matches an exposedField
+ *        identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -405,11 +406,13 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @brief Determine if a node_interface matches an exposedField identifier.
  *
- * A node_interface matches an exposedField identifier if the node_interface's
- * @a type is node_interface::exposedfield_id and the node_interface's @a id is
- * lexicographically equal to the exposedField identifier.
+ * A <code>node_interface</code> matches an exposedField identifier if the
+ * <code>node_interface</code>'s @a type is
+ * <code>node_interface::exposedfield_id</code> and the
+ * <code>node_interface</code>'s @a id is lexicographically equal to the
+ * exposedField identifier.
  *
- * @param interface         node_interface.
+ * @param interface         <code>node_interface</code>.
  * @param exposedfield_id   exposedField identifier.
  *
  * @return @c true if @p interface matches @p exposedfield_id; @c false
@@ -422,7 +425,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a node_interface matches an field identifier.
+ * @brief Determine if a <code>node_interface</code> matches an field
+ *        identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -452,17 +456,20 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Function object to compare two node_interfaces based on their id.
+ * @brief Function object to compare two <code>node_interface</code>s based on
+ *        their id.
  *
- * node_interface_compare provides a
+ * <code>node_interface_compare</code> provides a
  * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
- * StrictWeakOrdering</a> for node_interfaces and ensures that exposedField
- * definitions appropriately encroach on the namespace of eventIn and eventOut
- * definitions. That is, per 4.7 of the VRML97 spec: "An exposedField named zzz
- * can be referred to as 'set_zzz' and treated as an eventIn, and can be
- * referred to as 'zzz_changed' and treated as an eventOut."
+ * StrictWeakOrdering</a> for <code>node_interface</code>s and ensures that
+ * exposedField definitions appropriately encroach on the namespace of eventIn
+ * and eventOut definitions. That is, per 4.7 of the VRML97 spec: &rdquo;An
+ * exposedField named zzz can be referred to as &lsquo;set_zzz&rsquo; and
+ * treated as an eventIn, and can be referred to as &lsquo;zzz_changed&rsquo;
+ * and treated as an eventOut.&rdquo;
  *
- * node_interface_compare is the comparator used by node_interface_set.
+ * <code>node_interface_compare</code> is the comparator used by
+ * <code>@link openvrml::node_interface_set node_interface_set@endlink</code>.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -478,7 +485,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_compare::result_type openvrml::node_interface_compare::operator()(const first_argument_type & lhs, const second_argument_type & rhs) const
  *
- * @brief Compare two node_interfaces based on their id.
+ * @brief Compare two <code>node_interface</code>s based on their id.
  *
  * @param lhs   node_interface.
  * @param rhs   node_interface.
@@ -1453,19 +1460,15 @@ void openvrml::node::initialize(openvrml::scene & scene,
             if (interface->type == node_interface::exposedfield_id
                     || interface->type == node_interface::field_id) {
                 if (interface->field_type == field_value::sfnode_id) {
-                    assert(dynamic_cast<const sfnode *>
-                           (&this->field(interface->id)));
-                    const sfnode & sfn = static_cast<const sfnode &>
-                                         (this->field(interface->id));
-                    if (sfn.value) { sfn.value->initialize(scene, timestamp); }
+                    const sfnode & sfn = this->field<sfnode>(interface->id);
+                    if (sfn.value()) {
+                        sfn.value()->initialize(scene, timestamp);
+                    }
                 } else if (interface->field_type == field_value::mfnode_id) {
-                    assert(dynamic_cast<const mfnode *>
-                           (&this->field(interface->id)));
-                    const mfnode & mfn = static_cast<const mfnode &>
-                                         (this->field(interface->id));
-                    for (size_t i = 0; i < mfn.value.size(); ++i) {
-                        if (mfn.value[i]) {
-                            mfn.value[i]->initialize(scene, timestamp);
+                    const mfnode & mfn = this->field<mfnode>(interface->id);
+                    for (size_t i = 0; i < mfn.value().size(); ++i) {
+                        if (mfn.value()[i]) {
+                            mfn.value()[i]->initialize(scene, timestamp);
                         }
                     }
                 }
@@ -1483,14 +1486,28 @@ void openvrml::node::initialize(openvrml::scene & scene,
  * @return the field value.
  *
  * @exception unsupported_interface if the node has no field named @p id.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
-const openvrml::field_value &
+std::auto_ptr<openvrml::field_value>
 openvrml::node::field(const std::string & id) const
-    throw (unsupported_interface)
+    throw (unsupported_interface, std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    return this->do_field(id);
+    return this->do_field(id).clone();
 }
+
+/**
+ * @fn const FieldValue & openvrml::node::field(const std::string & id) const throw (unsupported_interface, std::bad_cast)
+ *
+ * @brief Generalized field accessor.
+ *
+ * @param id    the name of the field.
+ *
+ * @return the field value.
+ *
+ * @exception unsupported_interface if the node has no field named @p id.
+ * @exception std::bad_cast         if the node's @p id field is not a
+ *                                  @p FieldValue.
+ */
 
 /**
  * @fn const openvrml::field_value & openvrml::node::do_field(const std::string & id) const throw (unsupported_interface)
@@ -1509,35 +1526,51 @@ openvrml::node::field(const std::string & id) const
  *
  * @param id    an eventIn identifier.
  *
- * @exception unsupported_interface  if the node has no eventIn @p id.
+ * @exception unsupported_interface if the node has no eventIn @p id.
  */
 openvrml::event_listener &
 openvrml::node::event_listener(const std::string & id)
     throw (unsupported_interface)
 {
-    //
-    // No need to lock here; the set of event listeners for a node instance
-    // cannot change.
-    //
     return this->do_event_listener(id);
 }
+
+/**
+ * @fn openvrml::field_value_listener<FieldValue> & openvrml::node::event_listener(const std::string & id) throw (unsupported_interface, std::bad_cast)
+ *
+ * @brief Get an event listener.
+ *
+ * @param id    an eventIn identifier.
+ *
+ * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception std::bad_cast         if the node's @p id eventIn is not a
+ *                                  @p FieldValue.
+ */
 
 /**
  * @brief Get an event emitter.
  *
  * @param id    an eventOut identifier.
  *
- * @exception unsupported_interface  if the node has no eventOut @p id.
+ * @exception unsupported_interface if the node has no eventOut @p id.
  */
 openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
     throw (unsupported_interface)
 {
-    //
-    // No need to lock here; the set of event emitters for a node instance
-    // cannot change.
-    //
     return this->do_event_emitter(id);
 }
+
+/**
+ * @fn openvrml::field_value_emitter<FieldValue> & openvrml::node::event_emitter(const std::string & id) throw (unsupported_interface, std::bad_cast)
+ *
+ * @brief Get an event emitter.
+ *
+ * @param id    an eventOut identifier.
+ *
+ * @exception unsupported_interface if the node has no eventOut @p id.
+ * @exception std::bad_cast         if the node's @p id eventOut is not a
+ *                                  @p FieldValue.
+ */
 
 /**
  * @brief Shut down the node.
@@ -1562,19 +1595,13 @@ void openvrml::node::shutdown(const double timestamp) throw ()
             if (interface->type == node_interface::exposedfield_id
                     || interface->type == node_interface::field_id) {
                 if (interface->field_type == field_value::sfnode_id) {
-                    assert(dynamic_cast<const sfnode *>
-                           (&this->field(interface->id)));
-                    const sfnode & sfn = static_cast<const sfnode &>
-                                         (this->field(interface->id));
-                    if (sfn.value) { sfn.value->shutdown(timestamp); }
+                    const sfnode & sfn = this->field<sfnode>(interface->id);
+                    if (sfn.value()) { sfn.value()->shutdown(timestamp); }
                 } else if (interface->field_type == field_value::mfnode_id) {
-                    assert(dynamic_cast<const mfnode *>
-                           (&this->field(interface->id)));
-                    const mfnode & mfn = static_cast<const mfnode &>
-                                         (this->field(interface->id));
-                    for (size_t i = 0; i < mfn.value.size(); ++i) {
-                        if (mfn.value[i]) {
-                            mfn.value[i]->shutdown(timestamp);
+                    const mfnode & mfn = this->field<mfnode>(interface->id);
+                    for (size_t i = 0; i < mfn.value().size(); ++i) {
+                        if (mfn.value()[i]) {
+                            mfn.value()[i]->shutdown(timestamp);
                         }
                     }
                 }
@@ -1972,12 +1999,93 @@ namespace {
 
         void operator()(const openvrml::node_interface & interface) const
         {
-            using openvrml::node_interface;
+            using namespace openvrml;
             if (interface.type == node_interface::exposedfield_id
                     || interface.type == node_interface::field_id) {
                 this->out << std::string(this->indent + indent_increment_, ' ')
-                          << interface.id << ' '
-                          << n.field(interface.id);
+                          << interface.id << ' ';
+                switch (interface.field_type) {
+                case field_value::sfbool_id:
+                    this->out << n.field<sfbool>(interface.id);
+                    break;
+                case field_value::sfcolor_id:
+                    this->out << n.field<sfcolor>(interface.id);
+                    break;
+                case field_value::sfdouble_id:
+                    this->out << n.field<sfdouble>(interface.id);
+                    break;
+                case field_value::sffloat_id:
+                    this->out << n.field<sffloat>(interface.id);
+                    break;
+                case field_value::sfimage_id:
+                    this->out << n.field<sfimage>(interface.id);
+                    break;
+                case field_value::sfint32_id:
+                    this->out << n.field<sfint32>(interface.id);
+                    break;
+                case field_value::sfnode_id:
+                    this->out << n.field<sfnode>(interface.id);
+                    break;
+                case field_value::sfrotation_id:
+                    this->out << n.field<sfrotation>(interface.id);
+                    break;
+                case field_value::sfstring_id:
+                    this->out << n.field<sfstring>(interface.id);
+                    break;
+                case field_value::sftime_id:
+                    this->out << n.field<sftime>(interface.id);
+                    break;
+                case field_value::sfvec2f_id:
+                    this->out << n.field<sfvec2f>(interface.id);
+                    break;
+                case field_value::sfvec2d_id:
+                    this->out << n.field<sfvec2d>(interface.id);
+                    break;
+                case field_value::sfvec3f_id:
+                    this->out << n.field<sfvec3f>(interface.id);
+                    break;
+                case field_value::sfvec3d_id:
+                    this->out << n.field<sfvec3d>(interface.id);
+                    break;
+                case field_value::mfcolor_id:
+                    this->out << n.field<mfcolor>(interface.id);
+                    break;
+                case field_value::mfdouble_id:
+                    this->out << n.field<mfdouble>(interface.id);
+                    break;
+                case field_value::mffloat_id:
+                    this->out << n.field<mffloat>(interface.id);
+                    break;
+                case field_value::mfint32_id:
+                    this->out << n.field<mfint32>(interface.id);
+                    break;
+                case field_value::mfnode_id:
+                    this->out << n.field<mfnode>(interface.id);
+                    break;
+                case field_value::mfrotation_id:
+                    this->out << n.field<mfrotation>(interface.id);
+                    break;
+                case field_value::mfstring_id:
+                    this->out << n.field<mfstring>(interface.id);
+                    break;
+                case field_value::mftime_id:
+                    this->out << n.field<mftime>(interface.id);
+                    break;
+                case field_value::mfvec2f_id:
+                    this->out << n.field<mfvec2f>(interface.id);
+                    break;
+                case field_value::mfvec2d_id:
+                    this->out << n.field<mfvec2d>(interface.id);
+                    break;
+                case field_value::mfvec3f_id:
+                    this->out << n.field<mfvec3f>(interface.id);
+                    break;
+                case field_value::mfvec3d_id:
+                    this->out << n.field<mfvec3d>(interface.id);
+                    break;
+                case field_value::invalid_type_id:
+                    assert(!"invalid field_value::type_id");
+                }
             }
         }
 
@@ -4369,19 +4477,17 @@ void openvrml::node_traverser::do_traversal(node & n)
             if (interface->type == node_interface::field_id
                     || interface->type == node_interface::exposedfield_id) {
                 if (interface->field_type == field_value::sfnode_id) {
-                    const sfnode & value =
-                        static_cast<const sfnode &>(n.field(interface->id));
-                    if (value.value) {
-                        this->do_traversal(*value.value);
+                    const sfnode value = n.field<sfnode>(interface->id);
+                    if (value.value()) {
+                        this->do_traversal(*value.value());
                     }
                 } else if (interface->field_type == field_value::mfnode_id) {
-                    const mfnode & children =
-                        static_cast<const mfnode &>(n.field(interface->id));
+                    const mfnode children = n.field<mfnode>(interface->id);
                     for (size_t i = 0;
-                         i < children.value.size() && !this->halt;
+                         i < children.value().size() && !this->halt;
                          ++i) {
-                        if (children.value[i]) {
-                            this->do_traversal(*children.value[i]);
+                        if (children.value()[i]) {
+                            this->do_traversal(*children.value()[i]);
                         }
                     }
                 }

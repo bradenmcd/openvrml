@@ -1279,14 +1279,14 @@ namespace {
     };
 
     /**
-     * @var class vrml97_node_type_impl<Node>::event_listener_base<Node>
+     * @var class vrml97_node_type_impl::event_listener_base<Node>
      *
      * @brief The <code>event_listener_base</code> class template accesses
      * <code>vrml97_node_type_impl<Node>::event_listener_map</code>.
      */
 
     /**
-     * @var class vrml97_node_type_impl<Node>::event_emitter_base<Node>
+     * @var class vrml97_node_type_impl::event_emitter_base<Node>
      *
      * @brief The <code>event_emitter_base</code> class template accesses
      * <code>vrml97_node_type_impl<Node>::event_emitter_map</code>.
@@ -1799,6 +1799,18 @@ namespace {
     {}
 
     /**
+     * @brief Polymorphically construct a copy.
+     */
+    template <typename Derived>
+    template <typename FieldValue>
+    std::auto_ptr<field_value>
+    abstract_base<Derived>::exposedfield<FieldValue>::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<field_value>(new exposedfield<FieldValue>(*this));
+    }
+
+    /**
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
@@ -1817,18 +1829,6 @@ namespace {
     template <typename Derived>
     abstract_base<Derived>::~abstract_base() throw ()
     {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     */
-    template <typename Derived>
-    template <typename FieldValue>
-    std::auto_ptr<field_value>
-    abstract_base<Derived>::exposedfield<FieldValue>::do_clone() const
-        throw (std::bad_alloc)
-    {
-        return std::auto_ptr<field_value>(new exposedfield<FieldValue>(*this));
-    }
 
     /**
      * @brief Get a field value for a node.
@@ -2769,10 +2769,10 @@ namespace {
     bool abstract_indexed_set_node<Derived>::modified() const
     {
         return this->node::modified()
-            || (this->color_.sfnode::value
-                && this->color_.sfnode::value->modified())
-            || (this->coord_.sfnode::value
-                && this->coord_.sfnode::value->modified());
+            || (this->color_.sfnode::value()
+                && this->color_.sfnode::value()->modified())
+            || (this->coord_.sfnode::value()
+                && this->coord_.sfnode::value()->modified());
     }
 
     /**
@@ -2785,7 +2785,7 @@ namespace {
     abstract_indexed_set_node<Derived>::color() const throw ()
     {
         return node_cast<openvrml::color_node *>(
-            this->color_.sfnode::value.get());
+            this->color_.sfnode::value().get());
     }
 
 
@@ -2988,7 +2988,7 @@ namespace {
     template <typename Derived>
     bool abstract_texture_node<Derived>::repeat_s() const throw ()
     {
-        return this->repeat_s_.value;
+        return this->repeat_s_.value();
     }
 
     /**
@@ -3000,7 +3000,7 @@ namespace {
     template <typename Derived>
     bool abstract_texture_node<Derived>::repeat_t() const throw ()
     {
-        return this->repeat_t_.value;
+        return this->repeat_t_.value();
     }
 
 
@@ -3136,8 +3136,10 @@ namespace {
 
         Derived & group = dynamic_cast<Derived &>(this->node());
 
-        for (vector<node_ptr>::const_iterator node = value.value.begin();
-             node != value.value.end();
+        vector<node_ptr> children = group.children_.mfnode::value();
+
+        for (vector<node_ptr>::const_iterator node = value.value().begin();
+             node != value.value().end();
              ++node) {
             //
             // Don't add NULLs.
@@ -3146,17 +3148,14 @@ namespace {
                 using std::find;
 
                 vector<node_ptr>::iterator pos =
-                    find(group.children_.mfnode::value.begin(),
-                         group.children_.mfnode::value.end(),
-                         *node);
-                if (pos == group.children_.mfnode::value.end()) {
+                    find(children.begin(), children.end(), *node);
+                if (pos == children.end()) {
                     //
                     // Throws std::bad_alloc.
                     //
-                    group.children_.mfnode::value.push_back(*node);
+                    children.push_back(*node);
                     scope_guard guard =
-                        make_obj_guard(group.children_.mfnode::value,
-                                       &vector<node_ptr>::pop_back);
+                        make_obj_guard(children, &vector<node_ptr>::pop_back);
                     child_node * const child =
                         node_cast<child_node *>(node->get());
                     if (child) {
@@ -3166,6 +3165,8 @@ namespace {
                 }
             }
         }
+
+        group.children_.mfnode::value(children);
 
         group.node::modified(true);
         group.bounding_volume_dirty(true);
@@ -3215,16 +3216,17 @@ namespace {
 
         self_t & group = dynamic_cast<self_t &>(this->node());
 
-        for (vector<node_ptr>::const_iterator node = value.value.begin();
-             node != value.value.end();
+        vector<node_ptr> children = group.children_.mfnode::value();
+
+        for (vector<node_ptr>::const_iterator node = value.value().begin();
+             node != value.value().end();
              ++node) {
             using std::remove;
-            group.children_.mfnode::value
-                .erase(remove(group.children_.mfnode::value.begin(),
-                              group.children_.mfnode::value.end(),
-                              *node),
-                       group.children_.mfnode::value.end());
+            children.erase(remove(children.begin(), children.end(), *node),
+                           children.end());
         }
+
+        group.children_.mfnode::value(children);
 
         group.node::modified(true);
         group.bounding_volume_dirty(true);
@@ -3300,25 +3302,26 @@ namespace {
         self_t & group =
             dynamic_cast<self_t &>(this->event_listener::node());
 
-        this->mfnode::value.clear();
+        vector<node_ptr> children;
 
-        for (vector<node_ptr>::const_iterator node = value.value.begin();
-             node != value.value.end();
+        for (vector<node_ptr>::const_iterator node = value.value().begin();
+             node != value.value().end();
              ++node) {
             //
             // The spec is ambiguous about whether the children field of
             // grouping nodes can contain NULLs. We allow it; for now, at
             // least.
             //
-            this->mfnode::value.push_back(*node); // Throws std::bad_alloc.
+            children.push_back(*node); // Throws std::bad_alloc.
             scope_guard guard =
-                make_obj_guard(this->mfnode::value,
-                               &vector<node_ptr>::pop_back);
+                make_obj_guard(children, &vector<node_ptr>::pop_back);
             child_node * const child =
                 node_cast<child_node *>(node->get());
             if (child) { child->relocate(); } // Throws std::bad_alloc.
             guard.dismiss();
         }
+
+        this->mfnode::value(children);
 
         group.bounding_volume_dirty(true);
     }
@@ -3408,8 +3411,8 @@ namespace {
     bool grouping_node_base<Derived>::modified() const
     {
         if (this->node::modified()) { return true; }
-        for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
-            if (this->children_.mfnode::value[i]->modified()) {
+        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
+            if (this->children_.mfnode::value()[i]->modified()) {
                 return true;
             }
         }
@@ -3468,10 +3471,10 @@ namespace {
 
         if (this->viewerObject) {
             viewer.insert_reference(this->viewerObject);
-        } else if (!this->children_.mfnode::value.empty()) {
+        } else if (!this->children_.mfnode::value().empty()) {
             vector<node_ptr>::size_type i;
             vector<node_ptr>::size_type n =
-                this->children_.mfnode::value.size();
+                this->children_.mfnode::value().size();
             size_t nSensors = 0;
 
             this->viewerObject = viewer.begin_object(this->id().c_str());
@@ -3481,7 +3484,7 @@ namespace {
             for (i = 0; i < n; ++i) {
                 child_node * const child =
                     node_cast<child_node *>(
-                        this->children_.mfnode::value[i].get());
+                        this->children_.mfnode::value()[i].get());
                 if (child) {
                     if (node_cast<light_node *>(child)
                         && !(node_cast<scoped_light_node *>(child))) {
@@ -3499,7 +3502,7 @@ namespace {
             for (i = 0; i<n; ++i) {
                 child_node * const child =
                     node_cast<child_node *>(
-                        this->children_.mfnode::value[i].get());
+                        this->children_.mfnode::value()[i].get());
                 if (child && !(node_cast<light_node *>(child))) {
                     child->render_child(viewer, context);
                 }
@@ -3523,7 +3526,7 @@ namespace {
     const std::vector<openvrml::node_ptr> &
     grouping_node_base<Derived>::do_children() const throw ()
     {
-        return this->children_.mfnode::value;
+        return this->children_.mfnode::value();
     }
 
     /**
@@ -3551,8 +3554,8 @@ namespace {
     void grouping_node_base<Derived>::recalc_bsphere()
     {
         this->bsphere = bounding_sphere();
-        for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
-            const node_ptr & node = this->children_.mfnode::value[i];
+        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
+            const node_ptr & node = this->children_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -5862,8 +5865,8 @@ namespace {
         // anchor)
         //
         if (over && active) {
-            this->scene()->load_url(this->url_.mfstring::value,
-                                    this->parameter_.mfstring::value);
+            this->scene()->load_url(this->url_.mfstring::value(),
+                                    this->parameter_.mfstring::value());
         }
     }
 
@@ -6038,12 +6041,12 @@ namespace {
     bool appearance_node::modified() const
     {
         return (this->node::modified()
-                || (this->material_.sfnode::value
-                    && this->material_.sfnode::value->modified())
-                || (this->texture_.sfnode::value
-                    && this->texture_.sfnode::value->modified())
-                || (this->texture_transform_.sfnode::value
-                    && this->texture_transform_.sfnode::value->modified()));
+                || (this->material_.sfnode::value()
+                    && this->material_.sfnode::value()->modified())
+                || (this->texture_.sfnode::value()
+                    && this->texture_.sfnode::value()->modified())
+                || (this->texture_transform_.sfnode::value()
+                    && this->texture_transform_.sfnode::value()->modified()));
     }
 
     /**
@@ -6055,7 +6058,7 @@ namespace {
     const openvrml::node_ptr &
     appearance_node::material() const throw ()
     {
-        return this->material_.sfnode::value;
+        return this->material_.sfnode::value();
     }
 
 /**
@@ -6067,7 +6070,7 @@ namespace {
     const openvrml::node_ptr &
     appearance_node::texture() const throw ()
     {
-        return this->texture_.sfnode::value;
+        return this->texture_.sfnode::value();
     }
 
     /**
@@ -6079,7 +6082,7 @@ namespace {
     const openvrml::node_ptr &
     appearance_node::texture_transform() const throw ()
     {
-        return this->texture_transform_.sfnode::value;
+        return this->texture_transform_.sfnode::value();
     }
 
     OPENVRML_LOCAL void set_unlit_material(openvrml::viewer & v)
@@ -6111,9 +6114,9 @@ namespace {
     {
         openvrml::material_node * const material =
             node_cast<openvrml::material_node *>(
-                this->material_.sfnode::value.get());
+                this->material_.sfnode::value().get());
         texture_node * const texture =
-            node_cast<texture_node *>(this->texture_.sfnode::value.get());
+            node_cast<texture_node *>(this->texture_.sfnode::value().get());
 
         if (material) {
             float trans = material->transparency();
@@ -6139,7 +6142,7 @@ namespace {
         if (texture) {
             openvrml::texture_transform_node * texture_transform =
                 node_cast<openvrml::texture_transform_node *>(
-                    this->texture_transform_.sfnode::value.get());
+                    this->texture_transform_.sfnode::value().get());
             if (texture_transform) {
                 texture_transform->render_texture_transform(v);
             } else {
@@ -6591,7 +6594,7 @@ namespace {
         if (!this->bound_nodes.empty()) {
             background_node & current =
                 dynamic_cast<background_node &>(*this->bound_nodes.back());
-            current.is_bound_.value = false;
+            current.is_bound_.value(false);
             node::emit_event(current.is_bound_emitter_, timestamp);
         }
 
@@ -6600,7 +6603,7 @@ namespace {
         // TRUE.
         //
         this->bound_nodes.push_back(&background);
-        background.is_bound_.value = true;
+        background.is_bound_.value(true);
         node::emit_event(background.is_bound_emitter_, timestamp);
     }
 
@@ -6621,7 +6624,7 @@ namespace {
                                                  this->bound_nodes.end(),
                                                  &background);
         if (pos != this->bound_nodes.end()) {
-            background.is_bound_.value = false;
+            background.is_bound_.value(false);
             node::emit_event(background.is_bound_emitter_, timestamp);
 
             if (pos == this->bound_nodes.end() - 1
@@ -6629,7 +6632,7 @@ namespace {
                 background_node & newActive =
                     dynamic_cast<background_node &>(
                         **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value = true;
+                newActive.is_bound_.value(true);
                 node::emit_event(newActive.is_bound_emitter_, timestamp);
             }
             this->bound_nodes.erase(pos);
@@ -6712,16 +6715,17 @@ namespace {
                 background.update_textures();
 
                 background.viewerObject =
-                    v.insert_background(background.ground_angle_.mffloat::value,
-                                        background.ground_color_.mfcolor::value,
-                                        background.sky_angle_.mffloat::value,
-                                        background.sky_color_.mfcolor::value,
-                                        background.front,
-                                        background.back,
-                                        background.left,
-                                        background.right,
-                                        background.top,
-                                        background.bottom);
+                    v.insert_background(
+                        background.ground_angle_.mffloat::value(),
+                        background.ground_color_.mfcolor::value(),
+                        background.sky_angle_.mffloat::value(),
+                        background.sky_color_.mfcolor::value(),
+                        background.front,
+                        background.back,
+                        background.left,
+                        background.right,
+                        background.top,
+                        background.bottom);
 
                 background.modified(false);
             }
@@ -7035,7 +7039,7 @@ namespace {
                 const_cast<background_class &>(
                     static_cast<const background_class &>(
                         node.type().node_class()));
-            if (value.value) {
+            if (value.value()) {
                 node_class.bind(node, timestamp);
             } else {
                 node_class.unbind(node, timestamp);
@@ -8423,13 +8427,13 @@ namespace {
     void background_node::update_textures()
     {
         if (this->front_needs_update) {
-            if (this->front_url_.mfstring::value.empty()) {
+            if (this->front_url_.mfstring::value().empty()) {
                 this->front = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->front_url_.mfstring::value));
+                       ->get_resource(this->front_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->front,
                                                        *this,
@@ -8439,13 +8443,13 @@ namespace {
             this->front_needs_update = false;
         }
         if (this->back_needs_update) {
-            if (this->back_url_.mfstring::value.empty()) {
+            if (this->back_url_.mfstring::value().empty()) {
                 this->back = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->back_url_.mfstring::value));
+                       ->get_resource(this->back_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->back,
                                                        *this,
@@ -8455,13 +8459,13 @@ namespace {
             this->back_needs_update = false;
         }
         if (this->left_needs_update) {
-            if (this->left_url_.mfstring::value.empty()) {
+            if (this->left_url_.mfstring::value().empty()) {
                 this->left = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->left_url_.mfstring::value));
+                       ->get_resource(this->left_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->left,
                                                        *this,
@@ -8471,13 +8475,13 @@ namespace {
             this->left_needs_update = false;
         }
         if (this->right_needs_update) {
-            if (this->right_url_.mfstring::value.empty()) {
+            if (this->right_url_.mfstring::value().empty()) {
                 this->right = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->right_url_.mfstring::value));
+                       ->get_resource(this->right_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->right,
                                                        *this,
@@ -8487,13 +8491,13 @@ namespace {
             this->right_needs_update = false;
         }
         if (this->top_needs_update) {
-            if (this->top_url_.mfstring::value.empty()) {
+            if (this->top_url_.mfstring::value().empty()) {
                 this->top = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->top_url_.mfstring::value));
+                       ->get_resource(this->top_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->top,
                                                        *this,
@@ -8503,13 +8507,13 @@ namespace {
             this->top_needs_update = false;
         }
         if (this->bottom_needs_update) {
-            if (this->bottom_url_.mfstring::value.empty()) {
+            if (this->bottom_url_.mfstring::value().empty()) {
                 this->bottom = image();
             } else {
                 using std::auto_ptr;
                 auto_ptr<resource_istream>
                     in(this->scene()
-                       ->get_resource(this->bottom_url_.mfstring::value));
+                       ->get_resource(this->bottom_url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->bottom,
                                                        *this,
@@ -8699,9 +8703,9 @@ namespace {
                                      inverse_modelview[3][2]).normalize();
 
         // Viewer-alignment
-        if ((node.axis_of_rotation_.sfvec3f::value[0] == 0)
-            && (node.axis_of_rotation_.sfvec3f::value[1] == 0)
-            && (node.axis_of_rotation_.sfvec3f::value[2] == 0)) {
+        if ((node.axis_of_rotation_.sfvec3f::value()[0] == 0)
+            && (node.axis_of_rotation_.sfvec3f::value()[1] == 0)
+            && (node.axis_of_rotation_.sfvec3f::value()[2] == 0)) {
             //
             // Viewer's up vector
             //
@@ -8734,7 +8738,7 @@ namespace {
             result[3][3] = 1.0;
         } else { // use axis of rotation
             // axis of rotation will be the y-axis vector
-            const vec3f Y(node.axis_of_rotation_.sfvec3f::value);
+            const vec3f Y(node.axis_of_rotation_.sfvec3f::value());
 
             // Plane defined by the axisOfRotation and billboard-to-viewer vector
             const vec3f X = (Y * position).normalize();
@@ -8803,7 +8807,7 @@ namespace {
 
         if (this->xformObject) {
             viewer.insert_reference(this->xformObject);
-        } else if (this->children_.mfnode::value.size() > 0) {
+        } else if (this->children_.mfnode::value().size() > 0) {
             this->xformObject = viewer.begin_object(this->id().c_str());
 
             viewer.transform(LM);
@@ -8939,7 +8943,7 @@ namespace {
     do_render_geometry(openvrml::viewer & viewer, rendering_context)
     {
         const viewer::object_t object_ref =
-            viewer.insert_box(this->size.value);
+            viewer.insert_box(this->size.value());
         return object_ref;
     }
 
@@ -8952,7 +8956,7 @@ namespace {
     box_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const vec3f corner = this->size.value / 2.0f;
+            const vec3f corner = this->size.value() / 2.0f;
             const float r = corner.length();
             const_cast<box_node *>(this)->bsphere.radius(r);
             const_cast<box_node *>(this)->bounding_volume_dirty(false); // logical const
@@ -9182,7 +9186,7 @@ namespace {
      */
     bool collision_node::modified() const
     {
-        return (this->proxy_.value && this->proxy_.value->modified())
+        return (this->proxy_.value() && this->proxy_.value()->modified())
             || this->grouping_node_base<collision_node>::modified();
     }
 
@@ -9302,7 +9306,7 @@ namespace {
     const std::vector<openvrml::color> &
     color_node::color() const throw ()
     {
-        return this->color_.mfcolor::value;
+        return this->color_.mfcolor::value();
     }
 
 
@@ -9486,25 +9490,26 @@ namespace {
             color_interpolator_node & node =
                 dynamic_cast<color_interpolator_node &>(this->node());
 
-            float fraction = value.value;
+            float fraction = value.value();
 
-            vector<float>::size_type n = node.key_.mffloat::value.size() - 1;
-            if (fraction < node.key_.mffloat::value[0]) {
-                node.value_.value = node.key_value_.mfcolor::value[0];
-            } else if (fraction > node.key_.mffloat::value[n]) {
-                node.value_.value = node.key_value_.mfcolor::value[n];
+            vector<float>::size_type n = node.key_.mffloat::value().size() - 1;
+            if (fraction < node.key_.mffloat::value()[0]) {
+                node.value_.value(node.key_value_.mfcolor::value()[0]);
+            } else if (fraction > node.key_.mffloat::value()[n]) {
+                node.value_.value(node.key_value_.mfcolor::value()[n]);
             } else {
                 // convert to HSV for the interpolation...
                 for (vector<float>::size_type i = 0; i < n; ++i) {
-                    if (node.key_.mffloat::value[i] <= value.value
-                        && fraction <= node.key_.mffloat::value[i + 1]) {
-                        const color & rgb1 = node.key_value_.mfcolor::value[i];
+                    if (node.key_.mffloat::value()[i] <= value.value()
+                        && fraction <= node.key_.mffloat::value()[i + 1]) {
+                        const color & rgb1 =
+                            node.key_value_.mfcolor::value()[i];
                         const color & rgb2 =
-                            node.key_value_.mfcolor::value[i + 1];
+                            node.key_value_.mfcolor::value()[i + 1];
 
-                        fraction = (fraction - node.key_.mffloat::value[i])
-                            / (node.key_.mffloat::value[i + 1]
-                               - node.key_.mffloat::value[i]);
+                        fraction = (fraction - node.key_.mffloat::value()[i])
+                            / (node.key_.mffloat::value()[i + 1]
+                               - node.key_.mffloat::value()[i]);
                         float hsv1[3], hsv2[3];
                         rgb1.hsv(hsv1);
                         rgb2.hsv(hsv2);
@@ -9525,7 +9530,9 @@ namespace {
                         } else if (h < 0.0) {
                             h += 360.0;
                         }
-                        node.value_.value.hsv(h, s, v);
+                        color val = node.value_.value();
+                        val.hsv(h, s, v);
+                        node.value_.value(val);
                         break;
                     }
                 }
@@ -9757,10 +9764,10 @@ namespace {
     do_render_geometry(openvrml::viewer & viewer, rendering_context)
     {
         const viewer::object_t object_ref =
-            viewer.insert_cone(this->height.value,
-                               this->bottomRadius.value,
-                               this->bottom.value,
-                               this->side.value);
+            viewer.insert_cone(this->height.value(),
+                               this->bottomRadius.value(),
+                               this->bottom.value(),
+                               this->side.value());
         return object_ref;
     }
 
@@ -9883,7 +9890,7 @@ namespace {
     const std::vector<openvrml::vec3f> &
     coordinate_node::point() const throw ()
     {
-        return this->point_.mfvec3f::value;
+        return this->point_.mfvec3f::value();
     }
 
 
@@ -10067,16 +10074,16 @@ namespace {
             coordinate_interpolator_node & node =
                 dynamic_cast<coordinate_interpolator_node &>(this->node());
 
-            const vector<float> & key = node.key_.mffloat::value;
-            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
-            vector<vec3f> & value = node.value_.mfvec3f::value;
+            const vector<float> & key = node.key_.mffloat::value();
+            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value();
+            vector<vec3f> value;;
 
             size_t nCoords = key_value.size() / key.size();
             size_t n = key.size() - 1;
 
-            if (fraction.value < key[0]) {
+            if (fraction.value() < key[0]) {
                 value.assign(key_value.begin(), key_value.begin() + nCoords);
-            } else if (fraction.value > key[n]) {
+            } else if (fraction.value() > key[n]) {
                 value.assign(key_value.begin() + n * nCoords,
                              key_value.begin() + (n + 1) * nCoords);
             } else {
@@ -10084,15 +10091,16 @@ namespace {
                 value.resize(nCoords);
 
                 for (size_t i = 0; i < n; ++i) {
-                    if (key[i] <= fraction.value
-                        && fraction.value <= key[i + 1]) {
+                    if (key[i] <= fraction.value()
+                        && fraction.value() <= key[i + 1]) {
                         vector<vec3f>::const_iterator v1 =
                             key_value.begin() + i * nCoords;
                         vector<vec3f>::const_iterator v2 =
                             key_value.begin() + (i + 1) * nCoords;
 
                         const float f =
-                            (fraction.value - key[i]) / (key[i + 1] - key[i]);
+                            (fraction.value() - key[i])
+                            / (key[i + 1] - key[i]);
 
                         for (size_t j = 0; j < nCoords; ++j) {
                             value[j] = *v1 + (f * (*v2 - *v1));
@@ -10103,6 +10111,8 @@ namespace {
                     }
                 }
             }
+
+            node.value_.mfvec3f::value(value);
 
             // Send the new value
             node::emit_event(node.value_changed_, timestamp);
@@ -10352,11 +10362,11 @@ namespace {
     do_render_geometry(openvrml::viewer & viewer, rendering_context)
     {
         const viewer::object_t object_ref =
-            viewer.insert_cylinder(this->height.value,
-                                   this->radius.value,
-                                   this->bottom.value,
-                                   this->side.value,
-                                   this->top.value);
+            viewer.insert_cylinder(this->height.value(),
+                                   this->radius.value(),
+                                   this->bottom.value(),
+                                   this->side.value(),
+                                   this->top.value());
         return object_ref;
     }
 
@@ -10757,10 +10767,10 @@ namespace {
         using openvrml_::pi;
         using openvrml_::pi_2;
 
-        if (this->enabled_.sfbool::value) {
+        if (this->enabled_.sfbool::value()) {
             // Become active
-            if (active && !this->is_active_.value) {
-                this->is_active_.value = active;
+            if (active && !this->is_active_.value()) {
+                this->is_active_.value(active);
 
                 // set activation point in local coords
                 vec3f v(static_cast<float>(p[0]),
@@ -10777,19 +10787,19 @@ namespace {
                 const vec3f up(0.0, 1.0, 0.0);
                 double ang = acos(bearing.dot(up));
                 if (ang > pi_2) { ang = pi - ang; }
-                this->disk = (ang < this->disk_angle_.sffloat::value);
+                this->disk = (ang < this->disk_angle_.sffloat::value());
                 // send message
                 node::emit_event(this->is_active_emitter_, timestamp);
             }
 
             // Become inactive
-            else if (!active && this->is_active_.value) {
-                this->is_active_.value = active;
+            else if (!active && this->is_active_.value()) {
+                this->is_active_.value(active);
                 node::emit_event(this->is_active_emitter_, timestamp);
 
                 // save auto offset of rotation
-                if (this->auto_offset_.sfbool::value) {
-                    this->offset_.sffloat::value = rotation_val;
+                if (this->auto_offset_.sfbool::value()) {
+                    this->offset_.sffloat::value(rotation_val);
                     node::emit_event(this->offset_, timestamp);
                 }
             }
@@ -10803,7 +10813,7 @@ namespace {
                           static_cast<float>(p[1]),
                           static_cast<float>(p[2]));
                 Vec = Vec * this->activationMatrix;
-                this->track_point_changed_.value = Vec;
+                this->track_point_changed_.value(Vec);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
                 vec3f tempv;
@@ -10823,20 +10833,20 @@ namespace {
                 if (cx.length() == 0.0) { return; }
                 rot = radius * float(acos(dir2.dot(dir1)));
                 if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
-                if (this->auto_offset_.sfbool::value) {
-                    rot = this->offset_.sffloat::value + rot;
+                if (this->auto_offset_.sfbool::value()) {
+                    rot = this->offset_.sffloat::value() + rot;
                 }
-                if (this->min_angle_.sffloat::value
-                    < this->max_angle_.sffloat::value) {
-                    if (rot < this->min_angle_.sffloat::value) {
-                        rot = this->min_angle_.sffloat::value;
-                    } else if (rot > this->max_angle_.sffloat::value) {
-                        rot = this->max_angle_.sffloat::value;
+                if (this->min_angle_.sffloat::value()
+                    < this->max_angle_.sffloat::value()) {
+                    if (rot < this->min_angle_.sffloat::value()) {
+                        rot = this->min_angle_.sffloat::value();
+                    } else if (rot > this->max_angle_.sffloat::value()) {
+                        rot = this->max_angle_.sffloat::value();
                     }
                 }
                 this->rotation_val = rot;
-                this->rotation_changed_.sfrotation::value =
-                    openvrml::rotation(0, 1, 0, rot);
+                this->rotation_changed_.sfrotation::value(
+                    openvrml::rotation(0, 1, 0, rot));
 
                 node::emit_event(this->rotation_changed_emitter_, timestamp);
             }
@@ -11059,11 +11069,11 @@ namespace {
     directional_light_node::
     do_render_child(openvrml::viewer & viewer, rendering_context)
     {
-        if (this->on_.sfbool::value) {
-            viewer.insert_dir_light(this->ambient_intensity_.sffloat::value,
-                                    this->intensity_.sffloat::value,
-                                    this->color_.sfcolor::value,
-                                    this->direction_.sfvec3f::value);
+        if (this->on_.sfbool::value()) {
+            viewer.insert_dir_light(this->ambient_intensity_.sffloat::value(),
+                                    this->intensity_.sffloat::value(),
+                                    this->color_.sfcolor::value(),
+                                    this->direction_.sfvec3f::value());
         }
         this->node::modified(false);
     }
@@ -11479,12 +11489,12 @@ namespace {
     bool elevation_grid_node::modified() const
     {
         return this->node::modified()
-            || (this->color_.sfnode::value
-                && this->color_.sfnode::value->modified())
-            || (this->normal_.sfnode::value
-                && this->normal_.sfnode::value->modified())
-            || (this->tex_coord_.sfnode::value
-                && this->tex_coord_.sfnode::value->modified());
+            || (this->color_.sfnode::value()
+                && this->color_.sfnode::value()->modified())
+            || (this->normal_.sfnode::value()
+                && this->normal_.sfnode::value()->modified())
+            || (this->tex_coord_.sfnode::value()
+                && this->tex_coord_.sfnode::value()->modified());
     }
 
     /**
@@ -11501,15 +11511,15 @@ namespace {
 
         openvrml::color_node * const colorNode =
             node_cast<openvrml::color_node *>(
-                this->color_.sfnode::value.get());
+                this->color_.sfnode::value().get());
         openvrml::normal_node * const normalNode =
             node_cast<openvrml::normal_node *>(
-                this->normal_.sfnode::value.get());
+                this->normal_.sfnode::value().get());
         openvrml::texture_coordinate_node * const texCoordNode =
             node_cast<openvrml::texture_coordinate_node *>(
-                this->tex_coord_.sfnode::value.get());
+                this->tex_coord_.sfnode::value().get());
 
-        if (!this->height_.mffloat::value.empty()) {
+        if (!this->height_.mffloat::value().empty()) {
             using std::vector;
 
             const vector<openvrml::color> & color =
@@ -11528,28 +11538,30 @@ namespace {
                 : vector<vec2f>();
             // insert geometry
             unsigned int optMask = 0;
-            if (this->ccw_.value) {
+            if (this->ccw_.value()) {
                 optMask |= viewer::mask_ccw;
             }
-            if (this->solid_.value) {
+            if (this->solid_.value()) {
                 optMask |= viewer::mask_solid;
             }
-            if (this->color_per_vertex_.value) {
+            if (this->color_per_vertex_.value()) {
                 optMask |= viewer::mask_color_per_vertex;
             }
-            if (this->normal_per_vertex_.value) {
+            if (this->normal_per_vertex_.value()) {
                 optMask |= viewer::mask_normal_per_vertex;
             }
 
-            obj = viewer.insert_elevation_grid(optMask,
-                                               this->height_.mffloat::value,
-                                               this->x_dimension_.sfint32::value,
-                                               this->z_dimension_.sfint32::value,
-                                               this->x_spacing_.sffloat::value,
-                                               this->z_spacing_.sffloat::value,
-                                               color,
-                                               normal,
-                                               texCoord);
+            obj =
+                viewer.insert_elevation_grid(
+                    optMask,
+                    this->height_.mffloat::value(),
+                    this->x_dimension_.sfint32::value(),
+                    this->z_dimension_.sfint32::value(),
+                    this->x_spacing_.sffloat::value(),
+                    this->z_spacing_.sffloat::value(),
+                    color,
+                    normal,
+                    texCoord);
         }
 
         if (colorNode) { colorNode->modified(false); }
@@ -12096,14 +12108,16 @@ namespace {
         ccw_(true),
         convex_(true),
         crease_angle_(0),
-        cross_section_(extrusionDefaultCrossSection_,
-                       extrusionDefaultCrossSection_ + 5),
+        cross_section_(std::vector<vec2f>(extrusionDefaultCrossSection_,
+                                          extrusionDefaultCrossSection_ + 5)),
         end_cap_(true),
-        orientation_(extrusionDefaultOrientation_,
-                     extrusionDefaultOrientation_ + 1),
-        scale_(extrusionDefaultScale_, extrusionDefaultScale_ + 1),
+        orientation_(std::vector<rotation>(extrusionDefaultOrientation_,
+                                           extrusionDefaultOrientation_ + 1)),
+        scale_(std::vector<vec2f>(extrusionDefaultScale_,
+                                  extrusionDefaultScale_ + 1)),
         solid_(true),
-        spine_(extrusionDefaultSpine_, extrusionDefaultSpine_ + 2)
+        spine_(std::vector<vec3f>(extrusionDefaultSpine_,
+                                  extrusionDefaultSpine_ + 2))
     {}
 
     /**
@@ -12122,20 +12136,20 @@ namespace {
     do_render_geometry(openvrml::viewer & viewer, rendering_context)
     {
         viewer::object_t obj = 0;
-        if (!this->cross_section_.value.empty()
-            && this->spine_.value.size() > 1) {
+        if (!this->cross_section_.value().empty()
+            && this->spine_.value().size() > 1) {
             unsigned int optMask = 0;
-            if (this->ccw_.value)        { optMask |= viewer::mask_ccw; }
-            if (this->convex_.value)     { optMask |= viewer::mask_convex; }
-            if (this->solid_.value)      { optMask |= viewer::mask_solid; }
-            if (this->begin_cap_.value)  { optMask |= viewer::mask_bottom; }
-            if (this->end_cap_.value)    { optMask |= viewer::mask_top; }
+            if (this->ccw_.value())       { optMask |= viewer::mask_ccw; }
+            if (this->convex_.value())    { optMask |= viewer::mask_convex; }
+            if (this->solid_.value())     { optMask |= viewer::mask_solid; }
+            if (this->begin_cap_.value()) { optMask |= viewer::mask_bottom; }
+            if (this->end_cap_.value())   { optMask |= viewer::mask_top; }
 
             obj = viewer.insert_extrusion(optMask,
-                                          this->spine_.value,
-                                          this->cross_section_.value,
-                                          this->orientation_.value,
-                                          this->scale_.value);
+                                          this->spine_.value(),
+                                          this->cross_section_.value(),
+                                          this->orientation_.value(),
+                                          this->scale_.value());
         }
 
         return obj;
@@ -12238,7 +12252,7 @@ namespace {
         if (!this->bound_nodes.empty()) {
             fog_node & current =
                 dynamic_cast<fog_node &>(*this->bound_nodes.back());
-            current.is_bound_.value = false;
+            current.is_bound_.value(false);
             node::emit_event(current.is_bound_emitter_, timestamp);
         }
 
@@ -12247,7 +12261,7 @@ namespace {
         // TRUE.
         //
         this->bound_nodes.push_back(&fog);
-        fog.is_bound_.value = true;
+        fog.is_bound_.value(true);
         node::emit_event(fog.is_bound_emitter_, timestamp);
     }
 
@@ -12266,14 +12280,14 @@ namespace {
                                                  this->bound_nodes.end(),
                                                  &fog);
         if (pos != this->bound_nodes.end()) {
-            fog.is_bound_.value = false;
+            fog.is_bound_.value(false);
             node::emit_event(fog.is_bound_emitter_, timestamp);
 
             if (pos == this->bound_nodes.end() - 1
                 && this->bound_nodes.size() > 1) {
                 fog_node & newActive =
                     dynamic_cast<fog_node &>(**(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value = true;
+                newActive.is_bound_.value(true);
                 node::emit_event(newActive.is_bound_emitter_, timestamp);
             }
             this->bound_nodes.erase(pos);
@@ -12315,9 +12329,9 @@ namespace {
         if (!this->bound_nodes.empty()) {
             fog_node & fog =
                 dynamic_cast<fog_node &>(*this->bound_nodes.back());
-            v.set_fog(fog.color_.sfcolor::value,
-                      fog.visibility_range_.sffloat::value,
-                      fog.fog_type_.sfstring::value.c_str());
+            v.set_fog(fog.color_.sfcolor::value(),
+                      fog.visibility_range_.sffloat::value(),
+                      fog.fog_type_.sfstring::value().c_str());
         }
     }
 
@@ -12493,7 +12507,7 @@ namespace {
             fog_class & node_class =
                 const_cast<fog_class &>(
                     static_cast<const fog_class &>(fog.type().node_class()));
-            if (bind.value) {
+            if (bind.value()) {
                 node_class.bind(fog, timestamp);
             } else {
                 node_class.unbind(fog, timestamp);
@@ -12821,9 +12835,11 @@ namespace {
         node(type, scope),
         abstract_base<font_style_node>(type, scope),
         openvrml::font_style_node(type, scope),
-        family_(fontStyleInitFamily_, fontStyleInitFamily_ + 1),
+        family_(std::vector<std::string>(fontStyleInitFamily_,
+                                         fontStyleInitFamily_ + 1)),
         horizontal_(true),
-        justify_(fontStyleInitJustify_, fontStyleInitJustify_ + 2),
+        justify_(std::vector<std::string>(fontStyleInitJustify_,
+                                          fontStyleInitJustify_ + 2)),
         leftToRight(true),
         size_(1.0),
         spacing_(1.0),
@@ -12846,7 +12862,7 @@ namespace {
     const std::vector<std::string> &
     font_style_node::family() const throw ()
     {
-        return this->family_.value;
+        return this->family_.value();
     }
 
     /**
@@ -12858,7 +12874,7 @@ namespace {
      */
     bool font_style_node::horizontal() const throw ()
     {
-        return this->horizontal_.value;
+        return this->horizontal_.value();
     }
 
     /**
@@ -12870,7 +12886,7 @@ namespace {
     const std::vector<std::string> &
     font_style_node::justify() const throw ()
     {
-        return this->justify_.value;
+        return this->justify_.value();
     }
 
     /**
@@ -12881,7 +12897,7 @@ namespace {
     const std::string & font_style_node::language() const
         throw ()
     {
-        return this->language_.value;
+        return this->language_.value();
     }
 
     /**
@@ -12893,7 +12909,7 @@ namespace {
      */
     bool font_style_node::left_to_right() const throw ()
     {
-        return this->leftToRight.value;
+        return this->leftToRight.value();
     }
 
     /**
@@ -12903,7 +12919,7 @@ namespace {
      */
     float font_style_node::size() const throw ()
     {
-        return this->size_.value;
+        return this->size_.value();
     }
 
     /**
@@ -12913,7 +12929,7 @@ namespace {
      */
     float font_style_node::spacing() const throw ()
     {
-        return this->spacing_.value;
+        return this->spacing_.value();
     }
 
     /**
@@ -12924,7 +12940,7 @@ namespace {
     const std::string & font_style_node::style() const
         throw ()
     {
-        return this->style_.value;
+        return this->style_.value();
     }
 
     /**
@@ -12936,7 +12952,7 @@ namespace {
      */
     bool font_style_node::top_to_bottom() const throw ()
     {
-        return this->topToBottom.value;
+        return this->topToBottom.value();
     }
 
 
@@ -13257,7 +13273,7 @@ namespace {
                 dynamic_cast<image_texture_node &>(
                     this->event_listener::node());
 
-            image_texture.url_.mfstring::value = url.value;
+            image_texture.url_.mfstring::value(url.value());
             image_texture.texture_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -13329,8 +13345,8 @@ namespace {
     {
         this->update_texture();
         return v.insert_texture(this->image_,
-                                this->repeat_s_.value,
-                                this->repeat_t_.value,
+                                this->repeat_s_.value(),
+                                this->repeat_t_.value(),
                                 true);
     }
 
@@ -13340,10 +13356,10 @@ namespace {
     void image_texture_node::update_texture()
     {
         if (this->texture_needs_update) {
-            if (!this->url_.mfstring::value.empty()) {
+            if (!this->url_.mfstring::value().empty()) {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()->get_resource(this->url_.mfstring::value));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(this->url_.mfstring::value()));
                 auto_ptr<stream_listener>
                     listener(new image_stream_listener(this->image_,
                                                        *this,
@@ -13868,14 +13884,14 @@ namespace {
     bool indexed_face_set_node::modified() const
     {
         return this->node::modified()
-            || (this->color_.sfnode::value
-                && this->color_.sfnode::value->modified())
-            || (this->coord_.sfnode::value
-                && this->coord_.sfnode::value->modified())
-            || (this->normal_.sfnode::value
-                && this->normal_.sfnode::value->modified())
-            || (this->tex_coord_.sfnode::value
-                && this->tex_coord_.sfnode::value->modified());
+            || (this->color_.sfnode::value()
+                && this->color_.sfnode::value()->modified())
+            || (this->coord_.sfnode::value()
+                && this->coord_.sfnode::value()->modified())
+            || (this->normal_.sfnode::value()
+                && this->normal_.sfnode::value()->modified())
+            || (this->tex_coord_.sfnode::value()
+                && this->tex_coord_.sfnode::value()->modified());
     }
 
     /**
@@ -13904,53 +13920,55 @@ namespace {
 
         openvrml::coordinate_node * const coordinateNode =
             node_cast<openvrml::coordinate_node *>(
-                this->coord_.sfnode::value.get());
+                this->coord_.sfnode::value().get());
         const vector<vec3f> & coord = coordinateNode
             ? coordinateNode->point()
             : vector<vec3f>();
 
         openvrml::color_node * const colorNode =
-            node_cast<openvrml::color_node *>(this->color_.sfnode::value.get());
+            node_cast<openvrml::color_node *>(
+                this->color_.sfnode::value().get());
         const vector<openvrml::color> & color = colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
 
         openvrml::normal_node * const normalNode =
-            node_cast<openvrml::normal_node *>(this->normal_.sfnode::value.get());
+            node_cast<openvrml::normal_node *>(
+                this->normal_.sfnode::value().get());
         const vector<vec3f> & normal = normalNode
             ? normalNode->vector()
             : vector<vec3f>();
 
         openvrml::texture_coordinate_node * const texCoordNode =
             node_cast<openvrml::texture_coordinate_node *>(
-                this->tex_coord_.sfnode::value.get());
+                this->tex_coord_.sfnode::value().get());
         const vector<vec2f> & texCoord = texCoordNode
             ? texCoordNode->point()
             : vector<vec2f>();
 
         unsigned int optMask = 0;
-        if (this->ccw_.value) {
+        if (this->ccw_.value()) {
             optMask |= viewer::mask_ccw;
         }
-        if (this->convex_.value) {
+        if (this->convex_.value()) {
             optMask |= viewer::mask_convex;
         }
-        if (this->solid_.value) {
+        if (this->solid_.value()) {
             optMask |= viewer::mask_solid;
         }
-        if (this->color_per_vertex_.value) {
+        if (this->color_per_vertex_.value()) {
             optMask |= viewer::mask_color_per_vertex;
         }
-        if (this->normal_per_vertex_.value) {
+        if (this->normal_per_vertex_.value()) {
             optMask |= viewer::mask_normal_per_vertex;
         }
 
         const viewer::object_t obj =
             viewer.insert_shell(optMask,
-                                coord, this->coord_index_.value,
-                                color, this->color_index_.value,
-                                normal, this->normal_index_.value,
-                                texCoord, this->tex_coord_index_.value);
+                                coord, this->coord_index_.value(),
+                                color, this->color_index_.value(),
+                                normal, this->normal_index_.value(),
+                                texCoord, this->tex_coord_index_.value());
 
         if (colorNode) { colorNode->modified(false); }
         if (coordinateNode) { coordinateNode->modified(false); }
@@ -13973,7 +13991,7 @@ namespace {
         //
         openvrml::coordinate_node * const coordinateNode =
             node_cast<openvrml::coordinate_node *>(
-                this->coord_.sfnode::value.get());
+                this->coord_.sfnode::value().get());
         if (coordinateNode) {
             const std::vector<vec3f> & coord = coordinateNode->point();
             this->bsphere = bounding_sphere();
@@ -14196,22 +14214,22 @@ namespace {
 
         openvrml::coordinate_node * const coordinateNode =
             node_cast<openvrml::coordinate_node *>(
-                this->coord_.sfnode::value.get());
+                this->coord_.sfnode::value().get());
         const vector<vec3f> & coord = coordinateNode
             ? coordinateNode->point()
             : vector<vec3f>();
 
         openvrml::color_node * const colorNode =
             node_cast<openvrml::color_node *>(
-                this->color_.sfnode::value.get());
+                this->color_.sfnode::value().get());
         const vector<openvrml::color> & color = colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
 
         viewer::object_t obj =
-            viewer.insert_line_set(coord, this->coord_index_.value,
-                                   this->color_per_vertex_.value,
-                                   color, this->color_index_.value);
+            viewer.insert_line_set(coord, this->coord_index_.value(),
+                                   this->color_per_vertex_.value(),
+                                   color, this->color_index_.value());
 
         if (colorNode) { colorNode->modified(false); }
         if (coordinateNode) { coordinateNode->modified(false); }
@@ -14449,7 +14467,7 @@ namespace {
         assert(this->scene());
         this->inlineScene = new inline_scene(this->scene()->browser(),
                                              this->scene());
-        this->inlineScene->load(this->url_.mfstring::value);
+        this->inlineScene->load(this->url_.mfstring::value());
     }
 
 
@@ -14623,8 +14641,8 @@ namespace {
         if (this->node::modified()) { return true; }
 
         // This should really check which range is being rendered...
-        for (size_t i = 0; i < this->level_.mfnode::value.size(); ++i) {
-            if (this->level_.mfnode::value[i]->modified()) { return true; }
+        for (size_t i = 0; i < this->level_.mfnode::value().size(); ++i) {
+            if (this->level_.mfnode::value()[i]->modified()) { return true; }
         }
         return false;
     }
@@ -14643,40 +14661,42 @@ namespace {
                     const rendering_context context)
     {
         this->node::modified(false);
-        if (this->level_.mfnode::value.empty()) { return; }
+        if (this->level_.mfnode::value().empty()) { return; }
 
         float x, y, z;
 
         mat4f MV = context.matrix();
         MV = MV.inverse();
         x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-        float dx = x - this->center_.value.x();
-        float dy = y - this->center_.value.y();
-        float dz = z - this->center_.value.z();
+        float dx = x - this->center_.value().x();
+        float dy = y - this->center_.value().y();
+        float dz = z - this->center_.value().z();
         float d2 = dx * dx + dy * dy + dz * dz;
 
         size_t i;
-        for (i = 0; i < this->range_.value.size(); ++i) {
-            if (d2 < this->range_.value[i] * this->range_.value[i]) { break; }
+        for (i = 0; i < this->range_.value().size(); ++i) {
+            if (d2 < this->range_.value()[i] * this->range_.value()[i]) {
+                break;
+            }
         }
 
         // Should choose an "optimal" level...
-        if (this->range_.value.empty()) {
-            i = this->level_.mfnode::value.size() - 1;
+        if (this->range_.value().empty()) {
+            i = this->level_.mfnode::value().size() - 1;
         }
 
         // Not enough levels...
-        if (i >= this->level_.mfnode::value.size()) {
-            i = this->level_.mfnode::value.size() - 1;
+        if (i >= this->level_.mfnode::value().size()) {
+            i = this->level_.mfnode::value().size() - 1;
         }
 
         child_node * const child =
-            node_cast<child_node *>(this->level_.mfnode::value[i].get());
+            node_cast<child_node *>(this->level_.mfnode::value()[i].get());
         if (child) { child->render_child(viewer, context); }
 
         // Don't re-render on their accounts
-        for (i = 0; i < this->level_.mfnode::value.size(); ++i) {
-            this->level_.mfnode::value[i]->modified(false);
+        for (i = 0; i < this->level_.mfnode::value().size(); ++i) {
+            this->level_.mfnode::value()[i]->modified(false);
         }
     }
 
@@ -14702,7 +14722,7 @@ namespace {
     const std::vector<openvrml::node_ptr> &
     lod_node::do_children() const throw ()
     {
-        return this->children_.value;
+        return this->children_.value();
     }
 
     /**
@@ -14724,8 +14744,8 @@ namespace {
         // switch in delayed-load inlines. this would necessarily switch
         // them in all at once. live with it for now.
         //
-        for (size_t i = 0; i < this->level_.mfnode::value.size(); i++) {
-            const node_ptr & node = this->level_.mfnode::value[i];
+        for (size_t i = 0; i < this->level_.mfnode::value().size(); i++) {
+            const node_ptr & node = this->level_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -14985,7 +15005,7 @@ namespace {
      */
     float material_node::ambient_intensity() const throw ()
     {
-        return this->ambient_intensity_.sffloat::value;
+        return this->ambient_intensity_.sffloat::value();
     }
 
     /**
@@ -14996,7 +15016,7 @@ namespace {
     const openvrml::color &
     material_node::diffuse_color() const throw ()
     {
-        return this->diffuse_color_.sfcolor::value;
+        return this->diffuse_color_.sfcolor::value();
     }
 
     /**
@@ -15007,7 +15027,7 @@ namespace {
     const openvrml::color &
     material_node::emissive_color() const throw ()
     {
-        return this->emissive_color_.sfcolor::value;
+        return this->emissive_color_.sfcolor::value();
     }
 
     /**
@@ -15017,7 +15037,7 @@ namespace {
      */
     float material_node::shininess() const throw ()
     {
-        return this->shininess_.sffloat::value;
+        return this->shininess_.sffloat::value();
     }
 
     /**
@@ -15028,7 +15048,7 @@ namespace {
     const openvrml::color &
     material_node::specular_color() const throw ()
     {
-        return this->specular_color_.sfcolor::value;
+        return this->specular_color_.sfcolor::value();
     }
 
     /**
@@ -15038,7 +15058,7 @@ namespace {
      */
     float material_node::transparency() const throw ()
     {
-        return this->transparency_.sffloat::value;
+        return this->transparency_.sffloat::value();
     }
 
 
@@ -15297,7 +15317,7 @@ namespace {
             //
             // set_speed is ignored if the MovieTexture is active.
             //
-            if (!node.active_.value) {
+            if (!node.active_.value()) {
                 node.speed_ = speed;
                 node.node::modified(true);
                 node::emit_event(node.speed_changed_, timestamp);
@@ -15748,7 +15768,7 @@ namespace {
             navigation_info_node & current =
                 dynamic_cast<navigation_info_node &>(
                     *this->bound_nodes.back());
-            current.is_bound_.value = false;
+            current.is_bound_.value(false);
             node::emit_event(current.is_bound_emitter_, timestamp);
         }
 
@@ -15757,7 +15777,7 @@ namespace {
         // TRUE.
         //
         this->bound_nodes.push_back(&nav_info);
-        nav_info.is_bound_.value = true;
+        nav_info.is_bound_.value(true);
         node::emit_event(nav_info.is_bound_emitter_, timestamp);
 
         this->browser().active_navigation_info(nav_info);
@@ -15780,7 +15800,7 @@ namespace {
                                                  this->bound_nodes.end(),
                                                  &nav_info);
         if (pos != this->bound_nodes.end()) {
-            nav_info.is_bound_.value = false;
+            nav_info.is_bound_.value(false);
             node::emit_event(nav_info.is_bound_emitter_, timestamp);
 
             if (pos == this->bound_nodes.end() - 1
@@ -15788,7 +15808,7 @@ namespace {
                 navigation_info_node & newActive =
                     dynamic_cast<navigation_info_node &>(
                         **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value = true;
+                newActive.is_bound_.value(true);
                 node::emit_event(newActive.is_bound_emitter_, timestamp);
 
                 this->browser().active_navigation_info(nav_info);
@@ -16051,7 +16071,7 @@ namespace {
                 const_cast<navigation_info_class &>(
                     static_cast<const navigation_info_class &>(
                         this->node().type().node_class()));
-            if (bind.value) {
+            if (bind.value()) {
                 node_class.bind(node, timestamp);
             } else {
                 node_class.unbind(node, timestamp);
@@ -16151,7 +16171,7 @@ namespace {
     const std::vector<float> &
     navigation_info_node::avatar_size() const throw ()
     {
-        return this->avatar_size_.mffloat::value;
+        return this->avatar_size_.mffloat::value();
     }
 
     /**
@@ -16161,7 +16181,7 @@ namespace {
      */
     bool navigation_info_node::headlight() const throw ()
     {
-        return this->headlight_.sfbool::value;
+        return this->headlight_.sfbool::value();
     }
 
     /**
@@ -16171,7 +16191,7 @@ namespace {
      */
     float navigation_info_node::speed() const throw ()
     {
-        return this->speed_.sffloat::value;
+        return this->speed_.sffloat::value();
     }
 
     /**
@@ -16182,7 +16202,7 @@ namespace {
     const std::vector<std::string> &
     navigation_info_node::type() const throw ()
     {
-        return this->type_.mfstring::value;
+        return this->type_.mfstring::value();
     }
 
     /**
@@ -16193,7 +16213,7 @@ namespace {
     float navigation_info_node::visibility_limit() const
         throw ()
     {
-        return this->visibility_limit_.sffloat::value;
+        return this->visibility_limit_.sffloat::value();
     }
 
     /**
@@ -16350,7 +16370,7 @@ namespace {
     const std::vector<openvrml::vec3f> &
     normal_node::vector() const throw ()
     {
-        return this->vector_.mfvec3f::value;
+        return this->vector_.mfvec3f::value();
     }
 
 
@@ -16534,16 +16554,16 @@ namespace {
             normal_interpolator_node & node =
                 dynamic_cast<normal_interpolator_node &>(this->node());
 
-            const vector<float> & key = node.key_.mffloat::value;
-            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
-            vector<vec3f> & value = node.value_changed_.mfvec3f::value;
+            const vector<float> & key = node.key_.mffloat::value();
+            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value();
+            vector<vec3f> value = node.value_changed_.mfvec3f::value();
 
             size_t nNormals = key_value.size() / key.size();
             size_t n = key.size() - 1;
 
-            if (fraction.value < key[0]) {
+            if (fraction.value() < key[0]) {
                 value.assign(key_value.begin(), key_value.begin() + nNormals);
-            } else if (fraction.value > key[n]) {
+            } else if (fraction.value() > key[n]) {
                 value.assign(key_value.begin() + n * nNormals,
                              key_value.begin() + (n + 1) * nNormals);
             } else {
@@ -16551,8 +16571,8 @@ namespace {
                 value.resize(nNormals);
 
                 for (size_t i = 0; i < n; ++i) {
-                    if (key[i] <= fraction.value
-                        && fraction.value <= key[i + 1]) {
+                    if (key[i] <= fraction.value()
+                        && fraction.value() <= key[i + 1]) {
 
                         vector<vec3f>::const_iterator v1 =
                             key_value.begin() + i * nNormals;
@@ -16560,7 +16580,8 @@ namespace {
                             key_value.begin() + (i + 1) * nNormals;
 
                         const float f =
-                            (fraction.value - key[i]) / (key[i + 1] - key[i]);
+                            (fraction.value() - key[i])
+                            / (key[i + 1] - key[i]);
 
                         // Interpolate on the surface of unit sphere.
                         for (size_t j = 0; j < nNormals; ++j) {
@@ -16590,6 +16611,8 @@ namespace {
                     }
                 }
             }
+
+            node.value_changed_.mfvec3f::value(value);
 
             // Send the new value
             node::emit_event(node.value_changed_emitter_, timestamp);
@@ -16836,19 +16859,19 @@ namespace {
             orientation_interpolator_node & node =
                 dynamic_cast<orientation_interpolator_node &>(this->node());
 
-            const vector<float> & key = node.key_.mffloat::value;
+            const vector<float> & key = node.key_.mffloat::value();
             const vector<rotation> & key_value =
-                node.key_value_.mfrotation::value;
+                node.key_value_.mfrotation::value();
 
             size_t n = key.size() - 1;
-            if (fraction.value < key[0]) {
-                node.value_changed_.value = key_value[0];
-            } else if (fraction.value > key[n]) {
-                node.value_changed_.value = key_value[n];
+            if (fraction.value() < key[0]) {
+                node.value_changed_.value(key_value[0]);
+            } else if (fraction.value() > key[n]) {
+                node.value_changed_.value(key_value[n]);
             } else {
                 for (size_t i = 0; i < n; ++i) {
-                    if (key[i] <= fraction.value
-                        && fraction.value <= key[i + 1]) {
+                    if (key[i] <= fraction.value()
+                        && fraction.value() <= key[i + 1]) {
                         using openvrml_::pi;
 
                         const rotation & v1 = key_value[i];
@@ -16856,7 +16879,8 @@ namespace {
 
                         // Interpolation factor
                         const float f =
-                            (fraction.value - key[i]) / (key[i + 1] - key[i]);
+                            (fraction.value() - key[i])
+                            / (key[i + 1] - key[i]);
 
                         float x, y, z, r1, r2;
                         r1 = v1[3];
@@ -16888,9 +16912,9 @@ namespace {
                         } else if (angle < 0.0) {
                             angle += float(2.0 * pi);
                         }
-                        node.value_changed_.value
-                            .axis(vec3f(x, y, z).normalize());
-                        node.value_changed_.value.angle(angle);
+                        const rotation value(vec3f(x, y, z).normalize(),
+                                             angle);
+                        node.value_changed_.value(value);
                         break;
                     }
                 }
@@ -17099,7 +17123,7 @@ namespace {
     const openvrml::image &
     pixel_texture_node::image() const throw ()
     {
-        return this->image_.sfimage::value;
+        return this->image_.sfimage::value();
     }
 
     /**
@@ -17112,9 +17136,9 @@ namespace {
     openvrml::viewer::texture_object_t
     pixel_texture_node::do_render_texture(viewer & v)
     {
-        return v.insert_texture(this->image_.sfimage::value,
-                                this->repeat_s_.value,
-                                this->repeat_t_.value,
+        return v.insert_texture(this->image_.sfimage::value(),
+                                this->repeat_s_.value(),
+                                this->repeat_t_.value(),
                                 true);
     }
 
@@ -17470,27 +17494,27 @@ namespace {
                                    const bool active,
                                    const double (&p)[3])
     {
-        if (this->enabled_.sfbool::value) {
-            if (active && !this->is_active_.value) {
+        if (this->enabled_.sfbool::value()) {
+            if (active && !this->is_active_.value()) {
                 // Become active
-                this->is_active_.value = active;
+                this->is_active_.value(active);
 
                 vec3f V(static_cast<float>(p[0]),
                         static_cast<float>(p[1]),
                         static_cast<float>(p[2]));
                 this->activationMatrix = this->modelview.inverse();
                 V *= this->activationMatrix;
-                this->activationPoint.value = V;
+                this->activationPoint.value(V);
                 node::emit_event(this->is_active_emitter_, timestamp);
-            } else if (!active && this->is_active_.value) {
+            } else if (!active && this->is_active_.value()) {
                 // Become inactive
-                this->is_active_.value = active;
+                this->is_active_.value(active);
                 node::emit_event(this->is_active_emitter_, timestamp);
 
                 // auto offset
-                if (this->auto_offset_.sfbool::value) {
-                    this->offset_.sfvec3f::value =
-                        this->translation_changed_.value;
+                if (this->auto_offset_.sfbool::value()) {
+                    this->offset_.sfvec3f::value(
+                        this->translation_changed_.value());
                     node::emit_event(this->offset_, timestamp);
                 }
             } else if (active) {
@@ -17499,18 +17523,18 @@ namespace {
                         static_cast<float>(p[1]),
                         static_cast<float>(p[2]));
                 V *= this->activationMatrix;
-                this->track_point_changed_.value = V;
+                this->track_point_changed_.value(V);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
 
-                vec3f t(V[0] - this->activationPoint.value.x()
-                        + this->offset_.sfvec3f::value.x(),
-                        V[1] - this->activationPoint.value.y()
-                        + this->offset_.sfvec3f::value.y(),
+                vec3f t(V[0] - this->activationPoint.value().x()
+                        + this->offset_.sfvec3f::value().x(),
+                        V[1] - this->activationPoint.value().y()
+                        + this->offset_.sfvec3f::value().y(),
                         0.0);
 
-                const vec2f & min_pos = this->min_position_.sfvec2f::value;
-                const vec2f & max_pos = this->max_position_.sfvec2f::value;
+                const vec2f & min_pos = this->min_position_.sfvec2f::value();
+                const vec2f & max_pos = this->max_position_.sfvec2f::value();
 
                 if (min_pos.x() == max_pos.x()) {
                     t.x(min_pos.x());
@@ -17532,7 +17556,7 @@ namespace {
                     }
                 }
 
-                this->translation_changed_.value = t;
+                this->translation_changed_.value(t);
                 node::emit_event(this->translation_changed_emitter_,
                                  timestamp);
             }
@@ -17796,13 +17820,14 @@ namespace {
     void
     point_light_node::do_render_scoped_light(viewer & v)
     {
-        if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
-            v.insert_point_light(this->ambient_intensity_.sffloat::value,
-                                 this->attenuation_.sfvec3f::value,
-                                 this->color_.sfcolor::value,
-                                 this->intensity_.sffloat::value,
-                                 this->location_.sfvec3f::value,
-                                 this->radius_.sffloat::value);
+        if (this->on_.sfbool::value() && this->radius_.sffloat::value() > 0.0)
+        {
+            v.insert_point_light(this->ambient_intensity_.sffloat::value(),
+                                 this->attenuation_.sfvec3f::value(),
+                                 this->color_.sfcolor::value(),
+                                 this->intensity_.sffloat::value(),
+                                 this->location_.sfvec3f::value(),
+                                 this->radius_.sffloat::value());
         }
         this->node::modified(false);
     }
@@ -17990,10 +18015,10 @@ namespace {
     bool point_set_node::modified() const
     {
         return this->node::modified()
-            || (this->color_.sfnode::value
-                && this->color_.sfnode::value->modified())
-            || (this->coord_.sfnode::value
-                && this->coord_.sfnode::value->modified());
+            || (this->color_.sfnode::value()
+                && this->color_.sfnode::value()->modified())
+            || (this->coord_.sfnode::value()
+                && this->coord_.sfnode::value()->modified());
     }
 
     /**
@@ -18019,14 +18044,14 @@ namespace {
 
         openvrml::coordinate_node * const coordinateNode =
             node_cast<openvrml::coordinate_node *>(
-                this->coord_.sfnode::value.get());
+                this->coord_.sfnode::value().get());
         const vector<vec3f> & coord = coordinateNode
             ? coordinateNode->point()
             : vector<vec3f>();
 
         openvrml::color_node * const colorNode =
             node_cast<openvrml::color_node *>(
-                this->color_.sfnode::value.get());
+                this->color_.sfnode::value().get());
         const vector<openvrml::color> & color = colorNode
             ? colorNode->color()
             : vector<openvrml::color>();
@@ -18057,7 +18082,7 @@ namespace {
         this->bsphere = bounding_sphere();
         openvrml::coordinate_node * const coordinateNode =
             node_cast<openvrml::coordinate_node *>(
-                this->coord_.sfnode::value.get());
+                this->coord_.sfnode::value().get());
         if (coordinateNode) {
             const std::vector<vec3f> & coord = coordinateNode->point();
             for(std::vector<vec3f>::const_iterator vec(coord.begin());
@@ -18263,25 +18288,26 @@ namespace {
             position_interpolator_node & node =
                 dynamic_cast<position_interpolator_node &>(this->node());
 
-            const vector<float> & key = node.key_.mffloat::value;
-            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value;
+            const vector<float> & key = node.key_.mffloat::value();
+            const vector<vec3f> & key_value = node.key_value_.mfvec3f::value();
 
             vector<float>::size_type n = key.size() - 1;
-            if (fraction.value < key[0]) {
-                node.value_changed_.value = key_value[0];
-            } else if (fraction.value > key[n]) {
-                node.value_changed_.value = key_value[n];
+            if (fraction.value() < key[0]) {
+                node.value_changed_.value(key_value[0]);
+            } else if (fraction.value() > key[n]) {
+                node.value_changed_.value(key_value[n]);
             } else {
                 // should cache the last index used...
                 for (vector<float>::size_type i = 0; i < n; ++i) {
-                    if (key[i] <= fraction.value
-                        && fraction.value <= key[i + 1]) {
+                    if (key[i] <= fraction.value()
+                        && fraction.value() <= key[i + 1]) {
                         const vec3f & v1 = key_value[i];
                         const vec3f & v2 = key_value[i + 1];
 
                         const float f =
-                            (fraction.value - key[i]) / (key[i + 1] - key[i]);
-                        node.value_changed_.value = v1 + f * (v2 - v1);
+                            (fraction.value() - key[i])
+                            / (key[i + 1] - key[i]);
+                        node.value_changed_.value(v1 + f * (v2 - v1));
                         break;
                     }
                 }
@@ -18678,10 +18704,10 @@ namespace {
     proximity_sensor_node::
     do_render_child(openvrml::viewer & viewer, const rendering_context context)
     {
-        if (this->enabled_.sfbool::value
-            && this->size_.sfvec3f::value.x() > 0.0
-            && this->size_.sfvec3f::value.y() > 0.0
-            && this->size_.sfvec3f::value.z() > 0.0
+        if (this->enabled_.sfbool::value()
+            && this->size_.sfvec3f::value().x() > 0.0
+            && this->size_.sfvec3f::value().y() > 0.0
+            && this->size_.sfvec3f::value().z() > 0.0
             && viewer.mode() == viewer::draw_mode) {
             using openvrml_::fabs;
             using openvrml_::fless_equal;
@@ -18693,47 +18719,51 @@ namespace {
             mat4f MV = context.matrix();
             MV = MV.inverse();
             x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-            bool inside = fless_equal<float>()(fabs(x - this->center_.sfvec3f::value.x()),
-                                               0.5f * this->size_.sfvec3f::value.x())
-                && fless_equal<float>()(fabs(y - this->center_.sfvec3f::value.y()),
-                                        0.5f * this->size_.sfvec3f::value.y())
-                && fless_equal<float>()(fabs(z - this->center_.sfvec3f::value.z()),
-                                        0.5f * this->size_.sfvec3f::value.z());
-            bool wasIn = this->is_active_.value;
+            bool inside =
+                fless_equal<float>()(
+                    fabs(x - this->center_.sfvec3f::value().x()),
+                    0.5f * this->size_.sfvec3f::value().x())
+                && fless_equal<float>()(
+                    fabs(y - this->center_.sfvec3f::value().y()),
+                    0.5f * this->size_.sfvec3f::value().y())
+                && fless_equal<float>()(
+                    fabs(z - this->center_.sfvec3f::value().z()),
+                    0.5f * this->size_.sfvec3f::value().z());
+            bool wasIn = this->is_active_.value();
 
             // Check if viewer has entered the box
             if (inside && ! wasIn) {
-                this->is_active_.value = true;
-                node::emit_event(this->is_active_emitter_, timeNow.value);
+                this->is_active_.value(true);
+                node::emit_event(this->is_active_emitter_, timeNow.value());
 
                 this->enter_time_ = timeNow;
-                node::emit_event(this->enter_time_emitter_, timeNow.value);
+                node::emit_event(this->enter_time_emitter_, timeNow.value());
             }
 
             // Check if viewer has left the box
             else if (wasIn && !inside) {
-                this->is_active_.value = false;
-                node::emit_event(this->is_active_emitter_, timeNow.value);
+                this->is_active_.value(false);
+                node::emit_event(this->is_active_emitter_, timeNow.value());
 
                 this->exit_time_ = timeNow;
-                node::emit_event(this->exit_time_emitter_, timeNow.value);
+                node::emit_event(this->exit_time_emitter_, timeNow.value());
             }
 
             // Check for movement within the box
             if (wasIn || inside) {
-                if (this->position_changed_.value != vec3f(x, y, z)) {
-                    this->position_changed_.value = vec3f(x, y, z);
+                if (this->position_changed_.value() != vec3f(x, y, z)) {
+                    this->position_changed_.value(vec3f(x, y, z));
                     node::emit_event(this->position_changed_emitter_,
-                                     timeNow.value);
+                                     timeNow.value());
                 }
 
                 vec3f trans, scale, shear;
                 rotation orientation;
                 MV.transformation(trans, orientation, scale, shear);
-                if (this->orientation_changed_.value != orientation) {
-                    this->orientation_changed_.value = orientation;
+                if (this->orientation_changed_.value() != orientation) {
+                    this->orientation_changed_.value(orientation);
                     node::emit_event(this->orientation_changed_emitter_,
-                                     timeNow.value);
+                                     timeNow.value());
                 }
             }
         } else {
@@ -18918,24 +18948,25 @@ namespace {
             scalar_interpolator_node & node =
                 dynamic_cast<scalar_interpolator_node &>(this->node());
 
-            const vector<float> & key = node.key_.mffloat::value;
-            const vector<float> & key_value = node.key_value_.mffloat::value;
+            const vector<float> & key = node.key_.mffloat::value();
+            const vector<float> & key_value = node.key_value_.mffloat::value();
 
             vector<float>::size_type n = key.size() - 1;
-            if (fraction.value < key[0]) {
-                node.value_changed_.value = key_value[0];
-            } else if (fraction.value > key[n]) {
-                node.value_changed_.value = key_value[n];
+            if (fraction.value() < key[0]) {
+                node.value_changed_.value(key_value[0]);
+            } else if (fraction.value() > key[n]) {
+                node.value_changed_.value(key_value[n]);
             } else {
                 for (vector<float>::size_type i = 0; i < n; ++i) {
-                    if (key[i] <= fraction.value
-                        && fraction.value <= key[i + 1]) {
+                    if (key[i] <= fraction.value()
+                        && fraction.value() <= key[i + 1]) {
                         float v1 = key_value[i];
                         float v2 = key_value[i + 1];
 
                         const float f =
-                            (fraction.value - key[i]) / (key[i + 1] - key[i]);
-                        node.value_changed_.value = v1 + f * (v2 - v1);
+                            (fraction.value() - key[i])
+                            / (key[i + 1] - key[i]);
+                        node.value_changed_.value(v1 + f * (v2 - v1));
                         break;
                     }
                 }
@@ -19164,10 +19195,10 @@ namespace {
     bool shape_node::modified() const
     {
         return this->node::modified()
-            || (this->geometry_.sfnode::value
-                && this->geometry_.sfnode::value->modified())
-            || (this->appearance_.sfnode::value
-                && this->appearance_.sfnode::value->modified());
+            || (this->geometry_.sfnode::value()
+                && this->geometry_.sfnode::value()->modified())
+            || (this->appearance_.sfnode::value()
+                && this->appearance_.sfnode::value()->modified());
     }
 
     /**
@@ -19182,14 +19213,14 @@ namespace {
     {
         openvrml::appearance_node * const appearance =
             node_cast<openvrml::appearance_node *>(
-                this->appearance_.sfnode::value.get());
+                this->appearance_.sfnode::value().get());
         openvrml::material_node * const material =
             appearance
             ? node_cast<openvrml::material_node *>(
                 appearance->material().get())
             : 0;
         geometry_node * const geometry =
-            node_cast<geometry_node *>(this->geometry_.sfnode::value.get());
+            node_cast<geometry_node *>(this->geometry_.sfnode::value().get());
 
         if (this->viewerObject && (this->modified()
                                    || (appearance && appearance->modified())
@@ -19263,7 +19294,8 @@ namespace {
         // just pass off to the geometry's getbvolume() method
         //
         bounded_volume_node * bv =
-            node_cast<bounded_volume_node *>(this->geometry_.sfnode::value.get());
+            node_cast<bounded_volume_node *>(
+                this->geometry_.sfnode::value().get());
         const openvrml::bounding_volume & result = bv
             ? bv->bounding_volume()
             : this->bounded_volume_node::do_bounding_volume();
@@ -19619,8 +19651,8 @@ namespace {
                     const rendering_context /* context */)
     {
         // If this clip has been modified, update the internal data
-        if (this->source_.sfnode::value
-            && this->source_.sfnode::value->modified()) {
+        if (this->source_.sfnode::value()
+            && this->source_.sfnode::value()->modified()) {
 //        this->source.value->render(viewer, context);
         }
     }
@@ -19745,7 +19777,7 @@ namespace {
     do_render_geometry(openvrml::viewer & viewer, rendering_context)
     {
         const viewer::object_t object_ref =
-            viewer.insert_sphere(this->radius.value);
+            viewer.insert_sphere(this->radius.value());
         return object_ref;
     }
 
@@ -19758,8 +19790,10 @@ namespace {
     sphere_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<sphere_node *>(this)->bsphere.radius(this->radius.value);
-            const_cast<sphere_node *>(this)->bounding_volume_dirty(false); // logical const
+            const_cast<sphere_node *>(this)
+                ->bsphere.radius(this->radius.value());
+            const_cast<sphere_node *>(this)
+                ->bounding_volume_dirty(false); // logical const
         }
         return this->bsphere;
     }
@@ -20060,18 +20094,18 @@ namespace {
                                     bool active,
                                     const double (&p)[3])
     {
-        if (this->enabled_.sfbool::value) {
+        if (this->enabled_.sfbool::value()) {
             // Become active
-            if (active && !this->is_active_.value) {
-                this->is_active_.value = active;
+            if (active && !this->is_active_.value()) {
+                this->is_active_.value(active);
 
                 // set activation point in world coords
                 const vec3f floatVec(static_cast<float>(p[0]),
                                      static_cast<float>(p[1]),
                                      static_cast<float>(p[2]));
-                this->activationPoint.value = floatVec;
+                this->activationPoint.value(floatVec);
 
-                if (this->auto_offset_.sfbool::value) {
+                if (this->auto_offset_.sfbool::value()) {
                     this->rotation_changed_ = this->offset_;
                 }
 
@@ -20079,20 +20113,20 @@ namespace {
                 vec3f V;
                 mat4f M = this->modelview.inverse();
                 V = V * M;
-                this->centerPoint.value = V;
+                this->centerPoint.value(V);
 
                 // send message
                 node::emit_event(this->is_active_emitter_, timestamp);
             }
             // Become inactive
-            else if (!active && this->is_active_.value) {
-                this->is_active_.value = active;
+            else if (!active && this->is_active_.value()) {
+                this->is_active_.value(active);
                 node::emit_event(this->is_active_emitter_, timestamp);
 
                 // save auto offset of rotation
-                if (this->auto_offset_.sfbool::value) {
-                    this->offset_.sfrotation::value =
-                        this->rotation_changed_.value;
+                if (this->auto_offset_.sfbool::value()) {
+                    this->offset_.sfrotation::value(
+                        this->rotation_changed_.value());
                     node::emit_event(this->offset_, timestamp);
                 }
             }
@@ -20104,14 +20138,14 @@ namespace {
                         static_cast<float>(p[2]));
                 mat4f M = this->modelview.inverse();
                 V = V * M;
-                this->track_point_changed_.value = V;
+                this->track_point_changed_.value(V);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
 
                 vec3f V2(static_cast<float>(p[0]),
                          static_cast<float>(p[1]),
                          static_cast<float>(p[2]));
-                vec3f tempv = V2 - this->centerPoint.value;
+                vec3f tempv = V2 - this->centerPoint.value();
                 vec3f dir1(tempv);
 
                 //
@@ -20120,7 +20154,8 @@ namespace {
                 const float dist = dir1.length();
 
                 dir1 = dir1.normalize();
-                tempv = this->activationPoint.value - this->centerPoint.value;
+                tempv =
+                    this->activationPoint.value() - this->centerPoint.value();
                 vec3f dir2(tempv);
                 dir2 = dir2.normalize();
 
@@ -20130,10 +20165,10 @@ namespace {
 
                 openvrml::rotation newRot(cx,
                                           dist * float(acos(dir1.dot(dir2))));
-                if (this->auto_offset_.sfbool::value) {
-                    newRot = newRot * this->offset_.sfrotation::value;
+                if (this->auto_offset_.sfbool::value()) {
+                    newRot = newRot * this->offset_.sfrotation::value();
                 }
-                this->rotation_changed_.value = newRot;
+                this->rotation_changed_.value(newRot);
 
                 node::emit_event(this->rotation_changed_emitter_, timestamp);
             }
@@ -20475,16 +20510,17 @@ namespace {
     void
     spot_light_node::do_render_scoped_light(viewer & v)
     {
-        if (this->on_.sfbool::value && this->radius_.sffloat::value > 0.0) {
-            v.insert_spot_light(this->ambient_intensity_.sffloat::value,
-                                this->attenuation_.sfvec3f::value,
-                                this->beam_width_.sffloat::value,
-                                this->color_.sfcolor::value,
-                                this->cut_off_angle_.sffloat::value,
-                                this->direction_.sfvec3f::value,
-                                this->intensity_.sffloat::value,
-                                this->location_.sfvec3f::value,
-                                this->radius_.sffloat::value);
+        if (this->on_.sfbool::value() && this->radius_.sffloat::value() > 0.0)
+        {
+            v.insert_spot_light(this->ambient_intensity_.sffloat::value(),
+                                this->attenuation_.sfvec3f::value(),
+                                this->beam_width_.sffloat::value(),
+                                this->color_.sfcolor::value(),
+                                this->cut_off_angle_.sffloat::value(),
+                                this->direction_.sfvec3f::value(),
+                                this->intensity_.sffloat::value(),
+                                this->location_.sfvec3f::value(),
+                                this->radius_.sffloat::value());
         }
         this->node::modified(false);
     }
@@ -20686,13 +20722,15 @@ namespace {
             switch_node & node =
                 dynamic_cast<switch_node &>(this->event_listener::node());
 
-            const int32 which_choice = node.which_choice_.sfint32::value;
-            assert(!node.children_.value.empty());
-            node.children_.value[0] =
+            const int32 which_choice = node.which_choice_.sfint32::value();
+            assert(!node.children_.value().empty());
+            std::vector<node_ptr> children = node.children_.value();
+            children[0] =
                 (which_choice >= 0
-                 && which_choice < int32(node.choice_.mfnode::value.size()))
-                ? node.choice_.mfnode::value[which_choice]
+                 && which_choice < int32(node.choice_.mfnode::value().size()))
+                ? node.choice_.mfnode::value()[which_choice]
                 : node_ptr(0);
+            node.children_.value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -20769,12 +20807,15 @@ namespace {
             switch_node & node =
                 dynamic_cast<switch_node &>(this->event_listener::node());
 
-            assert(!node.children_.value.empty());
-            node.children_.value[0] =
-                (which_choice.value >= 0
-                 && which_choice.value < int32(node.choice_.mfnode::value.size()))
-                ? node.choice_.mfnode::value[which_choice.value]
+            assert(!node.children_.value().empty());
+            std::vector<node_ptr> children = node.children_.value();
+            children[0] =
+                ((which_choice.value() >= 0)
+                 && (which_choice.value()
+                     < int32(node.choice_.mfnode::value().size())))
+                ? node.choice_.mfnode::value()[which_choice.value()]
                 : node_ptr(0);
+            node.children_.value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -20841,10 +20882,10 @@ namespace {
     {
         if (this->node::modified()) { return true; }
 
-        long w = this->which_choice_.sfint32::value;
+        long w = this->which_choice_.sfint32::value();
 
-        return w >= 0 && size_t(w) < this->choice_.mfnode::value.size()
-            && this->choice_.mfnode::value[w]->modified();
+        return w >= 0 && size_t(w) < this->choice_.mfnode::value().size()
+            && this->choice_.mfnode::value()[w]->modified();
     }
 
     /**
@@ -20860,9 +20901,9 @@ namespace {
     switch_node::
     do_render_child(openvrml::viewer & viewer, const rendering_context context)
     {
-        assert(!this->children_.value.empty());
+        assert(!this->children_.value().empty());
         child_node * const child =
-            node_cast<child_node *>(this->children_.value[0].get());
+            node_cast<child_node *>(this->children_.value()[0].get());
         if (child) { child->render_child(viewer, context); }
         this->node::modified(false);
     }
@@ -20889,7 +20930,7 @@ namespace {
     const std::vector<openvrml::node_ptr> &
     switch_node::do_children() const throw ()
     {
-        return this->children_.value;
+        return this->children_.value();
     }
 
     /**
@@ -20898,9 +20939,9 @@ namespace {
     void switch_node::recalcBSphere()
     {
         this->bsphere = bounding_sphere();
-        long w = this->which_choice_.sfint32::value;
-        if (w >= 0 && size_t(w) < this->choice_.mfnode::value.size()) {
-            const node_ptr & node = this->choice_.mfnode::value[w];
+        long w = this->which_choice_.sfint32::value();
+        if (w >= 0 && size_t(w) < this->choice_.mfnode::value().size()) {
+            const node_ptr & node = this->choice_.mfnode::value()[w];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -21943,8 +21984,8 @@ namespace {
     bool text_node::modified() const
     {
         return this->node::modified()
-            || (this->font_style_.sfnode::value
-                && this->font_style_.sfnode::value->modified());
+            || (this->font_style_.sfnode::value()
+                && this->font_style_.sfnode::value()->modified());
     }
 
     /**
@@ -21967,8 +22008,8 @@ namespace {
                                 std::vector<int32>(), // normalIndex
                                 this->text_geometry_.tex_coord,
                                 std::vector<int32>()); // texCoordIndex
-        if (this->font_style_.sfnode::value) {
-            this->font_style_.sfnode::value->modified(false);
+        if (this->font_style_.sfnode::value()) {
+            this->font_style_.sfnode::value()->modified(false);
         }
 
         return retval;
@@ -22014,13 +22055,13 @@ namespace {
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         this->ucs4_string.clear();
-        this->ucs4_string.resize(this->string_.mfstring::value.size());
+        this->ucs4_string.resize(this->string_.mfstring::value().size());
 
-        for (size_t i = 0; i < this->string_.mfstring::value.size(); ++i) {
+        for (size_t i = 0; i < this->string_.mfstring::value().size(); ++i) {
             using std::string;
             using std::vector;
 
-            const string & element = this->string_.mfstring::value[i];
+            const string & element = this->string_.mfstring::value()[i];
 
             vector<FcChar32> & ucs4Element = this->ucs4_string[i];
 
@@ -22222,7 +22263,7 @@ namespace {
 
         openvrml::font_style_node * const fontStyle =
             node_cast<openvrml::font_style_node *>(
-                this->font_style_.sfnode::value.get());
+                this->font_style_.sfnode::value().get());
         if (fontStyle) {
             if (!fontStyle->family().empty()) {
                 family = fontStyle->family();
@@ -22540,7 +22581,7 @@ namespace {
         float spacing = 1.0;
         openvrml::font_style_node * fontStyle =
             node_cast<openvrml::font_style_node *>(
-                this->font_style_.sfnode::value.get());
+                this->font_style_.sfnode::value().get());
         if (fontStyle) {
             horizontal = fontStyle->horizontal();
             if (!fontStyle->justify().empty()) {
@@ -22703,8 +22744,8 @@ namespace {
             // Scale to length.
             //
             const float length =
-                (line < this->length_.mffloat::value.size())
-                ? this->length_.mffloat::value[line]
+                (line < this->length_.mffloat::value().size())
+                ? this->length_.mffloat::value()[line]
                 : 0.0;
             if (length > 0.0) {
                 const float currentLength =
@@ -22772,8 +22813,8 @@ namespace {
         // Scale to maxExtent.
         //
         const float maxExtent =
-            (this->max_extent_.sffloat::value > 0.0)
-            ? this->max_extent_.sffloat::value
+            (this->max_extent_.sffloat::value() > 0.0)
+            ? this->max_extent_.sffloat::value()
             : 0.0;
         if (maxExtent > 0.0) {
             const float currentMaxExtent = geometryXMax - geometryXMin;
@@ -22804,20 +22845,20 @@ namespace {
         } else if (justify[1] == "MIDDLE") {
             if (horizontal) {
                 yOffset = ((size * spacing
-                            * this->string_.mfstring::value.size()) / 2.0f)
+                            * this->string_.mfstring::value().size()) / 2.0f)
                     - (size * spacing);
             } else {
                 xOffset = ((size * spacing
-                            * this->string_.mfstring::value.size()) / 2.0f)
+                            * this->string_.mfstring::value().size()) / 2.0f)
                     - (size * spacing);
             }
         } else if (justify[1] == "END") {
             if (horizontal) {
                 yOffset = size * spacing
-                    * (this->string_.mfstring::value.size() - 1);
+                    * (this->string_.mfstring::value().size() - 1);
             } else {
                 xOffset = size * spacing
-                    * (this->string_.mfstring::value.size() - 1);
+                    * (this->string_.mfstring::value().size() - 1);
             }
         }
         for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
@@ -22975,7 +23016,7 @@ namespace {
     const std::vector<openvrml::vec2f> &
     texture_coordinate_node::point() const throw ()
     {
-        return this->point_.mfvec2f::value;
+        return this->point_.mfvec2f::value();
     }
 
 
@@ -23192,10 +23233,10 @@ namespace {
     texture_transform_node::
     do_render_texture_transform(viewer & v)
     {
-        v.set_texture_transform(this->center_.sfvec2f::value,
-                                this->rotation_.sffloat::value,
-                                this->scale_.sfvec2f::value,
-                                this->translation_.sfvec2f::value);
+        v.set_texture_transform(this->center_.sfvec2f::value(),
+                                this->rotation_.sffloat::value(),
+                                this->scale_.sfvec2f::value(),
+                                this->translation_.sfvec2f::value());
     }
 
 
@@ -23445,7 +23486,7 @@ namespace {
             time_sensor_node & node =
                 dynamic_cast<time_sensor_node &>(this->node());
 
-            if (!node.is_active_.value) {
+            if (!node.is_active_.value()) {
                 node.cycle_interval_ = cycle_interval;
                 node.lastTime = timestamp;
                 node::emit_event(node.cycle_interval_changed_emitter_,
@@ -23528,33 +23569,34 @@ namespace {
             time_sensor_node & node =
                 dynamic_cast<time_sensor_node &>(this->event_listener::node());
 
-            if (enabled.value != node.is_active_.value) {
-                if (node.is_active_.value) {
+            if (enabled.value() != node.is_active_.value()) {
+                if (node.is_active_.value()) {
                     using openvrml_::fequal;
 
                     //
                     // Was active; shutdown.
                     //
-                    double cycleInt = node.cycle_interval_.value;
+                    double cycleInt = node.cycle_interval_.value();
                     double f = (cycleInt > 0.0)
-                        ? fmod(node.time_.value - node.start_time_.value,
+                        ? fmod(node.time_.value() - node.start_time_.value(),
                                cycleInt)
                         : 0.0;
 
                     // Fraction of cycle message
-                    node.fraction_changed_.value =
-                        float(fequal<double>()(f, 0.0) ? 1.0 : (f / cycleInt));
+                    node.fraction_changed_.value(float(fequal<double>()(f, 0.0)
+                                                       ? 1.0
+                                                       : (f / cycleInt)));
                 } else {
                     //
                     // Was inactive; startup.
                     //
-                    node.cycle_time_.value = timestamp;
+                    node.cycle_time_.value(timestamp);
                     node::emit_event(node.cycle_time_emitter_, timestamp);
 
                     // Fraction of cycle message
-                    node.fraction_changed_.value = 0.0;
+                    node.fraction_changed_.value(0.0);
                 }
-                node.time_.value = timestamp;
+                node.time_.value(timestamp);
                 node::emit_event(node.time_emitter_, timestamp);
                 node::emit_event(node.fraction_changed_emitter_, timestamp);
                 node.is_active_ = enabled;
@@ -23610,7 +23652,7 @@ namespace {
             time_sensor_node & node =
                 dynamic_cast<time_sensor_node &>(this->node());
 
-            if (!node.is_active_.value) {
+            if (!node.is_active_.value()) {
                 node.start_time_ = start_time;
                 node.lastTime = timestamp;
                 node::emit_event(node.start_time_changed_emitter_, timestamp);
@@ -23778,51 +23820,54 @@ namespace {
     {
         sftime timeNow(currentTime);
 
-        if (this->enabled_.sfbool::value) {
-            if (this->lastTime > timeNow.value) { this->lastTime = timeNow.value; }
+        if (this->enabled_.sfbool::value()) {
+            if (this->lastTime > timeNow.value()) {
+                this->lastTime = timeNow.value();
+            }
 
             // Become active at startTime if either the valid stopTime hasn't
             // passed or we are looping.
-            if (!this->is_active_.value
-                && this->start_time_.value <= timeNow.value
-                && this->start_time_.value >= this->lastTime
-                && ((this->stop_time_.sftime::value < this->start_time_.value
-                     || this->stop_time_.sftime::value > timeNow.value)
-                    || this->loop_.sfbool::value)) {
+            if (!this->is_active_.value()
+                && this->start_time_.value() <= timeNow.value()
+                && this->start_time_.value() >= this->lastTime
+                && ((this->stop_time_.sftime::value() < this->start_time_.value()
+                     || this->stop_time_.sftime::value() > timeNow.value())
+                    || this->loop_.sfbool::value())) {
 
                 // Start at first tick >= startTime
-                this->is_active_.value = true;
-                node::emit_event(this->is_active_emitter_, timeNow.value);
-                this->time_.value = timeNow.value;
-                node::emit_event(this->time_emitter_, timeNow.value);
-                this->fraction_changed_.value = 0.0;
-                node::emit_event(this->fraction_changed_emitter_, timeNow.value);
-                this->cycle_time_.value = timeNow.value;
-                node::emit_event(this->cycle_time_emitter_, timeNow.value);
+                this->is_active_.value(true);
+                node::emit_event(this->is_active_emitter_, timeNow.value());
+                this->time_.value(timeNow.value());
+                node::emit_event(this->time_emitter_, timeNow.value());
+                this->fraction_changed_.value(0.0);
+                node::emit_event(this->fraction_changed_emitter_,
+                                 timeNow.value());
+                this->cycle_time_.value(timeNow.value());
+                node::emit_event(this->cycle_time_emitter_, timeNow.value());
             }
 
             // Running (active and enabled)
-            else if (this->is_active_.value) {
+            else if (this->is_active_.value()) {
                 using openvrml_::fequal;
                 using openvrml_::fless_equal;
 
-                double f, cycleInt = this->cycle_interval_.value;
+                double f, cycleInt = this->cycle_interval_.value();
                 bool deactivate = false;
 
                 // Are we done? Choose min of stopTime or start + single cycle.
-                if ((this->stop_time_.sftime::value > this->start_time_.value
-                     && fless_equal<double>()(this->stop_time_.sftime::value,
-                                              timeNow.value))
-                    || (!this->loop_.sfbool::value
-                        && fless_equal<double>()(this->start_time_.value
+                if ((this->stop_time_.sftime::value() > this->start_time_.value()
+                     && fless_equal<double>()(this->stop_time_.sftime::value(),
+                                              timeNow.value()))
+                    || (!this->loop_.sfbool::value()
+                        && fless_equal<double>()(this->start_time_.value()
                                                  + cycleInt,
-                                                 timeNow.value))) {
-                    this->is_active_.value = false;
+                                                 timeNow.value()))) {
+                    this->is_active_.value(false);
 
                     // Must respect stopTime/cycleInterval exactly
-                    if (this->start_time_.value + cycleInt
-                        < this->stop_time_.sftime::value) {
-                        timeNow = sftime(this->start_time_.value + cycleInt);
+                    if (this->start_time_.value() + cycleInt
+                        < this->stop_time_.sftime::value()) {
+                        timeNow = sftime(this->start_time_.value() + cycleInt);
                     } else {
                         timeNow = this->stop_time_;
                     }
@@ -23830,37 +23875,41 @@ namespace {
                     deactivate = true;
                 }
 
-                f = (cycleInt > 0.0 && timeNow.value > this->start_time_.value)
-                    ? fmod(timeNow.value - this->start_time_.value, cycleInt)
+                f = (cycleInt > 0.0 && timeNow.value() > this->start_time_.value())
+                    ? fmod(timeNow.value() - this->start_time_.value(),
+                           cycleInt)
                     : 0.0;
 
                 fequal<double> feq;
 
                 // Fraction of cycle message
-                this->fraction_changed_.value = feq(f, 0.0)
-                    ? 1.0f
-                    : float(f / cycleInt);
-                node::emit_event(this->fraction_changed_emitter_, timeNow.value);
+                this->fraction_changed_.value(feq(f, 0.0)
+                                              ? 1.0f
+                                              : float(f / cycleInt));
+                node::emit_event(this->fraction_changed_emitter_,
+                                 timeNow.value());
 
                 // Current time message
-                this->time_.value = timeNow.value;
-                node::emit_event(this->time_emitter_, timeNow.value);
+                this->time_.value(timeNow.value());
+                node::emit_event(this->time_emitter_, timeNow.value());
 
                 // End of cycle message (this may miss cycles...)
-                if (feq(this->fraction_changed_.value, 1.0)) {
-                    this->cycle_time_.value = timeNow.value;
-                    node::emit_event(this->cycle_time_emitter_, timeNow.value);
+                if (feq(this->fraction_changed_.value(), 1.0)) {
+                    this->cycle_time_.value(timeNow.value());
+                    node::emit_event(this->cycle_time_emitter_,
+                                     timeNow.value());
                 }
 
                 if (deactivate) {
-                    node::emit_event(this->is_active_emitter_, timeNow.value);
+                    node::emit_event(this->is_active_emitter_,
+                                     timeNow.value());
                 }
             }
 
             // Tell the scene this node needs quick updates while it is active.
             // Should check whether time, fraction_changed eventOuts are
             // being used, and set delta to cycleTime if not...
-            if (this->is_active_.value) {
+            if (this->is_active_.value()) {
                 this->type().node_class().browser().delta(0.0);
             }
             this->lastTime = currentTime;
@@ -24165,19 +24214,19 @@ namespace {
                                         const bool active,
                                         const double (&)[3])
     {
-        if (this->enabled_.sfbool::value) {
-            if (over && !active && this->is_active_.value) {
-                this->touch_time_.value = timestamp;
+        if (this->enabled_.sfbool::value()) {
+            if (over && !active && this->is_active_.value()) {
+                this->touch_time_.value(timestamp);
                 node::emit_event(this->touch_time_emitter_, timestamp);
             }
 
-            if (over != this->is_over_.value) {
-                this->is_over_.value = over;
+            if (over != this->is_over_.value()) {
+                this->is_over_.value(over);
                 node::emit_event(this->is_over_emitter_, timestamp);
             }
 
-            if (active != this->is_active_.value) {
-                this->is_active_.value = active;
+            if (active != this->is_active_.value()) {
+                this->is_active_.value(active);
                 node::emit_event(this->is_active_emitter_, timestamp);
             }
             // if (over && any routes from eventOuts)
@@ -24923,7 +24972,7 @@ namespace {
 
         if (this->xformObject) {
             viewer.insert_reference(this->xformObject);
-        } else if (!this->children_.mfnode::value.empty()) {
+        } else if (!this->children_.mfnode::value().empty()) {
             this->xformObject = viewer.begin_object(this->id().c_str());
 
             // Apply transforms
@@ -24957,8 +25006,8 @@ namespace {
     void transform_node::recalc_bsphere()
     {
         this->bsphere = bounding_sphere();
-        for (size_t i = 0; i < this->children_.mfnode::value.size(); ++i) {
-            const node_ptr & node = this->children_.mfnode::value[i];
+        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
+            const node_ptr & node = this->children_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -24984,11 +25033,11 @@ namespace {
         if (this->transform_dirty) {
             this->transform_ =
                 mat4f::transformation(
-                    this->translation_.sfvec3f::value,
-                    this->rotation_.sfrotation::value,
-                    this->scale_.sfvec3f::value,
-                    this->scale_orientation_.sfrotation::value,
-                    this->center_.sfvec3f::value);
+                    this->translation_.sfvec3f::value(),
+                    this->rotation_.sfrotation::value(),
+                    this->scale_.sfvec3f::value(),
+                    this->scale_orientation_.sfrotation::value(),
+                    this->center_.sfvec3f::value());
             this->transform_dirty = false;
         }
     }
@@ -25117,7 +25166,7 @@ namespace {
         if (!this->bound_nodes.empty()) {
             viewpoint_node & current =
                 dynamic_cast<viewpoint_node &>(*this->bound_nodes.back());
-            current.is_bound_.value = false;
+            current.is_bound_.value(false);
             node::emit_event(current.is_bound_emitter_, timestamp);
         }
 
@@ -25126,7 +25175,7 @@ namespace {
         // TRUE.
         //
         this->bound_nodes.push_back(&viewpoint);
-        viewpoint.is_bound_.value = true;
+        viewpoint.is_bound_.value(true);
         node::emit_event(viewpoint.is_bound_emitter_, timestamp);
 
         this->browser().active_viewpoint(viewpoint);
@@ -25146,7 +25195,7 @@ namespace {
             std::find(this->bound_nodes.begin(), this->bound_nodes.end(),
                       &viewpoint);
         if (pos != this->bound_nodes.end()) {
-            viewpoint.is_bound_.value = false;
+            viewpoint.is_bound_.value(false);
             node::emit_event(viewpoint.is_bound_emitter_, timestamp);
 
             if (pos == this->bound_nodes.end() - 1
@@ -25154,7 +25203,7 @@ namespace {
                 viewpoint_node & newActive =
                     dynamic_cast<viewpoint_node &>(
                         **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value = true;
+                newActive.is_bound_.value(true);
                 node::emit_event(newActive.is_bound_emitter_, timestamp);
 
                 this->browser().active_viewpoint(viewpoint);
@@ -25404,7 +25453,7 @@ namespace {
                 const_cast<viewpoint_class &>(
                     static_cast<const viewpoint_class &>(
                         node.type().node_class()));
-            if (value.value) {
+            if (value.value()) {
                 node_class.bind(node, timestamp);
             } else {
                 node_class.unbind(node, timestamp);
@@ -25730,7 +25779,7 @@ namespace {
      */
     const std::string & viewpoint_node::description() const throw ()
     {
-        return this->description_.value;
+        return this->description_.value();
     }
 
     /**
@@ -25740,7 +25789,7 @@ namespace {
      */
     float viewpoint_node::field_of_view() const throw ()
     {
-        return this->field_of_view_.sffloat::value;
+        return this->field_of_view_.sffloat::value();
     }
 
     /**
@@ -25851,8 +25900,8 @@ namespace {
             static const rotation scaleOrientation;
             static const vec3f center;
             const mat4f & t =
-                mat4f::transformation(this->position_.sfvec3f::value,
-                                      this->orientation_.sfrotation::value,
+                mat4f::transformation(this->position_.sfvec3f::value(),
+                                      this->orientation_.sfrotation::value(),
                                       scale,
                                       scaleOrientation,
                                       center);
@@ -26128,11 +26177,11 @@ namespace {
     visibility_sensor_node::do_render_child(openvrml::viewer & viewer,
                                             rendering_context)
     {
-        if (this->enabled_.sfbool::value) {
+        if (this->enabled_.sfbool::value()) {
             sftime timeNow(browser::current_time());
-            vec3f xyz[2] = { this->center_.sfvec3f::value,
-                             this->center_.sfvec3f::value
-                             + this->size_.sfvec3f::value };
+            vec3f xyz[2] = { this->center_.sfvec3f::value(),
+                             this->center_.sfvec3f::value()
+                             + this->size_.sfvec3f::value() };
 
             // hack: enclose box in a sphere...
             viewer.transform_points(2, &xyz[0]);
@@ -26141,7 +26190,7 @@ namespace {
             // Was the sphere visible last time through? How does this work
             // for USE'd nodes? I need a way for each USE to store whether
             // it was active.
-            bool wasIn = this->is_active_.value;
+            bool wasIn = this->is_active_.value();
 
             // Is the sphere visible? ...
             bool inside = xyz[0].z() < 0.0; // && z > - scene->visLimit()
@@ -26166,20 +26215,20 @@ namespace {
 
             // Just became visible
             if (inside && !wasIn) {
-                this->is_active_.value = true;
-                node::emit_event(this->is_active_emitter_, timeNow.value);
+                this->is_active_.value(true);
+                node::emit_event(this->is_active_emitter_, timeNow.value());
 
                 this->enter_time_ = timeNow;
-                node::emit_event(this->enter_time_emitter_, timeNow.value);
+                node::emit_event(this->enter_time_emitter_, timeNow.value());
             }
 
             // Check if viewer has left the box
             else if (wasIn && !inside) {
-                this->is_active_.value = false;
-                node::emit_event(this->is_active_emitter_, timeNow.value);
+                this->is_active_.value(false);
+                node::emit_event(this->is_active_emitter_, timeNow.value());
 
                 this->exit_time_ = timeNow;
-                node::emit_event(this->exit_time_emitter_, timeNow.value);
+                node::emit_event(this->exit_time_emitter_, timeNow.value());
             }
         } else {
             this->node::modified(false);

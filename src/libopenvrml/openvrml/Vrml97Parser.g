@@ -940,9 +940,9 @@ options { defaultErrorHandler=false; }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
         url_list=externprotoUrlList {
-            for (size_t i = 0; i < url_list.value.size(); ++i) {
+            for (size_t i = 0; i < url_list.value().size(); ++i) {
                 boost::shared_ptr<openvrml::node_class> node_class =
-                    browser.node_class_map_.find(url_list.value[i]);
+                    browser.node_class_map_.find(url_list.value()[i]);
                 if (node_class) {
                     node_type = node_class->create_type(id->getText(),
                                                         interfaces);
@@ -1007,12 +1007,17 @@ externprotoUrlList returns [mfstring urlList]
 options { defaultErrorHandler=false; }
 {
     using std::string;
+    using std::vector;
     using openvrml::mfstring;
 
     string s;
 }
-    :   s=stringValue { urlList.value.push_back(s); }
-    |   LBRACKET ( s=stringValue { urlList.value.push_back(s); } )* RBRACKET
+    :   s=stringValue { urlList.value(vector<string>(1, s)); }
+    |   LBRACKET {
+            vector<string> value;
+        } (s=stringValue { value.push_back(s); })* RBRACKET {
+            urlList.value(value);
+        }
     ;
 
 routeStatement[const openvrml::scope & scope]
@@ -1718,11 +1723,17 @@ returns [boost::shared_ptr<field_value> mcv =
             boost::shared_ptr<field_value>(new mfcolor)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     color c;
     mfcolor & colors = static_cast<mfcolor &>(*mcv);
 }
-    : colorValue[c] { colors.value.push_back(c); }
-    | LBRACKET (colorValue[c] { colors.value.push_back(c); })* RBRACKET
+    :   colorValue[c] { colors.value(vector<color>(1, c)); }
+    |   LBRACKET {
+            vector<color> value;
+        } (colorValue[c] { value.push_back(c); })* RBRACKET {
+            colors.value(value);
+        }
     ;
 
 colorValue[color & c]
@@ -1766,11 +1777,17 @@ returns [boost::shared_ptr<field_value> mfv =
             boost::shared_ptr<field_value>(new mffloat)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     float f;
     mffloat & floats = static_cast<mffloat &>(*mfv);
 }
-    : f=floatValue { floats.value.push_back(f); }
-    | LBRACKET (f=floatValue { floats.value.push_back(f); })* RBRACKET
+    :   f=floatValue { floats.value(vector<float>(1, f)); }
+    |   LBRACKET {
+            vector<float> value;
+        } (f=floatValue { value.push_back(f); })* RBRACKET {
+            floats.value(value);
+        }
     ;
 
 floatValue returns [float val]
@@ -1825,11 +1842,17 @@ returns [boost::shared_ptr<field_value> miv =
             boost::shared_ptr<field_value>(new mfint32)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     long i;
     mfint32 & int32s = static_cast<mfint32 &>(*miv);
 }
-    : i=intValue { int32s.value.push_back(i); }
-    | LBRACKET (i=intValue { int32s.value.push_back(i); })* RBRACKET
+    :   i=intValue { int32s.value(vector<int32>(1, i)); }
+    |   LBRACKET {
+            vector<int32> value;
+        } (i=intValue { value.push_back(i); })* RBRACKET {
+            int32s.value(value);
+        }
     ;
 
 intValue returns [int32 val]
@@ -1883,20 +1906,27 @@ options { defaultErrorHandler=false; }
 mfNodeValue[openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
-returns [boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode)]
+returns [boost::shared_ptr<field_value> mnv =
+         boost::shared_ptr<field_value>(new mfnode)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     openvrml::node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     :   n=nodeStatement[browser, scope, script_node_id] {
-            if (n) { nodes.value.push_back(n); }
+            if (n) { nodes.value(vector<node_ptr>(1, n)); }
         }
-    |   LBRACKET (
+    |   LBRACKET {
+            vector<node_ptr> value;
+        } (
             n=nodeStatement[browser, scope, script_node_id] {
-                if (n) { nodes.value.push_back(n); }
+                if (n) { value.push_back(n); }
             }
-        )* RBRACKET
+        )* RBRACKET {
+            nodes.value(value);
+        }
     ;
 
 protoMfNodeValue[openvrml::browser & browser,
@@ -1905,9 +1935,12 @@ protoMfNodeValue[openvrml::browser & browser,
                  proto_node_class::is_map_t & is_map,
                  proto_node_class::routes_t & routes,
                  const std::string & script_node_id]
-returns [boost::shared_ptr<field_value> mnv = boost::shared_ptr<field_value>(new mfnode)]
+returns [boost::shared_ptr<field_value> mnv =
+         boost::shared_ptr<field_value>(new mfnode)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     node_ptr n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
@@ -1917,18 +1950,22 @@ options { defaultErrorHandler=false; }
                              is_map,
                              routes,
                              script_node_id] {
-            if (n) { nodes.value.push_back(n); }
+            if (n) { nodes.value(vector<node_ptr>(1, n)); }
         }
-    |   LBRACKET (
+    |   LBRACKET {
+            vector<node_ptr> value;
+        } (
             n=protoNodeStatement[browser,
                                  scope,
                                  proto_interfaces,
                                  is_map,
                                  routes,
                                  script_node_id] {
-                if (n) { nodes.value.push_back(n); }
+                if (n) { value.push_back(n); }
             }
-        )* RBRACKET
+        )* RBRACKET {
+            nodes.value(value);
+        }
     ;
 
 sfRotationValue returns [boost::shared_ptr<field_value> srv]
@@ -1942,11 +1979,17 @@ returns [boost::shared_ptr<field_value> mrv =
          boost::shared_ptr<field_value>(new mfrotation)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     rotation r;
     mfrotation & rotations = static_cast<mfrotation &>(*mrv);
 }
-    : rotationValue[r] { rotations.value.push_back(r); }
-    | LBRACKET (rotationValue[r] { rotations.value.push_back(r); })* RBRACKET
+    :   rotationValue[r] { rotations.value(vector<rotation>(1, r)); }
+    |   LBRACKET {
+            vector<rotation> value;
+        } (rotationValue[r] { value.push_back(r); })* RBRACKET {
+            rotations.value(value);
+        }
     ;
 
 //
@@ -1986,11 +2029,18 @@ returns [boost::shared_ptr<field_value> msv =
          boost::shared_ptr<field_value>(new mfstring)]
 options { defaultErrorHandler=false; }
 {
-    std::string s;
+    using std::string;
+    using std::vector;
+
+    string s;
     mfstring & strings = static_cast<mfstring &>(*msv);
 }
-    : s=stringValue { strings.value.push_back(s); }
-    | LBRACKET (s=stringValue { strings.value.push_back(s); })* RBRACKET
+    :   s=stringValue { strings.value(vector<string>(1, s)); }
+    |   LBRACKET {
+            vector<string> value;
+        } (s=stringValue { value.push_back(s); })* RBRACKET {
+            strings.value(value);
+        }
     ;
 
 stringValue returns [std::string str]
@@ -2023,14 +2073,21 @@ options { defaultErrorHandler=false; }
     ;
 
 mfTimeValue
-returns [boost::shared_ptr<field_value> mtv = boost::shared_ptr<field_value>(new mftime)]
+returns [boost::shared_ptr<field_value> mtv =
+         boost::shared_ptr<field_value>(new mftime)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     double t;
     mftime & times = static_cast<mftime &>(*mtv);
 }
-    : t=doubleValue { times.value.push_back(t); }
-    | LBRACKET (t=doubleValue { times.value.push_back(t); })* RBRACKET
+    :   t=doubleValue { times.value(vector<double>(1, t)); }
+    |   LBRACKET {
+            vector<double> value;
+        } (t=doubleValue { value.push_back(t); })* RBRACKET {
+            times.value(value);
+        }
     ;
 
 doubleValue returns [double val = 0.0]
@@ -2050,11 +2107,17 @@ returns [boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec2f)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     vec2f v;
     mfvec2f & vec2fs = static_cast<mfvec2f &>(*mvv);
 }
-    : vec2fValue[v] { vec2fs.value.push_back(v); }
-    | LBRACKET (vec2fValue[v] { vec2fs.value.push_back(v); })* RBRACKET
+    :   vec2fValue[v] { vec2fs.value(vector<vec2f>(1, v)); }
+    |   LBRACKET {
+            vector<vec2f> value;
+        } (vec2fValue[v] { value.push_back(v); })* RBRACKET {
+            vec2fs.value(value);
+        }
     ;
 
 vec2fValue[vec2f & v]
@@ -2079,11 +2142,17 @@ returns [boost::shared_ptr<field_value> mvv =
          boost::shared_ptr<field_value>(new mfvec3f)]
 options { defaultErrorHandler=false; }
 {
+    using std::vector;
+
     vec3f v;
     mfvec3f & vec3fs = static_cast<mfvec3f &>(*mvv);
 }
-    : vec3fValue[v] { vec3fs.value.push_back(v); }
-    | LBRACKET (vec3fValue[v] { vec3fs.value.push_back(v); })* RBRACKET
+    :   vec3fValue[v] { vec3fs.value(vector<vec3f>(1, v)); }
+    |   LBRACKET {
+            vector<vec3f> value;
+        } (vec3fValue[v] { value.push_back(v); })* RBRACKET {
+            vec3fs.value(value);
+        }
     ;
 
 vec3fValue[vec3f & v]
