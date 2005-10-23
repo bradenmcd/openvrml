@@ -1705,7 +1705,12 @@ namespace {
                 openvrml::node & node,
                 const typename FieldValue::value_type & value =
                 typename FieldValue::value_type());
+            exposedfield(const exposedfield<FieldValue> & obj) throw ();
             virtual ~exposedfield() throw ();
+
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
         };
 
 
@@ -1767,6 +1772,24 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   the instance to copy.
+     */
+    template <typename Derived>
+    template <typename FieldValue>
+    abstract_base<Derived>::exposedfield<FieldValue>::
+    exposedfield(const exposedfield<FieldValue> & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        event_listener_base<Derived>(obj.event_listener_base<Derived>::node()),
+        event_emitter_base<Derived>(
+            obj.event_listener_base<Derived>::node(),
+            static_cast<const field_value &>(*this)),
+        openvrml::exposedfield<FieldValue>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     template <typename Derived>
@@ -1794,6 +1817,18 @@ namespace {
     template <typename Derived>
     abstract_base<Derived>::~abstract_base() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     */
+    template <typename Derived>
+    template <typename FieldValue>
+    std::auto_ptr<field_value>
+    abstract_base<Derived>::exposedfield<FieldValue>::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<field_value>(new exposedfield<FieldValue>(*this));
+    }
 
     /**
      * @brief Get a field value for a node.
@@ -3009,9 +3044,12 @@ namespace {
             public abstract_base<Derived>::template exposedfield<mfnode> {
         public:
             explicit children_exposedfield(openvrml::node & node) throw ();
+            children_exposedfield(const children_exposedfield & obj) throw ();
             virtual ~children_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfnode & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3216,12 +3254,37 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    template <typename Derived>
+    grouping_node_base<Derived>::children_exposedfield::
+    children_exposedfield(const children_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        abstract_base<Derived>::template exposedfield<openvrml::mfnode>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
     ~children_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     */
+    template <typename Derived>
+    std::auto_ptr<openvrml::field_value>
+    grouping_node_base<Derived>::children_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new children_exposedfield(*this));
+    }
 
     /**
      * @brief Handle event.
@@ -3603,9 +3666,12 @@ namespace {
         class back_url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit back_url_exposedfield(background_node & node) throw ();
+            back_url_exposedfield(const back_url_exposedfield & obj) throw ();
             virtual ~back_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3614,9 +3680,13 @@ namespace {
         class bottom_url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit bottom_url_exposedfield(background_node & node) throw ();
+            bottom_url_exposedfield(const bottom_url_exposedfield & obj)
+                throw ();
             virtual ~bottom_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3625,9 +3695,13 @@ namespace {
         class front_url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit front_url_exposedfield(background_node & node) throw ();
+            front_url_exposedfield(const front_url_exposedfield & obj)
+                throw ();
             virtual ~front_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3635,11 +3709,13 @@ namespace {
 
         class left_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit left_url_exposedfield(background_node & node)
-                throw ();
+            explicit left_url_exposedfield(background_node & node) throw ();
+            left_url_exposedfield(const left_url_exposedfield & obj) throw ();
             virtual ~left_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3647,11 +3723,14 @@ namespace {
 
         class right_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit right_url_exposedfield(background_node & node)
+            explicit right_url_exposedfield(background_node & node) throw ();
+            right_url_exposedfield(const right_url_exposedfield & obj)
                 throw ();
             virtual ~right_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -3660,9 +3739,12 @@ namespace {
         class top_url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit top_url_exposedfield(background_node & node) throw ();
+            top_url_exposedfield(const top_url_exposedfield & obj) throw ();
             virtual ~top_url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4189,9 +4271,12 @@ namespace {
         class url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit url_exposedfield(image_texture_node & node);
+            url_exposedfield(const url_exposedfield & obj) throw ();
             virtual ~url_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & url,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4894,9 +4979,12 @@ namespace {
         class choice_exposedfield : public exposedfield<mfnode> {
         public:
             explicit choice_exposedfield(switch_node & node);
+            choice_exposedfield(const choice_exposedfield & obj) throw ();
             virtual ~choice_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfnode & choice,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4905,9 +4993,13 @@ namespace {
         class which_choice_exposedfield : public exposedfield<sfint32> {
         public:
             explicit which_choice_exposedfield(switch_node & node);
+            which_choice_exposedfield(const which_choice_exposedfield & obj)
+                throw ();
             virtual ~which_choice_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfint32 & which_choice,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4942,8 +5034,12 @@ namespace {
         class string_exposedfield : public exposedfield<mfstring> {
         public:
             explicit string_exposedfield(text_node & node);
+            string_exposedfield(const string_exposedfield & obj) throw ();
             virtual ~string_exposedfield() throw ();
 
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mfstring & string,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4952,8 +5048,13 @@ namespace {
         class font_style_exposedfield : public exposedfield<sfnode> {
         public:
             explicit font_style_exposedfield(text_node & node);
+            font_style_exposedfield(const font_style_exposedfield & obj)
+                throw ();
             virtual ~font_style_exposedfield() throw ();
 
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfnode & font_style,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4962,8 +5063,12 @@ namespace {
         class length_exposedfield : public exposedfield<mffloat> {
         public:
             explicit length_exposedfield(text_node & node);
+            length_exposedfield(const length_exposedfield & obj) throw ();
             virtual ~length_exposedfield() throw ();
 
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const mffloat & length,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -4972,8 +5077,13 @@ namespace {
         class max_extent_exposedfield : public exposedfield<sffloat> {
         public:
             explicit max_extent_exposedfield(text_node & node);
+            max_extent_exposedfield(const max_extent_exposedfield & obj)
+                throw ();
             virtual ~max_extent_exposedfield() throw ();
 
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sffloat & max_extent,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5099,9 +5209,12 @@ namespace {
         class enabled_exposedfield : public exposedfield<sfbool> {
         public:
             explicit enabled_exposedfield(time_sensor_node & node);
+            enabled_exposedfield(const enabled_exposedfield & obj) throw ();
             virtual ~enabled_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfbool & enabled,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5192,9 +5305,12 @@ namespace {
         class center_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit center_exposedfield(transform_node & node);
+            center_exposedfield(const center_exposedfield & obj) throw ();
             virtual ~center_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & center,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5203,9 +5319,12 @@ namespace {
         class rotation_exposedfield : public exposedfield<sfrotation> {
         public:
             explicit rotation_exposedfield(transform_node & node);
+            rotation_exposedfield(const rotation_exposedfield & obj) throw ();
             virtual ~rotation_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfrotation & rotation,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5214,9 +5333,12 @@ namespace {
         class scale_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit scale_exposedfield(transform_node & node);
+            scale_exposedfield(const scale_exposedfield & obj) throw ();
             virtual ~scale_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & scale,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5226,9 +5348,13 @@ namespace {
             public exposedfield<sfrotation> {
         public:
             explicit scale_orientation_exposedfield(transform_node & node);
+            scale_orientation_exposedfield(
+                const scale_orientation_exposedfield & obj) throw ();
             virtual ~scale_orientation_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void
             event_side_effect(const sfrotation & scale_orientation,
                               double timestamp)
@@ -5238,9 +5364,13 @@ namespace {
         class translation_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit translation_exposedfield(transform_node & node);
+            translation_exposedfield(const translation_exposedfield & obj)
+                throw ();
             virtual ~translation_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & translation,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5296,9 +5426,13 @@ namespace {
         class orientation_exposedfield : public exposedfield<sfrotation> {
         public:
             explicit orientation_exposedfield(viewpoint_node & node);
+            orientation_exposedfield(const orientation_exposedfield & obj)
+                throw ();
             virtual ~orientation_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfrotation & orientation,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -5307,9 +5441,12 @@ namespace {
         class position_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit position_exposedfield(viewpoint_node & node);
+            position_exposedfield(const position_exposedfield & obj) throw ();
             virtual ~position_exposedfield() throw ();
 
         private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & position,
                                            double timestamp)
                 throw (std::bad_alloc);
@@ -6871,28 +7008,29 @@ namespace {
         sfbool_listener(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Destroy.
+     */
     background_node::set_bind_listener::~set_bind_listener()
         throw ()
     {}
 
-/**
- * @brief Process an event.
- *
- * @param value     event value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Process an event.
+     *
+     * @param value     event value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::set_bind_listener::
     do_process_event(const sfbool & value, const double timestamp)
         throw (std::bad_alloc)
     {
         try {
-            background_node & node = dynamic_cast<background_node &>(this->node());
+            background_node & node =
+                dynamic_cast<background_node &>(this->node());
             background_class & node_class =
                 const_cast<background_class &>(
                     static_cast<const background_class &>(
@@ -6907,19 +7045,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::back_url_exposedfield
- *
- * @brief backUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::back_url_exposedfield
+     *
+     * @brief backUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::back_url_exposedfield::
     back_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -6927,21 +7065,48 @@ namespace {
         exposedfield<openvrml::mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::back_url_exposedfield::
+    back_url_exposedfield(const back_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::back_url_exposedfield::
     ~back_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new backUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::back_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new back_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new backUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::back_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -6955,19 +7120,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::bottom_url_exposedfield
- *
- * @brief bottomUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::bottom_url_exposedfield
+     *
+     * @brief bottomUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::bottom_url_exposedfield::
     bottom_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -6975,21 +7140,48 @@ namespace {
         exposedfield<mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::bottom_url_exposedfield::
+    bottom_url_exposedfield(const bottom_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::bottom_url_exposedfield::
     ~bottom_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new bottomUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::bottom_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new bottom_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new bottomUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::bottom_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -7003,19 +7195,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::front_url_exposedfield
- *
- * @brief frontUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::front_url_exposedfield
+     *
+     * @brief frontUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::front_url_exposedfield::
     front_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -7023,21 +7215,48 @@ namespace {
         exposedfield<mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::front_url_exposedfield::
+    front_url_exposedfield(const front_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::front_url_exposedfield::
     ~front_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new frontUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::front_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new front_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new frontUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::front_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -7051,19 +7270,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::left_url_exposedfield
- *
- * @brief leftUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::left_url_exposedfield
+     *
+     * @brief leftUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::left_url_exposedfield::
     left_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -7071,21 +7290,48 @@ namespace {
         exposedfield<mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::left_url_exposedfield::
+    left_url_exposedfield(const left_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::left_url_exposedfield::
     ~left_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new leftUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::left_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new left_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new leftUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::left_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -7099,19 +7345,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::right_url_exposedfield
- *
- * @brief rightUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::right_url_exposedfield
+     *
+     * @brief rightUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::right_url_exposedfield::
     right_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -7119,21 +7365,48 @@ namespace {
         exposedfield<mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::right_url_exposedfield::
+    right_url_exposedfield(const right_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::right_url_exposedfield::
     ~right_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new rightUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::right_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new right_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new rightUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::right_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -7147,19 +7420,19 @@ namespace {
         }
     }
 
-/**
- * @internal
- *
- * @class background_node::top_url_exposedfield
- *
- * @brief topUrl exposedField implementation.
- */
+    /**
+     * @internal
+     *
+     * @class background_node::top_url_exposedfield
+     *
+     * @brief topUrl exposedField implementation.
+     */
 
-/**
- * @brief Construct.
- *
- * @param node  background_node.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param node  background_node.
+     */
     background_node::top_url_exposedfield::
     top_url_exposedfield(background_node & node) throw ():
         event_listener(node),
@@ -7167,21 +7440,48 @@ namespace {
         exposedfield<mfstring>(node)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    background_node::top_url_exposedfield::
+    top_url_exposedfield(const top_url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
     background_node::top_url_exposedfield::
     ~top_url_exposedfield() throw ()
     {}
 
-/**
- * @brief Process event.
- *
- * @param value     new topUrl value.
- * @param timestamp the current time.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    background_node::top_url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new top_url_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param value     new topUrl value.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     void
     background_node::top_url_exposedfield::
     event_side_effect(const mfstring &, double)
@@ -7195,168 +7495,168 @@ namespace {
         }
     }
 
-/**
- * @var background_node::set_bind_listener background_node::set_bind_listener_
- *
- * @brief set_bind eventIn handler.
- */
+    /**
+     * @var background_node::set_bind_listener background_node::set_bind_listener_
+     *
+     * @brief set_bind eventIn handler.
+     */
 
-/**
- * @var abstract_base<background_node>::exposedfield<openvrml::mffloat> background_node::ground_angle_
- *
- * @brief groundAngle exposedField.
- */
+    /**
+     * @var abstract_base<background_node>::exposedfield<openvrml::mffloat> background_node::ground_angle_
+     *
+     * @brief groundAngle exposedField.
+     */
 
-/**
- * @var abstract_base<background_node>::exposedfield<openvrml::mfcolor> background_node::ground_color_
- *
- * @brief groundColor exposedField.
- */
+    /**
+     * @var abstract_base<background_node>::exposedfield<openvrml::mfcolor> background_node::ground_color_
+     *
+     * @brief groundColor exposedField.
+     */
 
-/**
- * @var background_node::back_url_exposedfield background_node::back_url_
- *
- * @brief backUrl exposedField.
- */
+    /**
+     * @var background_node::back_url_exposedfield background_node::back_url_
+     *
+     * @brief backUrl exposedField.
+     */
 
-/**
- * @var background_node::bottom_url_exposedfield background_node::bottom_url_
- *
- * @brief bottomUrl exposedField.
- */
+    /**
+     * @var background_node::bottom_url_exposedfield background_node::bottom_url_
+     *
+     * @brief bottomUrl exposedField.
+     */
 
-/**
- * @var background_node::front_url_exposedfield background_node::front_url_
- *
- * @brief frontUrl exposedField.
- */
+    /**
+     * @var background_node::front_url_exposedfield background_node::front_url_
+     *
+     * @brief frontUrl exposedField.
+     */
 
-/**
- * @var background_node::left_url_exposedfield background_node::left_url_
- *
- * @brief leftUrl exposedField.
- */
+    /**
+     * @var background_node::left_url_exposedfield background_node::left_url_
+     *
+     * @brief leftUrl exposedField.
+     */
 
-/**
- * @var background_node::right_url_exposedfield background_node::right_url_
- *
- * @brief rightUrl exposedField.
- */
+    /**
+     * @var background_node::right_url_exposedfield background_node::right_url_
+     *
+     * @brief rightUrl exposedField.
+     */
 
-/**
- * @var background_node::top_url_exposedfield background_node::top_url_
- *
- * @brief topUrl exposedField.
- */
+    /**
+     * @var background_node::top_url_exposedfield background_node::top_url_
+     *
+     * @brief topUrl exposedField.
+     */
 
-/**
- * @var abstract_base<background_node>::exposedfield<openvrml::mffloat> background_node::sky_angle_
- *
- * @brief skyAngle exposedField.
- */
+    /**
+     * @var abstract_base<background_node>::exposedfield<openvrml::mffloat> background_node::sky_angle_
+     *
+     * @brief skyAngle exposedField.
+     */
 
-/**
- * @var abstract_base<background_node>::exposedfield<openvrml::mfcolor> background_node::sky_color_
- *
- * @brief skyColor exposedField.
- */
+    /**
+     * @var abstract_base<background_node>::exposedfield<openvrml::mfcolor> background_node::sky_color_
+     *
+     * @brief skyColor exposedField.
+     */
 
-/**
- * @var openvrml::sfbool background_node::is_bound_
- *
- * @brief isBound eventOut value.
- */
+    /**
+     * @var openvrml::sfbool background_node::is_bound_
+     *
+     * @brief isBound eventOut value.
+     */
 
-/**
- * @var openvrml::sfbool_emitter background_node::is_bound_emitter_
- *
- * @brief isBound eventOut emitter.
- */
+    /**
+     * @var openvrml::sfbool_emitter background_node::is_bound_emitter_
+     *
+     * @brief isBound eventOut emitter.
+     */
 
-/**
- * @var openvrml::image background_node::front
- *
- * @brief Front image.
- */
+    /**
+     * @var openvrml::image background_node::front
+     *
+     * @brief Front image.
+     */
 
-/**
- * @var bool background_node::front_needs_update
- *
- * @brief Flag to indicate that the front image needs to be updated.
- */
+    /**
+     * @var bool background_node::front_needs_update
+     *
+     * @brief Flag to indicate that the front image needs to be updated.
+     */
 
-/**
- * @var openvrml::image background_node::back
- *
- * @brief Back image.
- */
+    /**
+     * @var openvrml::image background_node::back
+     *
+     * @brief Back image.
+     */
 
-/**
- * @var bool background_node::back_needs_update
- *
- * @brief Flag to indicate that the back image needs to be updated.
- */
+    /**
+     * @var bool background_node::back_needs_update
+     *
+     * @brief Flag to indicate that the back image needs to be updated.
+     */
 
-/**
- * @var openvrml::image background_node::left
- *
- * @brief Left image.
- */
+    /**
+     * @var openvrml::image background_node::left
+     *
+     * @brief Left image.
+     */
 
-/**
- * @var bool background_node::left_needs_update
- *
- * @brief Flag to indicate that the left image needs to be updated.
- */
+    /**
+     * @var bool background_node::left_needs_update
+     *
+     * @brief Flag to indicate that the left image needs to be updated.
+     */
 
-/**
- * @var openvrml::image background_node::right
- *
- * @brief Right image.
- */
+    /**
+     * @var openvrml::image background_node::right
+     *
+     * @brief Right image.
+     */
 
-/**
- * @var bool background_node::right_needs_update
- *
- * @brief Flag to indicate that the right image needs to be updated.
- */
+    /**
+     * @var bool background_node::right_needs_update
+     *
+     * @brief Flag to indicate that the right image needs to be updated.
+     */
 
-/**
- * @var openvrml::image background_node::top
- *
- * @brief Top image.
- */
+    /**
+     * @var openvrml::image background_node::top
+     *
+     * @brief Top image.
+     */
 
-/**
- * @var bool background_node::top_needs_update
- *
- * @brief Flag to indicate that the top image needs to be updated.
- */
+    /**
+     * @var bool background_node::top_needs_update
+     *
+     * @brief Flag to indicate that the top image needs to be updated.
+     */
 
-/**
- * @var openvrml::image background_node::bottom
- *
- * @brief Bottom image.
- */
+    /**
+     * @var openvrml::image background_node::bottom
+     *
+     * @brief Bottom image.
+     */
 
-/**
- * @var bool background_node::bottom_needs_update
- *
- * @brief Flag to indicate that the bottom image needs to be updated.
- */
+    /**
+     * @var bool background_node::bottom_needs_update
+     *
+     * @brief Flag to indicate that the bottom image needs to be updated.
+     */
 
-/**
- * @var openvrml::viewer::object_t background_node::viewerObject
- *
- * @brief Handle for the renderer.
- */
+    /**
+     * @var openvrml::viewer::object_t background_node::viewerObject
+     *
+     * @brief Handle for the renderer.
+     */
 
-/**
- * @brief Construct.
- *
- * @param type  the node_type associated with the node instance.
- * @param scope the scope to which the node belongs.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param type  the node_type associated with the node instance.
+     * @param scope the scope to which the node belongs.
+     */
     background_node::
     background_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope):
@@ -7385,42 +7685,45 @@ namespace {
         viewerObject(0)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Destroy.
+     */
     background_node::~background_node() throw ()
     {
         // remove d_viewerObject...
     }
 
-/**
- * @brief Initialize.
- *
- * @param timestamp the current time.
- */
+    /**
+     * @brief Initialize.
+     *
+     * @param timestamp the current time.
+     */
     void background_node::do_initialize(double) throw ()
     {
-        assert(dynamic_cast<const background_class *>(&this->type().node_class()));
+        assert(dynamic_cast<const background_class *>(
+                   &this->type().node_class()));
         background_class & nodeClass =
             const_cast<background_class &>(
-                static_cast<const background_class &>(this->type().node_class()));
+                static_cast<const background_class &>(
+                    this->type().node_class()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
-/**
- * @brief Shut down.
- *
- * Calls background_class::unbind to unbind the node if it is bound.
- *
- * @param timestamp the current time.
- */
+    /**
+     * @brief Shut down.
+     *
+     * Calls background_class::unbind to unbind the node if it is bound.
+     *
+     * @param timestamp the current time.
+     */
     void
     background_node::do_shutdown(const double timestamp)
         throw ()
     {
         background_class & node_class =
             const_cast<background_class &>(
-                static_cast<const background_class &>(this->type().node_class()));
+                static_cast<const background_class &>(
+                    this->type().node_class()));
         node_class.unbind(*this, timestamp);
 
         if (node_class.is_first(*this)) { node_class.reset_first(); }
@@ -8350,38 +8653,38 @@ namespace {
         return type;
     }
 
-/**
- * @class billboard_node
- *
- * @brief Billboard node instances.
- */
+    /**
+     * @class billboard_node
+     *
+     * @brief Billboard node instances.
+     */
 
-/**
- * @var billboard_node::billboard_class
- *
- * @brief Class object for Billboard nodes.
- */
+    /**
+     * @var billboard_node::billboard_class
+     *
+     * @brief Class object for Billboard nodes.
+     */
 
-/**
- * @var abstract_base<billboard_node>::exposedfield<openvrml::sfvec3f> billboard_node::axis_of_rotation_
- *
- * @brief axisOfRotation exposedField.
- */
+    /**
+     * @var abstract_base<billboard_node>::exposedfield<openvrml::sfvec3f> billboard_node::axis_of_rotation_
+     *
+     * @brief axisOfRotation exposedField.
+     */
 
-/**
- * @var openvrml::viewer::object_t billboard_node::xformObject
- *
- * @brief Handle for the renderer.
- */
+    /**
+     * @var openvrml::viewer::object_t billboard_node::xformObject
+     *
+     * @brief Handle for the renderer.
+     */
 
-/**
- * @brief Get the bounding box transformation matrix.
- *
- * @param node      a pointer to a billboard_node.
- * @param modelview input ModelView transformation matrix.
- *
- * @return the bounding box transformation matrix.
- */
+    /**
+     * @brief Get the bounding box transformation matrix.
+     *
+     * @param node      a pointer to a billboard_node.
+     * @param modelview input ModelView transformation matrix.
+     *
+     * @return the bounding box transformation matrix.
+     */
     const openvrml::mat4f
     billboard_node::
     billboard_to_matrix(const billboard_node & node, const mat4f & modelview)
@@ -8452,12 +8755,12 @@ namespace {
         return result;
     }
 
-/**
- * @brief Construct.
- *
- * @param type  the node_type associated with the node instance.
- * @param scope the scope to which the node belongs.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param type  the node_type associated with the node instance.
+     * @param scope the scope to which the node belongs.
+     */
     billboard_node::
     billboard_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope):
@@ -8470,20 +8773,20 @@ namespace {
         xformObject(0)
     {}
 
-/**
- * @brief Destroy.
- */
+    /**
+     * @brief Destroy.
+     */
     billboard_node::~billboard_node() throw ()
     {
         // delete xformObject...
     }
 
-/**
- * @brief Render the node.
- *
- * @param viewer    a viewer.
- * @param context   the rendering context.
- */
+    /**
+     * @brief Render the node.
+     *
+     * @param viewer    a viewer.
+     * @param context   the rendering context.
+     */
     void
     billboard_node::
     do_render_child(openvrml::viewer & viewer, rendering_context context)
@@ -12903,11 +13206,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    image_texture_node::url_exposedfield::
+    url_exposedfield(const url_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     image_texture_node::url_exposedfield::
     ~url_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    image_texture_node::url_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new url_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20307,11 +20637,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    switch_node::choice_exposedfield::
+    choice_exposedfield(const choice_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfnode>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     switch_node::choice_exposedfield::~choice_exposedfield()
         throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    switch_node::choice_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new choice_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20362,11 +20719,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    switch_node::which_choice_exposedfield::
+    which_choice_exposedfield(const which_choice_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfint32>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     switch_node::which_choice_exposedfield::
     ~which_choice_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    switch_node::which_choice_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new which_choice_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20708,11 +21092,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    text_node::string_exposedfield::
+    string_exposedfield(const string_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mfstring>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     text_node::string_exposedfield::
     ~string_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    text_node::string_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new string_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20758,11 +21169,37 @@ namespace {
     {}
 
     /**
-     * @brief Destroy.
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
      */
     text_node::font_style_exposedfield::
-    ~font_style_exposedfield() throw ()
+    font_style_exposedfield(const font_style_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfnode>(obj)
     {}
+
+    /**
+     * @brief Destroy.
+     */
+    text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
+    {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    text_node::font_style_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new font_style_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20808,11 +21245,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    text_node::length_exposedfield::
+    length_exposedfield(const length_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::mffloat>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     text_node::length_exposedfield::~length_exposedfield()
         throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    text_node::length_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new length_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -20857,11 +21321,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    text_node::max_extent_exposedfield::
+    max_extent_exposedfield(const max_extent_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sffloat>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     text_node::max_extent_exposedfield::
     ~max_extent_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    text_node::max_extent_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new max_extent_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -22986,12 +23477,39 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    time_sensor_node::enabled_exposedfield::
+    enabled_exposedfield(const enabled_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfbool>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     time_sensor_node::enabled_exposedfield::
     ~enabled_exposedfield()
         throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    time_sensor_node::enabled_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new enabled_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -23910,10 +24428,37 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    transform_node::center_exposedfield::
+    center_exposedfield(const center_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfvec3f>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     transform_node::center_exposedfield::~center_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    transform_node::center_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new center_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -23959,10 +24504,37 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    transform_node::rotation_exposedfield::
+    rotation_exposedfield(const rotation_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfrotation>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    transform_node::rotation_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new rotation_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -24008,11 +24580,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    transform_node::scale_exposedfield::
+    scale_exposedfield(const scale_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfvec3f>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     transform_node::scale_exposedfield::
     ~scale_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    transform_node::scale_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new scale_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -24058,11 +24657,39 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    transform_node::scale_orientation_exposedfield::
+    scale_orientation_exposedfield(const scale_orientation_exposedfield & obj)
+        throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfrotation>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     transform_node::scale_orientation_exposedfield::
     ~scale_orientation_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    transform_node::scale_orientation_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new scale_orientation_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -24107,11 +24734,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    transform_node::translation_exposedfield::
+    translation_exposedfield(const translation_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfvec3f>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     transform_node::translation_exposedfield::
     ~translation_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    transform_node::translation_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new translation_exposedfield(*this));
+    }
 
     /**
      * @brief Process event.
@@ -24781,11 +25435,38 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    viewpoint_node::orientation_exposedfield::
+    orientation_exposedfield(const orientation_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfrotation>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     viewpoint_node::orientation_exposedfield::
     ~orientation_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    viewpoint_node::orientation_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new orientation_exposedfield(*this));
+    }
 
     /**
      * @brief Process an event.
@@ -24830,10 +25511,37 @@ namespace {
     {}
 
     /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    viewpoint_node::position_exposedfield::
+    position_exposedfield(const position_exposedfield & obj) throw ():
+        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        exposedfield<openvrml::sfvec3f>(obj)
+    {}
+
+    /**
      * @brief Destroy.
      */
     viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
     {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    viewpoint_node::position_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new position_exposedfield(*this));
+    }
 
     /**
      * @brief Process an event.

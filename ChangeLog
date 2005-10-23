@@ -1,3 +1,12 @@
+2005-10-23 Braden McDaniel  <braden@endoframe.com>
+
+	Concrete exposedfields need to implement
+	openvrml::field_value::do_clone.
+
+	* src/libopenvrml/openvrml/exposedfield.cpp
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-10-07 Braden McDaniel  <braden@endoframe.com>
 
 	Applied (modified) patch from <sgrieve@users.sourceforge.net> to

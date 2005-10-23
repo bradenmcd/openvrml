@@ -51,6 +51,14 @@
  */
 
 /**
+ * @fn openvrml::exposedfield::exposedfield(const exposedfield<FieldValue> & obj)
+ *
+ * @brief Construct a copy.
+ *
+ * @param obj   the instance to copy.
+ */
+
+/**
  * @fn openvrml::exposedfield::~exposedfield() throw ()
  *
  * @brief Destroy.

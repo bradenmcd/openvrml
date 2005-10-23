@@ -32,10 +32,13 @@ namespace openvrml {
                                       public field_value_listener<FieldValue>,
                                       public field_value_emitter<FieldValue> {
     public:
+        virtual ~exposedfield() throw ();
+
+    protected:
         exposedfield(openvrml::node & node,
                      const typename FieldValue::value_type & value =
                      typename FieldValue::value_type());
-        virtual ~exposedfield() throw ();
+        exposedfield(const exposedfield<FieldValue> & obj);
 
     private:
         virtual void do_process_event(const FieldValue & value,
@@ -54,6 +57,16 @@ namespace openvrml {
         event_emitter(static_cast<const field_value &>(*this)),
         FieldValue(value),
         field_value_listener<FieldValue>(node),
+        field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
+    {}
+
+    template <typename FieldValue>
+    inline exposedfield<FieldValue>::exposedfield(
+        const exposedfield<FieldValue> & obj):
+        event_listener(obj.node()),
+        event_emitter(static_cast<const field_value &>(*this)),
+        FieldValue(obj),
+        field_value_listener<FieldValue>(obj.node()),
         field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
     {}
 
