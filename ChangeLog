@@ -1,5 +1,12 @@
 2005-10-23 Braden McDaniel  <braden@endoframe.com>
 
+	Code clean up; fixed some variable names.
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.cpp
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+
+2005-10-23 Braden McDaniel  <braden@endoframe.com>
+
 	Concrete exposedfields need to implement
 	openvrml::field_value::do_clone.
 

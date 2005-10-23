@@ -789,13 +789,13 @@ boost::shared_ptr<field_value>  X3DVrmlParser::sfDoubleValue() {
 #line 790 "X3DVrmlParser.cpp"
 #line 288 "expandedX3DVrmlParser.g"
 	
-	double f;
+	double d;
 	
 #line 795 "X3DVrmlParser.cpp"
 	
-	f=doubleValue();
+	d=doubleValue();
 #line 295 "expandedX3DVrmlParser.g"
-	sfv.reset(new sfdouble(f));
+	sfv.reset(new sfdouble(d));
 #line 800 "X3DVrmlParser.cpp"
 	return sfv;
 }
@@ -1097,8 +1097,8 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 #line 1098 "X3DVrmlParser.cpp"
 #line 298 "expandedX3DVrmlParser.g"
 	
-	double f;
-	mfdouble & floats = static_cast<mfdouble &>(*mfv);
+	double d;
+	mfdouble & doubles = static_cast<mfdouble &>(*mfv);
 	
 #line 1104 "X3DVrmlParser.cpp"
 	
@@ -1106,9 +1106,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 	case INTEGER:
 	case REAL:
 	{
-		f=doubleValue();
+		d=doubleValue();
 #line 307 "expandedX3DVrmlParser.g"
-		floats.value.push_back(f);
+		doubles.value.push_back(d);
 #line 1113 "X3DVrmlParser.cpp"
 		break;
 	}
@@ -1120,7 +1120,7 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
 				f=doubleValue();
 #line 308 "expandedX3DVrmlParser.g"
-				floats.value.push_back(f);
+				doubles.value.push_back(f);
 #line 1125 "X3DVrmlParser.cpp"
 			}
 			else {

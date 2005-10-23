@@ -313,9 +313,9 @@ options { defaultErrorHandler=false; }
 sfDoubleValue returns [boost::shared_ptr<field_value> sfv]
 options { defaultErrorHandler=false; }
 {
-    double f;
+    double d;
 }
-    :   f=doubleValue { sfv.reset(new sfdouble(f)); }
+    :   d=doubleValue { sfv.reset(new sfdouble(d)); }
     ;
 
 mfDoubleValue
@@ -323,11 +323,11 @@ returns [boost::shared_ptr<field_value> mfv =
             boost::shared_ptr<field_value>(new mfdouble)]
 options { defaultErrorHandler=false; }
 {
-    double f;
-    mfdouble & floats = static_cast<mfdouble &>(*mfv);
+    double d;
+    mfdouble & doubles = static_cast<mfdouble &>(*mfv);
 }
-    :   f=doubleValue { floats.value.push_back(f); }
-    |   LBRACKET (f=doubleValue { floats.value.push_back(f); })* RBRACKET
+    :   d=doubleValue { doubles.value.push_back(d); }
+    |   LBRACKET (f=doubleValue { doubles.value.push_back(f); })* RBRACKET
     ;
 
 sfVec2dValue returns [boost::shared_ptr<field_value> svv]
