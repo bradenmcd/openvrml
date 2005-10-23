@@ -891,14 +891,6 @@ bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sfcolor::field_value_type_id(sfcolor_id);
 
-# if 0
-/**
- * @var openvrml::sfcolor::value
- *
- * @brief Color value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -1074,14 +1066,6 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sffloat::field_value_type_id(sffloat_id);
 
-# if 0
-/**
- * @var openvrml::sffloat::value
- *
- * @brief Single precision floating point value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -1255,14 +1239,6 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
  */
 const openvrml::field_value::type_id
 openvrml::sfdouble::field_value_type_id(sfdouble_id);
-
-# if 0
-/**
- * @var openvrml::sfdouble::value
- *
- * @brief Single precision doubleing point value.
- */
-# endif
 
 /**
  * @brief Construct.
@@ -1455,14 +1431,6 @@ bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sfimage::field_value_type_id(sfimage_id);
 
-# if 0
-/**
- * @var openvrml::image openvrml::sfimage::value
- *
- * @brief Image data.
- */
-# endif
-
 /**
  * Construct.
  *
@@ -1641,14 +1609,6 @@ bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sfint32::field_value_type_id(sfint32_id);
 
-# if 0
-/**
- * @var openvrml::sfint32::value
- *
- * @brief Signed 32-bit integer value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -1823,14 +1783,6 @@ bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
  */
 const openvrml::field_value::type_id
 openvrml::sfnode::field_value_type_id(sfnode_id);
-
-# if 0
-/**
- * @var openvrml::sfnode::value
- *
- * @brief A node reference.
- */
-# endif
 
 /**
  * @brief Construct.
@@ -2025,14 +1977,6 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sfrotation::field_value_type_id(sfrotation_id);
 
-# if 0
-/**
- * @var openvrml::sfrotation::value
- *
- * @brief Rotation value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -2210,14 +2154,6 @@ bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
  */
 const openvrml::field_value::type_id
 openvrml::sfstring::field_value_type_id(sfstring_id);
-
-# if 0
-/**
- * @var openvrml::sfstring::value
- *
- * @brief String value.
- */
-# endif
 
 /**
  * @brief Construct.
@@ -2398,14 +2334,6 @@ openvrml::sftime::field_value_type_id(sftime_id);
  * @brief Type of @a value.
  */
 
-# if 0
-/**
- * @var openvrml::sftime::value
- *
- * @brief Double precision floating point value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -2582,14 +2510,6 @@ bool openvrml::operator!=(const sftime & lhs, const sftime & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::sfvec2f::field_value_type_id(sfvec2f_id);
 
-# if 0
-/**
- * @var openvrml::sfvec2f::value
- *
- * @brief 2-component vector value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -2763,14 +2683,6 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  */
 const openvrml::field_value::type_id
 openvrml::sfvec2d::field_value_type_id(sfvec2d_id);
-
-# if 0
-/**
- * @var openvrml::sfvec2d::value
- *
- * @brief 2-component vector value.
- */
-# endif
 
 /**
  * @brief Construct.
@@ -2964,14 +2876,6 @@ openvrml::sfvec3f::field_value_type_id(sfvec3f_id);
  * @brief Type of @a value.
  */
 
-# if 0
-/**
- * @var openvrml::sfvec3f::value
- *
- * @brief 3-component vector value.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -3145,14 +3049,6 @@ openvrml::sfvec3d::field_value_type_id(sfvec3d_id);
  *
  * @brief Type of @a value.
  */
-
-# if 0
-/**
- * @var openvrml::sfvec3d::value
- *
- * @brief 3-component vector value.
- */
-# endif
 
 /**
  * @brief Construct.
@@ -3343,14 +3239,6 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfcolor::field_value_type_id(mfcolor_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::color> openvrml::mfcolor::value
- *
- * @brief Color values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -3379,20 +3267,6 @@ openvrml::mfcolor::mfcolor(const std::vector<color>::size_type n,
 openvrml::mfcolor::mfcolor(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfcolor::mfcolor(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfcolor</code> with a copy of a range.
- *
- * Creates an <code>mfcolor</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -3572,14 +3446,6 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mffloat::field_value_type_id(mffloat_id);
 
-# if 0
-/**
- * @var std::vector<float> openvrml::mffloat::value
- *
- * @brief Single precision floating point values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -3608,20 +3474,6 @@ openvrml::mffloat::mffloat(const std::vector<float>::size_type n,
 openvrml::mffloat::mffloat(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mffloat::mffloat(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mffloat</code> with a copy of a range.
- *
- * Creates an <code>mffloat</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -3800,14 +3652,6 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfdouble::field_value_type_id(mfdouble_id);
 
-# if 0
-/**
- * @var std::vector<double> openvrml::mfdouble::value
- *
- * @brief Single precision doubleing point values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -3851,20 +3695,6 @@ openvrml::mfdouble::mfdouble(const std::vector<float> & value)
     std::vector<double> temp(value.begin(), value.end());
     this->value(temp);
 }
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfdouble::mfdouble(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfdouble</code> with a copy of a range.
- *
- * Creates an <code>mfdouble</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -4051,14 +3881,6 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfint32::field_value_type_id(mfint32_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::int32> openvrml::mfint32::value
- *
- * @brief Signed 32-bit integer values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -4087,20 +3909,6 @@ openvrml::mfint32::mfint32(const std::vector<int32>::size_type n,
 openvrml::mfint32::mfint32(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfint32::mfint32(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfint32</code> with a copy of a range.
- *
- * Creates an <code>mfint32</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -4280,14 +4088,6 @@ bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfnode::field_value_type_id(mfnode_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::node_ptr> openvrml::mfnode::value
- *
- * @brief Node references.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -4316,20 +4116,6 @@ openvrml::mfnode::mfnode(const std::vector<node_ptr>::size_type n,
 openvrml::mfnode::mfnode(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfnode::mfnode(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfnode</code> with a copy of a range.
- *
- * Creates an <code>mfnode</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -4512,14 +4298,6 @@ bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfrotation::field_value_type_id(mfrotation_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::rotation> openvrml::mfrotation::value
- *
- * @brief Rotation values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -4549,20 +4327,6 @@ openvrml::mfrotation::mfrotation(const value_type & value)
     throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfrotation::mfrotation(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfrotation</code> with a copy of a range.
- *
- * Creates an <code>mfrotation</code> with a @a value that is a copy of the
- * range [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -4745,14 +4509,6 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
 const openvrml::field_value::type_id
 openvrml::mfstring::field_value_type_id(mfstring_id);
 
-# if 0
-/**
- * @var std::vector<std::string> openvrml::mfstring::value
- *
- * @brief String values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -4783,20 +4539,6 @@ openvrml::mfstring::mfstring(const std::vector<std::string>::size_type n,
 openvrml::mfstring::mfstring(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfstring::mfstring(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfstring</code> with a copy of a range.
- *
- * Creates an <code>mfstring</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -4977,14 +4719,6 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mftime::field_value_type_id(mftime_id);
 
-# if 0
-/**
- * @var std::vector<double> openvrml::mftime::value
- *
- * @brief Double precision floating point values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -5014,20 +4748,6 @@ openvrml::mftime::mftime(const std::vector<double>::size_type n,
 openvrml::mftime::mftime(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mftime::mftime(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mftime</code> with a copy of a range.
- *
- * Creates an <code>mftime</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -5208,14 +4928,6 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfvec2f::field_value_type_id(mfvec2f_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::vec2f> openvrml::mfvec2f::value
- *
- * @brief 2-component vector values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -5245,20 +4957,6 @@ openvrml::mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n,
 openvrml::mfvec2f::mfvec2f(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfvec2f::mfvec2f(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfvec2f</code> with a copy of a range.
- *
- * Creates an <code>mfvec2f</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -5437,14 +5135,6 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfvec2d::field_value_type_id(mfvec2d_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::vec2d> openvrml::mfvec2d::value
- *
- * @brief 2-component vector values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -5492,20 +5182,6 @@ openvrml::mfvec2d::mfvec2d(const std::vector<vec2f> & value)
     }
     this->value(temp);
 }
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfvec2d::mfvec2d(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfvec2d</code> with a copy of a range.
- *
- * Creates an <code>mfvec2d</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -5691,14 +5367,6 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfvec3f::field_value_type_id(mfvec3f_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::vec3f> openvrml::mfvec3f::value
- *
- * @brief 3-component vector values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -5728,20 +5396,6 @@ openvrml::mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n,
 openvrml::mfvec3f::mfvec3f(const value_type & value) throw (std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfvec3f::mfvec3f(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfvec3f</code> with a copy of a range.
- *
- * Creates an <code>mfvec3f</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
@@ -5921,14 +5575,6 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
 const openvrml::field_value::type_id
 openvrml::mfvec3d::field_value_type_id(mfvec3d_id);
 
-# if 0
-/**
- * @var std::vector<openvrml::vec3d> openvrml::mfvec3d::value
- *
- * @brief 3-component vector values.
- */
-# endif
-
 /**
  * @brief Construct.
  *
@@ -5976,20 +5622,6 @@ openvrml::mfvec3d::mfvec3d(const std::vector<vec3f> & value)
     }
     this->value(temp);
 }
-
-# if 0
-/**
- * @fn template <typename InputIterator> openvrml::mfvec3d::mfvec3d(InputIterator first, InputIterator last)
- *
- * @brief Create an <code>mfvec3d</code> with a copy of a range.
- *
- * Creates an <code>mfvec3d</code> with a @a value that is a copy of the range
- * [@p first, @p last).
- *
- * @param first an iterator pointing to the beginning of the range.
- * @param last  an iterator pointing one past the end of the range.
- */
-# endif
 
 /**
  * @brief Construct a copy.
