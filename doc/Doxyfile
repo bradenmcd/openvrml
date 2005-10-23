@@ -83,7 +83,9 @@ EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = ScriptJDK.h \
                          Vrml97Parser.* \
-                         Vrml97ParserTokenTypes.hpp
+                         Vrml97ParserTokenTypes.hpp \
+                         X3DVrmlParser.* \
+                         X3DVrmlParserTokenTypes.hpp
 EXAMPLE_PATH           = 
 EXAMPLE_PATTERNS       = 
 EXAMPLE_RECURSIVE      = NO
