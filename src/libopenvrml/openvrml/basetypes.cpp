@@ -269,7 +269,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 
 
 /**
- * @class openvrml::vec2<T>
+ * @class openvrml::vec2
  *
  * @ingroup basetypes
  *
@@ -279,7 +279,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 /**
  * @internal
  *
- * @var T openvrml::vec2<T>::vec[2]
+ * @var T openvrml::vec2::vec[2]
  *
  * @brief Vector components.
  */
@@ -351,8 +351,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Multiply a vector by a scalar.
  *
  * @param lhs   left-hand operand (the vector).
@@ -369,7 +367,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator*(const T rhs) const
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
+ * @relatesalso openvrml::vec2
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -385,7 +383,7 @@ const openvrml::vec2<float> openvrml::operator*(const float lhs, const vec2<floa
     return result *= lhs;
 }
 /**
- * @relatesalso openvrml::vec2<T>
+ * @relatesalso openvrml::vec2
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -420,8 +418,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Divide a vector by a scalar.
  *
  * @pre @p rhs is nonzero.
@@ -455,8 +451,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Add two vectors.
  *
  * @param lhs   left-hand operand.
@@ -488,8 +482,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Subtract two vectors.
  *
  * @param lhs   left-hand operand.
@@ -517,7 +509,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
 }
 
 /**
- * @fn const T & openvrml::vec2<T>::operator[](const size_t index) const throw ()
+ * @fn const T & openvrml::vec2::operator[](const size_t index) const throw ()
  *
  * @brief Index-based component access.
  *
@@ -530,7 +522,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn T openvrml::vec2<T>::x() const throw ()
+ * @fn T openvrml::vec2::x() const throw ()
  *
  * @brief Get the x component.
  *
@@ -538,7 +530,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn T openvrml::vec2<T>::y() const throw ()
+ * @fn T openvrml::vec2::y() const throw ()
  *
  * @brief Get the y component.
  *
@@ -546,7 +538,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2<T>::x(T value) throw ()
+ * @fn void openvrml::vec2::x(T value) throw ()
  *
  * @brief Set the x component.
  *
@@ -556,7 +548,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2<T>::y(T value) throw ()
+ * @fn void openvrml::vec2::y(T value) throw ()
  *
  * @brief Set the y component.
  *
@@ -593,7 +585,7 @@ T openvrml::vec2<T>::length() const throw ()
 /**
  * @brief Normalize.
  *
- * @return a vec2<T> that is the vector normalized.
+ * @return a <code>vec2\<T\></code> that is the vector normalized.
  */
 template<typename T>
 const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
@@ -606,8 +598,6 @@ const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
@@ -624,8 +614,6 @@ bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
- *
  * @brief Compare for inequality.
  *
  * @param lhs   left-hand operand.
@@ -641,7 +629,7 @@ bool openvrml::vec2<T>::operator!=(const vec2<T> & rhs) const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
+ * @relatesalso openvrml::vec2
  *
  * @brief Stream output.
  *
@@ -656,7 +644,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2<float> & v)
 }
 
 /**
- * @relatesalso openvrml::vec2<T>
+ * @relatesalso openvrml::vec2
  *
  * @brief Stream output.
  *
@@ -677,7 +665,7 @@ template class openvrml::vec2<float>;
 template class openvrml::vec2<double>;
 
 /**
- * @class openvrml::vec3<T>
+ * @class openvrml::vec3
  *
  * @ingroup basetypes
  *
@@ -687,7 +675,7 @@ template class openvrml::vec2<double>;
 /**
  * @internal
  *
- * @var T openvrml::vec3<T>::vec[3]
+ * @var T openvrml::vec3::vec[3]
  *
  * @brief Vector components.
  */
@@ -768,8 +756,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Cross multiply two vectors.
  *
  * @param lhs   left-hand operand.
@@ -810,8 +796,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Multiply a vector by a matrix.
  *
  * @param vec   a 3-component vector.
@@ -827,19 +811,10 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator*(const mat4f & mat) const
     return result *= mat;
 }
 
-/**
- * @relatesalso openvrml::vec3<T>
- *
- * @brief Multiply a matrix by a vector.
- *
- * @param mat   a matrix.
- * @param vec   a 3-component vector.
- *
- * @return the result vector.
- */
 namespace {
     template<typename T>
-        const openvrml::vec3<T> do_vec3_mat_mult(const openvrml::mat4f & mat, const openvrml::vec3<T> & vec)
+    const openvrml::vec3<T> do_vec3_mat_mult(const openvrml::mat4f & mat,
+                                             const openvrml::vec3<T> & vec)
         throw ()
     {
         const T x = mat[0][0] * vec[0] + mat[0][1] * vec[1]
@@ -853,11 +828,36 @@ namespace {
         return openvrml::vec3<T>(x / w, y / w, z / w);
     }
 }
-const openvrml::vec3<float> openvrml::operator*(const mat4f & mat, const vec3<float> & vec) throw ()
+/**
+ * @relatesalso openvrml::vec3
+ *
+ * @brief Multiply a matrix by a vector.
+ *
+ * @param mat   a matrix.
+ * @param vec   a 3-component vector.
+ *
+ * @return the result vector.
+ */
+const openvrml::vec3<float> openvrml::operator*(const mat4f & mat,
+                                                const vec3<float> & vec)
+    throw ()
 {
     return do_vec3_mat_mult(mat, vec);
 }
-const openvrml::vec3<double> openvrml::operator*(const mat4f & mat, const vec3<double> & vec) throw ()
+
+/**
+ * @relatesalso openvrml::vec3
+ *
+ * @brief Multiply a matrix by a vector.
+ *
+ * @param mat   a matrix.
+ * @param vec   a 3-component vector.
+ *
+ * @return the result vector.
+ */
+const openvrml::vec3<double> openvrml::operator*(const mat4f & mat,
+                                                 const vec3<double> & vec)
+    throw ()
 {
     return do_vec3_mat_mult(mat, vec);
 }
@@ -879,8 +879,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Multiply a vector by a scalar.
  *
  * @param lhs   left-hand operand (the vector).
@@ -897,7 +895,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator*(const T rhs) const
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
+ * @relatesalso openvrml::vec3
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -906,15 +904,16 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator*(const T rhs) const
  *
  * @return the result vector.
  */
-const openvrml::vec3<float> openvrml::operator*(const float lhs, const openvrml::vec3<float> & rhs)
+const openvrml::vec3<float>
+openvrml::operator*(const float lhs, const openvrml::vec3<float> & rhs)
     throw ()
 {
     vec3<float> result(rhs);
-    return result *= rhs;
+    return result *= lhs;
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
+ * @relatesalso openvrml::vec3
  *
  * @brief Multiply a vector by a scalar.
  *
@@ -923,11 +922,12 @@ const openvrml::vec3<float> openvrml::operator*(const float lhs, const openvrml:
  *
  * @return the result vector.
  */
-const openvrml::vec3<double> openvrml::operator*(const double lhs, const openvrml::vec3<double> & rhs)
+const openvrml::vec3<double>
+openvrml::operator*(const double lhs, const openvrml::vec3<double> & rhs)
     throw ()
 {
     vec3<double> result(rhs);
-    return result *= rhs;
+    return result *= lhs;
 }
 
 /**
@@ -950,8 +950,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Divide a vector by a scalar.
  *
  * @pre @p rhs is nonzero.
@@ -986,8 +984,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Add two vectors.
  *
  * @param lhs   left-hand operand.
@@ -1020,8 +1016,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Subtract two vectors.
  *
  * @param lhs   left-hand operand.
@@ -1049,7 +1043,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
 }
 
 /**
- * @fn const T & openvrml::vec3<T>::operator[](size_t index) const throw ()
+ * @fn const T & openvrml::vec3::operator[](size_t index) const throw ()
  *
  * @brief Index-based component access.
  *
@@ -1062,7 +1056,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3<T>::x() const throw ()
+ * @fn T openvrml::vec3::x() const throw ()
  *
  * @brief Get the x component.
  *
@@ -1070,7 +1064,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3<T>::y() const throw ()
+ * @fn T openvrml::vec3::y() const throw ()
  *
  * @brief Get the y component.
  *
@@ -1078,7 +1072,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3<T>::z() const throw ()
+ * @fn T openvrml::vec3::z() const throw ()
  *
  * @brief Get the z component.
  *
@@ -1086,7 +1080,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3<T>::x(T value) throw ()
+ * @fn void openvrml::vec3::x(T value) throw ()
  *
  * @brief Set the x component.
  *
@@ -1096,7 +1090,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3<T>::y(T value) throw ()
+ * @fn void openvrml::vec3::y(T value) throw ()
  *
  * @brief Set the y component.
  *
@@ -1106,7 +1100,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3<T>::z(T value) throw ()
+ * @fn void openvrml::vec3::z(T value) throw ()
  *
  * @brief Set the z component.
  *
@@ -1157,8 +1151,6 @@ const openvrml::vec3<T> openvrml::vec3<T>::normalize() const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Compare for equality.
  *
  * @param lhs   left-hand operand.
@@ -1175,8 +1167,6 @@ bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
- *
  * @brief Compare for inequality.
  *
  * @param lhs   left-hand operand.
@@ -1192,7 +1182,7 @@ bool openvrml::vec3<T>::operator!=(const vec3<T> & rhs) const throw ()
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
+ * @relatesalso openvrml::vec3
  *
  * @brief Stream output.
  *
@@ -1207,7 +1197,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3<float> & v)
 }
 
 /**
- * @relatesalso openvrml::vec3<T>
+ * @relatesalso openvrml::vec3
  *
  * @brief Stream output.
  *
@@ -3024,7 +3014,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) throw ()
  * to 256 levels of intensity.  The elements of
  * @link image::array array@endlink are bytes, with one byte per pixel
  * component.  Thus the number of elements in the array is
- * @p x * &p y * @p comp.
+ * @p x * @p y * @p comp.
  *
  * A one-component image specifies one-byte greyscale values.  A two-component
  * image specifies the intensity in the first byte and the alpha opacity in the
@@ -3091,7 +3081,7 @@ openvrml::image::image(const size_t x,
 /**
  * @brief Construct.
  *
- * @pre @p array.size() <= @p x * @p y & @p comp.
+ * @pre @p array.size() <= @p x * @p y * @p comp.
  *
  * @param x     pixels in the <var>x</var>-direction.
  * @param y     pixels in the <var>y</var>-direction.
