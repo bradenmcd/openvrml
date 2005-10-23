@@ -1118,9 +1118,9 @@ boost::shared_ptr<field_value>  X3DVrmlParser::mfDoubleValue() {
 		{ // ( ... )*
 		for (;;) {
 			if ((LA(1) == INTEGER || LA(1) == REAL)) {
-				f=doubleValue();
+				d=doubleValue();
 #line 308 "expandedX3DVrmlParser.g"
-				doubles.value.push_back(f);
+				doubles.value.push_back(d);
 #line 1125 "X3DVrmlParser.cpp"
 			}
 			else {

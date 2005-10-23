@@ -327,7 +327,7 @@ options { defaultErrorHandler=false; }
     mfdouble & doubles = static_cast<mfdouble &>(*mfv);
 }
     :   d=doubleValue { doubles.value.push_back(d); }
-    |   LBRACKET (f=doubleValue { doubles.value.push_back(f); })* RBRACKET
+    |   LBRACKET (d=doubleValue { doubles.value.push_back(d); })* RBRACKET
     ;
 
 sfVec2dValue returns [boost::shared_ptr<field_value> svv]
