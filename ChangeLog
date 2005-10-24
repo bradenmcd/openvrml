@@ -1,5 +1,22 @@
 2005-10-23 Braden McDaniel  <braden@endoframe.com>
 
+	Moved utility classes to assist implementation of nodes to the
+	openvrml::node_impl_util namespace.
+
+	* doc/Makefile.am:  Added node_impl_util.cpp and
+	node_impl_util.h as prerequisites.
+	* src/libopenvrml/Makefile.am
+	* src/libopenvrml/private.h:  Moved polymorphic_ptr_to_mem and
+	polymorphic_ptr_to_mem_impl class templates to the
+	openvrml::node_impl_util namespace.
+	* src/libopenvrml/openvrml/node_impl_util.cpp:  Added file.
+	* src/libopenvrml/openvrml/node_impl_util.h:  Added file.
+	* src/libopenvrml/openvrml/vrml97node.cpp:  Moved utility
+	classes to assist implementation of nodes to the
+	openvrml::node_impl_util namespace.
+
+2005-10-23 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field_value.cpp:  Removed #if 0'd
 	code.
 

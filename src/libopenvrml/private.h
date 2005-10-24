@@ -311,61 +311,6 @@ namespace {
             return obj_scope_guard_impl1<Object, MemberFunction, Param>(
                     obj, mem_fun, param);
         }
-
-
-        template <typename MemberBase, typename Object>
-        class OPENVRML_LOCAL ptr_to_polymorphic_mem {
-        public:
-            virtual ~ptr_to_polymorphic_mem() = 0;
-            virtual MemberBase & deref(Object & obj) = 0;
-            virtual const MemberBase & deref(const Object & obj) = 0;
-        };
-
-        template <typename MemberBase, typename Object>
-        ptr_to_polymorphic_mem<MemberBase, Object>::~ptr_to_polymorphic_mem()
-        {}
-
-
-        template <typename MemberBase, typename Member, typename Object>
-        class OPENVRML_LOCAL ptr_to_polymorphic_mem_impl :
-            public ptr_to_polymorphic_mem<MemberBase, Object> {
-
-            Member Object::* ptr_to_mem;
-
-        public:
-            explicit ptr_to_polymorphic_mem_impl(Member Object::* ptr_to_mem);
-            virtual ~ptr_to_polymorphic_mem_impl();
-
-            virtual MemberBase & deref(Object & obj);
-            virtual const MemberBase & deref(const Object & obj);
-        };
-
-        template <typename MemberBase, typename Member, typename Object>
-        ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        ptr_to_polymorphic_mem_impl(Member Object::* ptr_to_mem):
-            ptr_to_mem(ptr_to_mem)
-        {}
-
-        template <typename MemberBase, typename Member, typename Object>
-        ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        ~ptr_to_polymorphic_mem_impl()
-        {}
-
-        template <typename MemberBase, typename Member, typename Object>
-        MemberBase &
-        ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(Object & obj)
-        {
-            return obj.*this->ptr_to_mem;
-        }
-
-        template <typename MemberBase, typename Member, typename Object>
-        const MemberBase &
-        ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(const Object & obj)
-        {
-            return obj.*this->ptr_to_mem;
-        }
     }
 }
 
