@@ -1,3 +1,10 @@
+2005-10-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_class_map::operator=):  The Microsoft
+	compiler does not like "map" used as an argument name here.
+	* src/libopenvrml/openvrml/browser.h
+
 2005-10-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node_impl_util.cpp:  Doc-comment

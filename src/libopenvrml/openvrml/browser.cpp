@@ -4017,13 +4017,13 @@ openvrml::browser::node_class_map::node_class_map(browser & b)
 /**
  * @brief Assign.
  *
- * @param map   the value to assign.
+ * @param ncm   the value to assign.
  */
 openvrml::browser::node_class_map &
-openvrml::browser::node_class_map::operator=(const node_class_map & map)
+openvrml::browser::node_class_map::operator=(const node_class_map & ncm)
 {
-    boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(map.mutex_);
-    map_t temp(map.map_);
+    boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(ncm.mutex_);
+    map_t temp(ncm.map_);
     swap(this->map_, temp);
     return *this;
 }

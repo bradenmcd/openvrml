@@ -190,7 +190,7 @@ namespace openvrml {
         public:
             explicit node_class_map(browser & b);
 
-            node_class_map & operator=(const node_class_map & map);
+            node_class_map & operator=(const node_class_map & ncm);
 
             void init(viewpoint_node * initial_viewpoint, double timestamp);
 
