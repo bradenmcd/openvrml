@@ -1,5 +1,12 @@
 2005-10-24 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Added node_impl_util.cpp, node_impl_util.h to the project;
+	disabled debug information when building vrml97node.cpp--
+	otherwise the compiler will not build it.
+
+2005-10-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::node_class_map::operator=):  The Microsoft
 	compiler does not like "map" used as an argument name here.

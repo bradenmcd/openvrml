@@ -139,6 +139,9 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node_impl_util.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node_ptr.cpp">
 			</File>
 			<File
@@ -158,6 +161,13 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97node.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						MinimalRebuild="FALSE"
+						DebugInformationFormat="2"/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -196,6 +206,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node_impl_util.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\node_ptr.h">
