@@ -1,3 +1,8 @@
+2005-10-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/field_value.cpp:  Added doc-comment
+	for openvrml::field_value::value_type_constructor_tag.
+
 2005-10-24 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:

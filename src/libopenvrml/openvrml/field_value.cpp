@@ -363,7 +363,14 @@ std::auto_ptr<openvrml::field_value>
 }
 
 /**
- * @fn openvrml::field_value::field_value(const ValueType & value) throw (std::bad_alloc)
+ * @class openvrml::field_value::value_type_constructor_tag
+ *
+ * @brief This struct exists only to disambiguate <code>field_value</code>'s
+ *        constructor template from its copy constructor.
+ */
+
+/**
+ * @fn openvrml::field_value::field_value(const ValueType & value, const value_type_constructor_tag &) throw (std::bad_alloc)
  *
  * @brief Construct.
  *
