@@ -8,7 +8,6 @@ LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
 TESTS = \
         browser \
-        browser_basic \
         parse_anchor \
         node_interface_set
 
@@ -22,9 +21,6 @@ libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 browser_SOURCES = browser.cpp
 browser_LDADD = libtest-openvrml.la
 browser_LDFLAGS = -lboost_unit_test_framework
-
-browser_basic_SOURCES = browser_basic.cpp
-browser_basic_LDADD = libtest-openvrml.la
 
 parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = libtest-openvrml.la

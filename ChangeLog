@@ -1,5 +1,12 @@
 2005-10-28 Braden McDaniel  <braden@endoframe.com>
 
+	Removed obsolete test.
+
+	* tests/Makefile.am
+	* tests/browser_basic.cpp:  Removed file.
+
+2005-10-28 Braden McDaniel  <braden@endoframe.com>
+
 	Updated tests to reflect change to openvrml::browser constructor
 	to take an openvrml::profile_id.
 
