@@ -28,7 +28,7 @@ int main()
     using namespace openvrml;
 
     try {
-        test_browser b;
+        test_browser b(vrml97_profile_id);
 
         const char vrmlstring[] =
             "Anchor {"

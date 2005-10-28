@@ -24,7 +24,7 @@
 
 class test_browser : public openvrml::browser {
 public:
-    test_browser();
+    explicit test_browser(openvrml::profile_id profile);
 
 private:
     virtual std::auto_ptr<openvrml::resource_istream>

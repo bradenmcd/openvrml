@@ -28,12 +28,13 @@ using namespace openvrml;
 
 void create_vrml_from_stream()
 {
-    test_browser b;
+    test_browser b(vrml97_profile_id);
 
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
 
     vector<node_ptr> nodes = b.create_vrml_from_stream(vrmlstream);
+
     BOOST_REQUIRE(nodes.size() == 1);
     BOOST_REQUIRE(nodes[0] != node_ptr(0));
     BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Group");
@@ -46,7 +47,7 @@ void create_vrml_from_url()
         file << "#VRML V2.0 utf8" << endl
 	     << "Shape {}" << endl;
     }
-    test_browser b;
+    test_browser b(vrml97_profile_id);
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
     vector<node_ptr> nodes = b.create_vrml_from_stream(vrmlstream);

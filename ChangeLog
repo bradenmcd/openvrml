@@ -1,3 +1,14 @@
+2005-10-28 Braden McDaniel  <braden@endoframe.com>
+
+	Updated tests to reflect change to openvrml::browser constructor
+	to take an openvrml::profile_id.
+
+	* tests/browser.cpp
+	* tests/parse.cpp
+	* tests/parse_anchor.cpp
+	* tests/test_browser.cpp
+	* tests/test_browser.h
+
 2005-10-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/field_value.h:  Removed unnecessary
