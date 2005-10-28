@@ -129,8 +129,8 @@ namespace openvrml {
         struct value_type_constructor_tag {};
 
         template <typename ValueType>
-        explicit field_value(const ValueType & value,
-                             const value_type_constructor_tag &)
+        field_value(const ValueType & value,
+                    const value_type_constructor_tag &)
             throw (std::bad_alloc);
 
         field_value(const field_value & value) throw (std::bad_alloc);

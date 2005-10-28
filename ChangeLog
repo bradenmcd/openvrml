@@ -1,5 +1,10 @@
 2005-10-27 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/field_value.h:  Removed unnecessary
+	"explicit" keyword.
+
+2005-10-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field_value.cpp:  Added doc-comment
 	for openvrml::field_value::value_type_constructor_tag.
 
