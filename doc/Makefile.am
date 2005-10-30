@@ -27,8 +27,6 @@ DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml/openvrml/node.h \
         $(top_srcdir)/src/libopenvrml/openvrml/node_impl_util.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/node_impl_util.h \
-        $(top_srcdir)/src/libopenvrml/openvrml/node_ptr.cpp \
-        $(top_srcdir)/src/libopenvrml/openvrml/node_ptr.h \
         $(top_srcdir)/src/libopenvrml/openvrml/rendering_context.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/rendering_context.h \
         $(top_srcdir)/src/libopenvrml/openvrml/scope.cpp \

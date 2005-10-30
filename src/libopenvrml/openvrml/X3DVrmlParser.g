@@ -196,7 +196,7 @@ private:
 }
 
 vrmlScene[openvrml::scene & scene,
-          std::vector<node_ptr> & nodes]
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
 options { defaultErrorHandler=false; }
 {
     profile_id profile = invalid_profile_id;

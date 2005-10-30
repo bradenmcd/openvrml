@@ -28,10 +28,10 @@
 #   include <typeinfo>
 #   include <boost/cast.hpp>
 #   include <boost/concept_check.hpp>
+#   include <boost/intrusive_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
 #   include <openvrml/basetypes.h>
-#   include <openvrml/node_ptr.h>
 
 namespace openvrml {
 
@@ -458,13 +458,17 @@ namespace openvrml {
         throw ();
 
 
+    class node;
+    void intrusive_ptr_add_ref(const node *) throw ();
+    void intrusive_ptr_release(const node *) throw ();
+
     class OPENVRML_API sfnode : public field_value {
     public:
-        typedef node_ptr value_type;
+        typedef boost::intrusive_ptr<node> value_type;
 
         static const type_id field_value_type_id;
 
-        explicit sfnode(const node_ptr & node = node_ptr(0)) throw ();
+        explicit sfnode(const value_type & node = value_type(0)) throw ();
         sfnode(const sfnode & sfn);
         virtual ~sfnode() throw ();
 
@@ -845,12 +849,13 @@ namespace openvrml {
 
     class OPENVRML_API mfnode : public field_value {
     public:
-        typedef std::vector<node_ptr> value_type;
+        typedef std::vector<boost::intrusive_ptr<node> > value_type;
 
         static const type_id field_value_type_id;
 
-        explicit mfnode(std::vector<node_ptr>::size_type n = 0,
-                        const node_ptr & value = node_ptr())
+        explicit mfnode(value_type::size_type n = 0,
+                        const value_type::value_type & value =
+                        value_type::value_type())
             throw (std::bad_alloc);
         explicit mfnode(const value_type & value) throw (std::bad_alloc);
         mfnode(const mfnode & mfn);

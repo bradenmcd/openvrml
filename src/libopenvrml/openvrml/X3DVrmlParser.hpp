@@ -93,14 +93,14 @@ public:
 	}
 	public: void vrmlScene(
 		openvrml::scene & scene,
-          std::vector<node_ptr> & nodes
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes
 	);
 	public: openvrml::profile_id  profileStatement();
 	public: void componentStatement();
 	public: void metaStatement();
 	public: void statement(
 		openvrml::browser & browser,
-          std::vector<node_ptr> & nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope
 	);
 	public: int32  intValue();
@@ -140,7 +140,7 @@ public:
 	public: void vec3dValue(
 		vec3d & v
 	);
-	public: node_ptr  nodeStatement(
+	public: boost::intrusive_ptr<openvrml::node>  nodeStatement(
 		openvrml::browser & browser,
               const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id
@@ -151,7 +151,7 @@ public:
 	public: void routeStatement(
 		const openvrml::scope & scope
 	);
-	public: node_ptr  node(
+	public: boost::intrusive_ptr<openvrml::node>  node(
 		openvrml::browser & browser,
      const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id
@@ -175,7 +175,7 @@ public:
 		openvrml::browser & browser,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
-          std::vector<node_ptr> & impl_nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes
 	);
@@ -187,7 +187,7 @@ public:
            const openvrml::field_value::type_id ft,
            const std::string & node_id
 	);
-	public: node_ptr  protoNodeStatement(
+	public: boost::intrusive_ptr<openvrml::node>  protoNodeStatement(
 		openvrml::browser & browser,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & proto_interfaces,
@@ -199,7 +199,7 @@ public:
 		openvrml::browser & browser,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & interfaces,
-                   std::vector<node_ptr> & impl_nodes,
+                   std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes
 	);
@@ -207,7 +207,7 @@ public:
 		const openvrml::scope & scope,
                     proto_node_class::routes_t & routes
 	);
-	public: node_ptr  protoNode(
+	public: boost::intrusive_ptr<openvrml::node>  protoNode(
 		openvrml::browser & browser,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & proto_interfaces,

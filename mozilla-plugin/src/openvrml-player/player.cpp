@@ -507,7 +507,7 @@ namespace {
                 virtual ~plugin_istream() throw ()
                 {}
             } in(this->streambuf_);
-            std::vector<openvrml::node_ptr> nodes =
+            std::vector<boost::intrusive_ptr<openvrml::node> > nodes =
                 this->browser_->create_vrml_from_stream(in);
             this->browser_->replace_world(nodes);
         }

@@ -23,7 +23,6 @@ header "post_include_hpp" {
 # include <memory>
 # include <boost/shared_ptr.hpp>
 # include "field_value.h"
-# include "node_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 
@@ -623,7 +622,7 @@ private:
 }
 
 vrmlScene[openvrml::scene & scene,
-          std::vector<node_ptr> & nodes]
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
 options { defaultErrorHandler=false; }
 {
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
@@ -634,11 +633,11 @@ options { defaultErrorHandler=false; }
     ;
 
 statement[openvrml::browser & browser,
-          std::vector<node_ptr> & nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
     {
-        node_ptr node;
+        boost::intrusive_ptr<openvrml::node> node;
         boost::shared_ptr<node_type> nodeType;
     }
     : node=nodeStatement[browser, scope, std::string()] {
@@ -654,7 +653,7 @@ options { defaultErrorHandler=false; }
 nodeStatement[openvrml::browser & browser,
               const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id]
-returns [node_ptr n]
+returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler=false; }
     :   KEYWORD_DEF id0:ID n=node[browser, scope, id0->getText()]
     |   KEYWORD_USE id1:ID {
@@ -662,11 +661,12 @@ options { defaultErrorHandler=false; }
                 //
                 // Script node self-reference.
                 //
-                n = node_ptr::self;
+                n = openvrml::node::self_tag;
             } else {
                 using antlr::SemanticException;
                 assert(scope);
-                n.reset(scope->find_node(id1->getText()));
+                n = boost::intrusive_ptr<openvrml::node>(
+                    scope->find_node(id1->getText()));
                 if (!n) {
                     throw SemanticException("Node \"" + id1->getText()
                                             + "\" has not been defined in "
@@ -697,7 +697,7 @@ options { defaultErrorHandler=false; }
 
     node_interface_set interfaces;
     proto_node_class::default_value_map_t default_value_map;
-    vector<node_ptr> impl_nodes;
+    vector<boost::intrusive_ptr<openvrml::node> > impl_nodes;
     proto_node_class::is_map_t is_map;
     proto_node_class::routes_t routes;
 }
@@ -829,7 +829,7 @@ options { defaultErrorHandler=false; }
 protoBody[openvrml::browser & browser,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
-          std::vector<node_ptr> & impl_nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes]
 options { defaultErrorHandler=false; }
@@ -839,7 +839,7 @@ options { defaultErrorHandler=false; }
     assert(is_map.empty());
     assert(routes.empty());
 
-    node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
 }
     :   (protoStatement[browser, scope])*
             n=protoNodeStatement[browser,
@@ -863,7 +863,7 @@ options { defaultErrorHandler=false; }
 protoBodyStatement[openvrml::browser & browser,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & interfaces,
-                   std::vector<node_ptr> & impl_nodes,
+                   std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes]
 options { defaultErrorHandler=false; }
@@ -871,7 +871,7 @@ options { defaultErrorHandler=false; }
     assert(scope);
     assert(!impl_nodes.empty());
 
-    node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
 }
     :   n=protoNodeStatement[browser,
                              scope,
@@ -892,7 +892,7 @@ protoNodeStatement[openvrml::browser & browser,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes,
                    const std::string & script_node_id]
-returns [node_ptr n]
+returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -908,9 +908,10 @@ options { defaultErrorHandler=false; }
                 //
                 // Script node self-reference.
                 //
-                n = node_ptr::self;
+                n = node::self_tag;
             } else {
-                n.reset(scope->find_node(id1->getText()));
+                n = boost::intrusive_ptr<openvrml::node>(
+                    scope->find_node(id1->getText()));
                 if (!n) {
                     throw SemanticException("Node \"" + id1->getText()
                                             + "\" has not been defined in "
@@ -1152,10 +1153,11 @@ options { defaultErrorHandler=false; }
 node[openvrml::browser & browser,
      const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id]
-returns [node_ptr n]
+returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler = false; }
 {
     using antlr::SemanticException;
+    using boost::intrusive_ptr;
 
     initial_value_map initial_values;
     node_interface_set interfaces;
@@ -1172,10 +1174,11 @@ options { defaultErrorHandler = false; }
                                          initial_values,
                                          node_id]
         )* RBRACE {
-            n.reset(new script_node(browser.script_node_class_,
-                                    scope,
-                                    interfaces,
-                                    initial_values));
+            n = intrusive_ptr<openvrml::node>(
+                new script_node(browser.script_node_class_,
+                                scope,
+                                interfaces,
+                                initial_values));
             if (!node_id.empty()) { n->id(node_id); }
         }
     | nodeTypeId:ID {
@@ -1193,7 +1196,7 @@ options { defaultErrorHandler = false; }
                                   nodeType->interfaces(),
                                   initial_values])*
         RBRACE {
-            n = node_ptr(nodeType->create_node(scope, initial_values));
+            n = boost::intrusive_ptr<openvrml::node>(nodeType->create_node(scope, initial_values));
 
             if (!node_id.empty()) { n->id(node_id); }
         }
@@ -1343,7 +1346,7 @@ protoNode[openvrml::browser & browser,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes,
           const std::string & node_id]
-returns [node_ptr n]
+returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -1373,10 +1376,11 @@ options { defaultErrorHandler=false; }
                                                   initial_values,
                                                   is_mappings]
             )* RBRACE {
-                n.reset(new script_node(browser.script_node_class_,
-                                        scope,
-                                        interfaces,
-                                        initial_values));
+                n = boost::intrusive_ptr<openvrml::node>(
+                    new script_node(browser.script_node_class_,
+                                    scope,
+                                    interfaces,
+                                    initial_values));
                 if (!node_id.empty()) { n->id(node_id); }
             }
 
@@ -1871,7 +1875,7 @@ sfNodeValue[openvrml::browser & browser,
 returns [boost::shared_ptr<field_value> snv]
 options { defaultErrorHandler=false; }
 {
-    openvrml::node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
 }
     :   n=nodeStatement[browser, scope, script_node_id] {
             snv.reset(new sfnode(n));
@@ -1888,7 +1892,7 @@ protoSfNodeValue[openvrml::browser & browser,
 returns [boost::shared_ptr<field_value> snv]
 options { defaultErrorHandler=false; }
 {
-    node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
 }
     :   n=protoNodeStatement[browser,
                              scope,
@@ -1912,14 +1916,14 @@ options { defaultErrorHandler=false; }
 {
     using std::vector;
 
-    openvrml::node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     :   n=nodeStatement[browser, scope, script_node_id] {
-            if (n) { nodes.value(vector<node_ptr>(1, n)); }
+            if (n) { nodes.value(mfnode::value_type(1, n)); }
         }
     |   LBRACKET {
-            vector<node_ptr> value;
+            mfnode::value_type value;
         } (
             n=nodeStatement[browser, scope, script_node_id] {
                 if (n) { value.push_back(n); }
@@ -1941,7 +1945,7 @@ options { defaultErrorHandler=false; }
 {
     using std::vector;
 
-    node_ptr n;
+    boost::intrusive_ptr<openvrml::node> n;
     mfnode & nodes = static_cast<mfnode &>(*mnv);
 }
     :   n=protoNodeStatement[browser,
@@ -1950,10 +1954,10 @@ options { defaultErrorHandler=false; }
                              is_map,
                              routes,
                              script_node_id] {
-            if (n) { nodes.value(vector<node_ptr>(1, n)); }
+            if (n) { nodes.value(mfnode::value_type(1, n)); }
         }
     |   LBRACKET {
-            vector<node_ptr> value;
+            mfnode::value_type value;
         } (
             n=protoNodeStatement[browser,
                                  scope,

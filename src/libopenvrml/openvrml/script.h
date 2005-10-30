@@ -128,7 +128,7 @@ namespace openvrml {
 
         private:
             virtual const node_interface_set & do_interfaces() const throw ();
-            virtual const node_ptr
+            virtual const boost::intrusive_ptr<node>
             do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                            const initial_value_map & initial_values) const
                 throw (unsupported_interface, std::bad_cast, std::bad_alloc);

@@ -217,9 +217,9 @@ namespace openvrml {
         node_class_map node_class_map_;
         script_node_class script_node_class_;
         boost::scoped_ptr<scene> scene_;
-        const node_ptr default_viewpoint_;
+        const boost::intrusive_ptr<node> default_viewpoint_;
         viewpoint_node * active_viewpoint_;
-        const node_ptr default_navigation_info_;
+        const boost::intrusive_ptr<node> default_navigation_info_;
         navigation_info_node * active_navigation_info_;
         std::list<viewpoint_node *> viewpoint_list;
         std::list<scoped_light_node *> scoped_lights;
@@ -248,7 +248,8 @@ namespace openvrml {
             throw (std::bad_alloc);
         virtual ~browser() throw ();
 
-        const std::vector<node_ptr> & root_nodes() const throw ();
+        const std::vector<boost::intrusive_ptr<node> > & root_nodes() const
+            throw ();
         const node_path find_node(const node & n) const throw (std::bad_alloc);
         viewpoint_node & active_viewpoint() const throw ();
         void active_viewpoint(viewpoint_node & viewpoint) throw ();
@@ -269,14 +270,16 @@ namespace openvrml {
         const std::string world_url() const throw (std::bad_alloc);
         void world_url(const std::string & str)
             throw (invalid_url, std::bad_alloc);
-        void replace_world(const std::vector<node_ptr> & nodes);
+        void replace_world(
+            const std::vector<boost::intrusive_ptr<node> > & nodes);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)
             throw (std::bad_alloc);
         virtual void description(const std::string & description);
-        const std::vector<node_ptr> create_vrml_from_stream(std::istream & in);
+        const std::vector<boost::intrusive_ptr<node> >
+        create_vrml_from_stream(std::istream & in);
         void create_vrml_from_url(const std::vector<std::string> & url,
-                                  const node_ptr & node,
+                                  const boost::intrusive_ptr<node> & node,
                                   const std::string & event)
             throw (unsupported_interface, std::bad_cast,
                    boost::thread_resource_error);
@@ -333,7 +336,7 @@ namespace openvrml {
         profile_id profile_;
 
         mutable boost::recursive_mutex nodes_mutex_;
-        std::vector<node_ptr> nodes_;
+        std::vector<boost::intrusive_ptr<node> > nodes_;
 
         mutable boost::read_write_mutex url_mutex_;
         std::string url_;
@@ -352,8 +355,10 @@ namespace openvrml {
         void load(const std::vector<std::string> & url)
             throw (boost::thread_resource_error, std::bad_alloc);
         void initialize(double timestamp) throw (std::bad_alloc);
-        const std::vector<node_ptr> & nodes() const throw ();
-        void nodes(const std::vector<node_ptr> & n) throw (std::bad_alloc);
+        const std::vector<boost::intrusive_ptr<node> > & nodes() const
+            throw ();
+        void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
+            throw (std::bad_alloc);
         const std::string url() const throw (std::bad_alloc);
         void url(const std::string & str) throw (invalid_url, std::bad_alloc);
         void render(openvrml::viewer & viewer, rendering_context context);

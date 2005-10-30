@@ -41,7 +41,8 @@ int main()
             "}";
         stringstream vrmlstream(vrmlstring);
 
-        vector<node_ptr> nodes = b.create_vrml_from_stream(vrmlstream);
+        vector<boost::intrusive_ptr<node> > nodes =
+            b.create_vrml_from_stream(vrmlstream);
         if (nodes.size() != 1) {
             return EXIT_FAILURE;
         }

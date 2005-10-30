@@ -51,7 +51,7 @@ extern "C" {
 # include "browser.h"
 # include "node_impl_util.h"
 
-template void std::vector<openvrml::node_ptr>::pop_back();
+template void std::vector<boost::intrusive_ptr<openvrml::node> >::pop_back();
 
 namespace {
 
@@ -1688,7 +1688,8 @@ namespace {
                                      rendering_context context);
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
-        virtual const std::vector<node_ptr> & do_children() const throw ();
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw ();
 
         void recalc_bsphere();
         void render_nocull(openvrml::viewer & viewer,
@@ -1742,32 +1743,31 @@ namespace {
     do_process_event(const mfnode & value, const double timestamp)
         throw (std::bad_alloc)
     {
-        using std::vector;
-
         Derived & group = dynamic_cast<Derived &>(this->node());
 
-        vector<node_ptr> children = group.children_.mfnode::value();
+        typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
+        children_t children = group.children_.mfnode::value();
 
-        for (vector<node_ptr>::const_iterator node = value.value().begin();
-             node != value.value().end();
-             ++node) {
+        for (children_t::const_iterator n = value.value().begin();
+             n != value.value().end();
+             ++n) {
             //
             // Don't add NULLs.
             //
-            if (*node) {
+            if (*n) {
                 using std::find;
 
-                vector<node_ptr>::iterator pos =
-                    find(children.begin(), children.end(), *node);
+                children_t::iterator pos =
+                    find(children.begin(), children.end(), *n);
                 if (pos == children.end()) {
                     //
                     // Throws std::bad_alloc.
                     //
-                    children.push_back(*node);
+                    children.push_back(*n);
                     scope_guard guard =
-                        make_obj_guard(children, &vector<node_ptr>::pop_back);
+                        make_obj_guard(children, &children_t::pop_back);
                     child_node * const child =
-                        node_cast<child_node *>(node->get());
+                        node_cast<child_node *>(n->get());
                     if (child) {
                         child->relocate(); // Throws std::bad_alloc.
                     }
@@ -1822,17 +1822,16 @@ namespace {
     do_process_event(const mfnode & value, const double timestamp)
         throw (std::bad_alloc)
     {
-        using std::vector;
-
         self_t & group = dynamic_cast<self_t &>(this->node());
 
-        vector<node_ptr> children = group.children_.mfnode::value();
+        typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
+        children_t children = group.children_.mfnode::value();
 
-        for (vector<node_ptr>::const_iterator node = value.value().begin();
-             node != value.value().end();
-             ++node) {
+        for (children_t::const_iterator n = value.value().begin();
+             n != value.value().end();
+             ++n) {
             using std::remove;
-            children.erase(remove(children.begin(), children.end(), *node),
+            children.erase(remove(children.begin(), children.end(), *n),
                            children.end());
         }
 
@@ -1907,26 +1906,25 @@ namespace {
     event_side_effect(const mfnode & value, double)
         throw (std::bad_alloc)
     {
-        using std::vector;
-
         self_t & group =
             dynamic_cast<self_t &>(this->event_listener::node());
 
-        vector<node_ptr> children;
+        typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
+        children_t children;
 
-        for (vector<node_ptr>::const_iterator node = value.value().begin();
-             node != value.value().end();
-             ++node) {
+        for (children_t::const_iterator n = value.value().begin();
+             n != value.value().end();
+             ++n) {
             //
             // The spec is ambiguous about whether the children field of
             // grouping nodes can contain NULLs. We allow it; for now, at
             // least.
             //
-            children.push_back(*node); // Throws std::bad_alloc.
+            children.push_back(*n); // Throws std::bad_alloc.
             scope_guard guard =
-                make_obj_guard(children, &vector<node_ptr>::pop_back);
+                make_obj_guard(children, &children_t::pop_back);
             child_node * const child =
-                node_cast<child_node *>(node->get());
+                node_cast<child_node *>(n->get());
             if (child) { child->relocate(); } // Throws std::bad_alloc.
             guard.dismiss();
         }
@@ -2082,8 +2080,8 @@ namespace {
         if (this->viewerObject) {
             viewer.insert_reference(this->viewerObject);
         } else if (!this->children_.mfnode::value().empty()) {
-            vector<node_ptr>::size_type i;
-            vector<node_ptr>::size_type n =
+            vector<boost::intrusive_ptr<node> >::size_type i;
+            vector<boost::intrusive_ptr<node> >::size_type n =
                 this->children_.mfnode::value().size();
             size_t nSensors = 0;
 
@@ -2133,7 +2131,7 @@ namespace {
      * @return the child nodes in the scene graph.
      */
     template <typename Derived>
-    const std::vector<openvrml::node_ptr> &
+    const std::vector<boost::intrusive_ptr<openvrml::node> > &
     grouping_node_base<Derived>::do_children() const throw ()
     {
         return this->children_.mfnode::value();
@@ -2165,7 +2163,7 @@ namespace {
     {
         this->bsphere = bounding_sphere();
         for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            const node_ptr & node = this->children_.mfnode::value()[i];
+            const boost::intrusive_ptr<node> & node = this->children_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -2219,9 +2217,9 @@ namespace {
         //
         // appearance_node implementation
         //
-        virtual const node_ptr & material() const throw ();
-        virtual const node_ptr & texture() const throw ();
-        virtual const node_ptr & texture_transform() const throw ();
+        virtual const boost::intrusive_ptr<node> & material() const throw ();
+        virtual const boost::intrusive_ptr<node> & texture() const throw ();
+        virtual const boost::intrusive_ptr<node> & texture_transform() const throw ();
 
     private:
         virtual void do_render_appearance(viewer & v,
@@ -3018,7 +3016,8 @@ namespace {
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<node_ptr> & do_children() const throw ();
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw ();
 
         void load();
     };
@@ -3047,7 +3046,8 @@ namespace {
         do_bounding_volume() const;
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<node_ptr> & do_children() const throw ();
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw ();
         virtual void recalcBSphere();
     };
 
@@ -3635,7 +3635,8 @@ namespace {
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<node_ptr> & do_children() const throw ();
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw ();
         virtual void recalcBSphere();
     };
 
@@ -4597,7 +4598,7 @@ namespace {
      * @returns an sfnode object containing the Material node associated with
      *          this Appearance.
      */
-    const openvrml::node_ptr &
+    const boost::intrusive_ptr<openvrml::node> &
     appearance_node::material() const throw ()
     {
         return this->material_.sfnode::value();
@@ -4609,7 +4610,7 @@ namespace {
  * @return an sfnode object containing the texture node associated with
  *         this Appearance.
  */
-    const openvrml::node_ptr &
+    const boost::intrusive_ptr<openvrml::node> &
     appearance_node::texture() const throw ()
     {
         return this->texture_.sfnode::value();
@@ -4621,7 +4622,7 @@ namespace {
      * @return an sfnode object containing the TextureTransform node
      *         associated with this Appearance.
      */
-    const openvrml::node_ptr &
+    const boost::intrusive_ptr<openvrml::node> &
     appearance_node::texture_transform() const throw ()
     {
         return this->texture_transform_.sfnode::value();
@@ -12971,10 +12972,10 @@ namespace {
      *
      * @return the child nodes in the scene graph.
      */
-    const std::vector<openvrml::node_ptr> &
+    const std::vector<boost::intrusive_ptr<openvrml::node> > &
     inline_node::do_children() const throw ()
     {
-        static const std::vector<openvrml::node_ptr> empty;
+        static const std::vector<boost::intrusive_ptr<openvrml::node> > empty;
         return this->inlineScene
             ? this->inlineScene->nodes()
             : empty;
@@ -13261,7 +13262,7 @@ namespace {
      *
      * @return the child nodes in the scene graph.
      */
-    const std::vector<openvrml::node_ptr> &
+    const std::vector<boost::intrusive_ptr<openvrml::node> > &
     lod_node::do_children() const throw ()
     {
         return this->children_.value();
@@ -13287,7 +13288,7 @@ namespace {
         // them in all at once. live with it for now.
         //
         for (size_t i = 0; i < this->level_.mfnode::value().size(); i++) {
-            const node_ptr & node = this->level_.mfnode::value()[i];
+            const boost::intrusive_ptr<node> & node = this->level_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -19261,18 +19262,20 @@ namespace {
     event_side_effect(const mfnode &, double) throw (std::bad_alloc)
     {
         try {
-            switch_node & node =
+            switch_node & n =
                 dynamic_cast<switch_node &>(this->event_listener::node());
 
-            const int32 which_choice = node.which_choice_.sfint32::value();
-            assert(!node.children_.value().empty());
-            std::vector<node_ptr> children = node.children_.value();
+            const int32 which_choice = n.which_choice_.sfint32::value();
+            assert(!n.children_.value().empty());
+            typedef std::vector<boost::intrusive_ptr<openvrml::node> >
+                children_t;
+            children_t children = n.children_.value();
             children[0] =
                 (which_choice >= 0
-                 && which_choice < int32(node.choice_.mfnode::value().size()))
-                ? node.choice_.mfnode::value()[which_choice]
-                : node_ptr(0);
-            node.children_.value(children);
+                 && which_choice < int32(n.choice_.mfnode::value().size()))
+                ? n.choice_.mfnode::value()[which_choice]
+                : children_t::value_type(0);
+            n.children_.value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -19346,18 +19349,20 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            switch_node & node =
+            switch_node & n =
                 dynamic_cast<switch_node &>(this->event_listener::node());
 
-            assert(!node.children_.value().empty());
-            std::vector<node_ptr> children = node.children_.value();
+            assert(!n.children_.value().empty());
+            typedef std::vector<boost::intrusive_ptr<openvrml::node> >
+                children_t;
+            children_t children = n.children_.value();
             children[0] =
                 ((which_choice.value() >= 0)
                  && (which_choice.value()
-                     < int32(node.choice_.mfnode::value().size())))
-                ? node.choice_.mfnode::value()[which_choice.value()]
-                : node_ptr(0);
-            node.children_.value(children);
+                     < int32(n.choice_.mfnode::value().size())))
+                ? n.choice_.mfnode::value()[which_choice.value()]
+                : children_t::value_type(0);
+            n.children_.value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -19469,7 +19474,7 @@ namespace {
      *
      * @return the child nodes in the scene graph.
      */
-    const std::vector<openvrml::node_ptr> &
+    const std::vector<boost::intrusive_ptr<openvrml::node> > &
     switch_node::do_children() const throw ()
     {
         return this->children_.value();
@@ -19483,7 +19488,7 @@ namespace {
         this->bsphere = bounding_sphere();
         long w = this->which_choice_.sfint32::value();
         if (w >= 0 && size_t(w) < this->choice_.mfnode::value().size()) {
-            const node_ptr & node = this->choice_.mfnode::value()[w];
+            const boost::intrusive_ptr<node> & node = this->choice_.mfnode::value()[w];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -23549,7 +23554,7 @@ namespace {
     {
         this->bsphere = bounding_sphere();
         for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            const node_ptr & node = this->children_.mfnode::value()[i];
+            const boost::intrusive_ptr<node> & node = this->children_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {

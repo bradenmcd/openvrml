@@ -13,7 +13,6 @@
 # include <memory>
 # include <boost/shared_ptr.hpp>
 # include "field_value.h"
-# include "node_ptr.h"
 # define ANTLR_LBRACE {
 # define ANTLR_RBRACE }
 
@@ -108,10 +107,10 @@ namespace {
 
 namespace openvrml ANTLR_LBRACE
 
-#line 112 "Vrml97Parser.hpp"
+#line 111 "Vrml97Parser.hpp"
 class CUSTOM_API Vrml97Parser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public Vrml97ParserTokenTypes
 {
-#line 614 "Vrml97Parser.g"
+#line 613 "Vrml97Parser.g"
 
 public:
     Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
@@ -121,7 +120,7 @@ public:
 
 private:
     const std::string uri;
-#line 116 "Vrml97Parser.hpp"
+#line 115 "Vrml97Parser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -148,14 +147,14 @@ public:
 	}
 	public: void vrmlScene(
 		openvrml::scene & scene,
-          std::vector<node_ptr> & nodes
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes
 	);
 	public: void statement(
 		openvrml::browser & browser,
-          std::vector<node_ptr> & nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope
 	);
-	public: node_ptr  nodeStatement(
+	public: boost::intrusive_ptr<openvrml::node>  nodeStatement(
 		openvrml::browser & browser,
               const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id
@@ -166,7 +165,7 @@ public:
 	public: void routeStatement(
 		const openvrml::scope & scope
 	);
-	public: node_ptr  node(
+	public: boost::intrusive_ptr<openvrml::node>  node(
 		openvrml::browser & browser,
      const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id
@@ -190,7 +189,7 @@ public:
 		openvrml::browser & browser,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
-          std::vector<node_ptr> & impl_nodes,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
           proto_node_class::is_map_t & is_map,
           proto_node_class::routes_t & routes
 	);
@@ -203,7 +202,7 @@ public:
            const openvrml::field_value::type_id ft,
            const std::string & node_id
 	);
-	public: node_ptr  protoNodeStatement(
+	public: boost::intrusive_ptr<openvrml::node>  protoNodeStatement(
 		openvrml::browser & browser,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & proto_interfaces,
@@ -215,7 +214,7 @@ public:
 		openvrml::browser & browser,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & interfaces,
-                   std::vector<node_ptr> & impl_nodes,
+                   std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
                    proto_node_class::is_map_t & is_map,
                    proto_node_class::routes_t & routes
 	);
@@ -223,7 +222,7 @@ public:
 		const openvrml::scope & scope,
                     proto_node_class::routes_t & routes
 	);
-	public: node_ptr  protoNode(
+	public: boost::intrusive_ptr<openvrml::node>  protoNode(
 		openvrml::browser & browser,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & proto_interfaces,

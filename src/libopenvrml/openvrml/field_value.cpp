@@ -1794,9 +1794,9 @@ openvrml::sfnode::field_value_type_id(sfnode_id);
 /**
  * @brief Construct.
  *
- * @param node a <code>node_ptr</code>.
+ * @param node  a pointer to a node.
  */
-openvrml::sfnode::sfnode(const node_ptr & node) throw ():
+openvrml::sfnode::sfnode(const value_type & node) throw ():
     field_value(node, value_type_constructor_tag())
 {}
 
@@ -4107,10 +4107,10 @@ openvrml::mfnode::field_value_type_id(mfnode_id);
  *
  * @post size is @p n. Every element is a copy of @p value.
  */
-openvrml::mfnode::mfnode(const std::vector<node_ptr>::size_type n,
-                         const node_ptr & value)
+openvrml::mfnode::mfnode(const value_type::size_type n,
+                         const value_type::value_type & value)
     throw (std::bad_alloc):
-    field_value(std::vector<node_ptr>(n, value), value_type_constructor_tag())
+    field_value(value_type(n, value), value_type_constructor_tag())
 {}
 
 /**
@@ -4238,7 +4238,7 @@ void openvrml::mfnode::print(std::ostream & out) const
 {
     out << '[';
     if (this->value().size() > 1) {
-        for (std::vector<node_ptr>::const_iterator i(this->value().begin());
+        for (value_type::const_iterator i(this->value().begin());
              i != this->value().end() - 1; ++i) {
             if (*i) { out << **i << ", "; }
         }

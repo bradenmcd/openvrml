@@ -695,7 +695,7 @@ openvrml::script_node::script_node_type::do_interfaces() const
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const openvrml::node_ptr
+const boost::intrusive_ptr<openvrml::node>
 openvrml::script_node::script_node_type::
 do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                const initial_value_map & initial_values) const
@@ -703,6 +703,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 {
     using std::insert_iterator;
     using std::set_difference;
+    using boost::intrusive_ptr;
 
     //
     // The const_cast here is a bit messy; the alternative would be to make
@@ -727,17 +728,17 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                    interface_inserter,
                    node_interface_set::key_compare());
 
-    node_ptr node;
+    boost::intrusive_ptr<node> n;
     try {
-        node.reset(new script_node(scriptNodeClass,
-                                   scope,
-                                   interfaces,
-                                   initial_values));
+        n = intrusive_ptr<node>(new script_node(scriptNodeClass,
+                                                scope,
+                                                interfaces,
+                                                initial_values));
     } catch (std::invalid_argument & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
         assert(false);
     }
-    return node;
+    return n;
 }
 
 /**
@@ -1485,6 +1486,16 @@ script_node(script_node_class & class_,
     script_(0),
     events_received(0)
 {
+    //
+    // The refcount is incremented for the body of this constructor.  This
+    // keeps the node from potentially being deleted during the refcount
+    // manipulation that must be done to accommodate self-referential Script
+    // nodes.
+    //
+    this->add_ref();
+    openvrml_::scope_guard guard =
+        openvrml_::make_obj_guard(*this, &script_node::remove_ref);
+
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();
          ++interface) {
@@ -1530,37 +1541,39 @@ script_node(script_node_class & class_,
             // Replace instances of node_ptr::self with a real reference to
             // the current script_node.
             //
-            // After making the assignment, we must decrement the node_ptr's
-            // count because a Script node self-reference must not be an owning
-            // pointer. See the assign_with_self_ref_check functions for more
-            // information.
+            // After making the assignment, we must decrement the node
+            // pointer's count because a Script node self-reference must not be
+            // an owning pointer. See the assign_with_self_ref_check functions
+            // for more information.
             //
+            using boost::intrusive_ptr;
             if (interface->field_type == openvrml::field_value::sfnode_id) {
                 sfnode & sfnode_field_value =
                     *polymorphic_downcast<sfnode *>(field_value.second.get());
-                if (sfnode_field_value.value() == node_ptr::self) {
-                    node_ptr self(this);
-                    assert(self.count_ptr->second > 0);
-                    --self.count_ptr->second;
+                if (sfnode_field_value.value() == node::self_tag) {
+                    const intrusive_ptr<node> self(this);
                     sfnode_field_value.value(self);
+                    this->remove_ref();
                 }
             } else if (interface->field_type
                        == openvrml::field_value::mfnode_id) {
                 mfnode & mfnode_field_value =
                     *polymorphic_downcast<mfnode *>(field_value.second.get());
                 using std::vector;
-                vector<node_ptr> temp = mfnode_field_value.value();
-                for (vector<node_ptr>::iterator node = temp.begin();
-                     node != temp.end();
-                     ++node) {
-                    if (*node == node_ptr::self) {
-                        node_ptr self(this);
-                        assert(self.count_ptr->second > 0);
-                        --self.count_ptr->second;
-                        *node = self;
+                vector<intrusive_ptr<node > > temp =
+                    mfnode_field_value.value();
+                size_t self_ref_count = 0;
+                for (vector<intrusive_ptr<node> >::iterator n = temp.begin();
+                     n != temp.end();
+                     ++n) {
+                    if (*n == node::self_tag) {
+                        intrusive_ptr<node> self(this);
+                        *n = self;
+                        ++self_ref_count;
                     }
                 }
                 mfnode_field_value.value(temp);
+                while (self_ref_count--) { this->remove_ref(); }
             }
 
             succeeded = this->field_value_map_.insert(field_value).second;
@@ -1668,22 +1681,22 @@ void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
                                                        sfnode & retval) const
     throw ()
 {
-    const node_ptr & oldNode = retval.value();
+    using boost::intrusive_ptr;
+
+    const intrusive_ptr<node> & old_node = retval.value();
 
     //
     // About to relinquish ownership of a sfnode value. If the
     // sfnode value is this Script node, then we need to
-    // *increment* its refcount, since we previously
+    // *increment* our refcount, since we previously
     // *decremented* it to accommodate creating a cycle between
     // refcounted objects.
     //
-    if (oldNode
-        && (dynamic_cast<script_node *>(oldNode.count_ptr->first) == this)) {
-        ++oldNode.count_ptr->second;
+    if (dynamic_cast<script_node *>(old_node.get()) == this) {
+        this->add_ref();
     }
 
     retval = inval;
-
     //
     // Now, check to see if the new sfnode value is a self-
     // reference. If it is, we need to *decrement* the refcount.
@@ -1693,9 +1706,9 @@ void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
     // because the reference it held to itself would prevent the
     // refcount from ever dropping to zero.
     //
-    const node_ptr & newNode = retval.value();
-    if (dynamic_cast<script_node *>(newNode.count_ptr->first) == this) {
-        --(newNode.count_ptr->second);
+    const intrusive_ptr<node> & new_node = retval.value();
+    if (dynamic_cast<script_node *>(new_node.get()) == this) {
+        this->release();
     }
 }
 
@@ -1716,24 +1729,22 @@ void openvrml::script_node::assign_with_self_ref_check(const mfnode & inval,
                                                        mfnode & retval) const
     throw ()
 {
-    std::vector<node_ptr>::size_type i;
+    using boost::intrusive_ptr;
+
+    mfnode::value_type::size_type i;
     for (i = 0; i < retval.value().size(); ++i) {
-        const node_ptr & oldNode = retval.value()[i];
-        if (oldNode
-            && (dynamic_cast<script_node *>(oldNode.count_ptr->first)
-                == this)) {
-            ++oldNode.count_ptr->second;
+        const intrusive_ptr<node> & old_node = retval.value()[i];
+        if (dynamic_cast<script_node *>(old_node.get()) == this) {
+            this->add_ref();
         }
     }
 
     retval = inval;
 
     for (i = 0; i < retval.value().size(); ++i) {
-        const node_ptr & newNode = retval.value()[i];
-        if (newNode
-            && (dynamic_cast<script_node *>(newNode.count_ptr->first)
-                == this)) {
-            --(newNode.count_ptr->second);
+        const intrusive_ptr<node> & new_node = retval.value()[i];
+        if (dynamic_cast<script_node *>(new_node.get()) == this) {
+            this->release();
         }
     }
 }
@@ -2311,7 +2322,7 @@ public:
 
     static JSObject * initClass(JSContext * cx, JSObject * obj)
         throw ();
-    static JSBool toJsval(const openvrml::node_ptr & node,
+    static JSBool toJsval(const boost::intrusive_ptr<openvrml::node> & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::sfnode>
@@ -2676,8 +2687,9 @@ public:
     static JSClass jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
-    static JSBool toJsval(const std::vector<openvrml::node_ptr> & nodes,
-                          JSContext * cx, JSObject * obj, jsval * rval)
+    static JSBool toJsval(
+        const std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+        JSContext * cx, JSObject * obj, jsval * rval)
         throw ();
     static std::auto_ptr<openvrml::mfnode>
     createFromJSObject(JSContext * cx, JSObject * obj)
@@ -4168,7 +4180,7 @@ JSBool createVrmlFromString(JSContext * const cx,
         assert(script.script_node().scene());
         openvrml::browser & browser =
             script.script_node().scene()->browser();
-        const std::vector<openvrml::node_ptr> nodes =
+        const std::vector<boost::intrusive_ptr<openvrml::node> > nodes =
             browser.create_vrml_from_stream(in);
 
         if (nodes.empty()) {
@@ -5048,7 +5060,7 @@ JSObject * SFNode::initClass(JSContext * const cx,
     return proto;
 }
 
-JSBool SFNode::toJsval(const openvrml::node_ptr & node,
+JSBool SFNode::toJsval(const boost::intrusive_ptr<openvrml::node> & node,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
@@ -5146,7 +5158,7 @@ JSBool SFNode::initObject(JSContext * const cx,
 
     assert(script.script_node().scene());
     openvrml::browser & browser = script.script_node().scene()->browser();
-    std::vector<openvrml::node_ptr> nodes;
+    std::vector<boost::intrusive_ptr<openvrml::node> > nodes;
     try {
         nodes = browser.create_vrml_from_stream(in);
     } catch (openvrml::invalid_vrml & ex) {
@@ -5231,7 +5243,7 @@ JSBool SFNode::setProperty(JSContext * const cx,
 
         if (!thisNode.value()) { return JS_TRUE; }
 
-        openvrml::node_ptr nodePtr = thisNode.value();
+        boost::intrusive_ptr<openvrml::node> nodePtr = thisNode.value();
 
         const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
 
@@ -9055,10 +9067,12 @@ JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
     return JS_TRUE;
 }
 
-JSBool MFNode::toJsval(const std::vector<openvrml::node_ptr> & nodes,
-                       JSContext * const cx,
-                       JSObject * const obj,
-                       jsval * const rval)
+JSBool
+MFNode::toJsval(
+    const std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+    JSContext * const cx,
+    JSObject * const obj,
+    jsval * const rval)
     throw ()
 {
     JSObject * const mfnodeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
@@ -9099,7 +9113,7 @@ MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
     assert(mfdata);
     std::auto_ptr<openvrml::mfnode>
             mfnode(new openvrml::mfnode(mfdata->array.size()));
-    std::vector<openvrml::node_ptr> temp = mfnode->value();
+    std::vector<boost::intrusive_ptr<openvrml::node> > temp = mfnode->value();
     for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
         assert(JSVAL_IS_OBJECT(mfdata->array[i]));
         assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),

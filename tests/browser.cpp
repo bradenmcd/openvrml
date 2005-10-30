@@ -33,10 +33,11 @@ void create_vrml_from_stream()
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
 
-    vector<node_ptr> nodes = b.create_vrml_from_stream(vrmlstream);
+    vector<boost::intrusive_ptr<node> > nodes =
+        b.create_vrml_from_stream(vrmlstream);
 
     BOOST_REQUIRE(nodes.size() == 1);
-    BOOST_REQUIRE(nodes[0] != node_ptr(0));
+    BOOST_REQUIRE(nodes[0] != boost::intrusive_ptr<node>(0));
     BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Group");
 }
 
@@ -50,7 +51,8 @@ void create_vrml_from_url()
     test_browser b(vrml97_profile_id);
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
-    vector<node_ptr> nodes = b.create_vrml_from_stream(vrmlstream);
+    vector<boost::intrusive_ptr<node> > nodes =
+        b.create_vrml_from_stream(vrmlstream);
     vector<string> url(1, "test.wrl");
     b.create_vrml_from_url(url, nodes[0], "set_children");
 
@@ -61,7 +63,7 @@ void create_vrml_from_url()
 
     grouping_node * group = node_cast<grouping_node *>(nodes[0].get());
     BOOST_REQUIRE(group);
-    const vector<node_ptr> & children = group->children();
+    const vector<boost::intrusive_ptr<node> > & children = group->children();
     BOOST_REQUIRE(children.size() == 1);
     BOOST_CHECK_EQUAL(children[0]->type().id(), "Shape");
 

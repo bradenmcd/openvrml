@@ -11,7 +11,6 @@ openvrml_include_HEADERS = \
 	openvrml/exposedfield.h \
         openvrml/scope.h \
         openvrml/node.h \
-        openvrml/node_ptr.h \
         openvrml/bounding_volume.h \
         openvrml/script.h \
         openvrml/browser.h \
@@ -64,7 +63,6 @@ libopenvrml_la_SOURCES = \
         openvrml/exposedfield.cpp \
         openvrml/scope.cpp \
         openvrml/node.cpp \
-        openvrml/node_ptr.cpp \
         openvrml/bounding_volume.cpp \
         openvrml/script.cpp \
         openvrml/ScriptJDK.cpp \

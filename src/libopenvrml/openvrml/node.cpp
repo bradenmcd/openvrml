@@ -832,7 +832,7 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
-const openvrml::node_ptr
+const boost::intrusive_ptr<openvrml::node>
 openvrml::node_type::
 create_node(const boost::shared_ptr<scope> & scope,
             const initial_value_map & initial_values) const
@@ -842,7 +842,7 @@ create_node(const boost::shared_ptr<scope> & scope,
 }
 
 /**
- * @fn const openvrml::node_ptr openvrml::node_type::do_create_node(const boost::shared_ptr<scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+ * @fn const boost::intrusive_ptr<openvrml::node> openvrml::node_type::do_create_node(const boost::shared_ptr<scope> & scope, const initial_value_map & initial_values) const throw (unsupported_interface, std::bad_cast, std::bad_alloc)
  *
  * @brief Create a new node with this <code>node_type</code>.
  *
@@ -1267,6 +1267,125 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @brief <code>mfvec3f</code> <code>exposedfield</code>.
  */
 
+namespace {
+
+    class OPENVRML_LOCAL self_ref_node : public openvrml::node {
+    public:
+        self_ref_node();
+        virtual ~self_ref_node() throw ();
+
+    private:
+        virtual const openvrml::field_value &
+        do_field(const std::string & id) const
+            throw (openvrml::unsupported_interface);
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (openvrml::unsupported_interface);
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (openvrml::unsupported_interface);
+    };
+
+    //
+    // Since nothing should ever actually use the self_ref_node instance,
+    // there's no need to go to the trouble to give it a valid node_type.
+    //
+    char not_remotely_a_node_type;
+    self_ref_node::self_ref_node():
+        node(reinterpret_cast<const openvrml::node_type &>(
+                 not_remotely_a_node_type),
+             boost::shared_ptr<openvrml::scope>())
+    {}
+
+    self_ref_node::~self_ref_node() throw ()
+    {}
+
+    const openvrml::field_value &
+    self_ref_node::do_field(const std::string &) const
+        throw (openvrml::unsupported_interface)
+    {
+        static const openvrml::sfbool val;
+        return val;
+    }
+
+    openvrml::event_listener &
+    self_ref_node::do_event_listener(const std::string &)
+        throw (openvrml::unsupported_interface)
+    {
+        class dummy_listener : public openvrml::sfbool_listener {
+        public:
+            dummy_listener(self_ref_node & n):
+                openvrml::event_listener(n),
+                openvrml::sfbool_listener(n)
+            {}
+
+            virtual ~dummy_listener() throw ()
+            {}
+
+        private:
+            virtual const std::string do_eventin_id() const throw ()
+            {
+                return std::string();
+            }
+
+            virtual void do_process_event(const openvrml::sfbool &, double)
+                throw (std::bad_alloc)
+            {}
+        };
+
+        static dummy_listener listener(*this);
+        return listener;
+    }
+
+    openvrml::event_emitter &
+    self_ref_node::do_event_emitter(const std::string &)
+        throw (openvrml::unsupported_interface)
+    {
+        class dummy_emitter : public openvrml::sfbool_emitter {
+        public:
+            explicit dummy_emitter(const openvrml::sfbool & value):
+                openvrml::event_emitter(value),
+                openvrml::sfbool_emitter(value)
+            {}
+
+        private:
+            virtual const std::string do_eventout_id() const throw ()
+            {
+                return std::string();
+            }            
+        };
+
+        openvrml::sfbool val;
+        static dummy_emitter emitter(val);
+        return emitter;
+    }
+}
+
+/**
+ * @brief Special value used when initializing a script_node.
+ *
+ * One should never attempt to dereference this value. It is useful only
+ * for comparison.
+ */
+const boost::intrusive_ptr<openvrml::node>
+openvrml::node::self_tag(new self_ref_node);
+
+/**
+ * @internal
+ *
+ * @var boost::mutex openvrml::node::ref_count_mutex_
+ *
+ * @brief Mutex to guard @a ref_count_.
+ */
+
+/**
+ * @internal
+ *
+ * @var size_t openvrml::node::ref_count_
+ *
+ * @brief The number of owning references to the instance.
+ */
+
 /**
  * @internal
  *
@@ -1371,6 +1490,68 @@ openvrml::node::~node() throw ()
                     node_is_(*this));
         if (pos != end) { this->scope_->named_node_map.erase(pos); }
     }
+}
+
+/**
+ * @fn void openvrml::node::add_ref() const throw ()
+ *
+ * @brief Increment the reference count.
+ *
+ * Add an owning reference.
+ */
+
+/**
+ * @fn void openvrml::intrusive_ptr_add_ref(const node * n) throw ()
+ *
+ * @relatesalso openvrml::node
+ *
+ * @brief Increment the reference count.
+ *
+ * This function is used by <code>boost::intrusive_ptr&lt;node&gt;</code>.
+ *
+ * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
+ */
+
+/**
+ * @fn void openvrml::node::remove_ref() const throw ()
+ *
+ * @brief Decrement the reference count.
+ *
+ * Remove an owning reference; <strong>but do not destroy the instance if the
+ * reference count drops to zero</string>. This function should be used with
+ * caution. It is really only appropriate when the caller is aware that the
+ * reference count may drop to zero but destroying the instance in that case
+ * would be inappropriate. In most cases it is appropriate to use
+ * node::release.
+ */
+
+/**
+ * @fn void openvrml::node::release() const throw ()
+ *
+ * @brief Decrement the reference count; destroy the instance if the count
+ *        drops to zero.
+ */
+
+/**
+ * @fn void openvrml::intrusive_ptr_release() throw ()
+ *
+ * @relatesalso openvrml::node
+ *
+ * @brief Decrement the reference count.
+ *
+ * This function is used by <code>boost::intrusive_ptr&lt;node&gt;</code>.
+ *
+ * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
+ */
+
+/**
+ * @brief The number of owning references to the instance.
+ *
+ * @return the number of owning references to the instance.
+ */
+size_t openvrml::node::use_count() const throw ()
+{
+    return this->ref_count_;
 }
 
 /**
@@ -2705,7 +2886,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance() throw ()
 }
 
 /**
- * @fn const openvrml::node_ptr & openvrml::appearance_node::material() const throw ()
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::material() const throw ()
  *
  * @brief Get the material node associated with this appearance node.
  *
@@ -2713,7 +2894,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const openvrml::node_ptr & openvrml::appearance_node::texture() const throw ()
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture() const throw ()
  *
  * @brief Get the texture node associated with this appearance node.
  *
@@ -2721,7 +2902,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance() throw ()
  */
 
 /**
- * @fn const openvrml::node_ptr & openvrml::appearance_node::texture_transform() const throw ()
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture_transform() const throw ()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
@@ -3366,14 +3547,14 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping() throw ()
  *
  * @return the children in the scene graph.
  */
-const std::vector<openvrml::node_ptr> &
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
 openvrml::grouping_node::children() const throw ()
 {
     return this->do_children();
 }
 
 /**
- * @fn const std::vector<openvrml::node_ptr> & openvrml::grouping_node::do_children() const throw ()
+ * @fn const std::vector<boost::intrusive_ptr<openvrml::node> > & openvrml::grouping_node::do_children() const throw ()
  *
  * @brief Get the children in the scene graph.
  *
@@ -3398,9 +3579,9 @@ activate_pointing_device_sensors(const double timestamp,
                                  const bool active,
                                  const double (&p)[3])
 {
-    using std::vector;
-    const vector<node_ptr> & children(this->children());
-    for (vector<node_ptr>::const_iterator child = children.begin();
+    typedef std::vector<boost::intrusive_ptr<node> > children_t;
+    const children_t & children(this->children());
+    for (children_t::const_iterator child = children.begin();
          child != children.end();
          ++child) {
         if (pointing_device_sensor_node * pointing_device_sensor =
@@ -4357,7 +4538,8 @@ void openvrml::node_traverser::traverse(node & n)
  *
  * @param node  the root node of the branch to traverse.
  */
-void openvrml::node_traverser::traverse(const node_ptr & node)
+void
+openvrml::node_traverser::traverse(const boost::intrusive_ptr<node> & node)
 {
     assert(this->traversed_nodes.empty());
     try {
@@ -4384,12 +4566,15 @@ void openvrml::node_traverser::traverse(const node_ptr & node)
  * @param nodes  the root @link openvrml::node nodes@endlink of the branch to
  *               traverse.
  */
-void openvrml::node_traverser::traverse(const std::vector<node_ptr> & nodes)
+void
+openvrml::node_traverser::traverse(
+    const std::vector<boost::intrusive_ptr<node> > & nodes)
 {
     assert(this->traversed_nodes.empty());
     try {
-        for (std::vector<node_ptr>::const_iterator node(nodes.begin());
-                node != nodes.end(); ++node) {
+        typedef std::vector<boost::intrusive_ptr<node> > nodes_t;
+        for (nodes_t::const_iterator node(nodes.begin()); node != nodes.end();
+             ++node) {
             if (*node) {
                 if (this->traversed_nodes.find(node->get())
                         == this->traversed_nodes.end()) {

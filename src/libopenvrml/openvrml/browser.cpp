@@ -66,7 +66,7 @@ namespace openvrml {
 
     private:
         virtual const node_interface_set & do_interfaces() const throw ();
-        virtual const node_ptr
+        virtual const boost::intrusive_ptr<node>
         do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                        const initial_value_map & initial_values) const
             throw ();
@@ -121,7 +121,7 @@ namespace openvrml {
     private:
         node_interface_set interfaces;
         default_value_map_t default_value_map;
-        std::vector<node_ptr> impl_nodes;
+        std::vector<boost::intrusive_ptr<node> > impl_nodes;
         routes_t routes;
         is_map_t is_map;
 
@@ -137,7 +137,7 @@ namespace openvrml {
 
         private:
             virtual const node_interface_set & do_interfaces() const throw ();
-            virtual const node_ptr
+            virtual const boost::intrusive_ptr<node>
             do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                            const initial_value_map & initial_values) const
                 throw (std::bad_alloc);
@@ -149,7 +149,7 @@ namespace openvrml {
             openvrml::browser & browser,
             const node_interface_set & interfaces,
             const default_value_map_t & default_value_map,
-            const std::vector<node_ptr> & impl_nodes,
+            const std::vector<boost::intrusive_ptr<node> > & impl_nodes,
             const is_map_t & is_map,
             const routes_t & routes);
         virtual ~proto_node_class() throw ();
@@ -298,7 +298,7 @@ namespace openvrml {
             throw (std::bad_alloc);
 
         boost::shared_ptr<openvrml::scope> proto_scope;
-        std::vector<node_ptr> impl_nodes;
+        std::vector<boost::intrusive_ptr<node> > impl_nodes;
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
@@ -394,7 +394,7 @@ namespace openvrml {
 
     class OPENVRML_LOCAL node_path_element {
     public:
-        std::vector<node_ptr>::size_type index;
+        std::vector<boost::intrusive_ptr<node> >::size_type index;
         field_value::type_id field_type;
         std::string field_id;
 
@@ -416,8 +416,10 @@ namespace openvrml {
     public:
         path_getter(const node & objective, node_path_t & node_path) throw ();
 
-        void get_path_from(const node_ptr & node) throw (std::bad_alloc);
-        void get_path_from(const std::vector<node_ptr> & nodes)
+        void get_path_from(const boost::intrusive_ptr<node> & node)
+            throw (std::bad_alloc);
+        void get_path_from(
+            const std::vector<boost::intrusive_ptr<node> > & nodes)
             throw (std::bad_alloc);
 
     private:
@@ -431,7 +433,7 @@ namespace openvrml {
         found(false)
     {}
 
-    void path_getter::get_path_from(const node_ptr & node)
+    void path_getter::get_path_from(const boost::intrusive_ptr<node> & node)
         throw (std::bad_alloc)
     {
         if (node) {
@@ -445,7 +447,8 @@ namespace openvrml {
         }
     }
 
-    void path_getter::get_path_from(const std::vector<node_ptr> & nodes)
+    void path_getter::get_path_from(
+        const std::vector<boost::intrusive_ptr<node> > & nodes)
         throw (std::bad_alloc)
     {
         this->node_path.push_back(node_path_element());
@@ -502,7 +505,8 @@ namespace openvrml {
     }
 
     OPENVRML_LOCAL const node_path_t
-    get_path(const std::vector<node_ptr> & root, const node & objective)
+    get_path(const std::vector<boost::intrusive_ptr<node> > & root,
+             const node & objective)
         throw (std::bad_alloc)
     {
         node_path_t path;
@@ -510,8 +514,9 @@ namespace openvrml {
         return path;
     }
 
-    OPENVRML_LOCAL node * resolve_node_path(const node_path_t & path,
-                                            const std::vector<node_ptr> & root)
+    OPENVRML_LOCAL node *
+    resolve_node_path(const node_path_t & path,
+                      const std::vector<boost::intrusive_ptr<node> > & root)
     {
         using boost::next;
         using boost::prior;
@@ -555,7 +560,7 @@ namespace openvrml {
         virtual ~field_value_cloner()
         {}
 
-        void clone_field_value(const node_ptr & src_node,
+        void clone_field_value(const boost::intrusive_ptr<node> & src_node,
                                const field_value & src,
                                field_value & dest)
             throw (std::bad_alloc)
@@ -579,14 +584,16 @@ namespace openvrml {
         }
 
     private:
-        virtual const node_ptr clone_node(const node_ptr & n)
+        virtual const boost::intrusive_ptr<node>
+        clone_node(const boost::intrusive_ptr<node> & n)
             throw (std::bad_alloc)
         {
             using std::set;
+            using boost::intrusive_ptr;
 
             assert(this->target_scope);
 
-            node_ptr result;
+            intrusive_ptr<node> result;
 
             if (!n) { return result; }
 
@@ -595,7 +602,8 @@ namespace openvrml {
                  != this->traversed_nodes.end());
 
             if (already_traversed) {
-                result.reset(this->target_scope->find_node(n->id()));
+                result = intrusive_ptr<node>(
+                    this->target_scope->find_node(n->id()));
                 assert(result);
             } else {
                 initial_value_map initial_values;
@@ -631,29 +639,30 @@ namespace openvrml {
             return result;
         }
 
-        void clone_sfnode(const node_ptr & src_node,
+        void clone_sfnode(const boost::intrusive_ptr<node> & src_node,
                           const sfnode & src,
                           sfnode & dest)
             throw (std::bad_alloc)
         {
             dest.value((src.value() == src_node)
-                       ? node_ptr::self
+                       ? node::self_tag
                        : this->clone_node(src.value()));
         }
 
-        void clone_mfnode(const node_ptr & src_node,
+        void clone_mfnode(const boost::intrusive_ptr<node> & src_node,
                           const mfnode & src,
                           mfnode & dest)
             throw (std::bad_alloc)
         {
             using std::swap;
             using std::vector;
-            std::vector<node_ptr> result(src.value().size());
-            for (vector<node_ptr>::size_type i = 0;
+            std::vector<boost::intrusive_ptr<node> > result(
+                src.value().size());
+            for (vector<boost::intrusive_ptr<node> >::size_type i = 0;
                  i < src.value().size();
                  ++i) {
                 result[i] = (src.value()[i] == src_node)
-                          ? node_ptr::self
+                          ? node::self_tag
                           : this->clone_node(src.value()[i]);
             }
             dest.value(result);
@@ -668,21 +677,24 @@ namespace openvrml {
         const initial_value_map & initial_values_;
 
     public:
-        proto_impl_cloner(const proto_node_class & node_class,
-                          const initial_value_map & initial_values,
-                          const boost::shared_ptr<openvrml::scope> & target_scope):
+        proto_impl_cloner(
+            const proto_node_class & node_class,
+            const initial_value_map & initial_values,
+            const boost::shared_ptr<openvrml::scope> & target_scope):
             field_value_cloner(target_scope),
             node_class(node_class),
             initial_values_(initial_values)
         {}
 
-        const std::vector<node_ptr> clone() throw (std::bad_alloc)
+        const std::vector<boost::intrusive_ptr<node> > clone()
+            throw (std::bad_alloc)
         {
             using std::vector;
 
-            vector<node_ptr> result(this->node_class.impl_nodes.size());
+            vector<boost::intrusive_ptr<node> > result(
+                this->node_class.impl_nodes.size());
 
-            for (vector<node_ptr>::size_type i = 0;
+            for (vector<boost::intrusive_ptr<node> >::size_type i = 0;
                  i < this->node_class.impl_nodes.size();
                  ++i) {
                 result[i] = this->clone_node(this->node_class.impl_nodes[i]);
@@ -712,14 +724,16 @@ namespace openvrml {
             const proto_node_class::is_target * is_target;
         };
 
-        virtual const node_ptr clone_node(const node_ptr & n)
+        virtual const boost::intrusive_ptr<node>
+        clone_node(const boost::intrusive_ptr<node> & n)
             throw (std::bad_alloc)
         {
             using std::set;
+            using boost::intrusive_ptr;
 
             assert(this->target_scope);
 
-            node_ptr result;
+            intrusive_ptr<node> result;
 
             if (!n) { return result; }
 
@@ -728,7 +742,8 @@ namespace openvrml {
                  != this->traversed_nodes.end());
 
             if (already_traversed) {
-                result.reset(this->target_scope->find_node(n->id()));
+                result = intrusive_ptr<node>(
+                    this->target_scope->find_node(n->id()));
                 assert(result);
             } else {
                 initial_value_map initial_values;
@@ -843,8 +858,8 @@ namespace openvrml {
         {
             using std::swap;
             using std::vector;
-            vector<node_ptr> result(src.value().size());
-            for (vector<node_ptr>::size_type i = 0;
+            vector<boost::intrusive_ptr<node> > result(src.value().size());
+            for (vector<boost::intrusive_ptr<node> >::size_type i = 0;
                  i < src.value().size();
                  ++i) {
                 result[i] = this->clone_node(src.value()[i]);
@@ -938,13 +953,13 @@ namespace openvrml {
         return this->interfaces_;
     }
 
-    const node_ptr
+    const boost::intrusive_ptr<node>
     proto_node_class::proto_node_type::
     do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                    const initial_value_map & initial_values) const
         throw (std::bad_alloc)
     {
-        return node_ptr(new proto_node(*this, scope, initial_values));
+        return boost::intrusive_ptr<node>(new proto_node(*this, scope, initial_values));
     }
 
     /**
@@ -2204,7 +2219,8 @@ namespace openvrml {
         throw (std::bad_alloc)
     {
         using std::vector;
-        for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+        for (vector<boost::intrusive_ptr<node> >::const_iterator node =
+                 this->impl_nodes.begin();
              node != impl_nodes.end();
              ++node) {
             (*node)->initialize(*this->scene(), timestamp);
@@ -2315,7 +2331,8 @@ namespace openvrml {
     void proto_node::do_shutdown(const double timestamp) throw ()
     {
         using std::vector;
-        for (vector<node_ptr>::const_iterator node = this->impl_nodes.begin();
+        for (vector<boost::intrusive_ptr<node> >::const_iterator node =
+                 this->impl_nodes.begin();
              node != impl_nodes.end();
              ++node) {
             (*node)->shutdown(timestamp);
@@ -2621,12 +2638,13 @@ namespace openvrml {
      * @param routes
      */
     proto_node_class::
-    proto_node_class(openvrml::browser & browser,
-                     const node_interface_set & interfaces,
-                     const default_value_map_t & default_value_map,
-                     const std::vector<node_ptr> & impl_nodes,
-                     const is_map_t & is_map,
-                     const routes_t & routes):
+    proto_node_class(
+        openvrml::browser & browser,
+        const node_interface_set & interfaces,
+        const default_value_map_t & default_value_map,
+        const std::vector<boost::intrusive_ptr<node> > & impl_nodes,
+        const is_map_t & is_map,
+        const routes_t & routes):
         node_class(browser),
         interfaces(interfaces),
         default_value_map(default_value_map),
@@ -5935,7 +5953,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
 /**
  * @internal
  *
- * @var openvrml::node_ptr openvrml::browser::default_viewpoint_
+ * @var boost::intrusive_ptr<openvrml::node> openvrml::browser::default_viewpoint_
  *
  * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
  *        is bound.
@@ -5952,7 +5970,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
 /**
  * @internal
  *
- * @var openvrml::node_ptr openvrml::browser::default_navigation_info_
+ * @var boost::intrusive_ptr<openvrml::node> openvrml::browser::default_navigation_info_
  *
  * @brief The "default" navigation_info_node used when no navigation_info_node
  *        in the scene is bound.
@@ -6177,7 +6195,8 @@ openvrml::browser::~browser() throw ()
  *
  * @return the root nodes for the browser.
  */
-const std::vector<openvrml::node_ptr> & openvrml::browser::root_nodes() const
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::browser::root_nodes() const
     throw ()
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
@@ -6488,7 +6507,9 @@ void openvrml::browser::world_url(const std::string & str)
  *
  * @param nodes new root nodes for the world.
  */
-void openvrml::browser::replace_world(const std::vector<node_ptr> & nodes)
+void
+openvrml::browser::replace_world(
+    const std::vector<boost::intrusive_ptr<node> > & nodes)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     const double now = browser::current_time();
@@ -6542,7 +6563,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                 const string viewpoint_node_id = uri(this->url()).fragment();
                 if (!viewpoint_node_id.empty()) {
                     if (!this->nodes().empty()) {
-                        const node_ptr & n = this->nodes()[0];
+                        const boost::intrusive_ptr<node> & n = this->nodes()[0];
                         if (n) {
                             node * const vp =
                                 n->scope()->find_node(viewpoint_node_id);
@@ -6645,10 +6666,10 @@ void openvrml::browser::description(const std::string & description)
  * @exception invalid_vrml      if @p in has invalid VRML syntax.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-const std::vector<openvrml::node_ptr>
+const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::browser::create_vrml_from_stream(std::istream & in)
 {
-    std::vector<node_ptr> nodes;
+    std::vector<boost::intrusive_ptr<node> > nodes;
     try {
         assert(this->scene_);
         switch (this->scene_->profile()) {
@@ -6688,7 +6709,7 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
 struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
     vrml_from_url_creator(openvrml::browser & browser,
                           const std::vector<std::string> & url,
-                          const node_ptr & node,
+                          const boost::intrusive_ptr<node> & node,
                           const std::string & event)
         throw (unsupported_interface, std::bad_cast):
         browser_(&browser),
@@ -6719,7 +6740,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
 private:
     openvrml::browser * const browser_;
     const std::vector<std::string> * const url_;
-    const node_ptr node_;
+    const boost::intrusive_ptr<node> node_;
     mfnode_listener * const listener_;
 };
 
@@ -6742,7 +6763,7 @@ private:
 void
 openvrml::browser::
 create_vrml_from_url(const std::vector<std::string> & url,
-                     const node_ptr & node,
+                     const boost::intrusive_ptr<node> & node,
                      const std::string & event)
     throw (unsupported_interface, std::bad_cast, boost::thread_resource_error)
 {
@@ -7459,7 +7480,7 @@ struct openvrml::scene::load_scene {
 
         assert(scene.url_.empty());
 
-        vector<node_ptr> nodes;
+        vector<boost::intrusive_ptr<node> > nodes;
         try {
             using boost::algorithm::iequals;
             
@@ -7542,7 +7563,8 @@ void openvrml::scene::load(const std::vector<std::string> & url)
 void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
+    for (std::vector<boost::intrusive_ptr<node> >::iterator node(
+             this->nodes_.begin());
          node != this->nodes_.end();
          ++node) {
         assert(*node);
@@ -7558,7 +7580,8 @@ void openvrml::scene::initialize(const double timestamp) throw (std::bad_alloc)
  *
  * @return the root nodes for the scene.
  */
-const std::vector<openvrml::node_ptr> & openvrml::scene::nodes() const throw()
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::scene::nodes() const throw()
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     return this->nodes_;
@@ -7574,7 +7597,7 @@ const std::vector<openvrml::node_ptr> & openvrml::scene::nodes() const throw()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::scene::nodes(const std::vector<node_ptr> & n)
+void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
     throw (std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
@@ -7629,11 +7652,12 @@ void openvrml::scene::render(openvrml::viewer & viewer,
                              rendering_context context)
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
-         node != this->nodes_.end();
-         ++node) {
-        assert(*node);
-        child_node * child = node_cast<child_node *>(node->get());
+    for (std::vector<boost::intrusive_ptr<node> >::iterator n(
+             this->nodes_.begin());
+         n != this->nodes_.end();
+         ++n) {
+        assert(*n);
+        child_node * child = node_cast<child_node *>(n->get());
         if (child) { child->render_child(viewer, context); }
     }
 }
@@ -7763,10 +7787,11 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
 void openvrml::scene::shutdown(const double timestamp) throw ()
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
-    for (std::vector<node_ptr>::iterator node(this->nodes_.begin());
-         node != this->nodes_.end();
-         ++node) {
-        if (*node) { (*node)->shutdown(timestamp); }
+    for (std::vector<boost::intrusive_ptr<node> >::iterator n(
+             this->nodes_.begin());
+         n != this->nodes_.end();
+         ++n) {
+        if (*n) { (*n)->shutdown(timestamp); }
     }
 }
 
@@ -7814,13 +7839,13 @@ openvrml::null_node_type::do_interfaces() const throw ()
     return interfaces;
 }
 
-const openvrml::node_ptr
+const boost::intrusive_ptr<openvrml::node>
 openvrml::null_node_type::
 do_create_node(const boost::shared_ptr<openvrml::scope> &,
                const initial_value_map &) const
     throw ()
 {
     assert(false);
-    static const node_ptr node;
+    static const boost::intrusive_ptr<node> node;
     return node;
 }

@@ -27,6 +27,7 @@
 #   include <list>
 #   include <set>
 #   include <utility>
+#   include <boost/thread/mutex.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
@@ -229,9 +230,10 @@ namespace openvrml {
         const openvrml::node_class & node_class() const throw ();
         const std::string & id() const throw ();
         const node_interface_set & interfaces() const throw ();
-        const node_ptr create_node(const boost::shared_ptr<scope> & scope,
-                                   const initial_value_map & initial_values =
-                                   initial_value_map()) const
+        const boost::intrusive_ptr<node>
+        create_node(const boost::shared_ptr<scope> & scope,
+                    const initial_value_map & initial_values =
+                    initial_value_map()) const
             throw (unsupported_interface, std::bad_cast, std::bad_alloc);
 
     protected:
@@ -240,7 +242,7 @@ namespace openvrml {
 
     private:
         virtual const node_interface_set & do_interfaces() const throw () = 0;
-        virtual const node_ptr
+        virtual const boost::intrusive_ptr<node>
         do_create_node(const boost::shared_ptr<scope> & scope,
                        const initial_value_map & initial_values) const
             throw (unsupported_interface, std::bad_cast, std::bad_alloc) = 0;
@@ -387,6 +389,9 @@ namespace openvrml {
         friend class exposedfield<mfvec3f>;
         friend class exposedfield<mfvec3d>;
 
+        mutable boost::mutex ref_count_mutex_;
+        mutable size_t ref_count_;
+
         mutable boost::recursive_mutex mutex_;
         const node_type & type_;
         boost::shared_ptr<openvrml::scope> scope_;
@@ -394,7 +399,14 @@ namespace openvrml {
         bool modified_;
 
     public:
+        static const boost::intrusive_ptr<node> self_tag;
+
         virtual ~node() throw () = 0;
+
+        void add_ref() const throw ();
+        void remove_ref() const throw ();
+        void release() const throw ();
+        size_t use_count() const throw ();
 
         const node_type & type() const throw ();
 
@@ -483,6 +495,41 @@ namespace openvrml {
         virtual transform_node * to_transform() throw ();
         virtual viewpoint_node * to_viewpoint() throw ();
     };
+
+    inline void node::add_ref() const throw ()
+    {
+        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+        ++this->ref_count_;
+    }
+
+    inline void intrusive_ptr_add_ref(const node * n) throw ()
+    {
+        assert(n);
+        n->add_ref();
+    }
+
+    inline void node::remove_ref() const throw ()
+    {
+        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+        assert(this->ref_count_ > 0);
+        --this->ref_count_;
+    }
+
+    inline void node::release() const throw ()
+    {
+        bool delete_me;
+        {
+            boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+            delete_me = (--this->ref_count_ == 0);
+        }
+        if (delete_me) { delete this; }
+    }
+
+    inline void intrusive_ptr_release(const node * n) throw ()
+    {
+        assert(n);
+        n->release();
+    }
 
     inline const boost::shared_ptr<scope> & node::scope() const throw ()
     {
@@ -749,9 +796,12 @@ namespace openvrml {
 
         void render_appearance(viewer & v, rendering_context context);
 
-        virtual const node_ptr & material() const throw () = 0;
-        virtual const node_ptr & texture() const throw () = 0;
-        virtual const node_ptr & texture_transform() const throw () = 0;
+        virtual const boost::intrusive_ptr<node> & material() const
+            throw () = 0;
+        virtual const boost::intrusive_ptr<node> & texture() const
+            throw () = 0;
+        virtual const boost::intrusive_ptr<node> & texture_transform() const
+            throw () = 0;
 
     protected:
         appearance_node(const node_type & type,
@@ -898,7 +948,8 @@ namespace openvrml {
     public:
         virtual ~grouping_node() throw () = 0;
 
-        const std::vector<node_ptr> & children() const throw ();
+        const std::vector<boost::intrusive_ptr<node> > & children() const
+            throw ();
         void activate_pointing_device_sensors(double timestamp,
                                               bool over,
                                               bool active,
@@ -911,7 +962,8 @@ namespace openvrml {
 
     private:
         virtual grouping_node * to_grouping() throw ();
-        virtual const std::vector<node_ptr> & do_children() const throw () = 0;
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw () = 0;
     };
 
 
@@ -1161,8 +1213,8 @@ namespace openvrml {
         virtual ~node_traverser() throw () = 0;
 
         void traverse(node & n);
-        void traverse(const node_ptr & node);
-        void traverse(const std::vector<node_ptr> & nodes);
+        void traverse(const boost::intrusive_ptr<node> & node);
+        void traverse(const std::vector<boost::intrusive_ptr<node> > & nodes);
 
     protected:
         void halt_traversal() throw ();

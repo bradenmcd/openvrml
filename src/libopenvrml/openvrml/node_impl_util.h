@@ -203,7 +203,7 @@ namespace openvrml {
         private:
             virtual const openvrml::node_interface_set & do_interfaces() const
                 throw ();
-            virtual const openvrml::node_ptr
+            virtual const boost::intrusive_ptr<openvrml::node>
             do_create_node(
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const openvrml::initial_value_map & initial_values) const
@@ -926,7 +926,7 @@ namespace openvrml {
         }
 
         template <typename Node>
-        const openvrml::node_ptr
+        const boost::intrusive_ptr<openvrml::node>
         node_type_impl<Node>::
         do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                        const openvrml::initial_value_map & initial_values)
@@ -937,7 +937,7 @@ namespace openvrml {
             using namespace openvrml;
 
             Node * const concrete_node_ptr = new Node(*this, scope);
-            const node_ptr result(concrete_node_ptr);
+            const boost::intrusive_ptr<node> result(concrete_node_ptr);
             for (initial_value_map::const_iterator initial_value =
                      initial_values.begin();
                  initial_value != initial_values.end();

@@ -932,7 +932,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::node_ptr openvrml::node_impl_util::node_type_impl::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const openvrml::initial_value_map & initial_values) const throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
+ * @fn const boost::intrusive_ptr<openvrml::node> openvrml::node_impl_util::node_type_impl::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const openvrml::initial_value_map & initial_values) const throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
  *
  * @brief Create a node instance.
  *
