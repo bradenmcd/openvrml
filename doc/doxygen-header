@@ -13,6 +13,7 @@
 <link rel="appendix" href="conformance" title="Conformance Test Results">
 <style type="text/css">
 @import url("doxygen.css");
+@import url("tabs.css");
 @import url("http://openvrml.org/openvrml.css");
 
 body, td {
