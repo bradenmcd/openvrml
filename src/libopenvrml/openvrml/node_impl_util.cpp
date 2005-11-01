@@ -32,6 +32,14 @@
  * <code>openvrml::node_impl_util</code> namespace can make node implementation
  * more concise by abstracting and providing code that many node
  * implementations are likely to have in common.
+ *
+ * Specifically, <code>node_type_impl</code> centralizes the logic for
+ * generalized field access. By using an instance of this class template
+ * for your <code>openvrml::node_type</code> implementation you can avoid a lot
+ * of tedious and repetitive code to implement
+ * <code>openvrml::node::do_field</code>,
+ * <code>openvrml::node::do_event_listener</code>, and
+ * <code>openvrml::node::do_event_emitter</code>.
  */
 
 /**

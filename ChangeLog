@@ -1,3 +1,8 @@
+2005-11-01 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp:  Improved
+	documentation for openvrml::node_impl_util namespace.
+
 2005-10-29 Braden McDaniel  <braden@endoframe.com>
 
 	Use an intrusive reference count for nodes instead of node_ptr.
