@@ -1227,8 +1227,8 @@ openvrml::script_node::create_emitter(script_node & node,
  */
 openvrml::script_node::set_url_listener_t::
 set_url_listener_t(script_node & node):
-    event_listener(node),
-    openvrml::mfstring_listener(node)
+    node_event_listener(node),
+    node_field_value_listener<mfstring>(node)
 {}
 
 /**
@@ -1495,6 +1495,7 @@ script_node(script_node_class & class_,
     this->add_ref();
     openvrml_::scope_guard guard =
         openvrml_::make_obj_guard(*this, &script_node::remove_ref);
+    boost::ignore_unused_variable_warning(guard);
 
     for (node_interface_set::const_iterator interface = interfaces.begin();
          interface != interfaces.end();

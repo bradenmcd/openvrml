@@ -1,3 +1,20 @@
+2005-11-02 Braden McDaniel  <braden@endoframe.com>
+
+	Factored node-specific parts of event_listener into their own
+	class.  This should accommodate things other than nodes being
+	event listeners.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-11-01 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node_impl_util.cpp:  Improved

@@ -1314,26 +1314,16 @@ namespace {
     {
         class dummy_listener : public openvrml::sfbool_listener {
         public:
-            dummy_listener(self_ref_node & n):
-                openvrml::event_listener(n),
-                openvrml::sfbool_listener(n)
-            {}
-
             virtual ~dummy_listener() throw ()
             {}
 
         private:
-            virtual const std::string do_eventin_id() const throw ()
-            {
-                return std::string();
-            }
-
             virtual void do_process_event(const openvrml::sfbool &, double)
                 throw (std::bad_alloc)
             {}
         };
 
-        static dummy_listener listener(*this);
+        static dummy_listener listener;
         return listener;
     }
 

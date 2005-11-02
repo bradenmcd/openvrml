@@ -37,13 +37,24 @@ namespace openvrml {
     public:
         virtual ~event_listener() throw () = 0;
 
-        openvrml::node & node() const throw ();
-        const std::string eventin_id() const throw ();
-
         virtual field_value::type_id type() const throw () = 0;
 
     protected:
-        explicit event_listener(openvrml::node & node) throw ();
+        event_listener() throw ();
+    };
+
+
+    class OPENVRML_API node_event_listener : public virtual event_listener {
+        openvrml::node * node_;
+
+    public:
+        virtual ~node_event_listener() throw ();
+
+        openvrml::node & node() const throw ();
+        const std::string eventin_id() const throw ();
+
+    protected:
+        explicit node_event_listener(openvrml::node & n) throw ();
 
     private:
         virtual const std::string do_eventin_id() const throw () = 0;
@@ -62,7 +73,7 @@ namespace openvrml {
         virtual field_value::type_id type() const throw ();
 
     protected:
-        explicit field_value_listener(openvrml::node & node) throw ();
+        explicit field_value_listener() throw ();
 
     private:
         virtual void do_process_event(const FieldValue & value,
@@ -71,10 +82,7 @@ namespace openvrml {
     };
 
     template <typename FieldValue>
-    field_value_listener<FieldValue>::field_value_listener(
-        openvrml::node & node)
-        throw ():
-        event_listener(node)
+    field_value_listener<FieldValue>::field_value_listener() throw ()
     {}
 
     template <typename FieldValue>
@@ -123,6 +131,30 @@ namespace openvrml {
     typedef field_value_listener<mfvec2d> mfvec2d_listener;
     typedef field_value_listener<mfvec3f> mfvec3f_listener;
     typedef field_value_listener<mfvec3d> mfvec3d_listener;
+
+
+    template <typename FieldValue>
+    class OPENVRML_API node_field_value_listener :
+        public virtual node_event_listener,
+        public field_value_listener<FieldValue> {
+    public:
+        virtual ~node_field_value_listener() throw ();
+
+    protected:
+        explicit node_field_value_listener(openvrml::node & n) throw ();
+    };
+
+    template <typename FieldValue>
+    node_field_value_listener<FieldValue>::
+    node_field_value_listener(openvrml::node & n)
+        throw ():
+        node_event_listener(n)
+    {}
+
+    template <typename FieldValue>
+    node_field_value_listener<FieldValue>::~node_field_value_listener()
+        throw ()
+    {}
 
 
     class OPENVRML_API event_emitter : boost::noncopyable {

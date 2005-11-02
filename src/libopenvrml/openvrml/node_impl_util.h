@@ -223,7 +223,7 @@ namespace openvrml {
 
 
         template <typename Node>
-        class event_listener_base : public virtual event_listener {
+        class event_listener_base : public virtual node_event_listener {
         public:
             virtual ~event_listener_base() throw () = 0;
 
@@ -239,7 +239,7 @@ namespace openvrml {
                 std::unary_function<typename event_listener_map_t::value_type,
                                     bool> {
                 explicit event_listener_equal_to(
-                    const event_listener & listener):
+                    const node_event_listener & listener):
                     listener_(&listener)
                 {}
 
@@ -252,7 +252,7 @@ namespace openvrml {
                 }
 
             private:
-                const event_listener * listener_;
+                const node_event_listener * listener_;
             };
 
             virtual const std::string do_eventin_id() const throw ();
@@ -261,7 +261,7 @@ namespace openvrml {
         template <typename Node>
         event_listener_base<Node>::event_listener_base(openvrml::node & n)
             throw ():
-            event_listener(n)
+            node_event_listener(n)
         {}
 
         template <typename Node>
@@ -372,6 +372,33 @@ namespace openvrml {
         protected:
             typedef Derived self_t;
 
+            typedef node_field_value_listener<sfbool> sfbool_listener;
+            typedef node_field_value_listener<sfcolor> sfcolor_listener;
+            typedef node_field_value_listener<sffloat> sffloat_listener;
+            typedef node_field_value_listener<sfdouble> sfdouble_listener;
+            typedef node_field_value_listener<sfimage> sfimage_listener;
+            typedef node_field_value_listener<sfint32> sfint32_listener;
+            typedef node_field_value_listener<sfnode> sfnode_listener;
+            typedef node_field_value_listener<sfrotation> sfrotation_listener;
+            typedef node_field_value_listener<sfstring> sfstring_listener;
+            typedef node_field_value_listener<sftime> sftime_listener;
+            typedef node_field_value_listener<sfvec2f> sfvec2f_listener;
+            typedef node_field_value_listener<sfvec2d> sfvec2d_listener;
+            typedef node_field_value_listener<sfvec3f> sfvec3f_listener;
+            typedef node_field_value_listener<sfvec3d> sfvec3d_listener;
+            typedef node_field_value_listener<mfcolor> mfcolor_listener;
+            typedef node_field_value_listener<mffloat> mffloat_listener;
+            typedef node_field_value_listener<mfdouble> mfdouble_listener;
+            typedef node_field_value_listener<mfint32> mfint32_listener;
+            typedef node_field_value_listener<mfnode> mfnode_listener;
+            typedef node_field_value_listener<mfrotation> mfrotation_listener;
+            typedef node_field_value_listener<mfstring> mfstring_listener;
+            typedef node_field_value_listener<mftime> mftime_listener;
+            typedef node_field_value_listener<mfvec2f> mfvec2f_listener;
+            typedef node_field_value_listener<mfvec2d> mfvec2d_listener;
+            typedef node_field_value_listener<mfvec3f> mfvec3f_listener;
+            typedef node_field_value_listener<mfvec3d> mfvec3d_listener;
+
             template <typename FieldValue>
             class event_emitter :
                 public event_emitter_base<Derived>,
@@ -454,8 +481,9 @@ namespace openvrml {
         abstract_node<Derived>::exposedfield<FieldValue>::
         exposedfield(openvrml::node & node,
                      const typename FieldValue::value_type & value):
-            openvrml::event_listener(node),
+            node_event_listener(node),
             openvrml::event_emitter(static_cast<const field_value &>(*this)),
+            node_field_value_listener<FieldValue>(node),
             event_listener_base<Derived>(node),
             event_emitter_base<Derived>(
                 node,
@@ -467,8 +495,11 @@ namespace openvrml {
         template <typename FieldValue>
         abstract_node<Derived>::exposedfield<FieldValue>::
         exposedfield(const exposedfield<FieldValue> & obj) throw ():
-            openvrml::event_listener(obj.openvrml::event_listener::node()),
+            openvrml::event_listener(),
+            node_event_listener(obj.node_event_listener::node()),
             openvrml::event_emitter(static_cast<const field_value &>(*this)),
+            node_field_value_listener<FieldValue>(
+                obj.node_event_listener::node()),
             event_listener_base<Derived>(
                 obj.event_listener_base<Derived>::node()),
             event_emitter_base<Derived>(

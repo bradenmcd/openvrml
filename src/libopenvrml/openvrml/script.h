@@ -135,7 +135,9 @@ namespace openvrml {
         };
 
         template <typename FieldValue>
-        class script_event_listener : public field_value_listener<FieldValue> {
+        class script_event_listener :
+            public node_field_value_listener<FieldValue> {
+
             const std::string id;
 
         public:
@@ -220,7 +222,7 @@ namespace openvrml {
         create_emitter(script_node & node, const field_value & value)
             throw (std::bad_alloc);
 
-        class set_url_listener_t : public openvrml::mfstring_listener {
+        class set_url_listener_t : public node_field_value_listener<mfstring> {
         public:
             explicit set_url_listener_t(script_node & node);
             virtual ~set_url_listener_t() throw ();
@@ -298,8 +300,8 @@ namespace openvrml {
     script_node::script_event_listener<FieldValue>::script_event_listener(
         const std::string & id,
         script_node & node):
-        openvrml::event_listener(node),
-        field_value_listener<FieldValue>(node),
+        node_event_listener(node),
+        node_field_value_listener<FieldValue>(node),
         id(id)
     {}
 

@@ -32,22 +32,9 @@
  */
 
 /**
- * @internal
- *
- * @var openvrml::node * openvrml::event_listener::node_
- *
- * @brief The <code>node</code> to which the <code>event_listener</code>
- *        belongs.
- */
-
-/**
  * @brief Construct.
- *
- * @param node  the <code>node</code> to which the <code>event_listener</code>
- *              belongs.
  */
-openvrml::event_listener::event_listener(openvrml::node & node) throw ():
-    node_(&node)
+openvrml::event_listener::event_listener() throw ()
 {}
 
 /**
@@ -55,40 +42,6 @@ openvrml::event_listener::event_listener(openvrml::node & node) throw ():
  */
 openvrml::event_listener::~event_listener() throw ()
 {}
-
-/**
- * @brief The <code>node</code> to which the <code>event_listener</code>
- *        belongs.
- *
- * @return the <code>node</code> to which the <code>event_listener</code>
- *         belongs.
- */
-openvrml::node & openvrml::event_listener::node() const throw ()
-{
-    return *this->node_;
-}
-
-/**
- * @brief The associated eventIn identifier.
- *
- * This function delegates to <code>event_listener::do_eventin_id</code>.
- *
- * @return the associated eventIn identifier.
- */
-const std::string openvrml::event_listener::eventin_id() const throw ()
-{
-    return this->do_eventin_id();
-}
-
-/**
- * @fn const std::string openvrml::event_listener::do_eventin_id() const throw ()
- *
- * @brief The associated eventIn identifier.
- *
- * Concrete subclasses must implement this function.
- *
- * @return the associated eventIn identifier.
- */
 
 /**
  * @fn openvrml::field_value::type_id openvrml::event_listener::type() const throw ()
@@ -100,6 +53,74 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  *         event listener.
  */
 
+
+/**
+ * @class openvrml::node_event_listener
+ *
+ * @brief Base class for event listeners of nodes.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::node * openvrml::node_event_listener::node_
+ *
+ * @brief The <code>node</code> to which the <code>node_event_listener</code>
+ *        belongs.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param n the <code>node</code> to which the <code>node_event_listener</code>
+ *          belongs.
+ */
+openvrml::node_event_listener::node_event_listener(openvrml::node & n)
+    throw ():
+    node_(&n)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::node_event_listener::~node_event_listener() throw ()
+{}
+
+/**
+ * @brief The <code>node</code> to which the <code>node_event_listener</code>
+ *        belongs.
+ *
+ * @return the <code>node</code> to which the <code>node_event_listener</code>
+ *         belongs.
+ */
+openvrml::node & openvrml::node_event_listener::node() const throw ()
+{
+    return *this->node_;
+}
+
+/**
+ * @brief The associated eventIn identifier.
+ *
+ * This function delegates to <code>node_event_listener::do_eventin_id</code>.
+ *
+ * @return the associated eventIn identifier.
+ */
+const std::string openvrml::node_event_listener::eventin_id() const throw ()
+{
+    return this->do_eventin_id();
+}
+
+/**
+ * @fn const std::string openvrml::node_event_listener::do_eventin_id() const throw ()
+ *
+ * @brief The associated eventIn identifier.
+ *
+ * Concrete subclasses must implement this function.
+ *
+ * @return the associated eventIn identifier.
+ */
+
+
 /**
  * @class openvrml::field_value_listener
  *
@@ -107,7 +128,7 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::field_value_listener<FieldValue>::field_value_listener(openvrml::node & node) throw ()
+ * @fn openvrml::field_value_listener::field_value_listener() throw ()
  *
  * @brief Construct.
  *
@@ -115,13 +136,13 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::field_value_listener<FieldValue>::~field_value_listener() throw ()
+ * @fn openvrml::field_value_listener::~field_value_listener() throw ()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn openvrml::field_value::type_id openvrml::field_value_listener<FieldValue>::type() const throw ()
+ * @fn openvrml::field_value::type_id openvrml::field_value_listener::type() const throw ()
  *
  * @brief <code>FieldValue::field_value_type_id</code>.
  *
@@ -129,7 +150,7 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn void openvrml::field_value_listener<FieldValue>::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::field_value_listener::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Process an event.
  *
@@ -140,7 +161,7 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn void openvrml::field_value_listener<FieldValue>::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::field_value_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
  *
  * @brief Called by
  *      <code>field_value_listener&lt;FieldValue&gt;::do_process_event</code>.
@@ -152,6 +173,7 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
+
 
 /**
  * @typedef openvrml::sfbool_listener
@@ -271,6 +293,28 @@ const std::string openvrml::event_listener::eventin_id() const throw ()
  * @typedef openvrml::mfvec3f_listener
  *
  * @brief mfvec3f event listener.
+ */
+
+
+/**
+ * @class openvrml::node_field_value_listener
+ *
+ * @brief Base class for <code>field_value_listener</code>s that are members
+ *        of nodes.
+ */
+
+/**
+ * @fn openvrml::node_field_value_listener::node_field_value_listener(openvrml::node & n) throw ()
+ *
+ * @brief Construct.
+ *
+ * @param n the node that the listener is a member of.
+ */
+
+/**
+ * @fn openvrml::node_field_value_listener::~node_field_value_listener() throw ()
+ *
+ * @brief Destroy.
  */
 
 

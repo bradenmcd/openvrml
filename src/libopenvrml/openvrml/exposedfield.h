@@ -28,9 +28,10 @@
 namespace openvrml {
 
     template <typename FieldValue>
-    class OPENVRML_API exposedfield : public FieldValue,
-                                      public field_value_listener<FieldValue>,
-                                      public field_value_emitter<FieldValue> {
+    class OPENVRML_API exposedfield :
+        public FieldValue,
+        public virtual node_field_value_listener<FieldValue>,
+        public field_value_emitter<FieldValue> {
     public:
         virtual ~exposedfield() throw ();
 
@@ -53,20 +54,21 @@ namespace openvrml {
     inline exposedfield<FieldValue>::exposedfield(
         openvrml::node & node,
         const typename FieldValue::value_type & value):
-        event_listener(node),
+        node_event_listener(node),
+        node_field_value_listener<FieldValue>(node),
         event_emitter(static_cast<const field_value &>(*this)),
         FieldValue(value),
-        field_value_listener<FieldValue>(node),
         field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
     {}
 
     template <typename FieldValue>
     inline exposedfield<FieldValue>::exposedfield(
         const exposedfield<FieldValue> & obj):
-        event_listener(obj.node()),
+        event_listener(),
+        node_event_listener(obj.node()),
+        node_field_value_listener<FieldValue>(obj.node()),
         event_emitter(static_cast<const field_value &>(*this)),
         FieldValue(obj),
-        field_value_listener<FieldValue>(obj.node()),
         field_value_emitter<FieldValue>(static_cast<FieldValue &>(*this))
     {}
 

@@ -198,7 +198,7 @@ namespace openvrml {
      */
     class OPENVRML_LOCAL proto_node : public node {
         template <typename FieldValue>
-        class proto_eventin : public field_value_listener<FieldValue> {
+        class proto_eventin : public node_field_value_listener<FieldValue> {
             typedef std::set<field_value_listener<FieldValue> *> listeners;
             listeners listeners_;
 
@@ -233,7 +233,7 @@ namespace openvrml {
         template <typename FieldValue>
         class proto_eventout : public field_value_emitter<FieldValue> {
         protected:
-            class listener_t : public field_value_listener<FieldValue> {
+            class listener_t : public node_field_value_listener<FieldValue> {
                 proto_eventout & emitter;
 
             public:
@@ -1002,8 +1002,8 @@ namespace openvrml {
      */
     template <typename FieldValue>
     proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
-        openvrml::event_listener(node),
-        field_value_listener<FieldValue>(node)
+        node_event_listener(node),
+        node_field_value_listener<FieldValue>(node)
     {}
 
     /**
@@ -1379,8 +1379,8 @@ namespace openvrml {
     listener_t(proto_eventout & emitter,
                proto_node & node,
                const FieldValue & initial_value):
-        openvrml::event_listener(node),
-        field_value_listener<FieldValue>(node),
+        node_event_listener(node),
+        node_field_value_listener<FieldValue>(node),
         emitter(emitter),
         node(node),
         value(initial_value)
@@ -1782,7 +1782,7 @@ namespace openvrml {
     template <typename FieldValue>
     proto_node::proto_exposedfield<FieldValue>::
     proto_exposedfield(proto_node & node, const FieldValue & initial_value):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(this->listener.value),
         proto_eventin<FieldValue>(node),
         proto_eventout<FieldValue>(node, initial_value)

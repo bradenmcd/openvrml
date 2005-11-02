@@ -474,6 +474,162 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfbool> openvrml::node_impl_util::abstract_node::sfbool_listener
+ *
+ * @brief <code>openvrml::sfbool</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfcolor> openvrml::node_impl_util::abstract_node::sfcolor_listener
+ *
+ * @brief <code>openvrml::sfcolor</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sffloat> openvrml::node_impl_util::abstract_node::sffloat_listener
+ *
+ * @brief <code>openvrml::sffloat</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfdouble> openvrml::node_impl_util::abstract_node::sfdouble_listener
+ *
+ * @brief <code>openvrml::sfdouble</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfimage> openvrml::node_impl_util::abstract_node::sfimage_listener
+ *
+ * @brief <code>openvrml::sfimage</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfint32> openvrml::node_impl_util::abstract_node::sfint32_listener
+ *
+ * @brief <code>openvrml::sfint32</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfnode> openvrml::node_impl_util::abstract_node::sfnode_listener
+ *
+ * @brief <code>openvrml::sfnode</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfrotation> openvrml::node_impl_util::abstract_node::sfrotation_listener
+ *
+ * @brief <code>openvrml::sfrotation</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfstring> openvrml::node_impl_util::abstract_node::sfstring_listener
+ *
+ * @brief <code>openvrml::sfstring</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sftime> openvrml::node_impl_util::abstract_node::sftime_listener
+ *
+ * @brief <code>openvrml::sftime</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfvec2f> openvrml::node_impl_util::abstract_node::sfvec2f_listener
+ *
+ * @brief <code>openvrml::sfvec2f</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfvec2d> openvrml::node_impl_util::abstract_node::sfvec2d_listener
+ *
+ * @brief <code>openvrml::sfvec2d</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfvec3f> openvrml::node_impl_util::abstract_node::sfvec3f_listener
+ *
+ * @brief <code>openvrml::sfvec3f</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::sfvec3d> openvrml::node_impl_util::abstract_node::sfvec3d_listener
+ *
+ * @brief <code>openvrml::sfvec3d</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfcolor> openvrml::node_impl_util::abstract_node::mfcolor_listener
+ *
+ * @brief <code>openvrml::mfcolor</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mffloat> openvrml::node_impl_util::abstract_node::mffloat_listener
+ *
+ * @brief <code>openvrml::mffloat</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfdouble> openvrml::node_impl_util::abstract_node::mfdouble_listener
+ *
+ * @brief <code>openvrml::mfdouble</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfint32> openvrml::node_impl_util::abstract_node::mfint32_listener
+ *
+ * @brief <code>openvrml::mfint32</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfnode> openvrml::node_impl_util::abstract_node::mfnode_listener
+ *
+ * @brief <code>openvrml::mfnode</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfrotation> openvrml::node_impl_util::abstract_node::mfrotation_listener
+ *
+ * @brief <code>openvrml::mfrotation</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfstring> openvrml::node_impl_util::abstract_node::mfstring_listener
+ *
+ * @brief <code>openvrml::mfstring</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mftime> openvrml::node_impl_util::abstract_node::mftime_listener
+ *
+ * @brief <code>openvrml::mftime</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfvec2f> openvrml::node_impl_util::abstract_node::mfvec2f_listener
+ *
+ * @brief <code>openvrml::mfvec2f</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfvec2d> openvrml::node_impl_util::abstract_node::mfvec2d_listener
+ *
+ * @brief <code>openvrml::mfvec2d</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfvec3f> openvrml::node_impl_util::abstract_node::mfvec3f_listener
+ *
+ * @brief <code>openvrml::mfvec3f</code> listener. Provided for convenience.
+ */
+
+/**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfvec3d> openvrml::node_impl_util::abstract_node::mfvec3d_listener
+ *
+ * @brief <code>openvrml::mfvec3d</code> listener. Provided for convenience.
+ */
+
+/**
  * @class openvrml::node_impl_util::abstract_node::event_emitter
  *
  * @brief Concrete event emitter class template.

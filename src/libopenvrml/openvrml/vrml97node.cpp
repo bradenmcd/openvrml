@@ -1149,7 +1149,7 @@ namespace {
 
         class set_color_index_listener :
             public event_listener_base<self_t>,
-            public mfint32_listener {
+            public abstract_node<Derived>::mfint32_listener {
         public:
             explicit set_color_index_listener(
                 abstract_indexed_set_node & node);
@@ -1163,7 +1163,7 @@ namespace {
 
         class set_coord_index_listener :
             public event_listener_base<self_t>,
-            public mfint32_listener {
+            public abstract_node<Derived>::mfint32_listener {
         public:
             explicit set_coord_index_listener(
                 abstract_indexed_set_node & node);
@@ -1214,9 +1214,9 @@ namespace {
     template <typename Derived>
     abstract_indexed_set_node<Derived>::set_color_index_listener::
     set_color_index_listener(abstract_indexed_set_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<Derived>(node),
-        mfint32_listener(node)
+        abstract_node<Derived>::mfint32_listener(node)
     {}
 
     /**
@@ -1264,9 +1264,9 @@ namespace {
     template <typename Derived>
     abstract_indexed_set_node<Derived>::set_coord_index_listener::
     set_coord_index_listener(abstract_indexed_set_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<Derived>(node),
-        mfint32_listener(node)
+        abstract_node<Derived>::mfint32_listener(node)
     {}
 
     /**
@@ -1623,8 +1623,9 @@ namespace {
         typedef typename abstract_node<Derived>::self_t self_t;
 
     protected:
-        class add_children_listener : public event_listener_base<self_t>,
-                                      public mfnode_listener {
+        class add_children_listener :
+            public event_listener_base<self_t>,
+            public abstract_node<Derived>::mfnode_listener {
         public:
             explicit add_children_listener(
                 grouping_node_base<Derived> & node);
@@ -1638,7 +1639,7 @@ namespace {
 
         class remove_children_listener :
             public event_listener_base<self_t>,
-            public mfnode_listener {
+            public abstract_node<Derived>::mfnode_listener {
         public:
             explicit remove_children_listener(
                 grouping_node_base<Derived> & node);
@@ -1712,9 +1713,9 @@ namespace {
     template <typename Derived>
     grouping_node_base<Derived>::add_children_listener::
     add_children_listener(grouping_node_base<Derived> & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<Derived>(node),
-        mfnode_listener(node)
+        abstract_node<Derived>::mfnode_listener(node)
     {}
 
    /**
@@ -1800,9 +1801,9 @@ namespace {
     grouping_node_base<Derived>::
     remove_children_listener::
     remove_children_listener(grouping_node_base<Derived> & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<Derived>(node),
-        mfnode_listener(node)
+        abstract_node<Derived>::mfnode_listener(node)
     {}
 
     /**
@@ -1858,8 +1859,9 @@ namespace {
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
     children_exposedfield(openvrml::node & node) throw ():
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        abstract_node<Derived>::mfnode_listener(node),
         abstract_node<Derived>::template exposedfield<openvrml::mfnode>(
             node)
     {}
@@ -1872,8 +1874,11 @@ namespace {
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
     children_exposedfield(const children_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        abstract_node<Derived>::mfnode_listener(
+            obj.node_event_listener::node()),
         abstract_node<Derived>::template exposedfield<openvrml::mfnode>(obj)
     {}
 
@@ -1907,7 +1912,7 @@ namespace {
         throw (std::bad_alloc)
     {
         self_t & group =
-            dynamic_cast<self_t &>(this->event_listener::node());
+            dynamic_cast<self_t &>(this->node_event_listener::node());
 
         typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
         children_t children;
@@ -2492,8 +2497,9 @@ namespace {
 
         friend class color_interpolator_class;
 
-        class set_fraction_listener : public event_listener_base<self_t>,
-                                      public sffloat_listener {
+        class set_fraction_listener :
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_fraction_listener(color_interpolator_node & node);
             virtual ~set_fraction_listener() throw ();
@@ -2720,8 +2726,9 @@ namespace {
 
         friend class extrusion_class;
 
-        class set_cross_section_listener : public event_listener_base<self_t>,
-                                           public mfvec2f_listener {
+        class set_cross_section_listener :
+            public event_listener_base<self_t>,
+            public mfvec2f_listener {
         public:
             explicit set_cross_section_listener(extrusion_node & node);
             virtual ~set_cross_section_listener() throw ();
@@ -5550,7 +5557,7 @@ namespace {
      */
     background_node::set_bind_listener::
     set_bind_listener(background_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<background_node>(node),
         sfbool_listener(node)
     {}
@@ -5607,8 +5614,9 @@ namespace {
      */
     background_node::back_url_exposedfield::
     back_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<openvrml::mfstring>(node)
     {}
 
@@ -5619,8 +5627,10 @@ namespace {
      */
     background_node::back_url_exposedfield::
     back_url_exposedfield(const back_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -5660,7 +5670,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .back_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5682,8 +5692,9 @@ namespace {
      */
     background_node::bottom_url_exposedfield::
     bottom_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -5694,8 +5705,10 @@ namespace {
      */
     background_node::bottom_url_exposedfield::
     bottom_url_exposedfield(const bottom_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -5735,7 +5748,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .bottom_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5757,8 +5770,9 @@ namespace {
      */
     background_node::front_url_exposedfield::
     front_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -5769,8 +5783,10 @@ namespace {
      */
     background_node::front_url_exposedfield::
     front_url_exposedfield(const front_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -5810,7 +5826,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .front_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5832,8 +5848,9 @@ namespace {
      */
     background_node::left_url_exposedfield::
     left_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -5844,8 +5861,10 @@ namespace {
      */
     background_node::left_url_exposedfield::
     left_url_exposedfield(const left_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -5885,7 +5904,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .left_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5907,8 +5926,9 @@ namespace {
      */
     background_node::right_url_exposedfield::
     right_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -5919,8 +5939,10 @@ namespace {
      */
     background_node::right_url_exposedfield::
     right_url_exposedfield(const right_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -5960,7 +5982,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .right_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5982,8 +6004,9 @@ namespace {
      */
     background_node::top_url_exposedfield::
     top_url_exposedfield(background_node & node) throw ():
-        event_listener(node),
+        node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -5994,8 +6017,10 @@ namespace {
      */
     background_node::top_url_exposedfield::
     top_url_exposedfield(const top_url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -6035,7 +6060,7 @@ namespace {
         throw (std::bad_alloc)
     {
         try {
-            dynamic_cast<background_node &>(this->event_listener::node())
+            dynamic_cast<background_node &>(this->node_event_listener::node())
                 .top_needs_update = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -8001,7 +8026,7 @@ namespace {
      */
     color_interpolator_node::set_fraction_listener::
     set_fraction_listener(color_interpolator_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<color_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -8586,7 +8611,7 @@ namespace {
      */
     coordinate_interpolator_node::set_fraction_listener::
     set_fraction_listener(coordinate_interpolator_node & node):
-        event_listener(node),
+        node_event_listener(node),
         event_listener_base<coordinate_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -9869,7 +9894,7 @@ namespace {
      */
     elevation_grid_node::set_height_listener::
     set_height_listener(elevation_grid_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<elevation_grid_node>(node),
         mffloat_listener(node)
     {}
@@ -10338,7 +10363,7 @@ namespace {
      */
     extrusion_node::set_cross_section_listener::
     set_cross_section_listener(extrusion_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<extrusion_node>(node),
         mfvec2f_listener(node)
     {}
@@ -10388,7 +10413,7 @@ namespace {
      */
     extrusion_node::set_orientation_listener::
     set_orientation_listener(extrusion_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<extrusion_node>(node),
         mfrotation_listener(node)
     {}
@@ -10438,7 +10463,7 @@ namespace {
      */
     extrusion_node::set_scale_listener::
     set_scale_listener(extrusion_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<extrusion_node>(node),
         mfvec2f_listener(node)
     {}
@@ -10487,7 +10512,7 @@ namespace {
      */
     extrusion_node::set_spine_listener::
     set_spine_listener(extrusion_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<extrusion_node>(node),
         mfvec3f_listener(node)
     {}
@@ -11020,7 +11045,7 @@ namespace {
      */
     fog_node::set_bind_listener::
     set_bind_listener(fog_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<fog_node>(node),
         sfbool_listener(node)
     {}
@@ -11759,8 +11784,9 @@ namespace {
      */
     image_texture_node::url_exposedfield::
     url_exposedfield(image_texture_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<mfstring>(node)
     {}
 
@@ -11771,8 +11797,10 @@ namespace {
      */
     image_texture_node::url_exposedfield::
     url_exposedfield(const url_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -11814,7 +11842,7 @@ namespace {
         try {
             image_texture_node & image_texture =
                 dynamic_cast<image_texture_node &>(
-                    this->event_listener::node());
+                    this->node_event_listener::node());
 
             image_texture.url_.mfstring::value(url.value());
             image_texture.texture_needs_update = true;
@@ -12222,7 +12250,7 @@ namespace {
      */
     indexed_face_set_node::set_normal_index_listener::
     set_normal_index_listener(indexed_face_set_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<indexed_face_set_node>(node),
         mfint32_listener(node)
     {}
@@ -12273,7 +12301,7 @@ namespace {
      */
     indexed_face_set_node::set_tex_coord_index_listener::
     set_tex_coord_index_listener(indexed_face_set_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<indexed_face_set_node>(node),
         mfint32_listener(node)
     {}
@@ -13828,7 +13856,7 @@ namespace {
      */
     movie_texture_node::set_speed_listener::
     set_speed_listener(movie_texture_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<movie_texture_node>(node),
         sffloat_listener(node)
     {}
@@ -14581,7 +14609,7 @@ namespace {
      */
     navigation_info_node::set_bind_listener::
     set_bind_listener(navigation_info_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<navigation_info_node>(node),
         sfbool_listener(node)
     {}
@@ -15065,7 +15093,7 @@ namespace {
      */
     normal_interpolator_node::set_fraction_listener::
     set_fraction_listener(normal_interpolator_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<normal_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -15371,7 +15399,7 @@ namespace {
      */
     orientation_interpolator_node::set_fraction_listener::
     set_fraction_listener(orientation_interpolator_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<orientation_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -16800,7 +16828,7 @@ namespace {
      */
     position_interpolator_node::set_fraction_listener::
     set_fraction_listener(position_interpolator_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<position_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -17460,7 +17488,7 @@ namespace {
      */
     scalar_interpolator_node::set_fraction_listener::
     set_fraction_listener(scalar_interpolator_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<scalar_interpolator_node>(node),
         sffloat_listener(node)
     {}
@@ -19210,8 +19238,9 @@ namespace {
      */
     switch_node::choice_exposedfield::
     choice_exposedfield(switch_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfnode_listener(node),
         exposedfield<openvrml::mfnode>(node)
     {}
 
@@ -19222,8 +19251,10 @@ namespace {
      */
     switch_node::choice_exposedfield::
     choice_exposedfield(const choice_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfnode_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfnode>(obj)
     {}
 
@@ -19263,7 +19294,7 @@ namespace {
     {
         try {
             switch_node & n =
-                dynamic_cast<switch_node &>(this->event_listener::node());
+                dynamic_cast<switch_node &>(this->node_event_listener::node());
 
             const int32 which_choice = n.which_choice_.sfint32::value();
             assert(!n.children_.value().empty());
@@ -19296,8 +19327,9 @@ namespace {
      */
     switch_node::which_choice_exposedfield::
     which_choice_exposedfield(switch_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfint32_listener(node),
         exposedfield<openvrml::sfint32>(node, -1)
     {}
 
@@ -19308,8 +19340,10 @@ namespace {
      */
     switch_node::which_choice_exposedfield::
     which_choice_exposedfield(const which_choice_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfint32_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfint32>(obj)
     {}
 
@@ -19350,7 +19384,7 @@ namespace {
     {
         try {
             switch_node & n =
-                dynamic_cast<switch_node &>(this->event_listener::node());
+                dynamic_cast<switch_node &>(this->node_event_listener::node());
 
             assert(!n.children_.value().empty());
             typedef std::vector<boost::intrusive_ptr<openvrml::node> >
@@ -19674,8 +19708,9 @@ namespace {
      */
     text_node::string_exposedfield::
     string_exposedfield(text_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(node),
         exposedfield<openvrml::mfstring>(node)
     {}
 
@@ -19686,8 +19721,10 @@ namespace {
      */
     text_node::string_exposedfield::
     string_exposedfield(const string_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mfstring_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mfstring>(obj)
     {}
 
@@ -19728,7 +19765,7 @@ namespace {
     {
         try {
             text_node & node =
-                dynamic_cast<text_node &>(this->event_listener::node());
+                dynamic_cast<text_node &>(this->node_event_listener::node());
             node.update_ucs4();
             node.update_geometry();
         } catch (std::bad_cast & ex) {
@@ -19751,8 +19788,9 @@ namespace {
      */
     text_node::font_style_exposedfield::
     font_style_exposedfield(text_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfnode_listener(node),
         exposedfield<openvrml::sfnode>(node)
     {}
 
@@ -19763,8 +19801,10 @@ namespace {
      */
     text_node::font_style_exposedfield::
     font_style_exposedfield(const font_style_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfnode_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfnode>(obj)
     {}
 
@@ -19804,7 +19844,7 @@ namespace {
     {
         try {
             text_node & node =
-                dynamic_cast<text_node &>(this->event_listener::node());
+                dynamic_cast<text_node &>(this->node_event_listener::node());
             node.update_ucs4();
             node.update_geometry();
         } catch (std::bad_cast & ex) {
@@ -19827,8 +19867,9 @@ namespace {
      */
     text_node::length_exposedfield::
     length_exposedfield(text_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mffloat_listener(node),
         exposedfield<openvrml::mffloat>(node)
     {}
 
@@ -19839,8 +19880,10 @@ namespace {
      */
     text_node::length_exposedfield::
     length_exposedfield(const length_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        mffloat_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::mffloat>(obj)
     {}
 
@@ -19881,7 +19924,7 @@ namespace {
     {
         try {
             text_node & node =
-                dynamic_cast<text_node &>(this->event_listener::node());
+                dynamic_cast<text_node &>(this->node_event_listener::node());
             node.update_geometry();
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -19903,8 +19946,9 @@ namespace {
      */
     text_node::max_extent_exposedfield::
     max_extent_exposedfield(text_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sffloat_listener(node),
         exposedfield<openvrml::sffloat>(node)
     {}
 
@@ -19915,8 +19959,10 @@ namespace {
      */
     text_node::max_extent_exposedfield::
     max_extent_exposedfield(const max_extent_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sffloat_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sffloat>(obj)
     {}
 
@@ -19957,7 +20003,7 @@ namespace {
     {
         try {
             text_node & node =
-                dynamic_cast<text_node &>(this->event_listener::node());
+                dynamic_cast<text_node &>(this->node_event_listener::node());
             node.update_geometry();
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -22003,7 +22049,7 @@ namespace {
      */
     time_sensor_node::set_cycle_interval_listener::
     set_cycle_interval_listener(time_sensor_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<time_sensor_node>(node),
         sftime_listener(node)
     {}
@@ -22059,8 +22105,9 @@ namespace {
      */
     time_sensor_node::enabled_exposedfield::
     enabled_exposedfield(time_sensor_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfbool_listener(node),
         exposedfield<openvrml::sfbool>(node, true)
     {}
 
@@ -22071,8 +22118,10 @@ namespace {
      */
     time_sensor_node::enabled_exposedfield::
     enabled_exposedfield(const enabled_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfbool_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfbool>(obj)
     {}
 
@@ -22114,7 +22163,7 @@ namespace {
     {
         try {
             time_sensor_node & node =
-                dynamic_cast<time_sensor_node &>(this->event_listener::node());
+                dynamic_cast<time_sensor_node &>(this->node_event_listener::node());
 
             if (enabled.value() != node.is_active_.value()) {
                 if (node.is_active_.value()) {
@@ -22169,7 +22218,7 @@ namespace {
      */
     time_sensor_node::set_start_time_listener::
     set_start_time_listener(time_sensor_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<time_sensor_node>(node),
         sftime_listener(node)
     {}
@@ -23018,8 +23067,9 @@ namespace {
      */
     transform_node::center_exposedfield::
     center_exposedfield(transform_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(node),
         exposedfield<openvrml::sfvec3f>(node)
     {}
 
@@ -23030,8 +23080,10 @@ namespace {
      */
     transform_node::center_exposedfield::
     center_exposedfield(const center_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfvec3f>(obj)
     {}
 
@@ -23071,7 +23123,7 @@ namespace {
     {
         try {
             transform_node & node =
-                dynamic_cast<transform_node &>(this->event_listener::node());
+                dynamic_cast<transform_node &>(this->node_event_listener::node());
             node.bounding_volume_dirty(true);
             node.transform_dirty = true;
         } catch (std::bad_cast & ex) {
@@ -23094,8 +23146,9 @@ namespace {
      */
     transform_node::rotation_exposedfield::
     rotation_exposedfield(transform_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(node),
         exposedfield<openvrml::sfrotation>(node)
     {}
 
@@ -23106,8 +23159,10 @@ namespace {
      */
     transform_node::rotation_exposedfield::
     rotation_exposedfield(const rotation_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfrotation>(obj)
     {}
 
@@ -23147,7 +23202,7 @@ namespace {
     {
         try {
             transform_node & node =
-                dynamic_cast<transform_node &>(this->event_listener::node());
+                dynamic_cast<transform_node &>(this->node_event_listener::node());
             node.bounding_volume_dirty(true);
             node.transform_dirty = true;
         } catch (std::bad_cast & ex) {
@@ -23170,8 +23225,9 @@ namespace {
      */
     transform_node::scale_exposedfield::
     scale_exposedfield(transform_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(node),
         exposedfield<openvrml::sfvec3f>(node, vec3f(1.0f, 1.0f, 1.0f))
     {}
 
@@ -23182,8 +23238,10 @@ namespace {
      */
     transform_node::scale_exposedfield::
     scale_exposedfield(const scale_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfvec3f>(obj)
     {}
 
@@ -23224,7 +23282,7 @@ namespace {
     {
         try {
             transform_node & node =
-                dynamic_cast<transform_node &>(this->event_listener::node());
+                dynamic_cast<transform_node &>(this->node_event_listener::node());
             node.bounding_volume_dirty(true);
             node.transform_dirty = true;
         } catch (std::bad_cast & ex) {
@@ -23247,8 +23305,9 @@ namespace {
      */
     transform_node::scale_orientation_exposedfield::
     scale_orientation_exposedfield(transform_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(node),
         exposedfield<openvrml::sfrotation>(node)
     {}
 
@@ -23260,8 +23319,10 @@ namespace {
     transform_node::scale_orientation_exposedfield::
     scale_orientation_exposedfield(const scale_orientation_exposedfield & obj)
         throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfrotation>(obj)
     {}
 
@@ -23301,7 +23362,7 @@ namespace {
     {
         try {
             transform_node & node =
-                dynamic_cast<transform_node &>(this->event_listener::node());
+                dynamic_cast<transform_node &>(this->node_event_listener::node());
             node.bounding_volume_dirty(true);
             node.transform_dirty = true;
         } catch (std::bad_cast & ex) {
@@ -23324,8 +23385,9 @@ namespace {
      */
     transform_node::translation_exposedfield::
     translation_exposedfield(transform_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(node),
         exposedfield<openvrml::sfvec3f>(node)
     {}
 
@@ -23336,8 +23398,10 @@ namespace {
      */
     transform_node::translation_exposedfield::
     translation_exposedfield(const translation_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfvec3f>(obj)
     {}
 
@@ -23378,7 +23442,7 @@ namespace {
     {
         try {
             transform_node & node =
-                dynamic_cast<transform_node &>(this->event_listener::node());
+                dynamic_cast<transform_node &>(this->node_event_listener::node());
             node.bounding_volume_dirty(true);
             node.transform_dirty = true;
         } catch (std::bad_cast & ex) {
@@ -23969,7 +24033,7 @@ namespace {
      */
     viewpoint_node::set_bind_listener::
     set_bind_listener(viewpoint_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         event_listener_base<viewpoint_node>(node),
         sfbool_listener(node)
     {}
@@ -24025,8 +24089,9 @@ namespace {
      */
     viewpoint_node::orientation_exposedfield::
     orientation_exposedfield(viewpoint_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(node),
         exposedfield<openvrml::sfrotation>(node)
     {}
 
@@ -24037,8 +24102,10 @@ namespace {
      */
     viewpoint_node::orientation_exposedfield::
     orientation_exposedfield(const orientation_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfrotation_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfrotation>(obj)
     {}
 
@@ -24079,7 +24146,7 @@ namespace {
     {
         try {
             viewpoint_node & node =
-                dynamic_cast<viewpoint_node &>(this->event_listener::node());
+                dynamic_cast<viewpoint_node &>(this->node_event_listener::node());
             node.final_transformation_dirty = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -24101,8 +24168,9 @@ namespace {
      */
     viewpoint_node::position_exposedfield::
     position_exposedfield(viewpoint_node & node):
-        openvrml::event_listener(node),
+        node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(node),
         exposedfield<openvrml::sfvec3f>(node, vec3f(0.0f, 0.0f, 10.0f))
     {}
 
@@ -24113,8 +24181,10 @@ namespace {
      */
     viewpoint_node::position_exposedfield::
     position_exposedfield(const position_exposedfield & obj) throw ():
-        openvrml::event_listener(obj.openvrml::event_listener::node()),
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        sfvec3f_listener(obj.node_event_listener::node()),
         exposedfield<openvrml::sfvec3f>(obj)
     {}
 
@@ -24154,7 +24224,8 @@ namespace {
     {
         try {
             viewpoint_node & node =
-                dynamic_cast<viewpoint_node &>(this->event_listener::node());
+                dynamic_cast<viewpoint_node &>(
+                    this->node_event_listener::node());
             node.final_transformation_dirty = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
