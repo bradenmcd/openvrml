@@ -1,5 +1,13 @@
 2005-11-02 Braden McDaniel  <braden@endoframe.com>
 
+	field_value's reference-counted value object needs to be
+	protected by a mutex.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
+2005-11-02 Braden McDaniel  <braden@endoframe.com>
+
 	Factored node-specific parts of event_listener into their own
 	class.  This should accommodate things other than nodes being
 	event listeners.

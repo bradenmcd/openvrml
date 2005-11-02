@@ -31,6 +31,7 @@
 #   include <boost/intrusive_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
+#   include <boost/thread/mutex.hpp>
 #   include <openvrml/basetypes.h>
 
 namespace openvrml {
@@ -58,15 +59,22 @@ namespace openvrml {
 
         template <typename ValueType>
         class counted_impl : public counted_impl_base {
+            mutable boost::mutex mutex_;
             boost::shared_ptr<ValueType> value_;
 
         public:
             explicit counted_impl(const ValueType & value)
                 throw (std::bad_alloc);
+            counted_impl(const counted_impl<ValueType> & ci) throw ();
+            virtual ~counted_impl() throw ();
+
             const ValueType & value() const throw ();
             void value(const ValueType & val) throw (std::bad_alloc);
 
         private:
+            counted_impl<ValueType> &
+            operator=(const counted_impl<ValueType> &);
+
             virtual std::auto_ptr<counted_impl_base> do_clone() const
                 throw (std::bad_alloc);
         };
@@ -158,9 +166,23 @@ namespace openvrml {
     {}
 
     template <typename ValueType>
+    field_value::counted_impl<ValueType>::
+    counted_impl(const counted_impl<ValueType> & ci) throw ():
+        counted_impl_base()
+    {
+        boost::mutex::scoped_lock lock(ci.mutex_);
+        value_ = ci.value_;
+    }
+
+    template <typename ValueType>
+    field_value::counted_impl<ValueType>::~counted_impl() throw ()
+    {}
+
+    template <typename ValueType>
     const ValueType & field_value::counted_impl<ValueType>::value() const
         throw ()
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
         assert(this->value_);
         return *this->value_;
     }
@@ -169,6 +191,7 @@ namespace openvrml {
     void field_value::counted_impl<ValueType>::value(const ValueType & val)
         throw (std::bad_alloc)
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
         assert(this->value_);
         if (!this->value_.unique()) {
             this->value_.reset(new ValueType(val));
@@ -217,7 +240,7 @@ namespace openvrml {
         throw (std::bad_alloc)
     {
         assert(this->counted_impl_.get());
-        return boost::polymorphic_downcast<
+        boost::polymorphic_downcast<
         counted_impl<typename FieldValue::value_type> *>(
             this->counted_impl_.get())->value(val);
     }

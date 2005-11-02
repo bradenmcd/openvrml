@@ -103,6 +103,12 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
+ * @var boost::mutex openvrml::field_value::counted_impl::mutex_
+ *
+ * @brief Mutex protecting @a value_.
+ */
+
+/**
  * @var boost::shared_ptr<ValueType> openvrml::field_value::counted_impl::value_
  *
  * @brief A <code>shared_ptr</code> to an instance of the
@@ -118,6 +124,26 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  * @param value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @fn openvrml::field_value::counted_impl::counted_impl(const counted_impl<ValueType> & ci) throw ()
+ *
+ * @brief Construct a copy.
+ *
+ * @param ci    the instance to copy.
+ */
+
+/**
+ * @fn openvrml::field_value::counted_impl::~counted_impl() throw ()
+ *
+ * @brief Destroy.
+ */
+
+/**
+ * @fn openvrml::field_value::counted_impl<ValueType> & openvrml::field_value::counted_impl::operator=(const counted_impl<ValueType> &)
+ *
+ * @brief Not implemented.
  */
 
 /**
