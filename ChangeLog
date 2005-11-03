@@ -1,5 +1,12 @@
 2005-11-02 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
+2005-11-02 Braden McDaniel  <braden@endoframe.com>
+
 	field_value's reference-counted value object needs to be
 	protected by a mutex.
 

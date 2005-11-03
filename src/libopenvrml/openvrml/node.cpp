@@ -689,6 +689,8 @@ void openvrml::node_class::do_render(viewer &) const throw ()
  *                                  <code>node_interface</code>s in
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml::node_class::create_type(const std::string & id,
@@ -716,6 +718,7 @@ openvrml::node_class::create_type(const std::string & id,
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @sa node_class::create_type
+ * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
 
@@ -823,7 +826,7 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  * @param initial_values    a map of initial values for the <code>node</code>'s
  *                          fields and exposedFields.
  *
- * @return a node_ptr to a new node.
+ * @return a <code>boost::intrusive_ptr</code> to a new node.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -831,6 +834,8 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  * @exception std::bad_cast         if a value in @p initial_values is the
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @sa http://boost.org/libs/smart_ptr/intrustive_ptr.html
  */
 const boost::intrusive_ptr<openvrml::node>
 openvrml::node_type::
@@ -853,7 +858,7 @@ create_node(const boost::shared_ptr<scope> & scope,
  * @param initial_values    a map of initial values for the <code>node</code>'s
  *                          fields and exposedFields.
  *
- * @return a node_ptr to a new node.
+ * @return a <code>boost::intrusive_ptr</code> to a new node.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -861,6 +866,8 @@ create_node(const boost::shared_ptr<scope> & scope,
  * @exception std::bad_cast         if a value in @p initial_values is the
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @sa http://boost.org/libs/smart_ptr/intrustive_ptr.html
  */
 
 
@@ -1398,6 +1405,8 @@ openvrml::node::self_tag(new self_ref_node);
  * @var boost::shared_ptr<openvrml::scope> openvrml::node::scope_
  *
  * @brief The scope to which the node belongs.
+ *
+ * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
 /**
@@ -1592,6 +1601,8 @@ const std::string & openvrml::node::id() const throw ()
  * @brief Get the scope to which the node belongs.
  *
  * @return the scope to which the node belongs.
+ *
+ * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
 /**

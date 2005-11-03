@@ -58,6 +58,8 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  */
 
 /**
+ * @internal
+ *
  * @class openvrml::field_value::counted_impl_base
  *
  * @brief Base class for the internal reference-counted objects.
@@ -97,6 +99,8 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
+ * @internal
+ *
  * @class openvrml::field_value::counted_impl
  *
  * @brief Concrete reference-counted implementation.
@@ -114,6 +118,8 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  * @brief A <code>shared_ptr</code> to an instance of the
  *        <code>value_type</code> of a
  *        @link openvrml::FieldValueConcept Field Value@endlink.
+ *
+ * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
 /**
@@ -643,13 +649,13 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @par Refinement of
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>,
+ * Default Constructible</a>,
  * <a href="http://www.boost.org/libs/utility/CopyConstructible.html">
- * CopyConstructible</a>,
+ * Copy Constructible</a>,
  * <a href="http://www.sgi.com/tech/stl/Assignable.html">
  * Assignable</a>,
  * <a href="http://www.sgi.com/tech/stl/EqualityComparable.html">
- * EqualityComparable</a>
+ * Equality Comparable</a>
  *
  * @par Associated types
  * <table>
