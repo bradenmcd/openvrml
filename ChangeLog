@@ -1,5 +1,13 @@
 2005-11-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::create_root_scope):  Removed helper class
+	vrml97_node_interface_set_.  This class was probably rendered
+	unnecessary when openvrml::node_interface_set was changed from
+	a class to a typedef of an instance of std::set.
+
+2005-11-03 Braden McDaniel  <braden@endoframe.com>
+
 	Added std::swap specializations for sf* field_value types.
 
 	* src/libopenvrml/openvrml/field_value.cpp

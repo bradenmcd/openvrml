@@ -4155,22 +4155,6 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
     for_each(this->map_.begin(), this->map_.end(), render_node_class(v));
 }
 
-namespace {
-    /**
-     * @internal
-     */
-    class OPENVRML_LOCAL vrml97_node_interface_set_ :
-        public openvrml::node_interface_set {
-    public:
-        vrml97_node_interface_set_(
-            const openvrml::node_interface * const begin,
-            const openvrml::node_interface * const end)
-        {
-            this->insert(begin, end);
-        }
-    };
-}
-
 /**
  * @brief Create a root scope.
  */
@@ -4211,7 +4195,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "bboxSize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Anchor");
@@ -4235,7 +4219,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfnode_id,
                                "textureTransform")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 3);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Appearance");
@@ -4274,7 +4258,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isActive")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:AudioClip");
@@ -4325,7 +4309,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isBound")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 12);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Background");
@@ -4358,7 +4342,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "bboxSize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 6);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Billboard");
@@ -4375,7 +4359,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::field_id,
                                field_value::sfvec3f_id,
                                "size");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class = this->node_class_map_.find("urn:X-openvrml:node:Box");
             assert(node_class);
@@ -4413,7 +4397,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sftime_id,
                                "collideTime")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Collision");
@@ -4430,7 +4414,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::exposedfield_id,
                                field_value::mfcolor_id,
                                "color");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Color");
@@ -4457,7 +4441,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfcolor_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:ColorInterpolator");
@@ -4484,7 +4468,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "bottom")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Cone");
@@ -4501,7 +4485,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::exposedfield_id,
                                field_value::mfvec3f_id,
                                "point");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Coordinate");
@@ -4528,7 +4512,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mfvec3f_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:CoordinateInterpolator");
@@ -4559,7 +4543,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "top")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 5);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Cylinder");
@@ -4601,7 +4585,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "trackPoint_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 9);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:CylinderSensor");
@@ -4631,7 +4615,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "on")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 5);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:DirectionalLight");
@@ -4688,7 +4672,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "zSpacing")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 14);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:ElevationGrid");
@@ -4745,7 +4729,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mfvec3f_id,
                                "spine")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 14);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Extrusion");
@@ -4775,7 +4759,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isBound")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 5);
             node_class = this->node_class_map_.find("urn:X-openvrml:node:Fog");
             assert(node_class);
@@ -4816,7 +4800,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "topToBottom")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 9);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:FontStyle");
@@ -4846,7 +4830,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "bboxSize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 5);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Group");
@@ -4870,7 +4854,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "repeatT")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 3);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:ImageTexture");
@@ -4939,7 +4923,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mfint32_id,
                                "texCoordIndex")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 18);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:IndexedFaceSet");
@@ -4975,7 +4959,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mfint32_id,
                                "coordIndex")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 7);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:IndexedLineSet");
@@ -4999,7 +4983,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "bboxSize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 3);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Inline");
@@ -5023,7 +5007,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mffloat_id,
                                "range")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 3);
             node_class = this->node_class_map_.find("urn:X-openvrml:node:LOD");
             assert(node_class);
@@ -5055,7 +5039,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "transparency")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 6);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Material");
@@ -5097,7 +5081,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isActive")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 9);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:MovieTexture");
@@ -5133,7 +5117,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isBound")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 7);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:NavigationInfo");
@@ -5150,7 +5134,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::exposedfield_id,
                                field_value::mfvec3f_id,
                                "vector");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Normal");
@@ -5177,7 +5161,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::mfvec3f_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:NormalInterpolator");
@@ -5204,7 +5188,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfrotation_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:OrientationInterpolator");
@@ -5229,7 +5213,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "repeatT")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 3);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:PixelTexture");
@@ -5268,7 +5252,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "translation_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:PlaneSensor");
@@ -5304,7 +5288,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "radius")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 7);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:PointLight");
@@ -5325,7 +5309,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfnode_id,
                                "coord")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 2);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:PointSet");
@@ -5352,7 +5336,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:PositionInterpolator");
@@ -5392,7 +5376,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sftime_id,
                                "exitTime")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:ProximitySensor");
@@ -5419,7 +5403,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "value_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:ScalarInterpolator");
@@ -5440,7 +5424,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfnode_id,
                                "geometry")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 2);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Shape");
@@ -5485,7 +5469,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "spatialize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 10);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Sound");
@@ -5502,7 +5486,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::field_id,
                                field_value::sffloat_id,
                                "radius");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Sphere");
@@ -5535,7 +5519,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "trackPoint_changed")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 6);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:SphereSensor");
@@ -5580,7 +5564,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "radius")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 10);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:SpotLight");
@@ -5601,7 +5585,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfint32_id,
                                "whichChoice")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 2);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Switch");
@@ -5628,7 +5612,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sffloat_id,
                                "maxExtent")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Text");
@@ -5645,7 +5629,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                 node_interface(node_interface::exposedfield_id,
                                field_value::mfvec2f_id,
                                "point");
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(&interface, &interface + 1);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:TextureCoordinate");
@@ -5672,7 +5656,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec2f_id,
                                "translation")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 4);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:TextureTransform");
@@ -5714,7 +5698,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sftime_id,
                                "time")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 9);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:TimeSensor");
@@ -5750,7 +5734,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sftime_id,
                                "touchTime")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 7);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:TouchSensor");
@@ -5795,7 +5779,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfvec3f_id,
                                "bboxSize")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 10);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Transform");
@@ -5834,7 +5818,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isBound")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 8);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:Viewpoint");
@@ -5867,7 +5851,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfbool_id,
                                "isActive")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 6);
             node_class = this->node_class_map_
                 .find("urn:X-openvrml:node:VisibilitySensor");
@@ -5888,7 +5872,7 @@ openvrml::browser::create_root_scope(const std::string & uri)
                                field_value::sfstring_id,
                                "title")
             };
-            static const vrml97_node_interface_set_
+            static const node_interface_set
                 interface_set(interfaces, interfaces + 2);
             node_class =
                 this->node_class_map_.find("urn:X-openvrml:node:WorldInfo");
