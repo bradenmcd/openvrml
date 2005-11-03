@@ -1151,6 +1151,93 @@ namespace openvrml {
 namespace std {
 
     template <>
+    OPENVRML_API inline void swap(openvrml::sfbool & a, openvrml::sfbool & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfcolor & a, openvrml::sfcolor & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfdouble & a,
+                                  openvrml::sfdouble & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sffloat & a, openvrml::sffloat & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfimage & a, openvrml::sfimage & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfint32 & a, openvrml::sfint32 & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfnode & a, openvrml::sfnode & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfrotation & a,
+                                  openvrml::sfrotation & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfstring & a,
+                                  openvrml::sfstring & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sftime & a, openvrml::sftime & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfvec2d & a, openvrml::sfvec2d & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfvec2f & a, openvrml::sfvec2f & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfvec3d & a, openvrml::sfvec3d & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfvec3f & a, openvrml::sfvec3f & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
     OPENVRML_API inline void swap(openvrml::mfcolor & a, openvrml::mfcolor & b)
     {
         a.swap(b);

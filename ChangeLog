@@ -1,3 +1,10 @@
+2005-11-03 Braden McDaniel  <braden@endoframe.com>
+
+	Added std::swap specializations for sf* field_value types.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
 2005-11-02 Braden McDaniel  <braden@endoframe.com>
 
 	Added bits missing for sfdouble, mfdouble, sfvec2d, mfvec2d,

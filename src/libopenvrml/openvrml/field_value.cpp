@@ -5830,6 +5830,188 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
 }
 
 /**
+ * @fn template <> void std::swap(openvrml::sfbool & a, openvrml::sfbool & b)
+ *
+ * @relatesalso openvrml::sfbool
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfcolor & a, openvrml::sfcolor & b)
+ *
+ * @relatesalso openvrml::sfcolor
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfdouble & a, openvrml::sfdouble & b)
+ *
+ * @relatesalso openvrml::sfdouble
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sffloat & a, openvrml::sffloat & b)
+ *
+ * @relatesalso openvrml::sffloat
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfimage & a, openvrml::sfimage & b)
+ *
+ * @relatesalso openvrml::sfimage
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfint32 & a, openvrml::sfint32 & b)
+ *
+ * @relatesalso openvrml::sfint32
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfnode & a, openvrml::sfnode & b)
+ *
+ * @relatesalso openvrml::sfnode
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfrotation & a, openvrml::sfrotation & b)
+ *
+ * @relatesalso openvrml::sfrotation
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfstring & a, openvrml::sfstring & b)
+ *
+ * @relatesalso openvrml::sfstring
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sftime & a, openvrml::sftime & b)
+ *
+ * @relatesalso openvrml::sftime
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfvec2d & a, openvrml::sfvec2d & b)
+ *
+ * @relatesalso openvrml::sfvec2d
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfvec2f & a, openvrml::sfvec2f & b)
+ *
+ * @relatesalso openvrml::sfvec2f
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfvec3d & a, openvrml::sfvec3d & b)
+ *
+ * @relatesalso openvrml::sfvec3d
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfvec3f & a, openvrml::sfvec3f & b)
+ *
+ * @relatesalso openvrml::sfvec3f
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
  * @fn template <> void std::swap(openvrml::mfcolor & a, openvrml::mfcolor & b)
  *
  * @relatesalso openvrml::mfcolor
