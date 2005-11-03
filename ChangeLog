@@ -1,5 +1,22 @@
 2005-11-02 Braden McDaniel  <braden@endoframe.com>
 
+	Added bits missing for sfdouble, mfdouble, sfvec2d, mfvec2d,
+	sfvec3d, and mfvec3d.
+
+	* src/libopenvrml/openvrml/event.cpp:  Added missing doc-
+	comments.
+	* src/libopenvrml/openvrml/field_value.cpp:  Added missing doc-
+	comments.
+	* src/libopenvrml/openvrml/field_value.h:  Added specializations
+	of std::swap for sfdouble, mfdouble, sfvec2d, mfvec2d, sfvec3d,
+	and mfvec3d.
+	* src/libopenvrml/openvrml/node_impl_util.cpp:  Added missing
+	doc-comments.
+	* src/libopenvrml/openvrml/node_impl_util.h:  Added missing
+	typedefs for abstract_node event_emitters.
+
+2005-11-02 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements.
 
 	* src/libopenvrml/openvrml/field_value.cpp

@@ -1157,6 +1157,13 @@ namespace std {
     }
 
     template <>
+    OPENVRML_API inline void swap(openvrml::mfdouble & a,
+                                  openvrml::mfdouble & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
     OPENVRML_API inline void swap(openvrml::mffloat & a, openvrml::mffloat & b)
     {
         a.swap(b);
@@ -1195,7 +1202,19 @@ namespace std {
     }
 
     template <>
+    OPENVRML_API inline void swap(openvrml::mfvec2d & a, openvrml::mfvec2d & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
     OPENVRML_API inline void swap(openvrml::mfvec2f & a, openvrml::mfvec2f & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::mfvec3d & a, openvrml::mfvec3d & b)
     {
         a.swap(b);
     }

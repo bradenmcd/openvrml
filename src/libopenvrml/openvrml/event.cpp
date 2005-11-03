@@ -188,6 +188,12 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
+ * @typedef openvrml::sfdouble_listener
+ *
+ * @brief sfdouble event listener.
+ */
+
+/**
  * @typedef openvrml::sffloat_listener
  *
  * @brief sffloat event listener.
@@ -230,9 +236,21 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
+ * @typedef openvrml::sfvec2d_listener
+ *
+ * @brief sfvec2d event listener.
+ */
+
+/**
  * @typedef openvrml::sfvec2f_listener
  *
  * @brief sfvec2f event listener.
+ */
+
+/**
+ * @typedef openvrml::sfvec3d_listener
+ *
+ * @brief sfvec3d event listener.
  */
 
 /**
@@ -245,6 +263,12 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  * @typedef openvrml::mfcolor_listener
  *
  * @brief mfcolor event listener.
+ */
+
+/**
+ * @typedef openvrml::mfdouble_listener
+ *
+ * @brief mfdouble event listener.
  */
 
 /**
@@ -284,9 +308,21 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
+ * @typedef openvrml::mfvec2d_listener
+ *
+ * @brief mfvec2d event listener.
+ */
+
+/**
  * @typedef openvrml::mfvec2f_listener
  *
  * @brief mfvec2f event listener.
+ */
+
+/**
+ * @typedef openvrml::mfvec3d_listener
+ *
+ * @brief mfvec3d event listener.
  */
 
 /**
@@ -553,6 +589,12 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
+ * @typedef openvrml::sfdouble_emitter
+ *
+ * @brief sfdouble event emitter.
+ */
+
+/**
  * @typedef openvrml::sffloat_emitter
  *
  * @brief sffloat event emitter.
@@ -595,9 +637,21 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
+ * @typedef openvrml::sfvec2d_emitter
+ *
+ * @brief sfvec2d event emitter.
+ */
+
+/**
  * @typedef openvrml::sfvec2f_emitter
  *
  * @brief sfvec2f event emitter.
+ */
+
+/**
+ * @typedef openvrml::sfvec3d_emitter
+ *
+ * @brief sfvec3d event emitter.
  */
 
 /**
@@ -610,6 +664,12 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  * @typedef openvrml::mfcolor_emitter
  *
  * @brief mfcolor event emitter.
+ */
+
+/**
+ * @typedef openvrml::mfdouble_emitter
+ *
+ * @brief mfdouble event emitter.
  */
 
 /**
@@ -649,9 +709,21 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
+ * @typedef openvrml::mfvec2d_emitter
+ *
+ * @brief mfvec2d event emitter.
+ */
+
+/**
  * @typedef openvrml::mfvec2f_emitter
  *
  * @brief mfvec2f event emitter.
+ */
+
+/**
+ * @typedef openvrml::mfvec3d_emitter
+ *
+ * @brief mfvec3d event emitter.
  */
 
 /**

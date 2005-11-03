@@ -706,6 +706,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  * @par Models
  * - <code>sfbool</code>
  * - <code>sfcolor</code>
+ * - <code>sfdouble</code>
  * - <code>sffloat</code>
  * - <code>sfimage</code>
  * - <code>sfint32</code>
@@ -713,16 +714,21 @@ std::istream & openvrml::operator>>(std::istream & in,
  * - <code>sfrotation</code>
  * - <code>sfstring</code>
  * - <code>sftime</code>
+ * - <code>sfvec2d</code>
  * - <code>sfvec2f</code>
+ * - <code>sfvec3d</code>
  * - <code>sfvec3f</code>
  * - <code>mfcolor</code>
+ * - <code>mfdouble</code>
  * - <code>mffloat</code>
  * - <code>mfint32</code>
  * - <code>mfnode</code>
  * - <code>mfrotation</code>
  * - <code>mfstring</code>
  * - <code>mftime</code>
+ * - <code>mfvec2d</code>
  * - <code>mfvec2f</code>
+ * - <code>mfvec3d</code>
  * - <code>mfvec3f</code>
  */
 
@@ -5837,6 +5843,19 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  */
 
 /**
+ * @fn template <> void std::swap(openvrml::mfdouble & a, openvrml::mfdouble & b)
+ *
+ * @relatesalso openvrml::mfdouble
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
  * @fn template <> void std::swap(openvrml::mffloat & a, openvrml::mffloat & b)
  *
  * @relatesalso openvrml::mffloat
@@ -5915,9 +5934,35 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  */
 
 /**
+ * @fn template <> void std::swap(openvrml::mfvec2d & a, openvrml::mfvec2d & b)
+ *
+ * @relatesalso openvrml::mfvec2d
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
  * @fn template <> void std::swap(openvrml::mfvec2f & a, openvrml::mfvec2f & b)
  *
  * @relatesalso openvrml::mfvec2f
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::mfvec3d & a, openvrml::mfvec3d & b)
+ *
+ * @relatesalso openvrml::mfvec3d
  *
  * @brief Swap the values of @p a and @p b.
  *

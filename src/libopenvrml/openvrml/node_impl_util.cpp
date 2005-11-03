@@ -663,6 +663,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfdouble> openvrml::node_impl_util::abstract_node::sfdouble_emitter
+ *
+ * @brief <code>openvrml::sfdouble</code> event emitter.
+ */
+
+/**
  * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sffloat> openvrml::node_impl_util::abstract_node::sffloat_emitter
  *
  * @brief <code>openvrml::sffloat</code> event emitter.
@@ -699,9 +705,21 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfvec2d> openvrml::node_impl_util::abstract_node::sfvec2d_emitter
+ *
+ * @brief <code>openvrml::sfvec2d</code> event emitter.
+ */
+
+/**
  * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfvec2f> openvrml::node_impl_util::abstract_node::sfvec2f_emitter
  *
  * @brief <code>openvrml::sfvec2f</code> event emitter.
+ */
+
+/**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfvec3d> openvrml::node_impl_util::abstract_node::sfvec3d_emitter
+ *
+ * @brief <code>openvrml::sfvec3d</code> event emitter.
  */
 
 /**
@@ -714,6 +732,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::mfcolor> openvrml::node_impl_util::abstract_node::mfcolor_emitter
  *
  * @brief <code>openvrml::mfcolor</code> event emitter.
+ */
+
+/**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::mfdouble> openvrml::node_impl_util::abstract_node::mfdouble_emitter
+ *
+ * @brief <code>openvrml::mfdouble</code> event emitter.
  */
 
 /**
@@ -747,9 +771,21 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::mfvec2d> openvrml::node_impl_util::abstract_node::mfvec2d_emitter
+ *
+ * @brief <code>openvrml::mfvec2d</code> event emitter.
+ */
+
+/**
  * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::mfvec2f> openvrml::node_impl_util::abstract_node::mfvec2f_emitter
  *
  * @brief <code>openvrml::mfvec2f</code> event emitter.
+ */
+
+/**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::mfvec3d> openvrml::node_impl_util::abstract_node::mfvec3d_emitter
+ *
+ * @brief <code>openvrml::mfvec3d</code> event emitter.
  */
 
 /**

@@ -410,21 +410,27 @@ namespace openvrml {
 
             typedef event_emitter<sfbool> sfbool_emitter;
             typedef event_emitter<sfcolor> sfcolor_emitter;
+            typedef event_emitter<sfdouble> sfdouble_emitter;
             typedef event_emitter<sffloat> sffloat_emitter;
             typedef event_emitter<sfimage> sfimage_emitter;
             typedef event_emitter<sfnode> sfnode_emitter;
             typedef event_emitter<sfrotation> sfrotation_emitter;
             typedef event_emitter<sfstring> sfstring_emitter;
             typedef event_emitter<sftime> sftime_emitter;
+            typedef event_emitter<sfvec2d> sfvec2d_emitter;
             typedef event_emitter<sfvec2f> sfvec2f_emitter;
+            typedef event_emitter<sfvec3d> sfvec3d_emitter;
             typedef event_emitter<sfvec3f> sfvec3f_emitter;
             typedef event_emitter<mfcolor> mfcolor_emitter;
+            typedef event_emitter<mfdouble> mfdouble_emitter;
             typedef event_emitter<mffloat> mffloat_emitter;
             typedef event_emitter<mfnode> mfnode_emitter;
             typedef event_emitter<mfrotation> mfrotation_emitter;
             typedef event_emitter<mfstring> mfstring_emitter;
             typedef event_emitter<mftime> mftime_emitter;
+            typedef event_emitter<mfvec2d> mfvec2d_emitter;
             typedef event_emitter<mfvec2f> mfvec2f_emitter;
+            typedef event_emitter<mfvec3d> mfvec3d_emitter;
             typedef event_emitter<mfvec3f> mfvec3f_emitter;
 
             template <typename FieldValue>
