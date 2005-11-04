@@ -95,3 +95,20 @@ EXTRA_DIST = \
         openvrml/X3DVrmlTokenTypes.txt \
         openvrml/X3DVrmlParser.g \
         openvrml/X3DVrmlParserTokenTypes.txt
+
+MAINTAINERCLEANFILES = \
+        openvrml/Vrml97Parser.cpp \
+        openvrml/Vrml97Parser.hpp \
+        openvrml/Vrml97ParserTokenTypes.hpp \
+        openvrml/Vrml97ParserTokenTypes.txt \
+        openvrml/expandedX3DVrml97Parser.g \
+        openvrml/X3DVrmlParser.cpp \
+        openvrml/X3DVrmlParser.hpp \
+        openvrml/X3DVrmlParserTokenTypes.hpp \
+        openvrml/X3DVrmlParserTokenTypes.txt
+
+$(srcdir)/openvrml/Vrml97Parser.hpp $(srcdir)/openvrml/Vrml97Parser.cpp: $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/Vrml97TokenTypes.txt
+	$(ANTLR) -o $(srcdir)/openvrml $(srcdir)/openvrml/Vrml97Parser.g
+
+$(srcdir)/openvrml/X3DVrmlParser.hpp $(srcdir)/openvrml/X3DVrmlParser.cpp: $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g $(srcdir)/openvrml/X3DVrmlTokenTypes.txt
+	$(ANTLR) -o $(srcdir)/openvrml -glib $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g

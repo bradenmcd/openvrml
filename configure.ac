@@ -47,6 +47,7 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
+OV_PROG_ANTLR
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])

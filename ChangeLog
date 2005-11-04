@@ -1,3 +1,27 @@
+2005-11-04 Braden McDaniel  <braden@endoframe.com>
+
+	Generate the antlr-generated sources as part of the build rather
+	than storing them in the repository.  These changes should
+	continue to include these generated files in release tarballs;
+	so release tarball users will not need to have antlr installed.
+
+	* configure.ac:  Call OV_PROG_ANTLR.
+	* m4/antlr:  Added file.  OV_PROG_ANTLR macro.
+	* src/libopenvrml/Makefile.am:  Added make rules to build the
+	antlr-generated sources.
+	* src/libopenvrml/openvrml/Vrml97Parser.cpp:  Removed file.
+	* src/libopenvrml/openvrml/Vrml97Parser.hpp:  Removed file.
+	* src/libopenvrml/openvrml/Vrml97ParserTokenTypes.hpp:  Removed
+	file.
+	* src/libopenvrml/openvrml/Vrml97ParserTokenTypes.txt:  Removed
+	file.
+	* src/libopenvrml/openvrml/X3DVrmlParser.cpp:  Removed file.
+	* src/libopenvrml/openvrml/X3DVrmlParser.hpp:  Removed file.
+	* src/libopenvrml/openvrml/X3DVrmlParserTokenTypes.hpp:  Removed
+	file.
+	* src/libopenvrml/openvrml/X3DVrmlParserTokenTypes.txt:  Removed
+	file.
+
 2005-11-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
