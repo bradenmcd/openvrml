@@ -1295,15 +1295,6 @@ openvrml::sfdouble::sfdouble(const value_type value) throw ():
 {}
 
 /**
- * @brief Construct.
- *
- * @param value initial value
- */
-openvrml::sfdouble::sfdouble(const float value) throw ():
-    field_value(value, value_type_constructor_tag())
-{}
-
-/**
  * @brief Construct a copy.
  *
  * @param sfd   the instance to copy.
@@ -1401,13 +1392,6 @@ std::auto_ptr<openvrml::field_value> openvrml::sfdouble::do_clone() const
 openvrml::sfdouble & openvrml::sfdouble::do_assign(const field_value & value)
     throw (std::bad_cast)
 {
-    //allow to convert from a float to a double
-    const sffloat * float_val = dynamic_cast<const sffloat *>(&value);
-    if (!float_val) {
-        this->value(float_val->value());
-        return *this;
-    }
-
     return (*this = dynamic_cast<const sfdouble &>(value));
 }
 
@@ -2739,15 +2723,6 @@ openvrml::sfvec2d::sfvec2d(const vec2d & vec) throw ():
 {}
 
 /**
- * @brief Construct.
- *
- * @param vec   initial value.
- */
-openvrml::sfvec2d::sfvec2d(const vec2f & vec) throw ():
-    field_value(vec2d(vec[0], vec[1]), value_type_constructor_tag())
-{}
-
-/**
  * @brief Construct a copy.
  *
  * @param sfv   the instance to copy.
@@ -3105,15 +3080,6 @@ openvrml::sfvec3d::sfvec3d(const vec3d & vec) throw ():
 {}
 
 /**
- * @brief Construct.
- *
- * @param vec   initial value.
- */
-openvrml::sfvec3d::sfvec3d(const vec3f & vec) throw ():
-    field_value(vec3d(vec[0], vec[1], vec[2]), value_type_constructor_tag())
-{}
-
-/**
  * @brief Construct a copy.
  *
  * @param sfv   the instance to copy.
@@ -3200,12 +3166,6 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3d::do_clone() const
 openvrml::sfvec3d & openvrml::sfvec3d::do_assign(const field_value & value)
     throw (std::bad_cast)
 {
-    //allow to convert from a float to a double
-    const sfvec3f * float_val = dynamic_cast<const sfvec3f *>(&value);
-    if (!float_val) {
-        return *this = sfvec3d(float_val->value());
-    }
-    
     return (*this = dynamic_cast<const sfvec3d &>(value));
 }
 
@@ -3727,21 +3687,6 @@ openvrml::mfdouble::mfdouble(const value_type & value) throw (std::bad_alloc):
 {}
 
 /**
- * @brief Construct.
- *
- * @param value initial value.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-openvrml::mfdouble::mfdouble(const std::vector<float> & value)
-    throw (std::bad_alloc):
-    field_value(std::vector<double>(), value_type_constructor_tag())
-{
-    std::vector<double> temp(value.begin(), value.end());
-    this->value(temp);
-}
-
-/**
  * @brief Construct a copy.
  *
  * @param mfd   the instance to copy.
@@ -3831,12 +3776,6 @@ std::auto_ptr<openvrml::field_value> openvrml::mfdouble::do_clone() const
 openvrml::mfdouble & openvrml::mfdouble::do_assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    //allow to convert from a float to a double
-    const mffloat * float_val = dynamic_cast<const mffloat *>(&value);
-    if (!float_val) {
-        return *this = mfdouble(float_val->value());
-    }
-    
     return (*this = dynamic_cast<const mfdouble &>(value));
 }
 
@@ -5211,24 +5150,6 @@ openvrml::mfvec2d::mfvec2d(const value_type & value) throw (std::bad_alloc):
 {}
 
 /**
- * @brief Construct.
- *
- * @param value initial value.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-openvrml::mfvec2d::mfvec2d(const std::vector<vec2f> & value)
-    throw (std::bad_alloc):
-    field_value(std::vector<vec2d>(), value_type_constructor_tag())
-{
-    std::vector<vec2d> temp(value.size());
-    for (std::vector<vec2d>::size_type i = 0; i < temp.size(); ++i) {
-        temp[i] = vec2d(value[i].x(), value[i].y());
-    }
-    this->value(temp);
-}
-
-/**
  * @brief Construct a copy.
  *
  * @param mfv   the instance to copy.
@@ -5317,12 +5238,6 @@ openvrml::mfvec2d::do_clone() const throw (std::bad_alloc)
 openvrml::mfvec2d & openvrml::mfvec2d::do_assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    //allow to convert from a float to a double
-    const mfvec2f * float_val = dynamic_cast<const mfvec2f *>(&value);
-    if (!float_val) {
-        return *this = mfvec2d(float_val->value());
-    }
-    
     return (*this = dynamic_cast<const mfvec2d &>(value));
 }
 
@@ -5651,24 +5566,6 @@ openvrml::mfvec3d::mfvec3d(const value_type & value) throw (std::bad_alloc):
 {}
 
 /**
- * @brief Construct.
- *
- * @param value initial value.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-openvrml::mfvec3d::mfvec3d(const std::vector<vec3f> & value)
-    throw (std::bad_alloc):
-    field_value(std::vector<vec3d>(), value_type_constructor_tag())
-{
-    std::vector<vec3d> temp(value.size());
-    for (std::vector<vec3d>::size_type i = 0; i < temp.size(); ++i) {
-        temp[i] = vec3d(value[i].x(), value[i].y(), value[i].z());
-    }
-    this->value(temp);
-}
-
-/**
  * @brief Construct a copy.
  *
  * @param mfv   the instance to copy.
@@ -5758,12 +5655,6 @@ std::auto_ptr<openvrml::field_value> openvrml::mfvec3d::do_clone() const
 openvrml::mfvec3d & openvrml::mfvec3d::do_assign(const field_value & value)
     throw (std::bad_cast, std::bad_alloc)
 {
-    //allow to convert from a float to a double
-    const mfvec3f * float_val = dynamic_cast<const mfvec3f *>(&value);
-    if (!float_val) {
-        return *this = mfvec3d(float_val->value());
-    }
-    
     return (*this = dynamic_cast<const mfvec3d &>(value));
 }
 

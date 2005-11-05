@@ -395,7 +395,6 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit sfdouble(double value = 0.0) throw ();
-        sfdouble(float value) throw ();
         sfdouble(const sfdouble & sfd);
         virtual ~sfdouble() throw ();
 
@@ -649,7 +648,6 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit sfvec2d(const vec2d & vec = vec2d()) throw ();
-        sfvec2d(const vec2f & vec) throw ();
         sfvec2d(const sfvec2d & sfv);
         virtual ~sfvec2d() throw ();
 
@@ -711,7 +709,6 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit sfvec3d(const vec3d & vec = vec3d()) throw ();
-        sfvec3d(const vec3f & vec) throw ();
         sfvec3d(const sfvec3d & sfv);
         virtual ~sfvec3d() throw ();
 
@@ -812,8 +809,6 @@ namespace openvrml {
                           double value = 0.0f)
             throw (std::bad_alloc);
         explicit mfdouble(const value_type & value) throw (std::bad_alloc);
-        mfdouble(const std::vector<float> & value)
-            throw (std::bad_alloc);
         mfdouble(const mfdouble & mfd);
         virtual ~mfdouble() throw ();
 
@@ -1053,8 +1048,6 @@ namespace openvrml {
                          const vec2d & value = vec2d())
             throw (std::bad_alloc);
         explicit mfvec2d(const value_type & value) throw (std::bad_alloc);
-        mfvec2d(const std::vector<vec2f> & value)
-            throw (std::bad_alloc);
         mfvec2d(const mfvec2d & mfv);
         virtual ~mfvec2d() throw ();
 
@@ -1122,8 +1115,6 @@ namespace openvrml {
                          const vec3d & value = vec3d())
             throw (std::bad_alloc);
         explicit mfvec3d(const value_type & value) throw (std::bad_alloc);
-        mfvec3d(const std::vector<vec3f> & value)
-            throw (std::bad_alloc);
         mfvec3d(const mfvec3d & mfv);
         virtual ~mfvec3d() throw ();
 
