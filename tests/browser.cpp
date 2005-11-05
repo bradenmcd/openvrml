@@ -43,6 +43,33 @@ void create_vrml_from_stream()
 
 void create_vrml_from_url()
 {
+    class children_listener : public openvrml::mfnode_listener {
+        bool received_event_;
+        boost::mutex & mutex_;
+        boost::condition & condition_;
+
+    public:
+        children_listener(boost::mutex & mutex, boost::condition & condition):
+            received_event_(false),
+            mutex_(mutex),
+            condition_(condition)
+        {}
+
+        bool received_event() const
+        {
+            return this->received_event_;
+        }
+
+    private:
+        virtual void do_process_event(const openvrml::mfnode &, double)
+            throw (std::bad_alloc)
+        {
+            boost::mutex::scoped_lock lock(this->mutex_);
+            this->received_event_ = true;
+            this->condition_.notify_all();
+        }
+    };
+
     {
 	ofstream file("test.wrl");
         file << "#VRML V2.0 utf8" << endl
@@ -53,13 +80,23 @@ void create_vrml_from_url()
     stringstream vrmlstream(vrmlstring);
     vector<boost::intrusive_ptr<node> > nodes =
         b.create_vrml_from_stream(vrmlstream);
+
+    boost::mutex mutex;
+    boost::condition listener_received_event;
+
+    children_listener listener(mutex, listener_received_event);
+    mfnode_emitter & emitter =
+        nodes[0]->event_emitter<mfnode>("children_changed");
+    emitter.add(listener);
+
     vector<string> url(1, "test.wrl");
     b.create_vrml_from_url(url, nodes[0], "set_children");
-
-    boost::xtime t;
-    boost::xtime_get(&t, boost::TIME_UTC);
-    t.sec += 1;
-    boost::thread::sleep(t);
+    {
+        boost::mutex::scoped_lock lock(mutex);
+        while (!listener.received_event()) {
+            listener_received_event.wait(lock);
+        }
+    }
 
     grouping_node * group = node_cast<grouping_node *>(nodes[0].get());
     BOOST_REQUIRE(group);

@@ -1,5 +1,12 @@
 2005-11-04 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/browser.cpp (create_vrml_from_url):  Now that listeners
+	aren't required to be nodes, the browser::create_vrml_from_url
+	test can be modified to use a condition variable rather than a
+	hackish sleep.
+
+2005-11-04 Braden McDaniel  <braden@endoframe.com>
+
 	Generate the antlr-generated sources as part of the build rather
 	than storing them in the repository.  These changes should
 	continue to include these generated files in release tarballs;
