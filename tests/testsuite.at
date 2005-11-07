@@ -98,8 +98,36 @@ Node {}
 AT_CHECK([parse < self-referential-script-in-proto.wrl])
 AT_CLEANUP
 
+AT_SETUP([Unrecognized EXTERNPROTO])
+AT_DATA([unrecognized-externproto.wrl],
+[[#VRML V2.0 utf8
+EXTERNPROTO UnrecognizedNode [ exposedField SFBool sfboolField ]
+[ "urn:unrecognized" ]
+UnrecognizedNode { sfboolField TRUE }
+]])
+AT_CHECK([parse < unrecognized-externproto.wrl])
+AT_CLEANUP
+
+AT_SETUP([Unimplemented EXTERNPROTO])
+AT_DATA([unimplemented-externproto.wrl],
+[[#VRML V2.0 utf8
+EXTERNPROTO UnimplementedNode [ exposedField SFBool sfboolField ] []
+UnimplementedNode { sfboolField TRUE }
+]])
+AT_CHECK([parse < unimplemented-externproto.wrl])
+AT_CLEANUP
 
 AT_BANNER([Parse tests: code that should be rejected])
+
+AT_SETUP([Unrecognized node type])
+AT_DATA([unrecognized-node.wrl],
+[[#VRML V2.0 utf8
+UnrecognizedNode {}
+]])
+AT_CHECK([parse < unrecognized-node.wrl], [1], [],
+[:2:17: error: Unknown node type "UnrecognizedNode".
+])
+AT_CLEANUP
 
 AT_SETUP([PROTO with a conflicting eventIn and exposedField])
 AT_DATA([proto-eventin-conflict.wrl],

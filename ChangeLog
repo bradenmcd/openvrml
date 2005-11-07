@@ -1,3 +1,11 @@
+2005-11-07 Braden McDaniel  <braden@endoframe.com>
+
+	Support parsing nodes from unrecognized EXTERNPROTOs.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* tests/testsuite.at
+
 2005-11-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/Makefile.am:  List antlr-generated sources

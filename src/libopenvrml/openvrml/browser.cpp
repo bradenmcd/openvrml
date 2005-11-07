@@ -161,42 +161,11 @@ namespace openvrml {
     };
 
 
-    /**
-     * @internal
-     *
-     * @brief A <code>PROTO</code> instance node.
-     *
-     * Like a typical node implementation, <code>proto_node</code>s have a
-     * many-to-one relationship with the
-     * <code>proto_node::proto_node_type</code> instance that creates them. And
-     * <code>proto_node::proto_node_type</code> has, in turn, a many-to-one
-     * relationship with the <code>proto_node_class</code> instance that
-     * creates them. Unlike a typical node implementation, there will very
-     * likely be more than one <code>proto_node_class</code> instance known to
-     * the <code>browser</code> instance; there will be one for each
-     * <code>PROTO</code> known to the <code>browser</code>.
-     *
-     * As the <code>proto_node_class</code> encodes the data in a
-     * <code>PROTO</code>, the <code>proto_node::proto_node_type</code> can
-     * be seen as modeling <code>EXTERNPROTO</code>. Each
-     * <code>EXTERNPROTO</code> will spawn a new
-     * <code>proto_node::proto_node_type</code> from the
-     * <code>proto_node_class</code> that corresponds to the <code>PROTO</code>
-     * to which the <code>EXTERNPROTO</code> refers. Recall that an
-     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined
-     * for a <code>PROTO</code>; thus, for a <code>PROTO</code> with
-     * <var>n</var> interfaces, there are <var>n</var>! possible unique
-     * <code>EXTERNPROTO</code>s (and thus unique
-     * <code>proto_node::proto_node_type</code> instances).
-     *
-     * Structurally, the implementation of <code>proto_node</code> is very
-     * similar to that of <code>proto_node_class</code>. The difference is that
-     * event pathways for <code>ROUTE</code>s and <code>IS</code> mappings are
-     * actually created in the <code>proto_node</code>. The
-     * <code>proto_node_class</code>, on the other hand, includes metadata
-     * about how these event pathways @e should be created.
-     */
-    class OPENVRML_LOCAL proto_node : public node {
+    class OPENVRML_LOCAL abstract_proto_node : public openvrml::node {
+    public:
+        virtual ~abstract_proto_node() throw () = 0;
+
+    protected:
         template <typename FieldValue>
         class proto_eventin : public node_field_value_listener<FieldValue> {
             typedef std::set<field_value_listener<FieldValue> *> listeners;
@@ -206,7 +175,7 @@ namespace openvrml {
             typedef FieldValue field_value_type;
             typedef field_value_listener<FieldValue> event_listener_type;
 
-            explicit proto_eventin(proto_node & node);
+            explicit proto_eventin(abstract_proto_node & node);
             virtual ~proto_eventin() throw ();
 
             bool is(event_listener_type & listener) throw (std::bad_alloc);
@@ -217,11 +186,11 @@ namespace openvrml {
                 throw (std::bad_alloc);
 
         private:
-            const std::string do_eventin_id() const throw ();
+            virtual const std::string do_eventin_id() const throw ();
         };
 
         static boost::shared_ptr<openvrml::event_listener>
-        create_eventin(field_value::type_id, proto_node & node)
+        create_eventin(field_value::type_id, abstract_proto_node & node)
             throw (std::bad_alloc);
 
         static bool
@@ -237,11 +206,11 @@ namespace openvrml {
                 proto_eventout & emitter;
 
             public:
-                proto_node & node;
+                abstract_proto_node & node;
                 FieldValue value;
 
                 listener_t(proto_eventout & emitter,
-                           proto_node & node,
+                           abstract_proto_node & node,
                            const FieldValue & initial_value);
                 virtual ~listener_t() throw ();
 
@@ -258,7 +227,7 @@ namespace openvrml {
             typedef field_value_listener<FieldValue> event_listener_type;
 
             proto_eventout(
-                proto_node & node,
+                abstract_proto_node & node,
                 const FieldValue & initial_value = FieldValue());
             virtual ~proto_eventout() throw ();
 
@@ -269,7 +238,7 @@ namespace openvrml {
         };
 
         static boost::shared_ptr<openvrml::event_emitter>
-        create_eventout(field_value::type_id, proto_node & node)
+        create_eventout(field_value::type_id, abstract_proto_node & node)
             throw (std::bad_alloc);
 
         static bool
@@ -282,8 +251,8 @@ namespace openvrml {
         class proto_exposedfield : public proto_eventin<FieldValue>,
                                    public proto_eventout<FieldValue> {
         public:
-            proto_exposedfield(proto_node & node,
-                                const FieldValue & initial_value);
+            proto_exposedfield(abstract_proto_node & node,
+                               const FieldValue & initial_value);
             virtual ~proto_exposedfield() throw ();
 
         private:
@@ -294,11 +263,8 @@ namespace openvrml {
 
         static boost::shared_ptr<openvrml::event_listener>
         create_exposedfield(const field_value & initial_value,
-                            proto_node & node)
+                            abstract_proto_node & node)
             throw (std::bad_alloc);
-
-        boost::shared_ptr<openvrml::scope> proto_scope;
-        std::vector<boost::intrusive_ptr<node> > impl_nodes;
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
@@ -343,6 +309,61 @@ namespace openvrml {
         };
 
         eventout_map_t eventout_map;
+
+        abstract_proto_node(const openvrml::node_type & type,
+                            const boost::shared_ptr<openvrml::scope> & scope)
+            throw ();
+    };
+
+    abstract_proto_node::abstract_proto_node(
+        const openvrml::node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope)
+        throw ():
+        openvrml::node(type, scope)
+    {}
+
+    abstract_proto_node::~abstract_proto_node() throw ()
+    {}
+
+
+    /**
+     * @internal
+     *
+     * @brief A <code>PROTO</code> instance node.
+     *
+     * Like a typical node implementation, <code>proto_node</code>s have a
+     * many-to-one relationship with the
+     * <code>proto_node::proto_node_type</code> instance that creates them. And
+     * <code>proto_node::proto_node_type</code> has, in turn, a many-to-one
+     * relationship with the <code>proto_node_class</code> instance that
+     * creates them. Unlike a typical node implementation, there will very
+     * likely be more than one <code>proto_node_class</code> instance known to
+     * the <code>browser</code> instance; there will be one for each
+     * <code>PROTO</code> known to the <code>browser</code>.
+     *
+     * As the <code>proto_node_class</code> encodes the data in a
+     * <code>PROTO</code>, the <code>proto_node::proto_node_type</code> can
+     * be seen as modeling <code>EXTERNPROTO</code>. Each
+     * <code>EXTERNPROTO</code> will spawn a new
+     * <code>proto_node::proto_node_type</code> from the
+     * <code>proto_node_class</code> that corresponds to the <code>PROTO</code>
+     * to which the <code>EXTERNPROTO</code> refers. Recall that an
+     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined
+     * for a <code>PROTO</code>; thus, for a <code>PROTO</code> with
+     * <var>n</var> interfaces, there are <var>n</var>! possible unique
+     * <code>EXTERNPROTO</code>s (and thus unique
+     * <code>proto_node::proto_node_type</code> instances).
+     *
+     * Structurally, the implementation of <code>proto_node</code> is very
+     * similar to that of <code>proto_node_class</code>. The difference is that
+     * event pathways for <code>ROUTE</code>s and <code>IS</code> mappings are
+     * actually created in the <code>proto_node</code>. The
+     * <code>proto_node_class</code>, on the other hand, includes metadata
+     * about how these event pathways @e should be created.
+     */
+    class OPENVRML_LOCAL proto_node : public abstract_proto_node {
+        boost::shared_ptr<openvrml::scope> proto_scope;
+        std::vector<boost::intrusive_ptr<node> > impl_nodes;
 
     public:
         proto_node(const node_type & type,
@@ -959,7 +980,8 @@ namespace openvrml {
                    const initial_value_map & initial_values) const
         throw (std::bad_alloc)
     {
-        return boost::intrusive_ptr<node>(new proto_node(*this, scope, initial_values));
+        return boost::intrusive_ptr<node>(
+            new proto_node(*this, scope, initial_values));
     }
 
     /**
@@ -1001,7 +1023,8 @@ namespace openvrml {
      * @param node  proto_node.
      */
     template <typename FieldValue>
-    proto_node::proto_eventin<FieldValue>::proto_eventin(proto_node & node):
+    abstract_proto_node::proto_eventin<FieldValue>::
+    proto_eventin(abstract_proto_node & node):
         node_event_listener(node),
         node_field_value_listener<FieldValue>(node)
     {}
@@ -1010,7 +1033,7 @@ namespace openvrml {
      * @brief Destroy.
      */
     template <typename FieldValue>
-    proto_node::proto_eventin<FieldValue>::~proto_eventin()
+    abstract_proto_node::proto_eventin<FieldValue>::~proto_eventin()
         throw ()
     {}
 
@@ -1024,7 +1047,7 @@ namespace openvrml {
      */
     template <typename FieldValue>
     void
-    proto_node::proto_eventin<FieldValue>::
+    abstract_proto_node::proto_eventin<FieldValue>::
     do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
@@ -1038,7 +1061,8 @@ namespace openvrml {
 
     template <typename FieldValue>
     const std::string
-    proto_node::proto_eventin<FieldValue>::do_eventin_id() const throw ()
+    abstract_proto_node::proto_eventin<FieldValue>::do_eventin_id() const
+        throw ()
     {
         using boost::polymorphic_downcast;
         proto_node & n = *polymorphic_downcast<proto_node *>(&this->node());
@@ -1061,7 +1085,8 @@ namespace openvrml {
      */
     template <typename FieldValue>
     bool
-    proto_node::proto_eventin<FieldValue>::is(event_listener_type & listener)
+    abstract_proto_node::proto_eventin<FieldValue>::
+    is(event_listener_type & listener)
         throw (std::bad_alloc)
     {
         return this->listeners_.insert(&listener).second;
@@ -1078,8 +1103,8 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     boost::shared_ptr<event_listener>
-    proto_node::create_eventin(const field_value::type_id type,
-                               proto_node & node)
+    abstract_proto_node::create_eventin(const field_value::type_id type,
+                                        abstract_proto_node & node)
         throw (std::bad_alloc)
     {
         boost::shared_ptr<openvrml::event_listener> result;
@@ -1182,9 +1207,10 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     bool
-    proto_node::eventin_is(const field_value::type_id field_type,
-                           openvrml::event_listener & impl_eventin,
-                           openvrml::event_listener & interface_eventin)
+    abstract_proto_node::eventin_is(
+        const field_value::type_id field_type,
+        openvrml::event_listener & impl_eventin,
+        openvrml::event_listener & interface_eventin)
         throw (std::bad_alloc)
     {
         using boost::polymorphic_downcast;
@@ -1375,9 +1401,9 @@ namespace openvrml {
      * @param initial_value initial value (used for exposedFields).
      */
     template <typename FieldValue>
-    proto_node::proto_eventout<FieldValue>::listener_t::
+    abstract_proto_node::proto_eventout<FieldValue>::listener_t::
     listener_t(proto_eventout & emitter,
-               proto_node & node,
+               abstract_proto_node & node,
                const FieldValue & initial_value):
         node_event_listener(node),
         node_field_value_listener<FieldValue>(node),
@@ -1390,7 +1416,8 @@ namespace openvrml {
      * @brief Destroy.
      */
     template <typename FieldValue>
-    proto_node::proto_eventout<FieldValue>::listener_t::~listener_t() throw ()
+    abstract_proto_node::proto_eventout<FieldValue>::listener_t::~listener_t()
+        throw ()
     {}
 
     /**
@@ -1398,7 +1425,8 @@ namespace openvrml {
      */
     template <typename FieldValue>
     const std::string
-    proto_node::proto_eventout<FieldValue>::listener_t::do_eventin_id() const
+    abstract_proto_node::proto_eventout<FieldValue>::listener_t::
+    do_eventin_id() const
         throw ()
     {
         return "<proto_node::proto_eventout::listener_t>";
@@ -1414,7 +1442,7 @@ namespace openvrml {
      */
     template<typename FieldValue>
     void
-    proto_node::proto_eventout<FieldValue>::listener_t::
+    abstract_proto_node::proto_eventout<FieldValue>::listener_t::
     do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
@@ -1457,8 +1485,9 @@ namespace openvrml {
      *                      proto_exposedfield<FieldValue>
      */
     template <typename FieldValue>
-    proto_node::proto_eventout<FieldValue>::
-    proto_eventout(proto_node & node, const FieldValue & initial_value):
+    abstract_proto_node::proto_eventout<FieldValue>::
+    proto_eventout(abstract_proto_node & node,
+                   const FieldValue & initial_value):
         openvrml::event_emitter(this->listener.value),
         field_value_emitter<FieldValue>(this->listener.value),
         listener(*this, node, initial_value)
@@ -1468,7 +1497,7 @@ namespace openvrml {
      * @brief Destroy.
      */
     template <typename FieldValue>
-    proto_node::proto_eventout<FieldValue>::~proto_eventout() throw ()
+    abstract_proto_node::proto_eventout<FieldValue>::~proto_eventout() throw ()
     {}
 
     /**
@@ -1484,7 +1513,7 @@ namespace openvrml {
      */
     template <typename FieldValue>
     bool
-    proto_node::proto_eventout<FieldValue>::
+    abstract_proto_node::proto_eventout<FieldValue>::
     is(event_emitter_type & emitter) throw (std::bad_alloc)
     {
         return emitter.add(this->listener);
@@ -1492,9 +1521,10 @@ namespace openvrml {
 
     template <typename FieldValue>
     const std::string
-    proto_node::proto_eventout<FieldValue>::do_eventout_id() const throw ()
+    abstract_proto_node::proto_eventout<FieldValue>::do_eventout_id() const
+        throw ()
     {
-        proto_node & n = this->listener.node;
+        abstract_proto_node & n = this->listener.node;
         eventout_map_t::const_iterator pos =
             std::find_if(n.eventout_map.begin(), n.eventout_map.end(),
                          proto_eventout_equal_to(*this));
@@ -1513,8 +1543,8 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     boost::shared_ptr<event_emitter>
-    proto_node::create_eventout(const field_value::type_id type,
-                                proto_node & node)
+    abstract_proto_node::create_eventout(const field_value::type_id type,
+                                         abstract_proto_node & node)
         throw (std::bad_alloc)
     {
         boost::shared_ptr<openvrml::event_emitter> result;
@@ -1620,9 +1650,10 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     bool
-    proto_node::eventout_is(const field_value::type_id field_type,
-                            openvrml::event_emitter & impl_eventout,
-                            openvrml::event_emitter & interface_eventout)
+    abstract_proto_node::eventout_is(
+        const field_value::type_id field_type,
+        openvrml::event_emitter & impl_eventout,
+        openvrml::event_emitter & interface_eventout)
         throw (std::bad_alloc)
     {
         using boost::polymorphic_downcast;
@@ -1780,8 +1811,9 @@ namespace openvrml {
      * @param initial_value initial value.
      */
     template <typename FieldValue>
-    proto_node::proto_exposedfield<FieldValue>::
-    proto_exposedfield(proto_node & node, const FieldValue & initial_value):
+    abstract_proto_node::proto_exposedfield<FieldValue>::
+    proto_exposedfield(abstract_proto_node & node,
+                       const FieldValue & initial_value):
         node_event_listener(node),
         openvrml::event_emitter(this->listener.value),
         proto_eventin<FieldValue>(node),
@@ -1792,7 +1824,8 @@ namespace openvrml {
      * @brief Destroy.
      */
     template <typename FieldValue>
-    proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield() throw ()
+    abstract_proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield()
+        throw ()
     {}
 
     /**
@@ -1805,7 +1838,7 @@ namespace openvrml {
      */
     template <typename FieldValue>
     void
-    proto_node::proto_exposedfield<FieldValue>::
+    abstract_proto_node::proto_exposedfield<FieldValue>::
     do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
@@ -1826,8 +1859,8 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     boost::shared_ptr<event_listener>
-    proto_node::create_exposedfield(const field_value & initial_value,
-                                    proto_node & node)
+    abstract_proto_node::create_exposedfield(const field_value & initial_value,
+                                             abstract_proto_node & node)
         throw (std::bad_alloc)
     {
         using boost::polymorphic_downcast;
@@ -2010,7 +2043,7 @@ namespace openvrml {
                            const boost::shared_ptr<openvrml::scope> & scope,
                            const initial_value_map & initial_values)
         throw (std::bad_alloc):
-        node(type, scope),
+        abstract_proto_node(type, scope),
         proto_scope(scope)
     {
         const proto_node_class & node_class =
@@ -2668,6 +2701,469 @@ namespace openvrml {
 } // namespace openvrml
 
 namespace {
+
+    class OPENVRML_LOCAL externproto_node_class : public openvrml::node_class {
+        std::vector<std::string> alt_uris;
+
+    public:
+        externproto_node_class(
+            openvrml::browser & b,
+            const std::vector<std::string> & uris) throw ();
+        virtual ~externproto_node_class() throw ();
+
+    private:
+        virtual const boost::shared_ptr<openvrml::node_type>
+        do_create_type(const std::string & id,
+                       const openvrml::node_interface_set & interfaces) const
+            throw (openvrml::unsupported_interface, std::bad_alloc);
+    };
+
+
+    class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
+        openvrml::node_interface_set interfaces_;
+        boost::shared_ptr<openvrml::node_class> owning_ptr_to_class_;
+
+    public:
+        externproto_node_type(const openvrml::node_class & c,
+                              const std::string & id,
+                              const openvrml::node_interface_set & interfaces)
+            throw (std::bad_alloc);
+
+        virtual ~externproto_node_type() throw ();
+
+        void set_owning_ptr_to_class(
+            const boost::shared_ptr<openvrml::node_class> & node_class)
+            throw ();
+
+    private:
+        virtual const openvrml::node_interface_set & do_interfaces() const
+            throw();
+
+        virtual const boost::intrusive_ptr<openvrml::node>
+        do_create_node(
+            const boost::shared_ptr<openvrml::scope> & scope,
+            const openvrml::initial_value_map & initial_values) const
+            throw (openvrml::unsupported_interface, std::bad_cast,
+                   std::bad_alloc);
+    };
+
+    
+    class OPENVRML_LOCAL externproto_node :
+        public openvrml::abstract_proto_node {
+
+        template <typename FieldValue>
+        class externproto_exposedfield :
+            public FieldValue,
+            public proto_eventin<FieldValue>,
+            public openvrml::field_value_emitter<FieldValue> {
+        public:
+            explicit externproto_exposedfield(externproto_node & node)
+                throw ();
+            virtual ~externproto_exposedfield() throw ();
+
+        private:
+            virtual void do_process_event(const FieldValue & value,
+                                          double timestamp)
+                throw (std::bad_alloc);
+            virtual const std::string do_eventout_id() const throw ();
+        };
+
+        static const boost::shared_ptr<openvrml::field_value>
+        create_exposedfield(externproto_node & node,
+                            openvrml::field_value::type_id type)
+            throw (std::bad_alloc);
+
+        typedef std::map<std::string,
+                         boost::shared_ptr<openvrml::field_value> >
+            field_map;
+
+        struct externproto_field_equal_to :
+            std::unary_function<field_map::value_type, bool> {
+
+            explicit externproto_field_equal_to(
+                const openvrml::field_value & field_value):
+                field_value_(&field_value)
+            {}
+
+            bool operator()(const field_map::value_type & arg) const
+            {
+                return this->field_value_ == arg.second.get();
+            }
+
+        private:
+            const openvrml::field_value * field_value_;
+        };
+
+        field_map field_map_;
+                
+    public:
+        externproto_node(const externproto_node_type & type,
+                         const boost::shared_ptr<openvrml::scope> & scope,
+                         const openvrml::initial_value_map & initial_values)
+            throw (std::bad_alloc);
+
+        virtual ~externproto_node() throw ();
+
+    private:
+        virtual const openvrml::field_value &
+        do_field(const std::string & id) const
+            throw (openvrml::unsupported_interface);
+
+        virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+            throw (openvrml::unsupported_interface);
+
+        virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+            throw (openvrml::unsupported_interface);
+    };
+
+
+    externproto_node_class::
+    externproto_node_class(openvrml::browser & b,
+                           const std::vector<std::string> & /* uris */)
+        throw ():
+        node_class(b)
+    {}
+
+    externproto_node_class::~externproto_node_class() throw ()
+    {}
+
+    const boost::shared_ptr<openvrml::node_type>
+    externproto_node_class::
+    do_create_type(const std::string & id,
+                   const openvrml::node_interface_set & interfaces) const
+        throw (openvrml::unsupported_interface, std::bad_alloc)
+    {
+        using openvrml::node_type;
+        return boost::shared_ptr<node_type>(
+            static_cast<node_type *>(
+                new externproto_node_type(*this, id, interfaces)));
+    }
+
+
+    externproto_node_type::externproto_node_type(
+        const openvrml::node_class & c,
+        const std::string & id,
+        const openvrml::node_interface_set & interfaces)
+        throw (std::bad_alloc):
+        node_type(c, id),
+        interfaces_(interfaces)
+    {}
+
+    externproto_node_type::~externproto_node_type() throw ()
+    {}
+
+    /**
+     * @brief Set the owning pointer to the <code>openvrml::node_class</code>.
+     *
+     * The base <code>openvrml::node_type</code> simply holds a reference to
+     * the <code>openvrml::node_class</code>. If we get an EXTERNPROTO with no
+     * implementation, we need to store an owning pointer to the
+     * <code>node_class</code> here. See the comment in
+     * <code>Vrml97Parser::externproto</code> for details.
+     */
+    void externproto_node_type::set_owning_ptr_to_class(
+        const boost::shared_ptr<openvrml::node_class> & node_class) throw ()
+    {
+        this->owning_ptr_to_class_ = node_class;
+    }
+
+    const openvrml::node_interface_set &
+    externproto_node_type::do_interfaces() const throw()
+    {
+        return this->interfaces_;
+    }
+
+    const boost::intrusive_ptr<openvrml::node>
+    externproto_node_type::do_create_node(
+        const boost::shared_ptr<openvrml::scope> & scope,
+        const openvrml::initial_value_map & initial_values) const
+        throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
+    {
+        using openvrml::node;
+        return boost::intrusive_ptr<node>(
+            static_cast<node *>(
+                new externproto_node(*this, scope, initial_values)));
+    }
+
+
+    template <typename FieldValue>
+    externproto_node::externproto_exposedfield<FieldValue>::
+    externproto_exposedfield(externproto_node & node) throw ():
+        openvrml::node_event_listener(node),
+        openvrml::event_emitter(static_cast<openvrml::field_value &>(*this)),
+        proto_eventin<FieldValue>(node),
+        openvrml::field_value_emitter<FieldValue>(
+            static_cast<FieldValue &>(*this))
+    {}
+
+    template <typename FieldValue>
+    externproto_node::externproto_exposedfield<FieldValue>::
+    ~externproto_exposedfield() throw ()
+    {}
+
+    template <typename FieldValue>
+    void externproto_node::externproto_exposedfield<FieldValue>::
+    do_process_event(const FieldValue & value, const double timestamp)
+        throw (std::bad_alloc)
+    {
+        static_cast<FieldValue &>(*this) = value;
+        this->proto_eventin<FieldValue>::do_process_event(value, timestamp);
+        this->node().modified(true);
+        node::emit_event(*this, timestamp);
+    }
+
+    template <typename FieldValue>
+    const std::string
+    externproto_node::externproto_exposedfield<FieldValue>::
+    do_eventout_id() const throw ()
+    {
+        using boost::polymorphic_downcast;
+        externproto_node & node =
+            *polymorphic_downcast<externproto_node *>(&this->node());
+        field_map::const_iterator pos =
+            std::find_if(node.field_map_.begin(),
+                         node.field_map_.end(),
+                         externproto_field_equal_to(*this));
+        assert(pos != node.field_map_.end());
+        return pos->first;
+    }
+
+    const boost::shared_ptr<openvrml::field_value>
+    externproto_node::create_exposedfield(externproto_node & node,
+                                          openvrml::field_value::type_id type)
+        throw (std::bad_alloc)
+    {
+        using namespace openvrml;
+
+        boost::shared_ptr<field_value> result;
+        switch (type) {
+        case field_value::sfbool_id:
+            result.reset(new externproto_exposedfield<sfbool>(node));
+            break;
+        case field_value::sfcolor_id:
+            result.reset(new externproto_exposedfield<sfcolor>(node));
+            break;
+        case field_value::sfdouble_id:
+            result.reset(new externproto_exposedfield<sfdouble>(node));
+            break;
+        case field_value::sffloat_id:
+            result.reset(new externproto_exposedfield<sffloat>(node));
+            break;
+        case field_value::sfimage_id:
+            result.reset(new externproto_exposedfield<sfimage>(node));
+            break;
+        case field_value::sfint32_id:
+            result.reset(new externproto_exposedfield<sfint32>(node));
+            break;
+        case field_value::sfnode_id:
+            result.reset(new externproto_exposedfield<sfnode>(node));
+            break;
+        case field_value::sfrotation_id:
+            result.reset(new externproto_exposedfield<sfrotation>(node));
+            break;
+        case field_value::sfstring_id:
+            result.reset(new externproto_exposedfield<sfstring>(node));
+            break;
+        case field_value::sftime_id:
+            result.reset(new externproto_exposedfield<sftime>(node));
+            break;
+        case field_value::sfvec2f_id:
+            result.reset(new externproto_exposedfield<sfvec2f>(node));
+            break;
+        case field_value::sfvec2d_id:
+            result.reset(new externproto_exposedfield<sfvec2d>(node));
+            break;
+        case field_value::sfvec3f_id:
+            result.reset(new externproto_exposedfield<sfvec3f>(node));
+            break;
+        case field_value::sfvec3d_id:
+            result.reset(new externproto_exposedfield<sfvec3d>(node));
+            break;
+        case field_value::mfcolor_id:
+            result.reset(new externproto_exposedfield<mfcolor>(node));
+            break;
+        case field_value::mffloat_id:
+            result.reset(new externproto_exposedfield<mffloat>(node));
+            break;
+        case field_value::mfdouble_id:
+            result.reset(new externproto_exposedfield<mfdouble>(node));
+            break;
+        case field_value::mfint32_id:
+            result.reset(new externproto_exposedfield<mfint32>(node));
+            break;
+        case field_value::mfnode_id:
+            result.reset(new externproto_exposedfield<mfnode>(node));
+            break;
+        case field_value::mfrotation_id:
+            result.reset(new externproto_exposedfield<mfrotation>(node));
+            break;
+        case field_value::mfstring_id:
+            result.reset(new externproto_exposedfield<mfstring>(node));
+            break;
+        case field_value::mftime_id:
+            result.reset(new externproto_exposedfield<mftime>(node));
+            break;
+        case field_value::mfvec2f_id:
+            result.reset(new externproto_exposedfield<mfvec2f>(node));
+            break;
+        case field_value::mfvec2d_id:
+            result.reset(new externproto_exposedfield<mfvec2d>(node));
+            break;
+        case field_value::mfvec3f_id:
+            result.reset(new externproto_exposedfield<mfvec3f>(node));
+            break;
+        case field_value::mfvec3d_id:
+            result.reset(new externproto_exposedfield<mfvec3d>(node));
+            break;
+        default:
+            assert(false);
+        }
+        assert(result);
+        return result;
+    }
+
+    externproto_node::externproto_node(
+        const externproto_node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope,
+        const openvrml::initial_value_map & initial_values)
+        throw (std::bad_alloc):
+        abstract_proto_node(type, scope)
+    {
+        using openvrml::node_interface;
+        using openvrml::node_interface_set;
+
+        for (node_interface_set::const_iterator interface =
+                 type.interfaces().begin();
+             interface != type.interfaces().end();
+             ++interface)
+        {
+            using boost::shared_ptr;
+            using boost::dynamic_pointer_cast;
+
+            bool succeeded = false;
+            std::auto_ptr<openvrml::field_value> field_auto_ptr;
+            shared_ptr<openvrml::event_listener> interface_eventin;
+            shared_ptr<openvrml::event_emitter> interface_eventout;
+            shared_ptr<openvrml::field_value> interface_field;
+            switch (interface->type) {
+            case node_interface::eventin_id:
+                succeeded = this->eventin_map
+                    .insert(make_pair(interface->id,
+                                      create_eventin(interface->field_type,
+                                                     *this)))
+                    .second;
+                break;
+            case node_interface::eventout_id:
+                succeeded = this->eventout_map
+                    .insert(make_pair(interface->id,
+                                      create_eventout(interface->field_type,
+                                                      *this)))
+                    .second;
+                break;
+            case node_interface::exposedfield_id:
+                interface_field = create_exposedfield(*this,
+                                                      interface->field_type);
+                succeeded = this->field_map_
+                    .insert(make_pair(interface->id, interface_field)).second;
+                assert(succeeded);
+
+                interface_eventin =
+                    dynamic_pointer_cast<openvrml::event_listener>(
+                        interface_field);
+                succeeded = this->eventin_map
+                    .insert(make_pair("set_" + interface->id,
+                                      interface_eventin))
+                    .second;
+                assert(succeeded);
+
+                interface_eventout =
+                    dynamic_pointer_cast<openvrml::event_emitter>(
+                        interface_eventin);
+                succeeded = this->eventout_map
+                    .insert(make_pair(interface->id + "_changed",
+                                      interface_eventout))
+                    .second;
+                break;
+            case node_interface::field_id:
+                field_auto_ptr =
+                    openvrml::field_value::create(interface->field_type);
+                succeeded = this->field_map_
+                    .insert(
+                        make_pair(
+                            interface->id,
+                            shared_ptr<openvrml::field_value>(field_auto_ptr)))
+                    .second;
+                break;
+            case node_interface::invalid_type_id:
+                assert(false
+                       && "got node_interface::invalid_type_id for "
+                       "interface->type");
+            }
+            assert(succeeded);
+        }
+
+        //
+        // Set the initial values.
+        //
+        using openvrml::initial_value_map;
+        for (initial_value_map::const_iterator map_entry =
+                 initial_values.begin();
+             map_entry != initial_values.end();
+             ++map_entry) {
+            const field_map::const_iterator pos =
+                this->field_map_.find(map_entry->first);
+            if (pos == this->field_map_.end()) {
+                throw openvrml::unsupported_interface(this->type(),
+                                                      map_entry->first);
+            }
+            pos->second->assign(*map_entry->second);
+        }
+    }
+
+    externproto_node::~externproto_node() throw ()
+    {}
+
+    const openvrml::field_value &
+    externproto_node::do_field(const std::string & id) const
+        throw (openvrml::unsupported_interface)
+    {
+        field_map::const_iterator pos = this->field_map_.find(id);
+        if (pos == this->field_map_.end()) {
+            throw openvrml::unsupported_interface(
+                this->type(), openvrml::node_interface::field_id, id);
+        }
+        assert(pos->second);
+        return *pos->second;
+    }
+
+    openvrml::event_listener &
+    externproto_node::do_event_listener(const std::string & id)
+        throw (openvrml::unsupported_interface)
+    {
+        eventin_map_t::const_iterator pos = this->eventin_map.find(id);
+        if (pos == this->eventin_map.end()) {
+            throw openvrml::unsupported_interface(
+                this->type(), openvrml::node_interface::eventin_id, id);
+        }
+        assert(pos->second);
+        return *pos->second;
+    }
+
+    openvrml::event_emitter &
+    externproto_node::do_event_emitter(const std::string & id)
+        throw (openvrml::unsupported_interface)
+    {
+        eventout_map_t::const_iterator pos = this->eventout_map.find(id);
+        if (pos == this->eventout_map.end()) {
+            throw openvrml::unsupported_interface(
+                this->type(), openvrml::node_interface::eventout_id, id);
+        }
+        assert(pos->second);
+        return *pos->second;
+    }
+
 
     class OPENVRML_LOCAL default_navigation_info :
         public openvrml::navigation_info_node {

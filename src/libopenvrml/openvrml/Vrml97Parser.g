@@ -934,40 +934,64 @@ externproto[openvrml::browser & browser,
             const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
+    using std::string;
+    using std::vector;
+    using boost::shared_ptr;
+
     openvrml::node_interface_set interfaces;
-    openvrml::mfstring url_list;
-    boost::shared_ptr<node_type> node_type;
+    openvrml::mfstring uri_list;
+    shared_ptr<node_type> node_type;
 }
     : KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
-        url_list=externprotoUrlList {
-            for (size_t i = 0; i < url_list.value().size(); ++i) {
-                boost::shared_ptr<openvrml::node_class> node_class =
-                    browser.node_class_map_.find(url_list.value()[i]);
+        uri_list=externprotoUrlList {
+            const vector<string> & alt_uris = uri_list.value();
+            for (vector<string>::const_iterator uri = alt_uris.begin();
+                 uri != alt_uris.end();
+                 ++uri) {
+                const shared_ptr<openvrml::node_class> node_class =
+                    browser.node_class_map_.find(*uri);
                 if (node_class) {
                     node_type = node_class->create_type(id->getText(),
                                                         interfaces);
                     break;
                 }
             }
-            //
-            // If we weren't able to create a node_type, that means that we
-            // don't already have a node_class for the node. Currently we only
-            // support referring to existing node_classes with EXTERNPROTO;
-            // adding new node_classes via EXTERNPROTO is not supported. In
-            // practice, this means that the ordinary way of using EXTERNPROTOs
-            // in VRML worlds will fail.
-            //
-            if (node_type) {
-                if (!scope->add_type(node_type)) {
-                    using antlr::SemanticException;
-                    throw SemanticException("Node type \"" + node_type->id()
-                                            + "\" has already been defined in "
-                                            " this scope.",
-                                            this->uri,
-                                            id->getLine(),
-                                            id->getColumn());
+
+            if (!node_type) {
+                const shared_ptr<node_class> externproto_class(
+                    new externproto_node_class(browser, alt_uris));
+
+                for (vector<string>::const_iterator uri = alt_uris.begin();
+                     uri != alt_uris.end();
+                     ++uri) {
+                    browser.node_class_map_.insert(*uri, externproto_class);
                 }
+
+                node_type = externproto_class->create_type(id->getText(),
+                                                           interfaces);
+                //
+                // Hack alert.  If we get an empty list of URIs for the
+                // EXTERNPROTO implementation, we have nothing to put in
+                // browser::node_class_map_.  That means that we'd wind up
+                // with no owning pointer to the node class except for the
+                // one in this scope (which is about to go away).  So, we
+                // store an owning pointer in the externproto_node_type.
+                //
+                boost::dynamic_pointer_cast<externproto_node_type>(node_type)
+                    ->set_owning_ptr_to_class(externproto_class);
+            }
+
+            assert(node_type);
+
+            if (!scope->add_type(node_type)) {
+                using antlr::SemanticException;
+                throw SemanticException("Node type \"" + node_type->id()
+                                        + "\" has already been defined in "
+                                        + "this scope.",
+                                        this->uri,
+                                        id->getLine(),
+                                        id->getColumn());
             }
         }
     ;
