@@ -1436,6 +1436,7 @@ openvrml::node::self_tag(new self_ref_node);
 openvrml::node::node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope)
     throw ():
+    ref_count_(0),
     type_(type),
     scope_(scope),
     scene_(0),
