@@ -1,5 +1,15 @@
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::event_listener_base::event_listener_equal_to::operator()):
+	static_cast the lhs of the comparison to
+	openvrml::event_listener*.  Microsoft cl 13.10.3077 appears to
+	have a bug with virtual inheritance and requires this
+	static_cast to generate the correct code.  Without the
+	static_cast, the comparison will never be true.
+
+2005-11-14 Braden McDaniel  <braden@endoframe.com>
+
 	Project file updates.
 
 	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj

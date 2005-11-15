@@ -248,7 +248,13 @@ namespace openvrml {
                     const
                 {
                     Node & n = dynamic_cast<Node &>(this->listener_->node());
-                    return this->listener_ == &arg.second->deref(n);
+                    //
+                    // This static_cast shouldn't be necessary.  However,
+                    // Microsoft cl 13.10.3077 will not generate correct code
+                    // without it.
+                    //
+                    return static_cast<const openvrml::event_listener *>(
+                        this->listener_) == &arg.second->deref(n);
                 }
 
             private:
