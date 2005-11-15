@@ -18,19 +18,21 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/VERBOSE:LIB"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\openvrml;&quot;..\openvrml-gl&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml;&quot;..\openvrml-gl&quot;;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;OPENVRML_USE_LIB;OPENVRML_GL_USE_LIB"
 				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="4"
+				DisableSpecificWarnings="4250;4290;4355"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool

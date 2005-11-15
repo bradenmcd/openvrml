@@ -1,5 +1,14 @@
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
 
+	Project file updates.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
+2005-11-14 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field_value.h:  Quell warnings from
 	the Microsoft compiler.
 
