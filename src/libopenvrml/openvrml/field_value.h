@@ -261,6 +261,10 @@ namespace openvrml {
 
     template <typename T>
     struct FieldValueConcept {
+        field_value * base_ptr;
+        T * fv;
+        field_value::type_id id;
+
         void constraints()
         {
             using boost::function_requires;
@@ -283,15 +287,12 @@ namespace openvrml {
             //
             // Make sure T inherits field_value (not virtually).
             //
-            field_value * base_ptr;
-            T * fv = static_cast<T *>(base_ptr);
-            ignore_unused_variable_warning(fv);
+            fv = static_cast<T *>(base_ptr);
 
             //
             // Make sure T::field_value_type_id exists.
             //
-            field_value::type_id id = T::field_value_type_id;
-            ignore_unused_variable_warning(id);
+            id = T::field_value_type_id;
         }
     };
 

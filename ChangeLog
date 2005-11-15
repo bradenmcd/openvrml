@@ -1,5 +1,10 @@
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/field_value.h:  Quell warnings from
+	the Microsoft compiler.
+
+2005-11-14 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp:  Initialize
 	openvrml::node::ref_count_ to 0.
 
