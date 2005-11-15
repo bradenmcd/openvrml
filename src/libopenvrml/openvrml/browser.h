@@ -179,7 +179,7 @@ namespace openvrml {
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
 
-        class vrml_from_url_creator;
+        struct vrml_from_url_creator;
 
         class node_class_map {
             mutable boost::mutex mutex_;
