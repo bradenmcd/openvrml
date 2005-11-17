@@ -1,5 +1,19 @@
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
 
+	Project file updates.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln: Added
+	README, ChangeLog, etc. to solution.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj:
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/test-openvrml/test-openvrml.vcproj:
+	Added file.
+
+
+2005-11-14 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node_impl_util.h
 	(openvrml::node_impl_util::event_listener_base::event_listener_equal_to::operator()):
 	static_cast the lhs of the comparison to

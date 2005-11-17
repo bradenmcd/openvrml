@@ -23,7 +23,7 @@
 				AdditionalIncludeDirectories="..\..\..\..\..\lib\antlr"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"

@@ -24,7 +24,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_WINDOWS_H;OPENVRML_USE_LIB;OPENVRML_GL_BUILD_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"

@@ -25,7 +25,7 @@
 				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				RuntimeTypeInfo="TRUE"

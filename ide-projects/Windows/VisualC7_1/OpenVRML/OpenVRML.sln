@@ -18,6 +18,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdl-viewer", "sdl-viewer\sd
 		{ED407BF6-F8A1-4C7E-9952-E5454896AC63} = {ED407BF6-F8A1-4C7E-9952-E5454896AC63}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-openvrml", "test-openvrml\test-openvrml.vcproj", "{1C9201DF-E553-422C-9CC4-E667F3C606F9}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -40,6 +44,20 @@ Global
 		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Debug.Build.0 = Debug|Win32
 		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Release.ActiveCfg = Release|Win32
 		{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}.Release.Build.0 = Release|Win32
+		{1C9201DF-E553-422C-9CC4-E667F3C606F9}.Debug.ActiveCfg = Debug|Win32
+		{1C9201DF-E553-422C-9CC4-E667F3C606F9}.Debug.Build.0 = Debug|Win32
+		{1C9201DF-E553-422C-9CC4-E667F3C606F9}.Release.ActiveCfg = Release|Win32
+		{1C9201DF-E553-422C-9CC4-E667F3C606F9}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		..\..\..\..\AUTHORS = ..\..\..\..\AUTHORS
+		..\..\..\..\ChangeLog = ..\..\..\..\ChangeLog
+		..\..\..\..\COPYING = ..\..\..\..\COPYING
+		..\..\..\..\COPYING.LESSER = ..\..\..\..\COPYING.LESSER
+		..\..\..\..\INSTALL = ..\..\..\..\INSTALL
+		..\..\..\..\NEWS = ..\..\..\..\NEWS
+		..\..\..\..\README = ..\..\..\..\README
+		..\..\..\..\THANKS = ..\..\..\..\THANKS
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
