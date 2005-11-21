@@ -4704,7 +4704,6 @@ namespace {
             }
             texture->render_texture(v);
         }
-        this->node::modified(false);
     }
 
 

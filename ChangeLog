@@ -1,5 +1,12 @@
 2005-11-21 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(appearance_node::do_render_appearance): Removed call to
+	this->node::modified(false).  This is taken care of in
+	openvrml::appearance_node::render_appearance.
+
+2005-11-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp: Doc-comment improvements.
 
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
