@@ -1,3 +1,7 @@
+2005-11-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.cpp: Doc-comment improvements.
+
 2005-11-14 Braden McDaniel  <braden@endoframe.com>
 
 	Project file updates.

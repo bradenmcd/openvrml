@@ -315,31 +315,36 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a node_interface matches an eventIn identifier.
+ * @brief Determine if a <code>node_interface</code> matches an eventIn
+ *        identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
+ * Adaptable Binary Predicate</a>,
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
+ * Default Constructible</a>
  */
 
 /**
  * @fn openvrml::node_interface_matches_eventin::result_type openvrml::node_interface_matches_eventin::operator()(const first_argument_type & interface, const second_argument_type & eventin_id) const
  *
- * @brief Determine if a node_interface matches an eventIn identifier.
+ * @brief Determine if a <code>node_interface</code> matches an eventIn
+ *        identifier.
  *
  * A node_interface matches an eventIn identifier if:
- * - the node_interface's @a type is node_interface::eventin_id and
- *   - the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier
- *   - or the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier with the string &ldquo;set_&rdquo; prepended.
- * - or, the node_interface's @a type is node_interface::exposedfield_id and
- *   - the node_interface's @a id is lexicographically equal to the eventIn
- *     identifier
- *   - or the node_interface's @a id with the string &ldquo;set_&rdquo;
- *     prepended is lexicographically equal to the eventIn identifier.
+ * - the <code>node_interface</code>'s @a type is node_interface::eventin_id
+ *   and
+ *   - the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventIn identifier
+ *   - or the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventIn identifier with the string &ldquo;set_&rdquo; prepended.
+ * - or, the <code>node_interface</code>'s @a type is
+ *     <code>node_interface::exposedfield_id</code> and
+ *   - the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventIn identifier
+ *   - or the <code>node_interface</code>'s @a id with the string
+ *     &ldquo;set_&rdquo; prepended is lexicographically equal to the eventIn
+ *     identifier.
  *
  * @param interface     node_interface.
  * @param eventin_id    eventIn identifier.
@@ -353,31 +358,36 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a node_interface matches an eventOut identifier.
+ * @brief Determine if a <code>node_interface</code> matches an eventOut
+ *        identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
+ * Adaptable Binary Predicate</a>,
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
+ * Default Constructible</a>
  */
 
 /**
  * @fn openvrml::node_interface_matches_eventout::result_type openvrml::node_interface_matches_eventout::operator()(const first_argument_type & interface, const second_argument_type & eventout_id) const
  *
- * @brief Determine if a node_interface matches an eventOut identifier.
+ * @brief Determine if a <code>node_interface</code> matches an eventOut
+ *        identifier.
  *
- * A node_interface matches an eventOut identifier if:
- * - the node_interface's @a type is node_interface::eventout_id and
- *   - the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier
- *   - or the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier with the string &ldquo;_changed&rdquo; appended.
- * - or, the node_interface's @a type is node_interface::exposedfield_id and
- *   - the node_interface's @a id is lexicographically equal to the eventOut
- *     identifier
- *   - or the node_interface's @a id with the string &ldquo;_changed&rdquo;
- *     appended is lexicographically equal to the eventOut identifier.
+ * A <code>node_interface</code> matches an eventOut identifier if:
+ * - the <code>node_interface</code>'s @a type is
+ *   <code>node_interface::eventout_id</code> and
+ *   - the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventOut identifier
+ *   - or the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventOut identifier with the string &ldquo;_changed&rdquo; appended.
+ * - or, the <code>node_interface</code>'s @a type is
+ *     <code>node_interface::exposedfield_id</code> and
+ *   - the <code>node_interface</code>'s @a id is lexicographically equal to
+ *     the eventOut identifier
+ *   - or the <code>node_interface</code>'s @a id with the string
+ *     &ldquo;_changed&rdquo; appended is lexicographically equal to the
+ *     eventOut identifier.
  *
  * @param interface     node_interface.
  * @param eventout_id   eventOut identifier.
@@ -396,15 +406,16 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
+ * Adaptable Binary Predicate</a>,
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
+ * Default Constructible</a>
  */
 
 /**
  * @fn openvrml::node_interface_matches_exposedfield::result_type openvrml::node_interface_matches_exposedfield::operator()(const first_argument_type & interface, const second_argument_type & exposedfield_id) const
  *
- * @brief Determine if a node_interface matches an exposedField identifier.
+ * @brief Determine if a <code>node_interface</code> matches an exposedField
+ *        identifier.
  *
  * A <code>node_interface</code> matches an exposedField identifier if the
  * <code>node_interface</code>'s @a type is
@@ -430,19 +441,23 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
+ * Adaptable Binary Predicate</a>,
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
+ * Default Constructible</a>
  */
 
 /**
  * @fn openvrml::node_interface_matches_field::result_type openvrml::node_interface_matches_field::operator()(const first_argument_type & interface, const second_argument_type & field_id) const
  *
- * @brief Determine if a node_interface matches an field identifier.
+ * @brief Determine if a <code>node_interface</code> matches an field
+ *        identifier.
  *
- * A node_interface matches a field identifier if the node_interface's @a type
- * is node_interface::field_id or node_interface::exposedfield_id and the
- * node_interface's @a id is lexicographically equal to the field identifier.
+ * A <code>node_interface</code> matches a field identifier if the
+ * <code>node_interface</code>'s @a type is
+ * <code>node_interface::field_id</code> or
+ * <code>node_interface::exposedfield_id</code> and the
+ * <code>node_interface</code>'s @a id is lexicographically equal to the field
+ * identifier.
  *
  * @param interface node_interface.
  * @param field_id  field identifier.
@@ -461,23 +476,23 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * <code>node_interface_compare</code> provides a
  * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
- * StrictWeakOrdering</a> for <code>node_interface</code>s and ensures that
+ * Strict Weak Ordering</a> for <code>node_interface</code>s and ensures that
  * exposedField definitions appropriately encroach on the namespace of eventIn
  * and eventOut definitions. That is, per 4.7 of the VRML97 spec: &rdquo;An
- * exposedField named zzz can be referred to as &lsquo;set_zzz&rsquo; and
- * treated as an eventIn, and can be referred to as &lsquo;zzz_changed&rsquo;
- * and treated as an eventOut.&rdquo;
+ * exposedField named &lsquo;zzz@rsquo; can be referred to as
+ * &lsquo;set_zzz&rsquo; and treated as an eventIn, and can be referred to as
+ * &lsquo;zzz_changed&rsquo; and treated as an eventOut.&rdquo;
  *
  * <code>node_interface_compare</code> is the comparator used by
  * <code>@link openvrml::node_interface_set node_interface_set@endlink</code>.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
- * AdaptableBinaryPredicate</a>,
+ * Adaptable Binary Predicate</a>,
  * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
- * StrictWeakOrdering</a>,
+ * Strict Weak Ordering</a>,
  * <a href="http://www.sgi.com/tech/stl/DefaultConstructible.html">
- * DefaultConstructible</a>
+ * Default Constructible</a>
  *
  * @see node_interface_set
  */
