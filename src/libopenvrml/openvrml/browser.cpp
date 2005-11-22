@@ -372,6 +372,8 @@ namespace openvrml {
             throw (std::bad_alloc);
         virtual ~proto_node() throw ();
 
+        virtual bool modified() const;
+
     private:
         virtual void do_initialize(double timestamp)
             throw (std::bad_alloc);
@@ -2240,6 +2242,19 @@ namespace openvrml {
      */
     proto_node::~proto_node() throw ()
     {}
+
+    /**
+     * @brief Indicate whether the node needs to be rerendered.
+     *
+     * @return @c true if the node has changed and needs to be rerendered;
+     *         @c false otherwise.
+     */
+    bool proto_node::modified() const
+    {
+        return !this->impl_nodes.empty()
+            ? this->impl_nodes.front()->modified()
+            : false;
+    }
 
     /**
      * @brief Initialize.
