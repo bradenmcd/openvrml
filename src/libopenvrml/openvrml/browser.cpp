@@ -4493,6 +4493,10 @@ openvrml::invalid_profile::~invalid_profile() throw ()
  * @class openvrml::browser
  *
  * @brief Encapsulates a VRML browser.
+ *
+ * <code>browser</code> is the foundation of the OpenVRML runtime. Users need
+ * to inherit this class and override <code>browser::do_get_resource</code> and
+ * provide an implementation of <code>resource_istream</code>.
  */
 
 /**
@@ -6919,15 +6923,110 @@ openvrml::browser::get_resource(const std::string & uri)
 }
 
 /**
+ * @fn std::auto_ptr<openvrml::resource_istream> openvrml::browser::do_get_resource(const std::string & uri)
+ *
  * @brief Fetch a network resource.
  *
- * Called by <code>browser::get_resource</code>.
+ * Called by <code>browser::get_resource</code>, clients of %OpenVRML are
+ * required to provide an implementation for this function. %OpenVRML depends
+ * on the implementation of this function for all of its input needs. As such,
+ * what kind of resources %OpenVRML is capable of resolving is entirely
+ * dependent on code provided by the application. A trivial implementation
+ * designed to handle only <code>file</code> resources can use
+ * <code>std::filebuf</code>:
  *
- * @param uri   a Uniform Resource Identifier.
+ * @code
+ * std::auto_ptr<openvrml::resource_istream>
+ * my_browser::do_get_resource(const std::string & uri)
+ * {
+ *     using std::auto_ptr;
+ *     using std::invalid_argument;
+ *     using std::string;
+ *     using openvrml::resource_istream;
+ *
+ *     class file_resource_istream : public resource_istream {
+ *         std::string url_;
+ *         std::filebuf buf_;
+ *
+ *     public:
+ *         explicit file_resource_istream(const std::string & path):
+ *             resource_istream(&this->buf_)
+ *         {
+ *             this->buf_.open(path.c_str(), ios_base::in);
+ *         }
+ *
+ *         void url(const std::string & str) throw (std::bad_alloc)
+ *         {
+ *             this->url_ = str;
+ *         }
+ *
+ *         virtual const std::string url() const throw ()
+ *         {
+ *             return this->url_;
+ *         }
+ *
+ *         virtual const std::string type() const throw ()
+ *         {
+ *             //
+ *             // A real application should use OS facilities for this;
+ *             // however, that is beyond the scope of this example (which
+ *             // is intended to be portable and stupid).
+ *             //
+ *             using std::string;
+ *             using boost::algorithm::iequals;
+ *             string media_type = "application/octet-stream";
+ *             const string::size_type dot_pos = this->url_.rfind('.');
+ *             if (dot_pos == string::npos
+ *                 || this->url_.size() < dot_pos + 1) {
+ *                 return media_type;
+ *             }
+ *             const string ext = this->url_.substr(dot_pos + 1);
+ *             if (iequals(ext, "wrl")) {
+ *                 media_type = "model/vrml";
+ *             } else if (iequals(ext, "png")) {
+ *                 media_type = "image/png";
+ *             } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
+ *                 media_type = "image/jpeg";
+ *             }
+ *             return media_type;
+ *         }
+ *
+ *         virtual bool data_available() const throw ()
+ *         {
+ *             return !!(*this);
+ *         }
+ *     };
+ *
+ *     const string scheme = uri.substr(0, uri.find_first_of(':'));
+ *     if (scheme != "file") {
+ *         throw invalid_argument('\"' + scheme + "\" URI scheme not "
+ *                                "supported");
+ *     }
+ *     //
+ *     // file://
+ *     //        ^
+ *     // 01234567
+ *     //
+ *     string path = uri.substr(uri.find_first_of('/', 7));
+ *
+ *     auto_ptr<resource_istream> in(new file_resource_istream(path));
+ *     static_cast<file_resource_istream *>(in.get())->url(uri);
+ *
+ *     return in;
+ * }
+ * @endcode
+ *
+ * The @p uri parameter is provided by %OpenVRML and can be assumed to be an
+ * absolute URI. As such, it will always have a scheme through which the client
+ * code can choose a resolution mechanism. For more information on URI syntax,
+ * see <a href="http://www.isi.edu/in-notes/rfc2396.txt">Internet
+ * RFC&nbsp;2396</a>.
+ *
+ * @param uri   an absolute Uniform Resource Identifier.
  *
  * @return the requested resource as a stream.
  *
- * @fn std::auto_ptr<openvrml::resource_istream> openvrml::browser::do_get_resource(const std::string & uri)
+ * @sa http://www.isi.edu/in-notes/rfc2396.txt
  */
 
 /**

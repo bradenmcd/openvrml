@@ -1,5 +1,9 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(shape_node::do_render_child): Set the modified flag for the
 	geometry node if the appearance has been modified.
