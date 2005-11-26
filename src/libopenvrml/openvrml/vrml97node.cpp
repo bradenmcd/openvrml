@@ -17792,6 +17792,13 @@ namespace {
         geometry_node * const geometry =
             node_cast<geometry_node *>(this->geometry_.sfnode::value().get());
 
+        //
+        // If the appearance has changed, we need to rerender the geometry.
+        //
+        if (geometry && appearance && appearance->modified()) {
+            geometry->modified(true);
+        }
+
         if (this->viewerObject && (this->modified()
                                    || (appearance && appearance->modified())
                                    || (geometry && geometry->modified()))) {
