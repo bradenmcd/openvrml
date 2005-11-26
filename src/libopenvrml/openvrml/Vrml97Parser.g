@@ -690,7 +690,8 @@ options { defaultErrorHandler=false; }
     | proto[browser, scope]
     ;
 
-proto[openvrml::browser & browser, const boost::shared_ptr<openvrml::scope> & scope]
+proto[openvrml::browser & browser,
+      const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
     using std::vector;
@@ -731,9 +732,9 @@ options { defaultErrorHandler=false; }
             std::string impl_id;
             do {
                 impl_id = '#' + proto_scope->id() + impl_id;
-            } while ((proto_scope = proto_scope->parent()));
+            } while ((proto_scope = proto_scope->parent())->parent());
             impl_id = scope->id() + impl_id;
-            browser.node_class_map_.insert(impl_id, node_class);
+            browser.add_node_class(impl_id, node_class);
 
             //
             // PROTOs implicitly introduce a new node type as well.
@@ -950,7 +951,7 @@ options { defaultErrorHandler=false; }
                  uri != alt_uris.end();
                  ++uri) {
                 const shared_ptr<openvrml::node_class> node_class =
-                    browser.node_class_map_.find(*uri);
+                    browser.node_class(*uri);
                 if (node_class) {
                     node_type = node_class->create_type(id->getText(),
                                                         interfaces);
@@ -965,7 +966,7 @@ options { defaultErrorHandler=false; }
                 for (vector<string>::const_iterator uri = alt_uris.begin();
                      uri != alt_uris.end();
                      ++uri) {
-                    browser.node_class_map_.insert(*uri, externproto_class);
+                    browser.add_node_class(*uri, externproto_class);
                 }
 
                 node_type = externproto_class->create_type(id->getText(),

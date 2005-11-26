@@ -3602,6 +3602,11 @@ namespace {
             throw (std::bad_alloc);
     };
 
+    inline bool relative(const uri & id)
+    {
+        return id.scheme().empty();
+    }
+
     uri::grammar::grammar(uri & uri_ref) throw ():
         uri_ref(uri_ref)
     {}
@@ -3972,8 +3977,8 @@ namespace {
         using std::list;
         using std::string;
 
-        assert(this->scheme().empty());
-        assert(!absolute_uri.scheme().empty());
+        assert(relative(*this));
+        assert(!relative(absolute_uri));
 
         string result = absolute_uri.scheme() + ':';
 
@@ -4490,6 +4495,101 @@ openvrml::invalid_profile::~invalid_profile() throw ()
 
 
 /**
+ * @class openvrml::node_class_id
+ *
+ * @brief Identifier for <code>node_class</code>es.
+ *
+ * <code>node_class</code> identifiers take the following form:
+ *
+ * <pre>
+ * absolute-uri ['#' proto-id ['#' proto-id [...]]]
+ * </pre>
+ *
+ * A <code>node_class</code> identifier is basically like an absolute URI;
+ * except the fragment identifier syntax has been extended to support referring
+ * to nested <code>PROTO</code>s.
+ *
+ * For example, supposing the following VRML world resides at
+ * <code>%http://example.com/example.wrl</code>:
+ *
+ * <pre>
+ * #VRML V2.0 utf8
+ *
+ * PROTO Outer [] {
+ *   PROTO Inner [] { Group {} }
+ *   Group {}
+ * }
+ * </pre>
+ *
+ * The <code>node_class_id</code> string for <code>Outer</code> would be
+ * <code>http://example.com/example.wrl#Outer</code>; and for
+ * <code>Inner</code>,
+ * <code>http://example.com/example.wrl#Outer#Inner</code>.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::string openvrml::node_class_id::id_
+ *
+ * @brief The identifier string.
+ */
+
+/**
+ * @brief Construct from a <code>const&nbsp;char&nbsp;*</code>.
+ *
+ * @param id    the identifier.
+ *
+ * @exception std::invalid_argument if @p id is not a valid
+ *                                  <code>node_class</code> identifier.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @todo Need to make sure the fragment part is valid.
+ */
+openvrml::node_class_id::node_class_id(const char * id)
+    throw (std::invalid_argument, std::bad_alloc):
+    id_(id)
+{
+    if (relative(uri(this->id_))) {
+        throw std::invalid_argument('<' + this->id_ + "> is not a valid "
+                                    "node_class identifier");
+    }
+}
+
+/**
+ * @brief Construct from a <code>std::string</code>.
+ *
+ * @param id    the identifier.
+ *
+ * @exception std::invalid_argument if @p id is not a valid
+ *                                  <code>node_class</code> identifier.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @todo Need to make sure the fragment part is valid.
+ */
+openvrml::node_class_id::node_class_id(const std::string & id)
+    throw (std::invalid_argument, std::bad_alloc):
+    id_(id)
+{
+    if (relative(uri(this->id_))) {
+        throw std::invalid_argument('<' + this->id_ + "> is not a valid "
+                                    "node_class identifier");
+    }
+}
+
+/**
+ * @brief Convert to a <code>std::string</code>.
+ *
+ * @return the <code>node_class</code> identifier as a
+ *         <code>std::string</code>.
+ */
+openvrml::node_class_id::operator std::string() const
+{
+    return this->id_;
+}
+
+
+/**
  * @class openvrml::browser
  *
  * @brief Encapsulates a VRML browser.
@@ -4618,10 +4718,23 @@ openvrml::browser::node_class_map::init(viewpoint_node * initial_viewpoint,
 const boost::shared_ptr<openvrml::node_class>
 openvrml::browser::node_class_map::
 insert(const std::string & id,
-       const boost::shared_ptr<node_class> & node_class)
+       const boost::shared_ptr<openvrml::node_class> & node_class)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     return this->map_.insert(make_pair(id, node_class)).first->second;
+}
+
+/**
+ * @brief Remove a <code>node_class</code>.
+ *
+ * @param id    the implementation identifier.
+ *
+ * @return @c true if a <code>node_class</code> is removed; @c false otherwise.
+ */
+bool openvrml::browser::node_class_map::remove(const std::string & id)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->map_.erase(id) > 0;
 }
 
 /**
@@ -4638,7 +4751,7 @@ openvrml::browser::node_class_map::find(const std::string & id) const
     const map_t::const_iterator pos = this->map_.find(id);
     return (pos != this->map_.end())
         ? pos->second
-        : boost::shared_ptr<node_class>();
+        : boost::shared_ptr<openvrml::node_class>();
 }
 
 namespace {
@@ -6690,6 +6803,51 @@ openvrml::browser::~browser() throw ()
 }
 
 /**
+ * @brief Add a <code>node_class</code>.
+ *
+ * If a <code>node_class</code> identified by @p id has already been added to
+ * the browser, it will be replaced.
+ *
+ * @warning If <code>std::bad_alloc</code> is thrown here, the
+ *          <code>browser</code>'s <code>node_class</code> map is left in an
+ *          unknown state. In all likelihood any preexisting entry in the map
+ *          with the same implementation identifier as @p id will have been
+ *          removed.
+ *
+ * @param id    a <code>node_class</code> identifier.
+ * @param nc    a <code>shared_ptr</code> to a <code>node_class</code>
+ *
+ * @exception std::invalid_argument if @p nc is null.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void
+openvrml::browser::
+add_node_class(const node_class_id & id,
+               const boost::shared_ptr<openvrml::node_class> & nc)
+    throw (std::invalid_argument, std::bad_alloc)
+{
+    if (!nc) {
+        throw std::invalid_argument("cannot add null node_class pointer");
+    }
+    this->node_class_map_.remove(id); // Remove any existing entry.
+    this->node_class_map_.insert(id, nc);
+}
+
+/**
+ * @brief Get the <code>node_class</code> corresponding to @p id.
+ *
+ * @param id    a <code>node_class</code> identifier.
+ *
+ * @return the <code>node_class</code> corresponding to @p id; or a null
+ *         pointer if no such <code>node_class</code> exists.
+ */
+const boost::shared_ptr<openvrml::node_class>
+openvrml::browser::node_class(const node_class_id & id) const throw ()
+{
+    return this->node_class_map_.find(id);
+}
+
+/**
  * @brief Get the root nodes for the browser.
  *
  * @return the root nodes for the browser.
@@ -7925,7 +8083,7 @@ namespace {
     OPENVRML_LOCAL const uri create_file_url(const uri & relative_uri)
         throw (bad_path, std::bad_alloc)
     {
-        assert(relative_uri.scheme().empty());
+        assert(relative(relative_uri));
 
         using std::string;
 
@@ -8303,7 +8461,7 @@ void openvrml::scene::load_url(const std::vector<std::string> & url,
                 try {
                     const uri urlElement(url[i]);
                     const string value =
-                        urlElement.scheme().empty()
+                        relative(urlElement)
                             ? urlElement.resolve_against(uri(this->url()))
                             : urlElement;
                     absoluteURIs[i] = value;
@@ -8352,7 +8510,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
             // case we are loading the root scene.  In that case, construct an
             // absolute file URL.
             //
-            const uri absolute_uri = !test_uri.scheme().empty()
+            const uri absolute_uri = !relative(test_uri)
                                    ? test_uri
                                    : (!this->parent() && this->url().empty())
                                         ? create_file_url(test_uri)

@@ -170,6 +170,18 @@ namespace openvrml {
     };
 
 
+    class OPENVRML_API node_class_id {
+        std::string id_;
+
+    public:
+        node_class_id(const char * id)
+            throw (std::invalid_argument, std::bad_alloc);
+        node_class_id(const std::string & id)
+            throw (std::invalid_argument, std::bad_alloc);
+        operator std::string() const;
+    };
+
+
     class viewer;
     class scene;
     class null_node_class;
@@ -194,9 +206,11 @@ namespace openvrml {
 
             void init(viewpoint_node * initial_viewpoint, double timestamp);
 
-            const boost::shared_ptr<node_class>
+            const boost::shared_ptr<openvrml::node_class>
             insert(const std::string & id,
-                   const boost::shared_ptr<node_class> & node_class);
+                   const boost::shared_ptr<openvrml::node_class> & node_class);
+
+            bool remove(const std::string & id);
 
             const boost::shared_ptr<node_class>
             find(const std::string & id) const;
@@ -247,6 +261,12 @@ namespace openvrml {
         browser(profile_id profile, std::ostream & out, std::ostream & err)
             throw (std::bad_alloc);
         virtual ~browser() throw ();
+
+        void add_node_class(const node_class_id & id,
+                            const boost::shared_ptr<openvrml::node_class> & nc)
+            throw (std::invalid_argument, std::bad_alloc);
+        const boost::shared_ptr<openvrml::node_class>
+        node_class(const node_class_id & id) const throw ();
 
         const std::vector<boost::intrusive_ptr<node> > & root_nodes() const
             throw ();

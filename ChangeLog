@@ -1,5 +1,41 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Exposed means to add and retrieve node_classes from the browser's
+	node_class map as part of openvrml::browser's public interface.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::proto): Fixed composition of impl_id; use
+	openvrml::browser::add_node_class instead of
+	openvrml::browser::node_class_map::insert.
+	(Vrml97Parser::externproto): Use openvrml::browser::node_class
+	instead of openvrml::browser::node_class_map::find; use
+	openvrml::browser::add_node_class instead of
+	openvrml::browser::node_class_map::insert.
+	* src/libopenvrml/openvrml/browser.cpp
+	(relative): Added function to check whether a URI is relative.
+	(uri::resolve_against): Changed to use relative.
+	(openvrml::node_class_id::node_class_id(const char *)): Added
+	constructor.
+	(openvrml::node_class_id::node_class_id(const std::string &)):
+	Added constructor.
+	(openvrml::node_class_id::operator std::string): Added conversion
+	operator.
+	(openvrml::browser::node_class_map::remove): Added function to
+	remove a node_class from the map.
+	(openvrml::browser::add_node_class): Added function to add a
+	node_class to the browser's node_class map.
+	(openvrml::browser::node_class): Added function to retrieve a
+	node_class from the browser's node_class map.
+	(create_file_url): Changed to use relative.
+	(openvrml::scene::load_url): Changed to use relative.
+	(openvrml::scene::get_resource): Changed to use relative.
+	* src/libopenvrml/openvrml/browser.h: Added class
+	openvrml::node_class_id; added functions
+	openvrml::browser::node_class_map::remove,
+	openvrml::browser::add_node_class, openvrml::browser::node_class.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
 
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
