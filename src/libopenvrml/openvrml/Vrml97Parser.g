@@ -626,7 +626,7 @@ vrmlScene[openvrml::scene & scene,
 options { defaultErrorHandler=false; }
 {
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
-        scene.browser().create_root_scope(this->uri);
+        create_root_scope(scene.browser(), this->uri);
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
     :   (statement[scene.browser(), nodes, root_scope])*

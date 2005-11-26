@@ -337,9 +337,6 @@ namespace openvrml {
         bool headlight_on();
 
     private:
-        OPENVRML_LOCAL std::auto_ptr<scope>
-        create_root_scope(const std::string & uri) throw (std::bad_alloc);
-
         virtual std::auto_ptr<resource_istream>
         do_get_resource(const std::string & uri) = 0;
     };

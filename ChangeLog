@@ -1,5 +1,18 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	Made create_root_scope a nonmember function.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::vrmlScene): Changed to use ::create_root_scope.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlParser::vrmlScene): Changed to use ::create_root_scope.
+	* src/libopenvrml/openvrml/browser.cpp: Made create_root_scope a
+	nonmember function.
+	* src/libopenvrml/openvrml/browser.h: Removed
+	openvrml::browser::create_root_scope.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	Exposed means to add and retrieve node_classes from the browser's
 	node_class map as part of openvrml::browser's public interface.
 

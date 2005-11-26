@@ -201,7 +201,7 @@ options { defaultErrorHandler=false; }
 {
     profile_id profile = invalid_profile_id;
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
-        scene.browser().create_root_scope(this->uri);
+        create_root_scope(scene.browser(), this->uri);
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
     :   profile=profileStatement { scene.profile_ = profile; }
