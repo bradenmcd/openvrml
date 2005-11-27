@@ -25,14 +25,14 @@
 # include <boost/thread/condition.hpp>
 # include <boost/thread/mutex.hpp>
 # include <boost/thread/thread.hpp>
+# include <openvrml/browser.h>
+# include <openvrml/gl/viewer.h>
 # include <unistd.h>
 # include <argp.h>
 # include <X11/keysym.h>
 # include <gdk/gdkx.h>
 # include <gtk/gtk.h>
 # include <gtk/gtkgl.h>
-# include <openvrml/browser.h>
-# include <openvrml/gl/viewer.h>
 
 namespace {
 

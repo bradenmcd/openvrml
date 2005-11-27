@@ -1,5 +1,12 @@
 2005-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/player.cpp: Include OpenVRML
+	headers before X11 headers.  This avoids a conflict between the
+	X11 headers and Boost headers.
+	From Simon Barner <barner@users.sourceforge.net>
+
+2005-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	Changed error messages not to look so much like sentences.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g
