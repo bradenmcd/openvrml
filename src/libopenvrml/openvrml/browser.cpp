@@ -340,27 +340,25 @@ namespace openvrml {
      * @brief A <code>PROTO</code> instance node.
      *
      * Like a typical node implementation, <code>proto_node</code>s have a
-     * many-to-one relationship with the
-     * <code>proto_node::proto_node_type</code> instance that creates them. And
-     * <code>proto_node::proto_node_type</code> has, in turn, a many-to-one
-     * relationship with the <code>proto_node_class</code> instance that
-     * creates them. Unlike a typical node implementation, there will very
+     * many-to-one relationship with the <code>proto_node_type</code> instance
+     * that creates them. And <code>proto_node_type</code> has, in turn, a
+     * many-to-one relationship with the <code>proto_node_class</code> instance
+     * that creates them. Unlike a typical node implementation, there will very
      * likely be more than one <code>proto_node_class</code> instance known to
      * the <code>browser</code> instance; there will be one for each
      * <code>PROTO</code> known to the <code>browser</code>.
      *
      * As the <code>proto_node_class</code> encodes the data in a
-     * <code>PROTO</code>, the <code>proto_node::proto_node_type</code> can
-     * be seen as modeling <code>EXTERNPROTO</code>. Each
-     * <code>EXTERNPROTO</code> will spawn a new
-     * <code>proto_node::proto_node_type</code> from the
+     * <code>PROTO</code>, the <code>proto_node_type</code> can be seen as
+     * modeling <code>EXTERNPROTO</code>. Each <code>EXTERNPROTO</code> will
+     * spawn a new <code>proto_node_type</code> from the
      * <code>proto_node_class</code> that corresponds to the <code>PROTO</code>
      * to which the <code>EXTERNPROTO</code> refers. Recall that an
-     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined
-     * for a <code>PROTO</code>; thus, for a <code>PROTO</code> with
-     * <var>n</var> interfaces, there are <var>n</var>! possible unique
-     * <code>EXTERNPROTO</code>s (and thus unique
-     * <code>proto_node::proto_node_type</code> instances).
+     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined for
+     * a <code>PROTO</code>; thus, for a <code>PROTO</code> with <var>n</var>
+     * interfaces, there are <var>n</var>! possible unique
+     * <code>EXTERNPROTO</code>s (and thus unique <code>proto_node_type</code>
+     * instances).
      *
      * Structurally, the implementation of <code>proto_node</code> is very
      * similar to that of <code>proto_node_class</code>. The difference is that
@@ -996,32 +994,32 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @class proto_node::proto_eventin
+     * @class abstract_proto_node::proto_eventin
      *
      * @brief PROTO eventIn handler class template.
      */
 
     /**
-     * @typedef proto_node::proto_eventin::listeners
+     * @typedef abstract_proto_node::proto_eventin::listeners
      *
      * @brief Set of event listeners.
      */
 
     /**
-     * @var proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
+     * @var abstract_proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
      *
      * @brief Set of event listeners to which events are delegated for
      *        processing.
      */
 
     /**
-     * @typedef proto_node::proto_eventin::field_value_type
+     * @typedef abstract_proto_node::proto_eventin::field_value_type
      *
      * @brief Field value type.
      */
 
     /**
-     * @typedef proto_node::proto_eventin::event_listener_type
+     * @typedef abstract_proto_node::proto_eventin::event_listener_type
      *
      * @brief Type of event listeners to which the instance delegates.
      */
@@ -1029,7 +1027,7 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param node  proto_node.
+     * @param node  abstract_proto_node.
      */
     template <typename FieldValue>
     abstract_proto_node::proto_eventin<FieldValue>::
@@ -1068,6 +1066,11 @@ namespace openvrml {
         }
     }
 
+    /**
+     * @brief The name of the associated eventIn.
+     *
+     * @return the name of the associated eventIn.
+     */
     template <typename FieldValue>
     const std::string
     abstract_proto_node::proto_eventin<FieldValue>::do_eventin_id() const
@@ -1107,7 +1110,7 @@ namespace openvrml {
      * @param type  field_value::type_id.
      * @param node  proto_node.
      *
-     * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+     * @return a boost::shared_ptr to a proto_eventin<FieldValue> instance.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
@@ -1202,16 +1205,17 @@ namespace openvrml {
     }
 
     /**
-     * @brief Create an IS mapping between an event_listener in the PROTO
-     *        implementation and an event_listener in the PROTO interface.
+     * @brief Create an @c IS mapping between an @c event_listener in the
+     *        @c PROTO implementation and an @c event_listener in the @c PROTO
+     *        interface.
      *
      * @param field_type        field value type of the concrete listeners.
-     * @param impl_eventin      event_listener of a node in the PROTO
+     * @param impl_eventin      @c event_listener of a node in the @c PROTO
      *                          implementation.
-     * @param interface_eventin event_listener from the PROTO interface.
+     * @param interface_eventin @c event_listener from the @c PROTO interface.
      *
-     * @return @c true if the IS mapping is established successfully; @c false
-     *         otherwise (i.e., if the mapping already exists).
+     * @return @c true if the @c IS mapping is established successfully;
+     *         @c false otherwise (i.e., if the mapping already exists).
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
@@ -1373,14 +1377,14 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @class proto_node::proto_eventout::listener_t
+     * @class abstract_proto_node::proto_eventout::listener_t
      *
      * @brief Listens for events emitted from nodes in the PROTO implementation
      *        in order to propagate them out of the PROTO instance.
      */
 
     /**
-     * @var proto_node::proto_eventout & proto_node::proto_eventout::listener_t::emitter
+     * @var abstract_proto_node::proto_eventout & abstract_proto_node::proto_eventout::listener_t::emitter
      *
      * @brief Reference to the outer proto_eventout class.
      *
@@ -1391,13 +1395,13 @@ namespace openvrml {
      */
 
     /**
-     * @var proto_node & proto_node::proto_eventout::listener_t::node
+     * @var abstract_proto_node & abstract_proto_node::proto_eventout::listener_t::node
      *
-     * @brief Reference to the proto_node instance.
+     * @brief Reference to the @c abstract_proto_node instance.
      */
 
     /**
-     * @var FieldValue proto_node::proto_eventout::listener_t::value
+     * @var FieldValue abstract_proto_node::proto_eventout::listener_t::value
      *
      * @brief The value of the most recently emitted event.
      */
@@ -1405,8 +1409,8 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param emitter       proto_eventout.
-     * @param node          proto_node.
+     * @param emitter       @c proto_eventout.
+     * @param node          @c abstract_proto_node.
      * @param initial_value initial value (used for exposedFields).
      */
     template <typename FieldValue>
@@ -1462,26 +1466,27 @@ namespace openvrml {
     }
 
     /**
-     * @var proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
+     * @var abstract_proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
      *
-     * @brief Listens for events emitted from nodes in the PROTO implementation
-     *        in order to propagate them out of the PROTO instance.
+     * @brief Listens for events emitted from nodes in the @c PROTO
+     *        implementation in order to propagate them out of the @c PROTO
+     *        instance.
      */
 
     /**
-     * @typedef proto_node::proto_eventout<FieldValue>::field_value_type
+     * @typedef abstract_proto_node::proto_eventout<FieldValue>::field_value_type
      *
      * @brief Field value type.
      */
 
     /**
-     * @typedef proto_node::proto_eventout<FieldValue>::event_emitter_type
+     * @typedef abstract_proto_node::proto_eventout<FieldValue>::event_emitter_type
      *
      * @brief Event emitter type.
      */
 
     /**
-     * @typedef proto_node::proto_eventout<FieldValue>::event_listener_type
+     * @typedef abstract_proto_node::proto_eventout<FieldValue>::event_listener_type
      *
      * @brief Event listener type.
      */
@@ -1489,9 +1494,9 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param node          proto_node.
+     * @param node          @c abstract_proto_node.
      * @param initial_value initial value.  This is used by
-     *                      proto_exposedfield<FieldValue>
+     *                      @c proto_exposedfield<FieldValue>
      */
     template <typename FieldValue>
     abstract_proto_node::proto_eventout<FieldValue>::
@@ -1510,12 +1515,12 @@ namespace openvrml {
     {}
 
     /**
-     * @brief Create an IS mapping.
+     * @brief Create an @c IS mapping.
      *
-     * @param emitter   the event_emitter from a node in the PROTO
+     * @param emitter   the @c event_emitter from a node in the @c PROTO
      *                  implementation.
      *
-     * @return @c true if the IS mapping is created successfully; @c false
+     * @return @c true if the @c IS mapping is created successfully; @c false
      *         otherwise (i.e., if it already exists).
      *
      * @exception std::bad_alloc    if memory allocation fails.
@@ -1528,6 +1533,11 @@ namespace openvrml {
         return emitter.add(this->listener);
     }
 
+    /**
+     * @brief The name of the associated eventOut.
+     *
+     * @return the name of the associated eventOut.
+     */
     template <typename FieldValue>
     const std::string
     abstract_proto_node::proto_eventout<FieldValue>::do_eventout_id() const
@@ -1542,12 +1552,13 @@ namespace openvrml {
     }
 
     /**
-     * @brief Factory function for proto_eventout<FieldValue> instances.
+     * @brief Factory function for @c proto_eventout<FieldValue> instances.
      *
-     * @param type  field_value::type_id.
-     * @param node  proto_node.
+     * @param type  @c field_value::type_id.
+     * @param node  @c abstract_proto_node.
      *
-     * @return a boost::shared_ptr to a proto_eventout<FieldValue> instance.
+     * @return a @c boost::shared_ptr to a @c proto_eventout<FieldValue>
+     *         instance.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
@@ -1645,16 +1656,18 @@ namespace openvrml {
     }
 
     /**
-     * @brief Create an IS mapping between an event_emitter in the PROTO
-     *        implementation and an event_emitter in the PROTO interface.
+     * @brief Create an @c IS mapping between an @c event_emitter in the
+     *        @c PROTO implementation and an @c event_emitter in the @c PROTO
+     *        interface.
      *
      * @param field_type            field value type of the concrete emitters.
-     * @param impl_eventout         event_emitter of a node in the PROTO
+     * @param impl_eventout         @c event_emitter of a node in the @c PROTO
      *                              implementation.
-     * @param interface_eventout    event_emitter from the PROTO interface.
+     * @param interface_eventout    @c event_emitter from the @c PROTO
+     *                              interface.
      *
-     * @return @c true if the IS mapping is established successfully; @c false
-     *         otherwise (i.e., if the mapping already exists).
+     * @return @c true if the @c IS mapping is established successfully;
+     *         @c false otherwise (i.e., if the mapping already exists).
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */

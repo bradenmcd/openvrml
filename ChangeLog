@@ -1,5 +1,9 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Doc-comment fixes.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp: Moved
 	::proto_node_class::proto_node_type to ::proto_node_type.
 
