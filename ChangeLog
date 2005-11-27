@@ -1,5 +1,12 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Moved implementations of
+	member functions for externproto_node_class,
+	externproto_node_type, and externproto_node after Vrml97Parser and
+	X3DVrmlParser have been included.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::proto_node::create_exposedfield): Take a proto_node as
 	an argument rather than an abstract_proto_node.
