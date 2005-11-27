@@ -255,25 +255,6 @@ namespace openvrml {
                     openvrml::event_emitter & interface_eventout)
             throw (std::bad_alloc);
 
-        template <typename FieldValue>
-        class proto_exposedfield : public proto_eventin<FieldValue>,
-                                   public proto_eventout<FieldValue> {
-        public:
-            proto_exposedfield(abstract_proto_node & node,
-                               const FieldValue & initial_value);
-            virtual ~proto_exposedfield() throw ();
-
-        private:
-            virtual void do_process_event(const FieldValue & value,
-                                          double timestamp)
-                throw (std::bad_alloc);
-        };
-
-        static boost::shared_ptr<openvrml::event_listener>
-        create_exposedfield(const field_value & initial_value,
-                            abstract_proto_node & node)
-            throw (std::bad_alloc);
-
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
 
@@ -368,6 +349,25 @@ namespace openvrml {
      * about how these event pathways @e should be created.
      */
     class OPENVRML_LOCAL proto_node : public abstract_proto_node {
+        template <typename FieldValue>
+        class proto_exposedfield : public proto_eventin<FieldValue>,
+                                   public proto_eventout<FieldValue> {
+        public:
+            proto_exposedfield(abstract_proto_node & node,
+                               const FieldValue & initial_value);
+            virtual ~proto_exposedfield() throw ();
+
+        private:
+            virtual void do_process_event(const FieldValue & value,
+                                          double timestamp)
+                throw (std::bad_alloc);
+        };
+
+        static boost::shared_ptr<openvrml::event_listener>
+        create_exposedfield(const field_value & initial_value,
+                            abstract_proto_node & node)
+            throw (std::bad_alloc);
+
         boost::shared_ptr<openvrml::scope> proto_scope;
         std::vector<boost::intrusive_ptr<node> > impl_nodes;
 
@@ -1833,7 +1833,7 @@ namespace openvrml {
      * @param initial_value initial value.
      */
     template <typename FieldValue>
-    abstract_proto_node::proto_exposedfield<FieldValue>::
+    proto_node::proto_exposedfield<FieldValue>::
     proto_exposedfield(abstract_proto_node & node,
                        const FieldValue & initial_value):
         node_event_listener(node),
@@ -1846,7 +1846,7 @@ namespace openvrml {
      * @brief Destroy.
      */
     template <typename FieldValue>
-    abstract_proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield()
+    proto_node::proto_exposedfield<FieldValue>::~proto_exposedfield()
         throw ()
     {}
 
@@ -1860,7 +1860,7 @@ namespace openvrml {
      */
     template <typename FieldValue>
     void
-    abstract_proto_node::proto_exposedfield<FieldValue>::
+    proto_node::proto_exposedfield<FieldValue>::
     do_process_event(const FieldValue & value, const double timestamp)
         throw (std::bad_alloc)
     {
@@ -1881,7 +1881,7 @@ namespace openvrml {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     boost::shared_ptr<event_listener>
-    abstract_proto_node::create_exposedfield(const field_value & initial_value,
+    proto_node::create_exposedfield(const field_value & initial_value,
                                              abstract_proto_node & node)
         throw (std::bad_alloc)
     {
