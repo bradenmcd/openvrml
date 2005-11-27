@@ -2742,7 +2742,7 @@ namespace {
 
     public:
         externproto_node_class(
-            openvrml::browser & b,
+            openvrml::scene & scene,
             const std::vector<std::string> & uris) throw ();
         virtual ~externproto_node_class() throw ();
 
@@ -5508,10 +5508,10 @@ namespace {
 namespace {
 
     externproto_node_class::
-    externproto_node_class(openvrml::browser & b,
+    externproto_node_class(openvrml::scene & scene,
                            const std::vector<std::string> & /* uris */)
         throw ():
-        node_class(b)
+        node_class(scene.browser())
     {}
 
     externproto_node_class::~externproto_node_class() throw ()

@@ -206,7 +206,7 @@ options { defaultErrorHandler=false; }
 }
     :   profile=profileStatement { scene.profile_ = profile; }
         (componentStatement)* (metaStatement)*
-        (statement[scene.browser(), nodes, root_scope])*
+        (statement[scene, nodes, root_scope])*
     ;
 
 profileStatement

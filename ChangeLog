@@ -1,9 +1,101 @@
 2005-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	externproto_node_class will need to be constructed with an
+	openvrml::scene rather than an openvrml::browser.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::vrmlScene): Pass an openvrml::scene to the
+	statement production.
+	(Vrml97Parser::statement): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	nodeStatement and protoStatement productions.
+	(Vrml97Prser::nodeStatement): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the node
+	production.
+	(Vrml97Parser::protoStatement): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the externproto
+	and proto productions.
+	(Vrml97Parser::proto): Take an openvrml::scene argument instead of
+	an openvrml::browser; pass the scene to the
+	protoInterfaceDeclaration and protoBody productions.
+	(Vrml97Parser::protoInterfaceDeclaration): Take an openvrml::scene
+	argument instead of an openvrml::browser; pass the scene to the
+	fieldValue production.
+	(Vrml97Parser::protoBody): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	protoStatement, protoNodeStatement, and protoBodyStatement
+	productions.
+	(Vrml97Parser::protoBodyStatement): Take an openvrml::scene
+	argument instead of an openvrml::browser; pass the scene to the
+	protoNodeStatement and protoStatement productions.
+	(Vrml97Parser::protoNodeStatement): Take an openvrml::scene
+	argument instead of an openvrml::browser; pass the scene to the
+	protoNode production.
+	(Vrml97Parser::externproto): Take an openvrml::scene argument
+	instead of an openvrml::browser; construct externproto_node_class
+	with the scene.
+	(Vrml97Parser::node): Take an openvrml::scene argument instead of
+	an openvrml::browser; pass the scene to the nodeBodyElement and
+	scriptInterfaceDeclaration productions.
+	(Vrml97Parser::nodeBodyElement): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the fieldValue
+	and protoStatement productions.
+	(Vrml97Parser::scriptInterfaceDeclaration): Take an
+	openvrml::scene argument instead of an openvrml::browser; pass the
+	scene to the scriptFieldInterfaceDeclaration production.
+	(Vrml97Parser::scriptFieldInterfaceDeclaration): Take an
+	openvrml::scene argument instead of an openvrml::browser; pass the
+	scene to the fieldValue production.
+	(Vrml97Parser::protoNode): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	protoNodeBodyElement and protoScriptInterfaceDeclaration
+	productions.
+	(Vrml97Parser::protoNodeBodyElement): Take an openvrml::scene
+	argument instead of an openvrml::browser; pass the scene to the
+	protoFieldValue and protoStatement productions.
+	(Vrml97Parser::protoScriptInterfaceDeclaration): Take an
+	openvrml::scene argument instead of an openvrml::browser; pass the
+	scene to the protoScriptFieldInterfaceDeclaration.
+	(Vrml97Parser::protoScriptFieldInterfaceDeclaration): Take an
+	openvrml::scene argument instead of an openvrml::browser; pass the
+	scene to the protoFieldValue production.
+	(Vrml97Parser::fieldValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	nodeFieldValue production.
+	(Vrml97Parser::protoFieldValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	protoNodeFieldValue production.
+	(Vrml97Parser::nodeFieldValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the sfNodeValue
+	and mfNodeValue productions.
+	(Vrml97Parser::protoNodeFieldValue): Take an openvrml::scene
+	argument instead of an openvrml::browser; pass the scene to the
+	protoSfNodeValue and protoMfNodeValue productions.
+	(Vrml97Parser::sfNodeValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	nodeStatement production.
+	(Vrml97Parser::protoSfNodeValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	protoNodeStatement production.
+	(Vrml97Parser::mfNodeValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	nodeStatement production.
+	(Vrml97Parser::protoMfNodeValue): Take an openvrml::scene argument
+	instead of an openvrml::browser; pass the scene to the
+	protoNodeStatement production.
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(X3DVrmlParser::vrmlScene): pass the scene to the statement
+	production.
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_class::externproto_node_class): Change to take
+	an openvrml::scene instead of an openvrml::browser.
+
+2005-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/player.cpp: Include OpenVRML
 	headers before X11 headers.  This avoids a conflict between the
-	X11 headers and Boost headers.
-	From Simon Barner <barner@users.sourceforge.net>
+	X11 headers and Boost headers.  From Simon Barner
+	<barner@users.sourceforge.net>
 
 2005-11-27 Braden McDaniel  <braden@endoframe.com>
 
