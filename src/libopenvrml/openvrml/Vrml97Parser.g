@@ -636,18 +636,17 @@ statement[openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
-    {
-        boost::intrusive_ptr<openvrml::node> node;
-        boost::shared_ptr<node_type> nodeType;
-    }
-    : node=nodeStatement[scene, scope, std::string()] {
+{
+    boost::intrusive_ptr<openvrml::node> node;
+}
+    :   node=nodeStatement[scene, scope, std::string()] {
             //
             // If we are unable to parse a node, node will be null.
             //
             if (node) { nodes.push_back(node); }
         }
-    | protoStatement[scene, scope]
-    | routeStatement[*scope]
+    |   protoStatement[scene, scope]
+    |   routeStatement[*scope]
     ;
 
 nodeStatement[openvrml::scene & scene,
@@ -687,8 +686,8 @@ options { defaultErrorHandler=false; }
     // XXX What if the node type already exists in the scope? Probably need to
     // XXX handle an exception here.
     //
-    : externproto[scene, scope]
-    | proto[scene, scope]
+    :   externproto[scene, scope]
+    |   proto[scene, scope]
     ;
 
 proto[openvrml::scene & scene,
@@ -843,13 +842,12 @@ options { defaultErrorHandler=false; }
 
     boost::intrusive_ptr<openvrml::node> n;
 }
-    :   (protoStatement[scene, scope])*
-            n=protoNodeStatement[scene,
-                                 scope,
-                                 interfaces,
-                                 is_map,
-                                 routes,
-                                 std::string()]
+    :   (protoStatement[scene, scope])* n=protoNodeStatement[scene,
+                                                             scope,
+                                                             interfaces,
+                                                             is_map,
+                                                             routes,
+                                                             std::string()]
         {
             assert(n);
             impl_nodes.push_back(n);
@@ -885,8 +883,8 @@ options { defaultErrorHandler=false; }
             assert(n);
             impl_nodes.push_back(n);
         }
-    | protoStatement[scene, scope]
-    | protoRouteStatement[*scope, routes]
+    |   protoStatement[scene, scope]
+    |   protoRouteStatement[*scope, routes]
     ;
 
 protoNodeStatement[openvrml::scene & scene,
@@ -945,7 +943,7 @@ options { defaultErrorHandler=false; }
     openvrml::mfstring uri_list;
     shared_ptr<node_type> node_type;
 }
-    : KEYWORD_EXTERNPROTO id:ID LBRACKET
+    :   KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
         uri_list=externprotoUrlList {
             const vector<string> & alt_uris = uri_list.value();
@@ -1027,8 +1025,8 @@ options { defaultErrorHandler=false; }
 
 interfaceType returns [node_interface::type_id interface_type]
 options { defaultErrorHandler=false; }
-    : interface_type=eventInterfaceType
-    | interface_type=fieldInterfaceType
+    :   interface_type=eventInterfaceType
+    |   interface_type=fieldInterfaceType
     ;
 
 externprotoUrlList returns [mfstring urlList]
@@ -1188,19 +1186,19 @@ options { defaultErrorHandler = false; }
 
     initial_value_map initial_values;
     node_interface_set interfaces;
-    boost::shared_ptr<node_type> nodeType;
+    boost::shared_ptr<openvrml::node_type> node_type;
 }
-    : { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
-            nodeBodyElement[scene,
-                            scope,
-                            script_node_interface_set,
-                            initial_values]
-            | scriptInterfaceDeclaration[scene,
-                                         scope,
-                                         interfaces,
-                                         initial_values,
-                                         node_id]
-        )* RBRACE {
+    :   { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE
+            (   nodeBodyElement[scene,
+                                scope,
+                                script_node_interface_set,
+                                initial_values]
+            |   scriptInterfaceDeclaration[scene,
+                                           scope,
+                                           interfaces,
+                                           initial_values,
+                                           node_id]
+            )* RBRACE {
             n = intrusive_ptr<openvrml::node>(
                 new script_node(scene.browser().script_node_class_,
                                 scope,
@@ -1208,9 +1206,9 @@ options { defaultErrorHandler = false; }
                                 initial_values));
             if (!node_id.empty()) { n->id(node_id); }
         }
-    | nodeTypeId:ID {
-            nodeType = scope->find_type(nodeTypeId->getText());
-            if (!nodeType) {
+    |   nodeTypeId:ID {
+            node_type = scope->find_type(nodeTypeId->getText());
+            if (!node_type) {
                 throw SemanticException("unknown node type \""
                                         + nodeTypeId->getText() + "\"",
                                         this->uri,
@@ -1220,11 +1218,10 @@ options { defaultErrorHandler = false; }
 
         } LBRACE (nodeBodyElement[scene,
                                   scope,
-                                  nodeType->interfaces(),
+                                  node_type->interfaces(),
                                   initial_values])*
         RBRACE {
-            n = boost::intrusive_ptr<openvrml::node>(
-                nodeType->create_node(scope, initial_values));
+            n = node_type->create_node(scope, initial_values);
 
             if (!node_id.empty()) { n->id(node_id); }
         }
@@ -1308,7 +1305,7 @@ options { defaultErrorHandler=false; }
     node_interface::type_id it(node_interface::invalid_type_id);
     field_value::type_id ft(field_value::invalid_type_id);
 }
-    : it=eventInterfaceType ft=fieldType id:ID {
+    :   it=eventInterfaceType ft=fieldType id:ID {
             const node_interface interface(it, ft, id->getText());
             const bool succeeded = interfaces.insert(interface).second;
             if (!succeeded) {
@@ -1323,11 +1320,11 @@ options { defaultErrorHandler=false; }
                                         id->getColumn());
             }
         }
-    | scriptFieldInterfaceDeclaration[scene,
-                                      scope,
-                                      interfaces,
-                                      initial_values,
-                                      node_id]
+    |   scriptFieldInterfaceDeclaration[scene,
+                                        scope,
+                                        interfaces,
+                                        initial_values,
+                                        node_id]
     ;
 
 scriptFieldInterfaceDeclaration[
@@ -1382,11 +1379,11 @@ options { defaultErrorHandler=false; }
     initial_value_map initial_values;
     node_interface_set interfaces;
     is_list is_mappings;
-    boost::shared_ptr<node_type> nodeType;
+    boost::shared_ptr<openvrml::node_type> node_type;
 }
     :   (
-            { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE (
-                protoNodeBodyElement[scene,
+            { !LT(1)->getText().compare("Script") }? scriptId:ID LBRACE
+            (   protoNodeBodyElement[scene,
                                      scope,
                                      proto_interfaces,
                                      is_map,
@@ -1394,15 +1391,15 @@ options { defaultErrorHandler=false; }
                                      script_node_interface_set,
                                      initial_values,
                                      is_mappings]
-                | protoScriptInterfaceDeclaration[scene,
-                                                  scope,
-                                                  proto_interfaces,
-                                                  is_map,
-                                                  routes,
-                                                  node_id,
-                                                  interfaces,
-                                                  initial_values,
-                                                  is_mappings]
+            |   protoScriptInterfaceDeclaration[scene,
+                                                scope,
+                                                proto_interfaces,
+                                                is_map,
+                                                routes,
+                                                node_id,
+                                                interfaces,
+                                                initial_values,
+                                                is_mappings]
             )* RBRACE {
                 n = boost::intrusive_ptr<openvrml::node>(
                     new script_node(scene.browser().script_node_class_,
@@ -1411,10 +1408,9 @@ options { defaultErrorHandler=false; }
                                     initial_values));
                 if (!node_id.empty()) { n->id(node_id); }
             }
-
-        | nodeTypeId:ID {
-                nodeType = scope->find_type(nodeTypeId->getText());
-                if (!nodeType) {
+        |   nodeTypeId:ID {
+                node_type = scope->find_type(nodeTypeId->getText());
+                if (!node_type) {
                     throw SemanticException("unknown node type \""
                                             + nodeTypeId->getText() + "\"",
                                             this->uri,
@@ -1427,10 +1423,10 @@ options { defaultErrorHandler=false; }
                                          proto_interfaces,
                                          is_map,
                                          routes,
-                                         nodeType->interfaces(),
+                                         node_type->interfaces(),
                                          initial_values,
                                          is_mappings])* RBRACE {
-                n = nodeType->create_node(scope, initial_values);
+                n = node_type->create_node(scope, initial_values);
                 if (!node_id.empty()) { n->id(node_id); }
             }
         ) {
@@ -1471,8 +1467,7 @@ options { defaultErrorHandler=false; }
             }
         } ( {impl_node_interface->type == node_interface::field_id
             || impl_node_interface->type == node_interface::exposedfield_id}?
-            (
-                fv=protoFieldValue[scene,
+            (   fv=protoFieldValue[scene,
                                    scope,
                                    proto_interfaces,
                                    is_map,
@@ -1487,7 +1482,7 @@ options { defaultErrorHandler=false; }
                 }
             |   isStatement[impl_node_interface->id, is_mappings]
             )
-        | isStatement[impl_node_interface->id, is_mappings]
+        |   isStatement[impl_node_interface->id, is_mappings]
         )
     |   protoRouteStatement[*scope, routes]
     |   protoStatement[scene, scope]
@@ -1560,7 +1555,7 @@ options { defaultErrorHandler=false; }
     boost::shared_ptr<field_value> fv;
     bool succeeded;
 }
-    : KEYWORD_FIELD ft=fieldType id:ID {
+    :   KEYWORD_FIELD ft=fieldType id:ID {
             succeeded =
                 interfaces.insert(node_interface(node_interface::field_id,
                                                  ft,
@@ -1588,7 +1583,7 @@ options { defaultErrorHandler=false; }
                     .second;
                 assert(succeeded);
             }
-            | isStatement[id->getText(), is_mappings] {
+        |   isStatement[id->getText(), is_mappings] {
                 using std::auto_ptr;
                 using boost::shared_ptr;
 
@@ -1614,26 +1609,26 @@ options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
-    : FIELDTYPE_MFCOLOR     { ft = field_value::mfcolor_id; }
-    | FIELDTYPE_MFFLOAT     { ft = field_value::mffloat_id; }
-    | FIELDTYPE_MFINT32     { ft = field_value::mfint32_id; }
-    | FIELDTYPE_MFNODE      { ft = field_value::mfnode_id; }
-    | FIELDTYPE_MFROTATION  { ft = field_value::mfrotation_id; }
-    | FIELDTYPE_MFSTRING    { ft = field_value::mfstring_id; }
-    | FIELDTYPE_MFTIME      { ft = field_value::mftime_id; }
-    | FIELDTYPE_MFVEC2F     { ft = field_value::mfvec2f_id; }
-    | FIELDTYPE_MFVEC3F     { ft = field_value::mfvec3f_id; }
-    | FIELDTYPE_SFBOOL      { ft = field_value::sfbool_id; }
-    | FIELDTYPE_SFCOLOR     { ft = field_value::sfcolor_id; }
-    | FIELDTYPE_SFFLOAT     { ft = field_value::sffloat_id; }
-    | FIELDTYPE_SFIMAGE     { ft = field_value::sfimage_id; }
-    | FIELDTYPE_SFINT32     { ft = field_value::sfint32_id; }
-    | FIELDTYPE_SFNODE      { ft = field_value::sfnode_id; }
-    | FIELDTYPE_SFROTATION  { ft = field_value::sfrotation_id; }
-    | FIELDTYPE_SFSTRING    { ft = field_value::sfstring_id; }
-    | FIELDTYPE_SFTIME      { ft = field_value::sftime_id; }
-    | FIELDTYPE_SFVEC2F     { ft = field_value::sfvec2f_id; }
-    | FIELDTYPE_SFVEC3F     { ft = field_value::sfvec3f_id; }
+    :   FIELDTYPE_MFCOLOR    { ft = field_value::mfcolor_id; }
+    |   FIELDTYPE_MFFLOAT    { ft = field_value::mffloat_id; }
+    |   FIELDTYPE_MFINT32    { ft = field_value::mfint32_id; }
+    |   FIELDTYPE_MFNODE     { ft = field_value::mfnode_id; }
+    |   FIELDTYPE_MFROTATION { ft = field_value::mfrotation_id; }
+    |   FIELDTYPE_MFSTRING   { ft = field_value::mfstring_id; }
+    |   FIELDTYPE_MFTIME     { ft = field_value::mftime_id; }
+    |   FIELDTYPE_MFVEC2F    { ft = field_value::mfvec2f_id; }
+    |   FIELDTYPE_MFVEC3F    { ft = field_value::mfvec3f_id; }
+    |   FIELDTYPE_SFBOOL     { ft = field_value::sfbool_id; }
+    |   FIELDTYPE_SFCOLOR    { ft = field_value::sfcolor_id; }
+    |   FIELDTYPE_SFFLOAT    { ft = field_value::sffloat_id; }
+    |   FIELDTYPE_SFIMAGE    { ft = field_value::sfimage_id; }
+    |   FIELDTYPE_SFINT32    { ft = field_value::sfint32_id; }
+    |   FIELDTYPE_SFNODE     { ft = field_value::sfnode_id; }
+    |   FIELDTYPE_SFROTATION { ft = field_value::sfrotation_id; }
+    |   FIELDTYPE_SFSTRING   { ft = field_value::sfstring_id; }
+    |   FIELDTYPE_SFTIME     { ft = field_value::sftime_id; }
+    |   FIELDTYPE_SFVEC2F    { ft = field_value::sfvec2f_id; }
+    |   FIELDTYPE_SFVEC3F    { ft = field_value::sfvec3f_id; }
     ;
 
 fieldValue[openvrml::scene & scene,
@@ -1642,9 +1637,9 @@ fieldValue[openvrml::scene & scene,
            const std::string & node_id]
 returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-    : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
+    :   { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=nodeFieldValue[scene, scope, ft, node_id]
-    | fv=nonNodeFieldValue[ft]
+    |   fv=nonNodeFieldValue[ft]
     ;
 
 protoFieldValue[openvrml::scene & scene,
@@ -1656,7 +1651,7 @@ protoFieldValue[openvrml::scene & scene,
                 const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-    : { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
+    :   { (ft == field_value::sfnode_id) || (ft == field_value::mfnode_id) }?
         fv=protoNodeFieldValue[scene,
                                scope,
                                proto_interfaces,
@@ -1666,30 +1661,30 @@ options { defaultErrorHandler=false; }
                                script_node_id] {
             assert(fv);
         }
-    | fv=nonNodeFieldValue[ft] { assert(fv); }
+    |   fv=nonNodeFieldValue[ft] { assert(fv); }
     ;
 
 nonNodeFieldValue[openvrml::field_value::type_id ft]
 returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-    : { ft == field_value::sfbool_id }? fv=sfBoolValue
-    | { ft == field_value::sfcolor_id }? fv=sfColorValue
-    | { ft == field_value::sffloat_id }? fv=sfFloatValue
-    | { ft == field_value::sfimage_id }? fv=sfImageValue
-    | { ft == field_value::sfint32_id }? fv=sfInt32Value
-    | { ft == field_value::sfrotation_id }? fv=sfRotationValue
-    | { ft == field_value::sfstring_id }? fv=sfStringValue
-    | { ft == field_value::sftime_id }? fv=sfTimeValue
-    | { ft == field_value::sfvec2f_id }? fv=sfVec2fValue
-    | { ft == field_value::sfvec3f_id }? fv=sfVec3fValue
-    | { ft == field_value::mfcolor_id }? fv=mfColorValue
-    | { ft == field_value::mffloat_id }? fv=mfFloatValue
-    | { ft == field_value::mfint32_id }? fv=mfInt32Value
-    | { ft == field_value::mfrotation_id }? fv=mfRotationValue
-    | { ft == field_value::mfstring_id }? fv=mfStringValue
-    | { ft == field_value::mftime_id }? fv=mfTimeValue
-    | { ft == field_value::mfvec2f_id }? fv=mfVec2fValue
-    | fv=mfVec3fValue
+    :   { ft == field_value::sfbool_id }? fv=sfBoolValue
+    |   { ft == field_value::sfcolor_id }? fv=sfColorValue
+    |   { ft == field_value::sffloat_id }? fv=sfFloatValue
+    |   { ft == field_value::sfimage_id }? fv=sfImageValue
+    |   { ft == field_value::sfint32_id }? fv=sfInt32Value
+    |   { ft == field_value::sfrotation_id }? fv=sfRotationValue
+    |   { ft == field_value::sfstring_id }? fv=sfStringValue
+    |   { ft == field_value::sftime_id }? fv=sfTimeValue
+    |   { ft == field_value::sfvec2f_id }? fv=sfVec2fValue
+    |   { ft == field_value::sfvec3f_id }? fv=sfVec3fValue
+    |   { ft == field_value::mfcolor_id }? fv=mfColorValue
+    |   { ft == field_value::mffloat_id }? fv=mfFloatValue
+    |   { ft == field_value::mfint32_id }? fv=mfInt32Value
+    |   { ft == field_value::mfrotation_id }? fv=mfRotationValue
+    |   { ft == field_value::mfstring_id }? fv=mfStringValue
+    |   { ft == field_value::mftime_id }? fv=mfTimeValue
+    |   { ft == field_value::mfvec2f_id }? fv=mfVec2fValue
+    |   fv=mfVec3fValue
     ;
 
 nodeFieldValue[openvrml::scene & scene,
@@ -1701,8 +1696,9 @@ options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
-    :   { ft == field_value::sfnode_id }?
-            fv=sfNodeValue[scene, scope, script_node_id]
+    :   { ft == field_value::sfnode_id }? fv=sfNodeValue[scene,
+                                                         scope,
+                                                         script_node_id]
     |   fv=mfNodeValue[scene, scope, script_node_id]
     ;
 
@@ -1715,12 +1711,12 @@ protoNodeFieldValue[openvrml::scene & scene,
                     const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
-    :   { ft == field_value::sfnode_id }?
-            fv=protoSfNodeValue[scene,
-                                scope,
-                                proto_interfaces,
-                                is_map, routes,
-                                script_node_id]
+    :   { ft == field_value::sfnode_id }? fv=protoSfNodeValue[scene,
+                                                              scope,
+                                                              proto_interfaces,
+                                                              is_map,
+                                                              routes,
+                                                              script_node_id]
     |   fv=protoMfNodeValue[scene,
                             scope,
                             proto_interfaces,
@@ -1734,13 +1730,13 @@ options { defaultErrorHandler=false; }
 {
     bool val(false);
 }
-    : val=boolValue { sbv.reset(new sfbool(val)); }
+    :   val=boolValue { sbv.reset(new sfbool(val)); }
     ;
 
 boolValue returns [bool val = false]
 options { defaultErrorHandler=false; }
-    : KEYWORD_TRUE { val = true; }
-    | KEYWORD_FALSE { val = false; }
+    :   KEYWORD_TRUE { val = true; }
+    |   KEYWORD_FALSE { val = false; }
     ;
 
 sfColorValue returns [boost::shared_ptr<field_value> scv]
@@ -1748,7 +1744,7 @@ options { defaultErrorHandler=false; }
 {
     color c;
 }
-    : colorValue[c] { scv.reset(new sfcolor(c)); }
+    :   colorValue[c] { scv.reset(new sfcolor(c)); }
     ;
 
 mfColorValue
@@ -1774,9 +1770,9 @@ options { defaultErrorHandler=false; }
 {
     float r, g, b;
 }
-    : r=colorComponent g=colorComponent b=colorComponent { c.r(r);
-                                                           c.g(g);
-                                                           c.b(b); }
+    :   r=colorComponent g=colorComponent b=colorComponent { c.r(r);
+                                                             c.g(g);
+                                                             c.b(b); }
     ;
 
 //
@@ -1784,7 +1780,7 @@ options { defaultErrorHandler=false; }
 //
 colorComponent returns [float val = 0.0f]
 options { defaultErrorHandler=false; }
-    : val=floatValue {
+    :   val=floatValue {
             if (val < 0.0 || val > 1.0) {
                 this->reportWarning(
                     "color component values must be from 0 to 1");
@@ -1802,7 +1798,7 @@ options { defaultErrorHandler=false; }
 {
     float f;
 }
-    : f=floatValue { sfv.reset(new sffloat(f)); }
+    :   f=floatValue { sfv.reset(new sffloat(f)); }
     ;
 
 mfFloatValue
@@ -1825,8 +1821,8 @@ options { defaultErrorHandler=false; }
 
 floatValue returns [float val]
 options { defaultErrorHandler=false; }
-    : f0:REAL     { std::istringstream(f0->getText()) >> val; }
-    | f1:INTEGER  { std::istringstream(f1->getText()) >> val; }
+    :   f0:REAL     { std::istringstream(f0->getText()) >> val; }
+    |   f1:INTEGER  { std::istringstream(f1->getText()) >> val; }
     ;
 
 sfImageValue returns [boost::shared_ptr<field_value> siv]
@@ -1867,7 +1863,7 @@ options { defaultErrorHandler=false; }
 {
     long i;
 }
-    : i=intValue { siv.reset(new sfint32(i)); }
+    :   i=intValue { siv.reset(new sfint32(i)); }
     ;
 
 mfInt32Value
@@ -2003,8 +1999,10 @@ options { defaultErrorHandler=false; }
 
 sfRotationValue returns [boost::shared_ptr<field_value> srv]
 options { defaultErrorHandler=false; }
-    { rotation r; }
-    : rotationValue[r] { srv.reset(new sfrotation(r)); }
+{
+    rotation r;
+}
+    :   rotationValue[r] { srv.reset(new sfrotation(r)); }
     ;
 
 mfRotationValue
@@ -2030,11 +2028,11 @@ options { defaultErrorHandler=false; }
 //
 rotationValue[rotation & r]
 options { defaultErrorHandler=false; }
-    {
-        using openvrml_::fequal;
-        float x, y, z, angle;
-    }
-    : x=floatValue y=floatValue z=floatValue angle=floatValue {
+{
+    using openvrml_::fequal;
+    float x, y, z, angle;
+}
+    :   x=floatValue y=floatValue z=floatValue angle=floatValue {
             vec3f axis(x, y, z);
 
             const float axisLength = axis.length();
@@ -2053,8 +2051,10 @@ options { defaultErrorHandler=false; }
 
 sfStringValue returns [boost::shared_ptr<field_value> ssv]
 options { defaultErrorHandler=false; }
-    { std::string s; }
-    : s=stringValue { ssv.reset(new sfstring(s)); }
+{
+    std::string s;
+}
+    :   s=stringValue { ssv.reset(new sfstring(s)); }
     ;
 
 mfStringValue
@@ -2078,8 +2078,7 @@ options { defaultErrorHandler=false; }
 
 stringValue returns [std::string str]
 options { defaultErrorHandler=false; }
-    :   s:STRING
-        {
+    :   s:STRING {
             using std::string;
             const string & token_text(s->getText());
             //
@@ -2101,8 +2100,10 @@ options { defaultErrorHandler=false; }
 
 sfTimeValue returns [boost::shared_ptr<field_value> stv]
 options { defaultErrorHandler=false; }
-    { double t(0.0); }
-    : t=doubleValue { stv.reset(new sftime(t)); }
+{
+    double t(0.0);
+}
+    :   t=doubleValue { stv.reset(new sftime(t)); }
     ;
 
 mfTimeValue
@@ -2125,14 +2126,16 @@ options { defaultErrorHandler=false; }
 
 doubleValue returns [double val = 0.0]
 options { defaultErrorHandler=false; }
-    : d0:REAL    { std::istringstream(d0->getText()) >> val; }
-    | d1:INTEGER { std::istringstream(d1->getText()) >> val; }
+    :   d0:REAL    { std::istringstream(d0->getText()) >> val; }
+    |   d1:INTEGER { std::istringstream(d1->getText()) >> val; }
     ;
 
 sfVec2fValue returns [boost::shared_ptr<field_value> svv]
 options { defaultErrorHandler=false; }
-    { vec2f v; }
-    : vec2fValue[v] { svv.reset(new sfvec2f(v)); }
+{
+    vec2f v;
+}
+    :   vec2fValue[v] { svv.reset(new sfvec2f(v)); }
     ;
 
 mfVec2fValue
@@ -2158,8 +2161,8 @@ options { defaultErrorHandler=false; }
 {
     float x, y;
 }
-    : x=floatValue y=floatValue { v.x(x);
-                                  v.y(y); }
+    :   x=floatValue y=floatValue { v.x(x);
+                                    v.y(y); }
     ;
 
 sfVec3fValue returns [boost::shared_ptr<field_value> svv]
@@ -2167,7 +2170,7 @@ options { defaultErrorHandler=false; }
 {
     vec3f v;
 }
-    : vec3fValue[v] { svv.reset(new sfvec3f(v)); }
+    :   vec3fValue[v] { svv.reset(new sfvec3f(v)); }
     ;
 
 mfVec3fValue
@@ -2193,7 +2196,7 @@ options { defaultErrorHandler=false; }
 {
     float x, y, z;
 }
-    : x=floatValue y=floatValue z=floatValue { v.x(x);
-                                               v.y(y);
-                                               v.z(z); }
+    :   x=floatValue y=floatValue z=floatValue { v.x(x);
+                                                 v.y(y);
+                                                 v.z(z); }
     ;
