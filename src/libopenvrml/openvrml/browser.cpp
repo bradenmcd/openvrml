@@ -7972,7 +7972,7 @@ openvrml::bad_url::~bad_url() throw ()
  * @brief Construct.
  */
 openvrml::invalid_url::invalid_url():
-    bad_url("Invalid URI.")
+    bad_url("invalid URI")
 {}
 
 /**
@@ -8015,7 +8015,7 @@ openvrml::bad_media_type::~bad_media_type() throw ()
  * @brief Construct.
  */
 openvrml::unreachable_url::unreachable_url():
-    bad_url("Unreachable URI.")
+    bad_url("unreachable URI")
 {}
 
 /**
@@ -8036,7 +8036,7 @@ openvrml::unreachable_url::~unreachable_url() throw ()
  * @brief Construct.
  */
 openvrml::no_alternative_url::no_alternative_url():
-    bad_url("No alternative URI could be resolved.")
+    bad_url("no alternative URI could be resolved")
 {}
 
 /**

@@ -1,3 +1,13 @@
+2005-11-27 Braden McDaniel  <braden@endoframe.com>
+
+	Changed error messages not to look so much like sentences.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp: Moved implementations of

@@ -19561,7 +19561,7 @@ namespace {
         FT_Error error = 0;
         error = FT_Init_FreeType(&this->freeTypeLibrary);
         if (error) {
-            browser.err << "Error initializing FreeType library." << std::endl;
+            browser.err << "error initializing FreeType library" << std::endl;
         }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
@@ -19575,7 +19575,7 @@ namespace {
         FT_Error error = 0;
         error = FT_Done_FreeType(this->freeTypeLibrary);
         if (error) {
-            this->browser().err << "Error shutting down FreeType library."
+            this->browser().err << "error shutting down FreeType library"
                                 << std::endl;
         }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
@@ -20843,7 +20843,7 @@ namespace {
             // too much trouble for now.
             //
             explicit FreeTypeError(FT_Error):
-                std::runtime_error("FreeType error.")
+                std::runtime_error("FreeType error")
                 {}
 
             virtual ~FreeTypeError() throw ()

@@ -668,9 +668,9 @@ options { defaultErrorHandler=false; }
                 n = boost::intrusive_ptr<openvrml::node>(
                     scope->find_node(id1->getText()));
                 if (!n) {
-                    throw SemanticException("Node \"" + id1->getText()
+                    throw SemanticException("node \"" + id1->getText()
                                             + "\" has not been defined in "
-                                            + "this scope.",
+                                            + "this scope",
                                             this->uri,
                                             id1->getLine(),
                                             id1->getColumn());
@@ -745,9 +745,9 @@ options { defaultErrorHandler=false; }
             assert(scope);
             if (!scope->add_type(node_type)) {
                 using antlr::SemanticException;
-                throw SemanticException("Node type \"" + node_type->id()
+                throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "
-                                        "this scope.",
+                                        "this scope",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -914,9 +914,9 @@ options { defaultErrorHandler=false; }
                 n = boost::intrusive_ptr<openvrml::node>(
                     scope->find_node(id1->getText()));
                 if (!n) {
-                    throw SemanticException("Node \"" + id1->getText()
+                    throw SemanticException("node \"" + id1->getText()
                                             + "\" has not been defined in "
-                                            + "this scope.",
+                                            + "this scope",
                                             this->uri,
                                             id1->getLine(),
                                             id1->getColumn());
@@ -987,9 +987,9 @@ options { defaultErrorHandler=false; }
 
             if (!scope->add_type(node_type)) {
                 using antlr::SemanticException;
-                throw SemanticException("Node type \"" + node_type->id()
+                throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "
-                                        + "this scope.",
+                                        + "this scope",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1057,9 +1057,9 @@ options { defaultErrorHandler=false; }
             openvrml::node * const from_node =
                 scope.find_node(from_node_id->getText());
             if (!from_node) {
-                throw SemanticException("Node \"" + from_node_id->getText()
+                throw SemanticException("node \"" + from_node_id->getText()
                                         + "\" has not been defined in this "
-                                        "scope.",
+                                        "scope",
                                         this->uri,
                                         from_node_id->getLine(),
                                         from_node_id->getColumn());
@@ -1068,9 +1068,9 @@ options { defaultErrorHandler=false; }
             openvrml::node * const to_node =
                 scope.find_node(to_node_id->getText());
             if (!to_node) {
-                throw SemanticException("Node \"" + to_node_id->getText()
+                throw SemanticException("node \"" + to_node_id->getText()
                                         + "\" has not been defined in this "
-                                        "scope.",
+                                        "scope",
                                         this->uri,
                                         to_node_id->getLine(),
                                         to_node_id->getColumn());
@@ -1104,9 +1104,9 @@ options { defaultErrorHandler=false; }
             openvrml::node * const from_node =
                 scope.find_node(from_node_id->getText());
             if (!from_node) {
-                throw SemanticException("Node \"" + from_node_id->getText()
+                throw SemanticException("node \"" + from_node_id->getText()
                                         + "\" has not been defined in this "
-                                        "scope.",
+                                        "scope",
                                         this->uri,
                                         from_node_id->getLine(),
                                         from_node_id->getColumn());
@@ -1115,9 +1115,9 @@ options { defaultErrorHandler=false; }
             openvrml::node * const to_node =
                 scope.find_node(to_node_id->getText());
             if (!to_node) {
-                throw SemanticException("Node \"" + to_node_id->getText()
+                throw SemanticException("node \"" + to_node_id->getText()
                                         + "\" has not been defined in this "
-                                        "scope.",
+                                        "scope",
                                         this->uri,
                                         to_node_id->getLine(),
                                         to_node_id->getColumn());
@@ -1140,7 +1140,7 @@ options { defaultErrorHandler=false; }
             if (from_interface == from_node_interfaces.end()) {
                 throw SemanticException(from_node->type().id() + " node has "
                                         "no eventOut \""
-                                        + eventout_id->getText() + "\".",
+                                        + eventout_id->getText() + "\"",
                                         this->uri,
                                         eventout_id->getLine(),
                                         eventout_id->getColumn());
@@ -1155,15 +1155,15 @@ options { defaultErrorHandler=false; }
             if (to_interface == to_node_interfaces.end()) {
                 throw SemanticException(to_node->type().id() + " node has no "
                                         "eventIn \"" + eventin_id->getText()
-                                        + "\".",
+                                        + "\"",
                                         this->uri,
                                         eventin_id->getLine(),
                                         eventin_id->getColumn());
             }
 
             if (to_interface->field_type != from_interface->field_type) {
-                throw SemanticException("Mismatch between eventOut and "
-                                        "eventIn types.",
+                throw SemanticException("mismatch between eventOut and "
+                                        "eventIn types",
                                         this->uri,
                                         eventin_id->getLine(),
                                         eventin_id->getColumn());
@@ -1209,8 +1209,8 @@ options { defaultErrorHandler = false; }
     | nodeTypeId:ID {
             nodeType = scope->find_type(nodeTypeId->getText());
             if (!nodeType) {
-                throw SemanticException("Unknown node type \""
-                                        + nodeTypeId->getText() + "\".",
+                throw SemanticException("unknown node type \""
+                                        + nodeTypeId->getText() + "\"",
                                         this->uri,
                                         nodeTypeId->getLine(),
                                         nodeTypeId->getColumn());
@@ -1240,8 +1240,8 @@ options { defaultErrorHandler = false; }
                                 LT(1)->getColumn());
     }
     catch [std::bad_cast & ex] {
-        throw SemanticException("Incorrect value type for field or "
-                                "exposedField.",
+        throw SemanticException("incorrect value type for field or "
+                                "exposedField",
                                 this->uri,
                                 LT(1)->getLine(),
                                 LT(1)->getColumn());
@@ -1283,8 +1283,8 @@ options { defaultErrorHandler=false; }
             const bool succeeded =
                 initial_values.insert(make_pair(id->getText(), fv)).second;
             if (!succeeded) {
-                throw SemanticException("Value for " + id->getText()
-                                        + " already declared.",
+                throw SemanticException("value for " + id->getText()
+                                        + " already declared",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1352,9 +1352,9 @@ options { defaultErrorHandler=false; }
                                                  id->getText()))
                     .second;
             if (!succeeded) {
-                throw SemanticException("Interface \"" + id->getText()
+                throw SemanticException("interface \"" + id->getText()
                                         + "\" already declared for Script "
-                                        "node.",
+                                        "node",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1412,8 +1412,8 @@ options { defaultErrorHandler=false; }
         | nodeTypeId:ID {
                 nodeType = scope->find_type(nodeTypeId->getText());
                 if (!nodeType) {
-                    throw SemanticException("Unknown node type \""
-                                            + nodeTypeId->getText() + "\".",
+                    throw SemanticException("unknown node type \""
+                                            + nodeTypeId->getText() + "\"",
                                             this->uri,
                                             nodeTypeId->getLine(),
                                             nodeTypeId->getColumn());
@@ -1460,8 +1460,8 @@ options { defaultErrorHandler=false; }
             const node_interface_set::const_iterator impl_node_interface =
                 find_interface(node_interfaces, interface_id->getText());
             if (impl_node_interface == node_interfaces.end()) {
-                throw SemanticException("Node has no interface \""
-                                        + interface_id->getText() + "\".",
+                throw SemanticException("node has no interface \""
+                                        + interface_id->getText() + "\"",
                                         this->uri,
                                         interface_id->getLine(),
                                         interface_id->getColumn());
@@ -1564,9 +1564,9 @@ options { defaultErrorHandler=false; }
                     .second;
             if (!succeeded) {
                 using antlr::SemanticException;
-                throw SemanticException("Interface \"" + id->getText()
+                throw SemanticException("interface \"" + id->getText()
                                         + "\" already declared for Script "
-                                        "node.",
+                                        "node",
                                         this->uri,
                                         id->getLine(),
                                         id->getColumn());
@@ -1782,8 +1782,8 @@ colorComponent returns [float val = 0.0f]
 options { defaultErrorHandler=false; }
     : val=floatValue {
             if (val < 0.0 || val > 1.0) {
-                this->reportWarning("Color component values must be from 0 to "
-                                    "1.");
+                this->reportWarning(
+                    "color component values must be from 0 to 1");
                 if (val < 0.0) {
                     val = 0.0;
                 } else if (val > 1.0) {
@@ -1838,8 +1838,8 @@ options { defaultErrorHandler=false; }
         } (
             pixel=intValue {
                 if (!(pixel_index < x * y)) {
-                    throw SemanticException("Too many pixel values for "
-                                            "SFImage.",
+                    throw SemanticException("too many pixel values for "
+                                            "SFImage",
                                             this->uri,
                                             LT(1)->getLine(),
                                             LT(1)->getColumn());
@@ -1848,8 +1848,8 @@ options { defaultErrorHandler=false; }
             }
         )* {
             if (pixel_index != x * y) {
-                throw antlr::SemanticException("Insufficient pixel values for "
-                                               "SFImage.",
+                throw antlr::SemanticException("insufficient pixel values for "
+                                               "SFImage",
                                                this->uri,
                                                LT(1)->getLine(),
                                                LT(1)->getColumn());
@@ -2035,8 +2035,8 @@ options { defaultErrorHandler=false; }
 
             const float axisLength = axis.length();
             if (!fequal<float>()(axisLength, 1.0f)) {
-                this->reportWarning("The axis component of a rotation must be "
-                                    "a normalized vector.");
+                this->reportWarning("axis component of a rotation must be "
+                                    "a normalized vector");
                 if (fequal<float>()(axisLength, 0.0f)) {
                     axis.z(1.0);
                 } else {

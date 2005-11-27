@@ -57,8 +57,8 @@
 openvrml::unsupported_interface::
 unsupported_interface(const node_interface & interface)
     throw ():
-    std::logic_error("Unsupported interface \""
-                     + boost::lexical_cast<std::string>(interface) + "\".")
+    std::logic_error("unsupported interface \""
+                     + boost::lexical_cast<std::string>(interface) + "\"")
 {}
 
 /**
@@ -899,7 +899,7 @@ create_node(const boost::shared_ptr<scope> & scope,
  * @brief Constructor.
  */
 openvrml::field_value_type_mismatch::field_value_type_mismatch():
-    std::logic_error("Field value types do not match.")
+    std::logic_error("field value types do not match")
 {}
 
 /**

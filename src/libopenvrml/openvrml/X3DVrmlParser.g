@@ -218,8 +218,8 @@ returns [openvrml::profile_id profile = invalid_profile_id]
             // XXX
             if (false) {
             } else {
-                throw antlr::SemanticException("Unsupported profile \""
-                                               + id->getText() + "\".",
+                throw antlr::SemanticException("unsupported profile \""
+                                               + id->getText() + "\"",
                                                this->uri,
                                                id->getLine(),
                                                id->getColumn());
