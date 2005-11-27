@@ -74,6 +74,7 @@ namespace openvrml {
 
 
     class proto_node;
+    class proto_node_type;
     class proto_impl_cloner;
 
     /**
@@ -81,13 +82,15 @@ namespace openvrml {
      *
      * @brief <code>node_class</code> for <code>PROTO</code>s.
      *
-     * The proto_node_class is OpenVRML's in-memory representation of a
-     * <code>PROTO</code> (as opposed to a <code>PROTO</code> instance).
-     * Through the <code>proto_node::proto_node_type</code> intermediary, it
-     * facilitates spawning any number of <code>proto_node</code> instances.
+     * The <code>proto_node_class</code> is %OpenVRML's in-memory
+     * representation of a <code>PROTO</code> (as opposed to a
+     * <code>PROTO</code> instance).  Through the <code>proto_node_type</code>
+     * intermediary, it facilitates spawning any number of
+     * <code>proto_node</code> instances.
      */
     class OPENVRML_LOCAL proto_node_class : public node_class {
         friend class proto_node;
+        friend class proto_node_type;
         friend class proto_impl_cloner;
 
     public:
@@ -125,25 +128,6 @@ namespace openvrml {
         routes_t routes;
         is_map_t is_map;
 
-        class proto_node_type : public node_type {
-            node_interface_set interfaces_;
-
-        public:
-            proto_node_type(const proto_node_class & node_class,
-                            const std::string & id,
-                            const node_interface_set & interfaces)
-                throw (unsupported_interface, std::bad_alloc);
-            virtual ~proto_node_type() throw ();
-
-        private:
-            virtual const node_interface_set & do_interfaces() const throw ();
-            virtual const boost::intrusive_ptr<node>
-            do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                           const initial_value_map & initial_values) const
-                throw (std::bad_alloc);
-        };
-
-
     public:
         proto_node_class(
             openvrml::browser & browser,
@@ -158,6 +142,30 @@ namespace openvrml {
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
+    };
+
+
+    /**
+     * @internal
+     *
+     * @brief <code>node_type</code> for PROTO node instances.
+     */
+    class OPENVRML_LOCAL proto_node_type : public node_type {
+        node_interface_set interfaces_;
+
+    public:
+        proto_node_type(const proto_node_class & node_class,
+                        const std::string & id,
+                        const node_interface_set & interfaces)
+            throw (unsupported_interface, std::bad_alloc);
+        virtual ~proto_node_type() throw ();
+
+    private:
+        virtual const node_interface_set & do_interfaces() const throw ();
+        virtual const boost::intrusive_ptr<node>
+        do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                       const initial_value_map & initial_values) const
+            throw (std::bad_alloc);
     };
 
 
@@ -935,7 +943,6 @@ namespace openvrml {
      *                                  supported by the @p node_class.
      * @exception std::bad_alloc        if memory allocation fails.
      */
-    proto_node_class::
     proto_node_type::proto_node_type(const proto_node_class & node_class,
                                      const std::string & id,
                                      const node_interface_set & interfaces)
@@ -962,7 +969,7 @@ namespace openvrml {
     /**
      * @brief Destroy.
      */
-    proto_node_class::proto_node_type::~proto_node_type() throw ()
+    proto_node_type::~proto_node_type() throw ()
     {}
 
     /**
@@ -971,13 +978,13 @@ namespace openvrml {
      * @return the interfaces.
      */
     const node_interface_set &
-    proto_node_class::proto_node_type::do_interfaces() const throw ()
+    proto_node_type::do_interfaces() const throw ()
     {
         return this->interfaces_;
     }
 
     const boost::intrusive_ptr<node>
-    proto_node_class::proto_node_type::
+    proto_node_type::
     do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                    const initial_value_map & initial_values) const
         throw (std::bad_alloc)
