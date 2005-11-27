@@ -2762,7 +2762,7 @@ namespace {
                    std::bad_alloc);
     };
 
-    
+
     class OPENVRML_LOCAL externproto_node :
         public openvrml::abstract_proto_node {
 
@@ -2810,7 +2810,7 @@ namespace {
         };
 
         field_map field_map_;
-                
+
     public:
         externproto_node(const externproto_node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope,
@@ -4082,7 +4082,7 @@ namespace {
         using openvrml::field_value;
         using openvrml::node_interface;
         using openvrml::node_interface_set;
-        
+
         std::auto_ptr<openvrml::scope> root_scope(new openvrml::scope(uri));
         boost::shared_ptr<openvrml::node_class> node_class;
         try {
@@ -8245,7 +8245,7 @@ struct openvrml::scene::load_scene {
         scene_(&scene),
         url_(&url)
     {}
-        
+
     void operator()() const throw () try {
         using std::endl;
         using std::string;
@@ -8259,7 +8259,7 @@ struct openvrml::scene::load_scene {
         vector<boost::intrusive_ptr<node> > nodes;
         try {
             using boost::algorithm::iequals;
-            
+
             std::auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
             scene.url(in->url());

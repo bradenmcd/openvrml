@@ -1,5 +1,10 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Removed trailing
+	whitespace.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp (create_root_scope): Take a
 	reference to a const openvrml::browser as an argument.
 
