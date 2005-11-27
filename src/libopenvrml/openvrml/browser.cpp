@@ -4068,9 +4068,15 @@ namespace {
 
     /**
      * @brief Create a root scope.
+     *
+     * @param browser a browser.
+     * @param uri     identifier for the root scope.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
     std::auto_ptr<openvrml::scope>
-    create_root_scope(openvrml::browser & browser, const std::string & uri)
+    create_root_scope(const openvrml::browser & browser,
+                      const std::string & uri)
         throw (std::bad_alloc)
     {
         using openvrml::field_value;
