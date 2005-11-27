@@ -365,7 +365,7 @@ namespace openvrml {
 
         static boost::shared_ptr<openvrml::event_listener>
         create_exposedfield(const field_value & initial_value,
-                            abstract_proto_node & node)
+                            proto_node & node)
             throw (std::bad_alloc);
 
         boost::shared_ptr<openvrml::scope> proto_scope;
@@ -1882,7 +1882,7 @@ namespace openvrml {
      */
     boost::shared_ptr<event_listener>
     proto_node::create_exposedfield(const field_value & initial_value,
-                                             abstract_proto_node & node)
+                                    proto_node & node)
         throw (std::bad_alloc)
     {
         using boost::polymorphic_downcast;

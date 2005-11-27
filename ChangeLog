@@ -1,5 +1,11 @@
 2005-11-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::proto_node::create_exposedfield): Take a proto_node as
+	an argument rather than an abstract_proto_node.
+
+2005-11-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp: Moved
 	openvrml::abstract_proto_node::proto_exposedfield to
 	openvrml::proto_node::proto_exposedfield.  externproto_node
