@@ -6078,10 +6078,10 @@ namespace {
                  this->eventin_map.begin();
              map_entry != this->eventin_map.end();
              ++map_entry) {
-            openvrml::event_listener & proto_eventin =
+            openvrml::event_listener & eventin =
                 this->proto_node_->event_listener(map_entry->first);
             bool succeeded = eventin_is(map_entry->second->type(),
-                                        proto_eventin,
+                                        eventin,
                                         *map_entry->second);
             assert(succeeded);
         }
@@ -6090,10 +6090,10 @@ namespace {
                  this->eventout_map.begin();
              map_entry != this->eventout_map.end();
              ++map_entry) {
-            openvrml::event_emitter & proto_eventout =
+            openvrml::event_emitter & eventout =
                 this->proto_node_->event_emitter(map_entry->first);
             bool succeeded = eventout_is(map_entry->second->value().type(),
-                                         proto_eventout,
+                                         eventout,
                                          *map_entry->second);
             assert(succeeded);
         }
