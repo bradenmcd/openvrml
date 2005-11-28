@@ -1,5 +1,22 @@
 2005-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	Don't try to use relative URIs as node_class_id's.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::proto): If the PROTO is the first one in the
+	stream, add the proto_node_class to the browser using the URI of
+	the resource without the fragment identifier; that is, the
+	proto_node_class is added to the browser twice under both
+	<http://example.com/world#proto-name> and
+	<http://example.com/world>.
+	(Vrml97Parser::externproto): If the implementation identifier for
+	the EXTERNPROTO is a relative URI, convert it to an absolute URI
+	before using it to attempt to retrieve a node_class from the
+	browser. Also, convert any relative URIs to absolute URIs before
+	adding externproto_node_classes to the browser.
+
+2005-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/Vrml97Parser.g: Cosmetic changes.
 
 2005-11-27 Braden McDaniel  <braden@endoframe.com>

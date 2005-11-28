@@ -694,7 +694,10 @@ proto[openvrml::scene & scene,
       const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
+    using std::string;
     using std::vector;
+    using boost::shared_ptr;
+    using boost::dynamic_pointer_cast;
 
     node_interface_set interfaces;
     proto_node_class::default_value_map_t default_value_map;
@@ -703,6 +706,7 @@ options { defaultErrorHandler=false; }
     proto_node_class::routes_t routes;
 }
     :   KEYWORD_PROTO id:ID {
+            assert(scope);
             boost::shared_ptr<openvrml::scope>
                 proto_scope(new openvrml::scope(id->getText(), scope));
         } LBRACKET (protoInterfaceDeclaration[scene,
@@ -716,7 +720,7 @@ options { defaultErrorHandler=false; }
                          impl_nodes,
                          is_map,
                          routes] RBRACE {
-            boost::shared_ptr<openvrml::node_class>
+            shared_ptr<openvrml::node_class>
                 node_class(new proto_node_class(scene.browser(),
                                                 interfaces,
                                                 default_value_map,
@@ -729,20 +733,25 @@ options { defaultErrorHandler=false; }
             //
             // First, construct the id for the node implementation.
             //
-            std::string impl_id;
+            string impl_id;
             do {
                 impl_id = '#' + proto_scope->id() + impl_id;
             } while ((proto_scope = proto_scope->parent())->parent());
-            impl_id = scope->id() + impl_id;
+            impl_id = proto_scope->id() + impl_id;
             scene.browser().add_node_class(impl_id, node_class);
+
+            if (!dynamic_pointer_cast<proto_node_class>(
+                    scene.browser().node_class(node_class_id(this->uri)))) {
+                scene.browser().add_node_class(node_class_id(this->uri),
+                                               node_class);
+            }
 
             //
             // PROTOs implicitly introduce a new node type as well.
             //
-            const boost::shared_ptr<node_type> node_type =
+            const shared_ptr<node_type> node_type =
                 node_class->create_type(id->getText(), interfaces);
             assert(node_type);
-            assert(scope);
             if (!scope->add_type(node_type)) {
                 using antlr::SemanticException;
                 throw SemanticException("node type \"" + node_type->id()
@@ -947,11 +956,15 @@ options { defaultErrorHandler=false; }
         (externInterfaceDeclaration[interfaces])* RBRACKET
         uri_list=externprotoUrlList {
             const vector<string> & alt_uris = uri_list.value();
-            for (vector<string>::const_iterator uri = alt_uris.begin();
-                 uri != alt_uris.end();
-                 ++uri) {
+            for (vector<string>::const_iterator resource_id = alt_uris.begin();
+                 resource_id != alt_uris.end();
+                 ++resource_id) {
+                const ::uri absolute_uri = !relative(::uri(*resource_id))
+                    ? ::uri(*resource_id)
+                    : ::uri(*resource_id)
+                        .resolve_against(::uri(this->uri));
                 const shared_ptr<openvrml::node_class> node_class =
-                    scene.browser().node_class(*uri);
+                    scene.browser().node_class(node_class_id(absolute_uri));
                 if (node_class) {
                     node_type = node_class->create_type(id->getText(),
                                                         interfaces);
@@ -963,10 +976,16 @@ options { defaultErrorHandler=false; }
                 const shared_ptr<node_class> externproto_class(
                     new externproto_node_class(scene, alt_uris));
 
-                for (vector<string>::const_iterator uri = alt_uris.begin();
-                     uri != alt_uris.end();
-                     ++uri) {
-                    scene.browser().add_node_class(*uri, externproto_class);
+                for (vector<string>::const_iterator resource_id =
+                         alt_uris.begin();
+                     resource_id != alt_uris.end();
+                     ++resource_id) {
+                    const ::uri absolute_uri = !relative(::uri(*resource_id))
+                        ? ::uri(*resource_id)
+                        : ::uri(*resource_id)
+                            .resolve_against(::uri(this->uri));
+                    scene.browser().add_node_class(node_class_id(absolute_uri),
+                                                   externproto_class);
                 }
 
                 node_type = externproto_class->create_type(id->getText(),
