@@ -1,5 +1,29 @@
 2005-11-27 Braden McDaniel  <braden@endoframe.com>
 
+	Load EXTERNPROTO implementations (asynchronously).
+
+	* src/libopenvrml/openvrml/browser.cpp: Modified
+	externproto_node::externproto_exposedfield to inherit
+	abstract_proto_node::proto_eventout rather than
+	openvrml::field_value_emitter.  Implemented do_clone for
+	externproto_node::externproto_exposedfield.  For externproto_node,
+	implemented do_shutdown as well as all the virtual cast functions.
+	Constructing an externproto_node_class now initiates a new thread
+	using the function object externproto_node_class::load_proto.
+	This parses the VRML world at the given URI which incidentally
+	puts any PROTOs in that world into the browser's node_class map.
+	At that point externproto_node_class::set_proto_node_class is
+	called, which sets the proto_node_class to which the
+	externproto_node_class will delegate.
+	externproto_node_class::set_proto_node_class in turn calls
+	externproto_node_type::set_proto_node_type which provides the
+	externproto_node_type with the proto_node_type to which it
+	delegates.  And finally externproto_node_type::set_proto_node_type
+	calls externproto_node::set_proto_node which provides the
+	externproto_node with the proto_node to which it delegates.
+
+2005-11-27 Braden McDaniel  <braden@endoframe.com>
+
 	Don't try to use relative URIs as node_class_id's.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g
