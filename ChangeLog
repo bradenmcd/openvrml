@@ -1,5 +1,11 @@
 2005-11-29 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::load_url): Call register_node_classes here
+	since the node_class_map constructor doesn't do it anymore.
+
+2005-11-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/Vrml97Parser.g
 	(Vrml97Parser::intValue): Read a hexadecimal integer into an
 	unsigned value and convert it to an openvrml::int32.  The VRML97

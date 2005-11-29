@@ -8041,6 +8041,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
     //
     node_class_map new_map;
     this->node_class_map_ = new_map;
+    register_node_classes(*this);
     this->scene_.reset(new root_scene(*this));
     this->scene_->load(url);
 }
