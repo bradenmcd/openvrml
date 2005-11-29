@@ -1,5 +1,13 @@
 2005-11-29 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::intValue): Read a hexadecimal integer into an
+	unsigned value and convert it to an openvrml::int32.  The VRML97
+	grammar includes a notion of signed hexadecimal integers; but this
+	doesn't make a lot of sense.
+
+2005-11-29 Braden McDaniel  <braden@endoframe.com>
+
 	Changed register_node_classes to use
 	openvrml::browser::add_node_class.
 
