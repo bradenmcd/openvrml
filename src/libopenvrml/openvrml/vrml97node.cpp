@@ -1311,13 +1311,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<Derived>::exposedfield<openvrml::sfnode> abstract_indexed_set_node<Derived>::color_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::sfnode> abstract_indexed_set_node<Derived>::color_
      *
      * @brief color exposedField.
      */
 
     /**
-     * @var abstract_node<Derived>::exposedfield<sfnode> abstract_indexed_set_node<Derived>::coord_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<sfnode> abstract_indexed_set_node<Derived>::coord_
      *
      * @brief coord exposedField.
      */
@@ -1429,25 +1429,25 @@ namespace {
     };
 
     /**
-     * @var abstract_node<Derived>::exposedfield<openvrml::sffloat> abstract_light_node::ambient_intensity_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::sffloat> abstract_light_node::ambient_intensity_
      *
      * @brief ambientIntensity exposedField.
      */
 
     /**
-     * @var abstract_node<Derived>::exposedfield<openvrml::sfcolor> abstract_light_node::color_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::sfcolor> abstract_light_node::color_
      *
      * @brief color exposedField.
      */
 
     /**
-     * @var abstract_node<Derived>::exposedfield<openvrml::sffloat> abstract_light_node::intensity_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::sffloat> abstract_light_node::intensity_
      *
      * @brief intensity exposedField.
      */
 
     /**
-     * @var abstract_node<Derived>::exposedfield<openvrml::sfbool> abstract_light_node::on_
+     * @var openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::sfbool> abstract_light_node::on_
      *
      * @brief on exposedField.
      */
@@ -1846,7 +1846,7 @@ namespace {
     /**
      * @internal
      *
-     * @class group_node::children_exposedfield
+     * @class grouping_node_base::children_exposedfield
      *
      * @brief children exposedField implementation.
      */
@@ -4336,19 +4336,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<anchor_node>::exposedfield<openvrml::sfstring> anchor_node::description_
+     * @var openvrml::node_impl_util::abstract_node<anchor_node>::exposedfield<openvrml::sfstring> anchor_node::description_
      *
      * @brief description exposedField
      */
 
     /**
-     * @var abstract_node<anchor_node>::exposedfield<openvrml::mfstring> anchor_node::parameter_
+     * @var openvrml::node_impl_util::abstract_node<anchor_node>::exposedfield<openvrml::mfstring> anchor_node::parameter_
      *
      * @brief parameter exposedField
      */
 
     /**
-     * @var abstract_node<anchor_node>::exposedfield<openvrml::mfstring> anchor_node::url_
+     * @var openvrml::node_impl_util::abstract_node<anchor_node>::exposedfield<openvrml::mfstring> anchor_node::url_
      *
      * @brief url exposedField
      */
@@ -4542,19 +4542,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::material_
+     * @var openvrml::node_impl_util::abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::material_
      *
      * @brief material exposedField.
      */
 
     /**
-     * @var abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::texture_
+     * @var openvrml::node_impl_util::abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::texture_
      *
      * @brief texture exposedField.
      */
 
     /**
-     * @var abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::texture_transform_
+     * @var openvrml::node_impl_util::abstract_node<appearance_node>::exposedfield<openvrml::sfnode> appearance_node::texture_transform_
      *
      * @brief textureTransform exposedField.
      */
@@ -4910,37 +4910,37 @@ namespace {
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::sfstring> audio_clip_node::description_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::sfstring> audio_clip_node::description_
      *
      * @brief description exposedField.
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::sfbool> audio_clip_node::loop_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::sfbool> audio_clip_node::loop_
      *
      * @brief loop exposedField.
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::sffloat> audio_clip_node::pitch_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::sffloat> audio_clip_node::pitch_
      *
      * @brief pitch exposedField.
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::sftime> audio_clip_node::start_time_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::sftime> audio_clip_node::start_time_
      *
      * @brief startTime exposedField.
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::sftime> audio_clip_node::stop_time_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::sftime> audio_clip_node::stop_time_
      *
      * @brief stopTime exposedField.
      */
 
     /**
-     * @var abstract_node<audio_clip_node>::exposedfield<openvrml::mfstring> audio_clip_node::url_
+     * @var openvrml::node_impl_util::abstract_node<audio_clip_node>::exposedfield<openvrml::mfstring> audio_clip_node::url_
      *
      * @brief url exposedField.
      */
@@ -6073,13 +6073,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<background_node>::exposedfield<openvrml::mffloat> background_node::ground_angle_
+     * @var openvrml::node_impl_util::abstract_node<background_node>::exposedfield<openvrml::mffloat> background_node::ground_angle_
      *
      * @brief groundAngle exposedField.
      */
 
     /**
-     * @var abstract_node<background_node>::exposedfield<openvrml::mfcolor> background_node::ground_color_
+     * @var openvrml::node_impl_util::abstract_node<background_node>::exposedfield<openvrml::mfcolor> background_node::ground_color_
      *
      * @brief groundColor exposedField.
      */
@@ -6121,13 +6121,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<background_node>::exposedfield<openvrml::mffloat> background_node::sky_angle_
+     * @var openvrml::node_impl_util::abstract_node<background_node>::exposedfield<openvrml::mffloat> background_node::sky_angle_
      *
      * @brief skyAngle exposedField.
      */
 
     /**
-     * @var abstract_node<background_node>::exposedfield<openvrml::mfcolor> background_node::sky_color_
+     * @var openvrml::node_impl_util::abstract_node<background_node>::exposedfield<openvrml::mfcolor> background_node::sky_color_
      *
      * @brief skyColor exposedField.
      */
@@ -7237,7 +7237,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<billboard_node>::exposedfield<openvrml::sfvec3f> billboard_node::axis_of_rotation_
+     * @var openvrml::node_impl_util::abstract_node<billboard_node>::exposedfield<openvrml::sfvec3f> billboard_node::axis_of_rotation_
      *
      * @brief axisOfRotation exposedField.
      */
@@ -7839,7 +7839,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<color_node>::exposedfield<openvrml::mfcolor> color_node::color_
+     * @var openvrml::node_impl_util::abstract_node<color_node>::exposedfield<openvrml::mfcolor> color_node::color_
      *
      * @brief color exposedField.
      */
@@ -8117,13 +8117,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<color_interpolator_node>::exposedfield<openvrml::mffloat> color_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<color_interpolator_node>::exposedfield<openvrml::mffloat> color_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<color_interpolator_node>::exposedfield<openvrml::mfcolor> color_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<color_interpolator_node>::exposedfield<openvrml::mfcolor> color_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -8423,7 +8423,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<coordinate_node>::exposedfield<openvrml::mfvec3f> coordinate_node::point_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_node>::exposedfield<openvrml::mfvec3f> coordinate_node::point_
      *
      * @brief point exposedField.
      */
@@ -8695,13 +8695,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<coordinate_interpolator_node>::exposedfield<openvrml::mffloat> coordinate_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_interpolator_node>::exposedfield<openvrml::mffloat> coordinate_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<coordinate_interpolator_node>::exposedfield<openvrml::mfvec3f> coordinate_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_interpolator_node>::exposedfield<openvrml::mfvec3f> coordinate_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -9170,37 +9170,37 @@ namespace {
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sfbool> cylinder_sensor_node::auto_offset_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sfbool> cylinder_sensor_node::auto_offset_
      *
      * @brief autoOffset exposedField.
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::disk_angle_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::disk_angle_
      *
      * @brief diskAngle exposedField.
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sfbool> cylinder_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sfbool> cylinder_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::max_angle_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::max_angle_
      *
      * @brief maxAngle exposedField.
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::min_angle_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::min_angle_
      *
      * @brief minAngle exposedField.
      */
 
     /**
-     * @var abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::offset_
+     * @var openvrml::node_impl_util::abstract_node<cylinder_sensor_node>::exposedfield<openvrml::sffloat> cylinder_sensor_node::offset_
      *
      * @brief offset exposedField.
      */
@@ -9595,7 +9595,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<directional_light_node>::exposedfield<openvrml::sfvec3f> directional_light_node::direction_
+     * @var openvrml::node_impl_util::abstract_node<directional_light_node>::exposedfield<openvrml::sfvec3f> directional_light_node::direction_
      *
      * @brief direction exposedField.
      */
@@ -9937,19 +9937,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::color_
+     * @var openvrml::node_impl_util::abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::color_
      *
      * @brief color exposedField.
      */
 
     /**
-     * @var abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::normal_
+     * @var openvrml::node_impl_util::abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::normal_
      *
      * @brief normal exposedField.
      */
 
     /**
-     * @var abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::tex_coord_
+     * @var openvrml::node_impl_util::abstract_node<elevation_grid_node>::exposedfield<openvrml::sfnode> elevation_grid_node::tex_coord_
      *
      * @brief texCoord exposedField.
      */
@@ -11091,19 +11091,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<fog_node>::exposedfield<openvrml::sfcolor> fog_node::color_
+     * @var openvrml::node_impl_util::abstract_node<fog_node>::exposedfield<openvrml::sfcolor> fog_node::color_
      *
      * @brief color exposedField.
      */
 
     /**
-     * @var abstract_node<fog_node>::exposedfield<openvrml::sfstring> fog_node::fog_type_
+     * @var openvrml::node_impl_util::abstract_node<fog_node>::exposedfield<openvrml::sfstring> fog_node::fog_type_
      *
      * @brief fogType exposedField.
      */
 
     /**
-     * @var abstract_node<fog_node>::exposedfield<openvrml::sffloat> fog_node::visibility_range_
+     * @var openvrml::node_impl_util::abstract_node<fog_node>::exposedfield<openvrml::sffloat> fog_node::visibility_range_
      *
      * @brief visibilityRange exposedField.
      */
@@ -12355,13 +12355,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<indexed_face_set_node>::exposedfield<openvrml::sfnode> indexed_face_set_node::normal_
+     * @var openvrml::node_impl_util::abstract_node<indexed_face_set_node>::exposedfield<openvrml::sfnode> indexed_face_set_node::normal_
      *
      * @brief normal exposedField.
      */
 
     /**
-     * @var abstract_node<indexed_face_set_node>::exposedfield<openvrml::sfnode> indexed_face_set_node::tex_coord_
+     * @var openvrml::node_impl_util::abstract_node<indexed_face_set_node>::exposedfield<openvrml::sfnode> indexed_face_set_node::tex_coord_
      *
      * @brief texCoord exposedField.
      */
@@ -12933,7 +12933,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<inline_node>::exposedfield<openvrml::mfstring> inline_node::url_
+     * @var openvrml::node_impl_util::abstract_node<inline_node>::exposedfield<openvrml::mfstring> inline_node::url_
      *
      * @brief url exposedField.
      */
@@ -13144,7 +13144,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<lod_node>::exposedfield<openvrml::mfnode> lod_node::level_
+     * @var openvrml::node_impl_util::abstract_node<lod_node>::exposedfield<openvrml::mfnode> lod_node::level_
      *
      * @brief level exposedField.
      */
@@ -13507,37 +13507,37 @@ namespace {
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::ambient_intensity_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::ambient_intensity_
      *
      * @brief ambientIntensity exposedField.
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::diffuse_color_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::diffuse_color_
      *
      * @brief diffuseColor exposedField.
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::emissive_color_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::emissive_color_
      *
      * @brief emissiveColor exposedField.
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::shininess_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::shininess_
      *
      * @brief shininess exposedField.
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::specular_color_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sfcolor> material_node::specular_color_
      *
      * @brief specularColor exposedField.
      */
 
     /**
-     * @var abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::transparency_
+     * @var openvrml::node_impl_util::abstract_node<material_node>::exposedfield<openvrml::sffloat> material_node::transparency_
      *
      * @brief transparency exposedField.
      */
@@ -13898,7 +13898,7 @@ namespace {
     }
 
     /**
-     * @var abstract_node<movie_texture_node>::exposedfield<openvrml::sfbool> movie_texture_node::loop_
+     * @var openvrml::node_impl_util::abstract_node<movie_texture_node>::exposedfield<openvrml::sfbool> movie_texture_node::loop_
      *
      * @brief loop exposedField.
      */
@@ -13922,19 +13922,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<movie_texture_node>::exposedfield<openvrml::sftime> movie_texture_node::start_time_
+     * @var openvrml::node_impl_util::abstract_node<movie_texture_node>::exposedfield<openvrml::sftime> movie_texture_node::start_time_
      *
      * @brief startTime exposedField.
      */
 
     /**
-     * @var abstract_node<movie_texture_node>::exposedfield<openvrml::sftime> movie_texture_node::stop_time_
+     * @var openvrml::node_impl_util::abstract_node<movie_texture_node>::exposedfield<openvrml::sftime> movie_texture_node::stop_time_
      *
      * @brief stopTime exposedField.
      */
 
     /**
-     * @var abstract_node<movie_texture_node>::exposedfield<openvrml::mfstring> movie_texture_node::url_
+     * @var openvrml::node_impl_util::abstract_node<movie_texture_node>::exposedfield<openvrml::mfstring> movie_texture_node::url_
      *
      * @brief url exposedField.
      */
@@ -14658,31 +14658,31 @@ namespace {
      */
 
     /**
-     * @var abstract_node<navigation_info_node>::exposedfield<openvrml::mffloat> navigation_info_node::avatar_size_
+     * @var openvrml::node_impl_util::abstract_node<navigation_info_node>::exposedfield<openvrml::mffloat> navigation_info_node::avatar_size_
      *
      * @brief avatarSize exposedField.
      */
 
     /**
-     * @var abstract_node<navigation_info_node>::exposedfield<openvrml::sfbool> navigation_info_node::headlight_
+     * @var openvrml::node_impl_util::abstract_node<navigation_info_node>::exposedfield<openvrml::sfbool> navigation_info_node::headlight_
      *
      * @brief headlight exposedField.
      */
 
     /**
-     * @var abstract_node<navigation_info_node>::exposedfield<openvrml::sffloat> navigation_info_node::speed_
+     * @var openvrml::node_impl_util::abstract_node<navigation_info_node>::exposedfield<openvrml::sffloat> navigation_info_node::speed_
      *
      * @brief speed exposedField.
      */
 
     /**
-     * @var abstract_node<navigation_info_node>::exposedfield<openvrml::mfstring> navigation_info_node::type_
+     * @var openvrml::node_impl_util::abstract_node<navigation_info_node>::exposedfield<openvrml::mfstring> navigation_info_node::type_
      *
      * @brief type exposedField.
      */
 
     /**
-     * @var abstract_node<navigation_info_node>::exposedfield<openvrml::sffloat> navigation_info_node::visibility_limit_
+     * @var openvrml::node_impl_util::abstract_node<navigation_info_node>::exposedfield<openvrml::sffloat> navigation_info_node::visibility_limit_
      *
      * @brief visibilityLimit exposedField.
      */
@@ -14906,7 +14906,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<normal_node>::exposedfield<openvrml::mfvec3f> normal_node::vector_
+     * @var openvrml::node_impl_util::abstract_node<normal_node>::exposedfield<openvrml::mfvec3f> normal_node::vector_
      *
      * @brief vector exposedField.
      */
@@ -15198,13 +15198,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<normal_interpolator_node>::exposedfield<openvrml::mffloat> normal_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<normal_interpolator_node>::exposedfield<openvrml::mffloat> normal_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<normal_interpolator_node>::exposedfield<openvrml::mfvec3f> normal_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<normal_interpolator_node>::exposedfield<openvrml::mfvec3f> normal_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -15504,13 +15504,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<orientation_interpolator_node>::exposedfield<openvrml::mffloat> orientation_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<orientation_interpolator_node>::exposedfield<openvrml::mffloat> orientation_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<orientation_interpolator_node>::exposedfield<openvrml::mfrotation> orientation_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<orientation_interpolator_node>::exposedfield<openvrml::mfrotation> orientation_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -15910,31 +15910,31 @@ namespace {
      */
 
     /**
-     * @var abstract_node<plane_sensor_node>::exposedfield<openvrml::sfbool> plane_sensor_node::auto_offset_
+     * @var openvrml::node_impl_util::abstract_node<plane_sensor_node>::exposedfield<openvrml::sfbool> plane_sensor_node::auto_offset_
      *
      * @brief autoOffset exposedField.
      */
 
     /**
-     * @var abstract_node<plane_sensor_node>::exposedfield<openvrml::sfbool> plane_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<plane_sensor_node>::exposedfield<openvrml::sfbool> plane_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
 
     /**
-     * @var abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec2f> plane_sensor_node::max_position_
+     * @var openvrml::node_impl_util::abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec2f> plane_sensor_node::max_position_
      *
      * @brief maxPosition exposedField.
      */
 
     /**
-     * @var abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec2f> plane_sensor_node::min_position_
+     * @var openvrml::node_impl_util::abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec2f> plane_sensor_node::min_position_
      *
      * @brief minPosition exposedField.
      */
 
     /**
-     * @var abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec3f> plane_sensor_node::offset_
+     * @var openvrml::node_impl_util::abstract_node<plane_sensor_node>::exposedfield<openvrml::sfvec3f> plane_sensor_node::offset_
      *
      * @brief offset exposedField.
      */
@@ -16332,19 +16332,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<point_light_node>::exposedfield<openvrml::sfvec3f> point_light_node::attenuation_
+     * @var openvrml::node_impl_util::abstract_node<point_light_node>::exposedfield<openvrml::sfvec3f> point_light_node::attenuation_
      *
      * @brief attenuation exposedField.
      */
 
     /**
-     * @var abstract_node<point_light_node>::exposedfield<openvrml::sfvec3f> point_light_node::location_
+     * @var openvrml::node_impl_util::abstract_node<point_light_node>::exposedfield<openvrml::sfvec3f> point_light_node::location_
      *
      * @brief location exposedField.
      */
 
     /**
-     * @var abstract_node<point_light_node>::exposedfield<openvrml::sffloat> point_light_node::radius_
+     * @var openvrml::node_impl_util::abstract_node<point_light_node>::exposedfield<openvrml::sffloat> point_light_node::radius_
      *
      * @brief radius exposedField.
      */
@@ -16534,13 +16534,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<point_set_node>::exposedfield<openvrml::sfnode> point_set_node::color_
+     * @var openvrml::node_impl_util::abstract_node<point_set_node>::exposedfield<openvrml::sfnode> point_set_node::color_
      *
      * @brief color exposedField.
      */
 
     /**
-     * @var abstract_node<point_set_node>::exposedfield<openvrml::sfnode> point_set_node::coord_
+     * @var openvrml::node_impl_util::abstract_node<point_set_node>::exposedfield<openvrml::sfnode> point_set_node::coord_
      *
      * @brief coord exposedField.
      */
@@ -16897,13 +16897,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<position_interpolator_node>::exposedfield<openvrml::mffloat> position_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<position_interpolator_node>::exposedfield<openvrml::mffloat> position_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<position_interpolator_node>::exposedfield<openvrml::mfvec3f> position_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<position_interpolator_node>::exposedfield<openvrml::mfvec3f> position_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -17136,19 +17136,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfvec3f> proximity_sensor_node::center_
+     * @var openvrml::node_impl_util::abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfvec3f> proximity_sensor_node::center_
      *
      * @brief center exposedField.
      */
 
     /**
-     * @var abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfbool> proximity_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfbool> proximity_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
 
     /**
-     * @var abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfvec3f> proximity_sensor_node::size_
+     * @var openvrml::node_impl_util::abstract_node<proximity_sensor_node>::exposedfield<openvrml::sfvec3f> proximity_sensor_node::size_
      *
      * @brief size exposedField.
      */
@@ -17556,13 +17556,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<scalar_interpolator_node>::exposedfield<openvrml::mffloat> scalar_interpolator_node::key_
+     * @var openvrml::node_impl_util::abstract_node<scalar_interpolator_node>::exposedfield<openvrml::mffloat> scalar_interpolator_node::key_
      *
      * @brief key exposedField.
      */
 
     /**
-     * @var abstract_node<scalar_interpolator_node>::exposedfield<openvrml::mffloat> scalar_interpolator_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<scalar_interpolator_node>::exposedfield<openvrml::mffloat> scalar_interpolator_node::key_value_
      *
      * @brief keyValue exposedField.
      */
@@ -17708,13 +17708,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<shape_node>::exposedfield<openvrml::sfnode> shape_node::appearance_
+     * @var openvrml::node_impl_util::abstract_node<shape_node>::exposedfield<openvrml::sfnode> shape_node::appearance_
      *
      * @brief appearance exposedField.
      */
 
     /**
-     * @var abstract_node<shape_node>::exposedfield<openvrml::sfnode> shape_node::geometry_
+     * @var openvrml::node_impl_util::abstract_node<shape_node>::exposedfield<openvrml::sfnode> shape_node::geometry_
      *
      * @brief geometry exposedField.
      */
@@ -18126,55 +18126,55 @@ namespace {
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sfvec3f> sound_node::direction_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sfvec3f> sound_node::direction_
      *
      * @brief direction exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::intensity_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::intensity_
      *
      * @brief intensity exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sfvec3f> sound_node::location_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sfvec3f> sound_node::location_
      *
      * @brief location exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::max_back_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::max_back_
      *
      * @brief maxBack exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::max_front_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::max_front_
      *
      * @brief maxFront exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::min_back_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::min_back_
      *
      * @brief minBack exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::min_front_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::min_front_
      *
      * @brief minFront exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::priority_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sffloat> sound_node::priority_
      *
      * @brief priority exposedField.
      */
 
     /**
-     * @var abstract_node<sound_node>::exposedfield<openvrml::sfnode> sound_node::source_
+     * @var openvrml::node_impl_util::abstract_node<sound_node>::exposedfield<openvrml::sfnode> sound_node::source_
      *
      * @brief source exposedField.
      */
@@ -18531,19 +18531,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfbool> sphere_sensor_node::auto_offset_
+     * @var openvrml::node_impl_util::abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfbool> sphere_sensor_node::auto_offset_
      *
      * @brief autoOffset exposedField.
      */
 
     /**
-     * @var abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfbool> sphere_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfbool> sphere_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
 
     /**
-     * @var abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfrotation> sphere_sensor_node::offset_
+     * @var openvrml::node_impl_util::abstract_node<sphere_sensor_node>::exposedfield<openvrml::sfrotation> sphere_sensor_node::offset_
      *
      * @brief offset exposedField.
      */
@@ -19008,37 +19008,37 @@ namespace {
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::attenuation_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::attenuation_
      *
      * @brief attenuation exposedField.
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<sffloat> spot_light_node::beam_width_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<sffloat> spot_light_node::beam_width_
      *
      * @brief beamWidth exposedField.
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<openvrml::sffloat> spot_light_node::cut_off_angle_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<openvrml::sffloat> spot_light_node::cut_off_angle_
      *
      * @brief cutOffAngle exposedField.
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::direction_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::direction_
      *
      * @brief direction exposedField.
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::location_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<openvrml::sfvec3f> spot_light_node::location_
      *
      * @brief location exposedField.
      */
 
     /**
-     * @var abstract_node<spot_light_node>::exposedfield<openvrml::sffloat> spot_light_node::radius_
+     * @var openvrml::node_impl_util::abstract_node<spot_light_node>::exposedfield<openvrml::sffloat> spot_light_node::radius_
      *
      * @brief radius exposedField.
      */
@@ -21580,7 +21580,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<texture_coordinate_node>::exposedfield<openvrml::mfvec2f> texture_coordinate_node::point_
+     * @var openvrml::node_impl_util::abstract_node<texture_coordinate_node>::exposedfield<openvrml::mfvec2f> texture_coordinate_node::point_
      *
      * @brief point exposedField.
      */
@@ -21775,25 +21775,25 @@ namespace {
      */
 
     /**
-     * @var abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::center_
+     * @var openvrml::node_impl_util::abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::center_
      *
      * @brief center exposedField.
      */
 
     /**
-     * @var abstract_node<texture_transform_node>::exposedfield<openvrml::sffloat> texture_transform_node::rotation_
+     * @var openvrml::node_impl_util::abstract_node<texture_transform_node>::exposedfield<openvrml::sffloat> texture_transform_node::rotation_
      *
      * @brief rotation exposedField.
      */
 
     /**
-     * @var abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::scale_
+     * @var openvrml::node_impl_util::abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::scale_
      *
      * @brief scale exposedField.
      */
 
     /**
-     * @var abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::translation_
+     * @var openvrml::node_impl_util::abstract_node<texture_transform_node>::exposedfield<openvrml::sfvec2f> texture_transform_node::translation_
      *
      * @brief translation exposedField.
      */
@@ -22289,7 +22289,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<time_sensor_node>::exposedfield<openvrml::sfbool> time_sensor_node::loop_
+     * @var openvrml::node_impl_util::abstract_node<time_sensor_node>::exposedfield<openvrml::sfbool> time_sensor_node::loop_
      *
      * @brief loop exposedField.
      */
@@ -22313,7 +22313,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<time_sensor_node>::exposedfield<openvrml::sftime> time_sensor_node::stop_time_
+     * @var openvrml::node_impl_util::abstract_node<time_sensor_node>::exposedfield<openvrml::sftime> time_sensor_node::stop_time_
      *
      * @brief stopTime exposedField.
      */
@@ -22697,7 +22697,7 @@ namespace {
      */
 
     /**
-     * @var abstract_node<touch_sensor_node>::exposedfield<openvrml::sfbool> touch_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<touch_sensor_node>::exposedfield<openvrml::sfbool> touch_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
@@ -24245,13 +24245,13 @@ namespace {
      */
 
     /**
-     * @var abstract_node<viewpoint_node>::exposedfield<openvrml::sffloat> viewpoint_node::field_of_view_
+     * @var openvrml::node_impl_util::abstract_node<viewpoint_node>::exposedfield<openvrml::sffloat> viewpoint_node::field_of_view_
      *
      * @brief fieldOfView exposedField.
      */
 
     /**
-     * @var abstract_node<viewpoint_node>::exposedfield<openvrml::sfbool> viewpoint_node::jump_
+     * @var openvrml::node_impl_util::abstract_node<viewpoint_node>::exposedfield<openvrml::sfbool> viewpoint_node::jump_
      *
      * @brief jump exposedField.
      */
@@ -24701,19 +24701,19 @@ namespace {
      */
 
     /**
-     * @var abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfvec3f> visibility_sensor_node::center_
+     * @var openvrml::node_impl_util::abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfvec3f> visibility_sensor_node::center_
      *
      * @brief center exposedField.
      */
 
     /**
-     * @var abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfbool> visibility_sensor_node::enabled_
+     * @var openvrml::node_impl_util::abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfbool> visibility_sensor_node::enabled_
      *
      * @brief enabled exposedField.
      */
 
     /**
-     * @var abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfvec3f> visibility_sensor_node::size_
+     * @var openvrml::node_impl_util::abstract_node<visibility_sensor_node>::exposedfield<openvrml::sfvec3f> visibility_sensor_node::size_
      *
      * @brief size exposedField.
      */

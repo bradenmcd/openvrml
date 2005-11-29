@@ -1,5 +1,12 @@
 2005-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2005-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(externproto_node::set_proto_node): Changed proto_eventin to
 	eventin and proto_eventout to eventout; required for Microsoft cl

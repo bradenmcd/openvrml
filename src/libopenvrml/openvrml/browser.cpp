@@ -1014,7 +1014,7 @@ namespace openvrml {
      */
 
     /**
-     * @var abstract_proto_node::proto_eventin::listeners proto_node::proto_eventin::listeners_
+     * @var abstract_proto_node::proto_eventin::listeners abstract_proto_node::proto_eventin::listeners_
      *
      * @brief Set of event listeners to which events are delegated for
      *        processing.
@@ -1377,7 +1377,7 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @class proto_node::proto_eventout
+     * @class abstract_proto_node::proto_eventout
      *
      * @brief PROTO eventOut handler class template.
      */
@@ -1474,7 +1474,7 @@ namespace openvrml {
     }
 
     /**
-     * @var abstract_proto_node::proto_eventout::listener_t proto_node::proto_eventout::listener
+     * @var abstract_proto_node::proto_eventout::listener_t abstract_proto_node::proto_eventout::listener
      *
      * @brief Listens for events emitted from nodes in the @c PROTO
      *        implementation in order to propagate them out of the @c PROTO
@@ -5681,6 +5681,12 @@ namespace {
         std::vector<std::string> alt_uris_;
     };
 
+    /**
+     * @brief Construct.
+     *
+     * @param scene the <code>scene</code> in which the EXTERNPROTO occurs.
+     * @param uris  the list of alternative implementation identifiers.
+     */
     externproto_node_class::
     externproto_node_class(openvrml::scene & scene,
                            const std::vector<std::string> & uris) throw ():
@@ -5690,6 +5696,9 @@ namespace {
         boost::thread t(f);
     }
 
+    /**
+     * @brief Destroy.
+     */
     externproto_node_class::~externproto_node_class() throw ()
     {}
 
