@@ -1,5 +1,9 @@
 2005-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Doc-comment fix.
+
+2005-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(externproto_node_class::externproto_node_class): Can throw
 	boost::thread_resource_error.

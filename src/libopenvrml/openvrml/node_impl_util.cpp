@@ -332,7 +332,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::event_listener_base<Node>::event_listener_equal_to::event_listener_equal_to(const event_listener & listener)
+ * @fn openvrml::node_impl_util::event_listener_base<Node>::event_listener_equal_to::event_listener_equal_to(const node_event_listener & listener)
  *
  * @brief Construct.
  *
