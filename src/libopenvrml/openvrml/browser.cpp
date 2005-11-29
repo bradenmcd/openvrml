@@ -2764,7 +2764,7 @@ namespace {
     public:
         externproto_node_class(openvrml::scene & scene,
                                const std::vector<std::string> & uris)
-            throw ();
+            throw (boost::thread_resource_error);
         virtual ~externproto_node_class() throw ();
 
     private:
@@ -5686,10 +5686,14 @@ namespace {
      *
      * @param scene the <code>scene</code> in which the EXTERNPROTO occurs.
      * @param uris  the list of alternative implementation identifiers.
+     *
+     * @exception boost::thread_resource_error  if a new thread of execution
+     *                                          cannot be started.
      */
     externproto_node_class::
     externproto_node_class(openvrml::scene & scene,
-                           const std::vector<std::string> & uris) throw ():
+                           const std::vector<std::string> & uris)
+        throw (boost::thread_resource_error):
         node_class(scene.browser())
     {
         boost::function0<void> f = load_proto(*this, scene, uris);
