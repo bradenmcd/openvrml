@@ -353,7 +353,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) throw ()
 /**
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
@@ -422,7 +421,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) throw ()
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
@@ -453,7 +451,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) throw ()
 /**
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return the result vector.
@@ -484,7 +481,6 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) throw ()
 /**
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return the result vector.
@@ -600,7 +596,6 @@ const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
 /**
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
@@ -616,7 +611,6 @@ bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const throw ()
 /**
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
@@ -663,6 +657,21 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2<double> & v)
 //
 template class openvrml::vec2<float>;
 template class openvrml::vec2<double>;
+
+
+/**
+ * @typedef openvrml::vec2<float> openvrml::vec2f
+ *
+ * @brief Single-precision two-component vector.
+ */
+
+
+/**
+ * @typedef openvrml::vec2<double> openvrml::vec2d
+ *
+ * @brief Double-precision two-component vector.
+ */
+
 
 /**
  * @class openvrml::vec3
@@ -758,7 +767,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) throw ()
 /**
  * @brief Cross multiply two vectors.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return the result vector.
@@ -798,7 +806,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) throw ()
 /**
  * @brief Multiply a vector by a matrix.
  *
- * @param vec   a 3-component vector.
  * @param mat   a matrix.
  *
  * @return the result vector.
@@ -881,7 +888,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) throw ()
 /**
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
@@ -954,7 +960,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) throw ()
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
  * @param rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
@@ -986,7 +991,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) throw ()
 /**
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return the result vector.
@@ -1018,7 +1022,6 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) throw ()
 /**
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return the result vector.
@@ -1153,7 +1156,6 @@ const openvrml::vec3<T> openvrml::vec3<T>::normalize() const throw ()
 /**
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
@@ -1169,7 +1171,6 @@ bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const throw ()
 /**
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
  * @param rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
@@ -1216,6 +1217,21 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3<double> & v)
 //
 template class openvrml::vec3<float>;
 template class openvrml::vec3<double>;
+
+
+/**
+ * @typedef openvrml::vec3<float> openvrml::vec3f
+ *
+ * @brief Single-precision three-component vector.
+ */
+
+
+/**
+ * @typedef openvrml::vec3<double> openvrml::vec3d
+ *
+ * @brief Double-precision three-component vector.
+ */
+
 
 /**
  * @class openvrml::rotation

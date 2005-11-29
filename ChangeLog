@@ -1,5 +1,12 @@
 2005-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+
+2005-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/event.h: Removed spurious member
 	openvrml::event_listener::node_.
 

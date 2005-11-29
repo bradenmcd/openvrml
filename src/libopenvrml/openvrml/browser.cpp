@@ -443,6 +443,10 @@ namespace openvrml {
         field_type(field_value::invalid_type_id)
     {}
 
+    /**
+     * @brief A node path is used to store the path to a node for the purpose
+     *        of duplicating a route in a cloned node hierarchy.
+     */
     typedef std::list<node_path_element> node_path_t;
 
     class OPENVRML_LOCAL path_getter : boost::noncopyable {
@@ -2750,6 +2754,9 @@ namespace {
 
     class externproto_node_type;
 
+    /**
+     * @brief <code>node_class</code> for <code>EXTERNPROTO</code>s.
+     */
     class OPENVRML_LOCAL externproto_node_class : public openvrml::node_class {
         struct load_proto;
 
@@ -6891,7 +6898,7 @@ openvrml::invalid_profile::~invalid_profile() throw ()
  * except the fragment identifier syntax has been extended to support referring
  * to nested <code>PROTO</code>s.
  *
- * For example, supposing the following VRML world resides at
+ * For example, supposing the following %VRML world resides at
  * <code>%http://example.com/example.wrl</code>:
  *
  * <pre>
@@ -8676,6 +8683,14 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  * @brief A pointer to the parent scene.
  *
  * If the scene is the root scene, @a parent will be 0.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::profile_id openvrml::scene::profile_
+ *
+ * @brief The profile to which the scene conforms.
  */
 
 /**
