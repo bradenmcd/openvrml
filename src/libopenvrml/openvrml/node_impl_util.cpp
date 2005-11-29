@@ -681,6 +681,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfint32> openvrml::node_impl_util::abstract_node::sfint32_emitter
+ *
+ * @brief <code>openvrml::sfint32</code> event emitter.
+ */
+
+/**
  * @typedef openvrml::node_impl_util::abstract_node::event_emitter<openvrml::sfnode> openvrml::node_impl_util::abstract_node::sfnode_emitter
  *
  * @brief <code>openvrml::sfnode</code> event emitter.

@@ -1,5 +1,10 @@
 2005-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
+	for openvrml::node_impl_util::abstract_node::sfint32_emitter.
+
+2005-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node_impl_util.h: Added omitted typedef
 	for openvrml::node_impl_util::abstract_node::sfint32_emitter.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
