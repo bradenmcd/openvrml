@@ -7025,10 +7025,8 @@ openvrml::node_class_id::operator std::string() const
  *
  * @param b the <code>browser</code>.
  */
-openvrml::browser::node_class_map::node_class_map(browser & b)
-{
-    register_node_classes(b, this->map_);
-}
+openvrml::browser::node_class_map::node_class_map()
+{}
 
 /**
  * @fn openvrml::browser::node_class_map::node_class_map(const node_class_map &)
@@ -7389,7 +7387,6 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     throw (std::bad_alloc):
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
-    node_class_map_(*this),
     script_node_class_(*this),
     scene_(new scene(*this, invalid_profile_id)),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
@@ -7408,6 +7405,7 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
 {
     assert(this->active_viewpoint_);
     assert(this->active_navigation_info_);
+    register_node_classes(*this);
 }
 
 /**
@@ -7425,7 +7423,6 @@ openvrml::browser::browser(profile_id profile,
     throw (std::bad_alloc):
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
-    node_class_map_(*this),
     script_node_class_(*this),
     scene_(new scene(*this, profile)),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
@@ -7444,6 +7441,7 @@ openvrml::browser::browser(profile_id profile,
 {
     assert(this->active_viewpoint_);
     assert(this->active_navigation_info_);
+    register_node_classes(*this);
 }
 
 /**
@@ -8041,7 +8039,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
     //
     // Create the new scene.
     //
-    node_class_map new_map(*this);
+    node_class_map new_map;
     this->node_class_map_ = new_map;
     this->scene_.reset(new root_scene(*this));
     this->scene_->load(url);

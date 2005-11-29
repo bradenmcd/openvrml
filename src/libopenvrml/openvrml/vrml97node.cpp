@@ -1021,116 +1021,119 @@ namespace {
     };
 }
 
-void register_node_classes(openvrml::browser & b,
-                           openvrml::node_class_map & map)
+void register_node_classes(openvrml::browser & b)
 {
+    using boost::shared_ptr;
     using openvrml::node_class;
-    map["urn:X-openvrml:node:Anchor"] =
-        boost::shared_ptr<node_class>(new anchor_class(b));
-    map["urn:X-openvrml:node:Appearance"] =
-        boost::shared_ptr<node_class>(new appearance_class(b));
-    map["urn:X-openvrml:node:AudioClip"] =
-        boost::shared_ptr<node_class>(new audio_clip_class(b));
-    map["urn:X-openvrml:node:Background"] =
-        boost::shared_ptr<node_class>(new background_class(b));
-    map["urn:X-openvrml:node:Billboard"] =
-        boost::shared_ptr<node_class>(new billboard_class(b));
-    map["urn:X-openvrml:node:Box"] =
-        boost::shared_ptr<node_class>(new box_class(b));
-    map["urn:X-openvrml:node:Collision"] =
-        boost::shared_ptr<node_class>(new collision_class(b));
-    map["urn:X-openvrml:node:Color"] =
-        boost::shared_ptr<node_class>(new color_class(b));
-    map["urn:X-openvrml:node:ColorInterpolator"] =
-        boost::shared_ptr<node_class>(new color_interpolator_class(b));
-    map["urn:X-openvrml:node:Cone"] =
-        boost::shared_ptr<node_class>(new cone_class(b));
-    map["urn:X-openvrml:node:Coordinate"] =
-        boost::shared_ptr<node_class>(new coordinate_class(b));
-    map["urn:X-openvrml:node:CoordinateInterpolator"] =
-        boost::shared_ptr<node_class>(new coordinate_interpolator_class(b));
-    map["urn:X-openvrml:node:Cylinder"] =
-        boost::shared_ptr<node_class>(new cylinder_class(b));
-    map["urn:X-openvrml:node:CylinderSensor"] =
-        boost::shared_ptr<node_class>(new cylinder_sensor_class(b));
-    map["urn:X-openvrml:node:DirectionalLight"] =
-        boost::shared_ptr<node_class>(new directional_light_class(b));
-    map["urn:X-openvrml:node:ElevationGrid"] =
-        boost::shared_ptr<node_class>(new elevation_grid_class(b));
-    map["urn:X-openvrml:node:Extrusion"] =
-        boost::shared_ptr<node_class>(new extrusion_class(b));
-    map["urn:X-openvrml:node:Fog"] =
-        boost::shared_ptr<node_class>(new fog_class(b));
-    map["urn:X-openvrml:node:FontStyle"] =
-        boost::shared_ptr<node_class>(new font_style_class(b));
-    map["urn:X-openvrml:node:Group"] =
-        boost::shared_ptr<node_class>(new group_class(b));
-    map["urn:X-openvrml:node:ImageTexture"] =
-        boost::shared_ptr<node_class>(new image_texture_class(b));
-    map["urn:X-openvrml:node:IndexedFaceSet"] =
-        boost::shared_ptr<node_class>(new indexed_face_set_class(b));
-    map["urn:X-openvrml:node:IndexedLineSet"] =
-        boost::shared_ptr<node_class>(new indexed_line_set_class(b));
-    map["urn:X-openvrml:node:Inline"] =
-        boost::shared_ptr<node_class>(new inline_class(b));
-    map["urn:X-openvrml:node:LOD"] =
-        boost::shared_ptr<node_class>(new lod_class(b));
-    map["urn:X-openvrml:node:Material"] =
-        boost::shared_ptr<node_class>(new material_class(b));
-    map["urn:X-openvrml:node:MovieTexture"] =
-        boost::shared_ptr<node_class>(new movie_texture_class(b));
-    map["urn:X-openvrml:node:NavigationInfo"] =
-        boost::shared_ptr<node_class>(new navigation_info_class(b));
-    map["urn:X-openvrml:node:Normal"] =
-        boost::shared_ptr<node_class>(new normal_class(b));
-    map["urn:X-openvrml:node:NormalInterpolator"] =
-        boost::shared_ptr<node_class>(new normal_interpolator_class(b));
-    map["urn:X-openvrml:node:OrientationInterpolator"] =
-        boost::shared_ptr<node_class>(new orientation_interpolator_class(b));
-    map["urn:X-openvrml:node:PixelTexture"] =
-        boost::shared_ptr<node_class>(new pixel_texture_class(b));
-    map["urn:X-openvrml:node:PlaneSensor"] =
-        boost::shared_ptr<node_class>(new plane_sensor_class(b));
-    map["urn:X-openvrml:node:PointLight"] =
-        boost::shared_ptr<node_class>(new point_light_class(b));
-    map["urn:X-openvrml:node:PointSet"] =
-        boost::shared_ptr<node_class>(new point_set_class(b));
-    map["urn:X-openvrml:node:PositionInterpolator"] =
-        boost::shared_ptr<node_class>(new position_interpolator_class(b));
-    map["urn:X-openvrml:node:ProximitySensor"] =
-        boost::shared_ptr<node_class>(new proximity_sensor_class(b));
-    map["urn:X-openvrml:node:ScalarInterpolator"] =
-        boost::shared_ptr<node_class>(new scalar_interpolator_class(b));
-    map["urn:X-openvrml:node:Shape"] =
-        boost::shared_ptr<node_class>(new shape_class(b));
-    map["urn:X-openvrml:node:Sound"] =
-        boost::shared_ptr<node_class>(new sound_class(b));
-    map["urn:X-openvrml:node:Sphere"] =
-        boost::shared_ptr<node_class>(new sphere_class(b));
-    map["urn:X-openvrml:node:SphereSensor"] =
-        boost::shared_ptr<node_class>(new sphere_sensor_class(b));
-    map["urn:X-openvrml:node:SpotLight"] =
-        boost::shared_ptr<node_class>(new spot_light_class(b));
-    map["urn:X-openvrml:node:Switch"] =
-        boost::shared_ptr<node_class>(new switch_class(b));
-    map["urn:X-openvrml:node:Text"] =
-        boost::shared_ptr<node_class>(new text_class(b));
-    map["urn:X-openvrml:node:TextureCoordinate"] =
-        boost::shared_ptr<node_class>(new texture_coordinate_class(b));
-    map["urn:X-openvrml:node:TextureTransform"] =
-        boost::shared_ptr<node_class>(new texture_transform_class(b));
-    map["urn:X-openvrml:node:TimeSensor"] =
-        boost::shared_ptr<node_class>(new time_sensor_class(b));
-    map["urn:X-openvrml:node:TouchSensor"] =
-        boost::shared_ptr<node_class>(new touch_sensor_class(b));
-    map["urn:X-openvrml:node:Transform"] =
-        boost::shared_ptr<node_class>(new transform_class(b));
-    map["urn:X-openvrml:node:Viewpoint"] =
-        boost::shared_ptr<node_class>(new viewpoint_class(b));
-    map["urn:X-openvrml:node:VisibilitySensor"] =
-        boost::shared_ptr<node_class>(new visibility_sensor_class(b));
-    map["urn:X-openvrml:node:WorldInfo"] =
-        boost::shared_ptr<node_class>(new world_info_class(b));
+    b.add_node_class("urn:X-openvrml:node:Anchor",
+                     shared_ptr<node_class>(new anchor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Appearance",
+                     shared_ptr<node_class>(new appearance_class(b)));
+    b.add_node_class("urn:X-openvrml:node:AudioClip",
+                     shared_ptr<node_class>(new audio_clip_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Background",
+                     shared_ptr<node_class>(new background_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Billboard",
+                     shared_ptr<node_class>(new billboard_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Box",
+                     shared_ptr<node_class>(new box_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Collision",
+                     shared_ptr<node_class>(new collision_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Color",
+                     shared_ptr<node_class>(new color_class(b)));
+    b.add_node_class("urn:X-openvrml:node:ColorInterpolator",
+                     shared_ptr<node_class>(new color_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Cone",
+                     shared_ptr<node_class>(new cone_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Coordinate",
+                     shared_ptr<node_class>(new coordinate_class(b)));
+    b.add_node_class("urn:X-openvrml:node:CoordinateInterpolator",
+                     shared_ptr<node_class>(
+                         new coordinate_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Cylinder",
+                     shared_ptr<node_class>(new cylinder_class(b)));
+    b.add_node_class("urn:X-openvrml:node:CylinderSensor",
+                     shared_ptr<node_class>(new cylinder_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:DirectionalLight",
+                     shared_ptr<node_class>(new directional_light_class(b)));
+    b.add_node_class("urn:X-openvrml:node:ElevationGrid",
+                     shared_ptr<node_class>(new elevation_grid_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Extrusion",
+                     shared_ptr<node_class>(new extrusion_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Fog",
+                     shared_ptr<node_class>(new fog_class(b)));
+    b.add_node_class("urn:X-openvrml:node:FontStyle",
+                     shared_ptr<node_class>(new font_style_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Group",
+                     shared_ptr<node_class>(new group_class(b)));
+    b.add_node_class("urn:X-openvrml:node:ImageTexture",
+                     shared_ptr<node_class>(new image_texture_class(b)));
+    b.add_node_class("urn:X-openvrml:node:IndexedFaceSet",
+                     shared_ptr<node_class>(new indexed_face_set_class(b)));
+    b.add_node_class("urn:X-openvrml:node:IndexedLineSet",
+                     shared_ptr<node_class>(new indexed_line_set_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Inline",
+                     shared_ptr<node_class>(new inline_class(b)));
+    b.add_node_class("urn:X-openvrml:node:LOD",
+                     shared_ptr<node_class>(new lod_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Material",
+                     shared_ptr<node_class>(new material_class(b)));
+    b.add_node_class("urn:X-openvrml:node:MovieTexture",
+                     shared_ptr<node_class>(new movie_texture_class(b)));
+    b.add_node_class("urn:X-openvrml:node:NavigationInfo",
+                     shared_ptr<node_class>(new navigation_info_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Normal",
+                     shared_ptr<node_class>(new normal_class(b)));
+    b.add_node_class("urn:X-openvrml:node:NormalInterpolator",
+                     shared_ptr<node_class>(new normal_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:OrientationInterpolator",
+                     shared_ptr<node_class>(
+                         new orientation_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:PixelTexture",
+                     shared_ptr<node_class>(new pixel_texture_class(b)));
+    b.add_node_class("urn:X-openvrml:node:PlaneSensor",
+                     shared_ptr<node_class>(new plane_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:PointLight",
+                     shared_ptr<node_class>(new point_light_class(b)));
+    b.add_node_class("urn:X-openvrml:node:PointSet",
+                     shared_ptr<node_class>(new point_set_class(b)));
+    b.add_node_class("urn:X-openvrml:node:PositionInterpolator",
+                     shared_ptr<node_class>(
+                         new position_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:ProximitySensor",
+                     shared_ptr<node_class>(new proximity_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:ScalarInterpolator",
+                     shared_ptr<node_class>(new scalar_interpolator_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Shape",
+                     shared_ptr<node_class>(new shape_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Sound",
+                     shared_ptr<node_class>(new sound_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Sphere",
+                     shared_ptr<node_class>(new sphere_class(b)));
+    b.add_node_class("urn:X-openvrml:node:SphereSensor",
+                     shared_ptr<node_class>(new sphere_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:SpotLight",
+                     shared_ptr<node_class>(new spot_light_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Switch",
+                     shared_ptr<node_class>(new switch_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Text",
+                     shared_ptr<node_class>(new text_class(b)));
+    b.add_node_class("urn:X-openvrml:node:TextureCoordinate",
+                     shared_ptr<node_class>(new texture_coordinate_class(b)));
+    b.add_node_class("urn:X-openvrml:node:TextureTransform",
+                     shared_ptr<node_class>(new texture_transform_class(b)));
+    b.add_node_class("urn:X-openvrml:node:TimeSensor",
+                     shared_ptr<node_class>(new time_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:TouchSensor",
+                     shared_ptr<node_class>(new touch_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Transform",
+                     shared_ptr<node_class>(new transform_class(b)));
+    b.add_node_class("urn:X-openvrml:node:Viewpoint",
+                     shared_ptr<node_class>(new viewpoint_class(b)));
+    b.add_node_class("urn:X-openvrml:node:VisibilitySensor",
+                     shared_ptr<node_class>(new visibility_sensor_class(b)));
+    b.add_node_class("urn:X-openvrml:node:WorldInfo",
+                     shared_ptr<node_class>(new world_info_class(b)));
 }
 
 namespace {

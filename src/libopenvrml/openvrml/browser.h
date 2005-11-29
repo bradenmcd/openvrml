@@ -200,7 +200,7 @@ namespace openvrml {
             map_t map_;
 
         public:
-            explicit node_class_map(browser & b);
+            node_class_map();
 
             node_class_map & operator=(const node_class_map & ncm);
 

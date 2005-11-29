@@ -24,21 +24,10 @@
 # ifndef OPENVRML_VRML97NODE_H
 #   define OPENVRML_VRML97NODE_H
 
-#   include <map>
-#   include <string>
-#   include <boost/shared_ptr.hpp>
-
-
 namespace openvrml {
-
     class browser;
-    class node_class;
-
-    typedef std::map<std::string, boost::shared_ptr<node_class> >
-        node_class_map;
 }
 
-extern "C" void register_node_classes(openvrml::browser & b,
-                                      openvrml::node_class_map & map);
+extern "C" void register_node_classes(openvrml::browser & b);
 
 # endif

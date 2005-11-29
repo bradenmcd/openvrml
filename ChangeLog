@@ -1,3 +1,29 @@
+2005-11-29 Braden McDaniel  <braden@endoframe.com>
+
+	Changed register_node_classes to use
+	openvrml::browser::add_node_class.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_class_map::node_class_map): Removed
+	openvrml::browser argument; do not call register_node_classes
+	here.
+	(openvrml::browser::browser(std::ostream &, std::ostream &)):
+	Removed explicit call to openvrml::browser::node_class_map
+	constructor; call register_node_classes here.
+	(openvrml::browser::browser(openvrml::profile_id, std::ostream &, std::ostream &)):
+	Removed explicit call to openvrml::browser::node_class_map
+	constructor; call register_node_classes here.
+	(openvrml::browser::load_url): Changed call to
+	openvrml::browser::node_class_map constructor.
+	* src/libopenvrml/openvrml/browser.h: Changed
+	openvrml::browser::node_class_map constructor not to take an
+	argument.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(register_node_classes): Use openvrml::browser::add_node_class
+	instead of directly using a node_class map.
+	* src/libopenvrml/openvrml/vrml97node.h: Changed
+	register_node_classes not to take a node_class_map argument.
+
 2005-11-28 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes.
