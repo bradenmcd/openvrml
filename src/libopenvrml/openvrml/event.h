@@ -32,8 +32,6 @@ namespace openvrml {
     class node;
 
     class OPENVRML_API event_listener : boost::noncopyable {
-        openvrml::node * node_;
-
     public:
         virtual ~event_listener() throw () = 0;
 
