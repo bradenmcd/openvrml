@@ -419,6 +419,7 @@ namespace openvrml {
             typedef event_emitter<sfdouble> sfdouble_emitter;
             typedef event_emitter<sffloat> sffloat_emitter;
             typedef event_emitter<sfimage> sfimage_emitter;
+            typedef event_emitter<sfint32> sfint32_emitter;
             typedef event_emitter<sfnode> sfnode_emitter;
             typedef event_emitter<sfrotation> sfrotation_emitter;
             typedef event_emitter<sfstring> sfstring_emitter;
