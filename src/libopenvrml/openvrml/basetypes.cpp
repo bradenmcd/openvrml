@@ -3075,6 +3075,9 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) throw ()
  * @brief Construct.
  */
 openvrml::image::image() throw ()
+    x_(0),
+    y_(0),
+    comp_(0)
 {}
 
 /**

@@ -1,3 +1,9 @@
+2005-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::image::image()): Initialize members.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
 2005-11-29 Braden McDaniel  <braden@endoframe.com>
 
 	Refactored Vrml97Parser::sfImageValue such that actual parsing of
