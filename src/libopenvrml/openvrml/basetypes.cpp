@@ -3365,10 +3365,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const image & img)
     for (size_t pixel_index = 0;
          pixel_index < img.x() * img.y();
          ++pixel_index) {
-        out << ' ' << "0x";
-        for (size_t component = 0; component < img.comp(); ++component) {
-            out << int(img.array()[pixel_index * img.comp() + component]);
-        }
+        out << ' ' << "0x" << img.pixel(pixel_index);
     }
     out.flags(save_flags);
     return out;

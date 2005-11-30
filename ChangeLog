@@ -1,5 +1,23 @@
 2005-11-29 Braden McDaniel  <braden@endoframe.com>
 
+	Use unsigned long for openvrml::image pixel accessors/mutators.
+	Fixed problem with openvrml::image's stream output operator.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::operator<<(std::ostream &, const openvrml::image &)):
+	Use openvrml::image::pixel accessor.
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::image::pixel(size_t)): Return unsigned long instead of
+	openvrml::int32.
+	(openvrml::image::pixel(size_t, unsigned long)): Changed argument
+	type from openvrml::int32 to unsigned long.
+	(openvrml::image::pixel(size_t, size_t)): Return unsigned long
+	instead of openvrml::int32.
+	(openvrml::image::pixel(size_t, size_t, unsigned long)): Changed
+	argument type from openvrml::int32 to unsigned long.
+
+2005-11-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::load_url): Call register_node_classes here
 	since the node_class_map constructor doesn't do it anymore.

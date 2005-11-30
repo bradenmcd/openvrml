@@ -616,10 +616,10 @@ namespace openvrml {
         template <typename InputIterator>
         void array(InputIterator begin, InputIterator end) throw ();
 
-        int32 pixel(size_t index) const throw ();
-        void pixel(size_t index, int32 value) throw ();
-        int32 pixel(size_t x, size_t y) const throw ();
-        void pixel(size_t x, size_t y, int32 value) throw ();
+        unsigned long pixel(size_t index) const throw ();
+        void pixel(size_t index, unsigned long value) throw ();
+        unsigned long pixel(size_t x, size_t y) const throw ();
+        void pixel(size_t x, size_t y, unsigned long value) throw ();
     };
 
     OPENVRML_API bool operator==(const image & lhs, const image & rhs)
@@ -680,19 +680,22 @@ namespace openvrml {
         std::copy(begin, end, this->array_.begin());
     }
 
-    inline int32 image::pixel(const size_t index) const throw ()
+    inline unsigned long image::pixel(const size_t index) const throw ()
     {
         assert(index < this->x_ * this->y_);
-        int32 retval = 0x00000000;
+        unsigned long retval = 0x00000000;
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
-            retval |= int32(this->array_[i]) << (8 * (component - 1));
+            retval |=
+                static_cast<unsigned long>(this->array_[i])
+                << (8 * (component - 1));
         }
         return retval;
     }
 
-    inline void image::pixel(const size_t index, const int32 value) throw ()
+    inline void image::pixel(const size_t index, const unsigned long value)
+        throw ()
     {
         assert(index < this->x_ * this->y_);
         for (size_t component = this->comp_, i = index * this->comp_;
@@ -704,13 +707,16 @@ namespace openvrml {
         }
     }
 
-    inline int32 image::pixel(const size_t x, const size_t y) const throw ()
+    inline unsigned long image::pixel(const size_t x, const size_t y) const
+        throw ()
     {
         assert((x * y) < this->array_.size());
         return this->pixel(y * this->x_ + x);
     }
 
-    inline void image::pixel(const size_t x, const size_t y, const int32 value)
+    inline void image::pixel(const size_t x,
+                             const size_t y,
+                             const unsigned long value)
         throw ()
     {
         assert((x * y) < this->array_.size());
