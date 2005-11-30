@@ -1,5 +1,15 @@
 2005-11-29 Braden McDaniel  <braden@endoframe.com>
 
+	Refactored Vrml97Parser::sfImageValue such that actual parsing of
+	the image occurs in the Vrml97Parser::imageValue production.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::sfImageValue): Refactored the guts of this to the
+	Vrml97Parser::imageValue production.
+	(Vrml97Parser::imageValue): Added production.
+
+2005-11-29 Braden McDaniel  <braden@endoframe.com>
+
 	Use unsigned long for openvrml::image pixel accessors/mutators.
 	Fixed problem with openvrml::image's stream output operator.
 

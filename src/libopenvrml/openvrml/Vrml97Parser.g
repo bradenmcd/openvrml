@@ -1847,18 +1847,28 @@ options { defaultErrorHandler=false; }
 sfImageValue returns [boost::shared_ptr<field_value> siv]
 options { defaultErrorHandler=false; }
 {
+    image img;
+}
+    :   imageValue[img] {
+            siv.reset(new sfimage(img));
+        }
+    ;
+
+imageValue[image & img]
+options { defaultErrorHandler=false; }
+{
     using antlr::SemanticException;
     size_t x, y, comp;
     int32 pixel;
     size_t pixel_index = 0;
 }
     :   x=intValue y=intValue comp=intValue {
-            image img(x, y, comp);
+            img.comp(comp);
+            img.resize(x, y);
         } (
             pixel=intValue {
                 if (!(pixel_index < x * y)) {
-                    throw SemanticException("too many pixel values for "
-                                            "SFImage",
+                    throw SemanticException("too many pixel values for image",
                                             this->uri,
                                             LT(1)->getLine(),
                                             LT(1)->getColumn());
@@ -1868,14 +1878,14 @@ options { defaultErrorHandler=false; }
         )* {
             if (pixel_index != x * y) {
                 throw antlr::SemanticException("insufficient pixel values for "
-                                               "SFImage",
+                                               "image",
                                                this->uri,
                                                LT(1)->getLine(),
                                                LT(1)->getColumn());
             }
-            siv.reset(new sfimage(img));
         }
     ;
+
 
 sfInt32Value returns [boost::shared_ptr<field_value> siv]
 options { defaultErrorHandler=false; }
