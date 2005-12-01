@@ -1,6 +1,12 @@
 2005-11-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::image::image()): Fixed missing colon before member
+	initializer list.
+
+2005-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.cpp
 	(openvrml::image::image()): Initialize members.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
 
