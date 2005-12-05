@@ -794,7 +794,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfbool_listener
  *
- * @brief sfbool event listener.
+ * @brief @c sfbool event listener.
  */
 
 /**
@@ -802,7 +802,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfcolor_listener
  *
- * @brief sfcolor event listener.
+ * @brief @c sfcolor event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::sfdouble_listener
+ *
+ * @brief @c sfdouble event listener.
  */
 
 /**
@@ -810,7 +818,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sffloat_listener
  *
- * @brief sffloat event listener.
+ * @brief @c sffloat event listener.
  */
 
 /**
@@ -818,7 +826,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfimage_listener
  *
- * @brief sfimage event listener.
+ * @brief @c sfimage event listener.
  */
 
 /**
@@ -826,7 +834,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfint32_listener
  *
- * @brief sfint32 event listener.
+ * @brief @c sfint32 event listener.
  */
 
 /**
@@ -834,7 +842,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfnode_listener
  *
- * @brief sfnode event listener.
+ * @brief @c sfnode event listener.
  */
 
 /**
@@ -842,7 +850,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfrotation_listener
  *
- * @brief sfrotation event listener.
+ * @brief @c sfrotation event listener.
  */
 
 /**
@@ -850,7 +858,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfstring_listener
  *
- * @brief sfstring event listener.
+ * @brief @c sfstring event listener.
  */
 
 /**
@@ -858,7 +866,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sftime_listener
  *
- * @brief sftime event listener.
+ * @brief @c sftime event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::sfvec2d_listener
+ *
+ * @brief @c sfvec2d event listener.
  */
 
 /**
@@ -866,7 +882,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfvec2f_listener
  *
- * @brief sfvec2f event listener.
+ * @brief @c sfvec2f event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::sfvec3d_listener
+ *
+ * @brief @c sfvec3d event listener.
  */
 
 /**
@@ -874,7 +898,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::sfvec3f_listener
  *
- * @brief sfvec3f event listener.
+ * @brief @c sfvec3f event listener.
  */
 
 /**
@@ -882,7 +906,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfcolor_listener
  *
- * @brief mfcolor event listener.
+ * @brief @c mfcolor event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::mfdouble_listener
+ *
+ * @brief @c mfdouble event listener.
  */
 
 /**
@@ -890,7 +922,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mffloat_listener
  *
- * @brief mffloat event listener.
+ * @brief @c mffloat event listener.
  */
 
 /**
@@ -898,7 +930,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfint32_listener
  *
- * @brief mfint32 event listener.
+ * @brief @c mfint32 event listener.
  */
 
 /**
@@ -906,7 +938,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfnode_listener
  *
- * @brief mfnode event listener.
+ * @brief @c mfnode event listener.
  */
 
 /**
@@ -914,7 +946,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfrotation_listener
  *
- * @brief mfrotation event listener.
+ * @brief @c mfrotation event listener.
  */
 
 /**
@@ -922,7 +954,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfstring_listener
  *
- * @brief mfstring event listener.
+ * @brief @c mfstring event listener.
  */
 
 /**
@@ -930,7 +962,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mftime_listener
  *
- * @brief mftime event listener.
+ * @brief @c mftime event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::mfvec2d_listener
+ *
+ * @brief @c mfvec2d event listener.
  */
 
 /**
@@ -938,7 +978,15 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfvec2f_listener
  *
- * @brief mfvec2f event listener.
+ * @brief @c mfvec2f event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::mfvec3d_listener
+ *
+ * @brief @c mfvec3d event listener.
  */
 
 /**
@@ -946,7 +994,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @typedef openvrml::script_node::mfvec3f_listener
  *
- * @brief mfvec3f event listener.
+ * @brief @c mfvec3f event listener.
  */
 
 /**
