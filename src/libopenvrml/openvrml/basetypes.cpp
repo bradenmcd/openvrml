@@ -3268,7 +3268,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t index) const throw ()
+ * @fn unsigned long openvrml::image::pixel(size_t index) const throw ()
  *
  * @brief Pixel value.
  *
@@ -3280,7 +3280,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t index, int32 value) throw ()
+ * @fn void openvrml::image::pixel(size_t index, unsigned long value) throw ()
  *
  * @brief Set a pixel value.
  *
@@ -3291,7 +3291,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t x, size_t y) const throw ()
+ * @fn unsigned long openvrml::image::pixel(size_t x, size_t y) const throw ()
  *
  * @brief Pixel value.
  *
@@ -3304,7 +3304,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t x, size_t y, int32 value) throw ()
+ * @fn void openvrml::image::pixel(size_t x, size_t y, unsigned long value) throw ()
  *
  * @brief Set a pixel value.
  *

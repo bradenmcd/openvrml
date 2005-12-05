@@ -1,5 +1,12 @@
 2005-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::image::pixel(size_t, size_t)): Fixed doc-comment.
+	(openvrml::image::pixel(size_t, size_t, unsigned_long)): Fixed
+	doc-comment.
+
+2005-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	* java/Makefile.am: List Java class files in CLASSES variable.
 
 2005-11-30 Braden McDaniel  <braden@endoframe.com>
