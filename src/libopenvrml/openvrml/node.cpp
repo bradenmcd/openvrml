@@ -1050,6 +1050,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::proto_node
+ *
+ * @brief A <code>PROTO</code> instance.
+ */
+
+/**
  * @var class openvrml::node::field_value_listener<sfbool>
  *
  * @brief <code>sfbool</code> <code>field_value_listener</code>.
@@ -1059,6 +1065,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::field_value_listener<sfcolor>
  *
  * @brief <code>sfcolor</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfdouble>
+ *
+ * @brief <code>sfdouble</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1104,9 +1116,21 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::field_value_listener<sfvec2d>
+ *
+ * @brief <code>sfvec2d</code> <code>field_value_listener</code>.
+ */
+
+/**
  * @var class openvrml::node::field_value_listener<sfvec2f>
  *
  * @brief <code>sfvec2f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfvec3d>
+ *
+ * @brief <code>sfvec3d</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1125,6 +1149,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::field_value_listener<mffloat>
  *
  * @brief <code>mffloat</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfdouble>
+ *
+ * @brief <code>mfdouble</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1158,9 +1188,21 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::field_value_listener<mfvec2d>
+ *
+ * @brief <code>mfvec2d</code> <code>field_value_listener</code>.
+ */
+
+/**
  * @var class openvrml::node::field_value_listener<mfvec2f>
  *
  * @brief <code>mfvec2f</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfvec3d>
+ *
+ * @brief <code>mfvec3d</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1179,6 +1221,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::exposedfield<sfcolor>
  *
  * @brief <code>sfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfdouble>
+ *
+ * @brief <code>sfdouble</code> <code>exposedfield</code>.
  */
 
 /**
@@ -1224,9 +1272,21 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::exposedfield<sfvec2d>
+ *
+ * @brief <code>sfvec2d</code> <code>exposedfield</code>.
+ */
+
+/**
  * @var class openvrml::node::exposedfield<sfvec2f>
  *
  * @brief <code>sfvec2f</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfvec3d>
+ *
+ * @brief <code>sfvec3d</code> <code>exposedfield</code>.
  */
 
 /**
@@ -1239,6 +1299,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::exposedfield<mfcolor>
  *
  * @brief <code>mfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfdouble>
+ *
+ * @brief <code>mfdouble</code> <code>exposedfield</code>.
  */
 
 /**
@@ -1278,9 +1344,21 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::exposedfield<mfvec2d>
+ *
+ * @brief <code>mfvec2d</code> <code>exposedfield</code>.
+ */
+
+/**
  * @var class openvrml::node::exposedfield<mfvec2f>
  *
  * @brief <code>mfvec2f</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfvec3d>
+ *
+ * @brief <code>mfvec3d</code> <code>exposedfield</code>.
  */
 
 /**
