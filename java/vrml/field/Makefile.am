@@ -10,7 +10,9 @@ JAVA_FILES = \
         SFRotation.java \
         SFString.java \
         SFTime.java \
+        SFVec2d.java \
         SFVec2f.java \
+        SFVec3d.java \
         SFVec3f.java \
         MFColor.java \
         MFFloat.java \
@@ -19,7 +21,9 @@ JAVA_FILES = \
         MFRotation.java \
         MFString.java \
         MFTime.java \
+        MFVec2d.java \
         MFVec2f.java \
+        MFVec3d.java \
         MFVec3f.java \
         ConstSFBool.java \
         ConstSFColor.java \
@@ -30,7 +34,9 @@ JAVA_FILES = \
         ConstSFRotation.java \
         ConstSFString.java \
         ConstSFTime.java \
+        ConstSFVec2d.java \
         ConstSFVec2f.java \
+        ConstSFVec3d.java \
         ConstSFVec3f.java \
         ConstMFColor.java \
         ConstMFFloat.java \
@@ -39,7 +45,9 @@ JAVA_FILES = \
         ConstMFRotation.java \
         ConstMFString.java \
         ConstMFTime.java \
+        ConstMFVec2d.java \
         ConstMFVec2f.java \
+        ConstMFVec3d.java \
         ConstMFVec3f.java
 
 if ENABLE_SCRIPT_NODE_JAVA
