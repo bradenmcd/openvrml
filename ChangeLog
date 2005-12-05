@@ -1,5 +1,12 @@
 2005-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::abstract_proto_node::create_eventin): Added missing
+	case for mfdouble.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+2005-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.cpp
 	(openvrml::image::pixel(size_t, size_t)): Fixed doc-comment.
 	(openvrml::image::pixel(size_t, size_t, unsigned_long)): Fixed

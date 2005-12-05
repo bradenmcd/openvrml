@@ -1139,11 +1139,11 @@ namespace openvrml {
         case field_value::sfcolor_id:
             result.reset(new proto_eventin<sfcolor>(node));
             break;
-        case field_value::sffloat_id:
-            result.reset(new proto_eventin<sffloat>(node));
-            break;
         case field_value::sfdouble_id:
             result.reset(new proto_eventin<sfdouble>(node));
+            break;
+        case field_value::sffloat_id:
+            result.reset(new proto_eventin<sffloat>(node));
             break;
         case field_value::sfimage_id:
             result.reset(new proto_eventin<sfimage>(node));
@@ -1177,6 +1177,9 @@ namespace openvrml {
             break;
         case field_value::mfcolor_id:
             result.reset(new proto_eventin<mfcolor>(node));
+            break;
+        case field_value::mfdouble_id:
+            result.reset(new proto_eventin<mfdouble>(node));
             break;
         case field_value::mffloat_id:
             result.reset(new proto_eventin<mffloat>(node));
