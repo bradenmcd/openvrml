@@ -1,3 +1,7 @@
+2005-12-05 Braden McDaniel  <braden@endoframe.com>
+
+	* java/Makefile.am: List Java class files in CLASSES variable.
+
 2005-11-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp

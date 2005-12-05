@@ -5,37 +5,77 @@ if ENABLE_SCRIPT_NODE_JAVA
 javapkgdatadir = $(pkgdatadir)/java
 javapkgdata_DATA = script.jar
 
-script.jar: vrml/InvalidEventInException.class \
-vrml/InvalidEventOutException.class vrml/InvalidExposedFieldException.class \
-vrml/InvalidFieldChangeException.class vrml/InvalidFieldException.class \
-vrml/InvalidRouteException.class vrml/InvalidVRMLSyntaxException.class \
-vrml/Browser.class vrml/Event.class vrml/Field.class vrml/ConstMField.class \
-vrml/MField.class vrml/ConstField.class vrml/BaseNode.class \
-vrml/field/SFBool.class vrml/field/SFColor.class vrml/field/SFFloat.class \
-vrml/field/SFImage.class vrml/field/SFInt32.class vrml/field/SFNode.class \
-vrml/field/SFRotation.class vrml/field/SFString.class vrml/field/SFTime.class \
-vrml/field/SFVec2f.class vrml/field/SFVec3f.class vrml/field/MFColor.class \
-vrml/field/MFFloat.class vrml/field/MFInt32.class vrml/field/MFNode.class \
-vrml/field/MFRotation.class vrml/field/MFString.class vrml/field/MFTime.class \
-vrml/field/MFVec2f.class vrml/field/MFVec3f.class \
-vrml/field/ConstSFBool.class vrml/field/ConstSFColor.class \
-vrml/field/ConstSFFloat.class vrml/field/ConstSFImage.class \
-vrml/field/ConstSFInt32.class vrml/field/ConstSFNode.class \
-vrml/field/ConstSFRotation.class vrml/field/ConstSFString.class \
-vrml/field/ConstSFTime.class vrml/field/ConstSFVec2f.class \
-vrml/field/ConstSFVec3f.class vrml/field/ConstMFColor.class \
-vrml/field/ConstMFFloat.class vrml/field/ConstMFInt32.class \
-vrml/field/ConstMFNode.class vrml/field/ConstMFRotation.class \
-vrml/field/ConstMFString.class vrml/field/ConstMFTime.class \
-vrml/field/ConstMFVec2f.class vrml/field/ConstMFVec3f.class \
-vrml/field/SFVec2d.class vrml/field/MFVec2f.class \
-vrml/field/ConstSFVec2d.class vrml/field/ConstMFVec2d.class \
-vrml/field/SFDouble.class vrml/field/MFDouble.class \
-vrml/field/ConstSFDouble.class vrml/field/ConstMFDouble.class \
-vrml/field/SFVec3d.class vrml/field/MFVec3f.class \
-vrml/field/ConstSFVec3d.class vrml/field/ConstMFVec3d.class
+CLASSES = \
+        vrml/InvalidEventInException.class \
+        vrml/InvalidEventOutException.class \
+        vrml/InvalidExposedFieldException.class \
+        vrml/InvalidFieldChangeException.class \
+        vrml/InvalidFieldException.class \
+        vrml/InvalidRouteException.class \
+        vrml/InvalidVRMLSyntaxException.class \
+        vrml/Browser.class \
+        vrml/Event.class \
+        vrml/Field.class \
+        vrml/ConstMField.class \
+        vrml/MField.class \
+        vrml/ConstField.class \
+        vrml/BaseNode.class \
+        vrml/field/SFBool.class \
+        vrml/field/SFColor.class \
+        vrml/field/SFFloat.class \
+        vrml/field/SFImage.class \
+        vrml/field/SFInt32.class \
+        vrml/field/SFNode.class \
+        vrml/field/SFRotation.class \
+        vrml/field/SFString.class \
+        vrml/field/SFTime.class \
+        vrml/field/SFVec2f.class \
+        vrml/field/SFVec3f.class \
+        vrml/field/MFColor.class \
+        vrml/field/MFFloat.class \
+        vrml/field/MFInt32.class \
+        vrml/field/MFNode.class \
+        vrml/field/MFRotation.class \
+        vrml/field/MFString.class \
+        vrml/field/MFTime.class \
+        vrml/field/MFVec2f.class \
+        vrml/field/MFVec3f.class \
+        vrml/field/ConstSFBool.class \
+        vrml/field/ConstSFColor.class \
+        vrml/field/ConstSFFloat.class \
+        vrml/field/ConstSFImage.class \
+        vrml/field/ConstSFInt32.class \
+        vrml/field/ConstSFNode.class \
+        vrml/field/ConstSFRotation.class \
+        vrml/field/ConstSFString.class \
+        vrml/field/ConstSFTime.class \
+        vrml/field/ConstSFVec2f.class \
+        vrml/field/ConstSFVec3f.class \
+        vrml/field/ConstMFColor.class \
+        vrml/field/ConstMFFloat.class \
+        vrml/field/ConstMFInt32.class \
+        vrml/field/ConstMFNode.class \
+        vrml/field/ConstMFRotation.class \
+        vrml/field/ConstMFString.class \
+        vrml/field/ConstMFTime.class \
+        vrml/field/ConstMFVec2f.class \
+        vrml/field/ConstMFVec3f.class \
+        vrml/field/SFVec2d.class \
+        vrml/field/MFVec2f.class \
+        vrml/field/ConstSFVec2d.class \
+        vrml/field/ConstMFVec2d.class \
+        vrml/field/SFDouble.class \
+        vrml/field/MFDouble.class \
+        vrml/field/ConstSFDouble.class \
+        vrml/field/ConstMFDouble.class \
+        vrml/field/SFVec3d.class \
+        vrml/field/MFVec3f.class \
+        vrml/field/ConstSFVec3d.class \
+        vrml/field/ConstMFVec3d.class \
+        vrml/node/Node.class \
+        vrml/node/Script.class
 
-vrml/node/Node.class vrml/node/Script.class
+script.jar: $(CLASSES)
 	$(JAR) cvf $@ $^
 
 JNI_HFILES = \
