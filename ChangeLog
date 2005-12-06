@@ -1,5 +1,10 @@
 2005-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.cpp: Doc-comment
+	improvements--stop faking em-dash.
+
+2005-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	* java/vrml/field/Makefile.am (JAVA_FILES): Added SFVec2d.java,
 	SFVec3d.java, MFVec2d.java, MFVec3d.java, ConstSFVec2d.java,
 	ConstSFVec3d.java, ConstMFVec2d.java, and ConstMFVec3d.java.

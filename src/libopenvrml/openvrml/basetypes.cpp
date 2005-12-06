@@ -45,7 +45,7 @@
  * @brief A color.
  *
  * VRML colors are represented as three single precision floating point
- * components--red, green, and blue--ranging from 0.0 to 1.0.
+ * components&mdash;red, green, and blue&mdash;ranging from 0.0 to 1.0.
  */
 
 /**
