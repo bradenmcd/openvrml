@@ -304,7 +304,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 /**
  * @internal
  *
- * @var float openvrml::color_rgba::rgb[4]
+ * @var float openvrml::color_rgba::rgba[4]
  *
  * @brief RGB triplet plus alpha.
  */
@@ -318,18 +318,18 @@ openvrml::color_rgba::color_rgba() throw ()
 /**
  * @brief Construct from a 4-element float array.
  *
- * @param rgb   an array comprising red, green, and blue components.
+ * @param rgba   an array comprising red, green, and blue components.
  */
 openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
 {
     assert(rgba[0] >= 0.0 && rgba[0] <= 1.0);
-    this->rgb[0] = rgba[0];
+    this->rgba[0] = rgba[0];
     assert(rgba[1] >= 0.0 && rgba[1] <= 1.0);
-    this->rgb[1] = rgba[1];
+    this->rgba[1] = rgba[1];
     assert(rgba[2] >= 0.0 && rgba[2] <= 1.0);
-    this->rgb[2] = rgba[2];
+    this->rgba[2] = rgba[2];
     assert(rgba[3] >= 0.0 && rgba[3] <= 1.0);
-    this->rgb[3] = rgba[3];
+    this->rgba[3] = rgba[3];
 }
 
 /**
@@ -343,13 +343,13 @@ openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
 openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
 {
     assert(r >= 0.0 && r <= 1.0);
-    this->rgb[0] = r;
+    this->rgba[0] = r;
     assert(g >= 0.0 && g <= 1.0);
-    this->rgb[1] = g;
+    this->rgba[1] = g;
     assert(b >= 0.0 && b <= 1.0);
-    this->rgb[2] = b;
+    this->rgba[2] = b;
     assert(a >= 0.0 && a <= 1.0);
-    this->rgb[3] = a;
+    this->rgba[3] = a;
 }
 
 /**
@@ -434,8 +434,8 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 void openvrml::color_rgba::hsv(float (&result)[4]) const throw ()
 {
-    rgb_to_hsv(&rgb[0], &result[0]);
-    result[3] = rgb[3]; // Copy the alpha.
+    rgb_to_hsv(&rgba[0], &result[0]);
+    result[3] = rgba[3]; // Copy the alpha.
 }
 
 /**
@@ -452,9 +452,9 @@ void openvrml::color_rgba::hsv(const float h,
                                const float a)
     throw ()
 {
-    hsv_to_rgb(h, s, v, &rgb[0]);
+    hsv_to_rgb(h, s, v, &rgba[0]);
     assert(a >= 0.0 && a <= 1.0);
-    rgb[3] = a;
+    rgba[3] = a;
 }
 
 /**
@@ -468,7 +468,8 @@ void openvrml::color_rgba::hsv(const float h,
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs) throw ()
+bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs)
+    throw ()
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());

@@ -1,5 +1,39 @@
 2005-12-08 Braden McDaniel  <braden@endoframe.com>
 
+	Changed openvrml::color_rgba::rgb to openvrml::color_rgba::rgba.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::color_rgba::color_rgba(const float (&)[4])): Changed
+	references from this->rgb to this->rgba.
+	(openvrml::color_rgba::color_rgba(float, float, float, float)):
+	Changed references from this->rgb to this->rgba.
+	(openvrml::color_rgba::hsv(float (&)[4]) const): Changed
+	references from this->rgb to this->rgba.
+	(openvrml::color_rgba::hsv(float, float, float, float)): Changed
+	references from this->rgb to this->rgba.
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::color_rgba): Changed member rgb to rgba.
+	(openvrml::color_rgba::operator[](size_t) const): Changed
+	reference from this->rgb to this->rgba.
+	(openvrml::color_rgba::r() const): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::g() const): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::b() const): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::a() const): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::r(float)): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::g(float)): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::b(float)): Changed reference from
+	this->rgb to this->rgba.
+	(openvrml::color_rgba::a(float)): Changed reference from
+	this->rgb to this->rgba.
+
+2005-12-08 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.cpp
 	(openvrml::color_rgba::color_rgba(const float (&)[4])): Fixed to
 	refer to function argument.

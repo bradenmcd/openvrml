@@ -107,7 +107,7 @@ namespace openvrml {
 
 
     class OPENVRML_API color_rgba {
-        float rgb[4];
+        float rgba[4];
 
     public:
         color_rgba() throw ();
@@ -143,47 +143,47 @@ namespace openvrml {
         throw ()
     {
         assert(index < 4);
-        return this->rgb[index];
+        return this->rgba[index];
     }
 
     inline float color_rgba::r() const throw ()
     {
-        return this->rgb[0];
+        return this->rgba[0];
     }
 
     inline float color_rgba::g() const throw ()
     {
-        return this->rgb[1];
+        return this->rgba[1];
     }
 
     inline float color_rgba::b() const throw ()
     {
-        return this->rgb[2];
+        return this->rgba[2];
     }
 
     inline float color_rgba::a() const throw ()
     {
-        return this->rgb[3];
+        return this->rgba[3];
     }
 
     inline void color_rgba::r(const float value) throw ()
     {
-        this->rgb[0] = value;
+        this->rgba[0] = value;
     }
 
     inline void color_rgba::g(const float value) throw ()
     {
-        this->rgb[1] = value;
+        this->rgba[1] = value;
     }
 
     inline void color_rgba::b(const float value) throw ()
     {
-        this->rgb[2] = value;
+        this->rgba[2] = value;
     }
 
     inline void color_rgba::a(const float value) throw ()
     {
-        this->rgb[3] = value;
+        this->rgba[3] = value;
     }
 
 
