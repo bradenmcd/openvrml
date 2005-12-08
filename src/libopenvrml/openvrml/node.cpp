@@ -2623,6 +2623,9 @@ bool openvrml::add_route(node & from,
         case field_value::sfvec3d_id:
             added_route = add_listener<sfvec3d>(emitter, listener);
             break;
+        case field_value::mfbool_id:
+            added_route = add_listener<mfbool>(emitter, listener);
+            break;
         case field_value::mfcolor_id:
             added_route = add_listener<mfcolor>(emitter, listener);
             break;

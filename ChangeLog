@@ -1,5 +1,13 @@
 2005-12-08 Braden McDaniel  <braden@endoframe.com>
 
+	Added missing case for mfbool to openvrml::add_route.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::add_route(node &, const std::string &, node &, const
+	std::string &)): Added missing case for mfbool.
+
+2005-12-08 Braden McDaniel  <braden@endoframe.com>
+
 	Changed openvrml::color_rgba::rgb to openvrml::color_rgba::rgba.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
