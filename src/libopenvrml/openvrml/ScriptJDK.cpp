@@ -59,6 +59,7 @@
 #   include <vrml_field_SFVec2d.h>
 #   include <vrml_field_SFVec3f.h>
 #   include <vrml_field_SFVec3d.h>
+#   include <vrml_field_MFBool.h>
 #   include <vrml_field_MFColor.h>
 #   include <vrml_field_MFFloat.h>
 #   include <vrml_field_MFDouble.h>
@@ -85,6 +86,7 @@
 #   include <vrml_field_ConstSFVec2d.h>
 #   include <vrml_field_ConstSFVec3f.h>
 #   include <vrml_field_ConstSFVec3d.h>
+#   include <vrml_field_ConstMFBool.h>
 #   include <vrml_field_ConstMFColor.h>
 #   include <vrml_field_ConstMFFloat.h>
 #   include <vrml_field_ConstMFDouble.h>
@@ -162,6 +164,7 @@ const char * ftn[] = {
   "SFVec2d",
   "SFVec3f",
   "SFVec3d",
+  "MFBool",
   "MFColor",
   "MFFloat",
   "MFDouble",
@@ -545,6 +548,8 @@ static field_value* newField(field_value::type_id fieldtype)
       return new sfvec3f;
     case field_value::sfvec3d_id:
       return new sfvec3d;
+    case field_value::mfbool_id:
+      return new mfbool;
     case field_value::mfcolor_id:
       return new mfcolor;
     case field_value::mffloat_id:
@@ -3027,6 +3032,376 @@ jstring JNICALL Java_vrml_field_SFVec3d_toString
 {
   return fieldToString(env, obj);
 }
+
+void JNICALL Java_vrml_field_ConstMFBool_CreateObject(JNIEnv * env,
+                                                      jobject obj,
+                                                      jint size,
+                                                      jboolArray value)
+{
+    try {
+        jbool *pjf = env->GetBoolArrayElements(value, NULL);
+        std::auto_ptr<openvrml::mfbool>
+            mfbool(new openvrml::mfbool(pjf, pjf + size));
+        env->ReleaseBoolArrayElements(value, pjf, JNI_ABORT);
+        jfieldID fid = getFid(env, obj, "FieldPtr", "I");
+        if (!fid) { return; }
+        env->SetIntField(obj, fid, reinterpret_cast<int>(mfbool.release()));
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+jint JNICALL Java_vrml_field_ConstMFBool_getSize(JNIEnv * env, jobject obj)
+{
+    mfbool * mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    if (!mff) return 0;
+    return mff->value.size();
+}
+
+void JNICALL Java_vrml_field_ConstMFBool_getValue(JNIEnv * env,
+                                                  jobject obj,
+                                                  jboolArray jarr)
+{
+    const mfbool * const mff =
+        static_cast<mfbool *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    const size_t size = mff->value.size();
+    if (size > 0) {
+        env->SetBoolArrayRegion(jarr, 0, size,
+                                 const_cast<jbool *>(&mff->value[0]));
+    }
+}
+
+jbool JNICALL Java_vrml_field_ConstMFBool_get1Value(JNIEnv * env,
+                                                    jobject obj,
+                                                    jint index)
+{
+    mfbool * mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    if (!mff) { return 0.0; }
+    return mff->value[index];
+}
+
+/**
+ * @brief JNI implementation of ConstMFBool::toString.
+ *
+ * @param env JNI environment
+ * @param obj ConstMFBool object
+ * @return String representation of ConstMFBool.
+ */
+jstring JNICALL Java_vrml_field_ConstMFBool_toString(JNIEnv * env,
+                                                     jobject obj)
+{
+    return fieldToString(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFBool_CreateObject(JNIEnv * env,
+                                                 jobject obj,
+                                                 jint size,
+                                                 jboolArray value)
+{
+    Java_vrml_field_ConstMFBool_CreateObject(env, obj, size, value);
+}
+
+jint JNICALL Java_vrml_field_MFBool_getSize(JNIEnv * env, jobject obj)
+{
+    return Java_vrml_field_ConstMFBool_getSize(env, obj);
+}
+
+void JNICALL Java_vrml_field_MFBool_clear(JNIEnv * env, jobject obj)
+{
+    mfbool * const mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    mff->value.clear();
+}
+
+void JNICALL Java_vrml_field_MFBool_delete(JNIEnv * env,
+                                           jobject obj,
+                                           jint index)
+{
+    mfbool * mff = static_cast<mfbool*>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    if (!(size_t(index) < mff->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+        return;
+    }
+    mff->value.erase(mff->value.begin() + index);
+}
+
+void JNICALL Java_vrml_field_MFBool_getValue(JNIEnv * env,
+                                             jobject obj,
+                                             jboolArray jarr)
+{
+    Java_vrml_field_ConstMFBool_getValue(env, obj, jarr);
+}
+
+jbool JNICALL Java_vrml_field_MFBool_get1Value(JNIEnv * env,
+                                               jobject obj,
+                                               jint index)
+{
+    return Java_vrml_field_ConstMFBool_get1Value(env, obj, index);
+}
+
+void JNICALL Java_vrml_field_MFBool_setValue__I_3F(JNIEnv * env,
+                                                   jobject obj,
+                                                   jint size,
+                                                   jboolArray value)
+{
+    try {
+        mfbool * const mff = static_cast<mfbool *>(getFieldValue(env, obj));
+        if (!mff) { return; }
+        mff->value.resize(size); // Throws bad_alloc.
+        jbool * const bools = env->GetBoolArrayElements(value, 0);
+        if (!bools) {
+            // Presumably we raised an OutOfMemoryError.
+            return;
+        }
+        for (size_t i = 0; i < mff->value.size(); ++i) {
+            if (!(jint(i) < env->GetArrayLength(value))) {
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+                jclass exceptionClass =
+                    env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+                if (!exceptionClass) {
+                    // Presumably FindClass raised an exception.
+                    break;
+                }
+                env->ThrowNew(exceptionClass, "size larger than "
+                                              "values.length");
+                break;
+            }
+            mff->value[i] = bools[i];
+        }
+        env->ReleaseBoolArrayElements(value, bools, JNI_ABORT);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFBool_setValue__Lvrml_field_MFBool_2(JNIEnv * env,
+                                                      jobject obj,
+                                                      jobject value)
+{
+    mfbool * const mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    const mfbool * const newMFBool =
+        static_cast<mfbool*>(getFieldValue(env, value));
+    if (!mff || !newMFBool) return;
+    try {
+        *mff = *newMFBool; // Throws bad_alloc.
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFBool_setValue__Lvrml_field_ConstMFBool_2(JNIEnv * env,
+                                                           jobject obj,
+                                                           jobject value)
+{
+    Java_vrml_field_MFBool_setValue__Lvrml_field_MFBool_2(env, obj, value);
+}
+
+void JNICALL Java_vrml_field_MFBool_set1Value__IF(JNIEnv * env,
+                                                  jobject obj,
+                                                  jint index,
+                                                  jbool value)
+{
+    mfbool * mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    mff->value[index] = value;
+}
+
+void JNICALL
+Java_vrml_field_MFBool_set1Value__ILvrml_field_ConstSFBool_2(JNIEnv * env,
+                                                             jobject obj,
+                                                             jint index,
+                                                             jobject sfboolObj)
+{
+    mfbool * mff = static_cast<mfbool*>(getFieldValue(env, obj));
+    sfbool * sff = static_cast<sfbool*>(getFieldValue(env, sfboolObj));
+    if (!mff || !sff) { return; }
+    mff->value[index] = sff->value;
+}
+
+void JNICALL
+Java_vrml_field_MFBool_set1Value__ILvrml_field_SFBool_2(JNIEnv * env,
+                                                        jobject obj,
+                                                        jint index,
+                                                        jobject sfbool)
+{
+  Java_vrml_field_MFBool_set1Value__ILvrml_field_ConstSFBool_2
+    (env, obj, index, sfbool);
+}
+
+
+/**
+ * @brief JNI implementation of MFBool.addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFBool object
+ * @param value Value to add to end of list
+ */
+void JNICALL Java_vrml_field_MFBool_addValue__F(JNIEnv * env,
+                                                jobject obj,
+                                                jbool value)
+{
+    mfbool * mff = static_cast<mfbool*>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    try {
+        mff->value.push_back(value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFBool.addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFBool object
+ * @param value Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFBool_addValue__Lvrml_field_ConstSFBool_2(JNIEnv * env,
+                                                           jobject obj,
+                                                           jobject value)
+{
+    mfbool * mff = static_cast<mfbool*>(getFieldValue(env, obj));
+    sfbool * sff = static_cast<sfbool*>(getFieldValue(env, value));
+    if (!mff || !sff) { return; }
+    try {
+        mff->value.push_back(sff->value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+/**
+ * @brief JNI implementation of MFBool.addValue.
+ *
+ * @param env JNI environment
+ * @param obj MFBool object
+ * @param value Value to add to end of list
+ */
+void JNICALL
+Java_vrml_field_MFBool_addValue__Lvrml_field_SFBool_2(JNIEnv * env,
+                                                      jobject obj,
+                                                      jobject value)
+{
+    Java_vrml_field_MFBool_addValue__Lvrml_field_ConstSFBool_2(env,
+                                                               obj,
+                                                               value);
+}
+
+void JNICALL Java_vrml_field_MFBool_insertValue__IF(JNIEnv * env,
+                                                    jobject obj,
+                                                    jint index,
+                                                    jbool value)
+{
+    mfbool * mff = static_cast<mfbool *>(getFieldValue(env, obj));
+    if (!mff) { return; }
+    if (!(size_t(index) < mff->value.size())) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass =
+                env->FindClass("java/lang/ArrayIndexOutOfBoundsException");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, "index out of bounds");
+    }
+    try {
+        mff->value.insert(mff->value.begin() + index, value);
+    } catch (std::bad_alloc & ex) {
+        env->ExceptionDescribe();
+        env->ExceptionClear();
+        jclass exceptionClass = env->FindClass("java/lang/OutOfMemoryError");
+        if (!exceptionClass) {
+            // Presumably FindClass raised an exception.
+            return;
+        }
+        env->ThrowNew(exceptionClass, ex.what());
+    }
+}
+
+void JNICALL
+Java_vrml_field_MFBool_insertValue__ILvrml_field_ConstSFBool_2(JNIEnv * env,
+                                                               jobject obj,
+                                                               jint index,
+                                                               jobject value)
+{
+    sfbool * sff = static_cast<sfbool*>(getFieldValue(env, value));
+    if (!sff) { return; }
+    Java_vrml_field_MFBool_insertValue__IF(env, obj, index, sff->value);
+}
+
+void JNICALL
+Java_vrml_field_MFBool_insertValue__ILvrml_field_SFBool_2(JNIEnv * env,
+                                                          jobject obj,
+                                                          jint index,
+                                                          jobject value)
+{
+  Java_vrml_field_MFBool_insertValue__ILvrml_field_ConstSFBool_2(env,
+                                                                 obj,
+                                                                 index,
+                                                                 value);
+}
+
+/**
+ * @brief JNI implementation of MFBool.toString.
+ *
+ * @param env JNI environment
+ * @param obj MFBool object
+ * @return String representation of MFBool.
+ */
+jstring JNICALL Java_vrml_field_MFBool_toString(JNIEnv * env, jobject obj)
+{
+    return fieldToString(env, obj);
+}
+
 
 void JNICALL Java_vrml_field_ConstMFColor_CreateObject___3_3F(
     JNIEnv * env,

@@ -337,6 +337,7 @@ namespace openvrml {
 
         friend class field_value_listener<sfbool>;
         friend class field_value_listener<sfcolor>;
+        friend class field_value_listener<sfcolorrgba>;
         friend class field_value_listener<sffloat>;
         friend class field_value_listener<sfdouble>;
         friend class field_value_listener<sfimage>;
@@ -349,9 +350,12 @@ namespace openvrml {
         friend class field_value_listener<sfvec2d>;
         friend class field_value_listener<sfvec3f>;
         friend class field_value_listener<sfvec3d>;
+        friend class field_value_listener<mfbool>;
         friend class field_value_listener<mfcolor>;
+        friend class field_value_listener<mfcolorrgba>;
         friend class field_value_listener<mffloat>;
         friend class field_value_listener<mfdouble>;
+        friend class field_value_listener<mfimage>;
         friend class field_value_listener<mfint32>;
         friend class field_value_listener<mfnode>;
         friend class field_value_listener<mfrotation>;
@@ -364,6 +368,7 @@ namespace openvrml {
 
         friend class exposedfield<sfbool>;
         friend class exposedfield<sfcolor>;
+        friend class exposedfield<sfcolorrgba>;
         friend class exposedfield<sffloat>;
         friend class exposedfield<sfdouble>;
         friend class exposedfield<sfimage>;
@@ -376,9 +381,12 @@ namespace openvrml {
         friend class exposedfield<sfvec2d>;
         friend class exposedfield<sfvec3f>;
         friend class exposedfield<sfvec3d>;
+        friend class exposedfield<mfbool>;
         friend class exposedfield<mfcolor>;
+        friend class exposedfield<mfcolorrgba>;
         friend class exposedfield<mffloat>;
         friend class exposedfield<mfdouble>;
+        friend class exposedfield<mfimage>;
         friend class exposedfield<mfint32>;
         friend class exposedfield<mfnode>;
         friend class exposedfield<mfrotation>;

@@ -167,7 +167,6 @@ inline void X3DVrmlScanner::identifyFieldType(antlr::Token & token)
     }
 }
 
-
 } // namespace
 
 namespace openvrml ANTLR_LBRACE
@@ -248,12 +247,12 @@ options { defaultErrorHandler=false; }
 {
     using openvrml::field_value;
 }
-    :   FIELDTYPE_MFBOOL      { ft = field_value::invalid_type_id; }
+    :   FIELDTYPE_MFBOOL      { ft = field_value::mfbool_id; }
     |   FIELDTYPE_MFCOLOR     { ft = field_value::mfcolor_id; }
-    |   FIELDTYPE_MFCOLORRGBA { ft = field_value::invalid_type_id; }
+    |   FIELDTYPE_MFCOLORRGBA { ft = field_value::mfcolorrgba_id; }
     |   FIELDTYPE_MFFLOAT     { ft = field_value::mffloat_id; }
     |   FIELDTYPE_MFDOUBLE    { ft = field_value::mfdouble_id; }
-    |   FIELDTYPE_MFIMAGE     { ft = field_value::invalid_type_id; }
+    |   FIELDTYPE_MFIMAGE     { ft = field_value::mfimage_id; }
     |   FIELDTYPE_MFINT32     { ft = field_value::mfint32_id; }
     |   FIELDTYPE_MFNODE      { ft = field_value::mfnode_id; }
     |   FIELDTYPE_MFROTATION  { ft = field_value::mfrotation_id; }
@@ -265,7 +264,7 @@ options { defaultErrorHandler=false; }
     |   FIELDTYPE_MFVEC3D     { ft = field_value::mfvec3d_id; }
     |   FIELDTYPE_SFBOOL      { ft = field_value::sfbool_id; }
     |   FIELDTYPE_SFCOLOR     { ft = field_value::sfcolor_id; }
-    |   FIELDTYPE_SFCOLORRGBA { ft = field_value::invalid_type_id; }
+    |   FIELDTYPE_SFCOLORRGBA { ft = field_value::sfcolorrgba_id; }
     |   FIELDTYPE_SFFLOAT     { ft = field_value::sffloat_id; }
     |   FIELDTYPE_SFDOUBLE    { ft = field_value::sfdouble_id; }
     |   FIELDTYPE_SFIMAGE     { ft = field_value::sfimage_id; }
@@ -285,6 +284,7 @@ returns [boost::shared_ptr<field_value> fv]
 options { defaultErrorHandler=false; }
     :   { ft == field_value::sfbool_id }? fv=sfBoolValue
     |   { ft == field_value::sfcolor_id }? fv=sfColorValue
+    |   { ft == field_value::sfcolorrgba_id }? fv=sfColorRgbaValue
     |   { ft == field_value::sffloat_id }? fv=sfFloatValue
     |   { ft == field_value::sfdouble_id }? fv=sfDoubleValue
     |   { ft == field_value::sfimage_id }? fv=sfImageValue
@@ -296,9 +296,12 @@ options { defaultErrorHandler=false; }
     |   { ft == field_value::sfvec2d_id }? fv=sfVec2dValue
     |   { ft == field_value::sfvec3f_id }? fv=sfVec3fValue
     |   { ft == field_value::sfvec3d_id }? fv=sfVec3dValue
+    |   { ft == field_value::mfbool_id }? fv=mfBoolValue
     |   { ft == field_value::mfcolor_id }? fv=mfColorValue
+    |   { ft == field_value::mfcolorrgba_id }? fv=mfColorRgbaValue
     |   { ft == field_value::mffloat_id }? fv=mfFloatValue
     |   { ft == field_value::mfdouble_id }? fv=mfDoubleValue
+    |   { ft == field_value::mfimage_id }? fv=mfImageValue
     |   { ft == field_value::mfint32_id }? fv=mfInt32Value
     |   { ft == field_value::mfrotation_id }? fv=mfRotationValue
     |   { ft == field_value::mfstring_id }? fv=mfStringValue
@@ -309,6 +312,81 @@ options { defaultErrorHandler=false; }
     |   { ft == field_value::mfvec3d_id }? fv=mfVec3dValue
     ;
 
+mfBoolValue
+returns [boost::shared_ptr<field_value> mfv =
+         boost::shared_ptr<field_value>(new mfbool)]
+options { defaultErrorHandler=false; }
+{
+    using std::vector;
+
+    bool b;
+    mfbool & bools = static_cast<mfbool &>(*mfv);
+}
+    :   b=boolValue { bools.value(vector<bool>(1, b)); }
+    |   LBRACKET {
+            vector<bool> value;
+        } (b=boolValue { value.push_back(b); })* RBRACKET {
+            bools.value(value);
+        }
+    ;
+
+sfColorRgbaValue returns [boost::shared_ptr<field_value> scv]
+options { defaultErrorHandler=false; }
+{
+    color_rgba c;
+}
+    : colorRgbaValue[c] { scv.reset(new sfcolorrgba(c)); }
+    ;
+
+mfColorRgbaValue
+returns [boost::shared_ptr<field_value> mcv =
+            boost::shared_ptr<field_value>(new mfcolorrgba)]
+options { defaultErrorHandler=false; }
+{
+    using std::vector;
+
+    color_rgba c;
+    mfcolorrgba & colors = static_cast<mfcolorrgba &>(*mcv);
+}
+    :   colorRgbaValue[c] { colors.value(vector<color_rgba>(1, c)); }
+    |   LBRACKET {
+            vector<color_rgba> value;
+        } (colorRgbaValue[c] { value.push_back(c); })* RBRACKET {
+            colors.value(value);
+        }
+    ;
+
+colorRgbaValue[color_rgba & c]
+options { defaultErrorHandler=false; }
+{
+    float r, g, b, a;
+}
+    :   r=colorComponent g=colorComponent b=colorComponent a=colorComponent {
+            c.r(r);
+            c.g(g);
+            c.b(b);
+            c.a(a);
+        }
+    ;
+
+mfImageValue
+returns [boost::shared_ptr<field_value> mcv =
+            boost::shared_ptr<field_value>(new mfimage)]
+options { defaultErrorHandler=false; }
+{
+    using std::vector;
+
+    image img;
+    mfimage & imgs = static_cast<mfimage &>(*mcv);
+}
+    :   imageValue[img] { imgs.value(vector<image>(1, img)); }
+    |   LBRACKET {
+            vector<image> value;
+        } (imageValue[img] { value.push_back(img); })*
+        RBRACKET {
+            imgs.value(value);
+        }
+    ;
 
 sfDoubleValue returns [boost::shared_ptr<field_value> sfv]
 options { defaultErrorHandler=false; }

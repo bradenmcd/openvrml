@@ -105,6 +105,7 @@ namespace openvrml {
 
     typedef field_value_listener<sfbool> sfbool_listener;
     typedef field_value_listener<sfcolor> sfcolor_listener;
+    typedef field_value_listener<sfcolorrgba> sfcolorrgba_listener;
     typedef field_value_listener<sffloat> sffloat_listener;
     typedef field_value_listener<sfdouble> sfdouble_listener;
     typedef field_value_listener<sfimage> sfimage_listener;
@@ -117,9 +118,12 @@ namespace openvrml {
     typedef field_value_listener<sfvec2d> sfvec2d_listener;
     typedef field_value_listener<sfvec3f> sfvec3f_listener;
     typedef field_value_listener<sfvec3d> sfvec3d_listener;
+    typedef field_value_listener<mfbool> mfbool_listener;
     typedef field_value_listener<mfcolor> mfcolor_listener;
+    typedef field_value_listener<mfcolorrgba> mfcolorrgba_listener;
     typedef field_value_listener<mffloat> mffloat_listener;
     typedef field_value_listener<mfdouble> mfdouble_listener;
+    typedef field_value_listener<mfimage> mfimage_listener;
     typedef field_value_listener<mfint32> mfint32_listener;
     typedef field_value_listener<mfnode> mfnode_listener;
     typedef field_value_listener<mfrotation> mfrotation_listener;
@@ -251,6 +255,7 @@ namespace openvrml {
 
     typedef field_value_emitter<sfbool> sfbool_emitter;
     typedef field_value_emitter<sfcolor> sfcolor_emitter;
+    typedef field_value_emitter<sfcolorrgba> sfcolorrgba_emitter;
     typedef field_value_emitter<sffloat> sffloat_emitter;
     typedef field_value_emitter<sfdouble> sfdouble_emitter;
     typedef field_value_emitter<sfimage> sfimage_emitter;
@@ -263,10 +268,13 @@ namespace openvrml {
     typedef field_value_emitter<sfvec2d> sfvec2d_emitter;
     typedef field_value_emitter<sfvec3f> sfvec3f_emitter;
     typedef field_value_emitter<sfvec3d> sfvec3d_emitter;
+    typedef field_value_emitter<mfbool> mfbool_emitter;
     typedef field_value_emitter<mfcolor> mfcolor_emitter;
+    typedef field_value_emitter<mfcolorrgba> mfcolorrgba_emitter;
     typedef field_value_emitter<mffloat> mffloat_emitter;
     typedef field_value_emitter<mfdouble> mfdouble_emitter;
     typedef field_value_emitter<mfint32> mfint32_emitter;
+    typedef field_value_emitter<mfimage> mfimage_emitter;
     typedef field_value_emitter<mfnode> mfnode_emitter;
     typedef field_value_emitter<mfrotation> mfrotation_emitter;
     typedef field_value_emitter<mfstring> mfstring_emitter;

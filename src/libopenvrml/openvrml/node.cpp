@@ -1068,6 +1068,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::field_value_listener<sfcolorrgba>
+ *
+ * @brief <code>sfcolorrgba</code> <code>field_value_listener</code>.
+ */
+
+/**
  * @var class openvrml::node::field_value_listener<sfdouble>
  *
  * @brief <code>sfdouble</code> <code>field_value_listener</code>.
@@ -1140,9 +1146,27 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::field_value_listener<mfbool>
+ *
+ * @brief <code>mfbool</code> <code>field_value_listener</code>.
+ */
+
+/**
  * @var class openvrml::node::field_value_listener<mfcolor>
  *
  * @brief <code>mfcolor</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfcolorrgba>
+ *
+ * @brief <code>mfcolorrgba</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfdouble>
+ *
+ * @brief <code>mfdouble</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1152,9 +1176,9 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @var class openvrml::node::field_value_listener<mfdouble>
+ * @var class openvrml::node::field_value_listener<mfimage>
  *
- * @brief <code>mfdouble</code> <code>field_value_listener</code>.
+ * @brief <code>mfimage</code> <code>field_value_listener</code>.
  */
 
 /**
@@ -1221,6 +1245,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::exposedfield<sfcolor>
  *
  * @brief <code>sfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfcolorrgba>
+ *
+ * @brief <code>sfcolorrgba</code> <code>exposedfield</code>.
  */
 
 /**
@@ -1296,9 +1326,21 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @var class openvrml::node::exposedfield<mfbool>
+ *
+ * @brief <code>mfbool</code> <code>exposedfield</code>.
+ */
+
+/**
  * @var class openvrml::node::exposedfield<mfcolor>
  *
  * @brief <code>mfcolor</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfcolorrgba>
+ *
+ * @brief <code>mfcolorrgba</code> <code>exposedfield</code>.
  */
 
 /**
@@ -1311,6 +1353,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  * @var class openvrml::node::exposedfield<mffloat>
  *
  * @brief <code>mffloat</code> <code>exposedfield</code>.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfimage>
+ *
+ * @brief <code>mfimage</code> <code>exposedfield</code>.
  */
 
 /**
@@ -2287,6 +2335,9 @@ namespace {
                 case field_value::sfcolor_id:
                     this->out << n.field<sfcolor>(interface.id);
                     break;
+                case field_value::sfcolorrgba_id:
+                    this->out << n.field<sfcolorrgba>(interface.id);
+                    break;
                 case field_value::sfdouble_id:
                     this->out << n.field<sfdouble>(interface.id);
                     break;
@@ -2323,14 +2374,23 @@ namespace {
                 case field_value::sfvec3d_id:
                     this->out << n.field<sfvec3d>(interface.id);
                     break;
+                case field_value::mfbool_id:
+                    this->out << n.field<mfbool>(interface.id);
+                    break;
                 case field_value::mfcolor_id:
                     this->out << n.field<mfcolor>(interface.id);
+                    break;
+                case field_value::mfcolorrgba_id:
+                    this->out << n.field<mfcolorrgba>(interface.id);
                     break;
                 case field_value::mfdouble_id:
                     this->out << n.field<mfdouble>(interface.id);
                     break;
                 case field_value::mffloat_id:
                     this->out << n.field<mffloat>(interface.id);
+                    break;
+                case field_value::mfimage_id:
+                    this->out << n.field<mfimage>(interface.id);
                     break;
                 case field_value::mfint32_id:
                     this->out << n.field<mfint32>(interface.id);
@@ -2524,6 +2584,9 @@ bool openvrml::add_route(node & from,
         case field_value::sfcolor_id:
             added_route = add_listener<sfcolor>(emitter, listener);
             break;
+        case field_value::sfcolorrgba_id:
+            added_route = add_listener<sfcolorrgba>(emitter, listener);
+            break;
         case field_value::sffloat_id:
             added_route = add_listener<sffloat>(emitter, listener);
             break;
@@ -2563,11 +2626,17 @@ bool openvrml::add_route(node & from,
         case field_value::mfcolor_id:
             added_route = add_listener<mfcolor>(emitter, listener);
             break;
+        case field_value::mfcolorrgba_id:
+            added_route = add_listener<mfcolorrgba>(emitter, listener);
+            break;
         case field_value::mffloat_id:
             added_route = add_listener<mffloat>(emitter, listener);
             break;
         case field_value::mfdouble_id:
             added_route = add_listener<mfdouble>(emitter, listener);
+            break;
+        case field_value::mfimage_id:
+            added_route = add_listener<mfimage>(emitter, listener);
             break;
         case field_value::mfint32_id:
             added_route = add_listener<mfint32>(emitter, listener);
@@ -2658,6 +2727,9 @@ bool openvrml::delete_route(node & from,
         case field_value::sfcolor_id:
             deleted_route = remove_listener<sfcolor>(emitter, listener);
             break;
+        case field_value::sfcolorrgba_id:
+            deleted_route = remove_listener<sfcolorrgba>(emitter, listener);
+            break;
         case field_value::sffloat_id:
             deleted_route = remove_listener<sffloat>(emitter, listener);
             break;
@@ -2694,14 +2766,23 @@ bool openvrml::delete_route(node & from,
         case field_value::sfvec3d_id:
             deleted_route = remove_listener<sfvec3d>(emitter, listener);
             break;
+        case field_value::mfbool_id:
+            deleted_route = remove_listener<mfbool>(emitter, listener);
+            break;
         case field_value::mfcolor_id:
             deleted_route = remove_listener<mfcolor>(emitter, listener);
+            break;
+        case field_value::mfcolorrgba_id:
+            deleted_route = remove_listener<mfcolorrgba>(emitter, listener);
             break;
         case field_value::mffloat_id:
             deleted_route = remove_listener<mffloat>(emitter, listener);
             break;
         case field_value::mfdouble_id:
             deleted_route = remove_listener<mfdouble>(emitter, listener);
+            break;
+        case field_value::mfimage_id:
+            deleted_route = remove_listener<mfimage>(emitter, listener);
             break;
         case field_value::mfint32_id:
             deleted_route = remove_listener<mfint32>(emitter, listener);

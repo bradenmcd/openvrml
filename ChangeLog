@@ -1,3 +1,321 @@
+2005-12-08 Braden McDaniel  <braden@endoframe.com>
+
+	Added sfcolorrgba, mfbool, mfcolorrgba, and mfimage field_value
+	types.  Added MFBool support to the Java and JavaScript
+	interfaces.  From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* java/Makefile.am (CLASSES): Added vrml/field/MFBool.class,
+	vrml/field/ConstMFBool.class.
+	(JNI_HFILES): Added vrml_field_MFBool.h, vrml_field_ConstMFBool.h.
+	(vrml_field_MFBool.h): Added rule.
+	(vrml_field_ConstMFBool.h): Added rule.
+	* java/vrml/field/ConstMFBool.java: Added file.
+	* java/vrml/field/MFBool.java: Added file.
+	* java/vrml/field/Makefile.am (JAVA_FILES): Added MFBool.java and
+	ConstMFBool.java.
+	* src/libopenvrml/openvrml/ScriptJDK.cpp: Include
+	vrml_field_MFBool.h and vrml_field_ConstMFBool.h.
+	(ftn): Added "MFBool".
+	(newField): Added case for mfbool.
+	(Java_vrml_field_ConstMFBool_CreateObject): Added function
+	definition.
+	(Java_vrml_field_ConstMFBool_getSize): Added function definition.
+	(Java_vrml_field_ConstMFBool_getValue): Added function definition.
+	(Java_vrml_field_ConstMFBool_get1Value): Added function
+	definition.
+	(Java_vrml_field_ConstMFBool_toString): Added function definition.
+	(Java_vrml_field_MFBool_CreateObject): Added function definition.
+	(Java_vrml_field_MFBool_getSize): Added function definition.
+	(Java_vrml_field_MFBool_clear): Added function definition.
+	(Java_vrml_field_MFBool_delete): Added function definition.
+	(Java_vrml_field_MFBool_getValue): Added function definition.
+	(Java_vrml_field_MFBool_get1Value): Added function definition.
+	(Java_vrml_field_MFBool_setValue__I_3F): Added function
+	definition.
+	(Java_vrml_field_MFBool_setValue__Lvrml_field_MFBool_2): Added
+	function definition.
+	(Java_vrml_field_MFBool_setValue__Lvrml_field_ConstMFBool_2):
+	Added function definition.
+	(Java_vrml_field_MFBool_set1Value__IF): Added function definition.
+	(Java_vrml_field_MFBool_set1Value__ILvrml_field_ConstSFBool_2):
+	Added function definition.
+	(Java_vrml_field_MFBool_set1Value__ILvrml_field_SFBool_2): Added
+	function definition.
+	(Java_vrml_field_MFBool_addValue__F): Added function definition.
+	(Java_vrml_field_MFBool_addValue__Lvrml_field_ConstSFBool_2):
+	Added function definition.
+	(Java_vrml_field_MFBool_addValue__Lvrml_field_SFBool_2): Added
+	function definition.
+	(Java_vrml_field_MFBool_insertValue__IF): Added function
+	definition.
+	(Java_vrml_field_MFBool_insertValue__ILvrml_field_ConstSFBool_2):
+	Added function definition.
+	(Java_vrml_field_MFBool_insertValue__ILvrml_field_SFBool_2): Added
+	function definition.
+	(Java_vrml_field_MFBool_toString): Added function definition.
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::imageValue): Changed grammar such that mfImageValue
+	in X3DVrmlParser.g is not ambiguous.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlparser::fieldType): Added support for MFBool, MFColorRGBA,
+	and MFImage.
+	(X3DVrmlParser::nonNodeFieldValue): Added support for MFBool,
+	MFColorRGBA, and MFImage.
+	(X3DVrmlParser::mfBoolValue): Added production.
+	(X3DVrmlParser::sfColorRgbaValue): Added production.
+	(X3DVrmlParser::mfColorRgbaValue): Added production.
+	(X3DVrmlParser::colorRgbaValue): Added production.
+	(X3DVrmlParser::mfImageValue): Added production.
+	* src/libopenvrml/openvrml/basetypes.cpp (rgb_to_hsv): Added
+	function; relocated logic in openvrml::color::hsv accessor to
+	here.
+	(hsv_to_rgb): Added function; relocated logic in
+	openvrml::color::hsv mutator to here.
+	(openvrml::color::hsv(float (&)[3]) const): Delegate to
+	rgb_to_hsv.
+	(openvrml::color::hsv(float, float, float)): Delegate to
+	hsv_to_rgb.
+	(openvrml::color_rgba::color_rgba()): Added function definition.
+	(openvrml::color_rgba::color_rgba(const float (&)[4])): Added
+	function definition.
+	(openvrml::color_rgba::color_rgba(float, float, float, float)):
+	Added function definition.
+	(openvrml::color_rgba::operator[](size_t) const): Added function
+	definition.
+	(openvrml::color_rgba::hsv(float (&)[4]) const): Added function
+	definition.
+	(openvrml::color_rgba::hsv(float, float, float, float)): Added
+	function definition.
+	(openvrml::operator==(const color_rgba &, const color_rgba &)):
+	Added function definition.
+	(openvrml::operator!=(const color_rgba &, const color_rgba &)):
+	Added function definition.
+	(openvrml::operator<<(std::ostream &, const color_rgba &)): Added
+	function definition.
+	* src/libopenvrml/openvrml/basetypes.h: Added openvrml::color_rgba
+	class.
+	(openvrml::color_rgba::operator[](size_t)): Added function
+	definition.
+	(openvrml::color_rgba::r() const): Added function definition.
+	(openvrml::color_rgba::r(float)): Added function definition.
+	(openvrml::color_rgba::g() const): Added function definition.
+	(openvrml::color_rgba::g(float)): Added function definition.
+	(openvrml::color_rgba::b() const): Added function definition.
+	(openvrml::color_rgba::b(float)): Added function definition.
+	(openvrml::color_rgba::a() const): Added function definition.
+	(openvrml::color_rgba::a(float)): Added function definition.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::abstract_proto_node::create_eventin): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::abstract_proto_node::eventin_is): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::abstract_proto_node::create_eventout): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::abstract_proto_node::eventout_is): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::proto_node::create_exposedfield): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::externproto_node::create_exposedfield): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	* src/libopenvrml/openvrml/event.cpp: Added doc-comments for
+	sfcolorrgba_listener, mfbool_listener, mfcolorrgba_listener,
+	mfimage_listener, sfcolorrgba_emitter, mfbool_emitter,
+	mfcolorrgba_emitter, and mfimage_emitter typedefs.
+	* src/libopenvrml/openvrml/event.h: Added sfcolorrgba_listener,
+	mfbool_listener, mfcolorrgba_listener, mfimage_listener,
+	sfcolorrgba_emitter, mfbool_emitter, mfcolorrgba_emitter, and
+	mfimage_emitter typedefs.
+	* src/libopenvrml/openvrml/field_value.cpp
+	(openvrml::field_value::create): Added cases for sfcolorrgba,
+	mfbool, mfcolorrgba, and mfimage.
+	(field_value_type_id_): Added entries for sfcolorrgba, mfbool,
+	mfcolorrgba, and mfimage.
+	(openvrml::sfcolorrgba::field_value_type_id): Added static member
+	definition.
+	(openvrml::sfcolorrgba::sfcolorrgba(const value_type &)): Added
+	function definition.
+	(openvrml::sfcolorrgba::sfcolorrgba(const sfcolorrgba &)): Added
+	function definition.
+	(openvrml::sfcolorrgba::~sfcolorrgba()): Added function
+	definition.
+	(openvrml::sfcolorrgba::operator=(const sfcolorrgba &)): Added
+	function definition.
+	(openvrml::sfcolorrgba::value() const): Added function definition.
+	(openvrml::sfcolorrgba::value(const value_type &)): Added function
+	definition.
+	(openvrml::sfcolorrgba::swap(sfcolorrgba &)): Added function
+	definition.
+	(openvrml::sfcolorrgba::do_clone() const): Added function
+	definition.
+	(openvrml::sfcolorrgba::do_assign(const field_value &)): Added
+	function definition.
+	(openvrml::sfcolorrgba::print(std::ostream &) const): Added
+	function definition.
+	(openvrml::sfcolorrgba::do_type() const): Added function
+	definition.
+	(openvrml::operator==(const sfcolorrgba &, const sfcolorrgba &)):
+	Added function definition.
+	(openvrml::operator!=(const sfcolorrgba &, const sfcolorrgba &)):
+	Added function definition.
+	(openvrml::mfbool::field_value_type_id): Added static member
+	definition.
+	(openvrml::mfbool::mfbool(value_type::size_type n, bool)
+	(openvrml::mfbool::mfbool(const value_type &)): Added function
+	definition.
+	(openvrml::mfbool::mfbool(const mfbool &)): Added function
+	definition.
+	(openvrml::mfbool::~mfbool()): Added function definition.
+	(openvrml::mfbool::operator=(const mfbool &)): Added function
+	definition.
+	(openvrml::mfbool::value() const): Added function definition.
+	(openvrml::mfbool::value(const value_type &)): Added function
+	definition.
+	(openvrml::mfbool::swap(mfbool & mfb)): Added function definition.
+	(openvrml::mfbool::do_clone() const): Added function definition.
+	(openvrml::mfbool::do_assign(const field_value &)): Added function
+	definition.
+	(openvrml::mfbool::do_type() const): Added function definition.
+	(openvrml::mfbool::print(std::ostream &) const): Added function
+	definition.
+	(openvrml::operator==(const mfbool &, const mfbool &)): Added
+	function definition.
+	(openvrml::operator!=(const mfbool &, const mfbool &)): Added
+	function definition.
+	(openvrml::mfcolorrgba::field_value_type_id): Added static member
+	definition.
+	(openvrml::mfcolorrgba::mfcolorrgba(value_type::size_type, const
+	color_rgba &)): Added function definition.
+	(openvrml::mfcolorrgba::mfcolorrgba(const value_type &)): Added
+	function definition.
+	(openvrml::mfcolorrgba::mfcolorrgba(const mfcolorrgba &)): Added
+	function definition.
+	(openvrml::mfcolorrgba::~mfcolorrgba()): Added function
+	definition.
+	(openvrml::mfcolorrgba::operator=(const mfcolorrgba &)): Added
+	function definition.
+	(openvrml::mfcolorrgba::value() const): Added function definition.
+	(openvrml::mfcolorrgba::value(const value_type &)): Added function
+	definition.
+	(openvrml::mfcolorrgba::swap(mfcolorrgba &)): Added function
+	definition.
+	(openvrml::mfcolorrgba::do_clone() const): Added function
+	definition.
+	(openvrml::mfcolorrgba::do_assign(const field_value &)): Added
+	function definition.
+	(openvrml::mfcolorrgba::do_type()): Added function definition.
+	(openvrml::mfcolorrgba::print(std::ostream &)): Added function
+	definition.
+	(openvrml::operator==(const mfcolorrgba &, const mfcolorrgba &)):
+	Added function definition.
+	(openvrml::operator!=(const mfcolorrgba &, const mfcolorrgba &)):
+	Added function definition.
+	(openvrml::mfimage::field_value_type_id): Added static member
+	definition.
+	(openvrml::mfimage::mfimage(value_type::size_type, const image&)):
+	Added function definition.
+	(openvrml::mfimage::mfimage(const value_type &)): Added function
+	definition.
+	(openvrml::mfimage::mfimage(const mfimage &)): Added function
+	definition.
+	(openvrml::mfimage::~mfimage()): Added function definition.
+	(openvrml::mfimage::operator=(const mfimage &)): Added function
+	definition.
+	(openvrml::mfimage::value() const): Added function definition.
+	(openvrml::mfimage::value(const value_type &)): Added function
+	definition.
+	(openvrml::mfimage::swap(mfimage &)): Added function definition.
+	(openvrml::mfimage::do_clone() const): Added function definition.
+	(openvrml::mfimage::do_assign(const field_value &)): Added
+	function definition.
+	(openvrml::mfimage::type_id() const): Added function definition.
+	(openvrml::mfimage::print(std::ostream &) const): Added function
+	definition.
+	(openvrml::operator==(const mfimage &, const mfimage &)): Added
+	function definition.
+	(openvrml::operator!=(const mfimage &, const mfimage &)): Added
+	function definition.
+	* src/libopenvrml/openvrml/field_value.h
+	(openvrml::field_value::type_id): Added enumerants sfcolorrgba_id,
+	mfbool_id, mfcolorrgba_id, and mfimage_id.
+	(openvrml::sfcolorrgba): Added class definition.
+	(openvrml::operator==(const sfcolorrgba &, const sfcolorrgba &)):
+	Added function declaration.
+	(openvrml::operator!=(const sfcolorrgba &, const sfcolorrgba &)):
+	Added function declaration.
+	(openvrml::mfbool): Added class definition.
+	(openvrml::operator==(const mfbool &, const mfbool &)): Added
+	function declaration.
+	(openvrml::operator!=(const mfbool &, const mfbool &)): Added
+	function declaration.
+	(openvrml::mfcolorrgba): Added class definition.
+	(openvrml::operator==(const mfcolorrgba &, const mfcolorrgba &)):
+	Added function declaration.
+	(openvrml::operator!=(const mfcolorrgba &, const mfcolorrgba &)):
+	Added function declaration.
+	(openvrml::mfimage): Added class definition.
+	(openvrml::operator==(const mfimage &, const mfimage &)): Added
+	function declaration.
+	(openvrml::operator!=(const mfimage &, const mfimage &)): Added
+	function declaration.
+	(std::swap(openvrml::sfcolorrgba &, openvrml::sfcolorrgba &)):
+	Added function definition.
+	(std::swap(openvrml::mfbool &, openvrml::mfbool &)): Added
+	function definition.
+	(std::swap(openvrml::mfcolorrgba &, openvrml::mfcolorrgba &)):
+	Added function definition.
+	(std::swap(openvrml::mfimage &, openvrml::mfimage &)): Added
+	function definition.
+	* src/libopenvrml/openvrml/node.cpp
+	(print_field_::operator()(const openvrml::node_interface &)
+	const): Added cases for sfcolorrgba, mfbool, mfcolorrgba, and
+	mfimage.
+	(openvrml::add_route(node &, const std::string &, node &, const
+	std::string &)): Added cases for sfcolorrgba, mfbool, mfcolorrgba,
+	and mfimage.
+	(openvrml::delete_route(node &, const std::string &, node &, const
+	std::string &)): Added cases for sfcolorrgba, mfbool, mfcolorrgba,
+	and mfimage.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Added friends field_value_listener<sfcolorrgba>,
+	field_value_listener<mfbool>, field_value_listener<mfcolorrgba>,
+	field_value_listener<mfimage>, exposedfield<sfcolorrgba>,
+	exposedfield<mfbool>, exposedfield<mfcolorrgba>,
+	exposedfield<mfimage>.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script::process_direct_output(double)): Added cases for
+	sfcolorrgba, mfbool, mfcolorrgba, and mfimage.
+	(openvrml::script_node::create_listener(field_value::type_id,
+	const std::string &, script_node &)): Added cases for sfcolorrgba,
+	mfbool, mfcolorrgba, and mfimage.
+	(openvrml::script_node::create_emitter(script_node &, const
+	openvrml::field_value &)): Added cases for sfcolorrgba, mfbool,
+	mfcolorrgba, and mfimage.
+	(js_::MFBool): Added class definition.
+	(js_::script::vrmlFieldToJSVal(const openvrml::field_value &)):
+	Added case for mfbool.
+	(js_::createFieldValueFromJsval(JSContext *, jsval,
+	openvrml::field_value::type_id)): Added case for mfbool.
+	(js_::MFBool::jsclass): Added static member definition.
+	(js_::MFBool::createFromJSObject(JSContext *, JSObject *)): Added
+	function definition.
+	(js_::MFBool::toJsval(const std::vector<bool> &, JSContext *,
+	JSObject *, jsval *)): Added function definition.
+	(js_::MFBool::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Added function definition.
+	(js_::MFBool::initObject(JSContext *, JSObject *, uintN, jsval*)):
+	Added function definition.
+	(js_::MFBool::setElement(JSContext *, JSObject *, jsval, jsval*)):
+	Added function definition.
+	(js_::MFBool::setLength(JSContext *, JSObject *, jsval, jsval *)):
+	Added function definition.
+	(js_::MFBool::toString(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Added function definition.
+	(js_::MFBool::finalize(JSContext *, JSObject *)): Added function
+	definition.
+	* src/libopenvrml/openvrml/script.h
+	(openvrml::script_node): Added typedefs for sfcolorrgba_listener,
+	mfbool_listener, mfcolorrgba_listener, and mfimage_listener.
+
 2005-12-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp: Doc-comment

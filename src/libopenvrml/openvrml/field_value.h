@@ -87,6 +87,7 @@ namespace openvrml {
             invalid_type_id,
             sfbool_id,
             sfcolor_id,
+            sfcolorrgba_id,
             sffloat_id,
             sfdouble_id,
             sfimage_id,
@@ -99,9 +100,12 @@ namespace openvrml {
             sfvec2d_id,
             sfvec3f_id,
             sfvec3d_id,
+            mfbool_id,
             mfcolor_id,
+            mfcolorrgba_id,
             mffloat_id,
             mfdouble_id,
+            mfimage_id,
             mfint32_id,
             mfnode_id,
             mfrotation_id,
@@ -356,6 +360,37 @@ namespace openvrml {
     OPENVRML_API bool operator==(const sfcolor & lhs, const sfcolor & rhs)
         throw ();
     OPENVRML_API bool operator!=(const sfcolor & lhs, const sfcolor & rhs)
+        throw ();
+
+
+    class OPENVRML_API sfcolorrgba : public field_value {
+    public:
+        typedef color_rgba value_type;
+
+        static const type_id field_value_type_id;
+
+        explicit sfcolorrgba(const value_type & value = color_rgba()) throw ();
+        sfcolorrgba(const sfcolorrgba & sfc);
+        virtual ~sfcolorrgba() throw ();
+
+        sfcolorrgba & operator=(const sfcolorrgba & sfc) throw (std::bad_alloc);
+
+        const value_type & value() const throw ();
+        void value(const value_type & val) throw (std::bad_alloc);
+        void swap(sfcolorrgba & sfc) throw ();
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual sfcolorrgba & do_assign(const field_value & value)
+            throw (std::bad_cast);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream & out) const;
+    };
+
+    OPENVRML_API bool operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
         throw ();
 
 
@@ -733,6 +768,38 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
         throw ();
 
+    class OPENVRML_API mfbool : public field_value {
+    public:
+        typedef std::vector<bool> value_type;
+
+        static const type_id field_value_type_id;
+
+        explicit mfbool(value_type::size_type n = 0, bool value = false)
+            throw (std::bad_alloc);
+        explicit mfbool(const value_type & value) throw (std::bad_alloc);
+        mfbool(const mfbool & mfc);
+        virtual ~mfbool() throw ();
+
+        mfbool & operator=(const mfbool & mfc) throw (std::bad_alloc);
+
+        const value_type & value() const throw ();
+        void value(const value_type & val) throw (std::bad_alloc);
+        void swap(mfbool & mfc) throw ();
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfbool & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    OPENVRML_API bool operator==(const mfbool & lhs, const mfbool & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfbool & lhs, const mfbool & rhs)
+        throw ();
+
     class OPENVRML_API mfcolor : public field_value {
     public:
         typedef std::vector<color> value_type;
@@ -766,6 +833,41 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfcolor & lhs, const mfcolor & rhs)
         throw ();
 
+    class OPENVRML_API mfcolorrgba : public field_value {
+    public:
+        typedef std::vector<color_rgba> value_type;
+
+        static const type_id field_value_type_id;
+
+        explicit mfcolorrgba(value_type::size_type n = 0,
+                             const color_rgba & value = color_rgba())
+            throw (std::bad_alloc);
+        explicit mfcolorrgba(const value_type & value) throw (std::bad_alloc);
+        mfcolorrgba(const mfcolorrgba & mfc);
+        virtual ~mfcolorrgba() throw ();
+
+        mfcolorrgba & operator=(const mfcolorrgba & mfc)
+            throw (std::bad_alloc);
+
+        const value_type & value() const throw ();
+        void value(const value_type & val) throw (std::bad_alloc);
+        void swap(mfcolorrgba & mfc) throw ();
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfcolorrgba & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    OPENVRML_API bool operator==(const mfcolorrgba & lhs,
+                                 const mfcolorrgba & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfcolorrgba & lhs,
+                                 const mfcolorrgba & rhs)
+        throw ();
 
     class OPENVRML_API mffloat : public field_value {
     public:
@@ -831,6 +933,39 @@ namespace openvrml {
     OPENVRML_API bool operator==(const mfdouble & lhs, const mfdouble & rhs)
         throw ();
     OPENVRML_API bool operator!=(const mfdouble & lhs, const mfdouble & rhs)
+        throw ();
+
+    class OPENVRML_API mfimage : public field_value {
+    public:
+        typedef std::vector<image> value_type;
+
+        static const type_id field_value_type_id;
+
+        explicit mfimage(value_type::size_type n = 0,
+                         const image & value = image())
+            throw (std::bad_alloc);
+        explicit mfimage(const value_type & value) throw (std::bad_alloc);
+        mfimage(const mfimage & mfi);
+        virtual ~mfimage() throw ();
+
+        mfimage & operator=(const mfimage & mfi) throw (std::bad_alloc);
+
+        const value_type & value() const throw ();
+        void value(const value_type & val) throw (std::bad_alloc);
+        void swap(mfimage & mfi) throw ();
+
+    private:
+        virtual std::auto_ptr<field_value> do_clone() const
+            throw (std::bad_alloc);
+        virtual mfimage & do_assign(const field_value & value)
+            throw (std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const throw ();
+        virtual void print(std::ostream &) const;
+    };
+
+    OPENVRML_API bool operator==(const mfimage & lhs, const mfimage & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const mfimage & lhs, const mfimage & rhs)
         throw ();
 
     class OPENVRML_API mfint32 : public field_value {
@@ -1143,13 +1278,14 @@ namespace openvrml {
 namespace std {
 
     template <>
-    OPENVRML_API inline void swap(openvrml::sfbool & a, openvrml::sfbool & b)
+    OPENVRML_API inline void swap(openvrml::sfcolor & a, openvrml::sfcolor & b)
     {
         a.swap(b);
     }
 
     template <>
-    OPENVRML_API inline void swap(openvrml::sfcolor & a, openvrml::sfcolor & b)
+    OPENVRML_API inline void swap(openvrml::sfcolorrgba & a,
+                                  openvrml::sfcolorrgba & b)
     {
         a.swap(b);
     }
@@ -1230,7 +1366,26 @@ namespace std {
     }
 
     template <>
+    OPENVRML_API inline void swap(openvrml::mfbool & a, openvrml::mfbool & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::sfbool & a, openvrml::sfbool & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
     OPENVRML_API inline void swap(openvrml::mfcolor & a, openvrml::mfcolor & b)
+    {
+        a.swap(b);
+    }
+
+    template <>
+    OPENVRML_API inline void swap(openvrml::mfcolorrgba & a,
+                                  openvrml::mfcolorrgba & b)
     {
         a.swap(b);
     }
@@ -1249,6 +1404,12 @@ namespace std {
     }
 
     template <>
+    OPENVRML_API inline void swap(openvrml::mfimage & a, openvrml::mfimage & b)
+    {
+        a.swap(b);
+    }
+
+	template <>
     OPENVRML_API inline void swap(openvrml::mfint32 & a, openvrml::mfint32 & b)
     {
         a.swap(b);

@@ -153,6 +153,7 @@ namespace openvrml {
 
         typedef script_event_listener<sfbool> sfbool_listener;
         typedef script_event_listener<sfcolor> sfcolor_listener;
+        typedef script_event_listener<sfcolorrgba> sfcolorrgba_listener;
         typedef script_event_listener<sffloat> sffloat_listener;
         typedef script_event_listener<sfdouble> sfdouble_listener;
         typedef script_event_listener<sfimage> sfimage_listener;
@@ -165,9 +166,12 @@ namespace openvrml {
         typedef script_event_listener<sfvec2d> sfvec2d_listener;
         typedef script_event_listener<sfvec3f> sfvec3f_listener;
         typedef script_event_listener<sfvec3d> sfvec3d_listener;
+        typedef script_event_listener<mfbool> mfbool_listener;
         typedef script_event_listener<mfcolor> mfcolor_listener;
+        typedef script_event_listener<mfcolorrgba> mfcolorrgba_listener;
         typedef script_event_listener<mffloat> mffloat_listener;
         typedef script_event_listener<mfdouble> mfdouble_listener;
+        typedef script_event_listener<mfimage> mfimage_listener;
         typedef script_event_listener<mfint32> mfint32_listener;
         typedef script_event_listener<mfnode> mfnode_listener;
         typedef script_event_listener<mfrotation> mfrotation_listener;

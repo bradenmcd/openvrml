@@ -1139,6 +1139,9 @@ namespace openvrml {
         case field_value::sfcolor_id:
             result.reset(new proto_eventin<sfcolor>(node));
             break;
+        case field_value::sfcolorrgba_id:
+            result.reset(new proto_eventin<sfcolorrgba>(node));
+            break;
         case field_value::sfdouble_id:
             result.reset(new proto_eventin<sfdouble>(node));
             break;
@@ -1175,14 +1178,23 @@ namespace openvrml {
         case field_value::sfvec3d_id:
             result.reset(new proto_eventin<sfvec3d>(node));
             break;
+        case field_value::mfbool_id:
+            result.reset(new proto_eventin<mfbool>(node));
+            break;
         case field_value::mfcolor_id:
             result.reset(new proto_eventin<mfcolor>(node));
+            break;
+        case field_value::mfcolorrgba_id:
+            result.reset(new proto_eventin<mfcolorrgba>(node));
             break;
         case field_value::mfdouble_id:
             result.reset(new proto_eventin<mfdouble>(node));
             break;
         case field_value::mffloat_id:
             result.reset(new proto_eventin<mffloat>(node));
+            break;
+        case field_value::mfimage_id:
+            result.reset(new proto_eventin<mfimage>(node));
             break;
         case field_value::mfint32_id:
             result.reset(new proto_eventin<mfint32>(node));
@@ -1254,6 +1266,11 @@ namespace openvrml {
                 dynamic_cast<proto_eventin<sfcolor> &>(interface_eventin)
                 .is(dynamic_cast<sfcolor_listener &>(impl_eventin));
             break;
+        case field_value::sfcolorrgba_id:
+            succeeded =
+                dynamic_cast<proto_eventin<sfcolorrgba> &>(interface_eventin)
+                .is(dynamic_cast<sfcolorrgba_listener &>(impl_eventin));
+            break;
         case field_value::sffloat_id:
             succeeded =
                 dynamic_cast<proto_eventin<sffloat> &>(interface_eventin)
@@ -1314,15 +1331,30 @@ namespace openvrml {
                 dynamic_cast<proto_eventin<sfvec3d> &>(interface_eventin)
                 .is(dynamic_cast<sfvec3d_listener &>(impl_eventin));
             break;
+        case field_value::mfbool_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfbool> &>(interface_eventin)
+                .is(dynamic_cast<mfbool_listener &>(impl_eventin));
+            break;
         case field_value::mfcolor_id:
             succeeded =
                 dynamic_cast<proto_eventin<mfcolor> &>(interface_eventin)
                 .is(dynamic_cast<mfcolor_listener &>(impl_eventin));
             break;
+        case field_value::mfcolorrgba_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfcolorrgba> &>(interface_eventin)
+                .is(dynamic_cast<mfcolorrgba_listener &>(impl_eventin));
+            break;
         case field_value::mffloat_id:
             succeeded =
                 dynamic_cast<proto_eventin<mffloat> &>(interface_eventin)
                 .is(dynamic_cast<mffloat_listener &>(impl_eventin));
+            break;
+        case field_value::mfimage_id:
+            succeeded =
+                dynamic_cast<proto_eventin<mfimage> &>(interface_eventin)
+                .is(dynamic_cast<mfimage_listener &>(impl_eventin));
             break;
         case field_value::mfdouble_id:
             succeeded =
@@ -1590,6 +1622,9 @@ namespace openvrml {
         case field_value::sfcolor_id:
             result.reset(new proto_eventout<sfcolor>(node));
             break;
+        case field_value::sfcolorrgba_id:
+            result.reset(new proto_eventout<sfcolorrgba>(node));
+            break;
         case field_value::sffloat_id:
             result.reset(new proto_eventout<sffloat>(node));
             break;
@@ -1626,14 +1661,23 @@ namespace openvrml {
         case field_value::sfvec3d_id:
             result.reset(new proto_eventout<sfvec3d>(node));
             break;
+        case field_value::mfbool_id:
+            result.reset(new proto_eventout<mfbool>(node));
+            break;
         case field_value::mfcolor_id:
             result.reset(new proto_eventout<mfcolor>(node));
+            break;
+        case field_value::mfcolorrgba_id:
+            result.reset(new proto_eventout<mfcolorrgba>(node));
             break;
         case field_value::mffloat_id:
             result.reset(new proto_eventout<mffloat>(node));
             break;
         case field_value::mfdouble_id:
             result.reset(new proto_eventout<mfdouble>(node));
+            break;
+        case field_value::mfimage_id:
+            result.reset(new proto_eventout<mfimage>(node));
             break;
         case field_value::mfint32_id:
             result.reset(new proto_eventout<mfint32>(node));
@@ -1706,6 +1750,11 @@ namespace openvrml {
                 dynamic_cast<proto_eventout<sfcolor> *>(&interface_eventout)
                 ->is(*dynamic_cast<sfcolor_emitter *>(&impl_eventout));
             break;
+        case field_value::sfcolorrgba_id:
+            succeeded =
+                dynamic_cast<proto_eventout<sfcolorrgba> *>(&interface_eventout)
+                ->is(*dynamic_cast<sfcolorrgba_emitter *>(&impl_eventout));
+            break;
         case field_value::sffloat_id:
             succeeded =
                 dynamic_cast<proto_eventout<sffloat> *>(&interface_eventout)
@@ -1766,10 +1815,20 @@ namespace openvrml {
                 dynamic_cast<proto_eventout<sfvec3d> *>(&interface_eventout)
                 ->is(*dynamic_cast<sfvec3d_emitter *>(&impl_eventout));
             break;
+        case field_value::mfbool_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfbool> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfbool_emitter *>(&impl_eventout));
+            break;
         case field_value::mfcolor_id:
             succeeded =
                 dynamic_cast<proto_eventout<mfcolor> *>(&interface_eventout)
                 ->is(*dynamic_cast<mfcolor_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfcolorrgba_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfcolorrgba> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfcolorrgba_emitter *>(&impl_eventout));
             break;
         case field_value::mffloat_id:
             succeeded =
@@ -1780,6 +1839,11 @@ namespace openvrml {
             succeeded =
                 dynamic_cast<proto_eventout<mfdouble> *>(&interface_eventout)
                 ->is(*dynamic_cast<mfdouble_emitter *>(&impl_eventout));
+            break;
+        case field_value::mfimage_id:
+            succeeded =
+                dynamic_cast<proto_eventout<mfimage> *>(&interface_eventout)
+                ->is(*dynamic_cast<mfimage_emitter *>(&impl_eventout));
             break;
         case field_value::mfint32_id:
             succeeded =
@@ -1915,6 +1979,12 @@ namespace openvrml {
                     node,
                     *polymorphic_downcast<const sfcolor *>(&initial_value)));
             break;
+        case field_value::sfcolorrgba_id:
+            result.reset(
+                new proto_exposedfield<sfcolorrgba>(
+                    node,
+                    *polymorphic_downcast<const sfcolorrgba *>(&initial_value)));
+            break;
         case field_value::sffloat_id:
             result.reset(
                 new proto_exposedfield<sffloat>(
@@ -1988,11 +2058,23 @@ namespace openvrml {
                     node,
                     *polymorphic_downcast<const sfvec3d *>(&initial_value)));
             break;
+        case field_value::mfbool_id:
+            result.reset(
+                new proto_exposedfield<mfbool>(
+                    node,
+                    *polymorphic_downcast<const mfbool *>(&initial_value)));
+            break;
         case field_value::mfcolor_id:
             result.reset(
                 new proto_exposedfield<mfcolor>(
                     node,
                     *polymorphic_downcast<const mfcolor *>(&initial_value)));
+            break;
+        case field_value::mfcolorrgba_id:
+            result.reset(
+                new proto_exposedfield<mfcolorrgba>(
+                    node,
+                    *polymorphic_downcast<const mfcolorrgba *>(&initial_value)));
             break;
         case field_value::mffloat_id:
             result.reset(
@@ -2005,6 +2087,12 @@ namespace openvrml {
                 new proto_exposedfield<mfdouble>(
                     node,
                     *polymorphic_downcast<const mfdouble *>(&initial_value)));
+            break;
+        case field_value::mfimage_id:
+            result.reset(
+                new proto_exposedfield<mfimage>(
+                    node,
+                    *polymorphic_downcast<const mfimage *>(&initial_value)));
             break;
         case field_value::mfint32_id:
             result.reset(
@@ -5898,6 +5986,9 @@ namespace {
         case field_value::sfcolor_id:
             result.reset(new externproto_exposedfield<sfcolor>(node));
             break;
+        case field_value::sfcolorrgba_id:
+            result.reset(new externproto_exposedfield<sfcolorrgba>(node));
+            break;
         case field_value::sfdouble_id:
             result.reset(new externproto_exposedfield<sfdouble>(node));
             break;
@@ -5934,14 +6025,23 @@ namespace {
         case field_value::sfvec3d_id:
             result.reset(new externproto_exposedfield<sfvec3d>(node));
             break;
+        case field_value::mfbool_id:
+            result.reset(new externproto_exposedfield<mfimage>(node));
+            break;
         case field_value::mfcolor_id:
             result.reset(new externproto_exposedfield<mfcolor>(node));
+            break;
+        case field_value::mfcolorrgba_id:
+            result.reset(new externproto_exposedfield<mfcolorrgba>(node));
             break;
         case field_value::mffloat_id:
             result.reset(new externproto_exposedfield<mffloat>(node));
             break;
         case field_value::mfdouble_id:
             result.reset(new externproto_exposedfield<mfdouble>(node));
+            break;
+        case field_value::mfimage_id:
+            result.reset(new externproto_exposedfield<mfimage>(node));
             break;
         case field_value::mfint32_id:
             result.reset(new externproto_exposedfield<mfint32>(node));

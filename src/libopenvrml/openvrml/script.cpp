@@ -261,6 +261,11 @@ void openvrml::script::process_direct_output(double timestamp)
                 .process_event(*polymorphic_downcast<sfcolor *>(
                     output->second.get()), timestamp);
             break;
+        case field_value::sfcolorrgba_id:
+            dynamic_cast<sfcolorrgba_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<sfcolorrgba *>(
+                    output->second.get()), timestamp);
+            break;
         case field_value::sffloat_id:
             dynamic_cast<sffloat_listener &>(*output->first)
                 .process_event(*polymorphic_downcast<sffloat *>(
@@ -321,9 +326,19 @@ void openvrml::script::process_direct_output(double timestamp)
                 .process_event(*polymorphic_downcast<sfvec3d *>(
                     output->second.get()), timestamp);
             break;
+        case field_value::mfbool_id:
+            dynamic_cast<mfbool_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfbool *>(
+                    output->second.get()), timestamp);
+            break;
         case field_value::mfcolor_id:
             dynamic_cast<mfcolor_listener &>(*output->first)
                 .process_event(*polymorphic_downcast<mfcolor *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfcolorrgba_id:
+            dynamic_cast<mfcolorrgba_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfcolorrgba *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mffloat_id:
@@ -334,6 +349,11 @@ void openvrml::script::process_direct_output(double timestamp)
         case field_value::mfdouble_id:
             dynamic_cast<mfdouble_listener &>(*output->first)
                 .process_event(*polymorphic_downcast<mfdouble *>(
+                    output->second.get()), timestamp);
+            break;
+        case field_value::mfimage_id:
+            dynamic_cast<mfimage_listener &>(*output->first)
+                .process_event(*polymorphic_downcast<mfimage *>(
                     output->second.get()), timestamp);
             break;
         case field_value::mfint32_id:
@@ -816,6 +836,14 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
+ * @typedef openvrml::script_node::sfcolorrgba_listener
+ *
+ * @brief sfcolorrgba event listener.
+ */
+
+/**
+ * @internal
+ *
  * @typedef openvrml::script_node::sffloat_listener
  *
  * @brief @c sffloat event listener.
@@ -904,6 +932,14 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
+ * @typedef openvrml::script_node::mfbool_listener
+ *
+ * @brief mfbool event listener.
+ */
+
+/**
+ * @internal
+ *
  * @typedef openvrml::script_node::mfcolor_listener
  *
  * @brief @c mfcolor event listener.
@@ -920,9 +956,25 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
+ * @typedef openvrml::script_node::mfcolorrgba_listener
+ *
+ * @brief mfcolorrgba event listener.
+ */
+
+/**
+ * @internal
+ *
  * @typedef openvrml::script_node::mffloat_listener
  *
  * @brief @c mffloat event listener.
+ */
+
+/**
+ * @internal
+ *
+ * @typedef openvrml::script_node::mfimage_listener
+ *
+ * @brief mfimage event listener.
  */
 
 /**
@@ -1024,6 +1076,9 @@ openvrml::script_node::create_listener(const field_value::type_id type,
     case field_value::sfcolor_id:
         listener.reset(new sfcolor_listener(id, node));
         break;
+    case field_value::sfcolorrgba_id:
+        listener.reset(new sfcolorrgba_listener(id, node));
+        break;
     case field_value::sffloat_id:
         listener.reset(new sffloat_listener(id, node));
         break;
@@ -1060,14 +1115,23 @@ openvrml::script_node::create_listener(const field_value::type_id type,
     case field_value::sfvec3d_id:
         listener.reset(new sfvec3d_listener(id, node));
         break;
+    case field_value::mfbool_id:
+        listener.reset(new mfbool_listener(id, node));
+        break;
     case field_value::mfcolor_id:
         listener.reset(new mfcolor_listener(id, node));
+        break;
+    case field_value::mfcolorrgba_id:
+        listener.reset(new mfcolorrgba_listener(id, node));
         break;
     case field_value::mffloat_id:
         listener.reset(new mffloat_listener(id, node));
         break;
     case field_value::mfdouble_id:
         listener.reset(new mfdouble_listener(id, node));
+        break;
+    case field_value::mfimage_id:
+        listener.reset(new mfimage_listener(id, node));
         break;
     case field_value::mfint32_id:
         listener.reset(new mfint32_listener(id, node));
@@ -1134,6 +1198,11 @@ openvrml::script_node::create_emitter(script_node & node,
                           node,
                           *polymorphic_downcast<const sfcolor *>(&value)));
         break;
+    case field_value::sfcolorrgba_id:
+        emitter.reset(new script_event_emitter<sfcolorrgba>(
+                          node,
+                          *polymorphic_downcast<const sfcolorrgba *>(&value)));
+        break;
     case field_value::sffloat_id:
         emitter.reset(new script_event_emitter<sffloat>(
                           node,
@@ -1194,10 +1263,20 @@ openvrml::script_node::create_emitter(script_node & node,
                           node,
                           *polymorphic_downcast<const sfvec3d *>(&value)));
         break;
+    case field_value::mfbool_id:
+        emitter.reset(new script_event_emitter<mfbool>(
+                          node,
+                          *polymorphic_downcast<const mfbool *>(&value)));
+        break;
     case field_value::mfcolor_id:
         emitter.reset(new script_event_emitter<mfcolor>(
                           node,
                           *polymorphic_downcast<const mfcolor *>(&value)));
+        break;
+    case field_value::mfcolorrgba_id:
+        emitter.reset(new script_event_emitter<mfcolorrgba>(
+                          node,
+                          *polymorphic_downcast<const mfcolorrgba *>(&value)));
         break;
     case field_value::mffloat_id:
         emitter.reset(new script_event_emitter<mffloat>(
@@ -1208,6 +1287,11 @@ openvrml::script_node::create_emitter(script_node & node,
         emitter.reset(new script_event_emitter<mfdouble>(
                           node,
                           *polymorphic_downcast<const mfdouble *>(&value)));
+        break;
+    case field_value::mfimage_id:
+        emitter.reset(new script_event_emitter<mfimage>(
+                          node,
+                          *polymorphic_downcast<const mfimage *>(&value)));
         break;
     case field_value::mfint32_id:
         emitter.reset(new script_event_emitter<mfint32>(
@@ -2663,6 +2747,32 @@ private:
                              uintN argc, jsval * argv) throw ();
 };
 
+class OPENVRML_LOCAL MFBool : public MField {
+public:
+    static JSClass jsclass;
+
+    static JSBool toJsval(const std::vector<bool> & bools,
+                          JSContext * cx, JSObject * obj, jsval * rval)
+        throw ();
+    static std::auto_ptr<openvrml::mfbool>
+    createFromJSObject(JSContext * cx, JSObject * obj)
+        throw (bad_conversion, std::bad_alloc);
+
+private:
+    static JSBool construct(JSContext * cx, JSObject * obj,
+                            uintN argc, jsval * argv,
+                            jsval * vp);
+    static JSBool initObject(JSContext * cx, JSObject * obj,
+                             uintN argc, jsval * argv);
+    static JSBool setElement(JSContext * cx, JSObject * obj,
+                             jsval id, jsval * vp);
+    static JSBool setLength(JSContext * cx, JSObject * obj,
+                            jsval id, jsval * vp);
+    static JSBool toString(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv, jsval * rval);
+    static void finalize(JSContext * cx, JSObject * obj);
+};
+
 class OPENVRML_LOCAL MFColor : public MFJSObject<MFColor> {
 public:
     static JSClass jsclass;
@@ -3351,6 +3461,17 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
         }
         break;
 
+    case field_value::mfbool_id:
+        {
+            const openvrml::mfbool & mfbool =
+                    static_cast<const openvrml::mfbool &>(fieldValue);
+            if (!MFBool::toJsval(mfbool.value(), this->cx, globalObj, &rval)) 
+            {
+                rval = JSVAL_NULL;
+            }
+        }
+        break;
+
     case field_value::mfcolor_id:
         {
             const openvrml::mfcolor & mfcolor =
@@ -3957,6 +4078,11 @@ createFieldValueFromJsval(JSContext * const cx,
         if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
         return auto_ptr<field_value>
             (SFVec3d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+
+    case field_value::mfbool_id:
+        if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
+        return auto_ptr<field_value>
+            (MFBool::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
     case field_value::mfcolor_id:
         if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
@@ -8575,6 +8701,216 @@ void MFJSDouble<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
         delete mfdata;
         JS_SetPrivate(cx, obj, 0);
     }
+}
+
+JSClass MFBool::jsclass = {
+    "MFBool",            // name
+    JSCLASS_HAS_PRIVATE, // flags
+    JS_PropertyStub,     // addProperty
+    JS_PropertyStub,     // delProperty
+    getElement,          // getProperty
+    setElement,          // setProperty
+    JS_EnumerateStub,    // enumerate
+    JS_ResolveStub,      // resolve
+    JS_ConvertStub,      // convert
+    finalize,            // finalize
+    0,                   // getObjectOps
+    0,                   // checkAccess
+    0,                   // call
+    0,                   // construct
+    0,                   // xdrObject
+    0,                   // hasInstance
+    0,                   // mark
+    0                    // spare
+};
+
+std::auto_ptr<openvrml::mfbool>
+MFBool::createFromJSObject(JSContext * const cx, JSObject * const obj)
+    throw (bad_conversion, std::bad_alloc)
+{
+    assert(cx);
+    assert(obj);
+
+    if (!JS_InstanceOf(cx, obj, &MFBool::jsclass, 0)) {
+        throw bad_conversion("MFBool object expected.");
+    }
+
+    MField::MFData * const mfdata =
+            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+    assert(mfdata);
+    std::auto_ptr<openvrml::mfbool>
+            mfbool(new openvrml::mfbool(mfdata->array.size()));
+    std::vector<bool> temp = mfbool->value();
+    for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
+        assert(JSVAL_IS_BOOLEAN(mfdata->array[i]));
+        temp[i] = JSVAL_TO_BOOLEAN(mfdata->array[i]);
+    }
+    mfbool->value(temp);
+    return mfbool;
+}
+
+JSBool MFBool::toJsval(const std::vector<bool> & bools,
+                       JSContext * const cx,
+                       JSObject * const obj,
+                       jsval * const rval)
+    throw ()
+{
+    JSObject * const mfboolObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+    if (!mfboolObj) { return JS_FALSE; }
+
+    jsval length = INT_TO_JSVAL(bools.size());
+    if (!setLength(cx, mfboolObj, 0, &length)) { return JS_FALSE; }
+
+    MFData * const mfdata =
+        static_cast<MFData *>(JS_GetPrivate(cx, mfboolObj));
+    for (size_t i = 0; i < bools.size(); ++i) {
+        mfdata->array[i] = BOOLEAN_TO_JSVAL(bools[i]);
+    }
+    *rval = OBJECT_TO_JSVAL(mfboolObj);
+    return JS_TRUE;
+}
+
+JSBool MFBool::construct(JSContext * const cx, JSObject * obj,
+                         const uintN argc, jsval * const argv,
+                         jsval * const rval)
+{
+    assert(cx);
+    assert(obj);
+    assert(rval);
+
+    //
+    // If called without new, replace obj with a new object.
+    //
+    if (!JS_IsConstructing(cx)) {
+        obj = JS_NewObject(cx, &jsclass, 0, 0);
+        if (!obj) { return JS_FALSE; }
+        *rval = OBJECT_TO_JSVAL(obj);
+    }
+    return initObject(cx, obj, argc, argv);
+}
+
+JSBool MFBool::initObject(JSContext * const cx,
+                          JSObject * const obj,
+                          const uintN argc,
+                          jsval * const argv)
+{
+    assert(cx);
+    assert(obj);
+
+    try {
+        std::auto_ptr<MFData> mfdata(new MFData(argc));
+        for (uintN i = 0; i < argc; ++i) {
+            //
+            // Convert the jsval to an int32 and back to a jsval in order
+            // to remove any decimal part.
+            //
+            JSBool boolean;
+            if (!JS_ValueToBoolean(cx, argv[i], &boolean)) {
+                return JS_FALSE;
+            }
+            mfdata->array[i] = BOOLEAN_TO_JSVAL(boolean);
+        }
+        if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+        mfdata.release();
+    } catch (std::bad_alloc & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+        return JS_FALSE;
+    }
+    return JS_TRUE;
+}
+
+JSBool MFBool::setElement(JSContext * const cx,
+                          JSObject * const obj,
+                          const jsval id,
+                          jsval * const vp)
+{
+    assert(cx);
+    assert(obj);
+    assert(vp);
+
+    if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
+        const size_t index = JSVAL_TO_INT(id);
+
+        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        assert(mfdata);
+
+        //
+        // Grow array if necessary.
+        //
+        if (index >= mfdata->array.size()) {
+            jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+            if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
+        }
+
+        //
+        // Convert the jsval to an int32 and back to a jsval in order
+        // to remove any decimal part.
+        //
+        JSBool b;
+        if (!JS_ValueToBoolean(cx, *vp, &b)) { return JS_FALSE; }
+        mfdata->array[index] = BOOLEAN_TO_JSVAL(b);
+        mfdata->changed = true;
+    }
+    return JS_TRUE;
+}
+
+JSBool MFBool::setLength(JSContext * const cx,
+                         JSObject * const obj,
+                         jsval,
+                         jsval * const vp)
+{
+    assert(cx);
+    assert(obj);
+    assert(vp);
+
+    MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+    assert(mfdata);
+
+    uint32 new_length;
+    if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
+
+    try {
+        if (size_t(JSVAL_TO_INT(*vp)) != mfdata->array.size()) {
+            mfdata->array.resize(JSVAL_TO_INT(*vp));
+        }
+    } catch (std::bad_alloc &) {
+        JS_ReportOutOfMemory(cx);
+        return JS_FALSE;
+    }
+    mfdata->changed = true;
+    return JS_TRUE;
+}
+
+JSBool MFBool::toString(JSContext * const cx,
+                        JSObject * const obj,
+                        uintN,
+                        jsval *,
+                        jsval * const rval)
+{
+    assert(cx);
+    assert(obj);
+
+    MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+    assert(mfdata);
+
+    std::ostringstream out;
+    out << '[';
+    for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
+        out << JSVAL_TO_BOOLEAN(mfdata->array[i]) ? "TRUE" : "FALSE";
+        if ((i + 1) < mfdata->array.size()) { out << ", "; }
+    }
+    out << ']';
+
+    JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
+    if (!jsstr) { return JS_FALSE; }
+    *rval = STRING_TO_JSVAL(jsstr);
+    return JS_TRUE;
+}
+
+void MFBool::finalize(JSContext * const cx, JSObject * const obj)
+{
+    delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
+    JS_SetPrivate(cx, obj, 0);
 }
 
 JSClass MFColor::jsclass = {

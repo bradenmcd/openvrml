@@ -214,6 +214,12 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
+ * @var openvrml::field_value::sfcolorrgba_id
+ *
+ * @brief Designates an <code>sfcolorrgba</code>.
+ */
+
+/**
  * @var openvrml::field_value::sffloat_id
  *
  * @brief Designates an <code>sffloat</code>.
@@ -268,15 +274,33 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
+ * @var openvrml::field_value::mfbool_id
+ *
+ * @brief Designates an <code>mfbool</code>.
+ */
+
+/**
  * @var openvrml::field_value::mfcolor_id
  *
  * @brief Designates an <code>mfcolor</code>.
  */
 
 /**
+ * @var openvrml::field_value::mfcolorrgba_id
+ *
+ * @brief Designates an <code>mfcolorrgba</code>.
+ */
+
+/**
  * @var openvrml::field_value::mffloat_id
  *
  * @brief Designates an <code>mffloat</code>.
+ */
+
+/**
+ * @var openvrml::field_value::mfimage_id
+ *
+ * @brief Designates an <code>mfimage</code>.
  */
 
 /**
@@ -331,7 +355,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value>
- openvrml::field_value::create(const type_id type)
+openvrml::field_value::create(const type_id type)
     throw (std::bad_alloc)
 {
     using std::auto_ptr;
@@ -340,6 +364,8 @@ std::auto_ptr<openvrml::field_value>
         return auto_ptr<field_value>(new sfbool);
     case field_value::sfcolor_id:
         return auto_ptr<field_value>(new sfcolor);
+    case field_value::sfcolorrgba_id:
+        return auto_ptr<field_value>(new sfcolorrgba);
     case field_value::sffloat_id:
         return auto_ptr<field_value>(new sffloat);
     case field_value::sfdouble_id:
@@ -364,12 +390,18 @@ std::auto_ptr<openvrml::field_value>
         return auto_ptr<field_value>(new sfvec3f);
     case field_value::sfvec3d_id:
         return auto_ptr<field_value>(new sfvec3d);
+    case field_value::mfbool_id:
+        return auto_ptr<field_value>(new mfbool);
     case field_value::mfcolor_id:
         return auto_ptr<field_value>(new mfcolor);
+    case field_value::mfcolorrgba_id:
+        return auto_ptr<field_value>(new mfcolorrgba);
     case field_value::mffloat_id:
         return auto_ptr<field_value>(new mffloat);
     case field_value::mfdouble_id:
         return auto_ptr<field_value>(new mfdouble);
+    case field_value::mfimage_id:
+        return auto_ptr<field_value>(new mfimage);
     case field_value::mfint32_id:
         return auto_ptr<field_value>(new mfint32);
     case field_value::mfnode_id:
@@ -559,6 +591,7 @@ namespace {
         "<invalid field type>",
         "SFBool",
         "SFColor",
+        "SFColorRGBA",
         "SFFloat",
         "SFDouble",
         "SFImage",
@@ -571,9 +604,12 @@ namespace {
         "SFVec2d",
         "SFVec3f",
         "SFVec3d",
+        "MFBool",
         "MFColor",
+        "MFColorRGBA",
         "MFFloat",
         "MFDouble",
+        "MFImage",
         "MFInt32",
         "MFNode",
         "MFRotation",
@@ -706,6 +742,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  * @par Models
  * - <code>sfbool</code>
  * - <code>sfcolor</code>
+ * - <code>sfcolorrgba</code>
  * - <code>sfdouble</code>
  * - <code>sffloat</code>
  * - <code>sfimage</code>
@@ -718,9 +755,12 @@ std::istream & openvrml::operator>>(std::istream & in,
  * - <code>sfvec2f</code>
  * - <code>sfvec3d</code>
  * - <code>sfvec3f</code>
+ * - <code>mfbool</code>
  * - <code>mfcolor</code>
+ * - <code>mfcolorrgba</code>
  * - <code>mfdouble</code>
  * - <code>mffloat</code>
+ * - <code>mfimage</code>
  * - <code>mfint32</code>
  * - <code>mfnode</code>
  * - <code>mfrotation</code>
@@ -1087,6 +1127,179 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
     return !(lhs == rhs);
 }
 
+/**
+ * @class openvrml::sfcolorrgba
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A color_rgba node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::sfcolorrgba::value_type
+ *
+ * @brief Type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::sfcolorrgba::field_value_type_id(sfcolorrgba_id);
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ */
+openvrml::sfcolorrgba::sfcolorrgba(const value_type & value) throw ():
+    field_value(value, value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct a copy.
+ *
+ * @param sfc   the instance to copy.
+ */
+openvrml::sfcolorrgba::sfcolorrgba(const sfcolorrgba & sfc):
+    field_value(sfc)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::sfcolorrgba::~sfcolorrgba() throw ()
+{}
+
+/**
+ * @brief Assign.
+ *
+ * @param sfc   the value to assign.
+ *
+ * @return a reference to the instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::sfcolorrgba & openvrml::sfcolorrgba::operator=(const sfcolorrgba & sfc)
+     throw (std::bad_alloc)
+{
+    return this->field_value::operator=(sfc);
+}
+
+/**
+ * @brief Access.
+ *
+ * @return the color_rgba value.
+ */
+const openvrml::sfcolorrgba::value_type & openvrml::sfcolorrgba::value() const throw ()
+{
+    return this->field_value::value<sfcolorrgba>();
+}
+
+/**
+ * @brief Mutate.
+ *
+ * @param val   the new value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void openvrml::sfcolorrgba::value(const value_type & val) throw (std::bad_alloc)
+{
+    this->field_value::value<sfcolorrgba>(val);
+}
+
+/**
+ * @brief Swap.
+ *
+ * @param sfc   the value to swap with this one.
+ */
+void openvrml::sfcolorrgba::swap(sfcolorrgba & sfc) throw ()
+{
+    this->field_value::swap<sfcolorrgba>(sfc);
+}
+
+/**
+ * @brief Polymorphically construct a copy.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::sfcolorrgba::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new sfcolorrgba(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @param value the new value to give the object.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast if @p value is not an SFColor.
+ */
+openvrml::sfcolorrgba & openvrml::sfcolorrgba::do_assign(const field_value & value)
+    throw (std::bad_cast)
+{
+    return (*this = dynamic_cast<const sfcolorrgba &>(value));
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::sfcolorrgba::print(std::ostream & out) const
+{
+    out << this->value();
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::sfcolorrgba.
+ */
+openvrml::field_value::type_id openvrml::sfcolorrgba::do_type() const throw ()
+{
+    return field_value::sfcolorrgba_id;
+}
+
+/**
+ * @relatesalso openvrml::sfcolorrgba
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs) throw ()
+{
+    return lhs.value() == rhs.value();
+}
+
+/**
+ * @relatesalso openvrml::sfcolorrgba
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *      otherwise.
+ */
+bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @class openvrml::sffloat
@@ -3221,6 +3434,214 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
     return !(lhs == rhs);
 }
 
+
+/**
+ * @class openvrml::mfbool
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A @c bool array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfbool::value_type
+ *
+ * @brief The type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfbool::field_value_type_id(mfbool_id);
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfbool</code> with @p n copies of @p value.
+ *
+ * @param n     the number elements in the mfbool.
+ * @param value used to initialize the mfbool.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post size is @p n. Every element is a copy of @p value.
+ */
+openvrml::mfbool::mfbool(const value_type::size_type n, const bool value)
+    throw (std::bad_alloc):
+    field_value(value_type(n, value), value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfbool::mfbool(const value_type & value) throw (std::bad_alloc):
+    field_value(value, value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct a copy.
+ *
+ * @param mfb   the instance to copy.
+ */
+openvrml::mfbool::mfbool(const mfbool & mfb):
+    field_value(mfb)
+{}
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfbool</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfbool::~mfbool() throw ()
+{}
+
+/**
+ * @brief Assign.
+ *
+ * @param mfb   the value to assign.
+ *
+ * @return a reference to the instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfbool & openvrml::mfbool::operator=(const mfbool & mfb)
+    throw (std::bad_alloc)
+{
+    return this->field_value::operator=(mfb);
+}
+
+/**
+ * @brief Access.
+ *
+ * @return the bool values.
+ */
+const openvrml::mfbool::value_type & openvrml::mfbool::value() const throw ()
+{
+    return this->field_value::value<mfbool>();
+}
+
+/**
+ * @brief Mutate.
+ *
+ * @param val   the new value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void openvrml::mfbool::value(const value_type & val) throw (std::bad_alloc)
+{
+    this->field_value::value<mfbool>(val);
+}
+
+/**
+ * @brief Swap.
+ *
+ * @param mfc   the value to swap with this one.
+ */
+void openvrml::mfbool::swap(mfbool & mfb) throw ()
+{
+    this->field_value::swap<mfbool>(mfb);
+}
+
+/**
+ * @brief Polymorphically construct a copy.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::mfbool::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfbool(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if  @p value is not an mfbool object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfbool & openvrml::mfbool::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    return (*this = dynamic_cast<const mfbool &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::mfbool.
+ */
+openvrml::field_value::type_id openvrml::mfbool::do_type() const throw ()
+{
+    return field_value::mfbool_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfbool::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value().size() > 1) {
+        for (value_type::const_iterator i(this->value().begin());
+             i != this->value().end() - 1; ++i) {
+            out << (*i ? "TRUE" : "FALSE") << ", ";
+        }
+    }
+    if (!this->value().empty()) {
+        out << (this->value().back() ? "TRUE" : "FALSE");
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfbool
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfbool & lhs, const mfbool & rhs) throw ()
+{
+    return lhs.value() == rhs.value();
+}
+
+/**
+ * @relatesalso openvrml::mfbool
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
+
+
+
 /**
  * @class openvrml::mfcolor
  *
@@ -3423,6 +3844,220 @@ bool openvrml::operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
  *         otherwise.
  */
 bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
+
+/**
+ * @class openvrml::mfcolorrgba
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A color_rgba array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfcolorrgba::value_type
+ *
+ * @brief The type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfcolorrgba::field_value_type_id(mfcolorrgba_id);
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfcolorrgba</code> with @p n copies of @p value.
+ *
+ * @param n     the number elements in the mfcolorrgba.
+ * @param value used to initialize the mfcolorrgba.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post size is @p n. Every element is a copy of @p value.
+ */
+openvrml::mfcolorrgba::mfcolorrgba(const value_type::size_type n,
+                                   const color_rgba & value)
+    throw (std::bad_alloc):
+    field_value(value_type(n, value),
+                value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfcolorrgba::mfcolorrgba(const value_type & value)
+    throw (std::bad_alloc):
+    field_value(value, value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct a copy.
+ *
+ * @param mfc   the instance to copy.
+ */
+openvrml::mfcolorrgba::mfcolorrgba(const mfcolorrgba & mfc):
+    field_value(mfc)
+{}
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfcolorrgba</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfcolorrgba::~mfcolorrgba() throw ()
+{}
+
+/**
+ * @brief Assign.
+ *
+ * @param mfc   the value to assign.
+ *
+ * @return a reference to the instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfcolorrgba &
+openvrml::mfcolorrgba::operator=(const mfcolorrgba & mfc)
+    throw (std::bad_alloc)
+{
+    return this->field_value::operator=(mfc);
+}
+
+/**
+ * @brief Access.
+ *
+ * @return the color_rgba values.
+ */
+const openvrml::mfcolorrgba::value_type & openvrml::mfcolorrgba::value() const
+    throw ()
+{
+    return this->field_value::value<mfcolorrgba>();
+}
+
+/**
+ * @brief Mutate.
+ *
+ * @param val   the new value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void openvrml::mfcolorrgba::value(const value_type & val)
+    throw (std::bad_alloc)
+{
+    this->field_value::value<mfcolorrgba>(val);
+}
+
+/**
+ * @brief Swap.
+ *
+ * @param mfc   the value to swap with this one.
+ */
+void openvrml::mfcolorrgba::swap(mfcolorrgba & mfc) throw ()
+{
+    this->field_value::swap<mfcolorrgba>(mfc);
+}
+
+/**
+ * @brief Polymorphically construct a copy.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::mfcolorrgba::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfcolorrgba(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if  @p value is not an mfcolorrgba object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfcolorrgba &
+openvrml::mfcolorrgba::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    return (*this = dynamic_cast<const mfcolorrgba &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::mfcolorrgba.
+ */
+openvrml::field_value::type_id openvrml::mfcolorrgba::do_type() const throw ()
+{
+    return field_value::mfcolorrgba_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfcolorrgba::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value().size() > 1) {
+        for (std::vector<color_rgba>::const_iterator i(this->value().begin());
+             i != this->value().end() - 1; ++i) {
+            out << *i << ", ";
+        }
+    }
+    if (!this->value().empty()) {
+        out << this->value().back();
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfcolorrgba
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
+    throw ()
+{
+    return lhs.value() == rhs.value();
+}
+
+/**
+ * @relatesalso openvrml::mfcolorrgba
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
+    throw ()
 {
     return !(lhs == rhs);
 }
@@ -3841,6 +4476,211 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs) throw ()
     return !(lhs == rhs);
 }
 
+/**
+ * @class openvrml::mfimage
+ *
+ * @ingroup fieldvalues
+ *
+ * @brief A image array node field value.
+ *
+ * @par Model of
+ * @link openvrml::FieldValueConcept Field Value@endlink
+ */
+
+/**
+ * @typedef openvrml::mfimage::value_type
+ *
+ * @brief The type of @a value.
+ */
+
+/**
+ * @brief <code>field_value::type_id</code> for this class.
+ */
+const openvrml::field_value::type_id
+openvrml::mfimage::field_value_type_id(mfimage_id);
+
+/**
+ * @brief Construct.
+ *
+ * Creates an <code>mfimage</code> with @p n copies of @p value.
+ *
+ * @param n     the number elements in the mfimage.
+ * @param value used to initialize the mfimage.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ *
+ * @post size is @p n. Every element is a copy of @p value.
+ */
+openvrml::mfimage::mfimage(const value_type::size_type n,
+                           const image & value)
+    throw (std::bad_alloc):
+    field_value(value_type(n, value), value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct.
+ *
+ * @param value initial value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfimage::mfimage(const value_type & value) throw (std::bad_alloc):
+    field_value(value, value_type_constructor_tag())
+{}
+
+/**
+ * @brief Construct a copy.
+ *
+ * @param mfi   the instance to copy.
+ */
+openvrml::mfimage::mfimage(const mfimage & mfi):
+    field_value(mfi)
+{}
+
+/**
+ * @brief Destroy.
+ *
+ * Each of the <code>mfimage</code>'s @a value elements is destroyed, and
+ * memory allocated for them (if any) is deallocated.
+ */
+openvrml::mfimage::~mfimage() throw ()
+{}
+
+/**
+ * @brief Assign.
+ *
+ * @param mfi   the value to assign.
+ *
+ * @return a reference to the instance.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfimage & openvrml::mfimage::operator=(const mfimage & mfi)
+    throw (std::bad_alloc)
+{
+    return this->field_value::operator=(mfi);
+}
+
+/**
+ * @brief Access.
+ *
+ * @return the image values.
+ */
+const openvrml::mfimage::value_type & openvrml::mfimage::value() const throw ()
+{
+    return this->field_value::value<mfimage>();
+}
+
+/**
+ * @brief Mutate.
+ *
+ * @param val   the new value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void openvrml::mfimage::value(const value_type & val) throw (std::bad_alloc)
+{
+    this->field_value::value<mfimage>(val);
+}
+
+/**
+ * @brief Swap.
+ *
+ * @param mfi   the value to swap with this one.
+ */
+void openvrml::mfimage::swap(mfimage & mfi) throw ()
+{
+    this->field_value::swap<mfimage>(mfi);
+}
+
+/**
+ * @brief Polymorphically construct a copy.
+ *
+ * @return a pointer to a copy of the object.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+std::auto_ptr<openvrml::field_value> openvrml::mfimage::do_clone() const
+    throw (std::bad_alloc)
+{
+    return std::auto_ptr<field_value>(new mfimage(*this));
+}
+
+/**
+ * @brief Virtual assignment.
+ *
+ * @return a reference to the object.
+ *
+ * @exception std::bad_cast     if  @p value is not an mfimage object.
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+openvrml::mfimage & openvrml::mfimage::do_assign(const field_value & value)
+    throw (std::bad_cast, std::bad_alloc)
+{
+    return (*this = dynamic_cast<const mfimage &>(value));
+}
+
+/**
+ * @brief Get the <code>field_value::type_id</code> associated with this class.
+ *
+ * @return @c field_value::mfimage.
+ */
+openvrml::field_value::type_id openvrml::mfimage::do_type() const throw ()
+{
+    return field_value::mfimage_id;
+}
+
+/**
+ * @brief Print to an output stream.
+ *
+ * @param out   an output stream.
+ */
+void openvrml::mfimage::print(std::ostream & out) const
+{
+    out << '[';
+    if (this->value().size() > 1) {
+        for (value_type::const_iterator i(this->value().begin());
+             i != this->value().end() - 1; ++i) {
+            out << *i << ", ";
+        }
+    }
+    if (!this->value().empty()) {
+        out << this->value().back();
+    }
+    out << ']';
+}
+
+/**
+ * @relatesalso openvrml::mfimage
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const mfimage & lhs, const mfimage & rhs) throw ()
+{
+    return lhs.value() == rhs.value();
+}
+
+/**
+ * @relatesalso openvrml::mfimage
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
 
 /**
  * @class openvrml::mfint32
@@ -5721,6 +6561,19 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
 }
 
 /**
+ * @fn template <> void std::swap(openvrml::mfbool & a, openvrml::mfbool & b)
+ *
+ * @relatesalso openvrml::mfbool
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
  * @fn template <> void std::swap(openvrml::sfbool & a, openvrml::sfbool & b)
  *
  * @relatesalso openvrml::sfbool
@@ -5737,6 +6590,19 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  * @fn template <> void std::swap(openvrml::sfcolor & a, openvrml::sfcolor & b)
  *
  * @relatesalso openvrml::sfcolor
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::sfcolorrgba & a, openvrml::sfcolorrgba & b)
+ *
+ * @relatesalso openvrml::sfcolorrgba
  *
  * @brief Swap the values of @p a and @p b.
  *
@@ -5916,6 +6782,19 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  */
 
 /**
+ * @fn template <> void std::swap(openvrml::mfcolorrgba & a, openvrml::mfcolorrgba & b)
+ *
+ * @relatesalso openvrml::mfcolorrgba
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
  * @fn template <> void std::swap(openvrml::mfdouble & a, openvrml::mfdouble & b)
  *
  * @relatesalso openvrml::mfdouble
@@ -5932,6 +6811,19 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  * @fn template <> void std::swap(openvrml::mffloat & a, openvrml::mffloat & b)
  *
  * @relatesalso openvrml::mffloat
+ *
+ * @brief Swap the values of @p a and @p b.
+ *
+ * Does not throw.
+ *
+ * @param a
+ * @param b
+ */
+
+/**
+ * @fn template <> void std::swap(openvrml::mfimage & a, openvrml::mfimage & b)
+ *
+ * @relatesalso openvrml::mfimage
  *
  * @brief Swap the values of @p a and @p b.
  *

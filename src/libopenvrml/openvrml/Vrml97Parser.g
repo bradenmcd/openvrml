@@ -1860,32 +1860,21 @@ options { defaultErrorHandler=false; }
     using antlr::SemanticException;
     size_t x, y, comp;
     int32 pixel;
-    size_t pixel_index = 0;
 }
     :   x=intValue y=intValue comp=intValue {
             img.comp(comp);
             img.resize(x, y);
+            const size_t img_size = x * y;
+            for (size_t pixel_index = 0; pixel_index < img_size; ++pixel_index)
+            ANTLR_LBRACE
         } (
             pixel=intValue {
-                if (!(pixel_index < x * y)) {
-                    throw SemanticException("too many pixel values for image",
-                                            this->uri,
-                                            LT(1)->getLine(),
-                                            LT(1)->getColumn());
-                }
-                img.pixel(pixel_index++, pixel);
+                img.pixel(pixel_index, pixel);
             }
-        )* {
-            if (pixel_index != x * y) {
-                throw antlr::SemanticException("insufficient pixel values for "
-                                               "image",
-                                               this->uri,
-                                               LT(1)->getLine(),
-                                               LT(1)->getColumn());
-            }
+        ) {
+            ANTLR_RBRACE
         }
     ;
-
 
 sfInt32Value returns [boost::shared_ptr<field_value> siv]
 options { defaultErrorHandler=false; }

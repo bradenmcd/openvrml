@@ -31,6 +31,7 @@ CLASSES = \
         vrml/field/SFTime.class \
         vrml/field/SFVec2f.class \
         vrml/field/SFVec3f.class \
+        vrml/field/MFBool.class \
         vrml/field/MFColor.class \
         vrml/field/MFFloat.class \
         vrml/field/MFInt32.class \
@@ -51,6 +52,7 @@ CLASSES = \
         vrml/field/ConstSFTime.class \
         vrml/field/ConstSFVec2f.class \
         vrml/field/ConstSFVec3f.class \
+        vrml/field/ConstMFBool.class \
         vrml/field/ConstMFColor.class \
         vrml/field/ConstMFFloat.class \
         vrml/field/ConstMFInt32.class \
@@ -100,6 +102,7 @@ JNI_HFILES = \
         vrml_field_SFVec2d.h \
         vrml_field_SFVec3f.h \
         vrml_field_SFVec3d.h \
+        vrml_field_MFBool.h \
         vrml_field_MFColor.h \
         vrml_field_MFFloat.h \
         vrml_field_MFDouble.h \
@@ -126,6 +129,7 @@ JNI_HFILES = \
         vrml_field_ConstSFVec2d.h \
         vrml_field_ConstSFVec3f.h \
         vrml_field_ConstSFVec3d.h \
+        vrml_field_ConstMFBool.h \
         vrml_field_ConstMFColor.h \
         vrml_field_ConstMFFloat.h \
         vrml_field_ConstMFDouble.h \
@@ -207,6 +211,9 @@ vrml_field_SFVec3f.h: vrml/field/SFVec3f.class
 vrml_field_SFVec3d.h: vrml/field/SFVec3d.class
 	$(JAVAH) -classpath . vrml.field.SFVec3d
 
+vrml_field_MFBool.h: vrml/field/MFBool.class
+	$(JAVAH) -classpath . vrml.field.MFBool
+
 vrml_field_MFColor.h: vrml/field/MFColor.class
 	$(JAVAH) -classpath . vrml.field.MFColor
 
@@ -284,6 +291,9 @@ vrml_field_ConstSFVec3f.h: vrml/field/ConstSFVec3f.class
 
 vrml_field_ConstSFVec3d.h: vrml/field/ConstSFVec3d.class
 	$(JAVAH) -classpath . vrml.field.ConstSFVec3d
+
+vrml_field_ConstMFBool.h: vrml/field/ConstMFBool.class
+	$(JAVAH) -classpath . vrml.field.ConstMFBool
 
 vrml_field_ConstMFColor.h: vrml/field/ConstMFColor.class
 	$(JAVAH) -classpath . vrml.field.ConstMFColor

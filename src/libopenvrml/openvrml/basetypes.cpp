@@ -25,6 +25,69 @@
 # include <private.h>
 # include "basetypes.h"
 
+namespace {
+
+    // Conversion functions between RGB each in [0,1] and HSV with
+    // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
+
+    OPENVRML_LOCAL inline void rgb_to_hsv(const float * const inrgb,
+                                          float * const outhsv)
+        throw ()
+    {
+        const float maxrgb = *std::max_element(inrgb, inrgb + 3);
+        const float minrgb = *std::min_element(inrgb, inrgb + 3);
+
+        outhsv[0] = 0.0;
+        outhsv[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0f;
+        outhsv[2] = maxrgb;
+
+        if (outhsv[1] != 0.0) {
+            const float rc = (maxrgb - inrgb[0]) / (maxrgb - minrgb);
+            const float gc = (maxrgb - inrgb[1]) / (maxrgb - minrgb);
+            const float bc = (maxrgb - inrgb[2]) / (maxrgb - minrgb);
+
+            if (inrgb[0] == maxrgb) {
+                outhsv[0] = bc - gc;
+            } else if (inrgb[1] == maxrgb) {
+                outhsv[0] = 2 + rc - bc;
+            } else {
+                outhsv[0] = 4 + gc - rc;
+            }
+
+            outhsv[0] *= 60.0;
+            if (outhsv[0] < 0.0) { outhsv[0] += 360.0; }
+        }
+    }
+
+    OPENVRML_LOCAL inline void hsv_to_rgb(float h,
+                                          const float s,
+                                          const float v,
+                                          float * const outhsv)
+        throw ()
+    {
+        if (s == 0.0) {
+            outhsv[0] = outhsv[1] = outhsv[2] = v;
+        } else {
+            if (h >= 360.0) { h -= 360.0; }
+            h /= 60.0;
+            const double i = floor(h);
+            const double f = h - i;
+            const float p = float(v * (1.0 - s));
+            const float q = float(v * (1.0 - s * f));
+            const float t = float(v * (1.0 - s * (1.0 - f)));
+            switch (int(i)) {
+            default:
+            case 0: outhsv[0] = v; outhsv[1] = t; outhsv[2] = p; break;
+            case 1: outhsv[0] = q; outhsv[1] = v; outhsv[2] = p; break;
+            case 2: outhsv[0] = p; outhsv[1] = v; outhsv[2] = t; break;
+            case 3: outhsv[0] = p; outhsv[1] = q; outhsv[2] = v; break;
+            case 4: outhsv[0] = t; outhsv[1] = p; outhsv[2] = v; break;
+            case 5: outhsv[0] = v; outhsv[1] = p; outhsv[2] = q; break;
+            }
+        }
+    }
+}
+
 /**
  * @defgroup basetypes Base Types
  */
@@ -163,29 +226,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 void openvrml::color::hsv(float (&result)[3]) const throw ()
 {
-    const float maxrgb = *std::max_element(this->rgb, this->rgb + 3);
-    const float minrgb = *std::min_element(this->rgb, this->rgb + 3);
-
-    result[0] = 0.0;
-    result[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0f;
-    result[2] = maxrgb;
-
-    if (result[1] != 0.0) {
-        const float rc = (maxrgb - rgb[0]) / (maxrgb - minrgb);
-        const float gc = (maxrgb - rgb[1]) / (maxrgb - minrgb);
-        const float bc = (maxrgb - rgb[2]) / (maxrgb - minrgb);
-
-        if (this->rgb[0] == maxrgb) {
-            result[0] = bc - gc;
-        } else if (this->rgb[1] == maxrgb) {
-            result[0] = 2 + rc - bc;
-        } else {
-            result[0] = 4 + gc - rc;
-        }
-
-        result[0] *= 60.0;
-        if (result[0] < 0.0) { result[0] += 360.0; }
-    }
+    rgb_to_hsv(&rgb[0], &result[0]);
 }
 
 /**
@@ -197,26 +238,7 @@ void openvrml::color::hsv(float (&result)[3]) const throw ()
  */
 void openvrml::color::hsv(float h, const float s, const float v) throw ()
 {
-    if (s == 0.0) {
-        this->rgb[0] = this->rgb[1] = this->rgb[2] = v;
-    } else {
-        if (h >= 360.0) { h -= 360.0; }
-        h /= 60.0;
-        const double i = floor(h);
-        const double f = h - i;
-        const float p = float(v * (1.0 - s));
-        const float q = float(v * (1.0 - s * f));
-        const float t = float(v * (1.0 - s * (1.0 - f)));
-        switch (int(i)) {
-        default:
-        case 0: this->rgb[0] = v; this->rgb[1] = t; this->rgb[2] = p; break;
-        case 1: this->rgb[0] = q; this->rgb[1] = v; this->rgb[2] = p; break;
-        case 2: this->rgb[0] = p; this->rgb[1] = v; this->rgb[2] = t; break;
-        case 3: this->rgb[0] = p; this->rgb[1] = q; this->rgb[2] = v; break;
-        case 4: this->rgb[0] = t; this->rgb[1] = p; this->rgb[2] = v; break;
-        case 5: this->rgb[0] = v; this->rgb[1] = p; this->rgb[2] = q; break;
-        }
-    }
+    hsv_to_rgb(h, s, v, &rgb[0]);
 }
 
 /**
@@ -265,6 +287,222 @@ bool openvrml::operator!=(const color & lhs, const color & rhs) throw ()
 std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 {
     return out << c.r() << ' ' << c.g() << ' ' << c.b();
+}
+
+/**
+ * @class openvrml::color_rgba
+ *
+ * @ingroup basetypes
+ *
+ * @brief A color with alpha channel.
+ *
+ * VRML <code>color_rgba</code>s are represented as four single precision
+ * floating point components&mdash;red, green, blue, and alpha&mdash;ranging
+ * from 0.0 to 1.0. For the alpha channel, 1.0 is opaque.
+ */
+
+/**
+ * @internal
+ *
+ * @var float openvrml::color_rgba::rgb[4]
+ *
+ * @brief RGB triplet plus alpha.
+ */
+
+/**
+ * @brief Construct.
+ */
+openvrml::color_rgba::color_rgba() throw ()
+{}
+
+/**
+ * @brief Construct from a 4-element float array.
+ *
+ * @param rgb   an array comprising red, green, and blue components.
+ */
+openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
+{
+    assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
+    this->rgb[0] = rgb[0];
+    assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
+    this->rgb[1] = rgb[1];
+    assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
+    this->rgb[2] = rgb[2];
+    assert(rgb[3] >= 0.0 && rgb[3] <= 1.0);
+    this->rgb[3] = rgb[3];
+}
+
+/**
+ * @brief Construct from red, green, and blue components.
+ *
+ * @param r red component.
+ * @param g green component.
+ * @param b blue component.
+ * @param a alpha component.
+ */
+openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
+{
+    assert(r >= 0.0 && r <= 1.0);
+    this->rgb[0] = r;
+    assert(g >= 0.0 && g <= 1.0);
+    this->rgb[1] = g;
+    assert(b >= 0.0 && b <= 1.0);
+    this->rgb[2] = b;
+    assert(a >= 0.0 && a <= 1.0);
+    this->rgb[3] = a;
+}
+
+/**
+ * @fn const float & openvrml::color_rgba::operator[](const size_t index) const throw ()
+ *
+ * @brief Index-based component access.
+ *
+ * @param index 0 is the red component, 1 is the green component, 2 is the
+ *              blue component, and 3 is the alpha component.
+ *
+ * @return the component corresponding to @p index.
+ */
+
+/**
+ * @fn float openvrml::color_rgba::r() const throw ()
+ *
+ * @brief Get the red component.
+ *
+ * @return the red component.
+ */
+
+/**
+ * @fn float openvrml::color_rgba::g() const throw ()
+ *
+ * @brief Get the green component.
+ *
+ * @return the green component.
+ */
+
+/**
+ * @fn float openvrml::color_rgba::b() const throw ()
+ *
+ * @brief Get the blue component.
+ *
+ * @return the blue component.
+ */
+
+/**
+ * @fn float openvrml::color_rgba::a() const throw ()
+ *
+ * @brief Get the alpha component.
+ *
+ * @return the alpha component.
+ */
+
+/**
+ * @fn void openvrml::color_rgba::r(float value) throw ()
+ *
+ * @brief Set the red component.
+ *
+ * @param value the new component value.
+ */
+
+/**
+ * @fn void openvrml::color_rgba::g(float value) throw ()
+ *
+ * @brief Set the green component.
+ *
+ * @param value the new component value.
+ */
+
+/**
+ * @fn void openvrml::color_rgba::b(float value) throw ()
+ *
+ * @brief Set the blue component.
+ *
+ * @param value the new component value.
+ */
+
+/**
+ * @fn void openvrml::color_rgba::a(float value) throw ()
+ *
+ * @brief Set the alpha component.
+ *
+ * @param value the new component value.
+ */
+
+/**
+ * @brief Get the color_rgba as hue, saturation, and value.
+ *
+ * @retval result   the hue, saturation, and value.
+ */
+void openvrml::color_rgba::hsv(float (&result)[4]) const throw ()
+{
+    rgb_to_hsv(&rgb[0], &result[0]);
+    result[3] = rgb[3]; // Copy the alpha.
+}
+
+/**
+ * @brief Set the color_rgba from hue, saturation, and value.
+ *
+ * @param h hue.
+ * @param s saturation.
+ * @param v value.
+ * @param a alpha.
+ */
+void openvrml::color_rgba::hsv(const float h,
+                               const float s,
+                               const float v,
+                               const float a)
+    throw ()
+{
+    hsv_to_rgb(h, s, v, &rgb[0]);
+    assert(a >= 0.0 && a <= 1.0);
+    rgb[3] = a;
+}
+
+/**
+ * @relatesalso openvrml::color_rgba
+ *
+ * @brief Compare for equality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs) throw ()
+{
+    using openvrml_::fequal;
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
+}
+
+/**
+ * @relatesalso openvrml::color_rgba
+ *
+ * @brief Compare for inequality.
+ *
+ * @param lhs   left-hand operand.
+ * @param rhs   right-hand operand.
+ *
+ * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
+ *         otherwise.
+ */
+bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs) throw ()
+{
+    return !(lhs == rhs);
+}
+
+/**
+ * @relatesalso openvrml::color_rgba
+ *
+ * @brief Stream output.
+ *
+ * @param out   output stream.
+ * @param c     a color_rgba.
+ *
+ * @return @p out.
+ */
+std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
+{
+    return out << c.r() << ' ' << c.g() << ' ' << c.b() << ' ' << c.a();
 }
 
 

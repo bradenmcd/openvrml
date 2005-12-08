@@ -188,6 +188,12 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
+ * @typedef openvrml::sfcolorrgba_listener
+ *
+ * @brief sfcolorrgba event listener.
+ */
+
+/**
  * @typedef openvrml::sfdouble_listener
  *
  * @brief sfdouble event listener.
@@ -266,6 +272,18 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
+ * @typedef openvrml::mfbool_listener
+ *
+ * @brief mfbool event listener.
+ */
+
+/**
+ * @typedef openvrml::mfcolorrgba_listener
+ *
+ * @brief mfcolorrgba event listener.
+ */
+
+/**
  * @typedef openvrml::mfdouble_listener
  *
  * @brief mfdouble event listener.
@@ -275,6 +293,12 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  * @typedef openvrml::mffloat_listener
  *
  * @brief mffloat event listener.
+ */
+
+/**
+ * @typedef openvrml::mfimage_listener
+ *
+ * @brief mfimage event listener.
  */
 
 /**
@@ -589,6 +613,12 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
+ * @typedef openvrml::sfcolorrgba_emitter
+ *
+ * @brief sfcolorrgba event emitter.
+ */
+
+/**
  * @typedef openvrml::sfdouble_emitter
  *
  * @brief sfdouble event emitter.
@@ -661,15 +691,33 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
+ * @typedef openvrml::mfbool_emitter
+ *
+ * @brief mfbool event emitter.
+ */
+
+/**
  * @typedef openvrml::mfcolor_emitter
  *
  * @brief mfcolor event emitter.
  */
 
 /**
+ * @typedef openvrml::mfcolorrgba_emitter
+ *
+ * @brief mfcolorrgba event emitter.
+ */
+
+/**
  * @typedef openvrml::mfdouble_emitter
  *
  * @brief mfdouble event emitter.
+ */
+
+/**
+ * @typedef openvrml::mfimage_emitter
+ *
+ * @brief mfimage event emitter.
  */
 
 /**

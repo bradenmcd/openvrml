@@ -14,6 +14,7 @@ JAVA_FILES = \
         SFVec2f.java \
         SFVec3d.java \
         SFVec3f.java \
+        MFBool.java \
         MFColor.java \
         MFFloat.java \
         MFInt32.java \
@@ -38,6 +39,7 @@ JAVA_FILES = \
         ConstSFVec2f.java \
         ConstSFVec3d.java \
         ConstSFVec3f.java \
+        ConstMFBool.java \
         ConstMFColor.java \
         ConstMFFloat.java \
         ConstMFInt32.java \

@@ -106,6 +106,87 @@ namespace openvrml {
     }
 
 
+    class OPENVRML_API color_rgba {
+        float rgb[4];
+
+    public:
+        color_rgba() throw ();
+        explicit color_rgba(const float (&rgba)[4]) throw ();
+        color_rgba(float r, float g, float b, float a = 1.0f) throw ();
+
+        const float & operator[](size_t index) const throw ();
+
+        float r() const throw ();
+        float g() const throw ();
+        float b() const throw ();
+        float a() const throw ();
+
+        void r(float value) throw ();
+        void g(float value) throw ();
+        void b(float value) throw ();
+        void a(float value) throw ();
+
+        void hsv(float (&result)[4]) const throw ();
+        void hsv(float h, float s, float v, float a = 1.0f) throw ();
+    };
+
+    OPENVRML_API bool operator==(const color_rgba & lhs,
+                                 const color_rgba & rhs)
+        throw ();
+    OPENVRML_API bool operator!=(const color_rgba & lhs,
+                                 const color_rgba & rhs)
+        throw ();
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const color_rgba & c);
+
+    inline const float & color_rgba::operator[](const size_t index) const
+        throw ()
+    {
+        assert(index < 4);
+        return this->rgb[index];
+    }
+
+    inline float color_rgba::r() const throw ()
+    {
+        return this->rgb[0];
+    }
+
+    inline float color_rgba::g() const throw ()
+    {
+        return this->rgb[1];
+    }
+
+    inline float color_rgba::b() const throw ()
+    {
+        return this->rgb[2];
+    }
+
+    inline float color_rgba::a() const throw ()
+    {
+        return this->rgb[3];
+    }
+
+    inline void color_rgba::r(const float value) throw ()
+    {
+        this->rgb[0] = value;
+    }
+
+    inline void color_rgba::g(const float value) throw ()
+    {
+        this->rgb[1] = value;
+    }
+
+    inline void color_rgba::b(const float value) throw ()
+    {
+        this->rgb[2] = value;
+    }
+
+    inline void color_rgba::a(const float value) throw ()
+    {
+        this->rgb[3] = value;
+    }
+
+
     template<typename T>
     class OPENVRML_API vec2 {
         T vec[2];
