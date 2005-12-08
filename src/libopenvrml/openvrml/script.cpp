@@ -8896,7 +8896,7 @@ JSBool MFBool::toString(JSContext * const cx,
     std::ostringstream out;
     out << '[';
     for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-        out << JSVAL_TO_BOOLEAN(mfdata->array[i]) ? "TRUE" : "FALSE";
+        out << (JSVAL_TO_BOOLEAN(mfdata->array[i]) ? "TRUE" : "FALSE");
         if ((i + 1) < mfdata->array.size()) { out << ", "; }
     }
     out << ']';

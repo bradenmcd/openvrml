@@ -1,5 +1,12 @@
 2005-12-08 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::MFBool::toString(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Added parentheses around ternary operator; << has
+	higher precedence.
+
+2005-12-08 Braden McDaniel  <braden@endoframe.com>
+
 	Added missing case for mfbool to openvrml::add_route.
 
 	* src/libopenvrml/openvrml/node.cpp
