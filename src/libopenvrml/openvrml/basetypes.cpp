@@ -322,14 +322,14 @@ openvrml::color_rgba::color_rgba() throw ()
  */
 openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
 {
-    assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
-    this->rgb[0] = rgb[0];
-    assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
-    this->rgb[1] = rgb[1];
-    assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
-    this->rgb[2] = rgb[2];
-    assert(rgb[3] >= 0.0 && rgb[3] <= 1.0);
-    this->rgb[3] = rgb[3];
+    assert(rgba[0] >= 0.0 && rgba[0] <= 1.0);
+    this->rgb[0] = rgba[0];
+    assert(rgba[1] >= 0.0 && rgba[1] <= 1.0);
+    this->rgb[1] = rgba[1];
+    assert(rgba[2] >= 0.0 && rgba[2] <= 1.0);
+    this->rgb[2] = rgba[2];
+    assert(rgba[3] >= 0.0 && rgba[3] <= 1.0);
+    this->rgb[3] = rgba[3];
 }
 
 /**

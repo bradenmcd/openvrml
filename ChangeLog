@@ -1,5 +1,11 @@
 2005-12-08 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::color_rgba::color_rgba(const float (&)[4])): Fixed to
+	refer to function argument.
+
+2005-12-08 Braden McDaniel  <braden@endoframe.com>
+
 	Added sfcolorrgba, mfbool, mfcolorrgba, and mfimage field_value
 	types.  Added MFBool support to the Java and JavaScript
 	interfaces.  From Andrew Grieve <sgrieve@users.sourceforge.net>
