@@ -1,3 +1,9 @@
+2005-12-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/private.h (OPENVRML_PRINT_EXCEPTION_): Quell
+	unused variable warnings from Microsoft cl when building with
+	NDEBUG.
+
 2005-12-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp

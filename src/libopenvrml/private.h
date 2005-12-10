@@ -23,6 +23,7 @@
 #   define OPENVRML_PRIVATE_H
 
 #   include <openvrml-common.h>
+#   include <boost/concept_check.hpp>
 
 #   ifndef NDEBUG
 #     include <iostream>
@@ -42,7 +43,8 @@
 #   endif
 
 #   ifdef NDEBUG
-#     define OPENVRML_PRINT_EXCEPTION_(ex_)
+#     define OPENVRML_PRINT_EXCEPTION_(ex_) \
+            boost::ignore_unused_variable_warning(ex_)
 #   else
 #     define OPENVRML_PRINT_EXCEPTION_(ex_) \
             std::cerr << __FILE__ << ":" << __LINE__ << ": " \
