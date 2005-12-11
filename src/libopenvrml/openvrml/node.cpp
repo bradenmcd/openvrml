@@ -26,6 +26,7 @@
 
 # include <algorithm>
 # include <sstream>
+# include <boost/array.hpp>
 # include <boost/bind.hpp>
 # include <boost/lexical_cast.hpp>
 # include "private.h"
@@ -142,7 +143,8 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
  */
 
 namespace {
-    const char * const node_interface_type_id_[] = {
+    typedef boost::array<const char *, 5> node_interface_type_id;
+    const node_interface_type_id node_interface_type_id_ = {
         "<invalid interface type>",
         "eventIn",
         "eventOut",
@@ -193,13 +195,12 @@ std::istream & openvrml::operator>>(std::istream & in,
     string interface_type_id;
     in >> interface_type_id;
 
-    static const char * const * const begin =
-            node_interface_type_id_ + node_interface::eventin_id;
-    static const char * const * const end =
-            node_interface_type_id_ + node_interface::field_id + 1;
-    const char * const * const pos = find(begin, end, interface_type_id);
-    if (pos != end) {
-        type = node_interface::type_id(pos - begin);
+    const node_interface_type_id::const_iterator pos =
+        find(node_interface_type_id_.begin(),
+             node_interface_type_id_.end(),
+             interface_type_id);
+    if (pos != node_interface_type_id_.end()) {
+        type = node_interface::type_id(pos - node_interface_type_id_.begin());
     } else {
         in.setstate(std::ios_base::failbit);
     }

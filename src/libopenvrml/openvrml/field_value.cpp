@@ -26,6 +26,7 @@
 
 # include <algorithm>
 # include <numeric>
+# include <boost/array.hpp>
 # include <private.h>
 # include "field_value.h"
 # include "node.h"
@@ -587,7 +588,8 @@ openvrml::field_value::type_id openvrml::field_value::type() const throw ()
  */
 
 namespace {
-    const char * const field_value_type_id_[] = {
+    typedef boost::array<const char *, 31> field_value_type_id;
+    const field_value_type_id field_value_type_id_ = {
         "<invalid field type>",
         "SFBool",
         "SFColor",
@@ -661,13 +663,12 @@ std::istream & openvrml::operator>>(std::istream & in,
 {
     std::string str;
     in >> str;
-    static const char * const * const begin =
-            field_value_type_id_ + field_value::sfbool_id;
-    static const char * const * const end =
-            field_value_type_id_ + field_value::mfvec3f_id + 1;
-    const char * const * const pos = std::find(begin, end, str);
-    if (pos != end) {
-        type_id = field_value::type_id(pos - begin);
+    const field_value_type_id::const_iterator pos = 
+        std::find(field_value_type_id_.begin(),
+                  field_value_type_id_.end(),
+                  str);
+    if (pos != field_value_type_id_.end()) {
+        type_id = field_value::type_id(pos - field_value_type_id_.begin());
     } else {
         in.setstate(std::ios_base::failbit);
     }

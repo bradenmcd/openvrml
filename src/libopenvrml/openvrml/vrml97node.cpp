@@ -36,6 +36,7 @@
 # include <iterator>
 # include <limits>
 # include <boost/algorithm/string/predicate.hpp>
+# include <boost/array.hpp>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -4191,7 +4192,8 @@ namespace {
                                  const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
                            "addChildren"),
@@ -4225,26 +4227,28 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 anchorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         anchor_node::add_children_listener>(
                             &anchor_node::add_children_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         anchor_node::remove_children_listener>(
                             &anchor_node::remove_children_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         anchor_node::children_exposedfield>(
@@ -4257,10 +4261,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         anchor_node::children_exposedfield>(
                             &anchor_node::children_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<anchor_node>::exposedfield<sfstring> >(
@@ -4273,10 +4277,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<anchor_node>::exposedfield<sfstring> >(
                             &anchor_node::description_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<anchor_node>::exposedfield<mfstring> >(
@@ -4289,10 +4293,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<anchor_node>::exposedfield<mfstring> >(
                             &anchor_node::parameter_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<anchor_node>::exposedfield<mfstring> >(
@@ -4305,17 +4309,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<anchor_node>::exposedfield<mfstring> >(
                             &anchor_node::url_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &anchor_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 anchorNodeType.add_field(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &anchor_node::bbox_size_)));
@@ -4458,7 +4462,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
                            "material"),
@@ -4477,10 +4482,12 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 appearanceNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
@@ -4493,10 +4500,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
                             &appearance_node::material_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 appearanceNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
@@ -4509,10 +4516,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
                             &appearance_node::texture_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 appearanceNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
@@ -4745,7 +4752,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfstring_id,
                            "description"),
@@ -4779,10 +4787,12 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sfstring> >(
@@ -4795,10 +4805,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sfstring> >(
                             &audio_clip_node::description_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sfbool> >(
@@ -4811,10 +4821,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sfbool> >(
                             &audio_clip_node::loop_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sffloat> >(
@@ -4827,10 +4837,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sffloat> >(
                             &audio_clip_node::pitch_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sftime> >(
@@ -4843,10 +4853,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sftime> >(
                             &audio_clip_node::start_time_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sftime> >(
@@ -4859,10 +4869,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<sftime> >(
                             &audio_clip_node::stop_time_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<audio_clip_node>::exposedfield<mfstring> >(
@@ -4875,18 +4885,18 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::exposedfield<mfstring> >(
                             &audio_clip_node::url_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::sftime_emitter>(
                             &audio_clip_node::duration_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 audioClipNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::sfbool_emitter>(
@@ -5303,7 +5313,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 12> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
                            "set_bind"),
@@ -5349,18 +5360,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 backgroundNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::set_bind_listener>(
                             &background_node::set_bind_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<background_node>::exposedfield<mffloat> >(
@@ -5373,10 +5386,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::exposedfield<mffloat> >(
                             &background_node::ground_angle_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<background_node>::exposedfield<mfcolor> >(
@@ -5389,10 +5402,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::exposedfield<mfcolor> >(
                             &background_node::ground_color_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::back_url_exposedfield>(
@@ -5405,10 +5418,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::back_url_exposedfield>(
                             &background_node::back_url_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::bottom_url_exposedfield>(
@@ -5421,10 +5434,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::bottom_url_exposedfield>(
                             &background_node::bottom_url_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::front_url_exposedfield>(
@@ -5437,10 +5450,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::front_url_exposedfield>(
                             &background_node::front_url_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::left_url_exposedfield>(
@@ -5453,10 +5466,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::left_url_exposedfield>(
                             &background_node::left_url_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::right_url_exposedfield>(
@@ -5469,10 +5482,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::right_url_exposedfield>(
                             &background_node::right_url_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         background_node::top_url_exposedfield>(
@@ -5485,10 +5498,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         background_node::top_url_exposedfield>(
                             &background_node::top_url_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<background_node>::exposedfield<mffloat> >(
@@ -5501,10 +5514,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::exposedfield<mffloat> >(
                             &background_node::sky_angle_)));
-            } else if (*interface == supportedInterfaces[10]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
-                    supportedInterfaces[10].field_type,
-                    supportedInterfaces[10].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<background_node>::exposedfield<mfcolor> >(
@@ -5517,10 +5530,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::exposedfield<mfcolor> >(
                             &background_node::sky_color_)));
-            } else if (*interface == supportedInterfaces[11]) {
+            } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_eventout(
-                    supportedInterfaces[11].field_type,
-                    supportedInterfaces[11].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::sfbool_emitter>(
@@ -7130,7 +7143,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
                            "addChildren"),
@@ -7158,26 +7172,28 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 billboardNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         billboard_node::add_children_listener>(
                             &billboard_node::add_children_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 billboardNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         billboard_node::remove_children_listener>(
                             &billboard_node::remove_children_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 billboardNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<billboard_node>::exposedfield<sfvec3f> >(
@@ -7190,10 +7206,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<billboard_node>::exposedfield<sfvec3f> >(
                             &billboard_node::axis_of_rotation_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 billboardNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         billboard_node::children_exposedfield>(
@@ -7206,17 +7222,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         billboard_node::children_exposedfield>(
                             &billboard_node::children_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 billboardNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &billboard_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 billboardNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &billboard_node::bbox_size_)));
@@ -7570,7 +7586,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
                            "addChildren"),
@@ -7604,26 +7621,28 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 collisionNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         collision_node::add_children_listener>(
                             &collision_node::add_children_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         collision_node::remove_children_listener>(
                             &collision_node::remove_children_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         collision_node::children_exposedfield>(
@@ -7636,10 +7655,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         collision_node::children_exposedfield>(
                             &collision_node::children_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<collision_node>::exposedfield<sfbool> >(
@@ -7652,31 +7671,31 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<collision_node>::exposedfield<sfbool> >(
                             &collision_node::collide_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &collision_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &collision_node::bbox_size_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &collision_node::proxy_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 collisionNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<collision_node>::sftime_emitter>(
@@ -7917,7 +7936,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
@@ -7940,18 +7960,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 colorInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         color_interpolator_node::set_fraction_listener>(
                             &color_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 colorInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<color_interpolator_node>::
@@ -7967,10 +7989,10 @@ namespace {
                         abstract_node<color_interpolator_node>::
                         exposedfield<mffloat> >(
                             &color_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 colorInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<color_interpolator_node>::
@@ -7986,10 +8008,10 @@ namespace {
                         abstract_node<color_interpolator_node>::
                         exposedfield<mfcolor> >(
                             &color_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 colorInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<color_interpolator_node>::sfcolor_emitter>(
@@ -8205,7 +8227,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::sffloat_id,
                            "bottomRadius"),
@@ -8227,31 +8250,33 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 coneNodeType.add_field(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &cone_node::bottomRadius)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 coneNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &cone_node::height)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 coneNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cone_node::side)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 coneNodeType.add_field(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cone_node::bottom)));
@@ -8501,12 +8526,14 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
             node_interface(node_interface::exposedfield_id,
-                           field_value::mffloat_id, "key"),
+                           field_value::mffloat_id,
+                           "key"),
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
                            "keyValue"),
@@ -8524,18 +8551,20 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 coordinateInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         coordinate_interpolator_node::set_fraction_listener>(
                             &coordinate_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 coordinateInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<coordinate_interpolator_node>::
@@ -8551,10 +8580,10 @@ namespace {
                         abstract_node<coordinate_interpolator_node>::
                         exposedfield<mffloat> >(
                             &coordinate_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 coordinateInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<coordinate_interpolator_node>::
@@ -8570,10 +8599,10 @@ namespace {
                         abstract_node<coordinate_interpolator_node>::
                         exposedfield<mfvec3f> >(
                             &coordinate_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 coordinateInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_interpolator_node>::
@@ -8784,7 +8813,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
                            "bottom"),
@@ -8809,38 +8839,40 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 cylinderNodeType.add_field(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cylinder_node::bottom)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &cylinder_node::height)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &cylinder_node::radius)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderNodeType.add_field(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cylinder_node::side)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cylinder_node::top)));
@@ -8977,7 +9009,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
                            "autoOffset"),
@@ -9015,10 +9048,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9034,10 +9069,10 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sfbool> >(
                             &cylinder_sensor_node::auto_offset_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9053,10 +9088,10 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sffloat> >(
                             &cylinder_sensor_node::disk_angle_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9072,10 +9107,10 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sfbool> >(
                             &cylinder_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9091,10 +9126,10 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sffloat> >(
                             &cylinder_sensor_node::max_angle_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9110,10 +9145,10 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sffloat> >(
                             &cylinder_sensor_node::min_angle_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<cylinder_sensor_node>::
@@ -9129,26 +9164,26 @@ namespace {
                         abstract_node<cylinder_sensor_node>::
                         exposedfield<sffloat> >(
                             &cylinder_sensor_node::offset_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<cylinder_sensor_node>::sfbool_emitter>(
                             &cylinder_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<cylinder_sensor_node>::sfrotation_emitter>(
                             &cylinder_sensor_node::rotation_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 cylinderSensorNodeType.add_eventout(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<cylinder_sensor_node>::sfvec3f_emitter>(
@@ -9460,7 +9495,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
                            "ambientIntensity"),
@@ -9486,10 +9522,12 @@ namespace {
         for (node_interface_set::const_iterator interface = interfaces.begin();
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 directionalLightNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<directional_light_node>::
@@ -9505,10 +9543,10 @@ namespace {
                         abstract_node<directional_light_node>::
                         exposedfield<sffloat> >(
                             &directional_light_node::ambient_intensity_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 directionalLightNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<directional_light_node>::
@@ -9524,10 +9562,10 @@ namespace {
                         abstract_node<directional_light_node>::
                         exposedfield<sfcolor> >(
                             &directional_light_node::color_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 directionalLightNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<directional_light_node>::
@@ -9543,10 +9581,10 @@ namespace {
                         abstract_node<directional_light_node>::
                         exposedfield<sfvec3f> >(
                             &directional_light_node::direction_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 directionalLightNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<directional_light_node>::
@@ -9562,10 +9600,10 @@ namespace {
                         abstract_node<directional_light_node>::
                         exposedfield<sffloat> >(
                             &directional_light_node::intensity_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 directionalLightNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<directional_light_node>::
@@ -9684,7 +9722,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 14> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mffloat_id,
                            "set_height"),
@@ -9736,18 +9775,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         elevation_grid_node::set_height_listener>(
                             &elevation_grid_node::set_height_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
@@ -9760,10 +9801,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
                             &elevation_grid_node::color_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
@@ -9776,10 +9817,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
                             &elevation_grid_node::normal_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
@@ -9792,73 +9833,73 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
                             &elevation_grid_node::tex_coord_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mffloat>(
                             &elevation_grid_node::height_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &elevation_grid_node::ccw_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &elevation_grid_node::color_per_vertex_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &elevation_grid_node::crease_angle_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &elevation_grid_node::normal_per_vertex_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &elevation_grid_node::solid_)));
-            } else if (*interface == supportedInterfaces[10]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[10].field_type,
-                    supportedInterfaces[10].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &elevation_grid_node::x_dimension_)));
-            } else if (*interface == supportedInterfaces[11]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[11].field_type,
-                    supportedInterfaces[11].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &elevation_grid_node::x_spacing_)));
-            } else if (*interface == supportedInterfaces[12]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[12].field_type,
-                    supportedInterfaces[12].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &elevation_grid_node::z_dimension_)));
-            } else if (*interface == supportedInterfaces[13]) {
+            } else if (*interface == *++supported_interface) {
                 elevationGridNodeType.add_field(
-                    supportedInterfaces[13].field_type,
-                    supportedInterfaces[13].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &elevation_grid_node::z_spacing_)));
@@ -10177,7 +10218,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 14> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfvec2f_id,
                            "set_crossSection"),
@@ -10229,105 +10271,107 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 extrusionNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         extrusion_node::set_cross_section_listener>(
                             &extrusion_node::set_cross_section_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         extrusion_node::set_orientation_listener>(
                             &extrusion_node::set_orientation_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_eventin(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         extrusion_node::set_scale_listener>(
                             &extrusion_node::set_scale_listener_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_eventin(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         extrusion_node::set_spine_listener>(
                             &extrusion_node::set_spine_listener_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &extrusion_node::begin_cap_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &extrusion_node::ccw_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &extrusion_node::convex_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &extrusion_node::crease_angle_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfvec2f>(
                             &extrusion_node::cross_section_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &extrusion_node::end_cap_)));
-            } else if (*interface == supportedInterfaces[10]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[10].field_type,
-                    supportedInterfaces[10].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfrotation>(
                             &extrusion_node::orientation_)));
-            } else if (*interface == supportedInterfaces[11]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[11].field_type,
-                    supportedInterfaces[11].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfvec2f>(
                             &extrusion_node::scale_)));
-            } else if (*interface == supportedInterfaces[12]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[12].field_type,
-                    supportedInterfaces[12].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &extrusion_node::solid_)));
-            } else if (*interface == supportedInterfaces[13]) {
+            } else if (*interface == *++supported_interface) {
                 extrusionNodeType.add_field(
-                    supportedInterfaces[13].field_type,
-                    supportedInterfaces[13].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfvec3f>(
                             &extrusion_node::spine_)));
@@ -10924,7 +10968,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
                            "set_bind"),
@@ -10949,18 +10994,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 fogNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         fog_node::set_bind_listener>(
                             &fog_node::set_bind_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 fogNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<fog_node>::exposedfield<sfcolor> >(
@@ -10973,10 +11020,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<fog_node>::exposedfield<sfcolor> >(
                             &fog_node::color_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 fogNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<fog_node>::exposedfield<sfstring> >(
@@ -10989,10 +11036,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<fog_node>::exposedfield<sfstring> >(
                             &fog_node::fog_type_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 fogNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<fog_node>::exposedfield<sffloat> >(
@@ -11005,10 +11052,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<fog_node>::exposedfield<sffloat> >(
                             &fog_node::visibility_range_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 fogNodeType.add_eventout(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<fog_node>::sfbool_emitter>(
@@ -11217,7 +11264,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::mfstring_id,
                            "family"),
@@ -11254,66 +11302,68 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &font_style_node::family_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &font_style_node::horizontal_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &font_style_node::justify_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfstring>(
                             &font_style_node::language_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &font_style_node::leftToRight)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &font_style_node::size_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &font_style_node::spacing_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfstring>(
                             &font_style_node::style_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 fontStyleNodeType.add_field(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &font_style_node::topToBottom)));
@@ -11559,7 +11609,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
                            "addChildren"),
@@ -11583,26 +11634,28 @@ namespace {
         node_type_t & groupNodeType = static_cast<node_type_t &>(*type);
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end(); ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 groupNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         group_node::add_children_listener>(
                             &group_node::add_children_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 groupNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         group_node::remove_children_listener>(
                             &group_node::remove_children_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 groupNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         group_node::children_exposedfield>(
@@ -11615,17 +11668,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         group_node::children_exposedfield>(
                             &group_node::children_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 groupNodeType.add_field(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &group_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 groupNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &group_node::bbox_size_)));
@@ -11703,7 +11756,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
                            "url"),
@@ -11722,10 +11776,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 imageTextureNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         image_texture_node::url_exposedfield>(
@@ -11738,17 +11794,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         image_texture_node::url_exposedfield>(
                             &image_texture_node::url_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 imageTextureNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &image_texture_node::repeat_s_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 imageTextureNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &image_texture_node::repeat_t_)));
@@ -11981,7 +12037,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 18> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfint32_id,
                            "set_colorIndex"),
@@ -12046,42 +12103,44 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_face_set_node::set_color_index_listener>(
                             &indexed_face_set_node::set_color_index_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_face_set_node::set_coord_index_listener>(
                             &indexed_face_set_node::set_coord_index_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_eventin(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_face_set_node::set_normal_index_listener>(
                             &indexed_face_set_node::set_normal_index_listener_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_eventin(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_face_set_node::set_tex_coord_index_listener>(
                             &indexed_face_set_node::set_tex_coord_index_listener_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_face_set_node>::
@@ -12097,10 +12156,10 @@ namespace {
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::color_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_face_set_node>::
@@ -12116,10 +12175,10 @@ namespace {
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::coord_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_face_set_node>::
@@ -12135,10 +12194,10 @@ namespace {
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::normal_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_exposedfield(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_face_set_node>::
@@ -12154,73 +12213,73 @@ namespace {
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::tex_coord_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_face_set_node::ccw_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_face_set_node::color_index_)));
-            } else if (*interface == supportedInterfaces[10]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[10].field_type,
-                    supportedInterfaces[10].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_face_set_node::color_per_vertex_)));
-            } else if (*interface == supportedInterfaces[11]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[11].field_type,
-                    supportedInterfaces[11].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_face_set_node::convex_)));
-            } else if (*interface == supportedInterfaces[12]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[12].field_type,
-                    supportedInterfaces[12].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_face_set_node::coord_index_)));
-            } else if (*interface == supportedInterfaces[13]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[13].field_type,
-                    supportedInterfaces[13].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &indexed_face_set_node::crease_angle_)));
-            } else if (*interface == supportedInterfaces[14]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[14].field_type,
-                    supportedInterfaces[14].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_face_set_node::normal_index_)));
-            } else if (*interface == supportedInterfaces[15]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[15].field_type,
-                    supportedInterfaces[15].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_face_set_node::normal_per_vertex_)));
-            } else if (*interface == supportedInterfaces[16]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[16].field_type,
-                    supportedInterfaces[16].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_face_set_node::solid_)));
-            } else if (*interface == supportedInterfaces[17]) {
+            } else if (*interface == *++supported_interface) {
                 indexedFaceSetNodeType.add_field(
-                    supportedInterfaces[17].field_type,
-                    supportedInterfaces[17].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_face_set_node::tex_coord_index_)));
@@ -12625,7 +12684,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfint32_id,
                            "set_colorIndex"),
@@ -12657,26 +12717,28 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_line_set_node::set_color_index_listener>(
                             &indexed_line_set_node::set_color_index_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         indexed_line_set_node::set_coord_index_listener>(
                             &indexed_line_set_node::set_coord_index_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_line_set_node>::
@@ -12692,10 +12754,10 @@ namespace {
                         abstract_node<indexed_line_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_line_set_node::color_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<indexed_line_set_node>::
@@ -12711,24 +12773,24 @@ namespace {
                         abstract_node<indexed_line_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_line_set_node::coord_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_field(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_line_set_node::color_index_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &indexed_line_set_node::color_per_vertex_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 indexedLineSetNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_line_set_node::coord_index_)));
@@ -12855,7 +12917,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
                            "url"),
@@ -12874,10 +12937,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 inlineNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<inline_node>::exposedfield<mfstring> >(
@@ -12890,17 +12955,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<inline_node>::exposedfield<mfstring> >(
                             &inline_node::url_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 inlineNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &inline_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 inlineNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &inline_node::bbox_size_)));
@@ -13078,7 +13143,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfnode_id,
                            "level"),
@@ -13097,10 +13163,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 lodNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<lod_node>::exposedfield<mfnode> >(
@@ -13113,17 +13181,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<lod_node>::exposedfield<mfnode> >(
                             &lod_node::level_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 lodNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &lod_node::center_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 lodNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mffloat>(
                             &lod_node::range_)));
@@ -13366,7 +13434,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
                            "ambientIntensity"),
@@ -13394,10 +13463,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
@@ -13410,10 +13481,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
                             &material_node::ambient_intensity_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
@@ -13426,10 +13497,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
                             &material_node::diffuse_color_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
@@ -13442,10 +13513,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
                             &material_node::emissive_color_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
@@ -13458,10 +13529,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
                             &material_node::shininess_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
@@ -13474,10 +13545,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sfcolor> >(
                             &material_node::specular_color_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 materialNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
@@ -13670,7 +13741,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
                            "loop"),
@@ -13707,10 +13779,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sfbool> >(
@@ -13723,10 +13797,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sfbool> >(
                             &movie_texture_node::loop_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         movie_texture_node::set_speed_listener >(
@@ -13738,10 +13812,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::sffloat_emitter>(
                             &movie_texture_node::speed_changed_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sftime> >(
@@ -13754,10 +13828,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sftime> >(
                             &movie_texture_node::start_time_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sftime> >(
@@ -13770,10 +13844,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::exposedfield<sftime> >(
                             &movie_texture_node::stop_time_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<movie_texture_node>::
@@ -13787,32 +13861,32 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::
                         exposedfield<mfstring> >(&movie_texture_node::url_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &movie_texture_node::repeat_s_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_field(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &movie_texture_node::repeat_t_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::sftime_emitter>(
                             &movie_texture_node::duration_changed_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 movieTextureNodeType.add_eventout(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::sfbool_emitter>(
@@ -14435,7 +14509,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
                            "set_bind"),
@@ -14449,7 +14524,8 @@ namespace {
                            field_value::sffloat_id,
                            "speed"),
             node_interface(node_interface::exposedfield_id,
-                           field_value::mfstring_id, "type"),
+                           field_value::mfstring_id,
+                           "type"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
                            "visibilityLimit"),
@@ -14466,18 +14542,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         navigation_info_node::set_bind_listener>(
                             &navigation_info_node::set_bind_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<navigation_info_node>::
@@ -14493,10 +14571,10 @@ namespace {
                         abstract_node<navigation_info_node>::
                         exposedfield<mffloat> >(
                             &navigation_info_node::avatar_size_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<navigation_info_node>::
@@ -14512,10 +14590,10 @@ namespace {
                         abstract_node<navigation_info_node>::
                         exposedfield<sfbool> >(
                             &navigation_info_node::headlight_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<navigation_info_node>::
@@ -14531,10 +14609,10 @@ namespace {
                         abstract_node<navigation_info_node>::
                         exposedfield<sffloat> >(
                             &navigation_info_node::speed_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<navigation_info_node>::
@@ -14550,10 +14628,10 @@ namespace {
                         abstract_node<navigation_info_node>::
                         exposedfield<mfstring> >(
                             &navigation_info_node::type_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<navigation_info_node>::
@@ -14569,10 +14647,10 @@ namespace {
                         abstract_node<navigation_info_node>::
                         exposedfield<sffloat> >(
                             &navigation_info_node::visibility_limit_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 navigationInfoNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<navigation_info_node>::sfbool_emitter>(
@@ -14984,7 +15062,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
@@ -15007,18 +15086,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 normalInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         normal_interpolator_node::set_fraction_listener>(
                             &normal_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 normalInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<normal_interpolator_node>::
@@ -15034,10 +15115,10 @@ namespace {
                         abstract_node<normal_interpolator_node>::
                         exposedfield<mffloat> >(
                             &normal_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 normalInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<normal_interpolator_node>::
@@ -15053,10 +15134,10 @@ namespace {
                         abstract_node<normal_interpolator_node>::
                         exposedfield<mfvec3f> >(
                             &normal_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 normalInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<normal_interpolator_node>::mfvec3f_emitter>(
@@ -15288,7 +15369,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
@@ -15312,18 +15394,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 orientationInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         orientation_interpolator_node::set_fraction_listener>(
                             &orientation_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 orientationInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<orientation_interpolator_node>::
@@ -15339,10 +15423,10 @@ namespace {
                         abstract_node<orientation_interpolator_node>::
                         exposedfield<mffloat> >(
                             &orientation_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 orientationInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<orientation_interpolator_node>::
@@ -15358,10 +15442,10 @@ namespace {
                         abstract_node<orientation_interpolator_node>::
                         exposedfield<mfrotation> >(
                             &orientation_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 orientationInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<orientation_interpolator_node>::
@@ -15593,7 +15677,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfimage_id,
                            "image"),
@@ -15611,10 +15696,12 @@ namespace {
         node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end(); ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 pixelTextureNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<pixel_texture_node>::exposedfield<sfimage> >(
@@ -15627,17 +15714,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<pixel_texture_node>::exposedfield<sfimage> >(
                             &pixel_texture_node::image_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 pixelTextureNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &pixel_texture_node::repeat_s_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 pixelTextureNodeType.add_field(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &pixel_texture_node::repeat_t_)));
@@ -15751,7 +15838,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
                            "autoOffset"),
@@ -15785,10 +15873,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfbool> >(
@@ -15801,10 +15891,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfbool> >(
                             &plane_sensor_node::auto_offset_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfbool> >(
@@ -15817,10 +15907,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfbool> >(
                             &plane_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec2f> >(
@@ -15833,10 +15923,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec2f> >(
                             &plane_sensor_node::max_position_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec2f> >(
@@ -15849,10 +15939,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec2f> >(
                             &plane_sensor_node::min_position_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec3f> >(
@@ -15865,26 +15955,26 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::exposedfield<sfvec3f> >(
                             &plane_sensor_node::offset_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::sfbool_emitter>(
                             &plane_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::sfvec3f_emitter>(
                             &plane_sensor_node::track_point_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 planeSensorNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::sfvec3f_emitter>(
@@ -16172,7 +16262,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
                            "ambientIntensity"),
@@ -16203,10 +16294,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
@@ -16219,10 +16312,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
                             &point_light_node::ambient_intensity_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sfvec3f> >(
@@ -16235,10 +16328,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sfvec3f> >(
                             &point_light_node::attenuation_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sfcolor> >(
@@ -16251,10 +16344,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sfcolor> >(
                             &point_light_node::color_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
@@ -16267,10 +16360,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
                             &point_light_node::intensity_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sfvec3f> >(
@@ -16283,10 +16376,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sfvec3f> >(
                             &point_light_node::location_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sfbool> >(
@@ -16299,10 +16392,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sfbool> >(
                             &point_light_node::on_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 pointLightNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
@@ -16469,7 +16562,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
                            "color"),
@@ -16485,10 +16579,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 pointSetNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_set_node>::exposedfield<sfnode> >(
@@ -16501,10 +16597,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_set_node>::exposedfield<sfnode> >(
                             &point_set_node::color_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 pointSetNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<point_set_node>::exposedfield<sfnode> >(
@@ -16718,7 +16814,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
@@ -16741,18 +16838,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 positionInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         position_interpolator_node::set_fraction_listener>(
                             &position_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 positionInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<position_interpolator_node>::
@@ -16768,10 +16867,10 @@ namespace {
                         abstract_node<position_interpolator_node>::
                         exposedfield<mffloat> >(
                             &position_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 positionInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<position_interpolator_node>::
@@ -16787,10 +16886,10 @@ namespace {
                         abstract_node<position_interpolator_node>::
                         exposedfield<mfvec3f> >(
                             &position_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 positionInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<position_interpolator_node>::
@@ -16987,7 +17086,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
                            "center"),
@@ -17022,10 +17122,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<proximity_sensor_node>::
@@ -17041,10 +17143,10 @@ namespace {
                         abstract_node<proximity_sensor_node>::
                         exposedfield<sfvec3f> >(
                             &proximity_sensor_node::center_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<proximity_sensor_node>::
@@ -17060,10 +17162,10 @@ namespace {
                         abstract_node<proximity_sensor_node>::
                         exposedfield<sfvec3f> >(
                             &proximity_sensor_node::size_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<proximity_sensor_node>::
@@ -17079,42 +17181,42 @@ namespace {
                         abstract_node<proximity_sensor_node>::
                         exposedfield<sfbool> >(
                             &proximity_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sfbool_emitter>(
                             &proximity_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_eventout(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sfvec3f_emitter>(
                             &proximity_sensor_node::position_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sfrotation_emitter>(
                             &proximity_sensor_node::orientation_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sftime_emitter>(
                             &proximity_sensor_node::enter_time_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 proximitySensorNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sftime_emitter>(
@@ -17382,7 +17484,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
                            "set_fraction"),
@@ -17405,18 +17508,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 scalarInterpolatorNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         scalar_interpolator_node::set_fraction_listener>(
                             &scalar_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 scalarInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<scalar_interpolator_node>::
@@ -17429,10 +17534,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<scalar_interpolator_node>::
                         exposedfield<mffloat> >(&scalar_interpolator_node::key_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 scalarInterpolatorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<scalar_interpolator_node>::
@@ -17448,10 +17553,10 @@ namespace {
                         abstract_node<scalar_interpolator_node>::
                         exposedfield<mffloat> >(
                             &scalar_interpolator_node::key_value_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 scalarInterpolatorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<scalar_interpolator_node>::sffloat_emitter>(
@@ -17643,7 +17748,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
                            "appearance"),
@@ -17659,10 +17765,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 shapeNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<shape_node>::exposedfield<sfnode> >(
@@ -17675,10 +17783,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<shape_node>::exposedfield<sfnode> >(
                             &shape_node::appearance_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 shapeNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<shape_node>::exposedfield<sfnode> >(
@@ -17918,7 +18026,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
                            "direction"),
@@ -17958,10 +18067,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sfvec3f> >(
@@ -17974,10 +18085,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sfvec3f> >(
                             &sound_node::direction_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -17990,10 +18101,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::intensity_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sfvec3f> >(
@@ -18006,10 +18117,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sfvec3f> >(
                             &sound_node::location_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -18022,10 +18133,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::max_back_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -18038,10 +18149,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::max_front_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -18054,10 +18165,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::min_back_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -18070,10 +18181,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::min_front_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
@@ -18086,10 +18197,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sffloat> >(
                             &sound_node::priority_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_exposedfield(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sound_node>::exposedfield<sfnode> >(
@@ -18102,10 +18213,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sound_node>::exposedfield<sfnode> >(
                             &sound_node::source_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 soundNodeType.add_field(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &sound_node::spatialize_)));
@@ -18414,7 +18525,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
                            "autoOffset"),
@@ -18442,10 +18554,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
@@ -18458,10 +18572,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
                             &sphere_sensor_node::auto_offset_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
@@ -18474,10 +18588,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
                             &sphere_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<sphere_sensor_node>::
@@ -18490,26 +18604,26 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::
                         exposedfield<sfrotation> >(&sphere_sensor_node::offset_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::sfbool_emitter>(
                             &sphere_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_eventout(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::sfrotation_emitter>(
                             &sphere_sensor_node::rotation_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 sphereSensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::sfvec3f_emitter>(
@@ -18791,7 +18905,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
                            "ambientIntensity"),
@@ -18831,10 +18946,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
@@ -18847,10 +18964,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
                             &spot_light_node::ambient_intensity_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
@@ -18863,10 +18980,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                             &spot_light_node::attenuation_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
@@ -18879,10 +18996,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
                             &spot_light_node::beam_width_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfcolor> >(
@@ -18895,10 +19012,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfcolor> >(
                             &spot_light_node::color_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
@@ -18911,10 +19028,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
                             &spot_light_node::cut_off_angle_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
@@ -18927,10 +19044,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                             &spot_light_node::direction_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
@@ -18943,10 +19060,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
                             &spot_light_node::intensity_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
@@ -18959,10 +19076,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                             &spot_light_node::location_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfbool> >(
@@ -18975,10 +19092,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sfbool> >(
                             &spot_light_node::on_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 spotLightNodeType.add_exposedfield(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
@@ -19168,7 +19285,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfnode_id,
                            "choice"),
@@ -19184,10 +19302,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 switchNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         switch_node::choice_exposedfield>(&switch_node::choice_)),
@@ -19197,10 +19317,10 @@ namespace {
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         switch_node::choice_exposedfield>(&switch_node::choice_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 switchNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         switch_node::which_choice_exposedfield>(
@@ -19603,7 +19723,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
                            "string"),
@@ -19625,10 +19746,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 textNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         text_node::string_exposedfield>(&text_node::string_)),
@@ -19638,10 +19761,10 @@ namespace {
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         text_node::string_exposedfield>(&text_node::string_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 textNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         text_node::font_style_exposedfield>(
@@ -19654,10 +19777,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         text_node::font_style_exposedfield>(
                             &text_node::font_style_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 textNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         text_node::length_exposedfield>(&text_node::length_)),
@@ -19667,10 +19790,10 @@ namespace {
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         text_node::length_exposedfield>(&text_node::length_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 textNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         text_node::max_extent_exposedfield>(
@@ -21659,7 +21782,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec2f_id,
                            "center"),
@@ -21682,10 +21806,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 textureTransformNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<texture_transform_node>::
@@ -21701,10 +21827,10 @@ namespace {
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::center_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 textureTransformNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<texture_transform_node>::
@@ -21720,10 +21846,10 @@ namespace {
                         abstract_node<texture_transform_node>::
                         exposedfield<sffloat> >(
                             &texture_transform_node::rotation_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 textureTransformNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<texture_transform_node>::
@@ -21739,10 +21865,10 @@ namespace {
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::scale_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 textureTransformNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<texture_transform_node>::
@@ -21877,7 +22003,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sftime_id,
                            "cycleInterval"),
@@ -21914,10 +22041,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         time_sensor_node::set_cycle_interval_listener>(
@@ -21929,10 +22058,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sftime_emitter>(
                             &time_sensor_node::cycle_interval_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         time_sensor_node::enabled_exposedfield>(
@@ -21945,10 +22074,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         time_sensor_node::enabled_exposedfield>(
                             &time_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<time_sensor_node>::exposedfield<sfbool> >(
@@ -21961,10 +22090,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::exposedfield<sfbool> >(
                             &time_sensor_node::loop_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         time_sensor_node::set_start_time_listener>(
@@ -21976,10 +22105,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sftime_emitter>(
                             &time_sensor_node::start_time_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<time_sensor_node>::exposedfield<sftime> >(
@@ -21992,34 +22121,34 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::exposedfield<sftime> >(
                             &time_sensor_node::stop_time_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sftime_emitter>(
                             &time_sensor_node::cycle_time_emitter_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sffloat_emitter>(
                             &time_sensor_node::fraction_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sfbool_emitter>(
                             &time_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 timeSensorNodeType.add_eventout(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sftime_emitter>(
@@ -22585,7 +22714,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
                            "enabled"),
@@ -22616,10 +22746,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<touch_sensor_node>::exposedfield<sfbool> >(
@@ -22632,50 +22764,50 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::exposedfield<sfbool> >(
                             &touch_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sfvec3f_emitter>(
                             &touch_sensor_node::hit_normal_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sfvec3f_emitter>(
                             &touch_sensor_node::hit_point_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sfvec2f_emitter>(
                             &touch_sensor_node::hit_tex_coord_changed_emitter_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sfbool_emitter>(
                             &touch_sensor_node::is_active_emitter_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sfbool_emitter>(
                             &touch_sensor_node::is_over_emitter_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 touchSensorNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sftime_emitter>(
@@ -22875,7 +23007,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
                            "addChildren"),
@@ -22915,26 +23048,28 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 transformNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::add_children_listener>(
                             &::transform_node::add_children_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_eventin(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::remove_children_listener>(
                             &::transform_node::remove_children_listener_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::center_exposedfield>(
@@ -22947,10 +23082,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::center_exposedfield>(
                             &::transform_node::center_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::children_exposedfield>(
@@ -22963,10 +23098,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::children_exposedfield>(
                             &::transform_node::children_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::rotation_exposedfield>(
@@ -22979,10 +23114,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::rotation_exposedfield>(
                             &::transform_node::rotation_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::scale_exposedfield>(
@@ -22995,10 +23130,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::scale_exposedfield>(
                             &::transform_node::scale_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::scale_orientation_exposedfield>(
@@ -23011,10 +23146,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::scale_orientation_exposedfield>(
                             &::transform_node::scale_orientation_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_exposedfield(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         ::transform_node::translation_exposedfield>(
@@ -23027,17 +23162,17 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         ::transform_node::translation_exposedfield>(
                             &::transform_node::translation_)));
-            } else if (*interface == supportedInterfaces[8]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_field(
-                    supportedInterfaces[8].field_type,
-                    supportedInterfaces[8].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &::transform_node::bbox_center_)));
-            } else if (*interface == supportedInterfaces[9]) {
+            } else if (*interface == *++supported_interface) {
                 transformNodeType.add_field(
-                    supportedInterfaces[9].field_type,
-                    supportedInterfaces[9].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &::transform_node::bbox_size_)));
@@ -23879,7 +24014,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
                            "set_bind"),
@@ -23913,18 +24049,20 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 viewpointNodeType.add_eventin(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         viewpoint_node::set_bind_listener>(
                             &viewpoint_node::set_bind_listener_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<viewpoint_node>::exposedfield<sffloat> >(
@@ -23937,10 +24075,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<viewpoint_node>::exposedfield<sffloat> >(
                             &viewpoint_node::field_of_view_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<viewpoint_node>::exposedfield<sfbool> >(
@@ -23953,10 +24091,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<viewpoint_node>::exposedfield<sfbool> >(
                             &viewpoint_node::jump_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_exposedfield(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         viewpoint_node::orientation_exposedfield>(
@@ -23969,10 +24107,10 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         viewpoint_node::orientation_exposedfield>(
                             &viewpoint_node::orientation_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_exposedfield(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         viewpoint_node::position_exposedfield>(
@@ -23985,25 +24123,25 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         viewpoint_node::position_exposedfield>(
                             &viewpoint_node::position_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_field(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfstring>(
                             &viewpoint_node::description_)));
-            } else if (*interface == supportedInterfaces[6]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_eventout(
-                    supportedInterfaces[6].field_type,
-                    supportedInterfaces[6].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<viewpoint_node>::sftime_emitter>(
                             &viewpoint_node::bind_time_emitter_)));
-            } else if (*interface == supportedInterfaces[7]) {
+            } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_eventout(
-                    supportedInterfaces[7].field_type,
-                    supportedInterfaces[7].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<viewpoint_node>::sfbool_emitter>(
@@ -24574,7 +24712,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
                            "center"),
@@ -24603,10 +24742,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<visibility_sensor_node>::
@@ -24622,10 +24763,10 @@ namespace {
                         abstract_node<visibility_sensor_node>::
                         exposedfield<sfvec3f> >(
                             &visibility_sensor_node::center_)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<visibility_sensor_node>::
@@ -24641,10 +24782,10 @@ namespace {
                         abstract_node<visibility_sensor_node>::
                         exposedfield<sfbool> >(
                             &visibility_sensor_node::enabled_)));
-            } else if (*interface == supportedInterfaces[2]) {
+            } else if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_exposedfield(
-                    supportedInterfaces[2].field_type,
-                    supportedInterfaces[2].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<visibility_sensor_node>::
@@ -24660,26 +24801,26 @@ namespace {
                         abstract_node<visibility_sensor_node>::
                         exposedfield<sfvec3f> >(
                             &visibility_sensor_node::size_)));
-            } else if (*interface == supportedInterfaces[3]) {
+            } else if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_eventout(
-                    supportedInterfaces[3].field_type,
-                    supportedInterfaces[3].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<visibility_sensor_node>::sftime_emitter>(
                             &visibility_sensor_node::enter_time_emitter_)));
-            } else if (*interface == supportedInterfaces[4]) {
+            } else if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_eventout(
-                    supportedInterfaces[4].field_type,
-                    supportedInterfaces[4].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<visibility_sensor_node>::sftime_emitter>(
                             &visibility_sensor_node::exit_time_emitter_)));
-            } else if (*interface == supportedInterfaces[5]) {
+            } else if (*interface == *++supported_interface) {
                 visibilitySensorNodeType.add_eventout(
-                    supportedInterfaces[5].field_type,
-                    supportedInterfaces[5].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
                         abstract_node<visibility_sensor_node>::sfbool_emitter>(
@@ -24897,7 +25038,8 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterfaces[] = {
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::mfstring_id,
                            "info"),
@@ -24913,17 +25055,19 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterfaces[0]) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 worldInfoNodeType.add_field(
-                    supportedInterfaces[0].field_type,
-                    supportedInterfaces[0].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &world_info_node::info)));
-            } else if (*interface == supportedInterfaces[1]) {
+            } else if (*interface == *++supported_interface) {
                 worldInfoNodeType.add_field(
-                    supportedInterfaces[1].field_type,
-                    supportedInterfaces[1].id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfstring>(
                             &world_info_node::title)));

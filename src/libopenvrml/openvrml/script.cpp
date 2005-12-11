@@ -24,6 +24,7 @@
 #   include <config.h>
 # endif
 
+# include <boost/array.hpp>
 # include <private.h>
 # include "browser.h"
 # include "ScriptJDK.h"
@@ -628,7 +629,8 @@ namespace {
     // range is used with std::set_difference, so the elements *must* be in
     // lexicographically increasing order according to their "id" member.
     //
-    const openvrml::node_interface built_in_script_interfaces_[] = {
+    const boost::array<openvrml::node_interface, 3>
+    built_in_script_interfaces_ = {
         openvrml::node_interface(openvrml::node_interface::field_id,
                                  openvrml::field_value::sfbool_id,
                                  "directOutput"),
@@ -650,7 +652,7 @@ openvrml::script_node::script_node_type::
 script_node_type(script_node_class & class_):
     node_type(class_, "Script")
 {
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < built_in_script_interfaces_.size(); ++i) {
         bool succeeded =
             this->interfaces_.insert(built_in_script_interfaces_[i]).second;
         assert(succeeded);
@@ -743,8 +745,8 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                                                            interfaces.begin());
     set_difference(this->interfaces_.begin(),
                    this->interfaces_.end(),
-                   built_in_script_interfaces_,
-                   built_in_script_interfaces_ + 3,
+                   built_in_script_interfaces_.begin(),
+                   built_in_script_interfaces_.end(),
                    interface_inserter,
                    node_interface_set::key_compare());
 

@@ -1,5 +1,171 @@
 2005-12-10 Braden McDaniel  <braden@endoframe.com>
 
+	Use boost::array.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	(field_value_type_id_): Use boost::array.
+	(operator>>(std::istream &, field_value::type_id &)): Changed to
+	use boost::array features.
+	* src/libopenvrml/openvrml/node.cpp
+	(node_interface_type_id_): Use boost::array.
+	(operator>>(stds::istream &, node_interface::type_id &)): Changed
+	to use boost::array features.
+	* src/libopenvrml/openvrml/script.cpp
+	(built_in_script_interfaces_): Use boost::array.
+	(openvrml::script_node::script_node_type::script_node_type(script_node_class&)):
+	Changed to use boost::array features.
+	(openvrml::script_node::script_node_type::do_create_node(const
+	boost::shared_ptr<openvrml::scope> &, const initial_value_map &)
+	const): Changed to use boost::array features.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(anchor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(appearance_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(audio_clip_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(background_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(billboard_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(collision_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(color_interpolator_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(cone_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(coordinate_interpolator_class::do_create_type(const std::string
+	&, const node_interface_set &) const): Use boost::array for array
+	of supported interfaces.
+	(audio_clip_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(cylinder_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(cylinder_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(directional_light_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(elevation_grid_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(extrusion_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(fog_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(font_style_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(group_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(image_texture_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(indexed_face_set_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(indexed_line_set_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(inline_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(lod_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(material_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(movie_texture_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(navigation_info_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(normal_interpolator_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(orientation_interpolator_class::do_create_type(const std::string
+	&, const node_interface_set &) const): Use boost::array for array
+	of supported interfaces.
+	(pixel_texture_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(plane_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(point_light_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(point_set_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(position_interpolator_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(proximity_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(scalar_interpolator_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(shape_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(sound_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(sphere_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(spot_light_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(switch_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(text_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(texture_transform_class::do_create_type(const std::string &,
+	const node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(time_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(touch_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(transform_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(viewpoint_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(visibility_sensor_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+	(world_info_class::do_create_type(const std::string &, const
+	node_interface_set &) const): Use boost::array for array of
+	supported interfaces.
+
+2005-12-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/private.h (OPENVRML_PRINT_EXCEPTION_): Quell
 	unused variable warnings from Microsoft cl when building with
 	NDEBUG.
