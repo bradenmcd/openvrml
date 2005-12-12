@@ -1258,7 +1258,7 @@ options { defaultErrorHandler = false; }
                                 LT(1)->getLine(),
                                 LT(1)->getColumn());
     }
-    catch [std::bad_cast & ex] {
+    catch [std::bad_cast &] {
         throw SemanticException("incorrect value type for field or "
                                 "exposedField",
                                 this->uri,
