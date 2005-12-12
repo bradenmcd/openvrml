@@ -706,7 +706,7 @@ namespace {
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
-                       const node_interface_set & interface) const
+                       const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 
@@ -786,7 +786,7 @@ namespace {
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
-                       const node_interface_set & interface) const
+                       const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 

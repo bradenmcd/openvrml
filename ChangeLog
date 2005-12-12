@@ -1,3 +1,11 @@
+2005-12-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(point_set_class): Changed do_create_type argument name to be
+	consistent with the function definition.
+	(sound_class): Changed do_create_type argument name to be
+	consistent with the function definition.
+
 2005-12-11 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced several instances of switching on field_value::type with
