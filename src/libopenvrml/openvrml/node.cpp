@@ -29,6 +29,7 @@
 # include <boost/array.hpp>
 # include <boost/bind.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/mpl/for_each.hpp>
 # include "private.h"
 # include "browser.h"
 
@@ -2309,6 +2310,32 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
  */
 
 namespace {
+    struct OPENVRML_LOCAL field_printer_ {
+        field_printer_(const openvrml::node & node,
+                       openvrml::field_value::type_id type,
+                       const std::string & interface_id,
+                       std::ostream & out):
+            node_(&node),
+            type_(type),
+            interface_id_(&interface_id),
+            out_(&out)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->type_) {
+                (*this->out_) << this->node_->field<T>(*this->interface_id_);
+            }
+        }
+
+    private:
+        const openvrml::node * node_;
+        openvrml::field_value::type_id type_;
+        const std::string * interface_id_;
+        std::ostream * out_;
+    };
+
     const short indent_increment_ = 4;
 
     struct OPENVRML_LOCAL print_field_ :
@@ -2325,104 +2352,17 @@ namespace {
         void operator()(const openvrml::node_interface & interface) const
         {
             using namespace openvrml;
+            using boost::mpl::for_each;
+            using openvrml_::field_value_types;
             if (interface.type == node_interface::exposedfield_id
                     || interface.type == node_interface::field_id) {
                 this->out << std::string(this->indent + indent_increment_, ' ')
                           << interface.id << ' ';
-                switch (interface.field_type) {
-                case field_value::sfbool_id:
-                    this->out << n.field<sfbool>(interface.id);
-                    break;
-                case field_value::sfcolor_id:
-                    this->out << n.field<sfcolor>(interface.id);
-                    break;
-                case field_value::sfcolorrgba_id:
-                    this->out << n.field<sfcolorrgba>(interface.id);
-                    break;
-                case field_value::sfdouble_id:
-                    this->out << n.field<sfdouble>(interface.id);
-                    break;
-                case field_value::sffloat_id:
-                    this->out << n.field<sffloat>(interface.id);
-                    break;
-                case field_value::sfimage_id:
-                    this->out << n.field<sfimage>(interface.id);
-                    break;
-                case field_value::sfint32_id:
-                    this->out << n.field<sfint32>(interface.id);
-                    break;
-                case field_value::sfnode_id:
-                    this->out << n.field<sfnode>(interface.id);
-                    break;
-                case field_value::sfrotation_id:
-                    this->out << n.field<sfrotation>(interface.id);
-                    break;
-                case field_value::sfstring_id:
-                    this->out << n.field<sfstring>(interface.id);
-                    break;
-                case field_value::sftime_id:
-                    this->out << n.field<sftime>(interface.id);
-                    break;
-                case field_value::sfvec2f_id:
-                    this->out << n.field<sfvec2f>(interface.id);
-                    break;
-                case field_value::sfvec2d_id:
-                    this->out << n.field<sfvec2d>(interface.id);
-                    break;
-                case field_value::sfvec3f_id:
-                    this->out << n.field<sfvec3f>(interface.id);
-                    break;
-                case field_value::sfvec3d_id:
-                    this->out << n.field<sfvec3d>(interface.id);
-                    break;
-                case field_value::mfbool_id:
-                    this->out << n.field<mfbool>(interface.id);
-                    break;
-                case field_value::mfcolor_id:
-                    this->out << n.field<mfcolor>(interface.id);
-                    break;
-                case field_value::mfcolorrgba_id:
-                    this->out << n.field<mfcolorrgba>(interface.id);
-                    break;
-                case field_value::mfdouble_id:
-                    this->out << n.field<mfdouble>(interface.id);
-                    break;
-                case field_value::mffloat_id:
-                    this->out << n.field<mffloat>(interface.id);
-                    break;
-                case field_value::mfimage_id:
-                    this->out << n.field<mfimage>(interface.id);
-                    break;
-                case field_value::mfint32_id:
-                    this->out << n.field<mfint32>(interface.id);
-                    break;
-                case field_value::mfnode_id:
-                    this->out << n.field<mfnode>(interface.id);
-                    break;
-                case field_value::mfrotation_id:
-                    this->out << n.field<mfrotation>(interface.id);
-                    break;
-                case field_value::mfstring_id:
-                    this->out << n.field<mfstring>(interface.id);
-                    break;
-                case field_value::mftime_id:
-                    this->out << n.field<mftime>(interface.id);
-                    break;
-                case field_value::mfvec2f_id:
-                    this->out << n.field<mfvec2f>(interface.id);
-                    break;
-                case field_value::mfvec2d_id:
-                    this->out << n.field<mfvec2d>(interface.id);
-                    break;
-                case field_value::mfvec3f_id:
-                    this->out << n.field<mfvec3f>(interface.id);
-                    break;
-                case field_value::mfvec3d_id:
-                    this->out << n.field<mfvec3d>(interface.id);
-                    break;
-                case field_value::invalid_type_id:
-                    assert(!"invalid field_value::type_id");
-                }
+                for_each<field_value_types>(
+                    field_printer_(n,
+                                   interface.field_type,
+                                   interface.id,
+                                   this->out));
             }
         }
 
@@ -2529,16 +2469,31 @@ void openvrml::node::do_shutdown(double) throw ()
 {}
 
 namespace {
-    template <typename FieldValue>
-    OPENVRML_LOCAL bool add_listener(openvrml::event_emitter & emitter,
-                                     openvrml::event_listener & listener)
-        throw (std::bad_alloc, std::bad_cast)
-    {
-        using openvrml::field_value_emitter;
-        using openvrml::field_value_listener;
-        return dynamic_cast<field_value_emitter<FieldValue> &>(emitter)
-            .add(dynamic_cast<field_value_listener<FieldValue> &>(listener));
-    }
+    struct OPENVRML_LOCAL add_listener {
+        add_listener(openvrml::event_emitter & emitter,
+                     openvrml::event_listener & listener,
+                     bool & added_route):
+            emitter_(&emitter),
+            listener_(&listener),
+            added_route_(&added_route)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->emitter_->value().type()) {
+                typedef openvrml::field_value_emitter<T> emitter_t;
+                typedef openvrml::field_value_listener<T> listener_t;
+                *this->added_route_ =
+                    dynamic_cast<emitter_t &>(*this->emitter_).add(
+                        dynamic_cast<listener_t &>(*this->listener_));
+            }
+        }
+
+        openvrml::event_emitter * emitter_;
+        openvrml::event_listener * listener_;
+        bool * added_route_;
+    };
 }
 
 /**
@@ -2578,100 +2533,11 @@ bool openvrml::add_route(node & from,
     event_listener & listener = to.event_listener(eventin);
     bool added_route = false;
     try {
-        switch (emitter.value().type()) {
-        case field_value::sfbool_id:
-            added_route = add_listener<sfbool>(emitter, listener);
-            break;
-        case field_value::sfcolor_id:
-            added_route = add_listener<sfcolor>(emitter, listener);
-            break;
-        case field_value::sfcolorrgba_id:
-            added_route = add_listener<sfcolorrgba>(emitter, listener);
-            break;
-        case field_value::sffloat_id:
-            added_route = add_listener<sffloat>(emitter, listener);
-            break;
-        case field_value::sfdouble_id:
-            added_route = add_listener<sfdouble>(emitter, listener);
-            break;
-        case field_value::sfimage_id:
-            added_route = add_listener<sfimage>(emitter, listener);
-            break;
-        case field_value::sfint32_id:
-            added_route = add_listener<sfint32>(emitter, listener);
-            break;
-        case field_value::sfnode_id:
-            added_route = add_listener<sfnode>(emitter, listener);
-            break;
-        case field_value::sfrotation_id:
-            added_route = add_listener<sfrotation>(emitter, listener);
-            break;
-        case field_value::sfstring_id:
-            added_route = add_listener<sfstring>(emitter, listener);
-            break;
-        case field_value::sftime_id:
-            added_route = add_listener<sftime>(emitter, listener);
-            break;
-        case field_value::sfvec2f_id:
-            added_route = add_listener<sfvec2f>(emitter, listener);
-            break;
-        case field_value::sfvec2d_id:
-            added_route = add_listener<sfvec2d>(emitter, listener);
-            break;
-        case field_value::sfvec3f_id:
-            added_route = add_listener<sfvec3f>(emitter, listener);
-            break;
-        case field_value::sfvec3d_id:
-            added_route = add_listener<sfvec3d>(emitter, listener);
-            break;
-        case field_value::mfbool_id:
-            added_route = add_listener<mfbool>(emitter, listener);
-            break;
-        case field_value::mfcolor_id:
-            added_route = add_listener<mfcolor>(emitter, listener);
-            break;
-        case field_value::mfcolorrgba_id:
-            added_route = add_listener<mfcolorrgba>(emitter, listener);
-            break;
-        case field_value::mffloat_id:
-            added_route = add_listener<mffloat>(emitter, listener);
-            break;
-        case field_value::mfdouble_id:
-            added_route = add_listener<mfdouble>(emitter, listener);
-            break;
-        case field_value::mfimage_id:
-            added_route = add_listener<mfimage>(emitter, listener);
-            break;
-        case field_value::mfint32_id:
-            added_route = add_listener<mfint32>(emitter, listener);
-            break;
-        case field_value::mfnode_id:
-            added_route = add_listener<mfnode>(emitter, listener);
-            break;
-        case field_value::mfrotation_id:
-            added_route = add_listener<mfrotation>(emitter, listener);
-            break;
-        case field_value::mfstring_id:
-            added_route = add_listener<mfstring>(emitter, listener);
-            break;
-        case field_value::mftime_id:
-            added_route = add_listener<mftime>(emitter, listener);
-            break;
-        case field_value::mfvec2f_id:
-            added_route = add_listener<mfvec2f>(emitter, listener);
-            break;
-        case field_value::mfvec2d_id:
-            added_route = add_listener<mfvec2d>(emitter, listener);
-            break;
-        case field_value::mfvec3f_id:
-            added_route = add_listener<mfvec3f>(emitter, listener);
-            break;
-        case field_value::mfvec3d_id:
-            added_route = add_listener<mfvec3d>(emitter, listener);
-            break;
-        case field_value::invalid_type_id:
-            assert(false);
-        }
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
+        for_each<field_value_types>(add_listener(emitter,
+                                                 listener,
+                                                 added_route));
     } catch (const bad_cast &) {
         throw field_value_type_mismatch();
     }
@@ -2679,16 +2545,31 @@ bool openvrml::add_route(node & from,
 }
 
 namespace {
-    template <typename FieldValue>
-    OPENVRML_LOCAL bool remove_listener(openvrml::event_emitter & emitter,
-                                        openvrml::event_listener & listener)
-        throw (std::bad_cast)
-    {
-        using openvrml::field_value_emitter;
-        using openvrml::field_value_listener;
-        return dynamic_cast<field_value_emitter<FieldValue> &>(emitter).remove(
-            dynamic_cast<field_value_listener<FieldValue> &>(listener));
-    }
+    struct OPENVRML_LOCAL remove_listener {
+        remove_listener(openvrml::event_emitter & emitter,
+                        openvrml::event_listener & listener,
+                        bool & deleted_route):
+            emitter_(&emitter),
+            listener_(&listener),
+            deleted_route_(&deleted_route)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->emitter_->value().type()) {
+                typedef openvrml::field_value_emitter<T> emitter_t;
+                typedef openvrml::field_value_listener<T> listener_t;
+                *this->deleted_route_ =
+                    dynamic_cast<emitter_t &>(*this->emitter_).remove(
+                        dynamic_cast<listener_t &>(*this->listener_));
+            }
+        }
+
+        openvrml::event_emitter * emitter_;
+        openvrml::event_listener * listener_;
+        bool * deleted_route_;
+    };
 }
 
 /**
@@ -2720,104 +2601,13 @@ bool openvrml::delete_route(node & from,
 
     event_emitter & emitter = from.event_emitter(eventout);
     event_listener & listener = to.event_listener(eventin);
-
     bool deleted_route = false;
-
     try {
-        switch (emitter.value().type()) {
-        case field_value::sfbool_id:
-            deleted_route = remove_listener<sfbool>(emitter, listener);
-            break;
-        case field_value::sfcolor_id:
-            deleted_route = remove_listener<sfcolor>(emitter, listener);
-            break;
-        case field_value::sfcolorrgba_id:
-            deleted_route = remove_listener<sfcolorrgba>(emitter, listener);
-            break;
-        case field_value::sffloat_id:
-            deleted_route = remove_listener<sffloat>(emitter, listener);
-            break;
-        case field_value::sfdouble_id:
-            deleted_route = remove_listener<sfdouble>(emitter, listener);
-            break;
-        case field_value::sfimage_id:
-            deleted_route = remove_listener<sfimage>(emitter, listener);
-            break;
-        case field_value::sfint32_id:
-            deleted_route = remove_listener<sfint32>(emitter, listener);
-            break;
-        case field_value::sfnode_id:
-            deleted_route = remove_listener<sfnode>(emitter, listener);
-            break;
-        case field_value::sfrotation_id:
-            deleted_route = remove_listener<sfrotation>(emitter, listener);
-            break;
-        case field_value::sfstring_id:
-            deleted_route = remove_listener<sfstring>(emitter, listener);
-            break;
-        case field_value::sftime_id:
-            deleted_route = remove_listener<sftime>(emitter, listener);
-            break;
-        case field_value::sfvec2f_id:
-            deleted_route = remove_listener<sfvec2f>(emitter, listener);
-            break;
-        case field_value::sfvec2d_id:
-            deleted_route = remove_listener<sfvec2d>(emitter, listener);
-            break;
-        case field_value::sfvec3f_id:
-            deleted_route = remove_listener<sfvec3f>(emitter, listener);
-            break;
-        case field_value::sfvec3d_id:
-            deleted_route = remove_listener<sfvec3d>(emitter, listener);
-            break;
-        case field_value::mfbool_id:
-            deleted_route = remove_listener<mfbool>(emitter, listener);
-            break;
-        case field_value::mfcolor_id:
-            deleted_route = remove_listener<mfcolor>(emitter, listener);
-            break;
-        case field_value::mfcolorrgba_id:
-            deleted_route = remove_listener<mfcolorrgba>(emitter, listener);
-            break;
-        case field_value::mffloat_id:
-            deleted_route = remove_listener<mffloat>(emitter, listener);
-            break;
-        case field_value::mfdouble_id:
-            deleted_route = remove_listener<mfdouble>(emitter, listener);
-            break;
-        case field_value::mfimage_id:
-            deleted_route = remove_listener<mfimage>(emitter, listener);
-            break;
-        case field_value::mfint32_id:
-            deleted_route = remove_listener<mfint32>(emitter, listener);
-            break;
-        case field_value::mfnode_id:
-            deleted_route = remove_listener<mfnode>(emitter, listener);
-            break;
-        case field_value::mfrotation_id:
-            deleted_route = remove_listener<mfrotation>(emitter, listener);
-            break;
-        case field_value::mfstring_id:
-            deleted_route = remove_listener<mfstring>(emitter, listener);
-            break;
-        case field_value::mftime_id:
-            deleted_route = remove_listener<mftime>(emitter, listener);
-            break;
-        case field_value::mfvec2f_id:
-            deleted_route = remove_listener<mfvec2f>(emitter, listener);
-            break;
-        case field_value::mfvec2d_id:
-            deleted_route = remove_listener<mfvec2d>(emitter, listener);
-            break;
-        case field_value::mfvec3f_id:
-            deleted_route = remove_listener<mfvec3f>(emitter, listener);
-            break;
-        case field_value::mfvec3d_id:
-            deleted_route = remove_listener<mfvec3d>(emitter, listener);
-            break;
-        case field_value::invalid_type_id:
-            assert(false);
-        }
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
+        for_each<field_value_types>(remove_listener(emitter,
+                                                    listener,
+                                                    deleted_route));
     } catch (const bad_cast &) {
         //
         // Do nothing.  If route removal fails, we simply return false.

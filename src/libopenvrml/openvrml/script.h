@@ -182,6 +182,35 @@ namespace openvrml {
         typedef script_event_listener<mfvec3f> mfvec3f_listener;
         typedef script_event_listener<mfvec3d> mfvec3d_listener;
 
+        struct OPENVRML_LOCAL script_event_listener_creator {
+            script_event_listener_creator(
+                const field_value::type_id type,
+                const std::string & id,
+                script_node & node,
+                boost::shared_ptr<openvrml::event_listener> & listener):
+                type_(type),
+                id_(&id),
+                node_(&node),
+                listener_(&listener)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    this->listener_->reset(
+                        new script_event_listener<T>(*this->id_,
+                                                     *this->node_));
+                }
+            }
+
+        private:
+            field_value::type_id type_;
+            const std::string * id_;
+            script_node * node_;
+            boost::shared_ptr<openvrml::event_listener> * listener_;
+        };
+
         static const boost::shared_ptr<openvrml::event_listener>
         create_listener(field_value::type_id type, const std::string & id,
                         script_node & node)
@@ -220,6 +249,34 @@ namespace openvrml {
 
         private:
             virtual const std::string do_eventout_id() const throw ();
+        };
+
+        struct OPENVRML_LOCAL script_event_emitter_creator {
+            script_event_emitter_creator(
+                script_node & node,
+                const openvrml::field_value & value,
+                std::auto_ptr<openvrml::event_emitter> & emitter):
+                node_(&node),
+                value_(&value),
+                emitter_(&emitter)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->value_->type()) {
+                    using boost::polymorphic_downcast;
+                    this->emitter_->reset(
+                        new script_event_emitter<T>(
+                            *this->node_,
+                            *polymorphic_downcast<const T *>(this->value_)));
+                }
+            }
+
+        private:
+            script_node * node_;
+            const openvrml::field_value * value_;
+            std::auto_ptr<openvrml::event_emitter> * emitter_;
         };
 
         static std::auto_ptr<openvrml::event_emitter>

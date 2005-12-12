@@ -25,6 +25,7 @@
 # endif
 
 # include <boost/array.hpp>
+# include <boost/mpl/for_each.hpp>
 # include <private.h>
 # include "browser.h"
 # include "ScriptJDK.h"
@@ -234,6 +235,35 @@ openvrml::script::direct_output(event_listener & listener,
     this->direct_output_map_[&listener] = value;
 }
 
+namespace {
+    struct OPENVRML_LOCAL direct_output_processor {
+        direct_output_processor(openvrml::event_listener & listener,
+                                openvrml::field_value & value,
+                                const double timestamp):
+            listener_(&listener),
+            value_(&value),
+            timestamp_(timestamp)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->listener_->type()) {
+                using boost::polymorphic_downcast;
+                using openvrml::field_value_listener;
+                dynamic_cast<field_value_listener<T> &>(*this->listener_)
+                    .process_event(*polymorphic_downcast<T *>(this->value_),
+                                   this->timestamp_);
+            }
+        }
+
+    private:
+        openvrml::event_listener * listener_;
+        openvrml::field_value * value_;
+        double timestamp_;
+    };
+}
+
 /**
  * @internal
  *
@@ -250,161 +280,11 @@ void openvrml::script::process_direct_output(double timestamp)
              this->direct_output_map_.begin();
          output != this->direct_output_map_.end();
          ++output) {
-        using boost::polymorphic_downcast;
-        switch (output->first->type()) {
-        case field_value::sfbool_id:
-            dynamic_cast<sfbool_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfbool *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfcolor_id:
-            dynamic_cast<sfcolor_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfcolor *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfcolorrgba_id:
-            dynamic_cast<sfcolorrgba_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfcolorrgba *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sffloat_id:
-            dynamic_cast<sffloat_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sffloat *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfdouble_id:
-            dynamic_cast<sfdouble_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfdouble *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfimage_id:
-            dynamic_cast<sfimage_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfimage *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfint32_id:
-            dynamic_cast<sfint32_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfint32 *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfnode_id:
-            dynamic_cast<sfnode_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfnode *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfrotation_id:
-            dynamic_cast<sfrotation_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfrotation *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfstring_id:
-            dynamic_cast<sfstring_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfstring *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sftime_id:
-            dynamic_cast<sftime_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sftime *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec2f_id:
-            dynamic_cast<sfvec2f_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfvec2f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec2d_id:
-            dynamic_cast<sfvec2d_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfvec2d *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec3f_id:
-            dynamic_cast<sfvec3f_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfvec3f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::sfvec3d_id:
-            dynamic_cast<sfvec3d_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<sfvec3d *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfbool_id:
-            dynamic_cast<mfbool_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfbool *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfcolor_id:
-            dynamic_cast<mfcolor_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfcolor *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfcolorrgba_id:
-            dynamic_cast<mfcolorrgba_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfcolorrgba *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mffloat_id:
-            dynamic_cast<mffloat_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mffloat *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfdouble_id:
-            dynamic_cast<mfdouble_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfdouble *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfimage_id:
-            dynamic_cast<mfimage_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfimage *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfint32_id:
-            dynamic_cast<mfint32_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfint32 *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfnode_id:
-            dynamic_cast<mfnode_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfnode *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfrotation_id:
-            dynamic_cast<mfrotation_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfrotation *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfstring_id:
-            dynamic_cast<mfstring_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfstring *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mftime_id:
-            dynamic_cast<mftime_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mftime *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec2f_id:
-            dynamic_cast<mfvec2f_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfvec2f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec2d_id:
-            dynamic_cast<mfvec2d_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfvec2d *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec3f_id:
-            dynamic_cast<mfvec3f_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfvec3f *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::mfvec3d_id:
-            dynamic_cast<mfvec3d_listener &>(*output->first)
-                .process_event(*polymorphic_downcast<mfvec3d *>(
-                    output->second.get()), timestamp);
-            break;
-        case field_value::invalid_type_id:
-            assert(false);
-        }
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
+        for_each<field_value_types>(direct_output_processor(*output->first,
+                                                            *output->second,
+                                                            timestamp));
     }
     this->direct_output_map_.clear();
 }
@@ -1070,101 +950,12 @@ openvrml::script_node::create_listener(const field_value::type_id type,
                                        script_node & node)
     throw (std::bad_alloc)
 {
+    using boost::mpl::for_each;
+    using openvrml_::field_value_types;
     boost::shared_ptr<openvrml::event_listener> listener;
-    switch (type) {
-    case field_value::sfbool_id:
-        listener.reset(new sfbool_listener(id, node));
-        break;
-    case field_value::sfcolor_id:
-        listener.reset(new sfcolor_listener(id, node));
-        break;
-    case field_value::sfcolorrgba_id:
-        listener.reset(new sfcolorrgba_listener(id, node));
-        break;
-    case field_value::sffloat_id:
-        listener.reset(new sffloat_listener(id, node));
-        break;
-    case field_value::sfdouble_id:
-        listener.reset(new sfdouble_listener(id, node));
-        break;
-    case field_value::sfimage_id:
-        listener.reset(new sfimage_listener(id, node));
-        break;
-    case field_value::sfint32_id:
-        listener.reset(new sfint32_listener(id, node));
-        break;
-    case field_value::sfnode_id:
-        listener.reset(new sfnode_listener(id, node));
-        break;
-    case field_value::sfstring_id:
-        listener.reset(new sfstring_listener(id, node));
-        break;
-    case field_value::sfrotation_id:
-        listener.reset(new sfrotation_listener(id, node));
-        break;
-    case field_value::sftime_id:
-        listener.reset(new sftime_listener(id, node));
-        break;
-    case field_value::sfvec2f_id:
-        listener.reset(new sfvec2f_listener(id, node));
-        break;
-    case field_value::sfvec2d_id:
-        listener.reset(new sfvec2d_listener(id, node));
-        break;
-    case field_value::sfvec3f_id:
-        listener.reset(new sfvec3f_listener(id, node));
-        break;
-    case field_value::sfvec3d_id:
-        listener.reset(new sfvec3d_listener(id, node));
-        break;
-    case field_value::mfbool_id:
-        listener.reset(new mfbool_listener(id, node));
-        break;
-    case field_value::mfcolor_id:
-        listener.reset(new mfcolor_listener(id, node));
-        break;
-    case field_value::mfcolorrgba_id:
-        listener.reset(new mfcolorrgba_listener(id, node));
-        break;
-    case field_value::mffloat_id:
-        listener.reset(new mffloat_listener(id, node));
-        break;
-    case field_value::mfdouble_id:
-        listener.reset(new mfdouble_listener(id, node));
-        break;
-    case field_value::mfimage_id:
-        listener.reset(new mfimage_listener(id, node));
-        break;
-    case field_value::mfint32_id:
-        listener.reset(new mfint32_listener(id, node));
-        break;
-    case field_value::mfnode_id:
-        listener.reset(new mfnode_listener(id, node));
-        break;
-    case field_value::mfstring_id:
-        listener.reset(new mfstring_listener(id, node));
-        break;
-    case field_value::mfrotation_id:
-        listener.reset(new mfrotation_listener(id, node));
-        break;
-    case field_value::mftime_id:
-        listener.reset(new mftime_listener(id, node));
-        break;
-    case field_value::mfvec2f_id:
-        listener.reset(new mfvec2f_listener(id, node));
-        break;
-    case field_value::mfvec2d_id:
-        listener.reset(new mfvec2d_listener(id, node));
-        break;
-    case field_value::mfvec3f_id:
-        listener.reset(new mfvec3f_listener(id, node));
-        break;
-    case field_value::mfvec3d_id:
-        listener.reset(new mfvec3d_listener(id, node));
-        break;
-    default:
-        assert(false);
-    }
+    for_each<field_value_types>(
+        script_event_listener_creator(type, id, node, listener));
+    assert(listener);
     return listener;
 }
 
@@ -1185,164 +976,12 @@ openvrml::script_node::create_emitter(script_node & node,
                                       const openvrml::field_value & value)
     throw (std::bad_alloc)
 {
-    using namespace openvrml;
-    using boost::polymorphic_downcast;
-
+    using boost::mpl::for_each;
+    using openvrml_::field_value_types;
     std::auto_ptr<openvrml::event_emitter> emitter;
-    switch (value.type()) {
-    case field_value::sfbool_id:
-        emitter.reset(new script_event_emitter<sfbool>(
-                          node,
-                          *polymorphic_downcast<const sfbool *>(&value)));
-        break;
-    case field_value::sfcolor_id:
-        emitter.reset(new script_event_emitter<sfcolor>(
-                          node,
-                          *polymorphic_downcast<const sfcolor *>(&value)));
-        break;
-    case field_value::sfcolorrgba_id:
-        emitter.reset(new script_event_emitter<sfcolorrgba>(
-                          node,
-                          *polymorphic_downcast<const sfcolorrgba *>(&value)));
-        break;
-    case field_value::sffloat_id:
-        emitter.reset(new script_event_emitter<sffloat>(
-                          node,
-                          *polymorphic_downcast<const sffloat *>(&value)));
-        break;
-    case field_value::sfdouble_id:
-        emitter.reset(new script_event_emitter<sfdouble>(
-                          node,
-                          *polymorphic_downcast<const sfdouble *>(&value)));
-        break;
-    case field_value::sfimage_id:
-        emitter.reset(new script_event_emitter<sfimage>(
-                          node,
-                          *polymorphic_downcast<const sfimage *>(&value)));
-        break;
-    case field_value::sfint32_id:
-        emitter.reset(new script_event_emitter<sfint32>(
-                          node,
-                          *polymorphic_downcast<const sfint32 *>(&value)));
-        break;
-    case field_value::sfnode_id:
-        emitter.reset(new script_event_emitter<sfnode>(
-                          node,
-                          *polymorphic_downcast<const sfnode *>(&value)));
-        break;
-    case field_value::sfstring_id:
-        emitter.reset(new script_event_emitter<sfstring>(
-                          node,
-                          *polymorphic_downcast<const sfstring *>(&value)));
-        break;
-    case field_value::sfrotation_id:
-        emitter.reset(new script_event_emitter<sfrotation>(
-                          node,
-                          *polymorphic_downcast<const sfrotation *>(&value)));
-        break;
-    case field_value::sftime_id:
-        emitter.reset(new script_event_emitter<sftime>(
-                          node,
-                          *polymorphic_downcast<const sftime *>(&value)));
-        break;
-    case field_value::sfvec2f_id:
-        emitter.reset(new script_event_emitter<sfvec2f>(
-                          node,
-                          *polymorphic_downcast<const sfvec2f *>(&value)));
-        break;
-    case field_value::sfvec2d_id:
-        emitter.reset(new script_event_emitter<sfvec2d>(
-                          node,
-                          *polymorphic_downcast<const sfvec2d *>(&value)));
-        break;
-    case field_value::sfvec3f_id:
-        emitter.reset(new script_event_emitter<sfvec3f>(
-                          node,
-                          *polymorphic_downcast<const sfvec3f *>(&value)));
-        break;
-    case field_value::sfvec3d_id:
-        emitter.reset(new script_event_emitter<sfvec3d>(
-                          node,
-                          *polymorphic_downcast<const sfvec3d *>(&value)));
-        break;
-    case field_value::mfbool_id:
-        emitter.reset(new script_event_emitter<mfbool>(
-                          node,
-                          *polymorphic_downcast<const mfbool *>(&value)));
-        break;
-    case field_value::mfcolor_id:
-        emitter.reset(new script_event_emitter<mfcolor>(
-                          node,
-                          *polymorphic_downcast<const mfcolor *>(&value)));
-        break;
-    case field_value::mfcolorrgba_id:
-        emitter.reset(new script_event_emitter<mfcolorrgba>(
-                          node,
-                          *polymorphic_downcast<const mfcolorrgba *>(&value)));
-        break;
-    case field_value::mffloat_id:
-        emitter.reset(new script_event_emitter<mffloat>(
-                          node,
-                          *polymorphic_downcast<const mffloat *>(&value)));
-        break;
-    case field_value::mfdouble_id:
-        emitter.reset(new script_event_emitter<mfdouble>(
-                          node,
-                          *polymorphic_downcast<const mfdouble *>(&value)));
-        break;
-    case field_value::mfimage_id:
-        emitter.reset(new script_event_emitter<mfimage>(
-                          node,
-                          *polymorphic_downcast<const mfimage *>(&value)));
-        break;
-    case field_value::mfint32_id:
-        emitter.reset(new script_event_emitter<mfint32>(
-                          node,
-                          *polymorphic_downcast<const mfint32 *>(&value)));
-        break;
-    case field_value::mfnode_id:
-        emitter.reset(new script_event_emitter<mfnode>(
-                          node,
-                          *polymorphic_downcast<const mfnode *>(&value)));
-        break;
-    case field_value::mfstring_id:
-        emitter.reset(new script_event_emitter<mfstring>(
-                          node,
-                          *polymorphic_downcast<const mfstring *>(&value)));
-        break;
-    case field_value::mfrotation_id:
-        emitter.reset(new script_event_emitter<mfrotation>(
-                          node,
-                          *polymorphic_downcast<const mfrotation *>(&value)));
-        break;
-    case field_value::mftime_id:
-        emitter.reset(new script_event_emitter<mftime>(
-                          node,
-                          *polymorphic_downcast<const mftime *>(&value)));
-        break;
-    case field_value::mfvec2f_id:
-        emitter.reset(new script_event_emitter<mfvec2f>(
-                          node,
-                          *polymorphic_downcast<const mfvec2f *>(&value)));
-        break;
-    case field_value::mfvec2d_id:
-        emitter.reset(new script_event_emitter<mfvec2d>(
-                          node,
-                          *polymorphic_downcast<const mfvec2d *>(&value)));
-        break;
-    case field_value::mfvec3f_id:
-        emitter.reset(new script_event_emitter<mfvec3f>(
-                          node,
-                          *polymorphic_downcast<const mfvec3f *>(&value)));
-        break;
-    case field_value::mfvec3d_id:
-        emitter.reset(new script_event_emitter<mfvec3d>(
-                          node,
-                          *polymorphic_downcast<const mfvec3d *>(&value)));
-        break;
-    default:
-        assert(false);
-    }
+    for_each<field_value_types>(
+        script_event_emitter_creator(node, value, emitter));
+    assert(emitter.get());
     return emitter;
 }
 

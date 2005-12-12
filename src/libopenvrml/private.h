@@ -65,6 +65,8 @@
 #   include <functional>
 #   include <limits>
 #   include <boost/concept_check.hpp>
+#   include <boost/mpl/vector.hpp>
+#   include <openvrml/field_value.h>
 
 namespace {
     namespace openvrml_ {
@@ -313,6 +315,39 @@ namespace {
             return obj_scope_guard_impl1<Object, MemberFunction, Param>(
                     obj, mem_fun, param);
         }
+
+
+        typedef boost::mpl::vector<openvrml::sfbool,
+                                   openvrml::sfcolor,
+                                   openvrml::sfcolorrgba,
+                                   openvrml::sfdouble,
+                                   openvrml::sffloat,
+                                   openvrml::sfimage,
+                                   openvrml::sfint32,
+                                   openvrml::sfnode,
+                                   openvrml::sfrotation,
+                                   openvrml::sfstring,
+                                   openvrml::sftime,
+                                   openvrml::sfvec2d,
+                                   openvrml::sfvec2f,
+                                   openvrml::sfvec3d,
+                                   openvrml::sfvec3f,
+                                   openvrml::mfbool,
+                                   openvrml::mfcolor,
+                                   openvrml::mfcolorrgba,
+                                   openvrml::mfdouble,
+                                   openvrml::mffloat,
+                                   openvrml::mfimage,
+                                   openvrml::mfint32,
+                                   openvrml::mfnode,
+                                   openvrml::mfrotation,
+                                   openvrml::mfstring,
+                                   openvrml::mftime,
+                                   openvrml::mfvec2d,
+                                   openvrml::mfvec2f,
+                                   openvrml::mfvec3d,
+                                   openvrml::mfvec3f>
+        field_value_types;
     }
 }
 

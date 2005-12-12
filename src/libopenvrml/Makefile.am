@@ -49,7 +49,9 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DBOOST_SPIRIT_THREADSAFE
+        -DBOOST_SPIRIT_THREADSAFE \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
 AM_CXXFLAGS = \
         @PTHREAD_CFLAGS@ \
         @FONTCONFIG_CFLAGS@ \

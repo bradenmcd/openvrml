@@ -28,6 +28,7 @@
 # include <numeric>
 # include <boost/array.hpp>
 # include <private.h>
+# include <boost/mpl/for_each.hpp>
 # include "field_value.h"
 # include "node.h"
 
@@ -346,6 +347,29 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  * @brief Designates an <code>mfvec3f</code>.
  */
 
+namespace {
+
+    struct OPENVRML_LOCAL create_field_value {
+        create_field_value(const openvrml::field_value::type_id type,
+                           std::auto_ptr<openvrml::field_value> & fv):
+            type_(type),
+            field_value_(&fv)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->type_) {
+                this->field_value_->reset(new T);
+            }
+        }
+
+    private:
+        openvrml::field_value::type_id type_;
+        std::auto_ptr<openvrml::field_value> * field_value_;
+    };
+}
+
 /**
  * @brief Create a default instance of the type specified by @p type.
  *
@@ -359,72 +383,13 @@ std::auto_ptr<openvrml::field_value>
 openvrml::field_value::create(const type_id type)
     throw (std::bad_alloc)
 {
-    using std::auto_ptr;
-    switch (type) {
-    case field_value::sfbool_id:
-        return auto_ptr<field_value>(new sfbool);
-    case field_value::sfcolor_id:
-        return auto_ptr<field_value>(new sfcolor);
-    case field_value::sfcolorrgba_id:
-        return auto_ptr<field_value>(new sfcolorrgba);
-    case field_value::sffloat_id:
-        return auto_ptr<field_value>(new sffloat);
-    case field_value::sfdouble_id:
-        return auto_ptr<field_value>(new sfdouble);
-    case field_value::sfimage_id:
-        return auto_ptr<field_value>(new sfimage);
-    case field_value::sfint32_id:
-        return auto_ptr<field_value>(new sfint32);
-    case field_value::sfnode_id:
-        return auto_ptr<field_value>(new sfnode);
-    case field_value::sfrotation_id:
-        return auto_ptr<field_value>(new sfrotation);
-    case field_value::sfstring_id:
-        return auto_ptr<field_value>(new sfstring);
-    case field_value::sftime_id:
-        return auto_ptr<field_value>(new sftime);
-    case field_value::sfvec2f_id:
-        return auto_ptr<field_value>(new sfvec2f);
-    case field_value::sfvec2d_id:
-        return auto_ptr<field_value>(new sfvec2d);
-    case field_value::sfvec3f_id:
-        return auto_ptr<field_value>(new sfvec3f);
-    case field_value::sfvec3d_id:
-        return auto_ptr<field_value>(new sfvec3d);
-    case field_value::mfbool_id:
-        return auto_ptr<field_value>(new mfbool);
-    case field_value::mfcolor_id:
-        return auto_ptr<field_value>(new mfcolor);
-    case field_value::mfcolorrgba_id:
-        return auto_ptr<field_value>(new mfcolorrgba);
-    case field_value::mffloat_id:
-        return auto_ptr<field_value>(new mffloat);
-    case field_value::mfdouble_id:
-        return auto_ptr<field_value>(new mfdouble);
-    case field_value::mfimage_id:
-        return auto_ptr<field_value>(new mfimage);
-    case field_value::mfint32_id:
-        return auto_ptr<field_value>(new mfint32);
-    case field_value::mfnode_id:
-        return auto_ptr<field_value>(new mfnode);
-    case field_value::mfrotation_id:
-        return auto_ptr<field_value>(new mfrotation);
-    case field_value::mfstring_id:
-        return auto_ptr<field_value>(new mfstring);
-    case field_value::mftime_id:
-        return auto_ptr<field_value>(new mftime);
-    case field_value::mfvec2f_id:
-        return auto_ptr<field_value>(new mfvec2f);
-    case field_value::mfvec2d_id:
-        return auto_ptr<field_value>(new mfvec2d);
-    case field_value::mfvec3f_id:
-        return auto_ptr<field_value>(new mfvec3f);
-    case field_value::mfvec3d_id:
-        return auto_ptr<field_value>(new mfvec3d);
-    default:
-        assert(false);
-    }
-    return auto_ptr<field_value>(0);
+    using boost::mpl::for_each;
+    using openvrml_::field_value_types;
+
+    std::auto_ptr<field_value> result;
+    for_each<field_value_types>(create_field_value(type, result));
+    assert(result.get());
+    return result;
 }
 
 /**

@@ -1,3 +1,55 @@
+2005-12-11 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced several instances of switching on field_value::type with
+	boost::mpl::for_each.  This consolidates several lists of the
+	field_value types into one--openvrml_::field_value_types in
+	private.h--and allows for more concise code.
+
+	* src/libopenvrml/Makefile.am: Define
+	BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS and
+	BOOST_MPL_LIMIT_VECTOR_SIZE=30.  The default boost::mpl::vector
+	size limit of 20 is not sufficient.
+	* src/libopenvrml/private.h: Added boost::mpl::vector of
+	field_value types.  * src/libopenvrml/openvrml/browser.cpp
+	(openvrml::abstract_proto_node::create_eventin(field_value::type_id,
+	abstract_proto_node &)): Use boost::mpl::for_each instead of
+	switch.
+	(openvrml::abstract_proto_node::create_eventout(field_value::type_id,
+	abstract_proto_node &)): Use boost::mpl::for_each instead of
+	switch.
+	(openvrml::proto_node::create_exposedfield(const field_value &,
+	proto_node &)): Use boost::mpl::for_each instead of switch.
+	(openvrml::proto_node::proto_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &, const initial_value_map &)):
+	Use boost::mpl::for_each for creating IS mappings.
+	(externproto_node::create_exposedfield(externproto_node &,
+	openvrml::field_value::type_id)): Use boost::mpl::for_each instead
+	of switch.
+	(externproto_node::set_proto_node(openvrml::proto_node_type &)):
+	Use boost::mpl::for_each for creating IS mappings.
+	* src/libopenvrml/openvrml/field_value.cpp
+	(openvrml::field_value::create(type_id)): Use boost::mpl::for_each
+	instead of switch.
+	* src/libopenvrml/openvrml/node.cpp
+	(print_field_::operator()(const openvrml::node_interface &)
+	const): Use boost::mpl::for_each instead of switch.
+	(openvrml::add_route(node &, const std::string &, node &, const
+	std::string &)): Use boost::mpl::for_each instead of switch.
+	(openvrml::delete_route(node &, const std::string &, node &, const
+	std::string &)): Use boost::mpl::for_each instead of switch.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script::process_direct_output): Use
+	boost::mpl::for_each instead of switch.
+	(openvrml::script_node::create_listener(field_value::type_id,
+	const std::string &, script_node &)): Use boost::mpl::for_each
+	instead of switch.
+	(openvrml::script_node::create_emitter(script_node &, const
+	openvrml::field_value &)): Use boost::mpl::for_each instead of
+	switch.
+	* src/libopenvrml/openvrml/script.h
+	(openvrml::script_node): Added script_event_listener_creator and
+	script_event_emitter_creator function objects.
+
 2005-12-10 Braden McDaniel  <braden@endoframe.com>
 
 	Use boost::array.

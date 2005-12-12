@@ -36,6 +36,7 @@
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/bind.hpp>
 # include <boost/functional.hpp>
+# include <boost/mpl/for_each.hpp>
 # include <boost/spirit.hpp>
 # include <boost/spirit/phoenix.hpp>
 # include <boost/thread/thread.hpp>
@@ -197,15 +198,58 @@ namespace openvrml {
             virtual const std::string do_eventin_id() const throw ();
         };
 
+        struct proto_eventin_creator {
+            proto_eventin_creator(
+                const openvrml::field_value::type_id type,
+                abstract_proto_node & node,
+                boost::shared_ptr<openvrml::event_listener> & listener):
+                type_(type),
+                node_(&node),
+                listener_(&listener)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    this->listener_->reset(new proto_eventin<T>(*this->node_));
+                }
+            }
+
+        private:
+            openvrml::field_value::type_id type_;
+            abstract_proto_node * node_;
+            boost::shared_ptr<openvrml::event_listener> * listener_;
+        };
+
         static boost::shared_ptr<openvrml::event_listener>
         create_eventin(field_value::type_id, abstract_proto_node & node)
             throw (std::bad_alloc);
 
-        static bool
-        eventin_is(field_value::type_id field_type,
-                   openvrml::event_listener & impl_eventin,
-                   openvrml::event_listener & interface_eventin)
-            throw (std::bad_alloc);
+        struct eventin_is {
+            eventin_is(const field_value::type_id field_type,
+                       openvrml::event_listener & impl_eventin,
+                       openvrml::event_listener & interface_eventin):
+                type_(field_type),
+                impl_eventin_(&impl_eventin),
+                interface_eventin_(&interface_eventin)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    dynamic_cast<proto_eventin<T> &>(*interface_eventin_).is(
+                        dynamic_cast<field_value_listener<T> &>(
+                            *impl_eventin_));
+                }
+            }
+
+        private:
+            field_value::type_id type_;
+            openvrml::event_listener * impl_eventin_;
+            openvrml::event_listener * interface_eventin_;
+        };
 
         template <typename FieldValue>
         class proto_eventout : public field_value_emitter<FieldValue> {
@@ -245,15 +289,58 @@ namespace openvrml {
             const std::string do_eventout_id() const throw ();
         };
 
+        struct proto_eventout_creator {
+            proto_eventout_creator(
+                const openvrml::field_value::type_id type,
+                abstract_proto_node & node,
+                boost::shared_ptr<openvrml::event_emitter> & emitter):
+                type_(type),
+                node_(&node),
+                emitter_(&emitter)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    this->emitter_->reset(new proto_eventout<T>(*this->node_));
+                }
+            }
+
+        private:
+            openvrml::field_value::type_id type_;
+            abstract_proto_node * node_;
+            boost::shared_ptr<openvrml::event_emitter> * emitter_;
+        };
+
         static boost::shared_ptr<openvrml::event_emitter>
         create_eventout(field_value::type_id, abstract_proto_node & node)
             throw (std::bad_alloc);
 
-        static bool
-        eventout_is(field_value::type_id field_type,
-                    openvrml::event_emitter & impl_eventout,
-                    openvrml::event_emitter & interface_eventout)
-            throw (std::bad_alloc);
+        struct eventout_is {
+            eventout_is(const field_value::type_id field_type,
+                        openvrml::event_emitter & impl_eventout,
+                        openvrml::event_emitter & interface_eventout):
+                type_(field_type),
+                impl_eventout_(&impl_eventout),
+                interface_eventout_(&interface_eventout)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    dynamic_cast<proto_eventout<T> &>(*interface_eventout_).is(
+                        dynamic_cast<field_value_emitter<T> &>(
+                            *impl_eventout_));
+                }
+            }
+
+        private:
+            field_value::type_id type_;
+            openvrml::event_emitter * impl_eventout_;
+            openvrml::event_emitter * interface_eventout_;
+        };
 
         typedef boost::shared_ptr<openvrml::event_listener> eventin_ptr;
         typedef std::map<std::string, eventin_ptr> eventin_map_t;
@@ -369,6 +456,35 @@ namespace openvrml {
             virtual void do_process_event(const FieldValue & value,
                                           double timestamp)
                 throw (std::bad_alloc);
+        };
+
+        struct proto_exposedfield_creator {
+            proto_exposedfield_creator(
+                const field_value & initial_value,
+                proto_node & node,
+                boost::shared_ptr<openvrml::event_listener> & exposedfield):
+                initial_value_(&initial_value),
+                node_(&node),
+                exposedfield_(&exposedfield)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->initial_value_->type()) {
+                    using boost::polymorphic_downcast;
+                    this->exposedfield_->reset(
+                        new proto_exposedfield<T>(
+                            *this->node_,
+                            *polymorphic_downcast<const T *>(
+                                this->initial_value_)));
+                }
+            }
+
+        private:
+            const openvrml::field_value * initial_value_;
+            proto_node * node_;
+            boost::shared_ptr<openvrml::event_listener> * exposedfield_;
         };
 
         static boost::shared_ptr<openvrml::event_listener>
@@ -1131,286 +1247,13 @@ namespace openvrml {
                                         abstract_proto_node & node)
         throw (std::bad_alloc)
     {
-        boost::shared_ptr<openvrml::event_listener> result;
-        switch (type) {
-        case field_value::sfbool_id:
-            result.reset(new proto_eventin<sfbool>(node));
-            break;
-        case field_value::sfcolor_id:
-            result.reset(new proto_eventin<sfcolor>(node));
-            break;
-        case field_value::sfcolorrgba_id:
-            result.reset(new proto_eventin<sfcolorrgba>(node));
-            break;
-        case field_value::sfdouble_id:
-            result.reset(new proto_eventin<sfdouble>(node));
-            break;
-        case field_value::sffloat_id:
-            result.reset(new proto_eventin<sffloat>(node));
-            break;
-        case field_value::sfimage_id:
-            result.reset(new proto_eventin<sfimage>(node));
-            break;
-        case field_value::sfint32_id:
-            result.reset(new proto_eventin<sfint32>(node));
-            break;
-        case field_value::sfnode_id:
-            result.reset(new proto_eventin<sfnode>(node));
-            break;
-        case field_value::sfrotation_id:
-            result.reset(new proto_eventin<sfrotation>(node));
-            break;
-        case field_value::sfstring_id:
-            result.reset(new proto_eventin<sfstring>(node));
-            break;
-        case field_value::sftime_id:
-            result.reset(new proto_eventin<sftime>(node));
-            break;
-        case field_value::sfvec2f_id:
-            result.reset(new proto_eventin<sfvec2f>(node));
-            break;
-        case field_value::sfvec2d_id:
-            result.reset(new proto_eventin<sfvec2d>(node));
-            break;
-        case field_value::sfvec3f_id:
-            result.reset(new proto_eventin<sfvec3f>(node));
-            break;
-        case field_value::sfvec3d_id:
-            result.reset(new proto_eventin<sfvec3d>(node));
-            break;
-        case field_value::mfbool_id:
-            result.reset(new proto_eventin<mfbool>(node));
-            break;
-        case field_value::mfcolor_id:
-            result.reset(new proto_eventin<mfcolor>(node));
-            break;
-        case field_value::mfcolorrgba_id:
-            result.reset(new proto_eventin<mfcolorrgba>(node));
-            break;
-        case field_value::mfdouble_id:
-            result.reset(new proto_eventin<mfdouble>(node));
-            break;
-        case field_value::mffloat_id:
-            result.reset(new proto_eventin<mffloat>(node));
-            break;
-        case field_value::mfimage_id:
-            result.reset(new proto_eventin<mfimage>(node));
-            break;
-        case field_value::mfint32_id:
-            result.reset(new proto_eventin<mfint32>(node));
-            break;
-        case field_value::mfnode_id:
-            result.reset(new proto_eventin<mfnode>(node));
-            break;
-        case field_value::mfrotation_id:
-            result.reset(new proto_eventin<mfrotation>(node));
-            break;
-        case field_value::mfstring_id:
-            result.reset(new proto_eventin<mfstring>(node));
-            break;
-        case field_value::mftime_id:
-            result.reset(new proto_eventin<mftime>(node));
-            break;
-        case field_value::mfvec2f_id:
-            result.reset(new proto_eventin<mfvec2f>(node));
-            break;
-        case field_value::mfvec2d_id:
-            result.reset(new proto_eventin<mfvec2d>(node));
-            break;
-        case field_value::mfvec3f_id:
-            result.reset(new proto_eventin<mfvec3f>(node));
-            break;
-        case field_value::mfvec3d_id:
-            result.reset(new proto_eventin<mfvec3d>(node));
-            break;
-        default:
-            assert(false);
-            break;
-        }
-        assert(result.get());
-        return result;
-    }
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
 
-    /**
-     * @brief Create an @c IS mapping between an @c event_listener in the
-     *        @c PROTO implementation and an @c event_listener in the @c PROTO
-     *        interface.
-     *
-     * @param field_type        field value type of the concrete listeners.
-     * @param impl_eventin      @c event_listener of a node in the @c PROTO
-     *                          implementation.
-     * @param interface_eventin @c event_listener from the @c PROTO interface.
-     *
-     * @return @c true if the @c IS mapping is established successfully;
-     *         @c false otherwise (i.e., if the mapping already exists).
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    bool
-    abstract_proto_node::eventin_is(
-        const field_value::type_id field_type,
-        openvrml::event_listener & impl_eventin,
-        openvrml::event_listener & interface_eventin)
-        throw (std::bad_alloc)
-    {
-        using boost::polymorphic_downcast;
-        bool succeeded;
-        switch (field_type) {
-        case field_value::sfbool_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfbool> &>(interface_eventin)
-                .is(dynamic_cast<sfbool_listener &>(impl_eventin));
-            break;
-        case field_value::sfcolor_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfcolor> &>(interface_eventin)
-                .is(dynamic_cast<sfcolor_listener &>(impl_eventin));
-            break;
-        case field_value::sfcolorrgba_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfcolorrgba> &>(interface_eventin)
-                .is(dynamic_cast<sfcolorrgba_listener &>(impl_eventin));
-            break;
-        case field_value::sffloat_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sffloat> &>(interface_eventin)
-                .is(dynamic_cast<sffloat_listener &>(impl_eventin));
-            break;
-        case field_value::sfdouble_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfdouble> &>(interface_eventin)
-                .is(dynamic_cast<sfdouble_listener &>(impl_eventin));
-            break;
-        case field_value::sfimage_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfimage> &>(interface_eventin)
-                .is(dynamic_cast<sfimage_listener &>(impl_eventin));
-            break;
-        case field_value::sfint32_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfint32> &>(interface_eventin)
-                .is(dynamic_cast<sfint32_listener &>(impl_eventin));
-            break;
-        case field_value::sfnode_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfnode> &>(interface_eventin)
-                .is(dynamic_cast<sfnode_listener &>(impl_eventin));
-            break;
-        case field_value::sfrotation_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfrotation> &>(interface_eventin)
-                .is(dynamic_cast<sfrotation_listener &>(impl_eventin));
-            break;
-        case field_value::sfstring_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfstring> &>(interface_eventin)
-                .is(dynamic_cast<sfstring_listener &>(impl_eventin));
-            break;
-        case field_value::sftime_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sftime> &>(interface_eventin)
-                .is(dynamic_cast<sftime_listener &>(impl_eventin));
-            break;
-        case field_value::sfvec2f_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfvec2f> &>(interface_eventin)
-                .is(dynamic_cast<sfvec2f_listener &>(impl_eventin));
-            break;
-        case field_value::sfvec2d_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfvec2d> &>(interface_eventin)
-                .is(dynamic_cast<sfvec2d_listener &>(impl_eventin));
-            break;
-        case field_value::sfvec3f_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfvec3f> &>(interface_eventin)
-                .is(dynamic_cast<sfvec3f_listener &>(impl_eventin));
-            break;
-        case field_value::sfvec3d_id:
-            succeeded =
-                dynamic_cast<proto_eventin<sfvec3d> &>(interface_eventin)
-                .is(dynamic_cast<sfvec3d_listener &>(impl_eventin));
-            break;
-        case field_value::mfbool_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfbool> &>(interface_eventin)
-                .is(dynamic_cast<mfbool_listener &>(impl_eventin));
-            break;
-        case field_value::mfcolor_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfcolor> &>(interface_eventin)
-                .is(dynamic_cast<mfcolor_listener &>(impl_eventin));
-            break;
-        case field_value::mfcolorrgba_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfcolorrgba> &>(interface_eventin)
-                .is(dynamic_cast<mfcolorrgba_listener &>(impl_eventin));
-            break;
-        case field_value::mffloat_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mffloat> &>(interface_eventin)
-                .is(dynamic_cast<mffloat_listener &>(impl_eventin));
-            break;
-        case field_value::mfimage_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfimage> &>(interface_eventin)
-                .is(dynamic_cast<mfimage_listener &>(impl_eventin));
-            break;
-        case field_value::mfdouble_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfdouble> &>(interface_eventin)
-                .is(dynamic_cast<mfdouble_listener &>(impl_eventin));
-            break;
-        case field_value::mfint32_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfint32> &>(interface_eventin)
-                .is(dynamic_cast<mfint32_listener &>(impl_eventin));
-            break;
-        case field_value::mfnode_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfnode> &>(interface_eventin)
-                .is(dynamic_cast<mfnode_listener &>(impl_eventin));
-            break;
-        case field_value::mfrotation_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfrotation> &>(interface_eventin)
-                .is(dynamic_cast<mfrotation_listener &>(impl_eventin));
-            break;
-        case field_value::mfstring_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfstring> &>(interface_eventin)
-                .is(dynamic_cast<mfstring_listener &>(impl_eventin));
-            break;
-        case field_value::mftime_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mftime> &>(interface_eventin)
-                .is(dynamic_cast<mftime_listener &>(impl_eventin));
-            break;
-        case field_value::mfvec2f_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfvec2f> &>(interface_eventin)
-                .is(dynamic_cast<mfvec2f_listener &>(impl_eventin));
-            break;
-        case field_value::mfvec2d_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfvec2d> &>(interface_eventin)
-                .is(dynamic_cast<mfvec2d_listener &>(impl_eventin));
-            break;
-        case field_value::mfvec3f_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfvec3f> &>(interface_eventin)
-                .is(dynamic_cast<mfvec3f_listener &>(impl_eventin));
-            break;
-        case field_value::mfvec3d_id:
-            succeeded =
-                dynamic_cast<proto_eventin<mfvec3d> &>(interface_eventin)
-                .is(dynamic_cast<mfvec3d_listener &>(impl_eventin));
-            break;
-        default:
-            assert(false);
-            break;
-        }
-        return succeeded;
+        boost::shared_ptr<openvrml::event_listener> result;
+        for_each<field_value_types>(proto_eventin_creator(type, node, result));
+        assert(result);
+        return result;
     }
 
     /**
@@ -1614,287 +1457,14 @@ namespace openvrml {
                                          abstract_proto_node & node)
         throw (std::bad_alloc)
     {
-        boost::shared_ptr<openvrml::event_emitter> result;
-        switch (type) {
-        case field_value::sfbool_id:
-            result.reset(new proto_eventout<sfbool>(node));
-            break;
-        case field_value::sfcolor_id:
-            result.reset(new proto_eventout<sfcolor>(node));
-            break;
-        case field_value::sfcolorrgba_id:
-            result.reset(new proto_eventout<sfcolorrgba>(node));
-            break;
-        case field_value::sffloat_id:
-            result.reset(new proto_eventout<sffloat>(node));
-            break;
-        case field_value::sfdouble_id:
-            result.reset(new proto_eventout<sfdouble>(node));
-            break;
-        case field_value::sfimage_id:
-            result.reset(new proto_eventout<sfimage>(node));
-            break;
-        case field_value::sfint32_id:
-            result.reset(new proto_eventout<sfint32>(node));
-            break;
-        case field_value::sfnode_id:
-            result.reset(new proto_eventout<sfnode>(node));
-            break;
-        case field_value::sfrotation_id:
-            result.reset(new proto_eventout<sfrotation>(node));
-            break;
-        case field_value::sfstring_id:
-            result.reset(new proto_eventout<sfstring>(node));
-            break;
-        case field_value::sftime_id:
-            result.reset(new proto_eventout<sftime>(node));
-            break;
-        case field_value::sfvec2f_id:
-            result.reset(new proto_eventout<sfvec2f>(node));
-            break;
-        case field_value::sfvec2d_id:
-            result.reset(new proto_eventout<sfvec2d>(node));
-            break;
-        case field_value::sfvec3f_id:
-            result.reset(new proto_eventout<sfvec3f>(node));
-            break;
-        case field_value::sfvec3d_id:
-            result.reset(new proto_eventout<sfvec3d>(node));
-            break;
-        case field_value::mfbool_id:
-            result.reset(new proto_eventout<mfbool>(node));
-            break;
-        case field_value::mfcolor_id:
-            result.reset(new proto_eventout<mfcolor>(node));
-            break;
-        case field_value::mfcolorrgba_id:
-            result.reset(new proto_eventout<mfcolorrgba>(node));
-            break;
-        case field_value::mffloat_id:
-            result.reset(new proto_eventout<mffloat>(node));
-            break;
-        case field_value::mfdouble_id:
-            result.reset(new proto_eventout<mfdouble>(node));
-            break;
-        case field_value::mfimage_id:
-            result.reset(new proto_eventout<mfimage>(node));
-            break;
-        case field_value::mfint32_id:
-            result.reset(new proto_eventout<mfint32>(node));
-            break;
-        case field_value::mfnode_id:
-            result.reset(new proto_eventout<mfnode>(node));
-            break;
-        case field_value::mfrotation_id:
-            result.reset(new proto_eventout<mfrotation>(node));
-            break;
-        case field_value::mfstring_id:
-            result.reset(new proto_eventout<mfstring>(node));
-            break;
-        case field_value::mftime_id:
-            result.reset(new proto_eventout<mftime>(node));
-            break;
-        case field_value::mfvec2f_id:
-            result.reset(new proto_eventout<mfvec2f>(node));
-            break;
-        case field_value::mfvec2d_id:
-            result.reset(new proto_eventout<mfvec2d>(node));
-            break;
-        case field_value::mfvec3f_id:
-            result.reset(new proto_eventout<mfvec3f>(node));
-            break;
-        case field_value::mfvec3d_id:
-            result.reset(new proto_eventout<mfvec3d>(node));
-            break;
-        default:
-            assert(false);
-            break;
-        }
-        assert(result.get());
-        return result;
-    }
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
 
-    /**
-     * @brief Create an @c IS mapping between an @c event_emitter in the
-     *        @c PROTO implementation and an @c event_emitter in the @c PROTO
-     *        interface.
-     *
-     * @param field_type            field value type of the concrete emitters.
-     * @param impl_eventout         @c event_emitter of a node in the @c PROTO
-     *                              implementation.
-     * @param interface_eventout    @c event_emitter from the @c PROTO
-     *                              interface.
-     *
-     * @return @c true if the @c IS mapping is established successfully;
-     *         @c false otherwise (i.e., if the mapping already exists).
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    bool
-    abstract_proto_node::eventout_is(
-        const field_value::type_id field_type,
-        openvrml::event_emitter & impl_eventout,
-        openvrml::event_emitter & interface_eventout)
-        throw (std::bad_alloc)
-    {
-        using boost::polymorphic_downcast;
-        bool succeeded;
-        switch (field_type) {
-        case field_value::sfbool_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfbool> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfbool_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfcolor_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfcolor> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfcolor_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfcolorrgba_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfcolorrgba> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfcolorrgba_emitter *>(&impl_eventout));
-            break;
-        case field_value::sffloat_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sffloat> *>(&interface_eventout)
-                ->is(*dynamic_cast<sffloat_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfdouble_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfdouble> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfdouble_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfimage_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfimage> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfimage_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfint32_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfint32> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfint32_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfnode_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfnode> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfnode_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfrotation_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfrotation> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfrotation_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfstring_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfstring> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfstring_emitter *>(&impl_eventout));
-            break;
-        case field_value::sftime_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sftime> *>(&interface_eventout)
-                ->is(*dynamic_cast<sftime_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfvec2f_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfvec2f> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec2f_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfvec2d_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfvec2d> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec2d_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfvec3f_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfvec3f> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec3f_emitter *>(&impl_eventout));
-            break;
-        case field_value::sfvec3d_id:
-            succeeded =
-                dynamic_cast<proto_eventout<sfvec3d> *>(&interface_eventout)
-                ->is(*dynamic_cast<sfvec3d_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfbool_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfbool> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfbool_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfcolor_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfcolor> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfcolor_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfcolorrgba_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfcolorrgba> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfcolorrgba_emitter *>(&impl_eventout));
-            break;
-        case field_value::mffloat_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mffloat> *>(&interface_eventout)
-                ->is(*dynamic_cast<mffloat_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfdouble_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfdouble> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfdouble_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfimage_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfimage> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfimage_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfint32_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfint32> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfint32_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfnode_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfnode> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfnode_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfrotation_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfrotation> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfrotation_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfstring_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfstring> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfstring_emitter *>(&impl_eventout));
-            break;
-        case field_value::mftime_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mftime> *>(&interface_eventout)
-                ->is(*dynamic_cast<mftime_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfvec2f_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfvec2f> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec2f_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfvec2d_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfvec2d> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec2d_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfvec3f_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfvec3f> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec3f_emitter *>(&impl_eventout));
-            break;
-        case field_value::mfvec3d_id:
-            succeeded =
-                dynamic_cast<proto_eventout<mfvec3d> *>(&interface_eventout)
-                ->is(*dynamic_cast<mfvec3d_emitter *>(&impl_eventout));
-            break;
-        default:
-            assert(false);
-            break;
-        }
-        return succeeded;
+        boost::shared_ptr<openvrml::event_emitter> result;
+        for_each<field_value_types>(
+            proto_eventout_creator(type, node, result));
+        assert(result);
+        return result;
     }
 
     /**
@@ -1964,194 +1534,13 @@ namespace openvrml {
                                     proto_node & node)
         throw (std::bad_alloc)
     {
-        using boost::polymorphic_downcast;
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
+
         boost::shared_ptr<openvrml::event_listener> result;
-        switch (initial_value.type()) {
-        case field_value::sfbool_id:
-            result.reset(
-                new proto_exposedfield<sfbool>(
-                    node,
-                    *polymorphic_downcast<const sfbool *>(&initial_value)));
-            break;
-        case field_value::sfcolor_id:
-            result.reset(
-                new proto_exposedfield<sfcolor>(
-                    node,
-                    *polymorphic_downcast<const sfcolor *>(&initial_value)));
-            break;
-        case field_value::sfcolorrgba_id:
-            result.reset(
-                new proto_exposedfield<sfcolorrgba>(
-                    node,
-                    *polymorphic_downcast<const sfcolorrgba *>(&initial_value)));
-            break;
-        case field_value::sffloat_id:
-            result.reset(
-                new proto_exposedfield<sffloat>(
-                    node,
-                    *polymorphic_downcast<const sffloat *>(&initial_value)));
-            break;
-        case field_value::sfdouble_id:
-            result.reset(
-                new proto_exposedfield<sfdouble>(
-                    node,
-                    *polymorphic_downcast<const sfdouble *>(&initial_value)));
-            break;
-        case field_value::sfimage_id:
-            result.reset(
-                new proto_exposedfield<sfimage>(
-                    node,
-                    *polymorphic_downcast<const sfimage *>(&initial_value)));
-            break;
-        case field_value::sfint32_id:
-            result.reset(
-                new proto_exposedfield<sfint32>(
-                    node,
-                    *polymorphic_downcast<const sfint32 *>(&initial_value)));
-            break;
-        case field_value::sfnode_id:
-            result.reset(
-                new proto_exposedfield<sfnode>(
-                    node,
-                    *polymorphic_downcast<const sfnode *>(&initial_value)));
-            break;
-        case field_value::sfrotation_id:
-            result.reset(
-                new proto_exposedfield<sfrotation>(
-                    node,
-                    *polymorphic_downcast<const sfrotation *>(
-                        &initial_value)));
-            break;
-        case field_value::sfstring_id:
-            result.reset(
-                new proto_exposedfield<sfstring>(
-                    node,
-                    *polymorphic_downcast<const sfstring *>(&initial_value)));
-            break;
-        case field_value::sftime_id:
-            result.reset(
-                new proto_exposedfield<sftime>(
-                    node,
-                    *polymorphic_downcast<const sftime *>(&initial_value)));
-            break;
-        case field_value::sfvec2f_id:
-            result.reset(
-                new proto_exposedfield<sfvec2f>(
-                    node,
-                    *polymorphic_downcast<const sfvec2f *>(&initial_value)));
-            break;
-        case field_value::sfvec2d_id:
-            result.reset(
-                new proto_exposedfield<sfvec2d>(
-                    node,
-                    *polymorphic_downcast<const sfvec2d *>(&initial_value)));
-            break;
-        case field_value::sfvec3f_id:
-            result.reset(
-                new proto_exposedfield<sfvec3f>(
-                    node,
-                    *polymorphic_downcast<const sfvec3f *>(&initial_value)));
-            break;
-        case field_value::sfvec3d_id:
-            result.reset(
-                new proto_exposedfield<sfvec3d>(
-                    node,
-                    *polymorphic_downcast<const sfvec3d *>(&initial_value)));
-            break;
-        case field_value::mfbool_id:
-            result.reset(
-                new proto_exposedfield<mfbool>(
-                    node,
-                    *polymorphic_downcast<const mfbool *>(&initial_value)));
-            break;
-        case field_value::mfcolor_id:
-            result.reset(
-                new proto_exposedfield<mfcolor>(
-                    node,
-                    *polymorphic_downcast<const mfcolor *>(&initial_value)));
-            break;
-        case field_value::mfcolorrgba_id:
-            result.reset(
-                new proto_exposedfield<mfcolorrgba>(
-                    node,
-                    *polymorphic_downcast<const mfcolorrgba *>(&initial_value)));
-            break;
-        case field_value::mffloat_id:
-            result.reset(
-                new proto_exposedfield<mffloat>(
-                    node,
-                    *polymorphic_downcast<const mffloat *>(&initial_value)));
-            break;
-        case field_value::mfdouble_id:
-            result.reset(
-                new proto_exposedfield<mfdouble>(
-                    node,
-                    *polymorphic_downcast<const mfdouble *>(&initial_value)));
-            break;
-        case field_value::mfimage_id:
-            result.reset(
-                new proto_exposedfield<mfimage>(
-                    node,
-                    *polymorphic_downcast<const mfimage *>(&initial_value)));
-            break;
-        case field_value::mfint32_id:
-            result.reset(
-                new proto_exposedfield<mfint32>(
-                    node,
-                    *polymorphic_downcast<const mfint32 *>(&initial_value)));
-            break;
-        case field_value::mfnode_id:
-            result.reset(
-                new proto_exposedfield<mfnode>(
-                    node,
-                    *polymorphic_downcast<const mfnode *>(&initial_value)));
-            break;
-        case field_value::mfrotation_id:
-            result.reset(
-                new proto_exposedfield<mfrotation>(
-                    node,
-                    *polymorphic_downcast<const mfrotation *>(
-                        &initial_value)));
-            break;
-        case field_value::mfstring_id:
-            result.reset(
-                new proto_exposedfield<mfstring>(
-                    node,
-                    *polymorphic_downcast<const mfstring *>(&initial_value)));
-            break;
-        case field_value::mftime_id:
-            result.reset(
-                new proto_exposedfield<mftime>(
-                    node,
-                    *polymorphic_downcast<const mftime *>(&initial_value)));
-            break;
-        case field_value::mfvec2f_id:
-            result.reset(
-                new proto_exposedfield<mfvec2f>(
-                    node,
-                    *polymorphic_downcast<const mfvec2f *>(&initial_value)));
-            break;
-        case field_value::mfvec2d_id:
-            result.reset(
-                new proto_exposedfield<mfvec2d>(
-                    node,
-                    *polymorphic_downcast<const mfvec2d *>(&initial_value)));
-            break;
-        case field_value::mfvec3f_id:
-            result.reset(
-                new proto_exposedfield<mfvec3f>(
-                    node,
-                    *polymorphic_downcast<const mfvec3f *>(&initial_value)));
-            break;
-        case field_value::mfvec3d_id:
-            result.reset(
-                new proto_exposedfield<mfvec3d>(
-                    node,
-                    *polymorphic_downcast<const mfvec3d *>(&initial_value)));
-            break;
-        default:
-            assert(false);
-        }
+        for_each<field_value_types>(proto_exposedfield_creator(initial_value,
+                                                               node,
+                                                               result));
         assert(result.get());
         return result;
     }
@@ -2251,12 +1640,15 @@ namespace openvrml {
                     const std::string & impl_node_interface =
                         is_mapping->second.impl_node_interface;
                     try {
+                        using boost::mpl::for_each;
+                        using openvrml_::field_value_types;
+
                         openvrml::event_listener & impl_eventin =
                             impl_node->event_listener(impl_node_interface);
-                        succeeded = eventin_is(interface->field_type,
-                                               impl_eventin,
-                                               *interface_eventin);
-                        assert(succeeded);
+                        for_each<field_value_types>(
+                            eventin_is(interface->field_type,
+                                       impl_eventin,
+                                       *interface_eventin));
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
@@ -2284,12 +1676,15 @@ namespace openvrml {
                     const std::string & impl_node_interface =
                         is_mapping->second.impl_node_interface;
                     try {
+                        using boost::mpl::for_each;
+                        using openvrml_::field_value_types;
+
                         openvrml::event_emitter & impl_eventout =
                             impl_node->event_emitter(impl_node_interface);
-                        succeeded = eventout_is(interface->field_type,
-                                                impl_eventout,
-                                                *interface_eventout);
-                        assert(succeeded);
+                        for_each<field_value_types>(
+                            eventout_is(interface->field_type,
+                                        impl_eventout,
+                                        *interface_eventout));
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
@@ -2327,18 +1722,21 @@ namespace openvrml {
                     const std::string & impl_node_interface =
                         is_mapping->second.impl_node_interface;
                     try {
+                        using boost::mpl::for_each;
+                        using openvrml_::field_value_types;
+
                         openvrml::event_listener & impl_eventin =
                             impl_node->event_listener(impl_node_interface);
-                        succeeded = eventin_is(interface->field_type,
-                                               impl_eventin,
-                                               *interface_eventin);
-                        assert(succeeded);
+                        for_each<field_value_types>(
+                            eventin_is(interface->field_type,
+                                       impl_eventin,
+                                       *interface_eventin));
                         openvrml::event_emitter & impl_eventout =
                             impl_node->event_emitter(impl_node_interface);
-                        succeeded = eventout_is(interface->field_type,
-                                                impl_eventout,
-                                                *interface_eventout);
-                        assert(succeeded);
+                        for_each<field_value_types>(
+                            eventout_is(interface->field_type,
+                                        impl_eventout,
+                                        *interface_eventout));
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
@@ -2940,6 +2338,31 @@ namespace {
             virtual void do_process_event(const FieldValue & value,
                                           double timestamp)
                 throw (std::bad_alloc);
+        };
+
+        struct externproto_exposedfield_creator {
+            externproto_exposedfield_creator(
+                externproto_node & node,
+                const openvrml::field_value::type_id type,
+                boost::shared_ptr<openvrml::field_value> & exposedfield):
+                node_(&node),
+                type_(type),
+                exposedfield_(&exposedfield)
+            {}
+
+            template <typename T>
+            void operator()(T) const
+            {
+                if (T::field_value_type_id == this->type_) {
+                    this->exposedfield_->reset(
+                        new externproto_exposedfield<T>(*this->node_));
+                }
+            }
+
+        private:
+            externproto_node * node_;
+            openvrml::field_value::type_id type_;
+            boost::shared_ptr<openvrml::field_value> * exposedfield_;
         };
 
         static const boost::shared_ptr<openvrml::field_value>
@@ -5976,104 +5399,14 @@ namespace {
                                           openvrml::field_value::type_id type)
         throw (std::bad_alloc)
     {
-        using namespace openvrml;
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
 
-        boost::shared_ptr<field_value> result;
-        switch (type) {
-        case field_value::sfbool_id:
-            result.reset(new externproto_exposedfield<sfbool>(node));
-            break;
-        case field_value::sfcolor_id:
-            result.reset(new externproto_exposedfield<sfcolor>(node));
-            break;
-        case field_value::sfcolorrgba_id:
-            result.reset(new externproto_exposedfield<sfcolorrgba>(node));
-            break;
-        case field_value::sfdouble_id:
-            result.reset(new externproto_exposedfield<sfdouble>(node));
-            break;
-        case field_value::sffloat_id:
-            result.reset(new externproto_exposedfield<sffloat>(node));
-            break;
-        case field_value::sfimage_id:
-            result.reset(new externproto_exposedfield<sfimage>(node));
-            break;
-        case field_value::sfint32_id:
-            result.reset(new externproto_exposedfield<sfint32>(node));
-            break;
-        case field_value::sfnode_id:
-            result.reset(new externproto_exposedfield<sfnode>(node));
-            break;
-        case field_value::sfrotation_id:
-            result.reset(new externproto_exposedfield<sfrotation>(node));
-            break;
-        case field_value::sfstring_id:
-            result.reset(new externproto_exposedfield<sfstring>(node));
-            break;
-        case field_value::sftime_id:
-            result.reset(new externproto_exposedfield<sftime>(node));
-            break;
-        case field_value::sfvec2f_id:
-            result.reset(new externproto_exposedfield<sfvec2f>(node));
-            break;
-        case field_value::sfvec2d_id:
-            result.reset(new externproto_exposedfield<sfvec2d>(node));
-            break;
-        case field_value::sfvec3f_id:
-            result.reset(new externproto_exposedfield<sfvec3f>(node));
-            break;
-        case field_value::sfvec3d_id:
-            result.reset(new externproto_exposedfield<sfvec3d>(node));
-            break;
-        case field_value::mfbool_id:
-            result.reset(new externproto_exposedfield<mfimage>(node));
-            break;
-        case field_value::mfcolor_id:
-            result.reset(new externproto_exposedfield<mfcolor>(node));
-            break;
-        case field_value::mfcolorrgba_id:
-            result.reset(new externproto_exposedfield<mfcolorrgba>(node));
-            break;
-        case field_value::mffloat_id:
-            result.reset(new externproto_exposedfield<mffloat>(node));
-            break;
-        case field_value::mfdouble_id:
-            result.reset(new externproto_exposedfield<mfdouble>(node));
-            break;
-        case field_value::mfimage_id:
-            result.reset(new externproto_exposedfield<mfimage>(node));
-            break;
-        case field_value::mfint32_id:
-            result.reset(new externproto_exposedfield<mfint32>(node));
-            break;
-        case field_value::mfnode_id:
-            result.reset(new externproto_exposedfield<mfnode>(node));
-            break;
-        case field_value::mfrotation_id:
-            result.reset(new externproto_exposedfield<mfrotation>(node));
-            break;
-        case field_value::mfstring_id:
-            result.reset(new externproto_exposedfield<mfstring>(node));
-            break;
-        case field_value::mftime_id:
-            result.reset(new externproto_exposedfield<mftime>(node));
-            break;
-        case field_value::mfvec2f_id:
-            result.reset(new externproto_exposedfield<mfvec2f>(node));
-            break;
-        case field_value::mfvec2d_id:
-            result.reset(new externproto_exposedfield<mfvec2d>(node));
-            break;
-        case field_value::mfvec3f_id:
-            result.reset(new externproto_exposedfield<mfvec3f>(node));
-            break;
-        case field_value::mfvec3d_id:
-            result.reset(new externproto_exposedfield<mfvec3d>(node));
-            break;
-        default:
-            assert(false);
-        }
-        assert(result);
+        boost::shared_ptr<openvrml::field_value> result;
+        for_each<field_value_types>(externproto_exposedfield_creator(node,
+                                                                     type,
+                                                                     result));
+        assert(result.get());
         return result;
     }
 
@@ -6201,24 +5534,29 @@ namespace {
                  this->eventin_map.begin();
              map_entry != this->eventin_map.end();
              ++map_entry) {
+            using boost::mpl::for_each;
+            using openvrml_::field_value_types;
+
             openvrml::event_listener & eventin =
                 this->proto_node_->event_listener(map_entry->first);
-            bool succeeded = eventin_is(map_entry->second->type(),
-                                        eventin,
-                                        *map_entry->second);
-            assert(succeeded);
+            for_each<field_value_types>(eventin_is(map_entry->second->type(),
+                                                   eventin,
+                                                   *map_entry->second));
         }
 
         for (eventout_map_t::const_iterator map_entry =
                  this->eventout_map.begin();
              map_entry != this->eventout_map.end();
              ++map_entry) {
+            using boost::mpl::for_each;
+            using openvrml_::field_value_types;
+
             openvrml::event_emitter & eventout =
                 this->proto_node_->event_emitter(map_entry->first);
-            bool succeeded = eventout_is(map_entry->second->value().type(),
-                                         eventout,
-                                         *map_entry->second);
-            assert(succeeded);
+            for_each<field_value_types>(
+                eventout_is(map_entry->second->value().type(),
+                            eventout,
+                            *map_entry->second));
         }
 
         if (this->scene()) {
