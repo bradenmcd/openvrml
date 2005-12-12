@@ -1,5 +1,12 @@
 2005-12-12 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS and
+	BOOST_MPL_LIMIT_VECTOR_SIZE=30.  The default boost::mpl::vector
+	size limit of 20 is not sufficient.
+
+2005-12-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(point_set_class): Changed do_create_type argument name to be
 	consistent with the function definition.
