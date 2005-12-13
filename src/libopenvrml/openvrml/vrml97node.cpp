@@ -2986,7 +2986,7 @@ namespace {
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
                                                     rendering_context context);
 
-        void recalcBSphere();
+        void recalc_bsphere();
     };
 
 
@@ -3059,7 +3059,7 @@ namespace {
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
         do_children() const throw ();
-        virtual void recalcBSphere();
+        virtual void recalc_bsphere();
     };
 
 
@@ -3368,7 +3368,7 @@ namespace {
                                                     rendering_context context);
         virtual bool do_emissive() const throw ();
 
-        void recalcBSphere();
+        void recalc_bsphere();
     };
 
 
@@ -3648,7 +3648,7 @@ namespace {
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
         do_children() const throw ();
-        virtual void recalcBSphere();
+        virtual void recalc_bsphere();
     };
 
 
@@ -12613,7 +12613,7 @@ namespace {
     /**
      * @brief Recalculate the bounding volume.
      */
-    void indexed_face_set_node::recalcBSphere()
+    void indexed_face_set_node::recalc_bsphere()
     {
         // take the bvolume of all the points. technically, we should figure
         // out just which points are used by the index and just use those,
@@ -12641,7 +12641,7 @@ namespace {
     indexed_face_set_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<indexed_face_set_node *>(this)->recalcBSphere();
+            const_cast<indexed_face_set_node *>(this)->recalc_bsphere();
         }
         return this->bsphere;
     }
@@ -13350,7 +13350,7 @@ namespace {
     lod_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<lod_node *>(this)->recalcBSphere();
+            const_cast<lod_node *>(this)->recalc_bsphere();
         }
         return this->bsphere;
     }
@@ -13369,7 +13369,7 @@ namespace {
     /**
      * @brief Recalculate the bounding volume.
      */
-    void lod_node::recalcBSphere()
+    void lod_node::recalc_bsphere()
     {
         this->bsphere = bounding_sphere();
 
@@ -16746,7 +16746,7 @@ namespace {
     /**
      * @brief Recalculate the bounding volume.
      */
-    void point_set_node::recalcBSphere()
+    void point_set_node::recalc_bsphere()
     {
         this->bsphere = bounding_sphere();
         openvrml::coordinate_node * const coordinateNode =
@@ -16771,7 +16771,7 @@ namespace {
     point_set_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<point_set_node *>(this)->recalcBSphere();
+            const_cast<point_set_node *>(this)->recalc_bsphere();
         }
         return this->bsphere;
     }
@@ -19627,7 +19627,7 @@ namespace {
     switch_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<switch_node *>(this)->recalcBSphere();
+            const_cast<switch_node *>(this)->recalc_bsphere();
         }
         return this->bsphere;
     }
@@ -19646,7 +19646,7 @@ namespace {
     /**
      * @brief Recalculate the bounding volume.
      */
-    void switch_node::recalcBSphere()
+    void switch_node::recalc_bsphere()
     {
         this->bsphere = bounding_sphere();
         long w = this->which_choice_.sfint32::value();

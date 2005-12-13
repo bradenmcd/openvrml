@@ -1,5 +1,29 @@
 2005-12-12 Braden McDaniel  <braden@endoframe.com>
 
+	Changed the name of "recalcBSphere" member functions to
+	"recalc_bsphere" to match project naming convention.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(indexed_face_set_node): Changed function name from
+	"recalcBSphere" to "recalc_bsphere".
+	(lod_node): Changed function name from "recalcBSphere" to
+	"recalc_bsphere".
+	(point_set_node): Changed function name from "recalcBSphere" to
+	"recalc_bsphere".
+	(switch_node): Changed function name from "recalcBSphere" to
+	"recalc_bsphere".
+	(indexed_face_set_node::do_bounding_volume() const): Changed
+	function name from "recalcBSphere" to "recalc_bsphere".
+	(lod_node::do_bounding_volume() const): Changed function name from
+	"recalcBSphere" to "recalc_bsphere".
+	(point_set_node::do_bounding_volume() const): Changed function
+	name from "recalcBSphere" to "recalc_bsphere".
+	(switch_node::do_bounding_volume() const): Changed function name
+	from "recalcBSphere" to "recalc_bsphere".
+
+2005-12-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/Vrml97Parser.g (Vrml97Parser::node):
 	Removed unused exception variable from catch block.
 
