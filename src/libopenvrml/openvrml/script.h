@@ -304,7 +304,32 @@ namespace openvrml {
             virtual const std::string do_eventout_id() const throw ();
         };
 
+        class set_metadata_listener :
+            public node_field_value_listener<sfnode> {
+        public:
+            explicit set_metadata_listener(script_node & node);
+            virtual ~set_metadata_listener() throw ();
+
+        private:
+            virtual const std::string do_eventin_id() const throw ();
+            virtual void do_process_event(const sfnode & value,
+                                          double timestamp)
+                throw (std::bad_alloc);
+        };
+
+        class metadata_changed_emitter : public openvrml::sfnode_emitter {
+        public:
+            explicit metadata_changed_emitter(const sfnode & value) throw ();
+            virtual ~metadata_changed_emitter() throw ();
+
+        private:
+            virtual const std::string do_eventout_id() const throw ();
+        };
+
         script_node_type type;
+        set_metadata_listener set_metadata_listener_;
+        sfnode metadata_;
+        metadata_changed_emitter metadata_changed_emitter_;
         sfbool direct_output;
         sfbool must_evaluate;
         set_url_listener_t set_url_listener;

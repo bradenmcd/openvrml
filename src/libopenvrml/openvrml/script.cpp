@@ -509,11 +509,14 @@ namespace {
     // range is used with std::set_difference, so the elements *must* be in
     // lexicographically increasing order according to their "id" member.
     //
-    const boost::array<openvrml::node_interface, 3>
+    const boost::array<openvrml::node_interface, 4>
     built_in_script_interfaces_ = {
         openvrml::node_interface(openvrml::node_interface::field_id,
                                  openvrml::field_value::sfbool_id,
                                  "directOutput"),
+        openvrml::node_interface(openvrml::node_interface::exposedfield_id,
+                                 openvrml::field_value::sfnode_id,
+                                 "metadata"),
         openvrml::node_interface(openvrml::node_interface::field_id,
                                  openvrml::field_value::sfbool_id,
                                  "mustEvaluate"),
@@ -618,7 +621,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 
     //
     // First, we need the set of node_interfaces *without* the built-in
-    // Script node interfaces (url, directOutput, mustEvaluate).
+    // Script node interfaces (url, directOutput, mustEvaluate, metadata).
     //
     node_interface_set interfaces;
     insert_iterator<node_interface_set> interface_inserter(interfaces,
@@ -1087,6 +1090,104 @@ openvrml::script_node::url_changed_emitter::do_eventout_id() const throw ()
 /**
  * @internal
  *
+ * @class openvrml::script_node::set_metadata_listener
+ *
+ * @brief set_metadata event listener.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param node  a reference to the containing script_node.
+ */
+openvrml::script_node::set_metadata_listener::
+set_metadata_listener(script_node & node):
+    node_event_listener(node),
+    node_field_value_listener<sfnode>(node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::script_node::set_metadata_listener::~set_metadata_listener() throw ()
+{}
+
+/**
+ * @brief Get the eventIn identifier.
+ *
+ * @return the eventIn identifier.
+ */
+const std::string
+openvrml::script_node::set_metadata_listener::do_eventin_id() const throw ()
+{
+    return "set_metadata";
+}
+
+/**
+ * @brief Process an event.
+ *
+ * @param value     new metadata value.
+ * @param timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void
+openvrml::script_node::set_metadata_listener::
+do_process_event(const sfnode & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    assert(dynamic_cast<openvrml::script_node *>(&this->node()));
+    openvrml::script_node & script_node =
+        dynamic_cast<openvrml::script_node &>(this->node());
+
+    script_node.metadata_ = value;
+    //
+    // metadata is an exposedField.
+    //
+    node::emit_event(script_node.metadata_changed_emitter_, timestamp);
+}
+
+/**
+ * @internal
+ *
+ * @class openvrml::script_node::metadata_changed_emitter
+ *
+ * @brief metadata_changed event emitter.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param value the associated field value.
+ */
+openvrml::script_node::metadata_changed_emitter::
+metadata_changed_emitter(const sfnode & value) throw ():
+    openvrml::event_emitter(value),
+    openvrml::sfnode_emitter(value)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::script_node::metadata_changed_emitter::~metadata_changed_emitter()
+    throw ()
+{}
+
+/**
+ * @brief The eventOut identifier.
+ *
+ * @return the eventOut identifier.
+ */
+const std::string
+openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
+    throw ()
+{
+    return "metadata_changed";
+}
+
+/**
+ * @internal
+ *
  * @var openvrml::script_node::script_node_type openvrml::script_node::type
  *
  * @brief Type object for the script_node instance.
@@ -1252,6 +1353,8 @@ script_node(script_node_class & class_,
     bounded_volume_node(this->type, scope),
     child_node(this->type, scope),
     type(class_),
+    set_metadata_listener_(*this),
+    metadata_changed_emitter_(this->metadata_),
     direct_output(false),
     must_evaluate(false),
     set_url_listener(*this),
@@ -1372,6 +1475,8 @@ script_node(script_node_class & class_,
             this->direct_output.assign(*initial_value->second);
         } else if (initial_value->first == "mustEvaluate") {
             this->must_evaluate.assign(*initial_value->second);
+        } else if (initial_value->first == "metadata") {
+            this->metadata_.assign(*initial_value->second);
         }
     }
 }
@@ -1572,6 +1677,8 @@ openvrml::script_node::do_field(const std::string & id) const
         return this->direct_output;
     } else if (id == "mustEvaluate") {
         return this->must_evaluate;
+    } else if (id == "metadata") {
+        return this->metadata_;
     } else if ((itr = this->field_value_map_.find(id))
             != this->field_value_map_.end()) {
         return *itr->second;
@@ -1597,6 +1704,8 @@ openvrml::script_node::do_event_listener(const std::string & id)
 {
     if (id == "url" || id == "set_url") {
         return this->set_url_listener;
+    } else if (id == "metadata" || id == "set_metadata") {
+        return this->set_metadata_listener_;
     } else {
         event_listener_map_t::iterator pos;
         const event_listener_map_t::iterator end =
@@ -1628,6 +1737,8 @@ openvrml::script_node::do_event_emitter(const std::string & id)
     openvrml::event_emitter * result = 0;
     if (id == "url" || id == "url_changed") {
         result = &this->url_changed_emitter_;
+    } else if (id == "metadata" || id == "metadata_changed") {
+        result = &this->metadata_changed_emitter_;
     } else {
         eventout_map_t::iterator pos;
         const eventout_map_t::iterator end = this->eventout_map_.end();

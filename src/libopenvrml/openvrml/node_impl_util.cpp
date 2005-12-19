@@ -836,6 +836,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
+ * @var openvrml::node_impl_util::abstract_node::metadata
+ *
+ * @brief metadata exposedField.
+ */
+
+/**
  * @fn openvrml::node_impl_util::abstract_node::abstract_node(const node_type & type, const boost::shared_ptr<openvrml::scope> & scope)
  *
  * @brief Construct.

@@ -457,6 +457,7 @@ namespace openvrml {
                     throw (std::bad_alloc);
             };
 
+            exposedfield<sfnode> metadata;
 
             abstract_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
@@ -541,7 +542,8 @@ namespace openvrml {
         abstract_node<Derived>::
         abstract_node(const node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope):
-            node(type, scope)
+            node(type, scope),
+            metadata(*this)
         {}
 
         template <typename Derived>

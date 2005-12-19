@@ -1,3 +1,365 @@
+2005-12-19 Braden McDaniel  <braden@endoframe.com>
+
+	Added additional fields to node implementations to support X3D
+	node types.  From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
+	for openvrml::node_impl_util::abstract_node<>::metadata.
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::abstract_node<>): Added metadata
+	member.
+	(openvrml::node_impl_util::abstract_node<Derived>::abstract_node(const
+	node_type &, const boost::shared_ptr<openvrml::scope> &)):
+	Initialize metadata member.
+	* src/libopenvrml/openvrml/script.cpp
+	(built_in_script_interfaces_): Added metadata exposedField.
+	(openvrml::script_node::set_metadata_listener::set_metadata_listener(script_node&):
+	Added function definition.
+	(openvrml::script_node::set_metadata_listener::~set_metadata_listener():
+	Added function definition.
+	(openvrml::script_node::set_metadata_listener::do_eventin_id()
+	const): Added function definiton.
+	(openvrml::script_node::set_metadata_listener::do_process_event(const
+	sfnode &, double)): Added function definiton.
+	(openvrml::script_node::metadata_changed_emitter::metadata_changed_emitter(const
+	sfnode &)): Added function definition.
+	(openvrml::script_node::metadata_changed_emitter::~metadata_changed_emitter()):
+	Added function definition.
+	(openvrml::script_node::metadata_changed_emitter::do_eventout_id()
+	const): Added function definition.
+	(openvrml::script_node::script_node(script_node_class &, const
+	boost::shared_ptr<openvrml::scope> &, const node_interface_set &,
+	const initial_value_map &)): Initialize set_metadata_listener_ and
+	metadata_changed_emitter_ members; assign initial value to
+	metadata_ member.
+	(openvrml::script_node::do_field(const std::string &) const):
+	Added case for metadata exposedField.
+	(openvrml::script_node::do_event_listener(const std::string &)):
+	Added case for metadata exposedField.
+	(openvrml::script_node::do_event_emitter(const std::string &)):
+	Added case for metadata exposedField.
+	* src/libopenvrml/openvrml/script.h (openvrml::script_node): Added
+	set_metadata_listener and metadata_changed_emitter classes; added
+	set_metadata_listener_, metadata_, and metadata_changed_emitter_
+	members.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base<>): Added virtual function
+	do_children_event_side_effect(const mfnode &, double).
+	(grouping_node_base<>::children_exposedfield::event_side_effect(const
+	mfnode &, double)): Changed to delegate to
+	grouping_node_base<>::do_children_event_side_effect(const mfnode&,
+	double).
+	(appearance_node): Added fill_properties_ and line_properties_
+	members.
+	(audio_clip_node): Added pause_time_, resume_time_, elapsed_time_,
+	elapsed_time_emitter_, is_paused_, and is_paused_emitter_ members.
+	(background_node): Added bind_time_ and bind_time_emitter_
+	members.
+	(box_node): Added solid_ member.
+	(collision_node): Added is_active and is_active_emitter_ members.
+	(cone_node): Added solid_ member.
+	(cylinder_node): Added solid_ member.
+	(cylinder_sensor_node): Added description_, is_over_, and
+	is_over_emitter_ members.
+	(fog_node): Added bind_time_ and bind_time_emitter_ members.
+	(indexed_line_set_node): Added vertex_count_ member.
+	(inline_node): Added load_ member.
+	(lod_node): Inherit grouping_node_base<lod_node>; added
+	current_children_ member; removed do_bounding_volume member
+	function.
+	(movie_texture_node): Added pause_time_, resume_time_,
+	elapsed_time_, elapsed_time_emitter, is_paused_, and
+	is_paused_emitter_ members.
+	(navigation_info_node): Added transition_type_, bind_time_, and
+	bind_time_emitter_ members.
+	(plane_sensor_node): Added description_, is_over_, and
+	is_over_emitter_ members.
+	(proximity_sensor_node): Added center_of_rotation_changed_ and
+	center_of_rotation_changed_emitter_ members.
+	(shape_node): Added bbox_center_ and bbox_size_ members.
+	(sphere_node): Added solid_ member.
+	(sphere_sensor_node): Added description_, is_over_, and
+	is_over_emitter_ members.
+	(switch_node): Inherit grouping_node_base<switch_node>; removed
+	choice_exposedfield member class; removed choice_, children_, and
+	bsphere members; added current_children_ member; removed
+	do_bounding_volume member function; added
+	do_children_event_side_effect virtual function.
+	(text_node): Added solid_ member.
+	(time_sensor_node): Added pause_time_, resume_time_,
+	elapsed_time_, elapsed_time_emitter_, is_paused_, and
+	is_paused_emitter_ members.
+	(touch_sensor_node): Added description_ member.
+	(transform_node): Removed do_bounding_volume member function.
+	(viewpoint_node): Changed type of description_ member from
+	openvrml::sfstring to
+	openvrml::node_impl_util::abstract_node<viewpoint_node>::exposedfield<sfstring>;
+	added center_of_rotation_ member.
+	(anchor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(appearance_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	metadata, fillProperties, and lineProperties exposedFields.
+	(appearance_node::appearance_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Initialize
+	fill_properties_ and line_properties_ members.
+	(audio_clip_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	metadata, pauseTime, and resumeTime exposedFields and elapsedTime
+	and isPaused eventOuts.
+	(audio_clip_node::audio_clip_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Initialize
+	pause_time_, resume_time_, elapsed_time_emitter_, and
+	is_paused_emitter_ members.
+	(background_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and bindTime eventOut.
+	(background_node::background_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Initialize
+	bind_time_emitter_ member.
+	(billboard_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(box_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and solid field.
+	(box_node::box_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize solid_ member.
+	(collision_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and enabled exposedFields and isActive eventOut.
+	(collision_node::collision_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize
+	is_active_emitter_ member.
+	(color_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(color_interpolator_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(cone_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and solid field.
+	(cone_node::cone_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize solid_ member.
+	(coordinate_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(coordinate_interpolator_class::do_create_type(const std::string&,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(cylinder_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and solid field.
+	(cylinder_node::cylinder_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize solid_ member.
+	(cyinder_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and description exposedFields and isOver eventOut.
+	(cylinder_sensor_node::cylinder_sensor_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Initialize description_ and
+	is_over_emitter_ members.
+	(directional_light_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(elevation_grid_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(extrusion_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(fog_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and bindTime eventOut.
+	(fog_node::fog_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize
+	bind_time_emitter_ member.
+	(font_style_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(group_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(image_texture_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(indexed_face_set_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(indexed_line_set_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and vertexCount exposedFields.
+	(indexed_line_set_node::indexed_line_set_node(const
+	openvrml::node_type &, const boost::shared_ptr<openvrml::scope>
+	&)): Initialize vertex_count_ member.
+	(inline_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and load exposedFields.
+	(inline_node::inline_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize load_ member.
+	(lod_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	metadata, and children exposedFields, addChildren and
+	removeChildren eventIns, and bboxCenter and bboxSize fields.
+	(lod_node::lod_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize
+	current_children_ member; removed initializers for level_ and
+	children_ members.
+	(lod_node::modified() const): Changed to use children_ instead of
+	level_.
+	(lod_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): Changed to use children_ instead of
+	level_.
+	(lod_node::do_children() const): Changed to use current_children_
+	instead of children_.
+	(lod_node::recalc_bsphere()): Changed to use children_ instead of
+	level_.
+	(material_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(movie_texture_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	pauseTime, and resumeTime exposedFields, and elapsedTime and
+	isPaused eventOuts.
+	(movie_texture_node::movie_texture_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Initialize pause_time_, resume_time_, elapsed_time_emitter_, and
+	is_paused_emitter_ members.
+	(navigation_info_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and transitionType exposedFields, and bindTime eventOut.
+	(navigation_info_node::navigation_info_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Initialize transition_type_ and bind_time_emitter_ members.
+	(normal_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(normal_interpolator_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(orienation_interpolator_class::do_create_type(const std::string&,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(pixel_texture_class::do_create_type(const std::string&, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(plane_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and description exposedFields and isOver eventOut.
+	(plane_sensor_node::plane_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope>&)): Initialize
+	description_ and is_over_emitter_ members.
+	(point_light_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(point_set_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(position_interpolator_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(proximity_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and centerOfRotation_changed eventOut.
+	(proximity_sensor_node::proximity_sensor_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Initialize
+	center_of_rotation_changed_emitter_ member.
+	(scalar_interpolator_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(shape_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and bboxCenter and bboxSize fields.
+	(shape_node::shape_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Initialize bbox_size_
+	member.
+	(sound_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(sphere_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and solid field.
+	(sphere_node::sphere_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Initialize solid_ member.
+	(sphere_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and description exposedFields and isOver eventOut.
+	(sphere_sensor_node::sphere_sensor_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Initialize description_ and is_over_emitter_ members.
+	(spot_light_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(switch_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	addChildren and removeChildren eventIns, children and metadata
+	exposedFields, and bboxCenter and bboxSize fields.
+	(switch_node::do_children_event_side_effect(const mfnode &,
+	double)): Moved logic from
+	switch_node::choice_exposedfield::event_side_effect to here.
+	(switch_node::which_choice_exposedfield::event_side_effect(const
+	sfint32 &, double)): Changed to use current_children_ instead of
+	children_.
+	(switch_node::switch_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope &)): Initialize
+	grouping_node_base<switch_node> and current_children_ members.
+	(switch_node::modified() const): Changed to use current_children_
+	instead of children_.
+	(switch_node::do_render_child(openvrml::viewer &,
+	rendering_contex)): Changed to use current_children_ instead of
+	children_.
+	(switch_node::do_children(openvrml::viewer &, rendering_contex)):
+	Changed to use current_children_ instead of children_.
+	(switch_node::recalc_bsphere()): Changed to use current_children_
+	instead of children_.
+	(text_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField and solid field.
+	(text_node::text_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope &)): Initialize solid_ member.
+	(texture_coordinate_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(texture_transform_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(time_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	metadata, pauseTime, and resumeTime exposedFields, and elapsedTime
+	and isPaused eventOuts.
+	(time_sensor_node::time_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope &)): Initialize
+	pause_time_, resume_time, elapsed_time_emitter_, and
+	is_paused_emitter_ members.
+	(touch_sensor_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	and description exposedFields.
+	(touch_sensor_node::touch_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope &)): Initialize
+	description_ member.
+	(transform_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for metadata
+	exposedField.
+	(transform_node::recalc_bsphere()): Delegate to
+	grouping_node_base<self_t>::recalc_bsphere().
+	(viewpoint_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Added support for
+	description, metadata, and centerOfRotation exposedFields.
+	(viewpoint_node::touch_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope &)): Initialize
+	description_ and center_of_rotation_ members.
+	(viewpoint_node::description() const): Changed to use description_
+	exposedfield.
+	(visibility_sensor_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+	(world_info_class::do_create_type(const std::string &,
+	const openvrml::node_interface_set &) const): Added support for
+	metadata exposedField.
+
 2005-12-12 Braden McDaniel  <braden@endoframe.com>
 
 	Changed the name of "recalcBSphere" member functions to

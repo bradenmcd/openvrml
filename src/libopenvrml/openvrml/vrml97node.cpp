@@ -1670,6 +1670,11 @@ namespace {
                 throw (std::bad_alloc);
         };
 
+        // so it can be overridden by switch node.
+        virtual void do_children_event_side_effect(const mfnode & value,
+                                                   double timestamp)
+            throw (std::bad_alloc);
+
         sfvec3f bbox_center_;
         sfvec3f bbox_size_;
         add_children_listener add_children_listener_;
@@ -1696,7 +1701,7 @@ namespace {
         virtual const std::vector<boost::intrusive_ptr<node> > &
         do_children() const throw ();
 
-        void recalc_bsphere();
+        virtual void recalc_bsphere();
         void render_nocull(openvrml::viewer & viewer,
                            rendering_context context);
     };
@@ -1912,12 +1917,23 @@ namespace {
     template <typename Derived>
     void
     grouping_node_base<Derived>::children_exposedfield::
-    event_side_effect(const mfnode & value, double)
+    event_side_effect(const mfnode & value, double time)
         throw (std::bad_alloc)
     {
-        self_t & group =
-            dynamic_cast<self_t &>(this->node_event_listener::node());
+        grouping_node_base<Derived> & group = 
+            dynamic_cast<grouping_node_base<Derived> &>(
+                this->node_event_listener::node());
+        group.do_children_event_side_effect(value, time);
+    }
 
+    /**
+     * @brief Handle event.
+     */
+    template <typename Derived>
+    void grouping_node_base<Derived>::
+    do_children_event_side_effect(const mfnode & value, double)
+        throw (std::bad_alloc)
+    {
         typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
         children_t children;
 
@@ -1938,9 +1954,9 @@ namespace {
             guard.dismiss();
         }
 
-        this->mfnode::value(children);
+        this->children_.mfnode::value(children);
 
-        group.bounding_volume_dirty(true);
+        this->bounding_volume_dirty(true);
     }
 
     /**
@@ -2215,6 +2231,8 @@ namespace {
         exposedfield<sfnode> material_;
         exposedfield<sfnode> texture_;
         exposedfield<sfnode> texture_transform_;
+        exposedfield<sfnode> fill_properties_;
+        exposedfield<sfnode> line_properties_;
 
     public:
         appearance_node(const node_type & type,
@@ -2248,10 +2266,17 @@ namespace {
         exposedfield<sftime> start_time_;
         exposedfield<sftime> stop_time_;
         exposedfield<mfstring> url_;
+        exposedfield<sftime> pause_time_;
+        exposedfield<sftime> resume_time_;
         sftime duration_changed_;
         sftime_emitter duration_changed_emitter_;
         sfbool is_active_;
         sfbool_emitter is_active_emitter_;
+        sftime elapsed_time_;
+        sftime_emitter elapsed_time_emitter_;
+        sfbool is_paused_;
+        sfbool_emitter is_paused_emitter_;
+
 
     public:
         audio_clip_node(const node_type & type,
@@ -2383,6 +2408,8 @@ namespace {
         exposedfield<mfcolor> sky_color_;
         sfbool is_bound_;
         sfbool_emitter is_bound_emitter_;
+        sftime bind_time_;
+        sftime_emitter bind_time_emitter_;
 
         image front;
         bool front_needs_update;
@@ -2440,6 +2467,7 @@ namespace {
         friend class box_class;
 
         sfvec3f size;
+        sfbool solid_;
 
         bounding_sphere bsphere;
 
@@ -2466,6 +2494,8 @@ namespace {
         sfnode proxy_;
         sftime collide_time_;
         sftime_emitter collide_time_emitter_;
+        sfbool is_active_;
+        sfbool_emitter is_active_emitter_;
 
     public:
         collision_node(const node_type & type,
@@ -2536,6 +2566,7 @@ namespace {
         sffloat bottomRadius;
         sffloat height;
         sfbool side;
+        sfbool solid_;
 
     public:
         cone_node(const node_type & type,
@@ -2610,6 +2641,7 @@ namespace {
         sffloat radius;
         sfbool side;
         sfbool top;
+        sfbool solid_;
 
     public:
         cylinder_node(const node_type & type,
@@ -2634,12 +2666,15 @@ namespace {
         exposedfield<sffloat> max_angle_;
         exposedfield<sffloat> min_angle_;
         exposedfield<sffloat> offset_;
+        exposedfield<sfstring> description_;
         sfbool is_active_;
         sfbool_emitter is_active_emitter_;
         sfrotation rotation_changed_;
         sfrotation_emitter rotation_changed_emitter_;
         sfvec3f track_point_changed_;
         sfvec3f_emitter track_point_changed_emitter_;
+        sfbool is_over_;
+        sfbool_emitter is_over_emitter_;
 
         float rotation_val;
         vec3f activationPoint;
@@ -2827,6 +2862,8 @@ namespace {
         exposedfield<sffloat> visibility_range_;
         sfbool is_bound_;
         sfbool_emitter is_bound_emitter_;
+        sftime bind_time_;
+        sftime_emitter bind_time_emitter_;
 
     public:
         fog_node(const node_type & type,
@@ -2995,6 +3032,8 @@ namespace {
 
         friend class indexed_line_set_class;
 
+        exposedfield<mfint32> vertex_count_;
+
     public:
         indexed_line_set_node(
             const node_type & type,
@@ -3013,6 +3052,7 @@ namespace {
         friend class inline_class;
 
         exposedfield<mfstring> url_;
+        exposedfield<sfbool> load_;
         sfvec3f bbox_center_;
         sfvec3f bbox_size_;
 
@@ -3034,16 +3074,13 @@ namespace {
     };
 
 
-    class OPENVRML_LOCAL lod_node : public abstract_node<lod_node>,
-                                    public grouping_node {
+    class OPENVRML_LOCAL lod_node : public grouping_node_base<lod_node> {
         friend class lod_class;
 
-        exposedfield<mfnode> level_;
         sfvec3f center_;
         mffloat range_;
 
-        mfnode children_;
-        bounding_sphere bsphere;
+        mfnode current_children_;
 
     public:
         lod_node(const node_type & type,
@@ -3053,8 +3090,6 @@ namespace {
         virtual bool modified() const;
 
     private:
-        virtual const openvrml::bounding_volume &
-        do_bounding_volume() const;
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
@@ -3116,10 +3151,16 @@ namespace {
         exposedfield<sftime> start_time_;
         exposedfield<sftime> stop_time_;
         exposedfield<mfstring> url_;
+        exposedfield<sftime> pause_time_;
+        exposedfield<sftime> resume_time_;
         sftime duration_;
         sftime_emitter duration_changed_;
         sfbool active_;
         sfbool_emitter is_active_;
+        sftime elapsed_time_;
+        sftime_emitter elapsed_time_emitter_;
+        sfbool is_paused_;
+        sfbool_emitter is_paused_emitter_;
 
         openvrml::image image_;
 
@@ -3162,8 +3203,11 @@ namespace {
         exposedfield<sffloat> speed_;
         exposedfield<mfstring> type_;
         exposedfield<sffloat> visibility_limit_;
+        exposedfield<mfstring> transition_type_;
         sfbool is_bound_;
         sfbool_emitter is_bound_emitter_;
+        sftime bind_time_;
+        sftime_emitter bind_time_emitter_;
 
     public:
         navigation_info_node(
@@ -3296,12 +3340,15 @@ namespace {
         exposedfield<sfvec2f> max_position_;
         exposedfield<sfvec2f> min_position_;
         exposedfield<sfvec3f> offset_;
+        exposedfield<sfstring> description_;
         sfbool is_active_;
         sfbool_emitter is_active_emitter_;
         sfvec3f track_point_changed_;
         sfvec3f_emitter track_point_changed_emitter_;
         sfvec3f translation_changed_;
         sfvec3f_emitter translation_changed_emitter_;
+        sfbool is_over_;
+        sfbool_emitter is_over_emitter_;
 
         sfvec3f activationPoint;
 
@@ -3423,6 +3470,8 @@ namespace {
         sftime_emitter enter_time_emitter_;
         sftime exit_time_;
         sftime_emitter exit_time_emitter_;
+        sfvec3f center_of_rotation_changed_;
+        sfvec3f_emitter center_of_rotation_changed_emitter_;
 
     public:
         proximity_sensor_node(
@@ -3474,6 +3523,8 @@ namespace {
 
         exposedfield<sfnode> appearance_;
         exposedfield<sfnode> geometry_;
+        sfvec3f bbox_center_;
+        sfvec3f bbox_size_;
 
         viewer::object_t viewerObject;
 
@@ -3523,6 +3574,7 @@ namespace {
         friend class sphere_class;
 
         sffloat radius;
+        sfbool solid_;
         bounding_sphere bsphere;
 
     public:
@@ -3546,12 +3598,15 @@ namespace {
         exposedfield<sfbool> auto_offset_;
         exposedfield<sfbool> enabled_;
         exposedfield<sfrotation> offset_;
+        exposedfield<sfstring> description_;
         sfbool is_active_;
         sfbool_emitter is_active_emitter_;
         sfrotation rotation_changed_;
         sfrotation_emitter rotation_changed_emitter_;
         sfvec3f track_point_changed_;
         sfvec3f_emitter track_point_changed_emitter_;
+        sfbool is_over_;
+        sfbool_emitter is_over_emitter_;
 
         sfvec3f activationPoint;
         sfvec3f centerPoint;
@@ -3596,23 +3651,8 @@ namespace {
     };
 
 
-    class OPENVRML_LOCAL switch_node : public abstract_node<switch_node>,
-                                       public grouping_node {
+    class OPENVRML_LOCAL switch_node : public grouping_node_base<switch_node> {
         friend class switch_class;
-
-        class choice_exposedfield : public exposedfield<mfnode> {
-        public:
-            explicit choice_exposedfield(switch_node & node);
-            choice_exposedfield(const choice_exposedfield & obj) throw ();
-            virtual ~choice_exposedfield() throw ();
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
-            virtual void event_side_effect(const mfnode & choice,
-                                           double timestamp)
-                throw (std::bad_alloc);
-        };
 
         class which_choice_exposedfield : public exposedfield<sfint32> {
         public:
@@ -3629,11 +3669,8 @@ namespace {
                 throw (std::bad_alloc);
         };
 
-        choice_exposedfield choice_;
         which_choice_exposedfield which_choice_;
-
-        mfnode children_;
-        bounding_sphere bsphere;
+        mfnode current_children_;
 
     public:
         switch_node(const node_type & type,
@@ -3643,7 +3680,10 @@ namespace {
         virtual bool modified() const;
 
     private:
-        virtual const openvrml::bounding_volume & do_bounding_volume() const;
+        virtual void do_children_event_side_effect(const mfnode & choice,
+                                                   double timestamp)
+            throw (std::bad_alloc);
+
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
@@ -3718,6 +3758,7 @@ namespace {
         font_style_exposedfield font_style_;
         length_exposedfield length_;
         max_extent_exposedfield max_extent_;
+        sfbool solid_;
 
         struct glyph_geometry {
             std::vector<vec2f> coord;
@@ -3866,6 +3907,8 @@ namespace {
         sftime start_time_;
         sftime_emitter start_time_changed_emitter_;
         exposedfield<sftime> stop_time_;
+        exposedfield<sftime> pause_time_;
+        exposedfield<sftime> resume_time_;
         sftime cycle_time_;
         sftime_emitter cycle_time_emitter_;
         sffloat fraction_changed_;
@@ -3874,6 +3917,10 @@ namespace {
         sfbool_emitter is_active_emitter_;
         sftime time_;
         sftime_emitter time_emitter_;
+        sftime elapsed_time_;
+        sftime_emitter elapsed_time_emitter_;
+        sfbool is_paused_;
+        sfbool_emitter is_paused_emitter_;
 
         double lastTime;
 
@@ -3897,6 +3944,7 @@ namespace {
         friend class touch_sensor_class;
 
         exposedfield<sfbool> enabled_;
+        exposedfield<sfstring> description_;
         sfvec3f hit_normal_changed_;
         sfvec3f_emitter hit_normal_changed_emitter_;
         sfvec3f hit_point_changed_;
@@ -4019,9 +4067,6 @@ namespace {
         virtual const mat4f & transform() const throw ();
 
     private:
-        virtual const openvrml::bounding_volume &
-        do_bounding_volume() const;
-
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
 
@@ -4082,7 +4127,9 @@ namespace {
         exposedfield<sfbool> jump_;
         orientation_exposedfield orientation_;
         position_exposedfield position_;
-        sfstring description_;
+        // description is a field in VRML97 and an exposedField in X3D.
+        exposedfield<sfstring> description_;
+        exposedfield<sfvec3f> center_of_rotation_;
         sfbool is_bound_;
         sfbool_emitter is_bound_emitter_;
         sftime bind_time_;
@@ -4192,7 +4239,7 @@ namespace {
                                  const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
@@ -4217,7 +4264,10 @@ namespace {
                            "bboxCenter"),
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "bboxSize")
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<anchor_node> node_type_t;
@@ -4323,6 +4373,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &anchor_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                anchorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<anchor_node>::exposedfield<sfnode> >(
+                            &anchor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<anchor_node>::exposedfield<sfnode> >(
+                            &anchor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<anchor_node>::exposedfield<sfnode> >(
+                            &anchor_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -4462,7 +4528,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
@@ -4472,7 +4538,16 @@ namespace {
                            "texture"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
-                           "textureTransform")
+                           "textureTransform"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "fillProperties"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "lineProperties")
         };
 
         typedef node_type_impl<appearance_node> node_type_t;
@@ -4532,6 +4607,54 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<appearance_node>::exposedfield<sfnode> >(
                             &appearance_node::texture_transform_)));
+            } else if (*interface == *++supported_interface) {
+                appearanceNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                appearanceNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::fill_properties_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::fill_properties_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::fill_properties_)));
+            } else if (*interface == *++supported_interface) {
+                appearanceNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::line_properties_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::line_properties_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<appearance_node>::exposedfield<sfnode> >(
+                            &appearance_node::line_properties_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -4583,7 +4706,9 @@ namespace {
         openvrml::appearance_node(type, scope),
         material_(*this),
         texture_(*this),
-        texture_transform_(*this)
+        texture_transform_(*this),
+        fill_properties_(*this),
+        line_properties_(*this)
     {}
 
     /**
@@ -4752,7 +4877,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 13> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfstring_id,
@@ -4777,7 +4902,22 @@ namespace {
                            "duration_changed"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isActive")
+                           "isActive"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "pauseTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "resumeTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "elapsedTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isPaused")
         };
 
         typedef node_type_impl<audio_clip_node> node_type_t;
@@ -4901,6 +5041,70 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<audio_clip_node>::sfbool_emitter>(
                             &audio_clip_node::is_active_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                audioClipNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sfnode> >(
+                            &audio_clip_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sfnode> >(
+                            &audio_clip_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sfnode> >(
+                            &audio_clip_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                audioClipNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::pause_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::pause_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::pause_time_)));
+            } else if (*interface == *++supported_interface) {
+                audioClipNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::resume_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::resume_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<audio_clip_node>::exposedfield<sftime> >(
+                            &audio_clip_node::resume_time_)));
+            } else if (*interface == *++supported_interface) {
+                audioClipNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<audio_clip_node>::sftime_emitter>(
+                            &audio_clip_node::elapsed_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                audioClipNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<audio_clip_node>::sfbool_emitter>(
+                            &audio_clip_node::is_paused_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -5000,8 +5204,12 @@ namespace {
         start_time_(*this),
         stop_time_(*this),
         url_(*this),
+        pause_time_(*this),
+        resume_time_(*this),
         duration_changed_emitter_(*this, this->duration_changed_),
-        is_active_emitter_(*this, this->is_active_)
+        is_active_emitter_(*this, this->is_active_),
+        elapsed_time_emitter_(*this, this->elapsed_time_),
+        is_paused_emitter_(*this, this->is_paused_)
     {}
 
     /**
@@ -5313,7 +5521,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 12> supported_interfaces_t;
+        typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
@@ -5350,7 +5558,13 @@ namespace {
                            "skyColor"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isBound")
+                           "isBound"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "bindTime")
         };
 
         typedef node_type_impl<background_node> node_type_t;
@@ -5538,6 +5752,30 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<background_node>::sfbool_emitter>(
                             &background_node::is_bound_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                backgroundNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<background_node>::exposedfield<sfnode> >(
+                            &background_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<background_node>::exposedfield<sfnode> >(
+                            &background_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<background_node>::exposedfield<sfnode> >(
+                            &background_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                backgroundNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<background_node>::sftime_emitter>(
+                            &background_node::bind_time_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -6263,6 +6501,7 @@ namespace {
         sky_angle_(*this),
         sky_color_(*this, std::vector<color>(1, color(0.0, 0.0, 0.0))),
         is_bound_emitter_(*this, this->is_bound_),
+        bind_time_emitter_(*this, this->bind_time_),
         front_needs_update(true),
         back_needs_update(true),
         left_needs_update(true),
@@ -7143,7 +7382,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
@@ -7162,7 +7401,10 @@ namespace {
                            "bboxCenter"),
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "bboxSize")
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<billboard_node> node_type_t;
@@ -7236,6 +7478,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &billboard_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                billboardNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<billboard_node>::exposedfield<sfnode> >(
+                            &billboard_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<billboard_node>::exposedfield<sfnode> >(
+                            &billboard_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<billboard_node>::exposedfield<sfnode> >(
+                            &billboard_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -7443,10 +7701,18 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterface =
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "size");
+                           "size"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid")
+        };
 
         typedef node_type_impl<box_node> node_type_t;
 
@@ -7455,12 +7721,37 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 boxNodeType.add_field(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(&box_node::size)));
+            } else if (*interface == *++supported_interface) {
+                boxNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<box_node>::exposedfield<sfnode> >(
+                            &box_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<box_node>::exposedfield<sfnode> >(
+                            &box_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<box_node>::exposedfield<sfnode> >(
+                            &box_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                boxNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfbool>(
+                            &box_node::solid_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -7505,7 +7796,8 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<box_node>(type, scope),
         geometry_node(type, scope),
-        size(vec3f(2.0, 2.0, 2.0))
+        size(vec3f(2.0, 2.0, 2.0)),
+        solid_(true)
     {
         this->bounding_volume_dirty(true); // lazy calc of bvolume
     }
@@ -7586,7 +7878,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
@@ -7611,7 +7903,16 @@ namespace {
                            "proxy"),
             node_interface(node_interface::eventout_id,
                            field_value::sftime_id,
-                           "collideTime")
+                           "collideTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "enabled"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isActive")
         };
 
         typedef node_type_impl<collision_node> node_type_t;
@@ -7700,6 +8001,46 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<collision_node>::sftime_emitter>(
                             &collision_node::collide_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                collisionNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<collision_node>::exposedfield<sfnode> >(
+                            &collision_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<collision_node>::exposedfield<sfnode> >(
+                            &collision_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<collision_node>::exposedfield<sfnode> >(
+                            &collision_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                collisionNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<collision_node>::exposedfield<sfbool> >(
+                            &collision_node::collide_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<collision_node>::exposedfield<sfbool> >(
+                            &collision_node::collide_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<collision_node>::exposedfield<sfbool> >(
+                            &collision_node::collide_)));
+            } else if (*interface == *++supported_interface) {
+                collisionNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<collision_node>::sfbool_emitter>(
+                            &collision_node::is_active_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -7758,7 +8099,8 @@ namespace {
         grouping_node(type, scope),
         grouping_node_base<collision_node>(type, scope),
         collide_(*this, true),
-        collide_time_emitter_(*this, this->collide_time_)
+        collide_time_emitter_(*this, this->collide_time_),
+        is_active_emitter_(*this, this->is_active_)
     {}
 
     /**
@@ -7813,10 +8155,15 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterface =
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfcolor_id,
-                           "color");
+                           "color"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
+        };
 
         typedef node_type_impl<color_node> node_type_t;
 
@@ -7825,10 +8172,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 colorNodeType.add_exposedfield(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<color_node>::exposedfield<mfcolor> >(
@@ -7841,6 +8190,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<color_node>::exposedfield<mfcolor> >(
                             &color_node::color_)));
+            } else if (*interface == *++supported_interface) {
+                colorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<color_node>::exposedfield<sfnode> >(
+                            &color_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<color_node>::exposedfield<sfnode> >(
+                            &color_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<color_node>::exposedfield<sfnode> >(
+                            &color_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -7936,7 +8301,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -7949,7 +8314,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::sfcolor_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<color_interpolator_node> node_type_t;
@@ -8016,6 +8384,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<color_interpolator_node>::sfcolor_emitter>(
                             &color_interpolator_node::value_changed_)));
+            } else if (*interface == *++supported_interface) {
+                colorInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
+                            &color_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
+                            &color_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
+                            &color_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -8227,7 +8611,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::sffloat_id,
@@ -8240,7 +8624,13 @@ namespace {
                            "side"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "bottom")
+                           "bottom"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid")
         };
 
         typedef node_type_impl<cone_node> node_type_t;
@@ -8280,6 +8670,29 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cone_node::bottom)));
+            } else if (*interface == *++supported_interface) {
+                coneNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cone_node>::exposedfield<sfnode> >(
+                            &cone_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cone_node>::exposedfield<sfnode> >(
+                            &cone_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cone_node>::exposedfield<sfnode> >(
+                            &cone_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                coneNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfbool>(
+                            &cone_node::solid_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -8339,7 +8752,8 @@ namespace {
         bottom(true),
         bottomRadius(1.0),
         height(2.0),
-        side(true)
+        side(true),
+        solid_(true)
     {}
 
     /**
@@ -8403,10 +8817,15 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterface =
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
-                           "point");
+                           "point"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
+        };
 
         typedef node_type_impl<coordinate_node> node_type_t;
 
@@ -8415,10 +8834,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 coordinateNodeType.add_exposedfield(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<coordinate_node>::exposedfield<mfvec3f> >(
@@ -8431,6 +8852,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_node>::exposedfield<mfvec3f> >(
                             &coordinate_node::point_)));
+            } else if (*interface == *++supported_interface) {
+                coordinateNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<coordinate_node>::exposedfield<sfnode> >(
+                            &coordinate_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<coordinate_node>::exposedfield<sfnode> >(
+                            &coordinate_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<coordinate_node>::exposedfield<sfnode> >(
+                            &coordinate_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -8526,7 +8963,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -8539,7 +8976,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::mfvec3f_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<coordinate_interpolator_node>
@@ -8608,6 +9048,22 @@ namespace {
                         abstract_node<coordinate_interpolator_node>::
                         mfvec3f_emitter>(
                             &coordinate_interpolator_node::value_changed_)));
+            } else if (*interface == *++supported_interface) {
+                coordinateInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
+                            &coordinate_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
+                            &coordinate_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
+                            &coordinate_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -8813,7 +9269,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
@@ -8829,7 +9285,13 @@ namespace {
                            "side"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "top")
+                           "top"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid")
         };
 
         typedef node_type_impl<cylinder_node> node_type_t;
@@ -8876,6 +9338,29 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &cylinder_node::top)));
+            } else if (*interface == *++supported_interface) {
+                cylinderNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cylinder_node>::exposedfield<sfnode> >(
+                            &cylinder_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cylinder_node>::exposedfield<sfnode> >(
+                            &cylinder_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cylinder_node>::exposedfield<sfnode> >(
+                            &cylinder_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                cylinderNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfbool>(
+                            &cylinder_node::solid_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -8942,7 +9427,8 @@ namespace {
         height(2.0),
         radius(1.0),
         side(true),
-        top(true)
+        top(true),
+        solid_(true)
     {}
 
     /**
@@ -9009,7 +9495,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        typedef boost::array<node_interface, 12> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
@@ -9037,7 +9523,16 @@ namespace {
                            "rotation_changed"),
             node_interface(node_interface::eventout_id,
                            field_value::sfvec3f_id,
-                           "trackPoint_changed")
+                           "trackPoint_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfstring_id,
+                           "description"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isOver")
         };
 
         typedef node_type_impl<cylinder_sensor_node> node_type_t;
@@ -9188,6 +9683,46 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<cylinder_sensor_node>::sfvec3f_emitter>(
                             &cylinder_sensor_node::track_point_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                cylinderSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
+                            &cylinder_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
+                            &cylinder_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
+                            &cylinder_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                cylinderSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
+                            &cylinder_sensor_node::description_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
+                            &cylinder_sensor_node::description_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
+                            &cylinder_sensor_node::description_)));
+            } else if (*interface == *++supported_interface) {
+                cylinderSensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cylinder_sensor_node>::sfbool_emitter>(
+                            &cylinder_sensor_node::is_over_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -9327,9 +9862,11 @@ namespace {
         max_angle_(*this, -1.0f),
         min_angle_(*this, 0.0f),
         offset_(*this, 0.0f),
+        description_(*this),
         is_active_emitter_(*this, this->is_active_),
         rotation_changed_emitter_(*this, this->rotation_changed_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
+        is_over_emitter_(*this, this->is_over_),
         rotation_val(0.0f),
         disk(false)
     {
@@ -9495,7 +10032,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
@@ -9511,7 +10048,10 @@ namespace {
                            "intensity"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
-                           "on")
+                           "on"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<directional_light_node> node_type_t;
@@ -9616,6 +10156,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<directional_light_node>::
                         exposedfield<sfbool> >(&directional_light_node::on_)));
+            } else if (*interface == *++supported_interface) {
+                directionalLightNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<directional_light_node>::exposedfield<sfnode> >(
+                            &directional_light_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<directional_light_node>::exposedfield<sfnode> >(
+                            &directional_light_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<directional_light_node>::exposedfield<sfnode> >(
+                            &directional_light_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -9722,7 +10278,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 14> supported_interfaces_t;
+        typedef boost::array<node_interface, 15> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mffloat_id,
@@ -9765,7 +10321,10 @@ namespace {
                            "zDimension"),
             node_interface(node_interface::field_id,
                            field_value::sffloat_id,
-                           "zSpacing")
+                           "zSpacing"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<elevation_grid_node> node_type_t;
@@ -9903,6 +10462,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &elevation_grid_node::z_spacing_)));
+            } else if (*interface == *++supported_interface) {
+                elevationGridNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
+                            &elevation_grid_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
+                            &elevation_grid_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
+                            &elevation_grid_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -10218,7 +10793,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 14> supported_interfaces_t;
+        typedef boost::array<node_interface, 15> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfvec2f_id,
@@ -10261,7 +10836,10 @@ namespace {
                            "solid"),
             node_interface(node_interface::field_id,
                            field_value::mfvec3f_id,
-                           "spine")
+                           "spine"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<extrusion_node> node_type_t;
@@ -10375,6 +10953,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfvec3f>(
                             &extrusion_node::spine_)));
+            } else if (*interface == *++supported_interface) {
+                extrusionNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<extrusion_node>::exposedfield<sfnode> >(
+                            &extrusion_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<extrusion_node>::exposedfield<sfnode> >(
+                            &extrusion_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<extrusion_node>::exposedfield<sfnode> >(
+                            &extrusion_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -10968,7 +11562,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
@@ -10984,7 +11578,13 @@ namespace {
                            "visibilityRange"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isBound")
+                           "isBound"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "bindTime")
         };
 
         typedef node_type_impl<fog_node> node_type_t;
@@ -11060,6 +11660,30 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<fog_node>::sfbool_emitter>(
                             &fog_node::is_bound_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                fogNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fog_node>::exposedfield<sfnode> >(
+                            &fog_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fog_node>::exposedfield<sfnode> >(
+                            &fog_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fog_node>::exposedfield<sfnode> >(
+                            &fog_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                fogNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fog_node>::sftime_emitter>(
+                            &fog_node::bind_time_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -11187,7 +11811,8 @@ namespace {
         color_(*this, openvrml::color(1.0, 1.0, 1.0)),
         fog_type_(*this, "LINEAR"),
         visibility_range_(*this, 0.0),
-        is_bound_emitter_(*this, this->is_bound_)
+        is_bound_emitter_(*this, this->is_bound_),
+        bind_time_emitter_(*this, this->bind_time_)
     {}
 
     /**
@@ -11264,7 +11889,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::mfstring_id,
@@ -11292,7 +11917,10 @@ namespace {
                            "style"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "topToBottom")
+                           "topToBottom"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<font_style_node> node_type_t;
@@ -11367,6 +11995,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &font_style_node::topToBottom)));
+            } else if (*interface == *++supported_interface) {
+                fontStyleNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<font_style_node>::exposedfield<sfnode> >(
+                            &font_style_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<font_style_node>::exposedfield<sfnode> >(
+                            &font_style_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<font_style_node>::exposedfield<sfnode> >(
+                            &font_style_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -11609,7 +12253,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
@@ -11625,7 +12269,10 @@ namespace {
                            "bboxCenter"),
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "bboxSize")
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<group_node> node_type_t;
@@ -11682,6 +12329,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &group_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                groupNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<group_node>::exposedfield<sfnode> >(
+                            &group_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<group_node>::exposedfield<sfnode> >(
+                            &group_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<group_node>::exposedfield<sfnode> >(
+                            &group_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -11756,7 +12419,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
@@ -11766,7 +12429,10 @@ namespace {
                            "repeatS"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "repeatT")
+                           "repeatT"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<image_texture_node> node_type_t;
@@ -11808,6 +12474,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &image_texture_node::repeat_t_)));
+            } else if (*interface == *++supported_interface) {
+                imageTextureNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<image_texture_node>::exposedfield<sfnode> >(
+                            &image_texture_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<image_texture_node>::exposedfield<sfnode> >(
+                            &image_texture_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<image_texture_node>::exposedfield<sfnode> >(
+                            &image_texture_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -12037,7 +12719,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 18> supported_interfaces_t;
+        typedef boost::array<node_interface, 19> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfint32_id,
@@ -12092,7 +12774,10 @@ namespace {
                            "solid"),
             node_interface(node_interface::field_id,
                            field_value::mfint32_id,
-                           "texCoordIndex")
+                           "texCoordIndex"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<indexed_face_set_node> node_type_t;
@@ -12283,6 +12968,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_face_set_node::tex_coord_index_)));
+            } else if (*interface == *++supported_interface) {
+                indexedFaceSetNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
+                            &indexed_face_set_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
+                            &indexed_face_set_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
+                            &indexed_face_set_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -12684,7 +13385,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfint32_id,
@@ -12706,7 +13407,13 @@ namespace {
                            "colorPerVertex"),
             node_interface(node_interface::field_id,
                            field_value::mfint32_id,
-                           "coordIndex")
+                           "coordIndex"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfint32_id,
+                           "vertexCount")
         };
 
         typedef node_type_impl<indexed_line_set_node> node_type_t;
@@ -12794,6 +13501,38 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
                             &indexed_line_set_node::coord_index_)));
+            } else if (*interface == *++supported_interface) {
+                indexedLineSetNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
+                            &indexed_line_set_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
+                            &indexed_line_set_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
+                            &indexed_line_set_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                indexedLineSetNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
+                            &indexed_line_set_node::vertex_count_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
+                            &indexed_line_set_node::vertex_count_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
+                            &indexed_line_set_node::vertex_count_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -12824,7 +13563,8 @@ namespace {
                           const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_indexed_set_node<indexed_line_set_node>(type, scope)
+        abstract_indexed_set_node<indexed_line_set_node>(type, scope),
+        vertex_count_(*this)
     {}
 
     /**
@@ -12917,7 +13657,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
@@ -12927,7 +13667,13 @@ namespace {
                            "bboxCenter"),
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "bboxSize")
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "load")
         };
 
         typedef node_type_impl<inline_node> node_type_t;
@@ -12969,6 +13715,38 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &inline_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                inlineNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<inline_node>::exposedfield<sfnode> >(
+                            &inline_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<inline_node>::exposedfield<sfnode> >(
+                            &inline_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<inline_node>::exposedfield<sfnode> >(
+                            &inline_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                inlineNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<inline_node>::exposedfield<sfbool> >(
+                            &inline_node::load_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<inline_node>::exposedfield<sfbool> >(
+                            &inline_node::load_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<inline_node>::exposedfield<sfbool> >(
+                            &inline_node::load_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -13033,6 +13811,7 @@ namespace {
         abstract_node<inline_node>(type, scope),
         grouping_node(type, scope),
         url_(*this),
+        load_(*this, true),
         inlineScene(0),
         hasLoaded(false)
     {
@@ -13143,7 +13922,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfnode_id,
@@ -13153,7 +13932,25 @@ namespace {
                            "center"),
             node_interface(node_interface::field_id,
                            field_value::mffloat_id,
-                           "range")
+                           "range"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "addChildren"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "removeChildren"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfnode_id,
+                           "children"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxCenter"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxSize")
         };
 
         typedef node_type_impl<lod_node> node_type_t;
@@ -13171,16 +13968,16 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<lod_node>::exposedfield<mfnode> >(
-                            &lod_node::level_)),
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<lod_node>::exposedfield<mfnode> >(
-                            &lod_node::level_)),
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<lod_node>::exposedfield<mfnode> >(
-                            &lod_node::level_)));
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)));
             } else if (*interface == *++supported_interface) {
                 lodNodeType.add_field(
                     supported_interface->field_type,
@@ -13195,6 +13992,68 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mffloat>(
                             &lod_node::range_)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<lod_node>::exposedfield<sfnode> >(
+                            &lod_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<lod_node>::exposedfield<sfnode> >(
+                            &lod_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<lod_node>::exposedfield<sfnode> >(
+                            &lod_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        lod_node::add_children_listener>(
+                            &lod_node::add_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        lod_node::remove_children_listener>(
+                            &lod_node::remove_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        lod_node::children_exposedfield>(
+                            &lod_node::children_)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &lod_node::bbox_center_)));
+            } else if (*interface == *++supported_interface) {
+                lodNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &lod_node::bbox_size_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -13215,7 +14074,7 @@ namespace {
      */
 
     /**
-     * @var openvrml::node_impl_util::abstract_node<lod_node>::exposedfield<openvrml::mfnode> lod_node::level_
+     * @var openvrml::node_impl_util::abstract_node<lod_node>::exposedfield<openvrml::mfnode> lod_node::children_
      *
      * @brief level exposedField.
      */
@@ -13257,10 +14116,9 @@ namespace {
         node(type, scope),
         bounded_volume_node(type, scope),
         child_node(type, scope),
-        abstract_node<lod_node>(type, scope),
         grouping_node(type, scope),
-        level_(*this),
-        children_(1)
+        grouping_node_base<lod_node>(type, scope),
+        current_children_(1)
     {
         this->bounding_volume_dirty(true); // lazy calc of bvolume
     }
@@ -13282,8 +14140,10 @@ namespace {
         if (this->node::modified()) { return true; }
 
         // This should really check which range is being rendered...
-        for (size_t i = 0; i < this->level_.mfnode::value().size(); ++i) {
-            if (this->level_.mfnode::value()[i]->modified()) { return true; }
+        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
+            if (this->children_.mfnode::value()[i]->modified()) {
+                return true;
+            }
         }
         return false;
     }
@@ -13302,7 +14162,7 @@ namespace {
                     const rendering_context context)
     {
         this->node::modified(false);
-        if (this->level_.mfnode::value().empty()) { return; }
+        if (this->children_.mfnode::value().empty()) { return; }
 
         float x, y, z;
 
@@ -13323,36 +14183,22 @@ namespace {
 
         // Should choose an "optimal" level...
         if (this->range_.value().empty()) {
-            i = this->level_.mfnode::value().size() - 1;
+            i = this->children_.mfnode::value().size() - 1;
         }
 
         // Not enough levels...
-        if (i >= this->level_.mfnode::value().size()) {
-            i = this->level_.mfnode::value().size() - 1;
+        if (i >= this->children_.mfnode::value().size()) {
+            i = this->children_.mfnode::value().size() - 1;
         }
 
         child_node * const child =
-            node_cast<child_node *>(this->level_.mfnode::value()[i].get());
+            node_cast<child_node *>(this->children_.mfnode::value()[i].get());
         if (child) { child->render_child(viewer, context); }
 
         // Don't re-render on their accounts
-        for (i = 0; i < this->level_.mfnode::value().size(); ++i) {
-            this->level_.mfnode::value()[i]->modified(false);
+        for (i = 0; i < this->children_.mfnode::value().size(); ++i) {
+            this->children_.mfnode::value()[i]->modified(false);
         }
-    }
-
-    /**
-     * @brief Get the bounding volume.
-     *
-     * @return the bounding volume associated with the node.
-     */
-    const openvrml::bounding_volume &
-    lod_node::do_bounding_volume() const
-    {
-        if (this->bounding_volume_dirty()) {
-            const_cast<lod_node *>(this)->recalc_bsphere();
-        }
-        return this->bsphere;
     }
 
     /**
@@ -13363,7 +14209,7 @@ namespace {
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
     lod_node::do_children() const throw ()
     {
-        return this->children_.value();
+        return this->current_children_.value();
     }
 
     /**
@@ -13385,8 +14231,8 @@ namespace {
         // switch in delayed-load inlines. this would necessarily switch
         // them in all at once. live with it for now.
         //
-        for (size_t i = 0; i < this->level_.mfnode::value().size(); i++) {
-            const boost::intrusive_ptr<node> & node = this->level_.mfnode::value()[i];
+        for (size_t i = 0; i < this->children_.mfnode::value().size(); i++) {
+            const boost::intrusive_ptr<node> & node = this->children_.mfnode::value()[i];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -13434,7 +14280,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
@@ -13453,7 +14299,10 @@ namespace {
                            "specularColor"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
-                           "transparency")
+                           "transparency"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<material_node> node_type_t;
@@ -13561,6 +14410,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<material_node>::exposedfield<sffloat> >(
                             &material_node::transparency_)));
+            } else if (*interface == *++supported_interface) {
+                materialNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<material_node>::exposedfield<sfnode> >(
+                            &material_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<material_node>::exposedfield<sfnode> >(
+                            &material_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<material_node>::exposedfield<sfnode> >(
+                            &material_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -13741,7 +14606,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
@@ -13769,7 +14634,22 @@ namespace {
                            "duration_changed"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isActive")
+                           "isActive"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "pauseTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "resumeTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "elapsedTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isPaused")
         };
 
         typedef node_type_impl<movie_texture_node> node_type_t;
@@ -13891,6 +14771,70 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::sfbool_emitter>(
                             &movie_texture_node::is_active_)));
+            } else if (*interface == *++supported_interface) {
+                movieTextureNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sfnode> >(
+                            &movie_texture_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sfnode> >(
+                            &movie_texture_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sfnode> >(
+                            &movie_texture_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                movieTextureNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::pause_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::pause_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::pause_time_)));
+            } else if (*interface == *++supported_interface) {
+                movieTextureNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::resume_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::resume_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<movie_texture_node>::exposedfield<sftime> >(
+                            &movie_texture_node::resume_time_)));
+            } else if (*interface == *++supported_interface) {
+                movieTextureNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<movie_texture_node>::sftime_emitter>(
+                            &movie_texture_node::elapsed_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                movieTextureNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<movie_texture_node>::sfbool_emitter>(
+                            &movie_texture_node::is_paused_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -14065,8 +15009,12 @@ namespace {
         start_time_(*this),
         stop_time_(*this),
         url_(*this),
+        pause_time_(*this),
+        resume_time_(*this),
         duration_changed_(*this, this->duration_),
-        is_active_(*this, this->active_)
+        is_active_(*this, this->active_),
+        elapsed_time_emitter_(*this, this->elapsed_time_),
+        is_paused_emitter_(*this, this->is_paused_)
     {}
 
     /**
@@ -14509,7 +15457,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
@@ -14531,7 +15479,16 @@ namespace {
                            "visibilityLimit"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isBound")
+                           "isBound"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfstring_id,
+                           "transitionType"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "bindTime")
         };
 
         typedef node_type_impl<navigation_info_node> node_type_t;
@@ -14655,6 +15612,46 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<navigation_info_node>::sfbool_emitter>(
                             &navigation_info_node::is_bound_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                navigationInfoNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<sfnode> >(
+                            &navigation_info_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<sfnode> >(
+                            &navigation_info_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<sfnode> >(
+                            &navigation_info_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                navigationInfoNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<mfstring> >(
+                            &navigation_info_node::transition_type_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<mfstring> >(
+                            &navigation_info_node::transition_type_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<navigation_info_node>::exposedfield<mfstring> >(
+                            &navigation_info_node::transition_type_)));
+            } else if (*interface == *++supported_interface) {
+                navigationInfoNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<navigation_info_node>::sftime_emitter>(
+                            &navigation_info_node::bind_time_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -14805,7 +15802,9 @@ namespace {
         type_(*this, std::vector<std::string>(navigation_type_,
                                               navigation_type_ + 2)),
         visibility_limit_(*this, 0.0),
-        is_bound_emitter_(*this, this->is_bound_)
+        transition_type_(*this, std::vector<std::string>(1, "LINEAR")),
+        is_bound_emitter_(*this, this->is_bound_),
+        bind_time_emitter_(*this, this->bind_time_)
     {}
 
     /**
@@ -14939,10 +15938,15 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterface =
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec3f_id,
-                           "vector");
+                           "vector"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
+        };
 
         typedef node_type_impl<normal_node> node_type_t;
 
@@ -14951,10 +15955,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 normalNodeType.add_exposedfield(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<normal_node>::exposedfield<mfvec3f> >(
@@ -14967,6 +15973,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<normal_node>::exposedfield<mfvec3f> >(
                             &normal_node::vector_)));
+            } else if (*interface == *++supported_interface) {
+                normalNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<normal_node>::exposedfield<sfnode> >(
+                            &normal_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<normal_node>::exposedfield<sfnode> >(
+                            &normal_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<normal_node>::exposedfield<sfnode> >(
+                            &normal_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -15062,7 +16084,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -15075,7 +16097,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::mfvec3f_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<normal_interpolator_node> node_type_t;
@@ -15142,6 +16167,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<normal_interpolator_node>::mfvec3f_emitter>(
                             &normal_interpolator_node::value_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                normalInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<normal_interpolator_node>::exposedfield<sfnode> >(
+                            &normal_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<normal_interpolator_node>::exposedfield<sfnode> >(
+                            &normal_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<normal_interpolator_node>::exposedfield<sfnode> >(
+                            &normal_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -15369,7 +16410,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -15382,7 +16423,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::sfrotation_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<orientation_interpolator_node>
@@ -15451,6 +16495,22 @@ namespace {
                         abstract_node<orientation_interpolator_node>::
                         sfrotation_emitter>(
                             &orientation_interpolator_node::value_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                orientationInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<orientation_interpolator_node>::exposedfield<sfnode> >(
+                            &orientation_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<orientation_interpolator_node>::exposedfield<sfnode> >(
+                            &orientation_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<orientation_interpolator_node>::exposedfield<sfnode> >(
+                            &orientation_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -15677,7 +16737,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfimage_id,
@@ -15687,7 +16747,10 @@ namespace {
                            "repeatS"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "repeatT")
+                           "repeatT"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<pixel_texture_node> node_type_t;
@@ -15728,6 +16791,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &pixel_texture_node::repeat_t_)));
+            } else if (*interface == *++supported_interface) {
+                pixelTextureNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
+                            &pixel_texture_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
+                            &pixel_texture_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
+                            &pixel_texture_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -15838,7 +16917,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
@@ -15863,7 +16942,16 @@ namespace {
                            "trackPoint_changed"),
             node_interface(node_interface::eventout_id,
                            field_value::sfvec3f_id,
-                           "translation_changed")
+                           "translation_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfstring_id,
+                           "description"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isOver")
         };
 
         typedef node_type_impl<plane_sensor_node> node_type_t;
@@ -15979,6 +17067,46 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<plane_sensor_node>::sfvec3f_emitter>(
                             &plane_sensor_node::translation_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                planeSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfnode> >(
+                            &plane_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfnode> >(
+                            &plane_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfnode> >(
+                            &plane_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                planeSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfstring> >(
+                            &plane_sensor_node::description_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfstring> >(
+                            &plane_sensor_node::description_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<plane_sensor_node>::exposedfield<sfstring> >(
+                            &plane_sensor_node::description_)));
+            } else if (*interface == *++supported_interface) {
+                planeSensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<plane_sensor_node>::sfbool_emitter>(
+                            &plane_sensor_node::is_over_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -16105,10 +17233,12 @@ namespace {
         max_position_(*this, vec2f(-1.0, -1.0)),
         min_position_(*this, vec2f(0.0, 0.0)),
         offset_(*this, vec3f(0.0, 0.0, 0.0)),
+        description_(*this),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
-        translation_changed_emitter_(*this, this->translation_changed_)
+        translation_changed_emitter_(*this, this->translation_changed_),
+        is_over_emitter_(*this, this->is_over_)
     {
         this->node::modified(true);
     }
@@ -16262,7 +17392,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
@@ -16284,7 +17414,10 @@ namespace {
                            "on"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
-                           "radius")
+                           "radius"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<point_light_node> node_type_t;
@@ -16408,6 +17541,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_light_node>::exposedfield<sffloat> >(
                             &point_light_node::radius_)));
+            } else if (*interface == *++supported_interface) {
+                pointLightNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<point_light_node>::exposedfield<sfnode> >(
+                            &point_light_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<point_light_node>::exposedfield<sfnode> >(
+                            &point_light_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<point_light_node>::exposedfield<sfnode> >(
+                            &point_light_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -16562,14 +17711,17 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
                            "color"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
-                           "coord")
+                           "coord"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<point_set_node> node_type_t;
@@ -16613,6 +17765,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<point_set_node>::exposedfield<sfnode> >(
                             &point_set_node::coord_)));
+            } else if (*interface == *++supported_interface) {
+                pointSetNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<point_set_node>::exposedfield<sfnode> >(
+                            &point_set_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<point_set_node>::exposedfield<sfnode> >(
+                            &point_set_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<point_set_node>::exposedfield<sfnode> >(
+                            &point_set_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -16814,7 +17982,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -16827,7 +17995,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::sfvec3f_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<position_interpolator_node> node_type_t;
@@ -16895,6 +18066,22 @@ namespace {
                         abstract_node<position_interpolator_node>::
                         sfvec3f_emitter>(
                             &position_interpolator_node::value_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                positionInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<position_interpolator_node>::exposedfield<sfnode> >(
+                            &position_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<position_interpolator_node>::exposedfield<sfnode> >(
+                            &position_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<position_interpolator_node>::exposedfield<sfnode> >(
+                            &position_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -17086,7 +18273,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
@@ -17111,7 +18298,13 @@ namespace {
                            "enterTime"),
             node_interface(node_interface::eventout_id,
                            field_value::sftime_id,
-                           "exitTime")
+                           "exitTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfvec3f_id,
+                           "centerOfRotation_changed")
         };
 
         typedef node_type_impl<proximity_sensor_node> node_type_t;
@@ -17221,6 +18414,30 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<proximity_sensor_node>::sftime_emitter>(
                             &proximity_sensor_node::exit_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                proximitySensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
+                            &proximity_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
+                            &proximity_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
+                            &proximity_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                proximitySensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<proximity_sensor_node>::sfvec3f_emitter>(
+                            &proximity_sensor_node::center_of_rotation_changed_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -17341,7 +18558,8 @@ namespace {
         enter_time_(0.0),
         enter_time_emitter_(*this, this->enter_time_),
         exit_time_(0.0),
-        exit_time_emitter_(*this, this->exit_time_)
+        exit_time_emitter_(*this, this->exit_time_),
+        center_of_rotation_changed_emitter_(*this, this->center_of_rotation_changed_)
     {
         this->node::modified(true);
     }
@@ -17484,7 +18702,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sffloat_id,
@@ -17497,7 +18715,10 @@ namespace {
                            "keyValue"),
             node_interface(node_interface::eventout_id,
                            field_value::sffloat_id,
-                           "value_changed")
+                           "value_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<scalar_interpolator_node> node_type_t;
@@ -17561,6 +18782,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<scalar_interpolator_node>::sffloat_emitter>(
                             &scalar_interpolator_node::value_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                scalarInterpolatorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
+                            &scalar_interpolator_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
+                            &scalar_interpolator_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
+                            &scalar_interpolator_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -17748,14 +18985,23 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
                            "appearance"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfnode_id,
-                           "geometry")
+                           "geometry"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxCenter"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxSize")
         };
 
         typedef node_type_impl<shape_node> node_type_t;
@@ -17799,6 +19045,36 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<shape_node>::exposedfield<sfnode> >(
                             &shape_node::geometry_)));
+            } else if (*interface == *++supported_interface) {
+                shapeNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<shape_node>::exposedfield<sfnode> >(
+                            &shape_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<shape_node>::exposedfield<sfnode> >(
+                            &shape_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<shape_node>::exposedfield<sfnode> >(
+                            &shape_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                shapeNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &shape_node::bbox_center_)));
+            } else if (*interface == *++supported_interface) {
+                shapeNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &shape_node::bbox_size_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -17856,7 +19132,8 @@ namespace {
         child_node(type, scope),
         appearance_(*this),
         geometry_(*this),
-        viewerObject(0)
+        viewerObject(0),
+        bbox_size_(vec3f(-1,-1,-1))
     {}
 
     /**
@@ -18026,7 +19303,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
@@ -18057,7 +19334,10 @@ namespace {
                            "source"),
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
-                           "spatialize")
+                           "spatialize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<sound_node> node_type_t;
@@ -18220,6 +19500,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &sound_node::spatialize_)));
+            } else if (*interface == *++supported_interface) {
+                soundNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<sound_node>::exposedfield<sfnode> >(
+                            &sound_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<sound_node>::exposedfield<sfnode> >(
+                            &sound_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<sound_node>::exposedfield<sfnode> >(
+                            &sound_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -18383,10 +19679,18 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface
-            supportedInterface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "radius");
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::field_id,
+                           field_value::sffloat_id,
+                           "radius"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid")
+        };
 
         typedef node_type_impl<sphere_node> node_type_t;
 
@@ -18395,13 +19699,38 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 spereNodeType.add_field(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &sphere_node::radius)));
+            } else if (*interface == *++supported_interface) {
+                spereNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<sphere_node>::exposedfield<sfnode> >(
+                            &sphere_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<sphere_node>::exposedfield<sfnode> >(
+                            &sphere_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<sphere_node>::exposedfield<sfnode> >(
+                            &sphere_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                spereNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfbool>(
+                            &sphere_node::solid_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -18446,7 +19775,8 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<sphere_node>(type, scope),
         geometry_node(type, scope),
-        radius(1.0)
+        radius(1.0),
+        solid_(true)
     {
         this->bounding_volume_dirty(true); // lazy calc of bvolumes
     }
@@ -18525,7 +19855,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
@@ -18544,7 +19874,16 @@ namespace {
                            "rotation_changed"),
             node_interface(node_interface::eventout_id,
                            field_value::sfvec3f_id,
-                           "trackPoint_changed")
+                           "trackPoint_changed"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfstring_id,
+                           "description"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isOver")
         };
 
         typedef node_type_impl<sphere_sensor_node> node_type_t;
@@ -18628,6 +19967,46 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::sfvec3f_emitter>(
                             &sphere_sensor_node::track_point_changed_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                sphereSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
+                            &sphere_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
+                            &sphere_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
+                            &sphere_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                sphereSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
+                            &sphere_sensor_node::description_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
+                            &sphere_sensor_node::description_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
+                            &sphere_sensor_node::description_)));
+            } else if (*interface == *++supported_interface) {
+                sphereSensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<sphere_sensor_node>::sfbool_emitter>(
+                            &sphere_sensor_node::is_over_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -18736,10 +20115,12 @@ namespace {
         auto_offset_(*this, true),
         enabled_(*this, true),
         offset_(*this, openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
+        description_(*this),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         rotation_changed_emitter_(*this, this->rotation_changed_),
-        track_point_changed_emitter_(*this, this->track_point_changed_)
+        track_point_changed_emitter_(*this, this->track_point_changed_),
+        is_over_emitter_(*this, this->is_over_)
     {
         this->node::modified(true);
     }
@@ -18905,7 +20286,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
@@ -18936,7 +20317,10 @@ namespace {
                            "on"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
-                           "radius")
+                           "radius"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<spot_light_node> node_type_t;
@@ -19108,6 +20492,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<spot_light_node>::exposedfield<sffloat> >(
                             &spot_light_node::radius_)));
+            } else if (*interface == *++supported_interface) {
+                spotLightNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<spot_light_node>::exposedfield<sfnode> >(
+                            &spot_light_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<spot_light_node>::exposedfield<sfnode> >(
+                            &spot_light_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<spot_light_node>::exposedfield<sfnode> >(
+                            &spot_light_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -19285,14 +20685,32 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "addChildren"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "removeChildren"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfnode_id,
+                           "children"),
             node_interface(node_interface::exposedfield_id,
                            field_value::mfnode_id,
                            "choice"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxCenter"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxSize"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfint32_id,
-                           "whichChoice")
+                           "whichChoice"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<switch_node> node_type_t;
@@ -19305,18 +20723,67 @@ namespace {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
             if (*interface == *++supported_interface) {
+                switchNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        switch_node::add_children_listener>(
+                            &switch_node::add_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                switchNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        switch_node::remove_children_listener>(
+                            &switch_node::remove_children_listener_)));
+            } else if (*interface == *++supported_interface) {
                 switchNodeType.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        switch_node::choice_exposedfield>(&switch_node::choice_)),
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        switch_node::choice_exposedfield>(&switch_node::choice_)),
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        switch_node::choice_exposedfield>(&switch_node::choice_)));
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)));
+            } else if (*interface == *++supported_interface) {
+                switchNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        switch_node::children_exposedfield>(
+                            &switch_node::children_)));
+            } else if (*interface == *++supported_interface) {
+                switchNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &switch_node::bbox_center_)));
+            } else if (*interface == *++supported_interface) {
+                switchNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &switch_node::bbox_size_)));
             } else if (*interface == *++supported_interface) {
                 switchNodeType.add_exposedfield(
                     supported_interface->field_type,
@@ -19333,6 +20800,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         switch_node::which_choice_exposedfield>(
                             &switch_node::which_choice_)));
+            } else if (*interface == *++supported_interface) {
+                switchNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<switch_node>::exposedfield<sfnode> >(
+                            &switch_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<switch_node>::exposedfield<sfnode> >(
+                            &switch_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<switch_node>::exposedfield<sfnode> >(
+                            &switch_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -19353,63 +20836,6 @@ namespace {
      */
 
     /**
-     * @internal
-     *
-     * @class switch_node::choice_exposedfield
-     *
-     * @brief choice exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  switch_node.
-     */
-    switch_node::choice_exposedfield::
-    choice_exposedfield(switch_node & node):
-        node_event_listener(node),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfnode_listener(node),
-        exposedfield<openvrml::mfnode>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    switch_node::choice_exposedfield::
-    choice_exposedfield(const choice_exposedfield & obj) throw ():
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfnode_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfnode>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    switch_node::choice_exposedfield::~choice_exposedfield()
-        throw ()
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    switch_node::choice_exposedfield::do_clone() const
-        throw (std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new choice_exposedfield(*this));
-    }
-
-    /**
      * @brief Process event.
      *
      * @param choice    choice nodes.
@@ -19417,25 +20843,21 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    switch_node::choice_exposedfield::
-    event_side_effect(const mfnode &, double) throw (std::bad_alloc)
+    void switch_node::do_children_event_side_effect(const mfnode &, double)
+        throw (std::bad_alloc)
     {
         try {
-            switch_node & n =
-                dynamic_cast<switch_node &>(this->node_event_listener::node());
-
-            const int32 which_choice = n.which_choice_.sfint32::value();
-            assert(!n.children_.value().empty());
+            const int32 which_choice = this->which_choice_.sfint32::value();
+            assert(!this->children_.mfnode::value().empty());
             typedef std::vector<boost::intrusive_ptr<openvrml::node> >
                 children_t;
-            children_t children = n.children_.value();
+            children_t children = this->current_children_.value();
             children[0] =
                 (which_choice >= 0
-                 && which_choice < int32(n.choice_.mfnode::value().size()))
-                ? n.choice_.mfnode::value()[which_choice]
+                 && which_choice < int32(this->children_.mfnode::value().size()))
+                ? this->children_.mfnode::value()[which_choice]
                 : children_t::value_type(0);
-            n.children_.value(children);
+            this->current_children_.value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -19515,44 +20937,26 @@ namespace {
             switch_node & n =
                 dynamic_cast<switch_node &>(this->node_event_listener::node());
 
-            assert(!n.children_.value().empty());
+            assert(!n.current_children_.mfnode::value().empty());
             typedef std::vector<boost::intrusive_ptr<openvrml::node> >
                 children_t;
-            children_t children = n.children_.value();
+            children_t children = n.current_children_.value();
             children[0] =
                 ((which_choice.value() >= 0)
                  && (which_choice.value()
-                     < int32(n.choice_.mfnode::value().size())))
-                ? n.choice_.mfnode::value()[which_choice.value()]
+                     < int32(n.children_.mfnode::value().size())))
+                ? n.children_.mfnode::value()[which_choice.value()]
                 : children_t::value_type(0);
-            n.children_.value(children);
+            n.current_children_.mfnode::value(children);
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
     }
 
     /**
-     * @var switch_node::choice_exposedfield switch_node::choice_
-     *
-     * @brief choice exposedField.
-     */
-
-    /**
      * @var switch_node::which_choice_exposedfield switch_node::which_choice_
      *
      * @brief whichChoice exposedField.
-     */
-
-    /**
-     * @var openvrml::mfnode switch_node::children_
-     *
-     * @brief The children currently in the scene graph.
-     */
-
-    /**
-     * @var openvrml::bounding_sphere switch_node::bsphere
-     *
-     * @brief Cached copy of the bsphere enclosing this node's children.
      */
 
     /**
@@ -19567,11 +20971,10 @@ namespace {
         node(type, scope),
         bounded_volume_node(type, scope),
         child_node(type, scope),
-        abstract_node<switch_node>(type, scope),
         grouping_node(type, scope),
-        choice_(*this),
+        grouping_node_base<switch_node>(type, scope),
         which_choice_(*this),
-        children_(1)
+        current_children_(1)
     {
         this->bounding_volume_dirty(true);
     }
@@ -19594,8 +20997,8 @@ namespace {
 
         long w = this->which_choice_.sfint32::value();
 
-        return w >= 0 && size_t(w) < this->choice_.mfnode::value().size()
-            && this->choice_.mfnode::value()[w]->modified();
+        return w >= 0 && size_t(w) < this->children_.mfnode::value().size()
+            && this->children_.mfnode::value()[w]->modified();
     }
 
     /**
@@ -19611,25 +21014,11 @@ namespace {
     switch_node::
     do_render_child(openvrml::viewer & viewer, const rendering_context context)
     {
-        assert(!this->children_.value().empty());
+        assert(!this->current_children_.mfnode::value().empty());
         child_node * const child =
-            node_cast<child_node *>(this->children_.value()[0].get());
+            node_cast<child_node *>(this->current_children_.value()[0].get());
         if (child) { child->render_child(viewer, context); }
         this->node::modified(false);
-    }
-
-    /**
-     * @brief Get the bounding volume.
-     *
-     * @return the bounding volume associated with the node.
-     */
-    const openvrml::bounding_volume &
-    switch_node::do_bounding_volume() const
-    {
-        if (this->bounding_volume_dirty()) {
-            const_cast<switch_node *>(this)->recalc_bsphere();
-        }
-        return this->bsphere;
     }
 
     /**
@@ -19640,7 +21029,7 @@ namespace {
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
     switch_node::do_children() const throw ()
     {
-        return this->children_.value();
+        return this->current_children_.value();
     }
 
     /**
@@ -19650,8 +21039,9 @@ namespace {
     {
         this->bsphere = bounding_sphere();
         long w = this->which_choice_.sfint32::value();
-        if (w >= 0 && size_t(w) < this->choice_.mfnode::value().size()) {
-            const boost::intrusive_ptr<node> & node = this->choice_.mfnode::value()[w];
+        if (w >= 0 && size_t(w) < this->children_.mfnode::value().size()) {
+            const boost::intrusive_ptr<node> & node =
+                this->children_.mfnode::value()[w];
             bounded_volume_node * bounded_volume =
                 node_cast<bounded_volume_node *>(node.get());
             if (bounded_volume) {
@@ -19723,7 +21113,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfstring_id,
@@ -19736,7 +21126,13 @@ namespace {
                            "length"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sffloat_id,
-                           "maxExtent")
+                           "maxExtent"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::field_id,
+                           field_value::sfbool_id,
+                           "solid")
         };
 
         typedef node_type_impl<text_node> node_type_t;
@@ -19806,6 +21202,29 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         text_node::max_extent_exposedfield>(
                             &text_node::max_extent_)));
+            } else if (*interface == *++supported_interface) {
+                textNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<text_node>::exposedfield<sfnode> >(
+                            &text_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<text_node>::exposedfield<sfnode> >(
+                            &text_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<text_node>::exposedfield<sfnode> >(
+                            &text_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                textNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfbool>(
+                            &text_node::solid_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -20688,7 +22107,8 @@ namespace {
         string_(*this),
         font_style_(*this),
         length_(*this),
-        max_extent_(*this)
+        max_extent_(*this),
+        solid_(true)
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         ,face(0)
 # endif
@@ -21654,10 +23074,15 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        static const node_interface supportedInterface =
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::mfvec2f_id,
-                           "point");
+                           "point"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
+        };
 
         typedef node_type_impl<texture_coordinate_node> node_type_t;
 
@@ -21667,10 +23092,12 @@ namespace {
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
-            if (*interface == supportedInterface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
                 textureCoordinateNodeType.add_exposedfield(
-                    supportedInterface.field_type,
-                    supportedInterface.id,
+                    supported_interface->field_type,
+                    supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
                         abstract_node<texture_coordinate_node>::
@@ -21686,6 +23113,22 @@ namespace {
                         abstract_node<texture_coordinate_node>::
                         exposedfield<mfvec2f> >(
                             &texture_coordinate_node::point_)));
+            } else if (*interface == *++supported_interface) {
+                textureCoordinateNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<texture_coordinate_node>::exposedfield<sfnode> >(
+                            &texture_coordinate_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<texture_coordinate_node>::exposedfield<sfnode> >(
+                            &texture_coordinate_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<texture_coordinate_node>::exposedfield<sfnode> >(
+                            &texture_coordinate_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -21782,7 +23225,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 4> supported_interfaces_t;
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec2f_id,
@@ -21795,7 +23238,10 @@ namespace {
                            "scale"),
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec2f_id,
-                           "translation")
+                           "translation"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<texture_transform_node> node_type_t;
@@ -21884,6 +23330,22 @@ namespace {
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::translation_)));
+            } else if (*interface == *++supported_interface) {
+                textureTransformNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<texture_transform_node>::exposedfield<sfnode> >(
+                            &texture_transform_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<texture_transform_node>::exposedfield<sfnode> >(
+                            &texture_transform_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<texture_transform_node>::exposedfield<sfnode> >(
+                            &texture_transform_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -22003,7 +23465,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 9> supported_interfaces_t;
+        typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sftime_id,
@@ -22031,7 +23493,22 @@ namespace {
                            "isActive"),
             node_interface(node_interface::eventout_id,
                            field_value::sftime_id,
-                           "time")
+                           "time"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "pauseTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sftime_id,
+                           "resumeTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sftime_id,
+                           "elapsedTime"),
+            node_interface(node_interface::eventout_id,
+                           field_value::sfbool_id,
+                           "isPaused")
         };
 
         typedef node_type_impl<time_sensor_node> node_type_t;
@@ -22153,6 +23630,70 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_sensor_node>::sftime_emitter>(
                             &time_sensor_node::time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                timeSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sfnode> >(
+                            &time_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sfnode> >(
+                            &time_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sfnode> >(
+                            &time_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                timeSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::pause_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::pause_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::pause_time_)));
+            } else if (*interface == *++supported_interface) {
+                timeSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::resume_time_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::resume_time_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<time_sensor_node>::exposedfield<sftime> >(
+                            &time_sensor_node::resume_time_)));
+            } else if (*interface == *++supported_interface) {
+                timeSensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<time_sensor_node>::sftime_emitter>(
+                            &time_sensor_node::elapsed_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                timeSensorNodeType.add_eventout(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<time_sensor_node>::sfbool_emitter>(
+                            &time_sensor_node::is_paused_emitter_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -22527,11 +24068,15 @@ namespace {
         start_time_(0.0),
         start_time_changed_emitter_(*this, this->start_time_),
         stop_time_(*this, 0.0),
+        pause_time_(*this),
+        resume_time_(*this),
         cycle_time_emitter_(*this, this->cycle_time_),
         fraction_changed_emitter_(*this, this->fraction_changed_),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         time_emitter_(*this, this->time_),
+        elapsed_time_emitter_(*this, this->elapsed_time_),
+        is_paused_emitter_(*this, this->is_paused_),
         lastTime(-1.0)
     {}
 
@@ -22714,7 +24259,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfbool_id,
@@ -22736,7 +24281,13 @@ namespace {
                            "isOver"),
             node_interface(node_interface::eventout_id,
                            field_value::sftime_id,
-                           "touchTime")
+                           "touchTime"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfstring_id,
+                           "description")
         };
 
         typedef node_type_impl<touch_sensor_node> node_type_t;
@@ -22812,6 +24363,38 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<touch_sensor_node>::sftime_emitter>(
                             &touch_sensor_node::touch_time_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                touchSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
+                            &touch_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
+                            &touch_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
+                            &touch_sensor_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                touchSensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
+                            &touch_sensor_node::description_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
+                            &touch_sensor_node::description_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
+                            &touch_sensor_node::description_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -22924,6 +24507,7 @@ namespace {
         abstract_node<touch_sensor_node>(type, scope),
         pointing_device_sensor_node(type, scope),
         enabled_(*this, true),
+        description_(*this),
         hit_normal_changed_emitter_(*this, this->hit_normal_changed_),
         hit_point_changed_emitter_(*this, this->hit_point_changed_),
         hit_tex_coord_changed_emitter_(*this, this->hit_tex_coord_changed_),
@@ -23007,7 +24591,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 10> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::mfnode_id,
@@ -23038,7 +24622,10 @@ namespace {
                            "bboxCenter"),
             node_interface(node_interface::field_id,
                            field_value::sfvec3f_id,
-                           "bboxSize")
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl< ::transform_node> node_type_t;
@@ -23176,6 +24763,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &::transform_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                transformNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<transform_node>::exposedfield<sfnode> >(
+                            &transform_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<transform_node>::exposedfield<sfnode> >(
+                            &transform_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<transform_node>::exposedfield<sfnode> >(
+                            &transform_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -23741,36 +25344,13 @@ namespace {
         this->node::modified(false);
     }
 
-    /**
-     * @brief Get the bounding volume.
-     *
-     * @return the bounding volume associated with the node.
-     */
-    const openvrml::bounding_volume &
-    transform_node::do_bounding_volume() const
-    {
-        if (this->bounding_volume_dirty()) {
-            const_cast<transform_node *>(this)->recalc_bsphere();
-        }
-        return this->bsphere;
-    }
 
     /**
      * @brief Recalculate the bounding volume.
      */
     void transform_node::recalc_bsphere()
     {
-        this->bsphere = bounding_sphere();
-        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            const boost::intrusive_ptr<node> & node = this->children_.mfnode::value()[i];
-            bounded_volume_node * bounded_volume =
-                node_cast<bounded_volume_node *>(node.get());
-            if (bounded_volume) {
-                const openvrml::bounding_volume & ci_bv =
-                    bounded_volume->bounding_volume();
-                this->bsphere.extend(ci_bv);
-            }
-        }
+        grouping_node_base<self_t>::recalc_bsphere();
         this->bsphere.transform(this->transform());
         this->bounding_volume_dirty(false);
     }
@@ -24014,7 +25594,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::eventin_id,
                            field_value::sfbool_id,
@@ -24031,7 +25611,12 @@ namespace {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
                            "position"),
+            // Note: Description is a field in VRML97 and an exposedField in
+            // X3D.
             node_interface(node_interface::field_id,
+                           field_value::sfstring_id,
+                           "description"),
+            node_interface(node_interface::exposedfield_id,
                            field_value::sfstring_id,
                            "description"),
             node_interface(node_interface::eventout_id,
@@ -24039,7 +25624,13 @@ namespace {
                            "bindTime"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isBound")
+                           "isBound"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfvec3f_id,
+                           "centerOfRotation")
         };
 
         typedef node_type_impl< ::viewpoint_node> node_type_t;
@@ -24128,7 +25719,24 @@ namespace {
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfstring>(
+                        new node_type_t::field_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfstring> >(
+                            &viewpoint_node::description_)));
+            } else if (*interface == *++supported_interface) {
+                viewpointNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfstring> >(
+                            &viewpoint_node::description_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfstring> >(
+                            &viewpoint_node::description_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfstring> >(
                             &viewpoint_node::description_)));
             } else if (*interface == *++supported_interface) {
                 viewpointNodeType.add_eventout(
@@ -24146,6 +25754,38 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<viewpoint_node>::sfbool_emitter>(
                             &viewpoint_node::is_bound_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                viewpointNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfnode> >(
+                            &viewpoint_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfnode> >(
+                            &viewpoint_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfnode> >(
+                            &viewpoint_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                viewpointNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
+                            &viewpoint_node::center_of_rotation_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
+                            &viewpoint_node::center_of_rotation_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
+                            &viewpoint_node::center_of_rotation_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -24488,6 +26128,8 @@ namespace {
         jump_(*this, true),
         orientation_(*this),
         position_(*this),
+        description_(*this),
+        center_of_rotation_(*this),
         is_bound_emitter_(*this, this->is_bound_),
         bind_time_emitter_(*this, this->bind_time_),
         final_transformation_dirty(true)
@@ -24544,7 +26186,7 @@ namespace {
      */
     const std::string & viewpoint_node::description() const throw ()
     {
-        return this->description_.value();
+        return this->description_.sfstring::value();
     }
 
     /**
@@ -24712,7 +26354,7 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 6> supported_interfaces_t;
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
                            field_value::sfvec3f_id,
@@ -24731,7 +26373,10 @@ namespace {
                            "exitTime"),
             node_interface(node_interface::eventout_id,
                            field_value::sfbool_id,
-                           "isActive")
+                           "isActive"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<visibility_sensor_node> node_type_t;
@@ -24825,6 +26470,22 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<visibility_sensor_node>::sfbool_emitter>(
                             &visibility_sensor_node::is_active_emitter_)));
+            } else if (*interface == *++supported_interface) {
+                visibilitySensorNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
+                            &visibility_sensor_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
+                            &visibility_sensor_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
+                            &visibility_sensor_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -25038,14 +26699,17 @@ namespace {
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
-        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::field_id,
                            field_value::mfstring_id,
                            "info"),
             node_interface(node_interface::field_id,
                            field_value::sfstring_id,
-                           "title")
+                           "title"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata")
         };
 
         typedef node_type_impl<world_info_node> node_type_t;
@@ -25071,6 +26735,22 @@ namespace {
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfstring>(
                             &world_info_node::title)));
+            } else if (*interface == *++supported_interface) {
+                worldInfoNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<world_info_node>::exposedfield<sfnode> >(
+                            &world_info_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<world_info_node>::exposedfield<sfnode> >(
+                            &world_info_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<world_info_node>::exposedfield<sfnode> >(
+                            &world_info_node::metadata)));
             } else {
                 throw unsupported_interface(*interface);
             }
