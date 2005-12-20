@@ -1,3 +1,29 @@
+2005-12-20 Braden McDaniel  <braden@endoframe.com>
+
+	Changed openvrml::resource_istream to use nonvirtual interface
+	idiom.
+
+	* examples/sdl_viewer.cpp
+	(browser::do_get_resource(const std::string &)): Changed
+	file_resource_istream to override the private virtual functions of
+	openvrml::resource_istream.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(browser::do_get_resource(const std::string &)): Changed
+	plugin_resource_istream to override the private virtual functions
+	of openvrml::resource_istream.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::resource_istream::url() const): Changed to delegate to
+	openvrml::resource_istream::do_url.
+	(openvrml::resource_istream::type() const): Changed to delegate to
+	openvrml::resource_istream::do_type.
+	(openvrml::resource_istream::data_available() const): Changed to
+	delegate to openvrml::resource_istream::do_data_available.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::resource_istream): Changed url, type, and
+	data_available functions to be nonvirtual; these now delegate to
+	private virtual functions do_url, do_type, and do_data_available,
+	respectively.
+
 2005-12-19 Braden McDaniel  <braden@endoframe.com>
 
 	Added additional fields to node implementations to support X3D

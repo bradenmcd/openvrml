@@ -31,12 +31,18 @@ namespace openvrml {
     class OPENVRML_API resource_istream : public std::istream {
     public:
         virtual ~resource_istream() = 0;
-        virtual const std::string url() const throw () = 0;
-        virtual const std::string type() const throw () = 0;
-        virtual bool data_available() const throw () = 0;
+
+        const std::string url() const throw (std::bad_alloc);
+        const std::string type() const throw (std::bad_alloc);
+        bool data_available() const throw ();
 
     protected:
         explicit resource_istream(std::streambuf * streambuf);
+
+    private:
+        virtual const std::string do_url() const throw (std::bad_alloc) = 0;
+        virtual const std::string do_type() const throw (std::bad_alloc) = 0;
+        virtual bool do_data_available() const throw () = 0;
     };
 
 

@@ -140,12 +140,13 @@ namespace {
                 this->url_ = str;
             }
 
-            virtual const std::string url() const throw ()
+        private:
+            virtual const std::string do_url() const throw ()
             {
                 return this->url_;
             }
 
-            virtual const std::string type() const throw ()
+            virtual const std::string do_type() const throw ()
             {
                 //
                 // A real application should use OS facilities for this.  This
@@ -171,7 +172,7 @@ namespace {
                 return media_type;
             }
 
-            virtual bool data_available() const throw ()
+            virtual bool do_data_available() const throw ()
             {
                 return !!(*this);
             }

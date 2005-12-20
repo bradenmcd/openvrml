@@ -5969,7 +5969,22 @@ openvrml::resource_istream::~resource_istream()
 {}
 
 /**
- * @fn const std::string openvrml::resource_istream::url() const throw ()
+ * @brief Get the URL associated with the stream.
+ *
+ * This function delegates to @c do_url.
+ *
+ * @return the URL associated with the stream.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+const std::string openvrml::resource_istream::url() const
+    throw (std::bad_alloc)
+{
+    return this->do_url();
+}
+
+/**
+ * @fn const std::string openvrml::resource_istream::do_url() const throw (std::bad_alloc)
  *
  * @brief Get the URL associated with the stream.
  *
@@ -5977,7 +5992,20 @@ openvrml::resource_istream::~resource_istream()
  */
 
 /**
- * @fn const std::string openvrml::resource_istream::type() const throw ()
+ * @brief Get the MIME content type associated with the stream.
+ *
+ * This function delegates to @c do_type.
+ *
+ * @return the MIME content type associated with the stream.
+ */
+const std::string openvrml::resource_istream::type() const
+    throw (std::bad_alloc)
+{
+    return this->do_type();
+}
+
+/**
+ * @fn const std::string openvrml::resource_istream::do_type() const throw (std::bad_alloc)
  *
  * @brief Get the MIME content type associated with the stream.
  *
@@ -5985,7 +6013,20 @@ openvrml::resource_istream::~resource_istream()
  */
 
 /**
- * @fn bool openvrml::resource_istream::data_available() const throw ()
+ * @brief Indicates whether data is available to be read from the stream.
+ *
+ * This function delegates to @c do_data_available.
+ *
+ * @return @c true if there is data in the stream buffer to be read; @c false
+ *         otherwise.
+ */
+bool openvrml::resource_istream::data_available() const throw ()
+{
+    return this->do_data_available();
+}
+
+/**
+ * @fn bool openvrml::resource_istream::do_data_available() const throw ()
  *
  * @brief Indicates whether data is available to be read from the stream.
  *
