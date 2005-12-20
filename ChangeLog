@@ -1,5 +1,10 @@
 2005-12-20 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base<Derived>): Made self_t protected.
+
+2005-12-20 Braden McDaniel  <braden@endoframe.com>
+
 	Changed openvrml::resource_istream to use nonvirtual interface
 	idiom.
 
