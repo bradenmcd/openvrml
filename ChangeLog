@@ -1,6 +1,14 @@
 2005-12-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base<Derived>): Change self_t back to a typedef;
+	rather than "using" the typedef from
+	openvrml::node_impl_util::abstract_node<Derived>.  gcc didn't
+	identify self_t as a type when importing it with "using".
+
+2005-12-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
 	(grouping_node_base<Derived>): Made self_t protected.
 
 2005-12-20 Braden McDaniel  <braden@endoframe.com>

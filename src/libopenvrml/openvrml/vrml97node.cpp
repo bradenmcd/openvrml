@@ -1625,7 +1625,7 @@ namespace {
     class OPENVRML_LOCAL grouping_node_base : public abstract_node<Derived>,
                                               public virtual grouping_node {
     protected:
-        using abstract_node<Derived>::self_t;
+        typedef Derived self_t;
 
         class add_children_listener :
             public event_listener_base<self_t>,
