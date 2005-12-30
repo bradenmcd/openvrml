@@ -1,3 +1,10 @@
+2005-12-30 Braden McDaniel  <braden@endoframe.com>
+
+	* tests/test_browser.cpp
+	(test_browser::do_get_resource(const std::string &): Changed
+	file_resource_istream to override the private virtual functions of
+	openvrml::resource_istream.	
+
 2005-12-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
