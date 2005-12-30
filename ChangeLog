@@ -1,5 +1,22 @@
 2005-12-30 Braden McDaniel  <braden@endoframe.com>
 
+	Made URI grammar parameterized with a struct defining semantic
+	actions.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(assign_iterators_base<SpiritActor, Iterator1, Iterator2>): Helper
+	class template for uri_grammar.
+	(assign_iterators(const SpiritActor &, const Iterator1 &, const
+	Iterator2 &)): Generator function for assign_iterators_base.
+	(null_actions): Helper class for uri_grammar.
+	(uri_grammar<Actions>): Spirit grammar for URIs. Moved from
+	uri::grammar and now parameterized with semantic actions.
+	(uri): Removed grammar inner class; added actions inner class to
+	be used as a template parameter for uri_grammar.
+	(uri::uri(const std::string &)): Changed to use uri_grammar.
+
+2005-12-30 Braden McDaniel  <braden@endoframe.com>
+
 	Added node_class_id test.
 
 	* tests/Makefile.am: Added node_class_id test.

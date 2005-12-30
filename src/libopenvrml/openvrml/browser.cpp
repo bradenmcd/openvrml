@@ -2771,122 +2771,145 @@ namespace {
     }
 
 
-    class OPENVRML_LOCAL uri {
-        struct grammar : public boost::spirit::grammar<grammar> {
+    template <typename SpiritActor, typename Iterator1, typename Iterator2>
+    class assign_iterators_base {
+        SpiritActor actor_;
+        Iterator1 begin_;
+        Iterator2 end_;
+
+    public:
+        typedef assign_iterators_base<SpiritActor, Iterator1, Iterator2>
+            this_type;
+
+        assign_iterators_base(const SpiritActor & actor,
+                              const Iterator1 & begin,
+                              const Iterator2 & end):
+            actor_(actor),
+            begin_(begin),
+            end_(end)
+        {}
+
+        template <typename T>
+        struct result {
+            typedef void type;
+        };
+
+        template <typename Tuple>
+        typename phoenix::actor_result<this_type, Tuple>::type
+        eval(Tuple) const
+        {
+            this->actor_(this->begin_(), this->end_());
+        }
+    };
+
+    template <typename SpiritActor, typename Iterator1, typename Iterator2>
+    phoenix::actor<assign_iterators_base<SpiritActor, Iterator1, Iterator2> >
+    assign_iterators(const SpiritActor & actor,
+                     const Iterator1 & begin,
+                     const Iterator2 & end)
+    {
+        return assign_iterators_base<SpiritActor, Iterator1, Iterator2>(actor,
+                                                                        begin,
+                                                                        end);
+    }
+
+    class OPENVRML_LOCAL null_actions {
+    public:
+        struct null_action {
+            template <typename Iterator>
+            void operator()(const Iterator & first,
+                            const Iterator & last) const
+            {}
+        };
+
+        null_action scheme, scheme_specific_part, userinfo, host, port,
+            authority, path, query, fragment;
+    };
+
+    template <typename Actions = null_actions>
+    struct uri_grammar : public boost::spirit::grammar<uri_grammar<Actions> > {
+
+        template <typename ScannerT>
+        struct definition {
             struct absolute_uri_closure :
                 boost::spirit::closure<absolute_uri_closure,
-                                       std::string::const_iterator,
-                                       std::string::const_iterator> {
-                member1 scheme_begin;
-                member2 scheme_end;
+                                       typename ScannerT::iterator_t,
+                                       typename ScannerT::iterator_t> {
+                typename absolute_uri_closure::member1 scheme_begin;
+                typename absolute_uri_closure::member2 scheme_end;
             };
 
             struct server_closure :
                 boost::spirit::closure<server_closure,
-                                       std::string::const_iterator,
-                                       std::string::const_iterator> {
-                member1 userinfo_begin;
-                member2 userinfo_end;
+                                       typename ScannerT::iterator_t,
+                                       typename ScannerT::iterator_t> {
+                typename server_closure::member1 userinfo_begin;
+                typename server_closure::member2 userinfo_end;
             };
 
-            template <typename ScannerT>
-            struct definition {
-                typedef boost::spirit::rule<ScannerT> rule_type;
-                typedef boost::spirit::rule<ScannerT,
-                                            absolute_uri_closure::context_t>
-                    absolute_uri_rule_type;
-                typedef boost::spirit::rule<ScannerT,
-                                            server_closure::context_t>
-                    server_rule_type;
+            typedef boost::spirit::rule<ScannerT> rule_type;
+            typedef boost::spirit::rule<
+                ScannerT,
+                typename absolute_uri_closure::context_t>
+                absolute_uri_rule_type;
+            typedef boost::spirit::rule<ScannerT,
+                                        typename server_closure::context_t>
+                server_rule_type;
 
-                rule_type uri_reference;
-                absolute_uri_rule_type absolute_uri;
-                rule_type relative_uri;
-                rule_type hier_part;
-                rule_type opaque_part;
-                rule_type uric_no_slash;
-                rule_type net_path;
-                rule_type abs_path;
-                rule_type rel_path;
-                rule_type rel_segment;
-                rule_type scheme;
-                rule_type authority;
-                rule_type reg_name;
-                server_rule_type server;
-                rule_type userinfo;
-                rule_type hostport;
-                rule_type host;
-                rule_type hostname;
-                rule_type domainlabel;
-                rule_type toplabel;
-                rule_type ipv4address;
-                rule_type port;
-                rule_type path_segments;
-                rule_type segment;
-                rule_type param;
-                rule_type pchar;
-                rule_type query;
-                rule_type fragment;
-                rule_type uric;
-                rule_type reserved;
-                rule_type unreserved;
-                rule_type mark;
-                rule_type escaped;
+            rule_type uri_reference;
+            absolute_uri_rule_type absolute_uri;
+            rule_type relative_uri;
+            rule_type hier_part;
+            rule_type opaque_part;
+            rule_type uric_no_slash;
+            rule_type net_path;
+            rule_type abs_path;
+            rule_type rel_path;
+            rule_type rel_segment;
+            rule_type scheme;
+            rule_type authority;
+            rule_type reg_name;
+            server_rule_type server;
+            rule_type userinfo;
+            rule_type hostport;
+            rule_type host;
+            rule_type hostname;
+            rule_type domainlabel;
+            rule_type toplabel;
+            rule_type ipv4address;
+            rule_type port;
+            rule_type path_segments;
+            rule_type segment;
+            rule_type param;
+            rule_type pchar;
+            rule_type query;
+            rule_type fragment;
+            rule_type uric;
+            rule_type reserved;
+            rule_type unreserved;
+            rule_type mark;
+            rule_type escaped;
 
-                explicit definition(const grammar & self);
+            explicit definition(const uri_grammar & self);
 
-                const boost::spirit::rule<ScannerT> & start() const;
-            };
-
-            mutable uri & uri_ref;
-
-            explicit grammar(uri & uri_ref) throw ();
+            const boost::spirit::rule<ScannerT> & start() const;
         };
 
-        std::string str_;
-        std::string::const_iterator scheme_begin, scheme_end;
-        std::string::const_iterator scheme_specific_part_begin,
-                                    scheme_specific_part_end;
-        std::string::const_iterator authority_begin, authority_end;
-        std::string::const_iterator userinfo_begin, userinfo_end;
-        std::string::const_iterator host_begin, host_end;
-        std::string::const_iterator port_begin, port_end;
-        std::string::const_iterator path_begin, path_end;
-        std::string::const_iterator query_begin, query_end;
-        std::string::const_iterator fragment_begin, fragment_end;
+        const Actions & actions;
 
-    public:
-        uri() throw (std::bad_alloc);
-        explicit uri(const std::string & str)
-            throw (openvrml::invalid_url, std::bad_alloc);
-
-        operator std::string() const throw (std::bad_alloc);
-
-        const std::string scheme() const throw (std::bad_alloc);
-        const std::string scheme_specific_part() const throw (std::bad_alloc);
-        const std::string authority() const throw (std::bad_alloc);
-        const std::string userinfo() const throw (std::bad_alloc);
-        const std::string host() const throw (std::bad_alloc);
-        const std::string port() const throw (std::bad_alloc);
-        const std::string path() const throw (std::bad_alloc);
-        const std::string query() const throw (std::bad_alloc);
-        const std::string fragment() const throw (std::bad_alloc);
-
-        const uri resolve_against(const uri & absolute_uri) const
-            throw (std::bad_alloc);
+        explicit uri_grammar(const Actions & actions);
     };
 
-    inline bool relative(const uri & id)
-    {
-        return id.scheme().empty();
-    }
 
-    uri::grammar::grammar(uri & uri_ref) throw ():
-        uri_ref(uri_ref)
+    template <typename Actions>
+    uri_grammar<Actions>::uri_grammar(const Actions & actions = Actions()):
+        actions(actions)
     {}
 
+    template <typename Actions>
     template <typename ScannerT>
-    uri::grammar::definition<ScannerT>::definition(const grammar & self)
+    uri_grammar<Actions>::definition<ScannerT>::
+    definition(const uri_grammar & self)
     {
         using namespace boost::spirit;
         using namespace phoenix;
@@ -2925,22 +2948,22 @@ namespace {
         BOOST_SPIRIT_DEBUG_NODE(mark);
         BOOST_SPIRIT_DEBUG_NODE(escaped);
 
-        uri & uri_ref = self.uri_ref;
-
         uri_reference
             =   !(absolute_uri | relative_uri) >> !('#' >> fragment)
             ;
 
         absolute_uri
-            =   (scheme[
-                    absolute_uri.scheme_begin = arg1,
-                    absolute_uri.scheme_end = arg2
-                ] >> ':')[
-                    var(uri_ref.scheme_begin) = absolute_uri.scheme_begin,
-                    var(uri_ref.scheme_end) = absolute_uri.scheme_end
+            =   (
+                    scheme[
+                        absolute_uri.scheme_begin = arg1,
+                        absolute_uri.scheme_end = arg2
+                    ] >> ':'
+                )[
+                    assign_iterators(self.actions.scheme,
+                                     absolute_uri.scheme_begin,
+                                     absolute_uri.scheme_end)
                 ] >> (hier_part | opaque_part)[
-                    var(uri_ref.scheme_specific_part_begin) = arg1,
-                    var(uri_ref.scheme_specific_part_end) = arg2
+                    self.actions.scheme_specific_part
                 ]
             ;
 
@@ -2975,17 +2998,11 @@ namespace {
             ;
 
         abs_path
-            =   ('/' >> path_segments)[
-                    var(uri_ref.path_begin) = arg1,
-                    var(uri_ref.path_end) = arg2
-                ]
+            =   ('/' >> path_segments)[ self.actions.path ]
             ;
 
         rel_path
-            =   (rel_segment >> !abs_path)[
-                    var(uri_ref.path_begin) = arg1,
-                    var(uri_ref.path_end) = arg2
-                ]
+            =   (rel_segment >> !abs_path)[ self.actions.path ]
             ;
 
         rel_segment
@@ -3006,10 +3023,7 @@ namespace {
             ;
 
         authority
-            =   (server | reg_name)[
-                    var(uri_ref.authority_begin) = arg1,
-                    var(uri_ref.authority_end) = arg2
-                ]
+            =   (server | reg_name)[ self.actions.authority ]
             ;
 
         reg_name
@@ -3028,12 +3042,15 @@ namespace {
 
         server
             =  !(
-                    !(userinfo[
-                        server.userinfo_begin = arg1,
-                        server.userinfo_end = arg2
-                    ] >> '@')[
-                        var(uri_ref.userinfo_begin) = server.userinfo_begin,
-                        var(uri_ref.userinfo_end) = server.userinfo_end
+                   !(
+                        userinfo[
+                            server.userinfo_begin = arg1,
+                            server.userinfo_end = arg2
+                        ] >> '@'
+                    )[
+                        assign_iterators(self.actions.userinfo,
+                                         server.userinfo_begin,
+                                         server.userinfo_end)
                     ]
                     >> hostport
                 )
@@ -3057,10 +3074,7 @@ namespace {
             ;
 
         host
-            =   (hostname | ipv4address)[
-                    var(uri_ref.host_begin) = arg1,
-                    var(uri_ref.host_end) = arg2
-                ]
+            =   (hostname | ipv4address)[ self.actions.host ]
             ;
 
         hostname
@@ -3081,10 +3095,7 @@ namespace {
             ;
 
         port
-            =   (*digit_p)[
-                    var(uri_ref.port_begin) = arg1,
-                    var(uri_ref.port_end) = arg2
-                ]
+            =   (*digit_p)[ self.actions.port ]
             ;
 
         path_segments
@@ -3112,17 +3123,11 @@ namespace {
             ;
 
         query
-            =   (*uric)[
-                    var(uri_ref.query_begin) = arg1,
-                    var(uri_ref.query_end) = arg2
-                ]
+            =   (*uric)[ self.actions.query ]
             ;
 
         fragment
-            =   (*uric)[
-                    var(uri_ref.fragment_begin) = arg1,
-                    var(uri_ref.fragment_end) = arg2
-                ]
+            =   (*uric)[ self.actions.fragment ]
             ;
 
         uric
@@ -3166,11 +3171,222 @@ namespace {
             ;
     }
 
+    template <typename Actions>
     template <typename ScannerT>
     const boost::spirit::rule<ScannerT> &
-    uri::grammar::definition<ScannerT>::start() const
+    uri_grammar<Actions>::definition<ScannerT>::start() const
     {
-        return uri_reference;
+        return this->uri_reference;
+    }
+
+    class OPENVRML_LOCAL uri {
+        class actions {
+            uri * uri_;
+
+        public:
+            explicit actions(uri & uri_):
+                uri_(&uri_),
+                scheme(*this),
+                scheme_specific_part(*this),
+                authority(*this),
+                userinfo(*this),
+                host(*this),
+                port(*this),
+                path(*this),
+                query(*this),
+                fragment(*this)
+            {}
+
+            struct scheme_action {
+                explicit scheme_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->scheme_begin = first;
+                    this->actions_->uri_->scheme_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } scheme;
+
+            struct scheme_specific_part_action {
+                explicit scheme_specific_part_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->scheme_specific_part_begin = first;
+                    this->actions_->uri_->scheme_specific_part_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } scheme_specific_part;
+
+            struct authority_action {
+                explicit authority_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->authority_begin = first;
+                    this->actions_->uri_->authority_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } authority;
+
+            struct userinfo_action {
+                explicit userinfo_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->userinfo_begin = first;
+                    this->actions_->uri_->userinfo_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } userinfo;
+
+            struct host_action {
+                explicit host_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->host_begin = first;
+                    this->actions_->uri_->host_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } host;
+
+            struct port_action {
+                explicit port_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->port_begin = first;
+                    this->actions_->uri_->port_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } port;
+
+            struct path_action {
+                explicit path_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->path_begin = first;
+                    this->actions_->uri_->path_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } path;
+
+            struct query_action {
+                explicit query_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->query_begin = first;
+                    this->actions_->uri_->query_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } query;
+
+            struct fragment_action {
+                explicit fragment_action(actions & actions_):
+                    actions_(&actions_)
+                {}
+
+                template <typename Iterator>
+                void operator()(const Iterator & first,
+                                const Iterator & last) const
+                {
+                    this->actions_->uri_->fragment_begin = first;
+                    this->actions_->uri_->fragment_end = last;
+                }
+
+            private:
+                actions * actions_;
+            } fragment;
+        };
+
+        std::string str_;
+        std::string::const_iterator scheme_begin, scheme_end;
+        std::string::const_iterator scheme_specific_part_begin,
+                                    scheme_specific_part_end;
+        std::string::const_iterator authority_begin, authority_end;
+        std::string::const_iterator userinfo_begin, userinfo_end;
+        std::string::const_iterator host_begin, host_end;
+        std::string::const_iterator port_begin, port_end;
+        std::string::const_iterator path_begin, path_end;
+        std::string::const_iterator query_begin, query_end;
+        std::string::const_iterator fragment_begin, fragment_end;
+
+    public:
+        uri() throw (std::bad_alloc);
+        explicit uri(const std::string & str)
+            throw (openvrml::invalid_url, std::bad_alloc);
+
+        operator std::string() const throw (std::bad_alloc);
+
+        const std::string scheme() const throw (std::bad_alloc);
+        const std::string scheme_specific_part() const throw (std::bad_alloc);
+        const std::string authority() const throw (std::bad_alloc);
+        const std::string userinfo() const throw (std::bad_alloc);
+        const std::string host() const throw (std::bad_alloc);
+        const std::string port() const throw (std::bad_alloc);
+        const std::string path() const throw (std::bad_alloc);
+        const std::string query() const throw (std::bad_alloc);
+        const std::string fragment() const throw (std::bad_alloc);
+
+        const uri resolve_against(const uri & absolute_uri) const
+            throw (std::bad_alloc);
+    };
+
+    inline bool relative(const uri & id)
+    {
+        return id.scheme().empty();
     }
 
     uri::uri() throw (std::bad_alloc)
@@ -3183,7 +3399,8 @@ namespace {
         using std::string;
         using namespace boost::spirit;
 
-        grammar g(*this);
+        actions a(*this);
+        uri_grammar<actions> g(a);
 
         string::const_iterator begin = this->str_.begin();
         string::const_iterator end = this->str_.end();
