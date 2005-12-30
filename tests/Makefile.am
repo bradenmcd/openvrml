@@ -9,6 +9,7 @@ TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
 TESTS = \
         browser \
         parse_anchor \
+        node_class_id \
         node_interface_set
 
 check_LTLIBRARIES = libtest-openvrml.la
@@ -27,6 +28,9 @@ parse_anchor_LDADD = libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
 node_interface_set_LDFLAGS = -lboost_unit_test_framework
+
+node_class_id_SOURCES = node_class_id.cpp
+node_class_id_LDFLAGS = -lboost_unit_test_framework
 
 parse_SOURCES = parse.cpp
 parse_LDADD = libtest-openvrml.la
