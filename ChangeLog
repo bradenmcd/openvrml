@@ -1,5 +1,66 @@
 2005-12-30 Braden McDaniel  <braden@endoframe.com>
 
+	Broke up URI grammar and used the part that parses absolute URIs
+	to validate node_class_id.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri_reserved_parser): Spirit parser for reserved URI characters.
+	(uri_reserved_p): uri_reserved_parser instance.
+	(uri_unreserved_parser): Spirit parser for unreserved URI
+	characters.
+	(uri_unreserved_p): uri_unreserved_parser instance.
+	(uric_grammar): Spirit grammar for URI characters.
+	(uric_grammar::definition<ScannerT>::definition(const
+	uric_grammar&)): uric_grammar definition.
+	(uric_grammar::definition<ScannerT>::start() const): uric_grammar
+	start rule.
+	(uri_authority_grammar): Spirit grammar for the authority part of
+	a URI.
+	(uri_authority_grammar<Actions>::definition<ScannerT>::definition(const
+	uri_authority_grammar &)): uri_authority_grammar definition.
+	(uri_authority_grammar<Actions>::definition<ScannerT>::start()
+	const): uri_authority_grammar start rule.
+	(uri_authority_grammar<Actions>::uri_authority_grammar(const
+	Actions &)): Construct uri_authority_grammar.
+	(uri_abs_path_grammar<Actions>): Spirit grammar for absolute URI
+	paths.
+	(uri_abs_path_grammar<Actions>::definition<ScannerT>::definition(const
+	uri_abs_path_grammar &)): uri_abs_path_grammar definition.
+	(uri_abs_path_grammar<Actions>::definition<ScannerT>::start()
+	const): uri_abs_path_grammar start rule.
+	(uri_abs_path_grammar<Actions>::uri_abs_path_grammar(const
+	Actions&)): Construct uri_abs_path_grammar.
+	(absolute_uri_grammar<Actions>): Spirit grammar for absolute URIs.
+	(absolute_uri_grammar<Actions>::definition<ScannerT>::definition(const
+	absolute_uri_grammar &)): absolute_uri_grammar definition.
+	(absolute_uri_grammar<Actions>::definition<ScannerT>::start()
+	const): absolute_uri_grammar start rule.
+	(absolute_uri_grammar<Actions>::absolute_uri_grammar(const
+	Actions&)): Construst absolute_uri_grammar.
+	(uri_grammar<Actions>::definition<ScannerT>): Use
+	absolute_uri_grammar, uri_abs_path_grammar, and
+	uri_authority_grammar.
+	(uri_grammar<Actions>::definition<ScannerT>::definition(const
+	uri_grammar &)): Use absolute_uri_grammar, uri_abs_path_grammar,
+	and uri_authority_grammar.
+	(node_class_id_grammar): Spirit grammar for node_class
+	identifiers.
+	(node_class_id_grammar::definition<ScannerT>::definition(const
+	node_class_id_grammar &)): node_class_id_grammar definition.
+	(node_class_id_grammar::definition<ScannerT>::start() const):
+	node_class_id_grammar start rule.
+	(node_class_id::node_class_id(const char *)): Validate using
+	node_class_id_grammar.
+	(node_class_id::node_class_id(const std::string &)): Validate
+	using node_class_id_grammar.
+	* tests/node_class_id.cpp
+	(construct_nested_proto_id()): Added function to test nested PROTO
+	identifiers.
+	(init_unit_test_suite(int, char * [])): Add
+	construct_nested_proto_id() to test suite.
+
+2005-12-30 Braden McDaniel  <braden@endoframe.com>
+
 	Made URI grammar parameterized with a struct defining semantic
 	actions.
 

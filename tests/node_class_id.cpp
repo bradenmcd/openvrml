@@ -19,6 +19,11 @@ void construct_from_url_with_fragment_id()
     node_class_id id("http://example.com#Foo");
 }
 
+void construct_nested_proto_id()
+{
+    node_class_id id("http://example.com#Foo#Bar");
+}
+
 void construct_from_relative_url()
 {
     BOOST_CHECK_THROW(node_class_id id("../foo/bar"), std::invalid_argument);
@@ -36,6 +41,7 @@ boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
     suite->add(BOOST_TEST_CASE(&construct_from_urn));
     suite->add(BOOST_TEST_CASE(&construct_from_url));
     suite->add(BOOST_TEST_CASE(&construct_from_url_with_fragment_id));
+    suite->add(BOOST_TEST_CASE(&construct_nested_proto_id));
     suite->add(BOOST_TEST_CASE(&construct_from_relative_url));
     suite->add(BOOST_TEST_CASE(&construct_from_arbitrary_string));
     return suite;
