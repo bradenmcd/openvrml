@@ -19132,8 +19132,8 @@ namespace {
         child_node(type, scope),
         appearance_(*this),
         geometry_(*this),
-        viewerObject(0),
-        bbox_size_(vec3f(-1,-1,-1))
+        bbox_size_(vec3f(-1,-1,-1)),
+        viewerObject(0)
     {}
 
     /**

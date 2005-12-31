@@ -1,3 +1,10 @@
+2005-12-31 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(shape_node::shape_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Reordered member
+	initializer list to match declaration order.
+
 2005-12-30 Braden McDaniel  <braden@endoframe.com>
 
 	Broke up URI grammar and used the part that parses absolute URIs
