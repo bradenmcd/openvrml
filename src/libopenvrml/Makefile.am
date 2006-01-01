@@ -89,8 +89,7 @@ libopenvrml_la_LDFLAGS = \
 libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
 
 EXTRA_DIST = \
-        openvrml-gl-config.h.in \
-        openvrml-gl-common.h \
+        openvrml-config.h.in \
         openvrml/Vrml97TokenTypes.txt \
         openvrml/Vrml97Parser.g \
         openvrml/Vrml97ParserTokenTypes.txt \
