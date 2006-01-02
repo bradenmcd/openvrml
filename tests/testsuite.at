@@ -131,7 +131,7 @@ AT_DATA([unrecognized-node.wrl],
 UnrecognizedNode {}
 ]])
 AT_CHECK([parse < unrecognized-node.wrl], [1], [],
-[:2:17: error: Unknown node type "UnrecognizedNode".
+[urn:X-openvrml:stream:1:2:17: error: unknown node type "UnrecognizedNode"
 ])
 AT_CLEANUP
 
@@ -147,7 +147,7 @@ PROTO Node [
 Node {}
 ]])
 AT_CHECK([parse < proto-eventin-conflict.wrl], [1], [],
-[:4:26: error: Interface "exposedField MFNode foo" conflicts with previous declaration
+[urn:X-openvrml:stream:1:4:26: error: Interface "exposedField MFNode foo" conflicts with previous declaration
 ])
 AT_CLEANUP
 
@@ -163,6 +163,6 @@ PROTO Node [
 Node {}
 ]])
 AT_CHECK([parse < proto-eventout-conflict.wrl], [1], [],
-[:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
+[urn:X-openvrml:stream:1:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
 ])
 AT_CLEANUP

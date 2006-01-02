@@ -1,5 +1,14 @@
 2006-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/testsuite.at (Unrecognized node type): Updated expected
+	output.
+	(PROTO with a conflicting eventIn and exposedField): Updated
+	expected output.
+	(PROTO with a conflicting eventOut and exposedField): Updated
+	expected output.
+
+2006-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/testsuite.at (Unrecognized EXTERNPROTO): Ignore stdout,
 	stderr.
 	(Unimplemented EXTERNPROTO): Ignore stdout, stderr.
