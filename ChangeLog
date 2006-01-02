@@ -1,5 +1,11 @@
 2006-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/testsuite.at (Unrecognized EXTERNPROTO): Ignore stdout,
+	stderr.
+	(Unimplemented EXTERNPROTO): Ignore stdout, stderr.
+
+2006-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::create_vrml_from_stream(std::istream &)):
 	Provide a real URI associated with the vrmlstream.  This is needed

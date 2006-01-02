@@ -105,7 +105,10 @@ EXTERNPROTO UnrecognizedNode [ exposedField SFBool sfboolField ]
 [ "urn:unrecognized" ]
 UnrecognizedNode { sfboolField TRUE }
 ]])
-AT_CHECK([parse < unrecognized-externproto.wrl])
+AT_CHECK([parse < unrecognized-externproto.wrl],
+         [0],
+         [ignore],
+         [ignore])
 AT_CLEANUP
 
 AT_SETUP([Unimplemented EXTERNPROTO])
@@ -114,7 +117,10 @@ AT_DATA([unimplemented-externproto.wrl],
 EXTERNPROTO UnimplementedNode [ exposedField SFBool sfboolField ] []
 UnimplementedNode { sfboolField TRUE }
 ]])
-AT_CHECK([parse < unimplemented-externproto.wrl])
+AT_CHECK([parse < unimplemented-externproto.wrl],
+         [0],
+         [ignore],
+         [ignore])
 AT_CLEANUP
 
 AT_BANNER([Parse tests: code that should be rejected])
