@@ -8771,8 +8771,7 @@ namespace {
 openvrml::scene::scene(openvrml::browser & browser, scene * parent) throw ():
     browser_(&browser),
     parent_(parent),
-    profile_(invalid_profile_id),
-    url_mutex_(boost::read_write_scheduling_policy::writer_priority)
+    profile_(invalid_profile_id)
 {}
 
 /**
@@ -8791,8 +8790,7 @@ openvrml::scene::scene(openvrml::browser & browser,
                        scene * parent) throw ():
     browser_(&browser),
     parent_(parent),
-    profile_(profile),
-    url_mutex_(boost::read_write_scheduling_policy::writer_priority)
+    profile_(profile)
 {}
 
 /**
@@ -8989,7 +8987,7 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
  */
 const std::string openvrml::scene::url() const throw (std::bad_alloc)
 {
-    boost::read_write_mutex::scoped_read_lock lock(this->url_mutex_);
+    boost::mutex::scoped_lock lock(this->url_mutex_);
     using std::string;
     const string result = this->parent_
                         ? string(uri(this->url_)
@@ -9013,7 +9011,7 @@ const std::string openvrml::scene::url() const throw (std::bad_alloc)
 void openvrml::scene::url(const std::string & str)
     throw (invalid_url, std::bad_alloc)
 {
-    boost::read_write_mutex::scoped_write_lock lock(this->url_mutex_);
+    boost::mutex::scoped_lock lock(this->url_mutex_);
     uri id(str); // Make sure we have a valid URI.
     this->url_ = str;
 }

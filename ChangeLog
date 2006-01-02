@@ -1,5 +1,20 @@
 2006-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	boost::read_write_mutex was broken and has been removed in Boost
+	1.33.1.  Use boost::mutex instead.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::url() const): Changed lock from
+	boost::read_write_mutex::scoped_read_lock to
+	boost::mutex::scoped_lock.
+	(openvrml::scene::url(const std::string &)): Changed lock from
+	boost::read_write_mutex::scoped_write_lock to
+	boost::mutex::scoped_lock.
+	* src/libopenvrml/openvrml/browser.h (openvrml::scene): Changed
+	url_mutex_ from boost::read_write_mutex to boost::mutex.
+
+2006-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/testsuite.at (Unrecognized node type): Updated expected
 	output.
 	(PROTO with a conflicting eventIn and exposedField): Updated

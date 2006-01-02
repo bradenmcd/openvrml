@@ -23,7 +23,6 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
-#   include <boost/thread/read_write_mutex.hpp>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -361,7 +360,7 @@ namespace openvrml {
         mutable boost::recursive_mutex nodes_mutex_;
         std::vector<boost::intrusive_ptr<node> > nodes_;
 
-        mutable boost::read_write_mutex url_mutex_;
+        mutable boost::mutex url_mutex_;
         std::string url_;
 
     public:
