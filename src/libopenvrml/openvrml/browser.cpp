@@ -7990,6 +7990,19 @@ void openvrml::browser::description(const std::string & description)
     this->out << description << std::endl;
 }
 
+
+//
+// stream_id_index_ is used to construct the URI for the stream; this is used
+// to identify any PROTOs in the stream in the browser's node_class map.  A
+// side-effect of this approach is that the node_class map will keep growing,
+// even if identical streams are repeatedly loaded.  For this reason it is
+// preferable to use an EXTERNPROTO in the stream.
+//
+namespace {
+    OPENVRML_LOCAL size_t stream_id_index_ = 0;
+    OPENVRML_LOCAL boost::mutex stream_id_index_mutex_;
+}
+
 /**
  * @brief Generate nodes from a stream of VRML syntax.
  *
@@ -8008,6 +8021,18 @@ void openvrml::browser::description(const std::string & description)
 const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::browser::create_vrml_from_stream(std::istream & in)
 {
+    using std::string;
+    using std::vector;
+    using boost::lexical_cast;
+
+    {
+        boost::mutex::scoped_lock lock(stream_id_index_mutex_);
+        ++stream_id_index_;
+    }
+
+    const string stream_id =
+        "urn:X-openvrml:stream:" + lexical_cast<string>(stream_id_index_);
+
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
         assert(this->scene_);
@@ -8015,7 +8040,7 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
         case vrml97_profile_id:
         {
             Vrml97Scanner scanner(in);
-            Vrml97Parser parser(scanner, "");
+            Vrml97Parser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
         }
         break;
@@ -8027,7 +8052,7 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
         case x3d_full_profile_id:
         {
             X3DVrmlScanner scanner(in);
-            X3DVrmlParser parser(scanner, "");
+            X3DVrmlParser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
         }
         break;
