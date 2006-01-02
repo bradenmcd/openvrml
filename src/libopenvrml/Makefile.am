@@ -20,15 +20,31 @@ openvrml_include_HEADERS = \
         openvrml/vrml97node.h \
         openvrml/node_impl_util.h
 
-noinst_HEADERS = \
-        private.h \
+VRML97PARSER_BUILT_SOURCEFILES = \
         openvrml/Vrml97Parser.cpp \
         openvrml/Vrml97Parser.hpp \
-        openvrml/Vrml97ParserTokenTypes.hpp \
+        openvrml/Vrml97ParserTokenTypes.hpp
+VRML97PARSER_BUILT_TEXTFILES = \
+        openvrml/Vrml97ParserTokenTypes.txt
+VRML97PARSER_BUILT_FILES = \
+        $(VRML97PARSER_BUILT_SOURCEFILES) \
+        $(VRML97PARSER_BUILT_TEXTFILES)
+
+X3DVRMLPARSER_BUILT_SOURCEFILES = \
         openvrml/X3DVrmlParser.cpp \
         openvrml/X3DVrmlParser.hpp \
-        openvrml/X3DVrmlParserTokenTypes.hpp \
-        openvrml/ScriptJDK.h
+        openvrml/X3DVrmlParserTokenTypes.hpp
+X3DVRMLPARSER_BUILT_TEXTFILES = \
+        openvrml/X3DVrmlParserTokenTypes.txt
+X3DVRMLPARSER_BUILT_FILES = \
+        $(X3DVRMLPARSER_BUILT_SOURCEFILES) \
+        $(X3DVRMLPARSER_BUILT_TEXTFILES)
+
+noinst_HEADERS = \
+        private.h \
+        openvrml/ScriptJDK.h \
+        $(VRML97PARSER_BUILT_SOURCEFILES) \
+        $(X3DVRMLPARSER_BUILT_SOURCEFILES)
 
 LIBRARY_VERSION = 5:3:0
 #                 | | |
@@ -92,27 +108,31 @@ EXTRA_DIST = \
         openvrml-config.h.in \
         openvrml/Vrml97TokenTypes.txt \
         openvrml/Vrml97Parser.g \
-        openvrml/Vrml97ParserTokenTypes.txt \
+        $(VRML97PARSER_BUILT_TEXTFILES) \
         openvrml/X3DVrmlTokenTypes.txt \
         openvrml/X3DVrmlParser.g \
-        openvrml/X3DVrmlParserTokenTypes.txt
+        $(X3DVRMLPARSER_BUILT_TEXTFILES)
 
 BUILT_SOURCES = \
-        $(srcdir)/openvrml/Vrml97Parser.cpp \
-        $(srcdir)/openvrml/Vrml97Parser.hpp \
-        $(srcdir)/openvrml/Vrml97ParserTokenTypes.hpp \
-        $(srcdir)/openvrml/X3DVrmlParser.cpp \
-        $(srcdir)/openvrml/X3DVrmlParser.hpp \
-        $(srcdir)/openvrml/X3DVrmlParserTokenTypes.hpp
+        $(VRML97PARSER_BUILT_SOURCEFILES) \
+        $(X3DVRMLPARSER_BUILT_SOURCEFILES)
 
+#
+# Note that maintainer-clean cleans BUILT_SOURCES, too.
+#
 MAINTAINERCLEANFILES = \
-        $(BUILT_SOURCES) \
-        $(srcdir)/openvrml/Vrml97ParserTokenTypes.txt \
+        $(VRML97PARSER_BUILT_TEXTFILES) \
         $(srcdir)/openvrml/expandedX3DVrml97Parser.g \
-        $(srcdir)/openvrml/X3DVrmlParserTokenTypes.txt
+        $(X3DVRMLPARSER_BUILT_TEXTFILES)
 
-$(srcdir)/openvrml/Vrml97Parser.hpp $(srcdir)/openvrml/Vrml97Parser.cpp: $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/Vrml97TokenTypes.txt
-	$(ANTLR) -o $(srcdir)/openvrml $(srcdir)/openvrml/Vrml97Parser.g
+#
+# antlr doesn't update timestamps correctly; so files are touched after being
+# generated.
+#
+$(VRML97PARSER_BUILT_FILES): $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/Vrml97TokenTypes.txt
+	$(ANTLR) -o $(srcdir)/openvrml $(srcdir)/openvrml/Vrml97Parser.g \
+&& touch $(VRML97PARSER_BUILT_FILES)
 
-$(srcdir)/openvrml/X3DVrmlParser.hpp $(srcdir)/openvrml/X3DVrmlParser.cpp: $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g $(srcdir)/openvrml/X3DVrmlTokenTypes.txt
-	$(ANTLR) -o $(srcdir)/openvrml -glib $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g
+$(X3DVRMLPARSER_BUILT_FILES): $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g $(srcdir)/openvrml/X3DVrmlTokenTypes.txt
+	$(ANTLR) -o $(srcdir)/openvrml -glib $(srcdir)/openvrml/Vrml97Parser.g $(srcdir)/openvrml/X3DVrmlParser.g \
+&& touch $(X3DVRMLPARSER_BUILT_FILES)
