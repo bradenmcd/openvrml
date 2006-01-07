@@ -1,3 +1,10 @@
+2006-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	* examples/sdl_viewer.cpp
+	(browser::do_get_resource(const std::string &)): Fixed
+	file_resource_istream::do_type() to sort of handle fragment
+	identifiers in the URI.
+
 2006-01-01 Braden McDaniel  <braden@endoframe.com>
 
 	boost::read_write_mutex was broken and has been removed in Boost

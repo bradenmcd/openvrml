@@ -26,6 +26,7 @@
 # include <iostream>
 # include <fstream>
 # include <boost/algorithm/string/predicate.hpp>
+# include <boost/utility.hpp>
 # include <SDL.h>
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
@@ -153,15 +154,20 @@ namespace {
                 // is a crude hack because sdl-viewer uses std::filebuf in
                 // order to remain simple and portable.
                 //
+                using std::find;
                 using std::string;
                 using boost::algorithm::iequals;
+                using boost::next;
                 string media_type = "application/octet-stream";
-                const string::size_type dot_pos = this->url_.rfind('.');
-                if (dot_pos == string::npos
-                    || this->url_.size() < dot_pos + 1) {
+                const string::const_reverse_iterator dot_pos =
+                    find(this->url_.rbegin(), this->url_.rend(), '.');
+                if (dot_pos == this->url_.rend()
+                    || next(dot_pos.base()) == this->url_.end()) {
                     return media_type;
                 }
-                const string ext = this->url_.substr(dot_pos + 1);
+                const string::const_iterator hash_pos =
+                    find(next(dot_pos.base()), this->url_.end(), '#');
+                const string ext(dot_pos.base(), hash_pos);
                 if (iequals(ext, "wrl")) {
                     media_type = "model/vrml";
                 } else if (iequals(ext, "png")) {
