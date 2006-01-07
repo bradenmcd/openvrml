@@ -133,7 +133,9 @@ namespace {
             explicit file_resource_istream(const std::string & path):
                 resource_istream(&this->buf_)
             {
-                this->buf_.open(path.c_str(), ios_base::in);
+                if (!this->buf_.open(path.c_str(), ios_base::in)) {
+                    this->setstate(ios_base::failbit);
+                }
             }
 
             void url(const std::string & str) throw (std::bad_alloc)

@@ -2,6 +2,13 @@
 
 	* examples/sdl_viewer.cpp
 	(browser::do_get_resource(const std::string &)): Fixed
+	file_resource_istream constructor to set failbit if opening the
+	file fails.
+
+2006-01-07 Braden McDaniel  <braden@endoframe.com>
+
+	* examples/sdl_viewer.cpp
+	(browser::do_get_resource(const std::string &)): Fixed
 	file_resource_istream::do_type() to sort of handle fragment
 	identifiers in the URI.
 
