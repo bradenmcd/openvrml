@@ -18,14 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include <cstdlib>
-# include <boost/lexical_cast.hpp>
+# include <sstream>
 # include <boost/thread/thread.hpp>
 # include <unistd.h>
 // Must include before X11 headers.
 # include <boost/numeric/conversion/converter.hpp>
 # include <gdk/gdkx.h>
-# include <argp.h>
 
 # include "browser.h"
 # include "gtkglviewer.h"
@@ -37,13 +35,6 @@ using namespace openvrml_player;
 namespace {
 
     const char application_name[] = "OpenVRML Player";
-}
-
-extern "C" {
-    const char * argp_program_version = "OpenVRML Player " PACKAGE_VERSION;
-    const char * argp_program_bug_address = PACKAGE_BUGREPORT;
-
-    error_t parse_opt(int key, char * arg, argp_state * state);
 }
 
 namespace openvrml_player {
@@ -136,44 +127,38 @@ namespace openvrml_player {
 
 namespace {
 
-    enum option_id {
-        gtk_socket_id_id = 128,
-        read_fd_id,
-        write_fd_id
-    };
+    GdkNativeWindow socket_id;
+    gint read_fd, write_fd;
 
-    argp_option options[] = {
+    GOptionEntry options[] = {
         {
             "gtk-socket-id",
-            gtk_socket_id_id,
-            "GTK_SOCKET_ID",
             0,
+            0,
+            G_OPTION_ARG_INT,
+            &socket_id,
             "GtkSocket id",
-            0
+            "GTK_SOCKET_ID"
         },
         {
             "read-fd",
-            read_fd_id,
-            "READ_FD",
             0,
+            0,
+            G_OPTION_ARG_INT,
+            &read_fd,
             "file descriptor for reading commands",
-            0
+            "READ_FD"
         },
         {
             "write-fd",
-            write_fd_id,
-            "WRITE_FD",
             0,
+            0,
+            G_OPTION_ARG_INT,
+            &write_fd,
             "file descriptor for writing commands",
-            0
+            "WRITE_FD"
         },
-        { 0, 0, 0, 0, 0, 0 }
-    };
-
-    struct arguments {
-        GdkNativeWindow socket_id;
-        int read_fd;
-        int write_fd;
+        { 0, 0, 0, G_OPTION_ARG_NONE, 0, 0, 0 }
     };
 
     struct initial_stream_reader {
@@ -230,33 +215,26 @@ int main(int argc, char * argv[])
     gtk_init(&argc, &argv);
     gtk_gl_init(&argc, &argv);
 
-    arguments arguments;
-    arguments.socket_id = 0;
-    arguments.read_fd = 0;
-    arguments.write_fd = 0;
+    GError * error = 0;
 
-    char args_doc[] = "[URI]";
-    char * const doc = 0;
-    argp_child * const children = 0;
-    char *(*help_filter)(int key, const char * text, void * input) = 0;
-    char * argp_domain = 0;
-    argp argp = {
-        options,
-        parse_opt,
-        args_doc,
-        doc,
-        children,
-        help_filter,
-        argp_domain
-    };
-    int uri_arg_index;
-    argp_parse(&argp, argc, argv, 0, &uri_arg_index, &arguments);
+    GOptionContext * const context =
+        g_option_context_new("- render VRML worlds");
+    const gchar * const translation_domain = 0;
+    g_option_context_add_main_entries(context, options, translation_domain);
+    g_option_context_add_group(context, gtk_get_option_group(true));
+    gboolean succeeded = g_option_context_parse(context, &argc, &argv, &error);
+    if (!succeeded) {
+        if (error) {
+            g_critical(error->message);
+            g_error_free(error);
+        }
+        return EXIT_FAILURE;        
+    }
 
     command_istream command_in;
 
-    if (arguments.read_fd) {
-        ::command_channel = g_io_channel_unix_new(arguments.read_fd);
-        GError * error = 0;
+    if (read_fd) {
+        ::command_channel = g_io_channel_unix_new(read_fd);
         GIOStatus status = g_io_channel_set_encoding(::command_channel,
                                                      0, // binary (no encoding)
                                                      &error);
@@ -274,12 +252,12 @@ int main(int argc, char * argv[])
                        static_cast<command_streambuf *>(command_in.rdbuf()));
     }
 
-    if (arguments.write_fd) {
-        ::request_channel = g_io_channel_unix_new(arguments.write_fd);
+    if (write_fd) {
+        ::request_channel = g_io_channel_unix_new(write_fd);
     }
 
-    GtkWidget * window = arguments.socket_id
-        ? gtk_plug_new(arguments.socket_id)
+    GtkWidget * window = socket_id
+        ? gtk_plug_new(socket_id)
         : gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
     GtkGLViewer viewer(*(GTK_CONTAINER(window)));
@@ -291,8 +269,8 @@ int main(int argc, char * argv[])
     thread_group threads;
 
     scoped_ptr<thread> initial_stream_reader_thread;
-    if (uri_arg_index < argc) {
-        const vector<string> uri(1, argv[uri_arg_index]), parameter;
+    if (argc > 1) {
+        const vector<string> uri(1, argv[1]), parameter;
         b.load_url(uri, parameter);
     } else {
         shared_ptr<plugin_streambuf> initial_stream(new plugin_streambuf);
@@ -313,39 +291,4 @@ int main(int argc, char * argv[])
 
     g_io_channel_shutdown(::command_channel, false, 0);
     g_io_channel_unref(::command_channel);
-}
-
-error_t parse_opt(int key, char * arg, argp_state * state)
-{
-    using boost::lexical_cast;
-    using boost::bad_lexical_cast;
-
-    arguments & args = *static_cast<arguments *>(state->input);
-
-    switch (key) {
-    case gtk_socket_id_id:
-        try {
-            args.socket_id = lexical_cast<GdkNativeWindow>(arg);
-        } catch (bad_lexical_cast &) {
-            argp_error(state, "GTK_SOCKET_ID must be an integer");
-        }
-        break;
-    case read_fd_id:
-        try {
-            args.read_fd = lexical_cast<int>(arg);
-        } catch (bad_lexical_cast &) {
-            argp_error(state, "READ_FD must be an unsigned integer");
-        }
-        break;
-    case write_fd_id:
-        try {
-            args.write_fd = lexical_cast<int>(arg);
-        } catch (bad_lexical_cast &) {
-            argp_error(state, "WRITE_FD must be an unsigned integer");
-        }
-        break;
-    default:
-        return ARGP_ERR_UNKNOWN;
-    }
-    return 0;
 }

@@ -1,3 +1,20 @@
+2006-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Use GOption instead of GNU argp for command line argument parsing.
+
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(argp_program_version): Removed.
+	(argp_program_bug_address): Removed.
+	(parse_opt(int, char*, arp_state*)): Removed.
+	(option_id): Removed enumeration.
+	(socket_id): Added global variable.
+	(read_fd): Added global variable.
+	(write_fd): Added global variable.
+	(options): Changed from argp_option array to GOptionEntry array.
+	(arguments): Removed struct.
+	(main(argc, argv *[])): Parse command line options with GOption
+	instead of GNU argp.
+
 2006-01-08 Braden McDaniel  <braden@endoframe.com>
 
 	Factored code in mozilla-plugin/src/openvrml-player/player.cpp
