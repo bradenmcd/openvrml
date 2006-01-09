@@ -12,7 +12,18 @@ AM_CXXFLAGS = @PTHREAD_CFLAGS@ @GTK_CFLAGS@ @GL_CFLAGS@
 if ENABLE_MOZILLA_PLUGIN
 libexec_PROGRAMS = openvrml-player
 endif
-openvrml_player_SOURCES = player.cpp
+noinst_HEADERS = \
+        bounded_buffer.h \
+        command_istream.h \
+        plugin_streambuf.h \
+        browser.h \
+        gtkglviewer.h
+openvrml_player_SOURCES = \
+        player.cpp \
+        command_istream.cpp \
+        plugin_streambuf.cpp \
+        browser.cpp \
+        gtkglviewer.cpp
 openvrml_player_LDADD = \
         $(top_builddir)/../src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/../src/libopenvrml/libopenvrml.la \

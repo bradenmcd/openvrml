@@ -1,3 +1,101 @@
+2006-01-08 Braden McDaniel  <braden@endoframe.com>
+
+	Factored code in mozilla-plugin/src/openvrml-player/player.cpp
+	into multiple files.
+
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	(noinst_HEADERS): Added bounded_buffer.h, command_istream.h,
+	plugin_streambuf.h, browser.h, and gtkglviewer.h.
+	(openvrml_player_SOURCES): Added command_istream.cpp,
+	plugin_streambuf.cpp, browser.cpp, and gtkglviewer.cpp.
+	* mozilla-plugin/src/openvrml-player/bounded_buffer.h
+	(openvrml_player::bounded_buffer<T, BufferSize>): Moved from
+	player.cpp.
+	* mozilla-plugin/src/openvrml-player/browser.cpp
+	(openvrml_player::browser::browser(GIOChannel *)): Moved from
+	player.cpp.
+	(openvrml_player::browser::do_get_resource(const std::string &)):
+	Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/browser.h
+	(openvrml_player::browser): Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp
+	(openvrml_player::command_streambuf::command_streambuf()): Moved
+	from player.cpp.
+	(openvrml_player::command_streambuf::underflow()): Moved from
+	player.cpp.
+	(openvrml_player::command_istream::command_istream()): Moved from
+	player.cpp.
+	(command_data_available): Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/command_istream.h
+	(openvrml_player::command_streambuf): Moved from player.cpp.
+	(openvrml_player::command_istream): Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp
+	(openvrml_player::GtkGLViewer::gl_config): Moved from player.cpp.
+	(openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer &)): Moved
+	from player.cpp.
+	(openvrml_player::GtkGLViewer::~GtkGLViewer()): Moved from
+	player.cpp.
+	(openvrml_player::GtkGLViewer::post_redraw()): Moved from
+	player.cpp.
+	(openvrml_player::GtkGLViewer::set_cursor(cursor_style)): Moved
+	from player.cpp.
+	(openvrml_player::GtkGLViewer::swap_buffers()): Moved from
+	player.cpp.
+	(timeout_callback): Moved from player.cpp.
+	(openvrml_player::GtkGLViewer::set_timer(double)): Moved from
+	player.cpp.
+	(openvrml_player::GtkGLViewer::timer_update()): Moved from
+	player.cpp.
+	(realize): Moved from player.cpp.
+	(expose_event): Moved from player.cpp.
+	(configure_event): Moved from player.cpp.
+	(key_press_event): Moved from player.cpp.
+	(button_press_event): Moved from player.cpp.
+	(button_release_event): Moved from player.cpp.
+	(motion_notify_event): Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.h
+	(openvrml_player::GtkGLViewer): Moved from player.cpp.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(bounded_buffer<T, BufferSize>): Moved to bounded_buffer.h.
+	(command_streambuf): Moved to command_istream.h.
+	(command_istream): Moved to command_istream.h.
+	(plugin_streambuf): Moved to plugin_streambuf.h.
+	(browser): Moved to browser.h.
+	(uninitialized_plugin_streambuf_set): Moved to plugin_streambuf.h.
+	(uninitialized_plugin_streambuf_set_): Moved to plugin_streambuf.cpp.
+	(plugin_streambuf_map_t): Moved to plugin_streambuf.h.
+	(plugin_streambuf_map): Moved to plugin_streambuf.cpp.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::plugin_streambuf(const
+	std::string &)): Moved from player.cpp.
+	(openvrml_player::plugin_streambuf::init(const std::string &)):
+	Moved from player.cpp.
+	(openvrml_player::plugin_streambuf::url() const): Moved from
+	player.cpp.
+	(openvrml_player::plugin_streambuf::type() const): Moved from
+	player.cpp.
+	(openvrml_player::plugin_streambuf::data_available() const): Moved
+	from player.cpp.
+	(openvrml_player::plugin_streambuf::underflow()): Moved from
+	player.cpp.
+	(openvrml_player::plugin_streambuf::npstream_destroyed()): Moved
+	from player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set_): Moved from
+	player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set::find(const
+	std::string &) const): Moved from player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set::insert(const
+	boost::shared_ptr<openvrml_player::plugin_streambuf> &)): Moved
+	from player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set::erase(const
+	boost::shared_ptr<openvrml_player::plugin_streambuf> &)): Moved
+	from player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set::size()
+	const): Moved from player.cpp.
+	(openvrml_player::uninitialized_plugin_streambuf_set::front()
+	const): Moved from player.cpp.
+	(openvrml_player::plugin_streambuf_map): Moved from player.cpp.
+
 2006-01-07 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp
