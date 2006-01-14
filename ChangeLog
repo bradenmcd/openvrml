@@ -1,3 +1,13 @@
+2006-01-14 Braden McDaniel  <braden@endoframe.com>
+
+	Added missing OPENVRML_LOCAL.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::load_scene): Added OPENVRML_LOCAL to definition.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser::node_class_map): Added OPENVRML_LOCAL to
+	definition.
+
 2006-01-13 Braden McDaniel  <braden@endoframe.com>
 
 	Allow openvrml::browser and openvrml::scene to be set directly

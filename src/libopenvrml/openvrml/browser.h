@@ -199,7 +199,7 @@ namespace openvrml {
         struct root_scene_loader;
         struct vrml_from_url_creator;
 
-        class node_class_map {
+        class OPENVRML_LOCAL node_class_map {
             mutable boost::mutex mutex_;
             typedef std::map<std::string, boost::shared_ptr<node_class> >
                 map_t;

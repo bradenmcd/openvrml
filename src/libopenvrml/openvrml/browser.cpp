@@ -8845,7 +8845,7 @@ openvrml::profile_id openvrml::scene::profile() const throw ()
     return this->profile_;
 }
 
-struct openvrml::scene::load_scene {
+struct OPENVRML_LOCAL openvrml::scene::load_scene {
 
     load_scene(openvrml::scene & scene,
                const std::vector<std::string> & url):
