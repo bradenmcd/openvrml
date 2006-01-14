@@ -7822,22 +7822,91 @@ const std::string openvrml::browser::world_url() const throw (std::bad_alloc)
 }
 
 /**
- * @brief Set the URI for the world.
+ * @brief Set the world from a stream.
  *
- * This function does nothing other than change the URI returned by
- * the browser::world_url accessor. It does not result in loading a new world.
+ * @param in    an input stream.
  *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception bad_media_type    if @p in.type() is not "model/vrml",
+ *                              "x-world/x-vrml", or "model/x3d+vrml".
+ * @excpetion invalid_vrml      if @p in has invalid syntax.
  */
-void openvrml::browser::world_url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
+void openvrml::browser::set_world(resource_istream & in)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    this->scene_->url(str);
+
+    using std::for_each;
+    using std::string;
+
+    //
+    // Clear out the current scene.
+    //
+    double now = browser::current_time();
+    if (this->scene_) { this->scene_->shutdown(now); }
+    for_each(this->listeners_.begin(), this->listeners_.end(),
+             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
+                            browser_event(*this, browser_event::shutdown)));
+    this->scene_.reset();
+    this->active_viewpoint_ =
+        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+    assert(this->viewpoint_list.empty());
+    assert(this->scoped_lights.empty());
+    assert(this->scripts.empty());
+    assert(this->timers.empty());
+
+    //
+    // Create the new scene.
+    //
+    node_class_map new_map;
+    this->node_class_map_ = new_map;
+    register_node_classes(*this);
+    this->scene_.reset(new scene(*this));
+    this->scene_->load(in);
+
+    //
+    // Initialize.
+    //
+    now = browser::current_time();
+    this->scene_->initialize(now);
+
+    //
+    // Get the initial viewpoint_node, if any was specified.
+    //
+    viewpoint_node * initial_viewpoint = 0;
+    const string viewpoint_node_id = uri(this->scene_->url()).fragment();
+    if (!viewpoint_node_id.empty()) {
+        if (!this->scene_->nodes().empty()) {
+            using boost::intrusive_ptr;
+            const intrusive_ptr<node> & n = this->scene_->nodes().front();
+            if (n) {
+                node * const vp = n->scope()->find_node(viewpoint_node_id);
+                initial_viewpoint = dynamic_cast<viewpoint_node *>(vp);
+            }
+        }
+    }
+
+    //
+    // Initialize the node_classes.
+    //
+    this->node_class_map_.init(initial_viewpoint, now);
+
+    if (this->active_viewpoint_
+        != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
+        // XXX
+        // XXX Fix openvrml::viewpoint_node so that we don't have to get an
+        // XXX event_listener here.
+        // XXX
+        event_listener & listener =
+            this->active_viewpoint_->event_listener("set_bind");
+        dynamic_cast<sfbool_listener &>(listener).process_event(sfbool(true),
+                                                                now);
+    }
+
+    this->modified(true);
+    this->new_view = true; // Force resetUserNav
+
+    for_each(this->listeners_.begin(), this->listeners_.end(),
+             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
+                            browser_event(*this, browser_event::initialized)));
 }
 
 /**
@@ -7863,6 +7932,43 @@ openvrml::browser::replace_world(
     this->new_view = true; // Force resetUserNav
 }
 
+struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
+    root_scene_loader(browser & b, const std::vector<std::string> & url):
+        browser_(&b),
+        url_(&url)
+    {}
+
+    void operator()() const throw ()
+    try {
+        boost::recursive_mutex::scoped_lock lock(this->browser_->mutex_);
+
+        using std::endl;
+
+        openvrml::browser & browser = *this->browser_;
+
+        try {
+            std::auto_ptr<resource_istream> in =
+                browser.scene_->get_resource(*this->url_);
+            if (!(*in)) { throw unreachable_url(); }
+            browser.set_world(*in);
+        } catch (antlr::ANTLRException & ex) {
+            browser.err << ex.getMessage() << endl;
+        } catch (unreachable_url &) {
+            throw;
+        } catch (std::exception & ex) {
+            browser.err << ex.what() << endl;
+        } catch (...) {
+            throw unreachable_url();
+        }
+    } catch (unreachable_url & ex) {
+        this->browser_->err << ex.what() << std::endl;
+    }
+
+private:
+    browser * browser_;
+    const std::vector<std::string> * url_;
+};
+
 /**
  * @brief Load a VRML world into the browser.
  *
@@ -7875,105 +7981,8 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
     throw (std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-
-    class root_scene : public openvrml::scene {
-    public:
-        explicit root_scene(openvrml::browser & b):
-            scene(b, 0)
-        {}
-
-    private:
-        virtual void scene_loaded()
-        {
-            boost::recursive_mutex::scoped_lock lock(this->browser().mutex_);
-
-            try {
-                using std::string;
-
-                const double now = browser::current_time();
-                this->initialize(now);
-
-                //
-                // Get the initial viewpoint_node, if any was specified.
-                //
-                viewpoint_node * initial_viewpoint = 0;
-                const string viewpoint_node_id = uri(this->url()).fragment();
-                if (!viewpoint_node_id.empty()) {
-                    if (!this->nodes().empty()) {
-                        const boost::intrusive_ptr<node> & n = this->nodes()[0];
-                        if (n) {
-                            node * const vp =
-                                n->scope()->find_node(viewpoint_node_id);
-                            initial_viewpoint =
-                                dynamic_cast<viewpoint_node *>(vp);
-                        }
-                    }
-                }
-
-                //
-                // Initialize the node_classes.
-                //
-                this->browser().node_class_map_.init(initial_viewpoint, now);
-
-                if (this->browser().active_viewpoint_
-                    != node_cast<viewpoint_node *>(
-                        this->browser().default_viewpoint_.get())) {
-                    event_listener & listener =
-                        this->browser().active_viewpoint_
-                        ->event_listener("set_bind");
-                    dynamic_cast<sfbool_listener &>(listener)
-                        .process_event(sfbool(true), now);
-                }
-            } catch (std::exception & ex) {
-                std::ostream & err = this->browser().err;
-                //
-                // For some reason the Microsoft compiler (13.10.3077) has a
-                // problem with the "normal" operator<< syntax here.
-                //
-                err.operator<<(ex.what()).operator<<(std::endl);
-            }
-            this->browser().modified(true);
-            this->browser().new_view = true; // Force resetUserNav
-
-            using std::for_each;
-
-            for_each(this->browser().listeners_.begin(),
-                     this->browser().listeners_.end(),
-                     boost::bind2nd(
-                         boost::mem_fun(&browser_listener::browser_changed),
-                         browser_event(this->browser(),
-                                       browser_event::initialized)));
-        }
-    };
-
-    using std::for_each;
-
-    const double now = browser::current_time();
-
-    //
-    // Clear out the current scene.
-    //
-    if (this->scene_) { this->scene_->shutdown(now); }
-    for_each(this->listeners_.begin(), this->listeners_.end(),
-             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
-                            browser_event(*this, browser_event::shutdown)));
-    this->scene_.reset();
-    this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
-    assert(this->viewpoint_list.empty());
-    assert(this->scoped_lights.empty());
-    assert(this->scripts.empty());
-    assert(this->timers.empty());
-
-    //
-    // Create the new scene.
-    //
-    node_class_map new_map;
-    this->node_class_map_ = new_map;
-    register_node_classes(*this);
-    this->scene_.reset(new root_scene(*this));
-    this->scene_->load(url);
+    boost::function0<void> f = root_scene_loader(*this, url);
+    boost::thread t(f);
 }
 
 /**
@@ -8856,31 +8865,9 @@ struct openvrml::scene::load_scene {
 
         vector<boost::intrusive_ptr<node> > nodes;
         try {
-            using boost::algorithm::iequals;
-
             std::auto_ptr<resource_istream> in = scene.get_resource(url);
             if (!(*in)) { throw unreachable_url(); }
-            scene.url(in->url());
-            if (iequals(in->type(), "model/vrml")
-                || iequals(in->type(), "x-world/x-vrml")) {
-                scene.profile_ = vrml97_profile_id;
-                Vrml97Scanner scanner(*in);
-                Vrml97Parser parser(scanner, in->url());
-                parser.vrmlScene(scene, nodes);
-            } else if (iequals(in->type(), "model/x3d+vrml")) {
-                X3DVrmlScanner scanner(*in);
-                X3DVrmlParser parser(scanner, in->url());
-                parser.vrmlScene(scene, nodes);
-            } else {
-                throw bad_media_type(in->type());
-            }
-        } catch (bad_media_type & ex) {
-            scene.browser().err << ex.what() << endl;
-        } catch (antlr::RecognitionException & ex) {
-            throw invalid_vrml(ex.getFilename(),
-                               ex.getLine(),
-                               ex.getColumn(),
-                               ex.getMessage());
+            scene.load(*in);
         } catch (antlr::ANTLRException & ex) {
             scene.browser().err << ex.getMessage() << endl;
         } catch (std::exception & ex) {
@@ -8925,6 +8912,45 @@ void openvrml::scene::load(const std::vector<std::string> & url)
 {
     boost::function0<void> f = load_scene(*this, url);
     boost::thread t(f);
+}
+
+/**
+ * @brief Load the scene from a stream.
+ *
+ * @param in    an input stream.
+ *
+ * @exception bad_media_type    if @p in.type() is not "model/vrml",
+ *                              "x-world/x-vrml", or "model/x3d+vrml".
+ * @excpetion invalid_vrml      if @p in has invalid syntax.
+ */
+void openvrml::scene::load(resource_istream & in)
+{
+    boost::recursive_mutex::scoped_lock nodes_lock(this->nodes_mutex_);
+    boost::mutex::scoped_lock url_lock(this->url_mutex_);
+
+    try {
+        using boost::algorithm::iequals;
+
+        this->url_ = in.url();
+
+        if (iequals(in.type(), "model/vrml")
+            || iequals(in.type(), "x-world/x-vrml")) {
+            Vrml97Scanner scanner(in);
+            Vrml97Parser parser(scanner, this->url_);
+            parser.vrmlScene(*this, this->nodes_);
+        } else if (iequals(in.type(), "model/x3d+vrml")) {
+            X3DVrmlScanner scanner(in);
+            X3DVrmlParser parser(scanner, this->url_);
+            parser.vrmlScene(*this, this->nodes_);
+        } else {
+            throw bad_media_type(in.type());
+        }
+    } catch (antlr::RecognitionException & ex) {
+        throw invalid_vrml(ex.getFilename(),
+                           ex.getLine(),
+                           ex.getColumn(),
+                           ex.getMessage());
+    }
 }
 
 /**
@@ -8994,26 +9020,6 @@ const std::string openvrml::scene::url() const throw (std::bad_alloc)
                                  .resolve_against(uri(this->parent_->url())))
                         : this->url_;
     return result;
-}
-
-/**
- * @brief Set the URI for the scene.
- *
- * Generally this function is used in conjunction with the two-argument
- * constructor (that does not take an alternative URI list) and the
- * scene::nodes mutator function.
- *
- * @param str   a valid URI.
- *
- * @exception invalid_url       if @p str is not a valid URI.
- * @exception std::bad_alloc    if memory allocation fails.
- */
-void openvrml::scene::url(const std::string & str)
-    throw (invalid_url, std::bad_alloc)
-{
-    boost::mutex::scoped_lock lock(this->url_mutex_);
-    uri id(str); // Make sure we have a valid URI.
-    this->url_ = str;
 }
 
 /**

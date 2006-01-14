@@ -47,7 +47,8 @@ openvrml_player::browser::do_get_resource(const std::string & uri)
 
             this->rdbuf(this->streambuf_.get());
             bool succeeded =
-                uninitialized_plugin_streambuf_set_.insert(this->streambuf_);
+                uninitialized_plugin_streambuf_map_.insert(uri,
+                                                           this->streambuf_);
             g_assert(succeeded);
 
             ostringstream request;

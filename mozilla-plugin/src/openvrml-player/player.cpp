@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML Mozilla plug-in
 // Copyright 2004, 2005, 2006  Braden N. McDaniel
@@ -35,6 +35,14 @@ using namespace openvrml_player;
 namespace {
 
     const char application_name[] = "OpenVRML Player";
+
+    //
+    // We don't already know what the URI of the initial stream is until we
+    // start getting that data from the browser.  This is a placeholder that
+    // is used to identify the plugin_streambuf that will be used to receive
+    // the initial stream data.
+    //
+    const char initial_stream_uri[] = "x-openvrml-initial:";
 }
 
 namespace openvrml_player {
@@ -46,7 +54,7 @@ namespace openvrml_player {
             browser_(&browser)
         {}
 
-        void operator()() const
+        void operator()() const throw ()
         {
             using std::string;
 
@@ -65,32 +73,27 @@ namespace openvrml_player {
                     command_line_stream >> stream_id >> type >> url;
 
                     shared_ptr<plugin_streambuf> streambuf =
-                        uninitialized_plugin_streambuf_set_.find(url);
+                        uninitialized_plugin_streambuf_map_.find(url);
 
+                    static bool got_initial_stream = false;
                     if (!streambuf) {
                         //
                         // If the world_url is empty, this is the primordial
                         // stream.
                         //
-                        if (this->browser_->world_url().empty()) {
-                            g_assert(uninitialized_plugin_streambuf_set_.size()
+                        if (!got_initial_stream) {
+                            g_assert(uninitialized_plugin_streambuf_map_.size()
                                      == 1);
                             streambuf =
-                                uninitialized_plugin_streambuf_set_.front();
-                            this->browser_->world_url(url);
+                                uninitialized_plugin_streambuf_map_.front();
+                            got_initial_stream = true;
                         } else {
                             g_warning("Attempt to create an unrequested "
                                       "stream.");
                             continue;
                         }
                     }
-                    streambuf->init(type);
-                    bool succeeded = ::plugin_streambuf_map
-                        .insert(make_pair(stream_id, streambuf)).second;
-                    g_assert(succeeded);
-                    succeeded =
-                        uninitialized_plugin_streambuf_set_.erase(streambuf);
-                    g_assert(succeeded);
+                    streambuf->init(stream_id, url, type);
                 } else if (command == "destroy-stream") {
                     size_t stream_id;
                     command_line_stream >> stream_id;
@@ -169,24 +172,39 @@ namespace {
             browser_(&browser)
         {}
 
-        void operator()() const
+        void operator()() const throw ()
         {
-            class plugin_istream : public std::istream {
+            class plugin_istream : public openvrml::resource_istream {
                 boost::shared_ptr<plugin_streambuf> streambuf_;
 
             public:
                 explicit plugin_istream(
                     const boost::shared_ptr<plugin_streambuf> & streambuf):
-                    std::istream(streambuf.get()),
+                    openvrml::resource_istream(streambuf.get()),
                     streambuf_(streambuf)
                 {}
 
                 virtual ~plugin_istream() throw ()
                 {}
+
+            private:
+                virtual const std::string do_url() const throw (std::bad_alloc)
+                {
+                    return this->streambuf_->url();
+                }
+
+                virtual const std::string do_type() const
+                    throw (std::bad_alloc)
+                {
+                    return this->streambuf_->type();
+                }
+
+                virtual bool do_data_available() const throw ()
+                {
+                    return this->streambuf_->data_available();
+                }
             } in(this->streambuf_);
-            std::vector<boost::intrusive_ptr<openvrml::node> > nodes =
-                this->browser_->create_vrml_from_stream(in);
-            this->browser_->replace_world(nodes);
+            this->browser_->set_world(in);
         }
 
     private:
@@ -194,8 +212,58 @@ namespace {
         openvrml::browser * browser_;
     };
 
-    GIOChannel * command_channel;
     GIOChannel * request_channel;
+
+    struct command_channel_loop {
+        command_channel_loop(const gint read_fd, command_istream & command_in):
+            read_fd_(read_fd),
+            command_in_(&command_in)
+        {}
+
+        void operator()() const throw ()
+        {
+            GMainContext * const main_context = g_main_context_new();
+            GMainLoop * const main_loop = g_main_loop_new(main_context, false);
+            GIOChannel * const command_channel =
+                g_io_channel_unix_new(this->read_fd_);
+            GError * error = 0;
+            GIOStatus status =
+                g_io_channel_set_encoding(command_channel,
+                                          0, // binary (no encoding)
+                                          &error);
+            if (status != G_IO_STATUS_NORMAL) {
+                if (error) {
+                    g_critical(error->message);
+                    g_error_free(error);
+                }
+                exit(EXIT_FAILURE);
+            }
+
+            GSource * const command_watch =
+                g_io_create_watch(command_channel, G_IO_IN);
+            const GDestroyNotify notify = 0;
+            g_source_set_callback(
+                command_watch,
+                reinterpret_cast<GSourceFunc>(::command_data_available),
+                static_cast<command_streambuf *>(this->command_in_->rdbuf()),
+                notify);
+            guint source_id = g_source_attach(command_watch, main_context);
+            g_return_if_fail(source_id != 0);
+
+            g_main_loop_run(main_loop);
+
+            g_source_unref(command_watch);
+            g_io_channel_shutdown(command_channel, false, 0);
+            g_io_channel_unref(command_channel);
+
+            g_main_loop_unref(main_loop);
+            g_main_context_unref(main_context);
+        }
+
+    private:
+        gint read_fd_;
+        command_istream * command_in_;
+    };
 }
 
 int main(int argc, char * argv[])
@@ -233,25 +301,6 @@ int main(int argc, char * argv[])
 
     command_istream command_in;
 
-    if (read_fd) {
-        ::command_channel = g_io_channel_unix_new(read_fd);
-        GIOStatus status = g_io_channel_set_encoding(::command_channel,
-                                                     0, // binary (no encoding)
-                                                     &error);
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            return EXIT_FAILURE;
-        }
-
-        g_io_add_watch(::command_channel,
-                       G_IO_IN,
-                       command_data_available,
-                       static_cast<command_streambuf *>(command_in.rdbuf()));
-    }
-
     if (write_fd) {
         ::request_channel = g_io_channel_unix_new(write_fd);
     }
@@ -268,27 +317,33 @@ int main(int argc, char * argv[])
 
     thread_group threads;
 
+    scoped_ptr<thread> command_channel_loop_thread;
     scoped_ptr<thread> initial_stream_reader_thread;
     if (argc > 1) {
         const vector<string> uri(1, argv[1]), parameter;
         b.load_url(uri, parameter);
     } else {
-        shared_ptr<plugin_streambuf> initial_stream(new plugin_streambuf);
+        function0<void> command_channel_loop_func =
+            command_channel_loop(read_fd, command_in);
+        command_channel_loop_thread.reset(
+            threads.create_thread(command_channel_loop_func));
+        
+        shared_ptr<plugin_streambuf> initial_stream(
+            new plugin_streambuf(initial_stream_uri));
         bool succeeded =
-            uninitialized_plugin_streambuf_set_.insert(initial_stream);
+            uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
+                                                       initial_stream);
         g_return_val_if_fail(succeeded, EXIT_FAILURE);
-        function0<void> f = initial_stream_reader(initial_stream, b);
-        initial_stream_reader_thread.reset(threads.create_thread(f));
+        function0<void> initial_stream_reader_func =
+            initial_stream_reader(initial_stream, b);
+        initial_stream_reader_thread.reset(
+            threads.create_thread(initial_stream_reader_func));
     }
-
-    viewer.timer_update();
 
     function0<void> read_commands = command_istream_reader(command_in, b);
     scoped_ptr<thread> command_reader_thread(
         threads.create_thread(read_commands));
 
+    viewer.timer_update();
     gtk_main();
-
-    g_io_channel_shutdown(::command_channel, false, 0);
-    g_io_channel_unref(::command_channel);
 }

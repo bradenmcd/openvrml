@@ -196,6 +196,7 @@ namespace openvrml {
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
 
+        struct root_scene_loader;
         struct vrml_from_url_creator;
 
         class node_class_map {
@@ -293,8 +294,7 @@ namespace openvrml {
         virtual const char * version() const throw ();
         float current_speed();
         const std::string world_url() const throw (std::bad_alloc);
-        void world_url(const std::string & str)
-            throw (invalid_url, std::bad_alloc);
+        void set_world(resource_istream & in);
         void replace_world(
             const std::vector<boost::intrusive_ptr<node> > & nodes);
         void load_url(const std::vector<std::string> & url,
@@ -376,13 +376,13 @@ namespace openvrml {
         profile_id profile() const throw ();
         void load(const std::vector<std::string> & url)
             throw (boost::thread_resource_error, std::bad_alloc);
+        void load(resource_istream & in);
         void initialize(double timestamp) throw (std::bad_alloc);
         const std::vector<boost::intrusive_ptr<node> > & nodes() const
             throw ();
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
             throw (std::bad_alloc);
         const std::string url() const throw (std::bad_alloc);
-        void url(const std::string & str) throw (invalid_url, std::bad_alloc);
         void render(openvrml::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)

@@ -1,3 +1,92 @@
+2006-01-13 Braden McDaniel  <braden@endoframe.com>
+
+	Allow openvrml::browser and openvrml::scene to be set directly
+	from a resource_istream.  Added a thread to openvrml-player
+	specifically to process input from the command channel.  This
+	resolves issues with the plug-in deadlocking when the main thread
+	becomes blocked.
+
+	* mozilla-plugin/src/openvrml-player/browser.cpp
+	(openvrml_player::browser::do_get_resource(const std::string &)):
+	Changed plugin_resource_istream constructor to use
+	uninitialized_plugin_streambuf_map_.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(initial_stream_uri): Identifier for the plugin_streambuf to be
+	used for the initial stream.
+	(openvrml_player::command_istream_reader::operator()() const):
+	Added nothrow exception specification; changed to use
+	uninitialized_plugin_streambuf_map_; removed call to
+	openvrml::browser::world_url; changed call to
+	plugin_streambuf::init to include stream_id and url arguments.
+	(initial_stream_reader::operator()() const): Added nothrow
+	exception specification; changed plugin_istream to inherit
+	openvrml::resource_istream instead of std::istream; call
+	openvrml::browser::set_world.
+	(command_channel): Removed; moved to
+	command_channel_loop::operator().
+	(command_channel_loop): Added; thread function object to run a
+	glib event loop to read input from a GIOChannel.
+	(main(argc, argv)): Moved logic to initialize the command_channel
+	GIOChannel to command_channel_loop::operator(); start the
+	command_channel_loop_thread.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::plugin_streambuf(const
+	std::string &)): Changed argument name to "requested_url".
+	(openvrml_player::plugin_streambuf::init(size_t, const std::string
+	&, const std::string &)): Added stream_id and received_url
+	arguments; remove the plugin_streambuf from
+	uninitialized_plugin_streambuf_map_ and add it to
+	plugin_streambuf_map.
+	(openvrml_player::plugin_streambuf::url() const): Block until the
+	plugin_streambuf has been initialized.
+	(openvrml_player::uninitialized_plugin_streambuf_set_): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map_): Added.
+	(openvrml_player::uninitialized_plugin_streambuf_set::find(const
+	std::string &)): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map::find(const
+	std::string &)): Added.
+	(openvrml_player::uninitialized_plugin_streambuf_set::insert(const
+	boost::shared_ptr<openvrml_player::plugin_streambuf> &)): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map::insert(const
+	std::string &,
+	boost::shared_ptr<openvrml_player::plugin_streambuf> &)): Added.
+	(openvrml_player::uninitialized_plugin_streambuf_set::erase(const
+	boost::shared_ptr<openvrml_player::plugin_streambuf> &)): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map::erase(const
+	std::string &)): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_set::size()
+	const): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map::size()
+	const): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_set::front()
+	const): Removed.
+	(openvrml_player::uninitialized_plugin_streambuf_map::front()
+	const): Removed.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf): Inherit
+	boost::enable_shared_from_tis<T>; removed const from url_ member.
+	(uninitialized_plugin_streambuf_set_): Removed.
+	(uninitialized_plugin_streambuf_map_): Added.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::world_url(const std::string &)): Removed.
+	(openvrml::browser::set_world(resource_istream & in)): Added; set
+	the world from a resource_istream.
+	(openvrml::browser::root_scene_loader): Added; thread function
+	object for openvrml::browser::load_url.
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Changed to delegate to
+	openvrml::browser::root_scene_loader.
+	(openvrml::scene::load_scene): Changed to delegate to
+	openvrml::scene::load.
+	(openvrml::scene::load(resource_istream & in)): Added; set the
+	scene from a resource_istream.
+	(openvrml::scene::url(const std::string &)): Removed.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Added root_scene_loader declaration; removed
+	world_url mutator; added set_world mutator.
+	(openvrml::scene): Added load mutator accepting a
+	resource_istream; removed url mutator.
+
 2006-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Use GOption instead of GNU argp for command line argument parsing.

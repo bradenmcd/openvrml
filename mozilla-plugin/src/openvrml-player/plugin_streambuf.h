@@ -25,19 +25,23 @@
 #   include <set>
 #   include <streambuf>
 #   include <boost/shared_ptr.hpp>
+#   include <boost/enable_shared_from_this.hpp>
 #   include "bounded_buffer.h"
 
 namespace openvrml_player {
 
     class command_istream_reader;
 
-    class plugin_streambuf : public std::streambuf {
+    class plugin_streambuf :
+        public boost::enable_shared_from_this<plugin_streambuf>,
+        public std::streambuf {
+
         friend class command_istream_reader;
 
         mutable boost::mutex mutex_;
         bool initialized_;
         mutable boost::condition streambuf_initialized_;
-        const std::string url_;
+        std::string url_;
         std::string type_;
         bounded_buffer<int_type, 64> buf_;
         char_type c_;
@@ -47,44 +51,31 @@ namespace openvrml_player {
         virtual int_type underflow();
 
     public:
-        explicit plugin_streambuf(const std::string & url = "");
-        void init(const std::string & type);
+        explicit plugin_streambuf(const std::string & requested_url);
+        void init(size_t stream_id,
+                  const std::string & received_url,
+                  const std::string & type);
         const std::string & url() const;
         const std::string & type() const;
         bool data_available() const;
         void npstream_destroyed();
     };
 
-    extern class uninitialized_plugin_streambuf_set {
+    extern class uninitialized_plugin_streambuf_map {
         mutable boost::mutex mutex_;
-        typedef std::set<boost::shared_ptr<plugin_streambuf> > set_t;
-        set_t set_;
-
-        struct plugin_streambuf_has_url :
-            std::unary_function<boost::shared_ptr<plugin_streambuf>, bool> {
-
-            explicit plugin_streambuf_has_url(const std::string & url):
-                url_(&url)
-            {}
-
-            bool
-            operator()(const boost::shared_ptr<plugin_streambuf> & arg) const
-            {
-                return arg->url() == *this->url_;
-            }
-
-        private:
-            const std::string * url_;
-        };
+        typedef std::map<std::string, boost::shared_ptr<plugin_streambuf> >
+            map_t;
+        map_t map_;
 
     public:
         const boost::shared_ptr<plugin_streambuf>
         find(const std::string & url) const;
-        bool insert(const boost::shared_ptr<plugin_streambuf> & streambuf);
-        bool erase(const boost::shared_ptr<plugin_streambuf> & streambuf);
+        bool insert(const std::string & url,
+                    const boost::shared_ptr<plugin_streambuf> & streambuf);
+        bool erase(const std::string & url);
         size_t size() const;
         const boost::shared_ptr<plugin_streambuf> front() const;
-    } uninitialized_plugin_streambuf_set_;
+    } uninitialized_plugin_streambuf_map_;
 
 
     typedef std::map<size_t, boost::shared_ptr<plugin_streambuf> >

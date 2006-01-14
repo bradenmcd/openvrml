@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML Mozilla plug-in
 // Copyright 2004, 2005, 2006  Braden N. McDaniel
@@ -21,29 +21,39 @@
 # include <glib.h>
 # include "plugin_streambuf.h"
 
-openvrml_player::plugin_streambuf::plugin_streambuf(const std::string & url):
+openvrml_player::plugin_streambuf::
+plugin_streambuf(const std::string & requested_url):
     initialized_(false),
-    url_(url),
+    url_(requested_url),
     c_(traits_type::not_eof(this->c_)),
     npstream_destroyed_(false)
 {
     this->setg(&this->c_, &this->c_, &this->c_);
 }
 
-void openvrml_player::plugin_streambuf::init(const std::string & type)
+void openvrml_player::plugin_streambuf::init(const size_t stream_id,
+                                             const std::string & received_url,
+                                             const std::string & type)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
+    bool succeeded = uninitialized_plugin_streambuf_map_.erase(this->url_);
+    g_assert(succeeded);
+    this->url_ = received_url;
     this->type_ = type;
     this->initialized_ = true;
+    const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
+    succeeded = plugin_streambuf_map.insert(make_pair(stream_id, this_))
+        .second;
+    g_assert(succeeded);
     this->streambuf_initialized_.notify_all();
 }
 
 const std::string & openvrml_player::plugin_streambuf::url() const
 {
-    //
-    // No need to lock or wait on init here; this->url_ is set in the
-    // constructor and cannot be changed.
-    //
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (!this->initialized_) {
+        this->streambuf_initialized_.wait(lock);
+    }
     return this->url_;
 }
 
@@ -80,50 +90,49 @@ void openvrml_player::plugin_streambuf::npstream_destroyed()
 }
 
 
-openvrml_player::uninitialized_plugin_streambuf_set
-openvrml_player::uninitialized_plugin_streambuf_set_;
+openvrml_player::uninitialized_plugin_streambuf_map
+openvrml_player::uninitialized_plugin_streambuf_map_;
 
 const boost::shared_ptr<openvrml_player::plugin_streambuf>
-openvrml_player::uninitialized_plugin_streambuf_set::
+openvrml_player::uninitialized_plugin_streambuf_map::
 find(const std::string & url) const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    set_t::const_iterator pos = find_if(this->set_.begin(),
-                                        this->set_.end(),
-                                        plugin_streambuf_has_url(url));
-    return pos == this->set_.end()
+    map_t::const_iterator pos = this->map_.find(url);
+    return pos == this->map_.end()
         ? boost::shared_ptr<plugin_streambuf>()
-        : *pos;
+        : pos->second;
 }
 
 bool
-openvrml_player::uninitialized_plugin_streambuf_set::
-insert(const boost::shared_ptr<openvrml_player::plugin_streambuf> & streambuf)
+openvrml_player::uninitialized_plugin_streambuf_map::
+insert(const std::string & url,
+       const boost::shared_ptr<openvrml_player::plugin_streambuf> & streambuf)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->set_.insert(streambuf).second;
+    return this->map_.insert(make_pair(url, streambuf)).second;
 }
 
 bool
-openvrml_player::uninitialized_plugin_streambuf_set::
-erase(const boost::shared_ptr<openvrml_player::plugin_streambuf> & streambuf)
+openvrml_player::uninitialized_plugin_streambuf_map::
+erase(const std::string & url)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->set_.erase(streambuf) == 1;
+    return this->map_.erase(url) == 1;
 }
 
-size_t openvrml_player::uninitialized_plugin_streambuf_set::size() const
+size_t openvrml_player::uninitialized_plugin_streambuf_map::size() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->set_.size();
+    return this->map_.size();
 }
 
 const boost::shared_ptr<openvrml_player::plugin_streambuf>
-openvrml_player::uninitialized_plugin_streambuf_set::front() const
+openvrml_player::uninitialized_plugin_streambuf_map::front() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    g_assert(!this->set_.empty());
-    return *this->set_.begin();
+    g_assert(!this->map_.empty());
+    return this->map_.begin()->second;
 }
 
 
