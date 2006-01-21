@@ -1,3 +1,7 @@
+2006-01-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
+
 2006-01-14 Braden McDaniel  <braden@endoframe.com>
 
 	Added missing OPENVRML_LOCAL.
