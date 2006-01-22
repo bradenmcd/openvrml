@@ -25,19 +25,27 @@
 GdkGLConfig * openvrml_player::GtkGLViewer::gl_config(0);
 
 extern "C" {
-    gboolean realize(GtkWidget * widget, GdkEvent * event, gpointer data);
-    gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
-                          gpointer data);
-    gboolean configure_event(GtkWidget * widget, GdkEventConfigure * event,
-                             gpointer data);
-    gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
-                             gpointer data);
-    gboolean button_press_event(GtkWidget * widget, GdkEventButton * event,
-                                gpointer data);
-    gboolean button_release_event(GtkWidget * widget, GdkEventButton * event,
-                                  gpointer data);
-    gboolean motion_notify_event(GtkWidget * widget, GdkEventMotion * event,
-                                 gpointer data);
+    gboolean gtk_gl_viewer_realize(GtkWidget * widget,
+                                   GdkEvent * event,
+                                   gpointer data);
+    gboolean gtk_gl_viewer_expose_event(GtkWidget * widget,
+                                        GdkEventExpose * event,
+                                        gpointer data);
+    gboolean gtk_gl_viewer_configure_event(GtkWidget * widget,
+                                           GdkEventConfigure * event,
+                                           gpointer data);
+    gboolean gtk_gl_viewer_key_press_event(GtkWidget * widget,
+                                           GdkEventKey * event,
+                                           gpointer data);
+    gboolean gtk_gl_viewer_button_press_event(GtkWidget * widget,
+                                              GdkEventButton * event,
+                                              gpointer data);
+    gboolean gtk_gl_viewer_button_release_event(GtkWidget * widget,
+                                                GdkEventButton * event,
+                                                gpointer data);
+    gboolean gtk_gl_viewer_motion_notify_event(GtkWidget * widget,
+                                               GdkEventMotion * event,
+                                               gpointer data);
 }
 
 openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container):
@@ -77,27 +85,27 @@ openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container):
 
     g_signal_connect(G_OBJECT((this->drawing_area)),
                      "expose_event",
-                     G_CALLBACK(expose_event),
+                     G_CALLBACK(gtk_gl_viewer_expose_event),
                      this);
     g_signal_connect(G_OBJECT(this->drawing_area),
                      "configure_event",
-                     G_CALLBACK(configure_event),
+                     G_CALLBACK(gtk_gl_viewer_configure_event),
                      this);
     g_signal_connect(G_OBJECT(this->drawing_area),
                      "key_press_event",
-                     G_CALLBACK(key_press_event),
+                     G_CALLBACK(gtk_gl_viewer_key_press_event),
                      this);
     g_signal_connect(G_OBJECT(this->drawing_area),
                      "button_press_event",
-                     G_CALLBACK(button_press_event),
+                     G_CALLBACK(gtk_gl_viewer_button_press_event),
                      this);
     g_signal_connect(G_OBJECT(this->drawing_area),
                      "button_release_event",
-                     G_CALLBACK(button_release_event),
+                     G_CALLBACK(gtk_gl_viewer_button_release_event),
                      this);
     g_signal_connect(G_OBJECT(this->drawing_area),
                      "motion_notify_event",
-                     G_CALLBACK(motion_notify_event),
+                     G_CALLBACK(gtk_gl_viewer_motion_notify_event),
                      this);
 
     gtk_container_add(&container, this->drawing_area);
@@ -188,14 +196,14 @@ void openvrml_player::GtkGLViewer::timer_update()
     this->viewer::update();
 }
 
-gboolean realize(GtkWidget *, GdkEvent *, gpointer)
+gboolean gtk_gl_viewer_realize(GtkWidget *, GdkEvent *, gpointer)
 {
     return true;
 }
 
-gboolean expose_event(GtkWidget * const widget,
-                      GdkEventExpose * const event,
-                      const gpointer data)
+gboolean gtk_gl_viewer_expose_event(GtkWidget * const widget,
+                                    GdkEventExpose * const event,
+                                    const gpointer data)
 {
     using openvrml_player::GtkGLViewer;
 
@@ -213,9 +221,9 @@ gboolean expose_event(GtkWidget * const widget,
     return true;
 }
 
-gboolean configure_event(GtkWidget * const widget,
-                         GdkEventConfigure *,
-                         const gpointer data)
+gboolean gtk_gl_viewer_configure_event(GtkWidget * const widget,
+                                       GdkEventConfigure *,
+                                       const gpointer data)
 {
     GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
     g_assert(gl_drawable);
@@ -230,9 +238,9 @@ gboolean configure_event(GtkWidget * const widget,
     return true;
 }
 
-gboolean key_press_event(GtkWidget * const widget,
-                         GdkEventKey * const event,
-                         const gpointer data)
+gboolean gtk_gl_viewer_key_press_event(GtkWidget * const widget,
+                                       GdkEventKey * const event,
+                                       const gpointer data)
 {
     using openvrml::gl::viewer;
 
@@ -286,9 +294,9 @@ gboolean key_press_event(GtkWidget * const widget,
     return true;
 }
 
-gboolean button_press_event(GtkWidget * const widget,
-                            GdkEventButton * const event,
-                            const gpointer data)
+gboolean gtk_gl_viewer_button_press_event(GtkWidget * const widget,
+                                          GdkEventButton * const event,
+                                          const gpointer data)
 {
     using openvrml::gl::viewer;
 
@@ -324,9 +332,9 @@ gboolean button_press_event(GtkWidget * const widget,
     return true;
 }
 
-gboolean button_release_event(GtkWidget * const widget,
-                              GdkEventButton * const event,
-                              const gpointer data)
+gboolean gtk_gl_viewer_button_release_event(GtkWidget * const widget,
+                                            GdkEventButton * const event,
+                                            const gpointer data)
 {
     using openvrml::gl::viewer;
 
@@ -362,9 +370,9 @@ gboolean button_release_event(GtkWidget * const widget,
     return true;
 }
 
-gboolean motion_notify_event(GtkWidget * const widget,
-                             GdkEventMotion * const event,
-                             const gpointer data)
+gboolean gtk_gl_viewer_motion_notify_event(GtkWidget * const widget,
+                                           GdkEventMotion * const event,
+                                           const gpointer data)
 {
     using openvrml::gl::viewer;
 
