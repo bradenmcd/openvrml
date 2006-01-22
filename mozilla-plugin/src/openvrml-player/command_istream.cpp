@@ -47,6 +47,8 @@ gboolean command_data_available(GIOChannel * source,
 {
     using namespace openvrml_player;
 
+    typedef command_istream::traits_type traits_type;
+
     command_streambuf & streambuf =
         *static_cast<command_streambuf *>(data);
 
@@ -65,13 +67,16 @@ gboolean command_data_available(GIOChannel * source,
             }
             return false;
         }
-        if (status == G_IO_STATUS_EOF) { return false; }
+        if (status == G_IO_STATUS_EOF) {
+            streambuf.source_buffer_.put(traits_type::eof());
+            return false;
+        }
         if (status == G_IO_STATUS_AGAIN) { continue; }
         g_return_val_if_fail(status == G_IO_STATUS_NORMAL, false);
 
         g_assert(bytes_read == 1);
 
-        streambuf.source_buffer_.put(c);
+        streambuf.source_buffer_.put(traits_type::to_int_type(c));
 
         FD_ZERO(&readfds);
         FD_SET(fd, &readfds);

@@ -1,3 +1,9 @@
+2006-01-22 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp: Handle
+	EOF from the command_channel by inserting traits_type::eof() into
+	the stream buffer.
+
 2006-01-21 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
