@@ -46,6 +46,7 @@ extern "C" {
     gboolean gtk_gl_viewer_motion_notify_event(GtkWidget * widget,
                                                GdkEventMotion * event,
                                                gpointer data);
+    gint gtk_gl_viewer_timeout_callback(const gpointer ptr);
 }
 
 openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container):
@@ -169,24 +170,23 @@ void openvrml_player::GtkGLViewer::swap_buffers()
     gdk_gl_drawable_swap_buffers(gl_drawable);
 }
 
-namespace {
-    gint timeout_callback(const gpointer ptr)
-    {
-        assert(ptr);
-        using openvrml_player::GtkGLViewer;
+gint gtk_gl_viewer_timeout_callback(const gpointer ptr)
+{
+    assert(ptr);
+    using openvrml_player::GtkGLViewer;
 
-        GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
-        viewer.timer_update();
-        return false;
-    }
+    GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
+    viewer.timer_update();
+    return false;
 }
 
 void openvrml_player::GtkGLViewer::set_timer(const double t)
 {
     if (!this->timer) {
-        this->timer = g_timeout_add(guint(10.0 * (t + 1)),
-                                    GtkFunction(timeout_callback),
-                                    this);
+        this->timer =
+            g_timeout_add(guint(10.0 * (t + 1)),
+                          GtkFunction(gtk_gl_viewer_timeout_callback),
+                          this);
     }
 }
 

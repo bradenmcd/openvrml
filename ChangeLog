@@ -1,5 +1,11 @@
 2006-01-22 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp: Declare
+	timeout callback function 'extern "C"'; callback functions given
+	to C APIs should have C linkage.
+
+2006-01-22 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp: Disambiguate
 	externally linked functions by prefixing with "gtk_gl_viewer_".
 
