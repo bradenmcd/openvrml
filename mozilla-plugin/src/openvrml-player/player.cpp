@@ -29,6 +29,7 @@
 # include "gtkglviewer.h"
 # include "command_istream.h"
 # include "plugin_streambuf.h"
+# include "flag.h"
 
 using namespace openvrml_player;
 
@@ -43,6 +44,15 @@ namespace {
     // the initial stream data.
     //
     const char initial_stream_uri[] = "x-openvrml-initial:";
+
+    //
+    // Used to signal the various threads that we're done.  "quit" is
+    // initiated when the command_istream gets EOF.  At that point, the
+    // command_istream_reader thread sets quit_flag to true.  This flag is
+    // checked by the command_channel_loop thread and the main (rendering)
+    // thread, signaling them to terminate.
+    //
+    flag quit_flag;
 }
 
 namespace openvrml_player {
@@ -77,10 +87,6 @@ namespace openvrml_player {
 
                     static bool got_initial_stream = false;
                     if (!streambuf) {
-                        //
-                        // If the world_url is empty, this is the primordial
-                        // stream.
-                        //
                         if (!got_initial_stream) {
                             g_assert(uninitialized_plugin_streambuf_map_.size()
                                      == 1);
@@ -120,6 +126,11 @@ namespace openvrml_player {
                     }
                 }
             }
+
+            //
+            // Got EOF from the command stream. Time to shut down.
+            //
+            ::quit_flag.value(true);
         }
 
     private:
@@ -127,6 +138,9 @@ namespace openvrml_player {
         openvrml::browser * browser_;
     };
 }
+
+extern "C" gboolean
+openvrml_player_command_channel_loop_quit_event(gpointer data);
 
 namespace {
 
@@ -214,6 +228,12 @@ namespace {
 
     GIOChannel * request_channel;
 
+    struct command_channel_data {
+        GMainContext * main_context;
+        GMainLoop * main_loop;
+        GIOChannel * command_channel;
+    };
+
     struct command_channel_loop {
         command_channel_loop(const gint read_fd, command_istream & command_in):
             read_fd_(read_fd),
@@ -222,13 +242,13 @@ namespace {
 
         void operator()() const throw ()
         {
-            GMainContext * const main_context = g_main_context_new();
-            GMainLoop * const main_loop = g_main_loop_new(main_context, false);
-            GIOChannel * const command_channel =
-                g_io_channel_unix_new(this->read_fd_);
+            command_channel_data data;
+            data.main_context = g_main_context_new();
+            data.main_loop = g_main_loop_new(data.main_context, false);
+            data.command_channel = g_io_channel_unix_new(this->read_fd_);
             GError * error = 0;
             GIOStatus status =
-                g_io_channel_set_encoding(command_channel,
+                g_io_channel_set_encoding(data.command_channel,
                                           0, // binary (no encoding)
                                           &error);
             if (status != G_IO_STATUS_NORMAL) {
@@ -240,24 +260,34 @@ namespace {
             }
 
             GSource * const command_watch =
-                g_io_create_watch(command_channel, G_IO_IN);
+                g_io_create_watch(data.command_channel,
+                                  GIOCondition(G_IO_IN | G_IO_HUP));
             const GDestroyNotify notify = 0;
             g_source_set_callback(
                 command_watch,
                 reinterpret_cast<GSourceFunc>(::command_data_available),
                 static_cast<command_streambuf *>(this->command_in_->rdbuf()),
                 notify);
-            guint source_id = g_source_attach(command_watch, main_context);
+            guint source_id = g_source_attach(command_watch,
+                                              data.main_context);
             g_return_if_fail(source_id != 0);
 
-            g_main_loop_run(main_loop);
+            GSource * const quit = g_idle_source_new();
+            g_source_set_callback(
+                quit,
+                ::openvrml_player_command_channel_loop_quit_event,
+                &data,
+                notify);
+            source_id = g_source_attach(quit, data.main_context);
+            g_return_if_fail(source_id != 0);
+
+            g_main_loop_run(data.main_loop);
 
             g_source_unref(command_watch);
-            g_io_channel_shutdown(command_channel, false, 0);
-            g_io_channel_unref(command_channel);
+            g_io_channel_unref(data.command_channel);
 
-            g_main_loop_unref(main_loop);
-            g_main_context_unref(main_context);
+            g_main_loop_unref(data.main_loop);
+            g_main_context_unref(data.main_context);
         }
 
     private:
@@ -309,7 +339,7 @@ int main(int argc, char * argv[])
         ? gtk_plug_new(socket_id)
         : gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-    GtkGLViewer viewer(*(GTK_CONTAINER(window)));
+    GtkGLViewer viewer(*(GTK_CONTAINER(window)), ::quit_flag);
     browser b(::request_channel);
     b.viewer(&viewer);
 
@@ -346,4 +376,45 @@ int main(int argc, char * argv[])
 
     viewer.timer_update();
     gtk_main();
+
+    threads.join_all();
+
+    if (::request_channel) {
+        GError * error = 0;
+        const gboolean flush = false;
+        GIOStatus status = g_io_channel_shutdown(::request_channel,
+                                                 flush,
+                                                 &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                g_critical(error->message);
+                g_error_free(error);
+            }
+        }
+    }
+    g_io_channel_unref(::request_channel);
+}
+
+gboolean openvrml_player_command_channel_loop_quit_event(const gpointer data)
+{
+    command_channel_data & cc_data =
+        *static_cast<command_channel_data *>(data);
+
+    if (::quit_flag.value()) {
+        GError * error = 0;
+        GIOStatus status = g_io_channel_shutdown(cc_data.command_channel,
+                                                 true,
+                                                 &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                g_critical(error->message);
+                g_error_free(error);
+            }
+        }
+            
+        g_main_loop_quit(cc_data.main_loop);
+
+        return false;
+    }
+    return true;
 }

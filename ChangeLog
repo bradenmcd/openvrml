@@ -1,5 +1,49 @@
 2006-01-22 Braden McDaniel  <braden@endoframe.com>
 
+	Allow the plug-in child process to exit "normally" rather than
+	sending it SIGTERM.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::~PluginInstance): Don't send the child
+	openvrml-player process SIGTERM.  Shut down the request_channel
+	and the write descriptor for the output pipe (corresponding to the
+	command channel).
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	(noinst_HEADERS): Added flag.h.
+	(openvrml_player_SOURCES): Added flag.cpp.
+	* mozilla-plugin/src/openvrml-player/flag.cpp
+	(openvrml_player::flag::flag(bool)): Construct.
+	(openvrml_player::flag::value() const): Accessor.
+	(openvrml_player::flag::value(bool)): Mutator.
+	* mozilla-plugin/src/openvrml-player/flag.h
+	(openvrml_player::flag): Added.  A bool flag protected by a mutex.
+	Used to signal the various threads that it's time to quit.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp
+	(openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer &,
+	flag&)): Added quit flag parameter.
+	(gtk_gl_viewer_timeout_callback(gpointer)): Check quit flag.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.h
+	(openvrml_player::GtkGLViewer): Made
+	gtk_gl_viewer_timeout_callback a friend.  Added quit_ member.
+	(command_channel_data): Struct for passing command_channel_loop
+	data to the quit_event callback.
+	(command_channel_loop::operator()() const): Moved main_context,
+	main_loop, and command_channel to the command_channel_data struct.
+	Added openvrml_player_command_channel_loop_quit_event as an idle
+	callback.
+	(main(int, char *[])): Pass quit_flag to GtkGLViewer constructor.
+	Join all threads in the thread group before quitting.  Shut down
+	the request_channel.
+	(openvrml_player_command_channel_loop_quit_event(gpointer)):
+	"quit" callback for the command_channel_loop--shuts down the
+	command_channel and calls g_main_loop_quit.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()() const)):
+	Set the quit_flag to true if we leave the loop (i.e., we got EOF
+	from the command stream).
+
+2006-01-22 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp: Declare
 	timeout callback function 'extern "C"'; callback functions given
 	to C APIs should have C linkage.

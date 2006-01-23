@@ -19,7 +19,6 @@
 //
 
 # include <cerrno>
-# include <iostream>
 # include <list>
 # include <memory>
 # include <sstream>
@@ -264,8 +263,7 @@ NPError NPP_Initialize()
 }
 
 void NPP_Shutdown()
-{
-}
+{}
 
 /**
  * @internal
@@ -1029,10 +1027,38 @@ namespace {
     PluginInstance::~PluginInstance() throw ()
     {
         if (this->player_pid) {
-            kill(this->player_pid, SIGTERM);
+            if (this->request_channel) {
+                GError * error = 0;
+                const gboolean flush = false;
+                GIOStatus status = g_io_channel_shutdown(this->request_channel,
+                                                         flush,
+                                                         &error);
+                if (status != G_IO_STATUS_NORMAL) {
+                    if (error) {
+                        g_critical(error->message);
+                        g_error_free(error);
+                    }
+                }
+            }
+            g_io_channel_unref(this->request_channel);
+
+            //
+            // The openvrml-player process should detect that this file
+            // descriptor has been closed and terminate in response.
+            //
+            int result = close(this->out_pipe[1]);
+            if (result != 0) {
+                printerr(strerror(errno));
+                g_error("Failed to close write descriptor for "
+                        "OpenVRML plug-in's output pipe");
+            }
+
             int status;
             int options = 0;
-            waitpid(this->player_pid, &status, options);
+            pid_t pid = waitpid(this->player_pid, &status, options);
+            if (pid == -1) {
+                printerr(strerror(errno));
+            }
         }
     }
 

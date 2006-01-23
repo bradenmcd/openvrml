@@ -25,10 +25,18 @@
 #   include <gtk/gtkgl.h>
 #   include <openvrml/gl/viewer.h>
 
+extern "C" gint gtk_gl_viewer_timeout_callback(gpointer ptr);
+
 namespace openvrml_player {
 
+    class flag;
+
     class GtkGLViewer : public openvrml::gl::viewer {
+        friend gint (::gtk_gl_viewer_timeout_callback)(gpointer ptr);
+
         static GdkGLConfig * gl_config;
+
+        const flag * quit_;
 
         GtkWidget * drawing_area;
         guint timer;
@@ -36,7 +44,7 @@ namespace openvrml_player {
     public:
         bool redrawNeeded;
 
-        explicit GtkGLViewer(GtkContainer & container);
+        explicit GtkGLViewer(GtkContainer & container, flag & quit);
         virtual ~GtkGLViewer() throw ();
 
         void timer_update();

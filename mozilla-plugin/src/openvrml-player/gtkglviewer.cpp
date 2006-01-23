@@ -21,6 +21,7 @@
 # include <X11/keysym.h>
 # include <gdk/gdkx.h>
 # include "gtkglviewer.h"
+# include "flag.h"
 
 GdkGLConfig * openvrml_player::GtkGLViewer::gl_config(0);
 
@@ -46,10 +47,11 @@ extern "C" {
     gboolean gtk_gl_viewer_motion_notify_event(GtkWidget * widget,
                                                GdkEventMotion * event,
                                                gpointer data);
-    gint gtk_gl_viewer_timeout_callback(const gpointer ptr);
 }
 
-openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container):
+openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container,
+                                          flag & quit):
+    quit_(&quit),
     drawing_area(gtk_drawing_area_new()),
     timer(0),
     redrawNeeded(false)
@@ -110,8 +112,6 @@ openvrml_player::GtkGLViewer::GtkGLViewer(GtkContainer & container):
                      this);
 
     gtk_container_add(&container, this->drawing_area);
-
-        
 }
 
 openvrml_player::GtkGLViewer::~GtkGLViewer() throw ()
@@ -176,7 +176,11 @@ gint gtk_gl_viewer_timeout_callback(const gpointer ptr)
     using openvrml_player::GtkGLViewer;
 
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
-    viewer.timer_update();
+    if (!viewer.quit_->value()) {
+        viewer.timer_update();
+    } else {
+        gtk_main_quit();
+    }
     return false;
 }
 

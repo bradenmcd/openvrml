@@ -17,13 +17,15 @@ noinst_HEADERS = \
         command_istream.h \
         plugin_streambuf.h \
         browser.h \
-        gtkglviewer.h
+        gtkglviewer.h \
+        flag.h
 openvrml_player_SOURCES = \
         player.cpp \
         command_istream.cpp \
         plugin_streambuf.cpp \
         browser.cpp \
-        gtkglviewer.cpp
+        gtkglviewer.cpp \
+        flag.cpp
 openvrml_player_LDADD = \
         $(top_builddir)/../src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/../src/libopenvrml/libopenvrml.la \
