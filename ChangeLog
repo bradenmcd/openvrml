@@ -1,3 +1,9 @@
+2006-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp (PluginInstance::SetWindow):
+	Parse OPENVRML_PLAYER environment variable with g_shell_parse_argv
+	such that arguments can be passed along with the executable name.
+
 2006-01-22 Braden McDaniel  <braden@endoframe.com>
 
 	Allow the plug-in child process to exit "normally" rather than

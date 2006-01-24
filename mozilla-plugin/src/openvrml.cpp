@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML Mozilla plug-in
 // Copyright 2004  Braden N. McDaniel
@@ -1098,12 +1098,39 @@ namespace {
                             "openvrml-player's output pipe");
                 }
 
-                const char * exec_path = getenv("OPENVRML_PLAYER");
-                if (!exec_path) {
-                    exec_path = OPENVRML_LIBEXECDIR_ "/openvrml-player";
+                //
+                // The OPENVRML_PLAYER environment variable overrides the
+                // default path to the child process executable.  To allow
+                // OPENVRML_PLAYER to include arguments (rather than just be a
+                // path to an executable), it is parsed wit
+                // g_shell_parse_argv.  This is particularly useful in case we
+                // want to run the child process in a harness like valgrind.
+                //
+                gint openvrml_player_cmd_argc = 0;
+                gchar ** openvrml_player_cmd_argv = 0;
+                const gchar * const openvrml_player_cmd =
+                    g_getenv("OPENVRML_PLAYER");
+                if (!openvrml_player_cmd) {
+                    openvrml_player_cmd_argc = 1;
+                    openvrml_player_cmd_argv =
+                        static_cast<gchar **>(g_malloc(sizeof (gchar *)));
+                    if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
+                    openvrml_player_cmd_argv[0] =
+                        OPENVRML_LIBEXECDIR_ "/openvrml-player";
+                } else {
+                    GError * error = 0;
+                    gboolean succeeded =
+                        g_shell_parse_argv(openvrml_player_cmd,
+                                           &openvrml_player_cmd_argc,
+                                           &openvrml_player_cmd_argv,
+                                           &error);
+                    if (!succeeded) {
+                        if (error) {
+                            g_critical(error->message);
+                            g_error_free(error);
+                        }
+                    }
                 }
-                vector<char> exec_path_vec(exec_path,
-                                           exec_path + strlen(exec_path) + 1);
 
                 string socket_id_arg =
                     "--gtk-socket-id=" + lexical_cast<string>(this->window);
@@ -1126,18 +1153,27 @@ namespace {
                     write_fd_arg_c_str,
                     write_fd_arg_c_str + write_fd_arg.length() + 1);
 
-                char * argv[] = {
-                    &exec_path_vec.front(),
-                    &socket_id_arg_vec.front(),
-                    &read_fd_arg_vec.front(),
-                    &write_fd_arg_vec.front(),
-                    0
-                };
+                gchar ** const argv =
+                    static_cast<gchar **>(
+                        g_malloc(
+                            sizeof (gchar *) * openvrml_player_cmd_argc + 4));
+                if (!argv) { throw std::bad_alloc(); }
+                gint i;
+                for (i = 0; i < openvrml_player_cmd_argc; ++i) {
+                    argv[i] = openvrml_player_cmd_argv[i];
+                }
+                argv[i++] = &socket_id_arg_vec.front();
+                argv[i++] = &read_fd_arg_vec.front();
+                argv[i++] = &write_fd_arg_vec.front();
+                argv[i]   = 0;
 
                 result = execv(argv[0], argv);
                 if (result < 0) {
                     g_error("Failed to start openvrml-player");
                 }
+
+                g_free(argv);
+                g_strfreev(openvrml_player_cmd_argv);
             } else if (this->player_pid > 0) {
                 int result = close(this->out_pipe[0]);
                 if (result != 0) {
