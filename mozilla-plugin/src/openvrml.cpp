@@ -1153,10 +1153,10 @@ namespace {
                     write_fd_arg_c_str,
                     write_fd_arg_c_str + write_fd_arg.length() + 1);
 
+                const gint argv_size = openvrml_player_cmd_argc + 4;
                 gchar ** const argv =
                     static_cast<gchar **>(
-                        g_malloc(
-                            sizeof (gchar *) * openvrml_player_cmd_argc + 4));
+                        g_malloc(sizeof (gchar *) * argv_size));
                 if (!argv) { throw std::bad_alloc(); }
                 gint i;
                 for (i = 0; i < openvrml_player_cmd_argc; ++i) {
