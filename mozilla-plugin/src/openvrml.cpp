@@ -63,8 +63,7 @@ namespace {
         GdkNativeWindow window;
         int x, y;
         int width, height;
-        pid_t player_pid;
-        int out_pipe[2], in_pipe[2];
+        GIOChannel * command_channel;
         GIOChannel * request_channel;
         std::stringstream request_line;
         nsCOMPtr<VrmlBrowser> scriptablePeer;
@@ -76,8 +75,7 @@ namespace {
         nsISupports * GetScriptablePeer() throw ();
         void SetWindow(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
-        int in() const throw ();
-        int out() const throw ();
+        ssize_t WriteCommand(const std::string & command);
     };
 
     class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
@@ -411,14 +409,10 @@ NPError NPP_NewStream(const NPP instance,
     std::ostringstream command;
     command << "new-stream " << ptrdiff_t(stream) << ' ' << type << ' '
             << stream->url << '\n';
-    ssize_t bytes_written = write(pluginInstance.out(),
-                                  command.str().data(),
-                                  command.str().length());
-    if (bytes_written < 0) {
-        printerr(strerror(errno));
-        return NPERR_GENERIC_ERROR;
-    }
-    return NPERR_NO_ERROR;
+    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
+    return (bytes_written < 0)
+        ? NPERR_GENERIC_ERROR
+        : NPERR_NO_ERROR;
 }
 
 NPError NPP_DestroyStream(const NPP instance,
@@ -427,20 +421,15 @@ NPError NPP_DestroyStream(const NPP instance,
 {
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
 
-    PluginInstance * const pluginInstance =
-        static_cast<PluginInstance *>(instance->pdata);
+    PluginInstance & pluginInstance =
+        *static_cast<PluginInstance *>(instance->pdata);
 
     std::ostringstream command;
     command << "destroy-stream " << ptrdiff_t(stream) << '\n';
-    ssize_t bytes_written = write(pluginInstance->out(),
-                                  command.str().data(),
-                                  command.str().length());
-    if (bytes_written < 0) {
-        printerr(strerror(errno));
-        return NPERR_GENERIC_ERROR;
-    }
-
-    return NPERR_NO_ERROR;
+    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
+    return (bytes_written < 0)
+        ? NPERR_GENERIC_ERROR
+        : NPERR_NO_ERROR;
 }
 
 /* PLUGIN DEVELOPERS:
@@ -475,8 +464,8 @@ int32 NPP_Write(const NPP instance,
 {
     if (!instance || !instance->pdata) { return 0; }
 
-    PluginInstance * const pluginInstance =
-        static_cast<PluginInstance *>(instance->pdata);
+    PluginInstance & pluginInstance =
+        *static_cast<PluginInstance *>(instance->pdata);
 
     std::ostringstream command;
     command << "write " << ptrdiff_t(stream) << ' ' << offset << ' ' << len
@@ -484,15 +473,9 @@ int32 NPP_Write(const NPP instance,
     for (int32 i = 0; i < len; ++i) {
         command.put(static_cast<char *>(buffer)[i]);
     }
-    ssize_t bytes_written = write(pluginInstance->out(),
-                                  command.str().data(),
-                                  command.str().length());
-    if (bytes_written < 0) {
-        printerr(strerror(errno));
-        return NPERR_GENERIC_ERROR;
-    }
+    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
 
-    return len; /* The number of bytes accepted */
+    return bytes_written; // The number of bytes accepted.
 }
 
 void NPP_StreamAsFile(const NPP instance,
@@ -1003,62 +986,50 @@ namespace {
     }
 
 
-    PluginInstance::PluginInstance(NPP npp) throw (std::bad_alloc):
+    PluginInstance::PluginInstance(const NPP npp) throw (std::bad_alloc):
         npp(npp),
         window(0),
         x(0),
         y(0),
         width(0),
         height(0),
-        player_pid(0),
+        command_channel(0),
         request_channel(0),
         scriptablePeer(new ScriptablePeer(*this))
-    {
-        int result = pipe(this->out_pipe);
-        if (result != 0) {
-            printerr(strerror(errno));
-        }
-        result = pipe(this->in_pipe);
-        if (result != 0) {
-            printerr(strerror(errno));
-        }
-    }
+    {}
 
     PluginInstance::~PluginInstance() throw ()
     {
-        if (this->player_pid) {
-            if (this->request_channel) {
-                GError * error = 0;
-                const gboolean flush = false;
-                GIOStatus status = g_io_channel_shutdown(this->request_channel,
-                                                         flush,
-                                                         &error);
-                if (status != G_IO_STATUS_NORMAL) {
-                    if (error) {
-                        g_critical(error->message);
-                        g_error_free(error);
-                    }
+        if (this->request_channel) {
+            GError * error = 0;
+            const gboolean flush = false;
+            GIOStatus status = g_io_channel_shutdown(this->request_channel,
+                                                     flush,
+                                                     &error);
+            if (status != G_IO_STATUS_NORMAL) {
+                if (error) {
+                    printerr(error->message);
+                    g_error_free(error);
                 }
             }
+
             g_io_channel_unref(this->request_channel);
+        }
 
-            //
-            // The openvrml-player process should detect that this file
-            // descriptor has been closed and terminate in response.
-            //
-            int result = close(this->out_pipe[1]);
-            if (result != 0) {
-                printerr(strerror(errno));
-                g_error("Failed to close write descriptor for "
-                        "OpenVRML plug-in's output pipe");
+        if (this->command_channel) {
+            GError * error = 0;
+            const gboolean flush = false;
+            GIOStatus status = g_io_channel_shutdown(this->command_channel,
+                                                     flush,
+                                                     &error);
+            if (status != G_IO_STATUS_NORMAL) {
+                if (error) {
+                    printerr(error->message);
+                    g_error_free(error);
+                }
             }
 
-            int status;
-            int options = 0;
-            pid_t pid = waitpid(this->player_pid, &status, options);
-            if (pid == -1) {
-                printerr(strerror(errno));
-            }
+            g_io_channel_unref(this->command_channel);
         }
     }
 
@@ -1076,136 +1047,139 @@ namespace {
             // The plug-in window is unchanged. Resize the window and exit.
             //
         } else {
+            using std::string;
+            using std::vector;
+            using boost::lexical_cast;
+
             this->window = GdkNativeWindow(ptrdiff_t(window.window));
 
-            fcntl(this->out_pipe[0], F_SETFD, 0);
-            fcntl(this->in_pipe[1], F_SETFD, 0);
-
-            this->player_pid = fork();
-            if (this->player_pid == 0) {
-                using std::vector;
-                using std::string;
-                using boost::lexical_cast;
-
-                int result = close(this->out_pipe[1]);
-                if (result != 0) {
-                    g_error("Failed to close write descriptor for "
-                            "openvrml-player's input pipe");
-                }
-                result = close(this->in_pipe[0]);
-                if (result != 0) {
-                    g_error("Failed to close read descriptor for "
-                            "openvrml-player's output pipe");
-                }
-
-                //
-                // The OPENVRML_PLAYER environment variable overrides the
-                // default path to the child process executable.  To allow
-                // OPENVRML_PLAYER to include arguments (rather than just be a
-                // path to an executable), it is parsed wit
-                // g_shell_parse_argv.  This is particularly useful in case we
-                // want to run the child process in a harness like valgrind.
-                //
-                gint openvrml_player_cmd_argc = 0;
-                gchar ** openvrml_player_cmd_argv = 0;
-                const gchar * const openvrml_player_cmd =
-                    g_getenv("OPENVRML_PLAYER");
-                if (!openvrml_player_cmd) {
-                    openvrml_player_cmd_argc = 1;
-                    openvrml_player_cmd_argv =
-                        static_cast<gchar **>(g_malloc(sizeof (gchar *)));
-                    if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
-                    openvrml_player_cmd_argv[0] =
-                        OPENVRML_LIBEXECDIR_ "/openvrml-player";
-                } else {
-                    GError * error = 0;
-                    gboolean succeeded =
-                        g_shell_parse_argv(openvrml_player_cmd,
-                                           &openvrml_player_cmd_argc,
-                                           &openvrml_player_cmd_argv,
-                                           &error);
-                    if (!succeeded) {
-                        if (error) {
-                            g_critical(error->message);
-                            g_error_free(error);
-                        }
+            //
+            // The OPENVRML_PLAYER environment variable overrides the default
+            // path to the child process executable.  To allow OPENVRML_PLAYER
+            // to include arguments (rather than just be a path to an
+            // executable), it is parsed wit g_shell_parse_argv.  This is
+            // particularly useful in case we want to run the child process in
+            // a harness like valgrind.
+            //
+            gint openvrml_player_cmd_argc = 0;
+            gchar ** openvrml_player_cmd_argv = 0;
+            const gchar * const openvrml_player_cmd =
+                g_getenv("OPENVRML_PLAYER");
+            if (!openvrml_player_cmd) {
+                openvrml_player_cmd_argc = 1;
+                openvrml_player_cmd_argv =
+                    static_cast<gchar **>(g_malloc(sizeof (gchar *)));
+                if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
+                openvrml_player_cmd_argv[0] =
+                    OPENVRML_LIBEXECDIR_ "/openvrml-player";
+            } else {
+                GError * error = 0;
+                gboolean succeeded =
+                    g_shell_parse_argv(openvrml_player_cmd,
+                                       &openvrml_player_cmd_argc,
+                                       &openvrml_player_cmd_argv,
+                                       &error);
+                if (!succeeded) {
+                    if (error) {
+                        g_critical(error->message);
+                        g_error_free(error);
                     }
                 }
-
-                string socket_id_arg =
-                    "--gtk-socket-id=" + lexical_cast<string>(this->window);
-                const char * socket_id_arg_c_str = socket_id_arg.c_str();
-                vector<char> socket_id_arg_vec(
-                    socket_id_arg_c_str,
-                    socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-                string read_fd_arg =
-                    "--read-fd=" + lexical_cast<string>(this->out_pipe[0]);
-                const char * read_fd_arg_c_str = read_fd_arg.c_str();
-                vector<char> read_fd_arg_vec(
-                    read_fd_arg_c_str,
-                    read_fd_arg_c_str + read_fd_arg.length() + 1);
-
-                string write_fd_arg =
-                    "--write-fd=" + lexical_cast<string>(this->in_pipe[1]);
-                const char * write_fd_arg_c_str = write_fd_arg.c_str();
-                vector<char> write_fd_arg_vec(
-                    write_fd_arg_c_str,
-                    write_fd_arg_c_str + write_fd_arg.length() + 1);
-
-                const gint argv_size = openvrml_player_cmd_argc + 4;
-                gchar ** const argv =
-                    static_cast<gchar **>(
-                        g_malloc(sizeof (gchar *) * argv_size));
-                if (!argv) { throw std::bad_alloc(); }
-                gint i;
-                for (i = 0; i < openvrml_player_cmd_argc; ++i) {
-                    argv[i] = openvrml_player_cmd_argv[i];
-                }
-                argv[i++] = &socket_id_arg_vec.front();
-                argv[i++] = &read_fd_arg_vec.front();
-                argv[i++] = &write_fd_arg_vec.front();
-                argv[i]   = 0;
-
-                result = execv(argv[0], argv);
-                if (result < 0) {
-                    g_error("Failed to start openvrml-player");
-                }
-
-                g_free(argv);
-                g_strfreev(openvrml_player_cmd_argv);
-            } else if (this->player_pid > 0) {
-                int result = close(this->out_pipe[0]);
-                if (result != 0) {
-                    printerr(strerror(errno));
-                }
-                result = close(this->in_pipe[1]);
-                if (result != 0) {
-                    printerr(strerror(errno));
-                }
-                this->request_channel =
-                    g_io_channel_unix_new(this->in_pipe[0]);
-                g_io_add_watch(this->request_channel,
-                               G_IO_IN,
-                               request_data_available,
-                               this);
-            } else if (this->player_pid < 0) {
-                printerr(strerror(errno));
             }
+
+            string socket_id_arg =
+                "--gtk-socket-id=" + lexical_cast<string>(this->window);
+            const char * socket_id_arg_c_str = socket_id_arg.c_str();
+            vector<char> socket_id_arg_vec(
+                socket_id_arg_c_str,
+                socket_id_arg_c_str + socket_id_arg.length() + 1);
+
+            const gint argv_size = openvrml_player_cmd_argc + 2;
+            gchar ** const argv =
+                static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
+            if (!argv) { throw std::bad_alloc(); }
+            gint i;
+            for (i = 0; i < openvrml_player_cmd_argc; ++i) {
+                argv[i] = openvrml_player_cmd_argv[i];
+            }
+            argv[i++] = &socket_id_arg_vec.front();
+            argv[i]   = 0;
+
+            gchar * const working_directory = g_get_current_dir();
+            if (!working_directory) { throw std::bad_alloc(); };
+            gchar ** envp = 0;
+            GPid * const child_pid = 0;
+            gint standard_input, standard_output;
+            gint * const standard_error = 0;
+            GError * error = 0;
+            gboolean succeeded = g_spawn_async_with_pipes(working_directory,
+                                                          argv,
+                                                          envp,
+                                                          GSpawnFlags(0),
+                                                          0,
+                                                          0,
+                                                          child_pid,
+                                                          &standard_input,
+                                                          &standard_output,
+                                                          standard_error,
+                                                          &error);
+            if (!succeeded) {
+                if (error) {
+                    g_critical(error->message);
+                    g_error_free(error);
+                }
+            }
+
+            g_free(working_directory);
+            g_free(argv);
+            g_strfreev(openvrml_player_cmd_argv);
+
+            this->command_channel = g_io_channel_unix_new(standard_input);
+            if (!this->command_channel) { throw std::bad_alloc(); }
+
+            this->request_channel = g_io_channel_unix_new(standard_output);
+            if (!this->command_channel) { throw std::bad_alloc(); }
+            g_io_add_watch(this->request_channel,
+                           G_IO_IN,
+                           request_data_available,
+                           this);
+
         }
     }
 
     void PluginInstance::HandleEvent(void *) throw ()
     {}
 
-    int PluginInstance::in() const throw ()
+    ssize_t PluginInstance::WriteCommand(const std::string & command)
     {
-        return this->in_pipe[0];
-    }
+        gsize bytes_written;
+        GError * error = 0;
+        GIOStatus status = g_io_channel_write_chars(this->command_channel,
+                                                    command.data(),
+                                                    command.length(),
+                                                    &bytes_written,
+                                                    &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                printerr(error->message);
+                g_error_free(error);
+            }
+            return -1;
+        }
 
-    int PluginInstance::out() const throw ()
-    {
-        return this->out_pipe[1];
+        do {
+            status = g_io_channel_flush(this->command_channel, &error);
+        } while (status == G_IO_STATUS_AGAIN);
+
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                printerr(error->message);
+                g_error_free(error);
+            }
+            return -1;
+        }
+
+        return bytes_written;
     }
 
     gboolean request_data_available(GIOChannel * source,

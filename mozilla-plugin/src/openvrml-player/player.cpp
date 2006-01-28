@@ -145,7 +145,6 @@ openvrml_player_command_channel_loop_quit_event(gpointer data);
 namespace {
 
     GdkNativeWindow socket_id;
-    gint read_fd, write_fd;
 
     GOptionEntry options[] = {
         {
@@ -156,24 +155,6 @@ namespace {
             &socket_id,
             "GtkSocket id",
             "GTK_SOCKET_ID"
-        },
-        {
-            "read-fd",
-            0,
-            0,
-            G_OPTION_ARG_INT,
-            &read_fd,
-            "file descriptor for reading commands",
-            "READ_FD"
-        },
-        {
-            "write-fd",
-            0,
-            0,
-            G_OPTION_ARG_INT,
-            &write_fd,
-            "file descriptor for writing commands",
-            "WRITE_FD"
         },
         { 0, 0, 0, G_OPTION_ARG_NONE, 0, 0, 0 }
     };
@@ -235,8 +216,7 @@ namespace {
     };
 
     struct command_channel_loop {
-        command_channel_loop(const gint read_fd, command_istream & command_in):
-            read_fd_(read_fd),
+        explicit command_channel_loop(command_istream & command_in):
             command_in_(&command_in)
         {}
 
@@ -245,7 +225,7 @@ namespace {
             command_channel_data data;
             data.main_context = g_main_context_new();
             data.main_loop = g_main_loop_new(data.main_context, false);
-            data.command_channel = g_io_channel_unix_new(this->read_fd_);
+            data.command_channel = g_io_channel_unix_new(0); // stdin
             GError * error = 0;
             GIOStatus status =
                 g_io_channel_set_encoding(data.command_channel,
@@ -291,7 +271,6 @@ namespace {
         }
 
     private:
-        gint read_fd_;
         command_istream * command_in_;
     };
 }
@@ -331,9 +310,7 @@ int main(int argc, char * argv[])
 
     command_istream command_in;
 
-    if (write_fd) {
-        ::request_channel = g_io_channel_unix_new(write_fd);
-    }
+    ::request_channel = g_io_channel_unix_new(1); // stdout
 
     GtkWidget * window = socket_id
         ? gtk_plug_new(socket_id)
@@ -354,7 +331,7 @@ int main(int argc, char * argv[])
         b.load_url(uri, parameter);
     } else {
         function0<void> command_channel_loop_func =
-            command_channel_loop(read_fd, command_in);
+            command_channel_loop(command_in);
         command_channel_loop_thread.reset(
             threads.create_thread(command_channel_loop_func));
         

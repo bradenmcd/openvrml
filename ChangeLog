@@ -1,3 +1,43 @@
+2006-01-28 Braden McDaniel  <braden@endoframe.com>
+
+	Launch the child openvrml-player process using
+	g_spawn_async_with_pipes instead of fork/exec.  Use the child
+	process' stdin and stdout for the command and request channels,
+	respectively, instead of specifying file descriptors for these on
+	the command line.
+
+	* mozilla-plugin/src/openvrml.cpp (PluginInstance): Removed
+	player_pid, out_pipe, in_pipe members; added command_channel
+	member.  Removed in() and out() member functions; added
+	WriteCommand(const std::string &) member function.
+	(NPP_NewStream(NPP, NPMIMEType, NPStream *, NPBool, uint16 *)):
+	Delegate writing to the command channel to
+	PluginInstance::WriteCommand(const std::string &).
+	(NPP_DestroyStream(NPP, NPStream *, NPError)): Delegate writing to
+	the command channel to PluginInstance::WriteCommand(const
+	std::string &).
+	(NPP_Write(NPP, NPStream *, int32, int32, void *)): Delegate
+	writing to the command channel to
+	PluginInstance::WriteCommand(const std::string &).
+	(PluginInstance::PluginInstance(NPP)): Removed initialization of
+	player_pid, out_pipe, in_pipe.
+	(PluginInstance::~PluginInstance()): Shutdown/unref
+	command_channel; don't wait on child process.
+	(PluginInstance::SetWindow(NPWindow &)): Use
+	g_spawn_async_with_pipes instead of fork/exec.
+	(PluginInstance::WriteCommand(const std::string &)): Added
+	function; wrapper to simplify usage/error handling for
+	g_io_channel_write_chars.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(read_fd): Removed.
+	(write_fd): Removed.
+	(options): Removed entries for read-fd and write-fd.
+	(command_channel_loop): Removed read_fd_ member.
+	(command_channel_loop::command_channel_loop(command_istream &)):
+	Removed read_fd argument; create command_channel to read from
+	stdin.
+	(main(int, char *[])): Create request_channel to write to stdout.
+
 2006-01-24 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp (PluginInstance::SetWindow):
