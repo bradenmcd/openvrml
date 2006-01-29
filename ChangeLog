@@ -1,5 +1,11 @@
 2006-01-29 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(main(int, char *[])): boost::thread_group manages the lifetime of
+	created threads; eliminated use of boost::scoped_ptr for this.
+
+2006-01-29 Braden McDaniel  <braden@endoframe.com>
+
 	Use g_io_channel_get_buffer_condition instead of select/FD_ISSET.
 
 	* mozilla-plugin/src/openvrml.cpp

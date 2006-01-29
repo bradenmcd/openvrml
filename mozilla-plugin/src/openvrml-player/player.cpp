@@ -280,7 +280,6 @@ int main(int argc, char * argv[])
     using std::string;
     using std::vector;
     using boost::function0;
-    using boost::scoped_ptr;
     using boost::shared_ptr;
     using boost::thread;
     using boost::thread_group;
@@ -324,16 +323,13 @@ int main(int argc, char * argv[])
 
     thread_group threads;
 
-    scoped_ptr<thread> command_channel_loop_thread;
-    scoped_ptr<thread> initial_stream_reader_thread;
     if (argc > 1) {
         const vector<string> uri(1, argv[1]), parameter;
         b.load_url(uri, parameter);
     } else {
         function0<void> command_channel_loop_func =
             command_channel_loop(command_in);
-        command_channel_loop_thread.reset(
-            threads.create_thread(command_channel_loop_func));
+        threads.create_thread(command_channel_loop_func);
         
         shared_ptr<plugin_streambuf> initial_stream(
             new plugin_streambuf(initial_stream_uri));
@@ -343,13 +339,11 @@ int main(int argc, char * argv[])
         g_return_val_if_fail(succeeded, EXIT_FAILURE);
         function0<void> initial_stream_reader_func =
             initial_stream_reader(initial_stream, b);
-        initial_stream_reader_thread.reset(
-            threads.create_thread(initial_stream_reader_func));
+        threads.create_thread(initial_stream_reader_func);
     }
 
     function0<void> read_commands = command_istream_reader(command_in, b);
-    scoped_ptr<thread> command_reader_thread(
-        threads.create_thread(read_commands));
+    threads.create_thread(read_commands);
 
     viewer.timer_update();
     gtk_main();
