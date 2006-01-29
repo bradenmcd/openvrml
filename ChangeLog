@@ -1,3 +1,14 @@
+2006-01-29 Braden McDaniel  <braden@endoframe.com>
+
+	Use g_io_channel_get_buffer_condition instead of select/FD_ISSET.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Use g_io_channel_get_buffer_condition instead of select/FD_ISSET.
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp
+	(command_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Use g_io_channel_get_buffer_condition instead of select/FD_ISSET.
+
 2006-01-28 Braden McDaniel  <braden@endoframe.com>
 
 	Launch the child openvrml-player process using

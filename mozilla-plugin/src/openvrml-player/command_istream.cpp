@@ -52,8 +52,6 @@ gboolean command_data_available(GIOChannel * source,
     command_streambuf & streambuf =
         *static_cast<command_streambuf *>(data);
 
-    const int fd = g_io_channel_unix_get_fd(source);
-    fd_set readfds;
     do {
         gchar c;
         gsize bytes_read;
@@ -78,20 +76,7 @@ gboolean command_data_available(GIOChannel * source,
 
         streambuf.source_buffer_.put(traits_type::to_int_type(c));
 
-        FD_ZERO(&readfds);
-        FD_SET(fd, &readfds);
-
-        fd_set errorfds;
-        FD_ZERO(&errorfds);
-        FD_SET(fd, &errorfds);
-
-        timeval timeout = { 0, 0 };
-        int bits_set = select(fd + 1, &readfds, 0, &errorfds, &timeout);
-        if (FD_ISSET(fd, &errorfds) || bits_set < 0) {
-            g_warning(strerror(errno));
-            g_return_val_if_reached(false);
-        }
-    } while (FD_ISSET(fd, &readfds));
+    } while (g_io_channel_get_buffer_condition(source) & G_IO_IN);
 
     return true;
 }
