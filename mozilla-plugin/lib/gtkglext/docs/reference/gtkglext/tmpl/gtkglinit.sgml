@@ -14,6 +14,9 @@ Library initialization functions
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION gtk_gl_init ##### -->
 <para>
 

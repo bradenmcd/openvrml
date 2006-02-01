@@ -22,6 +22,9 @@ be made between those two functions.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION gtk_widget_set_gl_capability ##### -->
 <para>
 
