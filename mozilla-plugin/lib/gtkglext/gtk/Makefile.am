@@ -86,11 +86,11 @@ gtkglext_sources = \
 #
 
 gtkglextincludedir = $(includedir)/gtkglext-@GTKGLEXT_API_VERSION@/gtk
-noinst_HEADERS = $(gtkglext_headers)
+gtkglextinclude_HEADERS = $(gtkglext_headers)
 
 INCLUDES = $(common_includes)
 
-noinst_LTLIBRARIES = $(gtkglext_targetlib)
+lib_LTLIBRARIES = $(gtkglext_targetlib)
 
 EXTRA_LTLIBRARIES = \
 	libgtkglext-x11-@API_MJ@.@API_MI@.la	\
@@ -104,3 +104,12 @@ libgtkglext_win32_@API_MJ@_@API_MI@_la_SOURCES = $(gtkglext_sources)
 libgtkglext_win32_@API_MJ@_@API_MI@_la_LDFLAGS = $(common_ldflags)
 libgtkglext_win32_@API_MJ@_@API_MI@_la_LIBADD = $(common_libadd)
 libgtkglext_win32_@API_MJ@_@API_MI@_la_DEPENDENCIES = $(gtkglext_def)
+
+#
+# Extra rules
+#
+
+install-data-local: install-ms-lib
+
+uninstall-local: uninstall-ms-lib
+

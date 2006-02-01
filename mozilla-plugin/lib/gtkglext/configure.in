@@ -11,10 +11,10 @@ AC_PREREQ([2.54])
 # set gtkglext_binary_age and gtkglext_interface_age to 0.
 #
 m4_define([gtkglext_major_version], [1])
-m4_define([gtkglext_minor_version], [0])
-m4_define([gtkglext_micro_version], [6])
-m4_define([gtkglext_interface_age], [4])
-m4_define([gtkglext_binary_age],    [6])
+m4_define([gtkglext_minor_version], [1])
+m4_define([gtkglext_micro_version], [0])
+m4_define([gtkglext_interface_age], [0])
+m4_define([gtkglext_binary_age],    [0])
 m4_define([gtkglext_version],
           [gtkglext_major_version.gtkglext_minor_version.gtkglext_micro_version])
 
@@ -59,6 +59,10 @@ m4_define([gmodule_required_version], [2.0.0])
 m4_define([pango_pkg], [pango])
 m4_define([pango_required_version], [1.0.0])
 
+# Pangox
+m4_define([pangox_pkg], [pangox])
+m4_define([pangox_required_version], [1.0.0])
+
 # PangoFT2
 m4_define([pangoft2_pkg], [pangoft2])
 m4_define([pangoft2_required_version], [1.0.0])
@@ -86,6 +90,9 @@ AM_INIT_AUTOMAKE([1.7 no-define dist-bzip2 dist-zip])
 
 # Specify a configuration file
 AM_CONFIG_HEADER([config.h])
+
+dnl Initialize maintainer mode
+AM_MAINTAINER_MODE
 
 AC_CANONICAL_HOST
 
@@ -131,7 +138,6 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_ISC_POSIX
 #AM_DISABLE_STATIC
-AM_DISABLE_SHARED
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
@@ -343,14 +349,17 @@ PKG_CHECK_MODULES([BASE_DEPENDENCIES], [\
 gtk_pkg >= gtk_required_version \
 gdk_pkg >= gdk_required_version \
 pango_pkg >= pango_required_version \
+pangox_pkg >= pangox_required_version \
 gmodule_pkg >= gmodule_required_version \
 ])
 
 # Check for GLib
-AM_PATH_GLIB_2_0([glib_required_version], , )
+AM_PATH_GLIB_2_0([glib_required_version], ,
+                 [AC_MSG_ERROR([GLib 2.0 not found])])
 
 # Check for GTK+
-AM_PATH_GTK_2_0([gtk_required_version], , )
+AM_PATH_GTK_2_0([gtk_required_version], ,
+                [AC_MSG_ERROR([GTK+ 2.0 not found])])
 
 # Checks for libraries.
 
@@ -437,6 +446,10 @@ GDKGLEXT_WIN_EXTRA_DEFS=""
 
 if test "x$gdktarget" = "xx11"; then
   AC_PATH_XTRA
+
+  if test "x$no_x" = "xyes" ; then
+    AC_MSG_ERROR([X development libraries not found])
+  fi
 
   save_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
@@ -526,10 +539,12 @@ save_LIBS="$LIBS"
 LIBS="$LIBS $GL_LDFLAGS $WINDOWING_LIBS $MATH_LIB"
 
 if test "x$gdktarget" = "xx11"; then
-  AC_CHECK_HEADERS([GL/glx.h], , )
+  AC_CHECK_HEADERS([GL/glx.h], ,
+                   [AC_MSG_ERROR([Cannot find GLX header])])
 fi
 
-AC_CHECK_HEADERS([GL/gl.h GL/glu.h], , )
+AC_CHECK_HEADERS([GL/gl.h GL/glu.h], ,
+                 [AC_MSG_ERROR([Cannot find OpenGL headers])])
 
 if test "x$gdktarget" = "xx11"; then
 
@@ -589,6 +604,11 @@ if test "x$gdktarget" = "xx11"; then
                   GL_LIB_NAME=MesaGL])
   fi
 
+  if test "x$have_GL" = "xno" ; then
+    # no GL found
+    AC_MSG_ERROR([Cannot find GL library])
+  fi
+
   # GLU
 
   have_GLU=no
@@ -628,6 +648,11 @@ if test "x$gdktarget" = "xx11"; then
                  [GL_LIBS="-lMesaGLU $GL_LIBS"
                   have_GLU=yes], ,
                  [$GL_LIBS])
+  fi
+
+  if test "x$have_GLU" = "xno" ; then
+    # no GLU found
+    AC_MSG_ERROR([Cannot find GLU library])
   fi
 
   # Checks for SGI's GLU library
@@ -707,6 +732,9 @@ else
               [GL_LIBS="-lopengl32"
                have_opengl32=yes])
   AC_MSG_RESULT([$have_opengl32])
+  if test "x$have_opengl32" = "xno" ; then
+    AC_MSG_ERROR([Cannot find GL library])
+  fi
 
   AC_MSG_CHECKING([for gluNewQuadric in -lglu32])
   have_glu32=no
@@ -718,6 +746,9 @@ else
               [GL_LIBS="-lglu32 $GL_LIBS"
                have_glu32=yes])
   AC_MSG_RESULT([$have_glu32])
+  if test "x$have_glu32" = "xno" ; then
+    AC_MSG_ERROR([Cannot find GLU library])
+  fi
 
 dnl   AC_CHECK_LIB(opengl32, glNewList,
 dnl                GL_LIBS="-lopengl32",
@@ -763,7 +794,7 @@ LIBS="$save_LIBS"
 # CFLAGS and LIBS
 ##################################################
 
-GDKGLEXT_PACKAGES="gdk_pkg pango_pkg gmodule_pkg"
+GDKGLEXT_PACKAGES="gdk_pkg pango_pkg pangox_pkg gmodule_pkg"
 GDKGLEXT_EXTRA_CFLAGS="$GL_CFLAGS $GDKGLEXT_WIN_CFLAGS"
 GDKGLEXT_EXTRA_LIBS="$GL_LIBS $GDKGLEXT_WIN_LIBS"
 GDKGLEXT_DEP_CFLAGS="$GDKGLEXT_EXTRA_CFLAGS `$PKG_CONFIG --cflags $GDKGLEXT_PACKAGES`"

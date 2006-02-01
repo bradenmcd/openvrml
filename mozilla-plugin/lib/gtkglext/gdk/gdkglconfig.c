@@ -33,13 +33,7 @@ static gpointer parent_class = NULL;
 GType
 gdk_gl_config_get_type (void)
 {
-  static const char type_name[] = "GdkGLConfig";
   static GType type = 0;
-
-  if (!type)
-    {
-      type = g_type_from_name(type_name);
-    }
 
   if (!type)
     {
@@ -56,7 +50,7 @@ gdk_gl_config_get_type (void)
       };
 
       type = g_type_register_static (G_TYPE_OBJECT,
-                                     type_name,
+                                     "GdkGLConfig",
                                      &type_info, 0);
     }
 

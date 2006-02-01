@@ -12,6 +12,7 @@ EXTRA_DIST = \
 	gdkglext-uninstalled.pc.in	\
 	gtkglext-uninstalled.pc.in	\
 	gtkglext.spec.in		\
+	gtkglext.spec			\
 	gtkglext.nsi.in			\
 	gtkglext.nsi			\
 	setup-gtkglext.sh
@@ -45,12 +46,12 @@ gtkglext-$(API_VER)-uninstalled.pc: gtkglext-uninstalled.pc gtkglext-$(GDK_TARGE
 	rm -f $@ && cp gtkglext-uninstalled.pc $@
 
 pkgconfigdir = $(libdir)/pkgconfig
-noinst_DATA = \
+pkgconfig_DATA = \
 	gdkglext-$(GDK_TARGET)-$(API_VER).pc	\
 	gdkglext-$(API_VER).pc			\
 	gtkglext-$(GDK_TARGET)-$(API_VER).pc	\
 	gtkglext-$(API_VER).pc
-$(noinst_DATA): $(top_builddir)/config.status
+$(pkgconfig_DATA): $(top_builddir)/config.status
 
 DISTCLEANFILES = \
 	gdkglext-$(GDK_TARGET)-$(API_VER).pc			\
