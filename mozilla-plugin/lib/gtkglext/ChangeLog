@@ -1,13 +1,3 @@
-2004-03-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
-
-	* ==== Released 1.0.6 ====
-
-	* configure.in: Version 1.0.6, binary age 6, interface age 4.
-
-2004-03-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
-
-	* gtkglext.nsi.in: Rewritten for the NSIS 2.0.
-
 2004-02-21  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 
 	* examples/shapes.c (idle_add, idle_remove): 
@@ -48,11 +38,9 @@
 	(gtk_gl_widget_unrealize): Rendering context is now destroyed on
 	"unrealize" signal.
 
-2003-11-20  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+2004-01-30  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 
-	* ==== Released 1.0.5 ====
-
-	* configure.in: Version 1.0.5, binary age 5, interface age 3.
+	* gtkglext.nsi.in: Rewritten for new Modern UI macros of NSIS 2.
 
 2003-11-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 
@@ -134,12 +122,6 @@
 	synchronizes OpenGL rendering pipeline, and reduces flickering on
 	resizing X window. (Reported by Mathieu Lacage. Thanks!)
 
-2003-09-15  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
-
-	* ==== Released 1.0.4 ====
-
-	* configure.in: Version 1.0.4, Binary age 4, interface age 2.
-
 2003-09-14  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 
 	* examples/low-level.c (realize, configure_event, expose_event):
@@ -159,6 +141,11 @@
 
 	* gtk/gtkglwidget.c (gtk_widget_set_gl_capability) 
 	(gl_widget_private_destroy): Own reference to private->share_list.
+
+2003-09-10  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
+
+	* configure.in (gtkglext_minor_version): 1.1.x unstable
+	development series.
 
 2003-09-09  Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 

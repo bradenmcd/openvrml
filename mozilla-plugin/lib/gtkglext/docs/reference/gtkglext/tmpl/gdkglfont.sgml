@@ -14,6 +14,9 @@ Functions for font rendering in OpenGL
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION gdk_gl_font_use_pango_font ##### -->
 <para>
 

@@ -14,6 +14,9 @@ OpenGL-related tokens
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### MACRO GDK_GL_SUCCESS ##### -->
 <para>
 

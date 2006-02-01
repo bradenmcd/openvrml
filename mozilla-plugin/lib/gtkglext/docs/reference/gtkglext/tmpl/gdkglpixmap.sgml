@@ -14,6 +14,9 @@ OpenGL pixmap which is maintained off-screen
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT GdkGLPixmap ##### -->
 <para>
 

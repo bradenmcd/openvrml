@@ -14,6 +14,9 @@ Functions for generating easily recognizable 3D geometric objects
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION gdk_gl_draw_cube ##### -->
 <para>
 
