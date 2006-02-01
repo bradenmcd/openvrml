@@ -1,3 +1,8 @@
+2006-02-01 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml-player/Makefile.am (AM_CPPFLAGS):
+	Added top-level gtkglext builddir to include path.
+
 2006-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml-player/player.cpp

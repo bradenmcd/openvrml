@@ -1,5 +1,6 @@
 AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/gtkglext \
+        -I$(top_builddir)/lib/gtkglext \
         -I$(top_builddir)/lib/gtkglext/gdk \
         -I$(top_builddir)/../src/libopenvrml \
         -I$(top_srcdir)/../src/libopenvrml \
