@@ -1,5 +1,42 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	Refactored code into custom Gtk+ widget.
+
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	(noinst_HEADERS): Removed browser.h and gtkglviewer.h.
+	(openvrml_player_SOURCES): Removed browser.cpp and
+	gtkglviewer.cpp.
+	* mozilla-plugin/src/openvrml-player/browser.cpp: Removed file;
+	code relocated to gtkvrmlbrowser.cpp.
+	* mozilla-plugin/src/openvrml-player/browser.h: Removed file; code
+	relocated to gtkvrmlbrowser.cpp.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.cpp: Removed
+	file; code relocated to gtkvrmlbrowser.cpp.
+	* mozilla-plugin/src/openvrml-player/gtkglviewer.h: Removed file;
+	code relocated to gtkvrmlbrowser.cpp.
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp: Added
+	file; GtkVrmlBrowser widget implementation.
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.h: Added file;
+	GtkVrmlBrowser widget.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()() const): End
+	the main (rendering) thread with a call to gtk_main_quit.
+	(initial_stream_reader) Changed to use GtkVrmlBrowser instead of
+	openvrml::browser.
+	(command_channel_loop::command_channel_loop(GMainLoop &)): Pass a
+	constructed GMainLoop instead of an
+	openvrml_player::command_istream.
+	(command_channel_loop::operator()() const): Relocated code to
+	create the main loop and add the command_channel watch to main.
+	(main(int, char *[])): Create the GMainLoop for the
+	command_channel_loop thread and add the command_channel watch to
+	it.  Use GtkVrmlBrowser instead of openvrml::browser and
+	openvrml::viewer.
+	(openvrml_player_command_channel_loop_quit_event(gpointer)):
+	Relocated code to shut down the command_channel to main.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/player.cpp
 	(openvrml_player::command_istream_reader): Removed unused member
 	browser_.
