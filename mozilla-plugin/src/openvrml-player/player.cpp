@@ -58,10 +58,8 @@ namespace {
 namespace openvrml_player {
 
     struct command_istream_reader {
-        explicit command_istream_reader(command_istream & in,
-                                        openvrml::browser & browser):
-            in_(&in),
-            browser_(&browser)
+        explicit command_istream_reader(command_istream & in):
+            in_(&in)
         {}
 
         void operator()() const throw ()
@@ -135,7 +133,6 @@ namespace openvrml_player {
 
     private:
         command_istream * in_;
-        openvrml::browser * browser_;
     };
 }
 
@@ -342,7 +339,7 @@ int main(int argc, char * argv[])
         threads.create_thread(initial_stream_reader_func);
     }
 
-    function0<void> read_commands = command_istream_reader(command_in, b);
+    function0<void> read_commands = command_istream_reader(command_in);
     threads.create_thread(read_commands);
 
     viewer.timer_update();

@@ -1,5 +1,11 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader): Removed unused member
+	browser_.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
 	(openvrml_player::plugin_streambuf::plugin_streambuf(const
 	std::string &)): Initialze c_ to '\0', then set to
