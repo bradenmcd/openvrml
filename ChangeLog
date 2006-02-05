@@ -1,3 +1,11 @@
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::plugin_streambuf(const
+	std::string &)): Initialze c_ to '\0', then set to
+	traits_type::not_eof.  This quells an uninitialized variable
+	warning from valgrind.
+
 2006-02-01 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml-player/Makefile.am (AM_CPPFLAGS):

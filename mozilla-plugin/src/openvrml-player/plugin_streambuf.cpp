@@ -25,9 +25,14 @@ openvrml_player::plugin_streambuf::
 plugin_streambuf(const std::string & requested_url):
     initialized_(false),
     url_(requested_url),
-    c_(traits_type::not_eof(this->c_)),
+    c_('\0'),
     npstream_destroyed_(false)
 {
+    //
+    // This is really just here to emphasize that c_ must not be EOF.
+    //
+    this->c_ = traits_type::not_eof(this->c_);
+
     this->setg(&this->c_, &this->c_, &this->c_);
 }
 
