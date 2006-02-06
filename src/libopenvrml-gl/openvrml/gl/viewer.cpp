@@ -291,7 +291,7 @@ extern "C" void OPENVRML_GL_CALLBACK_ shell_tess_begin(const GLenum type,
             ? (*user_data_.face_normal_index)[user_data_.face_index]
             : user_data_.face_index;
         if (normal_index < user_data_.face_normal->size()) {
-            glColor3fv(&(*user_data_.face_normal)[normal_index][0]);
+            glNormal3fv(&(*user_data_.face_normal)[normal_index][0]);
         }
     }
 }

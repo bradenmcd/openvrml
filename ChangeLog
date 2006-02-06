@@ -1,5 +1,11 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(shell_tess_begin(GLenum, void *)): Fixed use of glColor3fv where
+	glNormal3fv should be used.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	Added missing instances of OPENVRML_GL_LOCAL.
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
