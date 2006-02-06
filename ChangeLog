@@ -1,5 +1,41 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	Added missing instances of OPENVRML_GL_LOCAL.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(checkErrors(const std::string &)): Added OPENVRML_GL_LOCAL.
+	(computeCylinder(double, double, int, float[][3], float[][3],
+	int[])): Added OPENVRML_GL_LOCAL.
+	(elevationVertexNormal(int, int, int, int, float, float)): Added
+	OPENVRML_GL_LOCAL.
+	(TessExtrusion): Added OPENVRML_GL_LOCAL.
+	(insertExtrusionCaps(GLUtesselator &, unsigned int, size_t, const
+	std::vector<vec3f> &, const std::vector<vec2f> &)): Added
+	OPENVRML_GL_LOCAL.
+	(computeExtrusion_(const std::vector<rotation> &, const
+	std::vector<vec2f> &, const std::vector<vec2f> &, const
+	std::vector<vec3f> &, std::vector<vec3f> &, std::vector<vec2f>&)):
+	Added OPENVRML_GL_LOCAL.
+	(computeExtrusion_(const std::vector<rotation> &, const
+	std::vector<vec2f> &, const std::vector<vec2f> &, const
+	std::vector<vec3f> &, std::vector<vec3f> &, std::vector<vec2f> &,
+	std::vector<int32> &)): Added OPENVRML_GL_LOCAL.
+	(computeBounds(size_t, const float *, float (&)[6])): Added
+	OPENVRML_GL_LOCAL.
+	(texGenParams(float[], int[], float[])): Added OPENVRML_GL_LOCAL.
+	(insertShellConvex(ShellData *)): Added OPENVRML_GL_LOCAL.
+	(insertShellTess(GLUtesselator &, const std::vector<vertex_data>&,
+	const std::vector<int32> &, bool, const std::vector<color> &,
+	const std::vector<int32> &, bool, const std::vector<vec3f> &,
+	const std::vector<int32> &)): Added OPENVRML_GL_LOCAL.
+	(computeSphere(double, int, float[][3], float[][3], int *)): Added
+	OPENVRML_GL_LOCAL.
+	(power_of_2(unsigned long)): Added OPENVRML_GL_LOCAL.
+	(computeView(const vec3f &, const rotation &, float, vec3f &,
+	vec3f &)): Added OPENVRML_GL_LOCAL.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	Refactored code into custom Gtk+ widget.
 
 	* mozilla-plugin/src/openvrml-player/Makefile.am

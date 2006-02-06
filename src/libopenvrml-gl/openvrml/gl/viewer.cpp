@@ -861,9 +861,9 @@ namespace {
     // (-1.0 ... 1.0)
     //
     OPENVRML_GL_LOCAL const rotation trackball(float p1x,
-                                            float p1y,
-                                            float p2x,
-                                            float p2y)
+                                               float p1y,
+                                               float p2x,
+                                               float p2y)
     {
         //
         // This size should really be based on the distance from the center of
@@ -979,7 +979,7 @@ void viewer::initialize()
 namespace {
 
     // Call this after each frame for debugging...
-    void checkErrors(const std::string & s)
+    OPENVRML_GL_LOCAL void checkErrors(const std::string & s)
     {
         GLenum glerr;
         while ((glerr = glGetError()) != GL_NO_ERROR) {
@@ -1522,12 +1522,12 @@ namespace {
      * It might be smarter to do just one, and reference it with scaling (but the
      * world creator could just as easily do that with DEF/USE ...).
      */
-    void computeCylinder(const double height,
-                         const double radius,
-                         const int numFacets,
-                         float c[][3],
-                         float tc[][3],
-                         int faces[])
+    OPENVRML_GL_LOCAL void computeCylinder(const double height,
+                                           const double radius,
+                                           const int numFacets,
+                                           float c[][3],
+                                           float tc[][3],
+                                           int faces[])
     {
         double angle, x, y;
         int i, polyIndex;
@@ -1759,7 +1759,7 @@ namespace {
 
     // Compute a normal at vert i,j of an ElevationGrid.
 
-    const vec3f elevationVertexNormal(
+    OPENVRML_GL_LOCAL const vec3f elevationVertexNormal(
             const int i, const int j,
             const int nx, const int nz,
             const float dx, const float dz,
@@ -1934,7 +1934,7 @@ namespace {
 
     // Extrusion cap tessellation for non-convex shapes
 
-    struct TessExtrusion {
+    struct OPENVRML_GL_LOCAL TessExtrusion {
         const float * c; // coordinates array [nVerts * 3]
         const float * crossSection; // crossSection coordinates [nCrossSection * 2]
         float tcDeltaU, tcDeltaV;
@@ -2006,11 +2006,11 @@ extern "C" {
 
 namespace {
 
-    void insertExtrusionCaps(GLUtesselator & tesselator,
-                             const unsigned int mask,
-                             const size_t nSpine,
-                             const std::vector<vec3f> & c,
-                             const std::vector<vec2f> & cs)
+    OPENVRML_GL_LOCAL void insertExtrusionCaps(GLUtesselator & tesselator,
+                                               const unsigned int mask,
+                                               const size_t nSpine,
+                                               const std::vector<vec3f> & c,
+                                               const std::vector<vec2f> & cs)
     {
         using std::vector;
 
@@ -2143,12 +2143,13 @@ namespace {
      * @retval c
      * @retval tc
      */
-    void computeExtrusion_(const std::vector<rotation> & orientation,
-                           const std::vector<vec2f> & scale,
-                           const std::vector<vec2f> & crossSection,
-                           const std::vector<vec3f> & spine,
-                           std::vector<vec3f> & c,
-                           std::vector<vec2f> & tc)
+    OPENVRML_GL_LOCAL void
+    computeExtrusion_(const std::vector<rotation> & orientation,
+                      const std::vector<vec2f> & scale,
+                      const std::vector<vec2f> & crossSection,
+                      const std::vector<vec3f> & spine,
+                      std::vector<vec3f> & c,
+                      std::vector<vec2f> & tc)
     {
         size_t i, j, ci;
 
@@ -2328,13 +2329,14 @@ namespace {
      * @retval tc
      * @retval faces
      */
-    void computeExtrusion_(const std::vector<rotation> & orientation,
-                           const std::vector<vec2f> & scale,
-                           const std::vector<vec2f> & crossSection,
-                           const std::vector<vec3f> & spine,
-                           std::vector<vec3f> & c,
-                           std::vector<vec2f> & tc,
-                           std::vector<int32> & faces)
+    OPENVRML_GL_LOCAL void
+    computeExtrusion_(const std::vector<rotation> & orientation,
+                      const std::vector<vec2f> & scale,
+                      const std::vector<vec2f> & crossSection,
+                      const std::vector<vec3f> & spine,
+                      std::vector<vec3f> & c,
+                      std::vector<vec2f> & tc,
+                      std::vector<int32> & faces)
     {
         computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
 
@@ -2553,9 +2555,9 @@ viewer::insert_point_set(const std::vector<vec3f> & coord,
 
 namespace {
 
-    void computeBounds(size_t npoints,
-                       const float * points,
-                       float (&bounds)[6])
+    OPENVRML_GL_LOCAL void computeBounds(size_t npoints,
+                                         const float * points,
+                                         float (&bounds)[6])
     {
         if (npoints == 0) {
             std::fill(bounds, bounds + 6, 0.0f);
@@ -2576,9 +2578,9 @@ namespace {
         }
     }
 
-    void texGenParams(float bounds[],  // xmin,xmax, ymin,ymax, zmin,zmax
-                      int axes[2],     // s, t
-                      float params[4]) // s0, 1/sSize, t0, 1/tSize
+    OPENVRML_GL_LOCAL void texGenParams(float bounds[],  // xmin,xmax, ymin,ymax, zmin,zmax
+                                        int axes[2],     // s, t
+                                        float params[4]) // s0, 1/sSize, t0, 1/tSize
     {
         axes[0] = 0;
         axes[1] = 1;
@@ -2610,7 +2612,7 @@ namespace {
         params[3] = float(1.0 / params[3]);
     }
 
-    void insertShellConvex(ShellData * const s)
+    OPENVRML_GL_LOCAL void insertShellConvex(ShellData * const s)
     {
         vec3f N;
         size_t i, nf = 0;                        // Number of faces
@@ -2710,15 +2712,16 @@ namespace {
         }
     }
 
-    void insertShellTess(GLUtesselator & tessobj,
-                         const std::vector<vertex_data> & vertices,
-                         const std::vector<int32> & coord_index,
-                         const bool color_per_face,
-                         const std::vector<openvrml::color> & color,
-                         const std::vector<int32> & color_index,
-                         const bool normal_per_face,
-                         const std::vector<vec3f> & normal,
-                         const std::vector<int32> & normal_index)
+    OPENVRML_GL_LOCAL void
+    insertShellTess(GLUtesselator & tessobj,
+                    const std::vector<vertex_data> & vertices,
+                    const std::vector<int32> & coord_index,
+                    const bool color_per_face,
+                    const std::vector<openvrml::color> & color,
+                    const std::vector<int32> & color_index,
+                    const bool normal_per_face,
+                    const std::vector<vec3f> & normal,
+                    const std::vector<int32> & normal_index)
     {
         using std::vector;
         gluTessCallback(&tessobj,
@@ -2939,11 +2942,11 @@ viewer::insert_shell(unsigned int mask,
 
 namespace {
 
-    void computeSphere(const double radius,
-                       const int numLatLong,
-                       float c[][3],
-                       float tc[][3],
-                       int *faces)
+    OPENVRML_GL_LOCAL void computeSphere(const double radius,
+                                         const int numLatLong,
+                                         float c[][3],
+                                         float tc[][3],
+                                         int *faces)
     {
         double r, angle, x, y, z;
         int i, j, polyIndex;
@@ -3421,7 +3424,7 @@ void viewer::set_sensitive(node * object)
 
 namespace {
 
-    inline bool power_of_2(unsigned long n)
+    OPENVRML_GL_LOCAL inline bool power_of_2(unsigned long n)
     {
         return !(n & (n - 1));
     }
@@ -3609,11 +3612,11 @@ namespace {
     /**
      * Compute a target and up vector from position/orientation/distance.
      */
-    void computeView(const vec3f & position,
-                     const rotation & orientation,
-                     const float distance,
-                     vec3f & target,
-                     vec3f & up)
+    OPENVRML_GL_LOCAL void computeView(const vec3f & position,
+                                       const rotation & orientation,
+                                       const float distance,
+                                       vec3f & target,
+                                       vec3f & up)
     {
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
 
