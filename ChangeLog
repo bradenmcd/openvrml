@@ -1,5 +1,13 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unused functions.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(length(const float[3])): Removed.
+	(normalize(float[3])): Removed.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(indexFaceNormal(size_t, size_t, size_t, const
 	std::vector<openvrml::vec3f> &)):  Normalize the returned vec3f.

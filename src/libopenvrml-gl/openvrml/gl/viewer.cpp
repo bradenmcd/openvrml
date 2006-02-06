@@ -105,19 +105,6 @@ namespace {
         }
     };
 
-    OPENVRML_GL_LOCAL inline double length(const float vec[3]) {
-        return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-    }
-
-    OPENVRML_GL_LOCAL inline void normalize(float vec[3]) {
-        const float len = float(length(vec));
-        if (!fequal<float>()(len, 0.0f)) {
-            vec[0] /= len;
-            vec[1] /= len;
-            vec[2] /= len;
-        }
-    }
-
     class OPENVRML_GL_LOCAL gl_capabilities {
     public:
         GLint max_modelview_stack_depth;
@@ -1525,9 +1512,9 @@ namespace {
     OPENVRML_GL_LOCAL void computeCylinder(const double height,
                                            const double radius,
                                            const int numFacets,
-                                           float c[][3],
-                                           float tc[][3],
-                                           int faces[])
+                                           float (*c)[3],
+                                           float (*tc)[3],
+                                           int * faces)
     {
         double angle, x, y;
         int i, polyIndex;
@@ -2578,9 +2565,9 @@ namespace {
         }
     }
 
-    OPENVRML_GL_LOCAL void texGenParams(float bounds[],  // xmin,xmax, ymin,ymax, zmin,zmax
-                                        int axes[2],     // s, t
-                                        float params[4]) // s0, 1/sSize, t0, 1/tSize
+    OPENVRML_GL_LOCAL void texGenParams(float (&bounds)[6],  // xmin,xmax, ymin,ymax, zmin,zmax
+                                        int (&axes)[2],     // s, t
+                                        float (&params)[4]) // s0, 1/sSize, t0, 1/tSize
     {
         axes[0] = 0;
         axes[1] = 1;
@@ -2944,8 +2931,8 @@ namespace {
 
     OPENVRML_GL_LOCAL void computeSphere(const double radius,
                                          const int numLatLong,
-                                         float c[][3],
-                                         float tc[][3],
+                                         float (*c)[3],
+                                         float (*tc)[3],
                                          int *faces)
     {
         double r, angle, x, y, z;
