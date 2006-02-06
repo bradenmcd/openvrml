@@ -1,6 +1,12 @@
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(indexFaceNormal(size_t, size_t, size_t, const
+	std::vector<openvrml::vec3f> &)):  Normalize the returned vec3f.
+
+2006-02-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(shell_tess_begin(GLenum, void *)): Fixed use of glColor3fv where
 	glNormal3fv should be used.
 

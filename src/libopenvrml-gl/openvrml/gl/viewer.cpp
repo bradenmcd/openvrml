@@ -261,7 +261,7 @@ namespace {
         using openvrml::vec3f;
         const vec3f v1 = points[i2] - points[i3];
         const vec3f v2 = points[i2] - points[i1];
-        return v1 * v2;
+        return (v1 * v2).normalize();
     }
 }
 
