@@ -1,3 +1,8 @@
+2006-02-10 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Makefile.am (VISUALC7_1_FILES): Added missing line
+	continuation.
+
 2006-02-09 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Makefile.am (VISUALC7_1_FILES): Updated to include
