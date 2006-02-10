@@ -1,3 +1,8 @@
+2006-02-09 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Makefile.am (VISUALC7_1_FILES): Updated to include
+	sdl-viewer project file instead of the old lookat one.
+
 2006-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	Removed unused functions.
@@ -617,7 +622,7 @@
 	* tests/test_browser.cpp
 	(test_browser::do_get_resource(const std::string &): Changed
 	file_resource_istream to override the private virtual functions of
-	openvrml::resource_istream.	
+	openvrml::resource_istream.
 
 2005-12-20 Braden McDaniel  <braden@endoframe.com>
 
