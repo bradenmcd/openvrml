@@ -298,6 +298,7 @@ namespace openvrml {
 
     class OPENVRML_API node : boost::noncopyable {
         friend class proto_node;
+        friend class externproto_node;
 
         friend std::ostream & operator<<(std::ostream & out, const node & n);
 
@@ -421,7 +422,7 @@ namespace openvrml {
         const std::string & id() const throw ();
         void id(const std::string & node_id) throw (std::bad_alloc);
 
-        const boost::shared_ptr<openvrml::scope> & scope() const throw ();
+        openvrml::scope & scope() const throw ();
 
         openvrml::scene * scene() const throw ();
 
@@ -539,9 +540,10 @@ namespace openvrml {
         n->release();
     }
 
-    inline const boost::shared_ptr<scope> & node::scope() const throw ()
+    inline scope & node::scope() const throw ()
     {
-        return this->scope_;
+        assert(this->scope_);
+        return *this->scope_;
     }
 
     inline openvrml::scene * node::scene() const throw ()

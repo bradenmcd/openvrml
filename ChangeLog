@@ -1,5 +1,24 @@
 2006-02-10 Braden McDaniel  <braden@endoframe.com>
 
+	It is not desirable for arbitrary clients of openvrml::node to be
+	able to share ownership of the scope.  Changed
+	openvrml::node::scope() to return a reference rather than a
+	boost::shared_ptr.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::externproto_node): Moved externproto_node to the
+	openvrml namespace from the anonymous namespace.
+	(openvrml::externproto_node(proto_node_type &)): Access
+	openvrml::node::scope_ directly since we need to transmit shared
+	ownership.
+	* src/libopenvrml/openvrml/node.h (openvrml::node): Made
+	openvrml::externproto_node a friend.
+	(openvrml::node::scope() const): Changed to return an
+	openvrml::scope& rathern than a const
+	boost::shared_ptr<openvrml::scope>.
+
+2006-02-10 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Makefile.am (VISUALC7_1_FILES): Added missing line
 	continuation.
 

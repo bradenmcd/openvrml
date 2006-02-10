@@ -402,11 +402,9 @@ namespace openvrml {
     {}
 } // namespace openvrml
 
-namespace {
-    class externproto_node;
-}
-
 namespace openvrml {
+
+    class externproto_node;
 
     /**
      * @internal
@@ -442,7 +440,7 @@ namespace openvrml {
      * about how these event pathways @e should be created.
      */
     class OPENVRML_LOCAL proto_node : public abstract_proto_node {
-        friend class ::externproto_node;
+        friend class externproto_node;
 
         template <typename FieldValue>
         class proto_exposedfield : public proto_eventin<FieldValue>,
@@ -2275,14 +2273,12 @@ namespace {
     };
 
 
-    class externproto_node;
-
     class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
         mutable boost::mutex mutex_;
         openvrml::node_interface_set interfaces_;
         boost::shared_ptr<openvrml::node_class> owning_ptr_to_class_;
 
-        typedef std::vector<boost::intrusive_ptr<externproto_node> >
+        typedef std::vector<boost::intrusive_ptr<openvrml::externproto_node> >
             externproto_nodes;
 
         mutable externproto_nodes externproto_nodes_;
@@ -2315,7 +2311,9 @@ namespace {
             throw (openvrml::unsupported_interface, std::bad_cast,
                    std::bad_alloc);
     };
+}
 
+namespace openvrml {
 
     class OPENVRML_LOCAL externproto_node :
         public openvrml::abstract_proto_node {
@@ -2452,7 +2450,9 @@ namespace {
         virtual openvrml::transform_node * to_transform() throw ();
         virtual openvrml::viewpoint_node * to_viewpoint() throw ();
     };
+}
 
+namespace {
 
     class OPENVRML_LOCAL default_navigation_info :
         public openvrml::navigation_info_node {
@@ -5752,564 +5752,547 @@ namespace {
             return this->proto_node_type_->create_node(scope, initial_values);
         }
 
+        using openvrml::externproto_node;
         const boost::intrusive_ptr<externproto_node> result(
             new externproto_node(*this, scope, initial_values));
 
         this->externproto_nodes_.push_back(result);
         return result;
     }
+} // namespace
 
 
-    template <typename FieldValue>
-    externproto_node::externproto_exposedfield<FieldValue>::
-    externproto_exposedfield(externproto_node & node,
-                             const FieldValue & initial_value) throw ():
-        openvrml::node_event_listener(node),
-        openvrml::event_emitter(static_cast<openvrml::field_value &>(*this)),
-        FieldValue(initial_value),
-        proto_eventin<FieldValue>(node),
-        proto_eventout<FieldValue>(node, initial_value)
-    {}
+template <typename FieldValue>
+openvrml::externproto_node::externproto_exposedfield<FieldValue>::
+externproto_exposedfield(externproto_node & node,
+                         const FieldValue & initial_value) throw ():
+    node_event_listener(node),
+    openvrml::event_emitter(static_cast<field_value &>(*this)),
+    FieldValue(initial_value),
+    proto_eventin<FieldValue>(node),
+    proto_eventout<FieldValue>(node, initial_value)
+{}
 
-    template <typename FieldValue>
-    externproto_node::externproto_exposedfield<FieldValue>::
-    ~externproto_exposedfield() throw ()
-    {}
+template <typename FieldValue>
+openvrml::externproto_node::externproto_exposedfield<FieldValue>::
+~externproto_exposedfield() throw ()
+{}
 
-    template <typename FieldValue>
-    std::auto_ptr<openvrml::field_value>
-    externproto_node::externproto_exposedfield<FieldValue>::do_clone() const
-        throw (std::bad_alloc)
+template <typename FieldValue>
+std::auto_ptr<openvrml::field_value>
+openvrml::externproto_node::externproto_exposedfield<FieldValue>::
+do_clone() const
+    throw (std::bad_alloc)
+{
+    using boost::polymorphic_downcast;
+    return std::auto_ptr<field_value>(
+        new externproto_exposedfield<FieldValue>(
+            *polymorphic_downcast<externproto_node *>(&this->node()),
+            *this));
+}
+
+
+template <typename FieldValue>
+void
+openvrml::externproto_node::externproto_exposedfield<FieldValue>::
+do_process_event(const FieldValue & value, const double timestamp)
+    throw (std::bad_alloc)
+{
+    static_cast<FieldValue &>(*this) = value;
+    this->proto_eventin<FieldValue>::do_process_event(value, timestamp);
+    this->node().modified(true);
+    node::emit_event(*this, timestamp);
+}
+
+const boost::shared_ptr<openvrml::field_value>
+openvrml::externproto_node::
+create_exposedfield(externproto_node & node, field_value::type_id type)
+    throw (std::bad_alloc)
+{
+    using boost::mpl::for_each;
+    using openvrml_::field_value_types;
+
+    boost::shared_ptr<field_value> result;
+    for_each<field_value_types>(externproto_exposedfield_creator(node,
+                                                                 type,
+                                                                 result));
+    assert(result.get());
+    return result;
+}
+
+openvrml::externproto_node::externproto_node(
+    const externproto_node_type & type,
+    const boost::shared_ptr<openvrml::scope> & scope,
+    const initial_value_map & initial_values)
+    throw (std::bad_alloc):
+    abstract_proto_node(type, scope)
+{
+    for (node_interface_set::const_iterator interface =
+             type.interfaces().begin();
+         interface != type.interfaces().end();
+         ++interface)
     {
-        using boost::polymorphic_downcast;
-        return std::auto_ptr<openvrml::field_value>(
-            new externproto_exposedfield<FieldValue>(
-                *polymorphic_downcast<externproto_node *>(&this->node()),
-                *this));
+        using boost::shared_ptr;
+        using boost::dynamic_pointer_cast;
+
+        bool succeeded = false;
+        std::auto_ptr<openvrml::field_value> field_auto_ptr;
+        shared_ptr<openvrml::event_listener> interface_eventin;
+        shared_ptr<openvrml::event_emitter> interface_eventout;
+        shared_ptr<openvrml::field_value> interface_field;
+        switch (interface->type) {
+        case node_interface::eventin_id:
+            succeeded = this->eventin_map
+                .insert(make_pair(interface->id,
+                                  create_eventin(interface->field_type,
+                                                 *this)))
+                .second;
+            break;
+        case node_interface::eventout_id:
+            succeeded = this->eventout_map
+                .insert(make_pair(interface->id,
+                                  create_eventout(interface->field_type,
+                                                  *this)))
+                .second;
+            break;
+        case node_interface::exposedfield_id:
+            interface_field = create_exposedfield(*this,
+                                                  interface->field_type);
+            succeeded = this->field_map_
+                .insert(make_pair(interface->id, interface_field)).second;
+            assert(succeeded);
+
+            interface_eventin =
+                dynamic_pointer_cast<openvrml::event_listener>(
+                    interface_field);
+            succeeded = this->eventin_map
+                .insert(make_pair("set_" + interface->id,
+                                  interface_eventin))
+                .second;
+            assert(succeeded);
+
+            interface_eventout =
+                dynamic_pointer_cast<openvrml::event_emitter>(
+                    interface_eventin);
+            succeeded = this->eventout_map
+                .insert(make_pair(interface->id + "_changed",
+                                  interface_eventout))
+                .second;
+            break;
+        case node_interface::field_id:
+            field_auto_ptr = field_value::create(interface->field_type);
+            succeeded = this->field_map_
+                .insert(
+                    make_pair(interface->id,
+                              shared_ptr<field_value>(field_auto_ptr)))
+                .second;
+            break;
+        case node_interface::invalid_type_id:
+            assert(false
+                   && "got node_interface::invalid_type_id for interface->type");
+        }
+        assert(succeeded);
     }
 
-
-    template <typename FieldValue>
-    void externproto_node::externproto_exposedfield<FieldValue>::
-    do_process_event(const FieldValue & value, const double timestamp)
-        throw (std::bad_alloc)
-    {
-        static_cast<FieldValue &>(*this) = value;
-        this->proto_eventin<FieldValue>::do_process_event(value, timestamp);
-        this->node().modified(true);
-        node::emit_event(*this, timestamp);
+    //
+    // Set the initial values.
+    //
+    for (initial_value_map::const_iterator map_entry =
+             initial_values.begin();
+         map_entry != initial_values.end();
+         ++map_entry) {
+        const field_map::const_iterator pos =
+            this->field_map_.find(map_entry->first);
+        if (pos == this->field_map_.end()) {
+            throw unsupported_interface(this->type(), map_entry->first);
+        }
+        pos->second->assign(*map_entry->second);
     }
+}
 
-    const boost::shared_ptr<openvrml::field_value>
-    externproto_node::create_exposedfield(externproto_node & node,
-                                          openvrml::field_value::type_id type)
-        throw (std::bad_alloc)
-    {
+openvrml::externproto_node::~externproto_node() throw ()
+{}
+
+bool openvrml::externproto_node::modified() const
+{
+    return this->proto_node_
+        ? this->proto_node_->modified()
+        : false;
+}
+
+void
+openvrml::externproto_node::
+set_proto_node(proto_node_type & node_type)
+    throw (std::bad_alloc)
+{
+    boost::recursive_mutex::scoped_lock lock(this->mutex());
+
+    using boost::static_pointer_cast;
+
+    this->proto_node_ =
+        static_pointer_cast<proto_node>(
+            node_type.create_node(this->scope_, this->field_map_));
+
+    for (eventin_map_t::const_iterator map_entry =
+             this->eventin_map.begin();
+         map_entry != this->eventin_map.end();
+         ++map_entry) {
         using boost::mpl::for_each;
         using openvrml_::field_value_types;
 
-        boost::shared_ptr<openvrml::field_value> result;
-        for_each<field_value_types>(externproto_exposedfield_creator(node,
-                                                                     type,
-                                                                     result));
-        assert(result.get());
-        return result;
+        openvrml::event_listener & eventin =
+            this->proto_node_->event_listener(map_entry->first);
+        for_each<field_value_types>(eventin_is(map_entry->second->type(),
+                                               eventin,
+                                               *map_entry->second));
     }
 
-    externproto_node::externproto_node(
-        const externproto_node_type & type,
-        const boost::shared_ptr<openvrml::scope> & scope,
-        const openvrml::initial_value_map & initial_values)
-        throw (std::bad_alloc):
-        abstract_proto_node(type, scope)
-    {
-        using openvrml::node_interface;
-        using openvrml::node_interface_set;
+    for (eventout_map_t::const_iterator map_entry =
+             this->eventout_map.begin();
+         map_entry != this->eventout_map.end();
+         ++map_entry) {
+        using boost::mpl::for_each;
+        using openvrml_::field_value_types;
 
-        for (node_interface_set::const_iterator interface =
-                 type.interfaces().begin();
-             interface != type.interfaces().end();
-             ++interface)
-        {
-            using boost::shared_ptr;
-            using boost::dynamic_pointer_cast;
-
-            bool succeeded = false;
-            std::auto_ptr<openvrml::field_value> field_auto_ptr;
-            shared_ptr<openvrml::event_listener> interface_eventin;
-            shared_ptr<openvrml::event_emitter> interface_eventout;
-            shared_ptr<openvrml::field_value> interface_field;
-            switch (interface->type) {
-            case node_interface::eventin_id:
-                succeeded = this->eventin_map
-                    .insert(make_pair(interface->id,
-                                      create_eventin(interface->field_type,
-                                                     *this)))
-                    .second;
-                break;
-            case node_interface::eventout_id:
-                succeeded = this->eventout_map
-                    .insert(make_pair(interface->id,
-                                      create_eventout(interface->field_type,
-                                                      *this)))
-                    .second;
-                break;
-            case node_interface::exposedfield_id:
-                interface_field = create_exposedfield(*this,
-                                                      interface->field_type);
-                succeeded = this->field_map_
-                    .insert(make_pair(interface->id, interface_field)).second;
-                assert(succeeded);
-
-                interface_eventin =
-                    dynamic_pointer_cast<openvrml::event_listener>(
-                        interface_field);
-                succeeded = this->eventin_map
-                    .insert(make_pair("set_" + interface->id,
-                                      interface_eventin))
-                    .second;
-                assert(succeeded);
-
-                interface_eventout =
-                    dynamic_pointer_cast<openvrml::event_emitter>(
-                        interface_eventin);
-                succeeded = this->eventout_map
-                    .insert(make_pair(interface->id + "_changed",
-                                      interface_eventout))
-                    .second;
-                break;
-            case node_interface::field_id:
-                field_auto_ptr =
-                    openvrml::field_value::create(interface->field_type);
-                succeeded = this->field_map_
-                    .insert(
-                        make_pair(
-                            interface->id,
-                            shared_ptr<openvrml::field_value>(field_auto_ptr)))
-                    .second;
-                break;
-            case node_interface::invalid_type_id:
-                assert(false
-                       && "got node_interface::invalid_type_id for "
-                       "interface->type");
-            }
-            assert(succeeded);
-        }
-
-        //
-        // Set the initial values.
-        //
-        using openvrml::initial_value_map;
-        for (initial_value_map::const_iterator map_entry =
-                 initial_values.begin();
-             map_entry != initial_values.end();
-             ++map_entry) {
-            const field_map::const_iterator pos =
-                this->field_map_.find(map_entry->first);
-            if (pos == this->field_map_.end()) {
-                throw openvrml::unsupported_interface(this->type(),
-                                                      map_entry->first);
-            }
-            pos->second->assign(*map_entry->second);
-        }
+        openvrml::event_emitter & eventout =
+            this->proto_node_->event_emitter(map_entry->first);
+        for_each<field_value_types>(
+            eventout_is(map_entry->second->value().type(),
+                        eventout,
+                        *map_entry->second));
     }
 
-    externproto_node::~externproto_node() throw ()
-    {}
+    if (this->scene()) {
+        this->proto_node_->initialize(*this->scene(),
+                                      browser::current_time());
+    }
+}
 
-    bool externproto_node::modified() const
-    {
-        return this->proto_node_
-            ? this->proto_node_->modified()
-            : false;
+void openvrml::externproto_node::do_initialize(const double timestamp)
+    throw (std::bad_alloc)
+{
+    if (this->proto_node_) {
+        this->proto_node_->initialize(*this->scene(), timestamp);
+    }
+}
+
+const openvrml::field_value &
+openvrml::externproto_node::do_field(const std::string & id) const
+    throw (unsupported_interface)
+{
+    if (this->proto_node_) {
+        return this->proto_node_->do_field(id);
     }
 
-    void
-    externproto_node::set_proto_node(openvrml::proto_node_type & node_type)
-        throw (std::bad_alloc)
-    {
-        boost::recursive_mutex::scoped_lock lock(this->mutex());
+    field_map::const_iterator pos = this->field_map_.find(id);
+    if (pos == this->field_map_.end()) {
+        throw unsupported_interface(this->type(),
+                                    node_interface::field_id,
+                                    id);
+    }
+    assert(pos->second);
+    return *pos->second;
+}
 
-        using boost::static_pointer_cast;
-
-        this->proto_node_ =
-            static_pointer_cast<openvrml::proto_node>(
-                node_type.create_node(this->scope(), this->field_map_));
-
-        for (eventin_map_t::const_iterator map_entry =
-                 this->eventin_map.begin();
-             map_entry != this->eventin_map.end();
-             ++map_entry) {
-            using boost::mpl::for_each;
-            using openvrml_::field_value_types;
-
-            openvrml::event_listener & eventin =
-                this->proto_node_->event_listener(map_entry->first);
-            for_each<field_value_types>(eventin_is(map_entry->second->type(),
-                                                   eventin,
-                                                   *map_entry->second));
-        }
-
-        for (eventout_map_t::const_iterator map_entry =
-                 this->eventout_map.begin();
-             map_entry != this->eventout_map.end();
-             ++map_entry) {
-            using boost::mpl::for_each;
-            using openvrml_::field_value_types;
-
-            openvrml::event_emitter & eventout =
-                this->proto_node_->event_emitter(map_entry->first);
-            for_each<field_value_types>(
-                eventout_is(map_entry->second->value().type(),
-                            eventout,
-                            *map_entry->second));
-        }
-
-        if (this->scene()) {
-            this->proto_node_->initialize(*this->scene(),
-                                          openvrml::browser::current_time());
-        }
+openvrml::event_listener &
+openvrml::externproto_node::do_event_listener(const std::string & id)
+    throw (unsupported_interface)
+{
+    if (this->proto_node_) {
+        return this->proto_node_->do_event_listener(id);
     }
 
-    void externproto_node::do_initialize(const double timestamp)
-        throw (std::bad_alloc)
-    {
-        if (this->proto_node_) {
-            this->proto_node_->initialize(*this->scene(), timestamp);
-        }
+    eventin_map_t::const_iterator pos = this->eventin_map.find(id);
+    if (pos == this->eventin_map.end()) {
+        throw unsupported_interface(this->type(),
+                                    node_interface::eventin_id,
+                                    id);
+    }
+    assert(pos->second);
+    return *pos->second;
+}
+
+openvrml::event_emitter &
+openvrml::externproto_node::do_event_emitter(const std::string & id)
+    throw (unsupported_interface)
+{
+    if (this->proto_node_) {
+        return this->proto_node_->do_event_emitter(id);
     }
 
-    const openvrml::field_value &
-    externproto_node::do_field(const std::string & id) const
-        throw (openvrml::unsupported_interface)
-    {
-        if (this->proto_node_) {
-            return this->proto_node_->do_field(id);
-        }
-
-        field_map::const_iterator pos = this->field_map_.find(id);
-        if (pos == this->field_map_.end()) {
-            throw openvrml::unsupported_interface(
-                this->type(), openvrml::node_interface::field_id, id);
-        }
-        assert(pos->second);
-        return *pos->second;
+    eventout_map_t::const_iterator pos = this->eventout_map.find(id);
+    if (pos == this->eventout_map.end()) {
+        throw unsupported_interface(this->type(),
+                                    node_interface::eventout_id,
+                                    id);
     }
+    assert(pos->second);
+    return *pos->second;
+}
 
-    openvrml::event_listener &
-    externproto_node::do_event_listener(const std::string & id)
-        throw (openvrml::unsupported_interface)
-    {
-        if (this->proto_node_) {
-            return this->proto_node_->do_event_listener(id);
-        }
-
-        eventin_map_t::const_iterator pos = this->eventin_map.find(id);
-        if (pos == this->eventin_map.end()) {
-            throw openvrml::unsupported_interface(
-                this->type(), openvrml::node_interface::eventin_id, id);
-        }
-        assert(pos->second);
-        return *pos->second;
+void openvrml::externproto_node::do_shutdown(const double timestamp) throw ()
+{
+    if (this->proto_node_) {
+        this->proto_node_->shutdown(timestamp);
     }
+}
 
-    openvrml::event_emitter &
-    externproto_node::do_event_emitter(const std::string & id)
-        throw (openvrml::unsupported_interface)
-    {
-        if (this->proto_node_) {
-            return this->proto_node_->do_event_emitter(id);
-        }
+/**
+ * @brief Cast to a script_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a script_node, or 0 otherwise.
+ */
+openvrml::script_node * openvrml::externproto_node::to_script() throw ()
+{
+    return node_cast<script_node *>(this->proto_node_.get());
+}
 
-        eventout_map_t::const_iterator pos = this->eventout_map.find(id);
-        if (pos == this->eventout_map.end()) {
-            throw openvrml::unsupported_interface(
-                this->type(), openvrml::node_interface::eventout_id, id);
-        }
-        assert(pos->second);
-        return *pos->second;
-    }
+/**
+ * @brief Cast to an appearance_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is an appearance_node, or 0 otherwise.
+ */
+openvrml::appearance_node *
+openvrml::externproto_node::to_appearance() throw ()
+{
+    return node_cast<appearance_node *>(this->proto_node_.get());
+}
 
-    void externproto_node::do_shutdown(const double timestamp) throw ()
-    {
-        if (this->proto_node_) {
-            this->proto_node_->shutdown(timestamp);
-        }
-    }
+/**
+ * @brief Cast to a <code>bounded_volume_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>bounded_volume_node</code>, or 0 otherwise.
+ */
+openvrml::bounded_volume_node * openvrml::externproto_node::to_bounded_volume()
+    throw ()
+{
+    return node_cast<bounded_volume_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a script_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a script_node, or 0 otherwise.
-     */
-    openvrml::script_node * externproto_node::to_script() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<script_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a child_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a child_node, or 0 otherwise.
+ */
+openvrml::child_node * openvrml::externproto_node::to_child() throw ()
+{
+    return node_cast<child_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to an appearance_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is an appearance_node, or 0 otherwise.
-     */
-    openvrml::appearance_node * externproto_node::to_appearance() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<appearance_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a color_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a color_node, or 0 otherwise.
+ */
+openvrml::color_node * openvrml::externproto_node::to_color() throw ()
+{
+    return node_cast<color_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>bounded_volume_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>bounded_volume_node</code>, or 0 otherwise.
-     */
-    openvrml::bounded_volume_node * externproto_node::to_bounded_volume()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<bounded_volume_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a coordinate_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a coordinate_node, or 0 otherwise.
+ */
+openvrml::coordinate_node *
+openvrml::externproto_node::to_coordinate() throw ()
+{
+    return node_cast<coordinate_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a child_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a child_node, or 0 otherwise.
-     */
-    openvrml::child_node * externproto_node::to_child() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<child_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a font_style_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a font_style_node, or 0 otherwise.
+ */
+openvrml::font_style_node *
+openvrml::externproto_node::to_font_style() throw ()
+{
+    return node_cast<font_style_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a color_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a color_node, or 0 otherwise.
-     */
-    openvrml::color_node * externproto_node::to_color() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<color_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a geometry_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a geometry_node, or 0 otherwise.
+ */
+openvrml::geometry_node * openvrml::externproto_node::to_geometry() throw ()
+{
+    return node_cast<geometry_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a coordinate_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a coordinate_node, or 0 otherwise.
-     */
-    openvrml::coordinate_node * externproto_node::to_coordinate() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<coordinate_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>grouping_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>grouping_node</code>, or 0 otherwise.
+ */
+openvrml::grouping_node * openvrml::externproto_node::to_grouping() throw ()
+{
+    return node_cast<grouping_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a font_style_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a font_style_node, or 0 otherwise.
-     */
-    openvrml::font_style_node * externproto_node::to_font_style() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<font_style_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>light_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>light_node</code>, or 0 otherwise.
+ */
+openvrml::light_node * openvrml::externproto_node::to_light() throw ()
+{
+    return node_cast<light_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a geometry_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a geometry_node, or 0 otherwise.
-     */
-    openvrml::geometry_node * externproto_node::to_geometry() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<geometry_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a material_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a material_node, or 0 otherwise.
+ */
+openvrml::material_node * openvrml::externproto_node::to_material() throw ()
+{
+    return node_cast<material_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>grouping_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>grouping_node</code>, or 0 otherwise.
-     */
-    openvrml::grouping_node * externproto_node::to_grouping() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<grouping_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>navigation_info_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>navigation_info_node</code>, or 0 otherwise.
+ */
+openvrml::navigation_info_node *
+openvrml::externproto_node::to_navigation_info()
+    throw ()
+{
+    return node_cast<navigation_info_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>light_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>light_node</code>, or 0 otherwise.
-     */
-    openvrml::light_node * externproto_node::to_light() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<light_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a normal_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a normal_node, or 0 otherwise.
+ */
+openvrml::normal_node * openvrml::externproto_node::to_normal() throw ()
+{
+    return node_cast<normal_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a material_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a material_node, or 0 otherwise.
-     */
-    openvrml::material_node * externproto_node::to_material() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<material_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>pointing_device_sensor_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>pointing_device_sensor_node</code>, or 0 otherwise.
+ */
+openvrml::pointing_device_sensor_node *
+openvrml::externproto_node::to_pointing_device_sensor()
+    throw ()
+{
+    return node_cast<pointing_device_sensor_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>navigation_info_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>navigation_info_node</code>, or 0 otherwise.
-     */
-    openvrml::navigation_info_node * externproto_node::to_navigation_info()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<navigation_info_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>scoped_light_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>scoped_light_node</code>, or 0 otherwise.
+ */
+openvrml::scoped_light_node *
+openvrml::externproto_node::to_scoped_light() throw ()
+{
+    return node_cast<scoped_light_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a normal_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a normal_node, or 0 otherwise.
-     */
-    openvrml::normal_node * externproto_node::to_normal() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<normal_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a sound_source_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a sound_source_node, or 0 otherwise.
+ */
+openvrml::sound_source_node *
+openvrml::externproto_node::to_sound_source() throw ()
+{
+    return node_cast<sound_source_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>pointing_device_sensor_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>pointing_device_sensor_node</code>, or 0 otherwise.
-     */
-    openvrml::pointing_device_sensor_node *
-    externproto_node::to_pointing_device_sensor()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<pointing_device_sensor_node *>(
-            this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a texture_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a texture_node, or 0 otherwise.
+ */
+openvrml::texture_node * openvrml::externproto_node::to_texture() throw ()
+{
+    return node_cast<texture_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a <code>scoped_light_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>scoped_light_node</code>, or 0 otherwise.
-     */
-    openvrml::scoped_light_node * externproto_node::to_scoped_light() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<scoped_light_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a texture_coordinate_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a texture_coordinate_node, or 0 otherwise.
+ */
+openvrml::texture_coordinate_node *
+openvrml::externproto_node::to_texture_coordinate()
+    throw ()
+{
+    return node_cast<texture_coordinate_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a sound_source_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a sound_source_node, or 0 otherwise.
-     */
-    openvrml::sound_source_node * externproto_node::to_sound_source() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<sound_source_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a texture_transform_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a texture_transform_node, or 0 otherwise.
+ */
+openvrml::texture_transform_node *
+openvrml::externproto_node::to_texture_transform()
+    throw ()
+{
+    return node_cast<texture_transform_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a texture_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a texture_node, or 0 otherwise.
-     */
-    openvrml::texture_node * externproto_node::to_texture() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<texture_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a <code>time_dependent_node</code>.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a <code>time_dependent_node</code>, or 0 otherwise.
+ */
+openvrml::time_dependent_node * openvrml::externproto_node::to_time_dependent()
+    throw ()
+{
+    return node_cast<time_dependent_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a texture_coordinate_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a texture_coordinate_node, or 0 otherwise.
-     */
-    openvrml::texture_coordinate_node *
-    externproto_node::to_texture_coordinate()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<texture_coordinate_node *>(this->proto_node_.get());
-    }
+/**
+ * @brief Cast to a transform_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a transform_node, or 0 otherwise.
+ */
+openvrml::transform_node * openvrml::externproto_node::to_transform() throw ()
+{
+    return node_cast<transform_node *>(this->proto_node_.get());
+}
 
-    /**
-     * @brief Cast to a texture_transform_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a texture_transform_node, or 0 otherwise.
-     */
-    openvrml::texture_transform_node * externproto_node::to_texture_transform()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<texture_transform_node *>(this->proto_node_.get());
-    }
-
-    /**
-     * @brief Cast to a <code>time_dependent_node</code>.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a <code>time_dependent_node</code>, or 0 otherwise.
-     */
-    openvrml::time_dependent_node * externproto_node::to_time_dependent()
-        throw ()
-    {
-        using namespace openvrml;
-        return node_cast<time_dependent_node *>(this->proto_node_.get());
-    }
-
-    /**
-     * @brief Cast to a transform_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a transform_node, or 0 otherwise.
-     */
-    openvrml::transform_node * externproto_node::to_transform() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<transform_node *>(this->proto_node_.get());
-    }
-
-    /**
-     * @brief Cast to a viewpoint_node.
-     *
-     * @return a pointer to the first node in the implementation if that node
-     *         is a viewpoint_node, or 0 otherwise.
-     */
-    openvrml::viewpoint_node * externproto_node::to_viewpoint() throw ()
-    {
-        using namespace openvrml;
-        return node_cast<viewpoint_node *>(this->proto_node_.get());
-    }
-} // namespace
+/**
+ * @brief Cast to a viewpoint_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a viewpoint_node, or 0 otherwise.
+ */
+openvrml::viewpoint_node * openvrml::externproto_node::to_viewpoint() throw ()
+{
+    return node_cast<viewpoint_node *>(this->proto_node_.get());
+}
 
 
 // Max time in seconds between updates. Make this user
@@ -7906,7 +7889,7 @@ void openvrml::browser::set_world(resource_istream & in)
             using boost::intrusive_ptr;
             const intrusive_ptr<node> & n = this->scene_->nodes().front();
             if (n) {
-                node * const vp = n->scope()->find_node(viewpoint_node_id);
+                node * const vp = n->scope().find_node(viewpoint_node_id);
                 initial_viewpoint = dynamic_cast<viewpoint_node *>(vp);
             }
         }
