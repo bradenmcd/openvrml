@@ -1,3 +1,28 @@
+2006-02-11 Braden McDaniel  <braden@endoframe.com>
+
+	Build with Microsoft Visual C++ 8.0.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml-config.h:
+	Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl-config.h:
+	Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Added file.
+	* ide-projects/Makefile.am: Added Visual C++ 8.0 project files.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::current_time()): Use _ftime_s instead of
+	_ftime; the latter is deprecated by Microsoft cl 14.0.
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::exposedfield<FieldValue>::exposedfield(openvrml::node&,
+	const typename FieldValue::value_type &)): Removed "typename" from
+	default value for Microsoft cl 14.0.
+
 2006-02-10 Braden McDaniel  <braden@endoframe.com>
 
 	It is not desirable for arbitrary clients of openvrml::node to be

@@ -2903,7 +2903,7 @@ namespace {
 
         escaped
             =   '%' >> xdigit_p >> xdigit_p
-            ;        
+            ;
     }
 
     template <typename ScannerT>
@@ -7267,7 +7267,8 @@ double openvrml::browser::current_time() throw ()
     double currentTime;
 # ifdef _WIN32
     _timeb timebuffer;
-    _ftime(&timebuffer);
+    const errno_t err = _ftime_s(&timebuffer);
+    assert(err == 0);
     currentTime = double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
 # else
     timeval tv;

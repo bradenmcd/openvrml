@@ -448,7 +448,11 @@ namespace openvrml {
                 explicit exposedfield(
                     openvrml::node & node,
                     const typename FieldValue::value_type & value =
+#   if defined(_MSC_VER) && (_MSC_VER == 1400)
+                    FieldValue::value_type());
+#   else
                     typename FieldValue::value_type());
+# endif
                 exposedfield(const exposedfield<FieldValue> & obj) throw ();
                 virtual ~exposedfield() throw ();
 
