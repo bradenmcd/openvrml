@@ -1,5 +1,32 @@
 2006-02-11 Braden McDaniel  <braden@endoframe.com>
 
+	Removed externproto_node_type::owning_ptr_to_class, as this
+	created a reference cycle.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g (externproto): If the
+	list of alternative URIs for the EXTERNPROTO implementation is
+	empty, generate a node_class_id from the world URI and the
+	EXTERNPROTO id so that the node_type can be added to the browser.
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_class): Added boost::scoped_ptr to the
+	load_proto thread.
+	(externproto_node_type): Removed owning_ptr_to_class_ and
+	set_owning_ptr_to_class.
+	(externproto_node_class(openvrml::scene &, const
+	std::vector<std::string> &): Initialize load_proto_thread_ with
+	the new thread.
+	(externproto_node_class::~externproto_node_class()): Join the
+	load_proto thread.
+	(openvrml::browser::node_class_map::~node_class_map()): Added
+	debug code to ensure that the node_class pointers in the map are
+	the last owning references at the point the node_class_map is
+	destroyed.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_class_map): Added nothrow exception
+	specification to the node_class_map destructor.
+
+2006-02-11 Braden McDaniel  <braden@endoframe.com>
+
 	Build with Microsoft Visual C++ 8.0.
 
 	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj:

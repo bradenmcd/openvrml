@@ -2255,6 +2255,8 @@ namespace {
 
         mutable externproto_node_types externproto_node_types_;
 
+        boost::scoped_ptr<boost::thread> load_proto_thread_;
+
     public:
         externproto_node_class(openvrml::scene & scene,
                                const std::vector<std::string> & uris)
@@ -2276,7 +2278,6 @@ namespace {
     class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
         mutable boost::mutex mutex_;
         openvrml::node_interface_set interfaces_;
-        boost::shared_ptr<openvrml::node_class> owning_ptr_to_class_;
 
         typedef std::vector<boost::intrusive_ptr<openvrml::externproto_node> >
             externproto_nodes;
@@ -2292,10 +2293,6 @@ namespace {
             throw (std::bad_alloc);
 
         virtual ~externproto_node_type() throw ();
-
-        void set_owning_ptr_to_class(
-            const boost::shared_ptr<openvrml::node_class> & node_class)
-            throw ();
 
         void set_proto_node_type(openvrml::proto_node_class & proto_node_class)
             throw (std::bad_alloc);
@@ -5621,17 +5618,19 @@ namespace {
     externproto_node_class(openvrml::scene & scene,
                            const std::vector<std::string> & uris)
         throw (boost::thread_resource_error):
-        node_class(scene.browser())
-    {
-        boost::function0<void> f = load_proto(*this, scene, uris);
-        boost::thread t(f);
-    }
+        node_class(scene.browser()),
+        load_proto_thread_(
+            new boost::thread(
+                boost::function0<void>(load_proto(*this, scene, uris))))
+    {}
 
     /**
      * @brief Destroy.
      */
     externproto_node_class::~externproto_node_class() throw ()
-    {}
+    {
+        this->load_proto_thread_->join();
+    }
 
     const boost::shared_ptr<openvrml::node_type>
     externproto_node_class::
@@ -5691,23 +5690,6 @@ namespace {
 
     externproto_node_type::~externproto_node_type() throw ()
     {}
-
-    /**
-     * @brief Set the owning pointer to the <code>openvrml::node_class</code>.
-     *
-     * The base <code>openvrml::node_type</code> simply holds a reference to
-     * the <code>openvrml::node_class</code>. If we get an EXTERNPROTO with no
-     * implementation, we need to store an owning pointer to the
-     * <code>node_class</code> here. See the comment in
-     * <code>Vrml97Parser::externproto</code> for details.
-     */
-    void externproto_node_type::set_owning_ptr_to_class(
-        const boost::shared_ptr<openvrml::node_class> & node_class) throw ()
-    {
-        assert(node_class);
-        assert(!this->owning_ptr_to_class_);
-        this->owning_ptr_to_class_ = node_class;
-    }
 
     void
     externproto_node_type::
@@ -6954,6 +6936,21 @@ openvrml::node_class_id::operator std::string() const
  */
 openvrml::browser::node_class_map::node_class_map()
 {}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::browser::node_class_map::~node_class_map() throw ()
+{
+# ifndef NDEBUG
+    for (map_t::const_iterator entry = this->map_.begin();
+         entry != this->map_.end();
+         ++entry) {
+        assert(entry->second.unique()
+               && "shared_ptr<node_class> was not unique when destroying the browser's node_class_map");
+    }
+# endif
+}
 
 /**
  * @fn openvrml::browser::node_class_map::node_class_map(const node_class_map &)

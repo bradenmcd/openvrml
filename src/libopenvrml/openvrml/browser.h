@@ -207,6 +207,7 @@ namespace openvrml {
 
         public:
             node_class_map();
+            ~node_class_map() throw ();
 
             node_class_map & operator=(const node_class_map & ncm);
 

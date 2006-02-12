@@ -976,30 +976,34 @@ options { defaultErrorHandler=false; }
                 const shared_ptr<node_class> externproto_class(
                     new externproto_node_class(scene, alt_uris));
 
-                for (vector<string>::const_iterator resource_id =
-                         alt_uris.begin();
-                     resource_id != alt_uris.end();
-                     ++resource_id) {
-                    const ::uri absolute_uri = !relative(::uri(*resource_id))
-                        ? ::uri(*resource_id)
-                        : ::uri(*resource_id)
-                            .resolve_against(::uri(this->uri));
-                    scene.browser().add_node_class(node_class_id(absolute_uri),
+                if (alt_uris.empty()) {
+                    //
+                    // If the list of alternative URIs (i.e., implementation
+                    // identifiers) is empty, we need to generate one to put in
+                    // the browser's node_class map. (The node_class map is
+                    // where the owning pointer to the node_class is kept.
+                    //
+                    node_class_id class_id = this->uri + '#' + id->getText();
+                    scene.browser().add_node_class(class_id,
                                                    externproto_class);
+                } else {
+                    for (vector<string>::const_iterator resource_id =
+                             alt_uris.begin();
+                         resource_id != alt_uris.end();
+                         ++resource_id) {
+                        const ::uri absolute_uri =
+                            !relative(::uri(*resource_id))
+                                ? ::uri(*resource_id)
+                                : ::uri(*resource_id).resolve_against(
+                                    ::uri(this->uri));
+                        scene.browser().add_node_class(
+                            node_class_id(absolute_uri),
+                            externproto_class);
+                    }
                 }
 
                 node_type = externproto_class->create_type(id->getText(),
                                                            interfaces);
-                //
-                // Hack alert.  If we get an empty list of URIs for the
-                // EXTERNPROTO implementation, we have nothing to put in
-                // browser::node_class_map_.  That means that we'd wind up
-                // with no owning pointer to the node class except for the
-                // one in this scope (which is about to go away).  So, we
-                // store an owning pointer in the externproto_node_type.
-                //
-                boost::dynamic_pointer_cast<externproto_node_type>(node_type)
-                    ->set_owning_ptr_to_class(externproto_class);
             }
 
             assert(node_type);
