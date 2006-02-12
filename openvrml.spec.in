@@ -70,7 +70,7 @@ VRML browser plug-in for Mozilla-based browsers.
 %setup
 
 %build
-%configure --disable-examples --disable-script-node-java CPPFLAGS="-DNDEBUG"
+%configure --disable-exception-specs --disable-examples --disable-script-node-java CPPFLAGS="-DNDEBUG"
 make %{?_smp_mflags}
 
 %install
@@ -114,6 +114,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Feb 12 2006  Braden McDaniel  <braden@endoframe.com>
+- configure with --disable-exception-specs.
+
 * Tue Apr 20 2005  Braden McDaniel  <braden@endoframe.com>
 - Removed dejagnu build prerequisite.
 

@@ -171,7 +171,7 @@ void openvrml::script::shutdown(double timestamp)
  * @return @c true if direct output is enabled for the Script node; @c false
  *         otherwise.
  */
-bool openvrml::script::direct_output() const throw ()
+bool openvrml::script::direct_output() const OPENVRML_NOTHROW
 {
     return this->node.direct_output.value();
 }
@@ -183,7 +183,7 @@ bool openvrml::script::direct_output() const throw ()
  * @return @c true if the browser may delay sending input events to the script
  *         until its outputs are needed by the browser; @c false otherwise.
  */
-bool openvrml::script::must_evaluate() const throw ()
+bool openvrml::script::must_evaluate() const OPENVRML_NOTHROW
 {
     return this->node.must_evaluate.value();
 }
@@ -199,7 +199,7 @@ bool openvrml::script::must_evaluate() const throw ()
  * @exception std::bad_alloc        if memory allocation fails.
  */
 void openvrml::script::field(const std::string & id, const field_value & value)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW3(unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     const script_node::field_value_map_t::iterator field =
         this->node.field_value_map_.find(id);
@@ -226,7 +226,7 @@ void openvrml::script::field(const std::string & id, const field_value & value)
 void
 openvrml::script::direct_output(event_listener & listener,
                                 const boost::shared_ptr<field_value> & value)
-    throw (field_value_type_mismatch, std::bad_alloc)
+    OPENVRML_THROW2(field_value_type_mismatch, std::bad_alloc)
 {
     assert(value);
     if (listener.type() != value->type()) {
@@ -312,7 +312,7 @@ openvrml::script_node_class::script_node_class(openvrml::browser & browser):
 /**
  * @brief Destroy.
  */
-openvrml::script_node_class::~script_node_class() throw ()
+openvrml::script_node_class::~script_node_class() OPENVRML_NOTHROW
 {}
 
 /**
@@ -325,7 +325,7 @@ openvrml::script_node_class::~script_node_class() throw ()
 const boost::shared_ptr<openvrml::node_type>
 openvrml::script_node_class::do_create_type(const std::string &,
                                             const node_interface_set &) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(false);
     return boost::shared_ptr<node_type>();
@@ -390,7 +390,7 @@ openvrml::script_node_class::do_create_type(const std::string &,
  */
 openvrml::script_node::eventout::eventout(const field_value::type_id type,
                                           script_node & node)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     node_(node),
     value_(field_value::create(type)),
     modified_(false),
@@ -403,7 +403,7 @@ openvrml::script_node::eventout::eventout(const field_value::type_id type,
  * @return the value that will be sent from the eventOut.
  */
 const openvrml::field_value & openvrml::script_node::eventout::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return *this->value_;
 }
@@ -420,7 +420,7 @@ const openvrml::field_value & openvrml::script_node::eventout::value() const
  * @exception std::bad_cast     if @p val is not the correct type.
  */
 void openvrml::script_node::eventout::value(const field_value & val)
-    throw (std::bad_alloc, std::bad_cast)
+    OPENVRML_THROW2(std::bad_alloc, std::bad_cast)
 {
     if (this->value_->type() == field_value::sfnode_id) {
         this->node_
@@ -442,7 +442,7 @@ void openvrml::script_node::eventout::value(const field_value & val)
  * @return @c true if the value has been changed since emit_event was last
  *         called; @c false otherwise.
  */
-bool openvrml::script_node::eventout::modified() const throw ()
+bool openvrml::script_node::eventout::modified() const OPENVRML_NOTHROW
 {
     return this->modified_;
 }
@@ -452,7 +452,7 @@ bool openvrml::script_node::eventout::modified() const throw ()
  *
  * @return the event_emitter associated with the eventout.
  */
-openvrml::event_emitter & openvrml::script_node::eventout::emitter() throw ()
+openvrml::event_emitter & openvrml::script_node::eventout::emitter() OPENVRML_NOTHROW
 {
     return *this->emitter_;
 }
@@ -468,7 +468,7 @@ openvrml::event_emitter & openvrml::script_node::eventout::emitter() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void openvrml::script_node::eventout::emit_event(const double timestamp)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     node::emit_event(*this->emitter_, timestamp);
     this->modified_ = false;
@@ -545,7 +545,7 @@ script_node_type(script_node_class & class_):
 /**
  * @brief Destroy.
  */
-openvrml::script_node::script_node_type::~script_node_type() throw ()
+openvrml::script_node::script_node_type::~script_node_type() OPENVRML_NOTHROW
 {}
 
 /**
@@ -560,7 +560,7 @@ openvrml::script_node::script_node_type::~script_node_type() throw ()
 void
 openvrml::script_node::script_node_type::
 add_interface(const node_interface & interface)
-    throw (std::bad_alloc, std::invalid_argument)
+    OPENVRML_THROW2(std::bad_alloc, std::invalid_argument)
 {
     bool succeeded  = this->interfaces_.insert(interface).second;
     if (!succeeded) {
@@ -576,7 +576,7 @@ add_interface(const node_interface & interface)
  */
 const openvrml::node_interface_set &
 openvrml::script_node::script_node_type::do_interfaces() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->interfaces_;
 }
@@ -604,7 +604,7 @@ const boost::intrusive_ptr<openvrml::node>
 openvrml::script_node::script_node_type::
 do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                const initial_value_map & initial_values) const
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW3(unsupported_interface, std::bad_cast, std::bad_alloc)
 {
     using std::insert_iterator;
     using std::set_difference;
@@ -670,13 +670,13 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
- * @fn openvrml::script_node::script_event_listener::~script_event_listener() throw ()
+ * @fn openvrml::script_node::script_event_listener::~script_event_listener()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn const std::string openvrml::script_node::script_event_listener::do_eventin_id() const throw ()
+ * @fn const std::string openvrml::script_node::script_event_listener::do_eventin_id() const
  *
  * @brief The associated eventIn identifier.
  *
@@ -684,7 +684,7 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
- * @fn void openvrml::script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
  *
@@ -951,7 +951,7 @@ const boost::shared_ptr<openvrml::event_listener>
 openvrml::script_node::create_listener(const field_value::type_id type,
                                        const std::string & id,
                                        script_node & node)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
     using openvrml_::field_value_types;
@@ -977,7 +977,7 @@ openvrml::script_node::create_listener(const field_value::type_id type,
 std::auto_ptr<openvrml::event_emitter>
 openvrml::script_node::create_emitter(script_node & node,
                                       const openvrml::field_value & value)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
     using openvrml_::field_value_types;
@@ -1010,7 +1010,7 @@ set_url_listener_t(script_node & node):
 /**
  * @brief Destroy.
  */
-openvrml::script_node::set_url_listener_t::~set_url_listener_t() throw ()
+openvrml::script_node::set_url_listener_t::~set_url_listener_t() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1019,7 +1019,7 @@ openvrml::script_node::set_url_listener_t::~set_url_listener_t() throw ()
  * @return the eventIn identifier.
  */
 const std::string
-openvrml::script_node::set_url_listener_t::do_eventin_id() const throw ()
+openvrml::script_node::set_url_listener_t::do_eventin_id() const OPENVRML_NOTHROW
 {
     return "set_url";
 }
@@ -1035,7 +1035,7 @@ openvrml::script_node::set_url_listener_t::do_eventin_id() const throw ()
 void
 openvrml::script_node::set_url_listener_t::
 do_process_event(const mfstring & value, const double timestamp)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     assert(dynamic_cast<openvrml::script_node *>(&this->node()));
     openvrml::script_node & script_node =
@@ -1065,7 +1065,7 @@ do_process_event(const mfstring & value, const double timestamp)
  * @param value the associated field value.
  */
 openvrml::script_node::url_changed_emitter::
-url_changed_emitter(const mfstring & value) throw ():
+url_changed_emitter(const mfstring & value) OPENVRML_NOTHROW:
     openvrml::event_emitter(value),
     openvrml::mfstring_emitter(value)
 {}
@@ -1073,7 +1073,7 @@ url_changed_emitter(const mfstring & value) throw ():
 /**
  * @brief Destroy.
  */
-openvrml::script_node::url_changed_emitter::~url_changed_emitter() throw ()
+openvrml::script_node::url_changed_emitter::~url_changed_emitter() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1082,7 +1082,7 @@ openvrml::script_node::url_changed_emitter::~url_changed_emitter() throw ()
  * @return the eventOut identifier.
  */
 const std::string
-openvrml::script_node::url_changed_emitter::do_eventout_id() const throw ()
+openvrml::script_node::url_changed_emitter::do_eventout_id() const OPENVRML_NOTHROW
 {
     return "url_changed";
 }
@@ -1109,7 +1109,7 @@ set_metadata_listener(script_node & node):
 /**
  * @brief Destroy.
  */
-openvrml::script_node::set_metadata_listener::~set_metadata_listener() throw ()
+openvrml::script_node::set_metadata_listener::~set_metadata_listener() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1118,7 +1118,7 @@ openvrml::script_node::set_metadata_listener::~set_metadata_listener() throw ()
  * @return the eventIn identifier.
  */
 const std::string
-openvrml::script_node::set_metadata_listener::do_eventin_id() const throw ()
+openvrml::script_node::set_metadata_listener::do_eventin_id() const OPENVRML_NOTHROW
 {
     return "set_metadata";
 }
@@ -1134,7 +1134,7 @@ openvrml::script_node::set_metadata_listener::do_eventin_id() const throw ()
 void
 openvrml::script_node::set_metadata_listener::
 do_process_event(const sfnode & value, const double timestamp)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     assert(dynamic_cast<openvrml::script_node *>(&this->node()));
     openvrml::script_node & script_node =
@@ -1161,7 +1161,7 @@ do_process_event(const sfnode & value, const double timestamp)
  * @param value the associated field value.
  */
 openvrml::script_node::metadata_changed_emitter::
-metadata_changed_emitter(const sfnode & value) throw ():
+metadata_changed_emitter(const sfnode & value) OPENVRML_NOTHROW:
     openvrml::event_emitter(value),
     openvrml::sfnode_emitter(value)
 {}
@@ -1170,7 +1170,7 @@ metadata_changed_emitter(const sfnode & value) throw ():
  * @brief Destroy.
  */
 openvrml::script_node::metadata_changed_emitter::~metadata_changed_emitter()
-    throw ()
+    OPENVRML_NOTHROW
 {}
 
 /**
@@ -1180,7 +1180,7 @@ openvrml::script_node::metadata_changed_emitter::~metadata_changed_emitter()
  */
 const std::string
 openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return "metadata_changed";
 }
@@ -1347,8 +1347,8 @@ script_node(script_node_class & class_,
             const boost::shared_ptr<openvrml::scope> & scope,
             const node_interface_set & interfaces,
             const initial_value_map & initial_values)
-    throw (unsupported_interface, std::bad_cast, std::bad_alloc,
-           std::invalid_argument):
+    OPENVRML_THROW4(unsupported_interface, std::bad_cast, std::bad_alloc,
+                    std::invalid_argument):
     node(this->type, scope),
     bounded_volume_node(this->type, scope),
     child_node(this->type, scope),
@@ -1484,7 +1484,7 @@ script_node(script_node_class & class_,
 /**
  * @brief Destroy.
  */
-openvrml::script_node::~script_node() throw ()
+openvrml::script_node::~script_node() OPENVRML_NOTHROW
 {
     delete this->script_;
 }
@@ -1496,7 +1496,7 @@ openvrml::script_node::~script_node() throw ()
  *
  * @return a pointer to this script_node.
  */
-openvrml::script_node * openvrml::script_node::to_script() throw ()
+openvrml::script_node * openvrml::script_node::to_script() OPENVRML_NOTHROW
 {
     return this;
 }
@@ -1528,7 +1528,7 @@ void openvrml::script_node::update(const double current_time)
 }
 
 /**
- * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const throw ()
+ * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const
  *
  * @brief Field value map accessor.
  *
@@ -1536,7 +1536,7 @@ void openvrml::script_node::update(const double current_time)
  */
 
 /**
- * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const throw ()
+ * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const
  *
  * @brief eventOut map accessor.
  *
@@ -1558,7 +1558,7 @@ void openvrml::script_node::update(const double current_time)
  */
 void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
                                                        sfnode & retval) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     using boost::intrusive_ptr;
 
@@ -1606,7 +1606,7 @@ void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
  */
 void openvrml::script_node::assign_with_self_ref_check(const mfnode & inval,
                                                        mfnode & retval) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     using boost::intrusive_ptr;
 
@@ -1636,7 +1636,7 @@ void openvrml::script_node::assign_with_self_ref_check(const mfnode & inval,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void openvrml::script_node::do_initialize(const double timestamp)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     assert(this->scene());
     this->scene()->browser().add_script(*this);
@@ -1668,7 +1668,7 @@ void openvrml::script_node::do_initialize(const double timestamp)
  */
 const openvrml::field_value &
 openvrml::script_node::do_field(const std::string & id) const
-    throw (unsupported_interface)
+    OPENVRML_THROW1(unsupported_interface)
 {
     field_value_map_t::const_iterator itr;
     if (id == "url") {
@@ -1700,7 +1700,7 @@ openvrml::script_node::do_field(const std::string & id) const
  */
 openvrml::event_listener &
 openvrml::script_node::do_event_listener(const std::string & id)
-    throw (unsupported_interface)
+    OPENVRML_THROW1(unsupported_interface)
 {
     if (id == "url" || id == "set_url") {
         return this->set_url_listener;
@@ -1732,7 +1732,7 @@ openvrml::script_node::do_event_listener(const std::string & id)
  */
 openvrml::event_emitter &
 openvrml::script_node::do_event_emitter(const std::string & id)
-    throw (unsupported_interface)
+    OPENVRML_THROW1(unsupported_interface)
 {
     openvrml::event_emitter * result = 0;
     if (id == "url" || id == "url_changed") {
@@ -1757,7 +1757,7 @@ openvrml::script_node::do_event_emitter(const std::string & id)
 }
 
 /**
- * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const throw ()
+ * @fn const openvrml::script_node::field_value_map_t & openvrml::script_node::field_value_map() const
  *
  * @brief field value map.
  *
@@ -1765,7 +1765,7 @@ openvrml::script_node::do_event_emitter(const std::string & id)
  */
 
 /**
- * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const throw ()
+ * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const
  *
  * @brief eventOut map.
  *
@@ -1777,7 +1777,7 @@ openvrml::script_node::do_event_emitter(const std::string & id)
  *
  * @param timestamp the current time.
  */
-void openvrml::script_node::do_shutdown(const double timestamp) throw ()
+void openvrml::script_node::do_shutdown(const double timestamp) OPENVRML_NOTHROW
 {
     if (this->script_) { this->script_->shutdown(timestamp); }
     this->scene()->browser().remove_script(*this);
@@ -1817,13 +1817,13 @@ namespace Browser {
                                    uintN argc,
                                    jsval * argv,
                                    jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool deleteRoute(JSContext * cx,
                                       JSObject * obj,
                                       uintN argc,
                                       jsval * argv,
                                       jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
 }
 
 class OPENVRML_LOCAL script : public openvrml::script {
@@ -1832,10 +1832,10 @@ class OPENVRML_LOCAL script : public openvrml::script {
     friend class MFNode;
     friend JSBool Browser::addRoute(JSContext * cx, JSObject * obj,
                                     uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     friend JSBool Browser::deleteRoute(JSContext * cx, JSObject * obj,
                                        uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
 
     static JSRuntime * rt;
     static size_t nInstances;
@@ -1847,19 +1847,20 @@ class OPENVRML_LOCAL script : public openvrml::script {
 
 public:
     script(openvrml::script_node & node, const std::string & source)
-        throw (std::bad_alloc);
+        OPENVRML_THROW1(std::bad_alloc);
     virtual ~script();
 
     openvrml::script_node & script_node();
 
     using openvrml::script::direct_output;
 
-    jsval vrmlFieldToJSVal(const openvrml::field_value & value) throw ();
+    jsval vrmlFieldToJSVal(const openvrml::field_value & value)
+        OPENVRML_NOTHROW;
 
 private:
     static JSBool field_setProperty(JSContext * cx, JSObject * obj,
                                     jsval id, jsval * val)
-        throw ();
+        OPENVRML_NOTHROW;
 
     virtual void do_initialize(double timeStamp);
     virtual void do_process_event(const std::string & id,
@@ -1868,9 +1869,9 @@ private:
     virtual void do_events_processed(double timeStamp);
     virtual void do_shutdown(double timeStamp);
 
-    void initVrmlClasses() throw (std::bad_alloc);
-    void defineBrowserObject() throw (std::bad_alloc);
-    void defineFields() throw (std::bad_alloc);
+    void initVrmlClasses() OPENVRML_THROW1(std::bad_alloc);
+    void defineBrowserObject() OPENVRML_THROW1(std::bad_alloc);
+    void defineFields() OPENVRML_THROW1(std::bad_alloc);
     void activate(double timeStamp, const std::string & fname,
                   size_t argc, const openvrml::field_value * const argv[]);
 };
@@ -1987,7 +1988,7 @@ OPENVRML_LOCAL JSBool floatsToJSArray(size_t numFloats, const float * floats,
 OPENVRML_LOCAL std::auto_ptr<openvrml::field_value>
 createFieldValueFromJsval(JSContext * cx, jsval val,
                           openvrml::field_value::type_id fieldType)
-    throw (bad_conversion, std::bad_alloc);
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 namespace Global {
     JSClass jsclass = {
@@ -2040,73 +2041,73 @@ namespace Browser {
                                   uintN argc,
                                   jsval * argv,
                                   jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool getVersion(JSContext * cx,
                                      JSObject * obj,
                                      uintN argc,
                                      jsval * argv,
                                      jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool getCurrentSpeed(JSContext * cx,
                                           JSObject * obj,
                                           uintN argc,
                                           jsval * argv,
                                           jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool getCurrentFrameRate(JSContext * cx,
                                               JSObject * obj,
                                               uintN argc,
                                               jsval * argv,
                                               jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool getWorldURL(JSContext * cx,
                                       JSObject * obj,
                                       uintN argc,
                                       jsval * argv,
                                       jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool replaceWorld(JSContext * cx,
                                        JSObject * obj,
                                        uintN argc,
                                        jsval * argv,
                                        jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool createVrmlFromString(JSContext * cx,
                                                JSObject * obj,
                                                uintN argc,
                                                jsval * argv,
                                                jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool createVrmlFromURL(JSContext * cx,
                                             JSObject * obj,
                                             uintN argc,
                                             jsval * argv,
                                             jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool addRoute(JSContext * cx,
                                    JSObject * obj,
                                    uintN argc,
                                    jsval * argv,
                                    jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool deleteRoute(JSContext * cx,
                                       JSObject * obj,
                                       uintN argc,
                                       jsval * argv,
                                       jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool loadURL(JSContext * cx,
                                   JSObject * obj,
                                   uintN argc,
                                   jsval * argv,
                                   jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_LOCAL JSBool setDescription(JSContext * cx,
                                          JSObject * obj,
                                          uintN argc,
                                          jsval * argv,
                                          jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
 }
 
 //
@@ -2143,9 +2144,10 @@ public:
     };
 
 protected:
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 private:
     sfield();
 };
@@ -2154,50 +2156,56 @@ class OPENVRML_LOCAL SFColor : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::color & sfcolor,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfcolor>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setHSV(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool getHSV(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL SFImage : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::sfimage & sfcolor,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfimage>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL SFNode : public sfield {
@@ -2206,220 +2214,261 @@ public:
     static JSClass direct_output_jsclass;
 
     static JSObject * initClass(JSContext * cx, JSObject * obj)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const boost::intrusive_ptr<openvrml::node> & node,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfnode>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     static JSBool construct(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv, jsval *)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj,
                               jsval id, jsval * vp)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj,
                               jsval id, jsval * vp)
-        throw ();
+        OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL SFRotation : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::rotation & rotation,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfrotation>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval *) throw ();
+                            uintN argc, jsval * argv, jsval *)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool getAxis(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) throw ();
+                          uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool inverse(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) throw ();
+                          uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multVec(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) throw ();
+                          uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool setAxis(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) throw ();
+                          uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool slerp(JSContext * cx, JSObject * obj,
-                        uintN argc, jsval * argv, jsval * rval) throw ();
+                        uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL SFVec2f : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::vec2f & vec2f,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfvec2f>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval) throw ();
+                              uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                             jsval * rval) throw ();
+                             jsval * rval) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class SFVec2d : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::vec2d & vec2d,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfvec2d>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval) throw ();
+                              uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                             jsval * rval) throw ();
+                             jsval * rval) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class SFVec3f : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::vec3f & vec3f,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfvec3f>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval) throw ();
+                              uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool cross(JSContext * cx, JSObject * obj,
-                        uintN argc, jsval * argv, jsval * rval) throw ();
+                        uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class SFVec3d : public sfield {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const openvrml::vec3d & vec3d,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::sfvec3d>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval) throw ();
+                              uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) throw ();
+                              jsval * vp) OPENVRML_NOTHROW;
     static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool cross(JSContext * cx, JSObject * obj,
-                        uintN argc, jsval * argv, jsval * rval) throw ();
+                        uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) throw ();
+                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
     static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval) throw ();
+                         uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval) throw ();
+                            uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL MField {
@@ -2436,13 +2485,14 @@ public:
 
 protected:
     static void AddRoots(JSContext * cx, JsvalArray & jsvalArray)
-        throw (std::bad_alloc);
-    static void RemoveRoots(JSContext * cx, JsvalArray & jsvalArray) throw ();
+        OPENVRML_THROW1(std::bad_alloc);
+    static void RemoveRoots(JSContext * cx, JsvalArray & jsvalArray)
+        OPENVRML_NOTHROW;
 
     static JSBool getElement(JSContext * cx, JSObject * obj,
-                             jsval id, jsval * vp) throw ();
+                             jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool getLength(JSContext * cx, JSObject * obj,
-                            jsval id, jsval * vp) throw ();
+                            jsval id, jsval * vp) OPENVRML_NOTHROW;
 
 private:
     MField();
@@ -2455,22 +2505,25 @@ private:
 template <typename Subclass>
 class OPENVRML_LOCAL MFJSObject : public MField {
 public:
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
 
 protected:
     static JSBool construct(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * vp) throw ();
+                            uintN argc, jsval * argv, jsval * vp)
+        OPENVRML_NOTHROW;
     static JSBool setElement(JSContext * cx, JSObject * obj,
-                             jsval id, jsval * vp) throw ();
+                             jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool setLength(JSContext * cx, JSObject * obj,
-                            jsval id, jsval * vp) throw ();
+                            jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
 private:
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
 };
 
 /**
@@ -2481,22 +2534,25 @@ private:
 template <typename Subclass>
 class OPENVRML_LOCAL MFJSDouble : public MField {
 public:
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
 
 protected:
     static JSBool construct(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * vp) throw ();
+                            uintN argc, jsval * argv, jsval * vp)
+        OPENVRML_NOTHROW;
     static JSBool setElement(JSContext * cx, JSObject * obj,
-                             jsval id, jsval * vp) throw ();
+                             jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool setLength(JSContext * cx, JSObject * obj,
-                            jsval id, jsval * vp) throw ();
+                            jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
 private:
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL MFBool : public MField {
@@ -2505,10 +2561,10 @@ public:
 
     static JSBool toJsval(const std::vector<bool> & bools,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfbool>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
@@ -2532,10 +2588,10 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::color> & colors,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfcolor>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MFFloat : public MFJSDouble<MFFloat> {
@@ -2544,10 +2600,10 @@ public:
 
     static JSBool toJsval(const std::vector<float> & floats,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mffloat>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class MFDouble : public MFJSDouble<MFDouble> {
@@ -2556,10 +2612,10 @@ public:
 
     static JSBool toJsval(const std::vector<double> & doubles,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfdouble>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MFInt32 : public MField {
@@ -2569,10 +2625,10 @@ public:
     static JSObject * initClass(JSContext * cx, JSObject * obj);
     static JSBool toJsval(const std::vector<openvrml::int32> & int32s,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfint32>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
@@ -2597,28 +2653,30 @@ class OPENVRML_LOCAL MFNode : public MField {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(
         const std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
         JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfnode>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv,
-                            jsval * vp) throw ();
+                            jsval * vp) OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool setElement(JSContext * cx, JSObject * obj,
-                             jsval id, jsval * vp) throw ();
+                             jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool setLength(JSContext * cx, JSObject * obj,
-                            jsval id, jsval * vp) throw ();
+                            jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL MFRotation : public MFJSObject<MFRotation> {
@@ -2628,37 +2686,39 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::rotation> & rotations,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfrotation>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MFString : public MField {
 public:
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool toJsval(const std::vector<std::string> & strings,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfstring>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
 private:
     static JSBool construct(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv,
-                            jsval * vp) throw ();
+                            jsval * vp) OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv) throw ();
+                             uintN argc, jsval * argv) OPENVRML_NOTHROW;
     static JSBool setElement(JSContext * cx, JSObject * obj,
-                             jsval id, jsval * vp) throw ();
+                             jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool setLength(JSContext * cx, JSObject * obj,
-                            jsval id, jsval * vp) throw ();
+                            jsval id, jsval * vp) OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval) throw ();
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+                           uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 };
 
 class OPENVRML_LOCAL MFTime : public MFJSDouble<MFTime> {
@@ -2667,10 +2727,10 @@ public:
 
     static JSBool toJsval(const std::vector<double> & times,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mftime>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MFVec2f : public MFJSObject<MFVec2f> {
@@ -2680,10 +2740,10 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::vec2f> & vec2fs,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfvec2f>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class MFVec2d : public MFJSObject<MFVec2d> {
@@ -2693,10 +2753,10 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::vec2d> & vec2ds,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfvec2d>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MFVec3f : public MFJSObject<MFVec3f> {
@@ -2706,10 +2766,10 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::vec3f> & vec3fs,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfvec3f>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class MFVec3d : public MFJSObject<MFVec3d> {
@@ -2719,10 +2779,10 @@ public:
 
     static JSBool toJsval(const std::vector<openvrml::vec3d> & vec3ds,
                           JSContext * cx, JSObject * obj, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static std::auto_ptr<openvrml::mfvec3d>
     createFromJSObject(JSContext * cx, JSObject * obj)
-        throw (bad_conversion, std::bad_alloc);
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL VrmlMatrix {
@@ -2740,63 +2800,64 @@ public:
         static JSClass jsclass;
 
         static JSObject * initClass(JSContext * cx, JSObject * obj)
-            throw ();
+            OPENVRML_NOTHROW;
         static JSBool construct(JSContext * cx, JSObject * obj,
                                 uintN argc, jsval * argv,
                                 jsval * vp)
-            throw ();
+            OPENVRML_NOTHROW;
         static JSBool getElement(JSContext * cx, JSObject * obj,
                                  jsval id, jsval * vp)
-            throw ();
+            OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jsval id, jsval * vp)
-            throw ();
+            OPENVRML_NOTHROW;
     };
 
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) throw ();
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
     static JSBool construct(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv,
                             jsval * vp)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool initObject(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool getElement(JSContext * cx, JSObject * obj,
                              jsval id, jsval * vp)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool setElement(JSContext * cx, JSObject * obj,
                              jsval id, jsval * vp)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool setTransform(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool getTransform(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool inverse(JSContext * cx, JSObject * obj,
                           uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool transpose(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool multLeft(JSContext * cx, JSObject * obj,
                            uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool multRight(JSContext * cx, JSObject * obj,
                             uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool multVecMatrix(JSContext * cx, JSObject * obj,
                                 uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool multMatrixVec(JSContext * cx, JSObject * obj,
                                 uintN argc, jsval * argv, jsval * rval)
-        throw ();
+        OPENVRML_NOTHROW;
     static JSBool toString(JSContext * cx, JSObject * obj,
                            uintN argc, jsval * argv, jsval * rval)
-        throw ();
-    static void finalize(JSContext * cx, JSObject * obj) throw ();
+        OPENVRML_NOTHROW;
+    static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
 private:
     VrmlMatrix();
@@ -2809,7 +2870,7 @@ OPENVRML_LOCAL JSBool eventOut_setProperty(JSContext * cx,
                                            JSObject * obj,
                                            jsval id,
                                            jsval * val)
-    throw ();
+    OPENVRML_NOTHROW;
 
 OPENVRML_LOCAL void errorReporter(JSContext * cx,
                                   const char * message,
@@ -2819,7 +2880,7 @@ OPENVRML_LOCAL void errorReporter(JSContext * cx,
 // Construct from inline script
 
 script::script(openvrml::script_node & node, const std::string & source)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     openvrml::script(node),
     cx(0),
     sfnode_class(this->direct_output()
@@ -3062,7 +3123,7 @@ openvrml::script_node & script::script_node()
  * @brief Create a jsval from an openvrml::field_value.
  */
 jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using openvrml::field_value;
 
@@ -3370,7 +3431,7 @@ JSBool eventOut_setProperty(JSContext * const cx,
                             JSObject *,
                             const jsval id,
                             jsval * const val)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSString * const str = JS_ValueToString(cx, id);
     if (!str) { return JS_FALSE; }
@@ -3424,7 +3485,7 @@ JSBool script::field_setProperty(JSContext * const cx,
                                  JSObject *,
                                  const jsval id,
                                  jsval * const val)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSString * const str = JS_ValueToString(cx, id);
     if (!str) { return JS_FALSE; }
@@ -3481,7 +3542,7 @@ JSBool script::field_setProperty(JSContext * const cx,
 //
 // Initialize SF*/MF* types.
 //
-void script::initVrmlClasses() throw (std::bad_alloc)
+void script::initVrmlClasses() OPENVRML_THROW1(std::bad_alloc)
 {
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
@@ -3514,7 +3575,7 @@ void script::initVrmlClasses() throw (std::bad_alloc)
 //
 // Define the Browser object.
 //
-void script::defineBrowserObject() throw (std::bad_alloc)
+void script::defineBrowserObject() OPENVRML_THROW1(std::bad_alloc)
 {
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
@@ -3621,7 +3682,7 @@ void script::defineBrowserObject() throw (std::bad_alloc)
 //
 // Define objects corresponding to fields/eventOuts
 //
-void script::defineFields() throw (std::bad_alloc)
+void script::defineFields() OPENVRML_THROW1(std::bad_alloc)
 {
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);
@@ -3725,7 +3786,7 @@ std::auto_ptr<openvrml::field_value>
 createFieldValueFromJsval(JSContext * const cx,
                           const jsval v,
                           const openvrml::field_value::type_id expectType)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
     using namespace openvrml;
@@ -3927,7 +3988,7 @@ namespace Browser {
 
 JSBool getName(JSContext * const cx, JSObject *,
                uintN, jsval *, jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script * const script =
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -3941,7 +4002,7 @@ JSBool getName(JSContext * const cx, JSObject *,
 
 JSBool getVersion(JSContext * const cx, JSObject *,
                   uintN, jsval *, jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script * const script =
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -3955,7 +4016,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
 
 JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
                        uintN, jsval *, jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script * const script =
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -3972,7 +4033,7 @@ JSBool getCurrentFrameRate(JSContext * const cx,
                            uintN,
                            jsval *,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script * const script =
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -3990,7 +4051,7 @@ JSBool getWorldURL(JSContext * const cx,
                    uintN,
                    jsval *,
                    jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script * const script =
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -4010,7 +4071,7 @@ JSBool loadURL(JSContext * const cx,
                uintN,
                jsval * const argv,
                jsval *)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::auto_ptr;
 
@@ -4057,7 +4118,7 @@ JSBool replaceWorld(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::auto_ptr;
 
@@ -4089,7 +4150,7 @@ JSBool createVrmlFromString(JSContext * const cx,
                             uintN,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetContextPrivate(cx));
     js_::script & script =
@@ -4132,7 +4193,7 @@ JSBool createVrmlFromURL(JSContext *,
                          uintN,
                          jsval *,
                          jsval *)
-    throw ()
+    OPENVRML_NOTHROW
 {
 # if 0
     using std::auto_ptr;
@@ -4202,7 +4263,7 @@ JSBool addRoute(JSContext * const cx,
                 uintN,
                 jsval * const argv,
                 jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::auto_ptr;
 
@@ -4280,7 +4341,7 @@ JSBool deleteRoute(JSContext * const cx,
                    uintN,
                    jsval * const argv,
                    jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::auto_ptr;
 
@@ -4337,7 +4398,7 @@ JSBool setDescription(JSContext * const cx,
                       uintN,
                       jsval * const argv,
                       jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSString * str = JS_ValueToString(cx, argv[0]);
     if (!str) { return JS_FALSE; }
@@ -4386,7 +4447,7 @@ openvrml::field_value & sfield::sfdata::field_value() const
 }
 
 void sfield::finalize(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     delete static_cast<field_data *>(JS_GetPrivate(cx, obj));
     JS_SetPrivate(cx, obj, 0);
@@ -4394,7 +4455,7 @@ void sfield::finalize(JSContext * const cx, JSObject * const obj)
 
 JSBool sfield::toString(JSContext * const cx, JSObject * const obj,
                         uintN, jsval *, jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -4430,7 +4491,7 @@ JSClass SFColor::jsclass = {
 };
 
 JSObject * SFColor::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "r", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -4458,7 +4519,7 @@ JSBool SFColor::toJsval(const openvrml::color & color,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfcolorObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfcolorObj) { return JS_FALSE; }
@@ -4480,7 +4541,7 @@ JSBool SFColor::toJsval(const openvrml::color & color,
 
 std::auto_ptr<openvrml::sfcolor>
 SFColor::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -4504,7 +4565,7 @@ JSBool SFColor::construct(JSContext * const cx,
                           const uintN argc,
                           jsval * const argv,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -4521,7 +4582,7 @@ JSBool SFColor::initObject(JSContext * const cx,
                            JSObject * const obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     jsdouble rgb[] = { 0.0, 0.0, 0.0 };
     for (uintN i = 0; i < ((argc < 3) ? argc : 3); ++i) {
@@ -4557,7 +4618,7 @@ JSBool SFColor::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -4581,7 +4642,7 @@ JSBool SFColor::setProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     sfield::sfdata & sfdata =
@@ -4626,7 +4687,7 @@ JSBool SFColor::setHSV(JSContext * const cx,
                        uintN,
                        jsval * const argv,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     sfield::sfdata & sfdata =
@@ -4659,7 +4720,7 @@ JSBool SFColor::getHSV(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -4697,7 +4758,7 @@ JSClass SFImage::jsclass = {
 };
 
 JSObject * SFImage::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // The properties are read-only for now; this can be made smarter
@@ -4728,7 +4789,7 @@ JSObject * SFImage::initClass(JSContext * const cx, JSObject * const obj)
 JSBool SFImage::toJsval(const openvrml::sfimage & sfimage,
                         JSContext * const cx, JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // Can't call JS_ConstructObject() here since SFImage's ctor
@@ -4759,7 +4820,7 @@ JSBool SFImage::toJsval(const openvrml::sfimage & sfimage,
 
 std::auto_ptr<openvrml::sfimage>
 SFImage::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -4780,7 +4841,7 @@ JSBool SFImage::construct(JSContext * const cx,
                           const uintN argc,
                           jsval * const argv,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -4802,7 +4863,7 @@ JSBool SFImage::initObject(JSContext * const cx,
                            JSObject * const obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // x dimension.
@@ -4883,7 +4944,7 @@ JSBool SFImage::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -4917,7 +4978,7 @@ JSBool SFImage::getProperty(JSContext * const cx,
  * @todo Implement me!
  */
 JSBool SFImage::setProperty(JSContext *, JSObject *, jsval , jsval *)
-    throw ()
+    OPENVRML_NOTHROW
 {
   // ...
   return JS_FALSE;
@@ -4967,7 +5028,7 @@ JSClass SFNode::direct_output_jsclass = {
 
 JSObject * SFNode::initClass(JSContext * const cx,
                              JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSFunctionSpec methods[] =
             { { "toString", SFNode::toString, 0, 0, 0 },
@@ -4991,7 +5052,7 @@ JSBool SFNode::toJsval(const boost::intrusive_ptr<openvrml::node> & node,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script & script =
         *static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -5022,7 +5083,7 @@ JSBool SFNode::toJsval(const boost::intrusive_ptr<openvrml::node> & node,
 std::auto_ptr<openvrml::sfnode>
 SFNode::createFromJSObject(JSContext * const cx,
                            JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
     js_::script & script =
@@ -5046,7 +5107,7 @@ JSBool SFNode::construct(JSContext * const cx,
                          const uintN argc,
                          jsval * const argv,
                          jsval * rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     js_::script & script =
         *static_cast<js_::script *>(JS_GetContextPrivate(cx));
@@ -5066,7 +5127,7 @@ JSBool SFNode::initObject(JSContext * const cx,
                           JSObject * const obj,
                           const uintN argc,
                           jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::istringstream;
     assert(argc >= 1);
@@ -5122,7 +5183,7 @@ JSBool SFNode::getProperty(JSContext * const cx,
                            JSObject * const obj,
                            const jsval id,
                            jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (!JSVAL_IS_STRING(id)) { return JS_TRUE; }
 
@@ -5155,7 +5216,7 @@ JSBool SFNode::setProperty(JSContext * const cx,
                            JSObject * const obj,
                            const jsval id,
                            jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_STRING(id)) {
         using std::auto_ptr;
@@ -5230,7 +5291,7 @@ JSClass SFRotation::jsclass = {
 
 JSObject * SFRotation::initClass(JSContext * const cx,
                                  JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -5263,7 +5324,7 @@ JSBool SFRotation::toJsval(const openvrml::rotation & rotation,
                            JSContext * const cx,
                            JSObject * const obj,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfrotationObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfrotationObj) { return JS_FALSE; }
@@ -5284,7 +5345,7 @@ JSBool SFRotation::toJsval(const openvrml::rotation & rotation,
 std::auto_ptr<openvrml::sfrotation>
 SFRotation::createFromJSObject(JSContext * const cx,
                                JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -5305,7 +5366,7 @@ JSBool SFRotation::construct(JSContext * const cx,
                              const uintN argc,
                              jsval * const argv,
                              jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -5322,7 +5383,7 @@ JSBool SFRotation::initObject(JSContext * const cx,
                               JSObject * const obj,
                               const uintN argc,
                               jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::auto_ptr;
 
@@ -5426,7 +5487,7 @@ JSBool SFRotation::getProperty(JSContext * const cx,
                                JSObject * const obj,
                                const jsval id,
                                jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -5448,7 +5509,7 @@ JSBool SFRotation::setProperty(JSContext * const cx,
                                JSObject * const obj,
                                const jsval id,
                                jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     sfield::sfdata & sfdata =
@@ -5495,7 +5556,7 @@ JSBool SFRotation::getAxis(JSContext * const cx,
                            uintN,
                            jsval *,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -5524,7 +5585,7 @@ JSBool SFRotation::inverse(JSContext * const cx,
                            uintN,
                            jsval *,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -5556,7 +5617,7 @@ JSBool SFRotation::multiply(JSContext * const cx,
                             uintN,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -5607,7 +5668,7 @@ JSBool SFRotation::multVec(JSContext * const cx,
                            uintN,
                            jsval * const argv,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -5660,7 +5721,7 @@ JSBool SFRotation::setAxis(JSContext * const cx,
                            uintN,
                            jsval * const argv,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     sfield::sfdata & obj_sfdata =
@@ -5698,7 +5759,7 @@ JSBool SFRotation::slerp(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -5774,7 +5835,7 @@ JSClass SFVec2f::jsclass = {
 };
 
 JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -5807,7 +5868,7 @@ JSBool SFVec2f::toJsval(const openvrml::vec2f & vec2f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfvec2fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfvec2fObj) { return JS_FALSE; }
@@ -5827,7 +5888,7 @@ JSBool SFVec2f::toJsval(const openvrml::vec2f & vec2f,
 
 std::auto_ptr<openvrml::sfvec2f>
 SFVec2f::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -5848,7 +5909,7 @@ JSBool SFVec2f::constructor(JSContext * const cx,
                             const uintN argc,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -5865,7 +5926,7 @@ JSBool SFVec2f::initObject(JSContext * const cx,
                            JSObject * const obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     jsdouble vec[] = { 0.0, 0.0 };
     for (uintN i(0); i < ((argc < 2) ? argc : 2); ++i) {
@@ -5898,7 +5959,7 @@ JSBool SFVec2f::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
@@ -5919,7 +5980,7 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
@@ -5958,7 +6019,7 @@ JSBool SFVec2f::add(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6010,7 +6071,7 @@ JSBool SFVec2f::divide(JSContext * const cx,
                        uintN,
                        jsval * const argv,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6052,7 +6113,7 @@ JSBool SFVec2f::dot(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -6087,7 +6148,7 @@ JSBool SFVec2f::length(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -6107,7 +6168,7 @@ JSBool SFVec2f::multiply(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6149,7 +6210,7 @@ JSBool SFVec2f::negate(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6185,7 +6246,7 @@ JSBool SFVec2f::normalize(JSContext * const cx,
                           uintN,
                           jsval *,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6221,7 +6282,7 @@ JSBool SFVec2f::subtract(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6290,7 +6351,7 @@ JSClass SFVec2d::jsclass = {
 };
 
 JSObject * SFVec2d::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -6323,7 +6384,7 @@ JSBool SFVec2d::toJsval(const openvrml::vec2d & vec2d,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfvec2dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfvec2dObj) { return JS_FALSE; }
@@ -6340,7 +6401,7 @@ JSBool SFVec2d::toJsval(const openvrml::vec2d & vec2d,
 
 std::auto_ptr<openvrml::sfvec2d>
 SFVec2d::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -6361,7 +6422,7 @@ JSBool SFVec2d::constructor(JSContext * const cx,
                             const uintN argc,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -6378,7 +6439,7 @@ JSBool SFVec2d::initObject(JSContext * const cx,
                            JSObject * const obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     jsdouble vec[] = { 0.0, 0.0 };
     for (uintN i(0); i < ((argc < 2) ? argc : 2); ++i) {
@@ -6411,7 +6472,7 @@ JSBool SFVec2d::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
@@ -6432,7 +6493,7 @@ JSBool SFVec2d::setProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
@@ -6471,7 +6532,7 @@ JSBool SFVec2d::add(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6523,7 +6584,7 @@ JSBool SFVec2d::divide(JSContext * const cx,
                        uintN,
                        jsval * const argv,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6565,7 +6626,7 @@ JSBool SFVec2d::dot(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -6600,7 +6661,7 @@ JSBool SFVec2d::length(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -6620,7 +6681,7 @@ JSBool SFVec2d::multiply(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6662,7 +6723,7 @@ JSBool SFVec2d::negate(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6698,7 +6759,7 @@ JSBool SFVec2d::normalize(JSContext * const cx,
                           uintN,
                           jsval *,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6734,7 +6795,7 @@ JSBool SFVec2d::subtract(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -6803,7 +6864,7 @@ JSClass SFVec3f::jsclass = {
 };
 
 JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -6838,7 +6899,7 @@ JSBool SFVec3f::toJsval(const openvrml::vec3f & vec3f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfvec3fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfvec3fObj) { return JS_FALSE; }
@@ -6859,7 +6920,7 @@ JSBool SFVec3f::toJsval(const openvrml::vec3f & vec3f,
 
 std::auto_ptr<openvrml::sfvec3f>
 SFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -6880,7 +6941,7 @@ JSBool SFVec3f::constructor(JSContext * const cx,
                             const uintN argc,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -6897,7 +6958,7 @@ JSBool SFVec3f::initObject(JSContext * const cx,
                            JSObject * obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     jsdouble vec[] = { 0.0, 0.0, 0.0 };
     for (uintN i(0); i < ((argc < 3) ? argc : 3); ++i) {
@@ -6930,7 +6991,7 @@ JSBool SFVec3f::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
@@ -6951,7 +7012,7 @@ JSBool SFVec3f::setProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
@@ -6993,7 +7054,7 @@ JSBool SFVec3f::add(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7045,7 +7106,7 @@ JSBool SFVec3f::cross(JSContext * const cx,
                       uintN,
                       jsval * const argv,
                       jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7097,7 +7158,7 @@ JSBool SFVec3f::divide(JSContext * const cx,
                        uintN,
                        jsval * const argv,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7139,7 +7200,7 @@ JSBool SFVec3f::dot(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7174,7 +7235,7 @@ JSBool SFVec3f::length(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -7194,7 +7255,7 @@ JSBool SFVec3f::multiply(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7236,7 +7297,7 @@ JSBool SFVec3f::negate(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7272,7 +7333,7 @@ JSBool SFVec3f::normalize(JSContext * const cx,
                           uintN,
                           jsval *,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7308,7 +7369,7 @@ JSBool SFVec3f::subtract(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7377,7 +7438,7 @@ JSClass SFVec3d::jsclass = {
 };
 
 JSObject * SFVec3d::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
@@ -7412,7 +7473,7 @@ JSBool SFVec3d::toJsval(const openvrml::vec3d & vec3d,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const sfvec3dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!sfvec3dObj) { return JS_FALSE; }
@@ -7433,7 +7494,7 @@ JSBool SFVec3d::toJsval(const openvrml::vec3d & vec3d,
 
 std::auto_ptr<openvrml::sfvec3d>
 SFVec3d::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
@@ -7454,7 +7515,7 @@ JSBool SFVec3d::constructor(JSContext * const cx,
                             const uintN argc,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -7471,7 +7532,7 @@ JSBool SFVec3d::initObject(JSContext * const cx,
                            JSObject * obj,
                            const uintN argc,
                            jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     jsdouble vec[] = { 0.0, 0.0, 0.0 };
     for (uintN i(0); i < ((argc < 3) ? argc : 3); ++i) {
@@ -7504,7 +7565,7 @@ JSBool SFVec3d::getProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
@@ -7525,7 +7586,7 @@ JSBool SFVec3d::setProperty(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
@@ -7567,7 +7628,7 @@ JSBool SFVec3d::add(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7619,7 +7680,7 @@ JSBool SFVec3d::cross(JSContext * const cx,
                       uintN,
                       jsval * const argv,
                       jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7671,7 +7732,7 @@ JSBool SFVec3d::divide(JSContext * const cx,
                        uintN,
                        jsval * const argv,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7713,7 +7774,7 @@ JSBool SFVec3d::dot(JSContext * const cx,
                     uintN,
                     jsval * const argv,
                     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7748,7 +7809,7 @@ JSBool SFVec3d::length(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
@@ -7768,7 +7829,7 @@ JSBool SFVec3d::multiply(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7810,7 +7871,7 @@ JSBool SFVec3d::negate(JSContext * const cx,
                        uintN,
                        jsval *,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7846,7 +7907,7 @@ JSBool SFVec3d::normalize(JSContext * const cx,
                           uintN,
                           jsval *,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7882,7 +7943,7 @@ JSBool SFVec3d::subtract(JSContext * const cx,
                          uintN,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
@@ -7937,7 +7998,7 @@ MField::MFData::~MFData()
 {}
 
 void MField::AddRoots(JSContext * const cx, JsvalArray & jsvalArray)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     using std::bad_alloc;
 
@@ -7955,7 +8016,7 @@ void MField::AddRoots(JSContext * const cx, JsvalArray & jsvalArray)
 }
 
 void MField::RemoveRoots(JSContext * const cx, JsvalArray & jsvalArray)
-    throw ()
+    OPENVRML_NOTHROW
 {
     for (size_t i = 0; i < jsvalArray.size(); ++i) {
         const JSBool ok = JS_RemoveRoot(cx, &jsvalArray[i]);
@@ -7967,7 +8028,7 @@ JSBool MField::getElement(JSContext * const cx,
                           JSObject * const obj,
                           const jsval id,
                           jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -7987,7 +8048,7 @@ JSBool MField::getLength(JSContext * const cx,
                          JSObject * const obj,
                          jsval,
                          jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8004,7 +8065,7 @@ JSBool MField::getLength(JSContext * const cx,
 template <typename Subclass>
 JSObject * MFJSObject<Subclass>::initClass(JSContext * const cx,
                                            JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8031,7 +8092,7 @@ JSBool MFJSObject<Subclass>::construct(JSContext * const cx,
                                        const uintN argc,
                                        jsval * const argv,
                                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8053,7 +8114,7 @@ JSBool MFJSObject<Subclass>::initObject(JSContext * const cx,
                                         JSObject * const obj,
                                         const uintN argc,
                                         jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8088,7 +8149,7 @@ JSBool MFJSObject<Subclass>::setElement(JSContext * const cx,
                                         JSObject * const obj,
                                         const jsval id,
                                         jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8129,7 +8190,7 @@ JSBool MFJSObject<Subclass>::setLength(JSContext * const cx,
                                        JSObject * const obj,
                                        jsval,
                                        jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::copy;
 
@@ -8198,7 +8259,7 @@ JSBool MFJSObject<Subclass>::toString(JSContext * const cx,
                                       JSObject * const obj,
                                       uintN, jsval *,
                                       jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8228,7 +8289,7 @@ JSBool MFJSObject<Subclass>::toString(JSContext * const cx,
 
 template <typename Subclass>
 void MFJSObject<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8244,7 +8305,7 @@ void MFJSObject<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
 template <typename Subclass>
 JSObject * MFJSDouble<Subclass>::initClass(JSContext * const cx,
                                            JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
@@ -8268,7 +8329,7 @@ JSBool MFJSDouble<Subclass>::construct(JSContext * const cx,
                                        const uintN argc,
                                        jsval * const argv,
                                        jsval * rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -8286,7 +8347,7 @@ JSBool MFJSDouble<Subclass>::initObject(JSContext * const cx,
                                         JSObject * const obj,
                                         const uintN argc,
                                         jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     try {
         std::auto_ptr<MFData> mfdata(new MFData(argc));
@@ -8319,7 +8380,7 @@ JSBool MFJSDouble<Subclass>::setElement(JSContext * const cx,
                                         JSObject * const obj,
                                         const jsval id,
                                         jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
@@ -8355,7 +8416,7 @@ JSBool MFJSDouble<Subclass>::setLength(JSContext * const cx,
                                        JSObject * const obj,
                                        jsval,
                                        jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using std::copy;
 
@@ -8423,7 +8484,7 @@ JSBool MFJSDouble<Subclass>::toString(JSContext * const cx,
                                       JSObject * const obj,
                                       uintN, jsval *,
                                       jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
@@ -8445,7 +8506,7 @@ JSBool MFJSDouble<Subclass>::toString(JSContext * const cx,
 
 template <typename Subclass>
 void MFJSDouble<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     if (mfdata) {
@@ -8478,7 +8539,7 @@ JSClass MFBool::jsclass = {
 
 std::auto_ptr<openvrml::mfbool>
 MFBool::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -8505,7 +8566,7 @@ JSBool MFBool::toJsval(const std::vector<bool> & bools,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfboolObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfboolObj) { return JS_FALSE; }
@@ -8690,7 +8751,7 @@ JSClass & MFColor::sfjsclass = SFColor::jsclass;
 
 std::auto_ptr<openvrml::mfcolor>
 MFColor::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -8726,7 +8787,7 @@ JSBool MFColor::toJsval(const std::vector<openvrml::color> & colors,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfcolorObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfcolorObj) { return JS_FALSE; }
@@ -8770,7 +8831,7 @@ JSBool MFFloat::toJsval(const std::vector<float> & floats,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8795,7 +8856,7 @@ JSBool MFFloat::toJsval(const std::vector<float> & floats,
 
 std::auto_ptr<openvrml::mffloat>
 MFFloat::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -8842,7 +8903,7 @@ JSBool MFDouble::toJsval(const std::vector<double> & doubles,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8867,7 +8928,7 @@ JSBool MFDouble::toJsval(const std::vector<double> & doubles,
 
 std::auto_ptr<openvrml::mfdouble>
 MFDouble::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -8935,7 +8996,7 @@ JSBool MFInt32::toJsval(const std::vector<openvrml::int32> & int32s,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -8958,7 +9019,7 @@ JSBool MFInt32::toJsval(const std::vector<openvrml::int32> & int32s,
 
 std::auto_ptr<openvrml::mfint32>
 MFInt32::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9149,7 +9210,7 @@ JSClass MFNode::jsclass = {
 };
 
 JSObject * MFNode::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9172,7 +9233,7 @@ JSObject * MFNode::initClass(JSContext * const cx, JSObject * const obj)
 
 JSBool MFNode::initObject(JSContext * const cx, JSObject * const obj,
                           const uintN argc, jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9210,7 +9271,7 @@ MFNode::toJsval(
     JSContext * const cx,
     JSObject * const obj,
     jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfnodeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfnodeObj) { return JS_FALSE; }
@@ -9231,7 +9292,7 @@ MFNode::toJsval(
 
 std::auto_ptr<openvrml::mfnode>
 MFNode::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9273,7 +9334,7 @@ JSBool MFNode::construct(JSContext * const cx,
                          const uintN argc,
                          jsval * const argv,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9294,7 +9355,7 @@ JSBool MFNode::setElement(JSContext * const cx,
                           JSObject * const obj,
                           const jsval id,
                           jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9339,7 +9400,7 @@ JSBool MFNode::setLength(JSContext * const cx,
                          JSObject * const obj,
                          jsval,
                          jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9411,7 +9472,7 @@ JSBool MFNode::toString(JSContext * const cx,
                         uintN,
                         jsval *,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9438,7 +9499,7 @@ JSBool MFNode::toString(JSContext * const cx,
 }
 
 void MFNode::finalize(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9477,7 +9538,7 @@ JSBool MFRotation::toJsval(const std::vector<openvrml::rotation> & rotations,
                            JSContext * const cx,
                            JSObject * const obj,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfrotationObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfrotationObj) { return JS_FALSE; }
@@ -9498,7 +9559,7 @@ JSBool MFRotation::toJsval(const std::vector<openvrml::rotation> & rotations,
 
 std::auto_ptr<openvrml::mfrotation>
 MFRotation::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9551,7 +9612,7 @@ JSClass MFString::jsclass = {
 };
 
 JSObject * MFString::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
             { { "length", 0, JSPROP_PERMANENT, getLength, setLength },
@@ -9574,7 +9635,7 @@ JSBool MFString::toJsval(const std::vector<std::string> & strings,
                          JSContext * const cx,
                          JSObject * const obj,
                          jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9598,7 +9659,7 @@ JSBool MFString::toJsval(const std::vector<std::string> & strings,
 
 std::auto_ptr<openvrml::mfstring>
 MFString::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9627,7 +9688,7 @@ JSBool MFString::construct(JSContext * const cx,
                            const uintN argc,
                            jsval * const argv,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9648,7 +9709,7 @@ JSBool MFString::initObject(JSContext * const cx,
                             JSObject * const obj,
                             const uintN argc,
                             jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -9679,7 +9740,7 @@ JSBool MFString::setElement(JSContext * const cx,
                             JSObject * const obj,
                             const jsval id,
                             jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
@@ -9712,7 +9773,7 @@ JSBool MFString::setLength(JSContext * const cx,
                            JSObject * const obj,
                            jsval,
                            jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
@@ -9769,7 +9830,7 @@ JSBool MFString::toString(JSContext * const cx,
                           uintN,
                           jsval *,
                           jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     assert(mfdata);
@@ -9792,7 +9853,7 @@ JSBool MFString::toString(JSContext * const cx,
 }
 
 void MFString::finalize(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
     if (mfdata) {
@@ -9827,7 +9888,7 @@ JSBool MFTime::toJsval(const std::vector<double> & times,
                        JSContext * const cx,
                        JSObject * const obj,
                        jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mftimeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mftimeObj) { return JS_FALSE; }
@@ -9848,7 +9909,7 @@ JSBool MFTime::toJsval(const std::vector<double> & times,
 
 std::auto_ptr<openvrml::mftime>
 MFTime::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9897,7 +9958,7 @@ JSBool MFVec2f::toJsval(const std::vector<openvrml::vec2f> & vec2fs,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfvec2fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec2fObj) { return JS_FALSE; }
@@ -9918,7 +9979,7 @@ JSBool MFVec2f::toJsval(const std::vector<openvrml::vec2f> & vec2fs,
 
 std::auto_ptr<openvrml::mfvec2f>
 MFVec2f::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -9975,7 +10036,7 @@ JSBool MFVec2d::toJsval(const std::vector<openvrml::vec2d> & vec2ds,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfvec2dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec2dObj) { return JS_FALSE; }
@@ -9996,7 +10057,7 @@ JSBool MFVec2d::toJsval(const std::vector<openvrml::vec2d> & vec2ds,
 
 std::auto_ptr<openvrml::mfvec2d>
 MFVec2d::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -10053,7 +10114,7 @@ JSBool MFVec3f::toJsval(const std::vector<openvrml::vec3f> & vec3fs,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfvec3fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec3fObj) { return JS_FALSE; }
@@ -10074,7 +10135,7 @@ JSBool MFVec3f::toJsval(const std::vector<openvrml::vec3f> & vec3fs,
 
 std::auto_ptr<openvrml::mfvec3f>
 MFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -10132,7 +10193,7 @@ JSBool MFVec3d::toJsval(const std::vector<openvrml::vec3d> & vec3ds,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     JSObject * const mfvec3dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
     if (!mfvec3dObj) { return JS_FALSE; }
@@ -10153,7 +10214,7 @@ JSBool MFVec3d::toJsval(const std::vector<openvrml::vec3d> & vec3ds,
 
 std::auto_ptr<openvrml::mfvec3d>
 MFVec3d::createFromJSObject(JSContext * const cx, JSObject * const obj)
-    throw (bad_conversion, std::bad_alloc)
+    OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     assert(cx);
     assert(obj);
@@ -10208,7 +10269,7 @@ JSClass VrmlMatrix::Row::jsclass = {
 
 JSObject * VrmlMatrix::Row::initClass(JSContext * const cx,
                                       JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return JS_InitClass(cx, obj, 0, &jsclass,
                         construct, 0,
@@ -10221,7 +10282,7 @@ JSBool VrmlMatrix::Row::construct(JSContext * const cx,
                                   uintN,
                                   jsval *,
                                   jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -10238,7 +10299,7 @@ JSBool VrmlMatrix::Row::getElement(JSContext * const cx,
                                    JSObject * const obj,
                                    const jsval id,
                                    jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10257,7 +10318,7 @@ JSBool VrmlMatrix::Row::getElement(JSContext * const cx,
 
 JSBool VrmlMatrix::Row::setElement(JSContext * const cx, JSObject * const obj,
                                    const jsval id, jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10295,7 +10356,7 @@ JSClass VrmlMatrix::jsclass = {
 };
 
 JSObject * VrmlMatrix::initClass(JSContext * const cx, JSObject * const obj)
-    throw ()
+    OPENVRML_NOTHROW
 {
     static JSFunctionSpec methods[] =
             { { "setTransform", setTransform, 0, 0, 0 },
@@ -10322,7 +10383,7 @@ JSBool VrmlMatrix::construct(JSContext * const cx,
                              const uintN argc,
                              jsval * const argv,
                              jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // If called without new, replace obj with a new object.
@@ -10339,7 +10400,7 @@ JSBool VrmlMatrix::initObject(JSContext * const cx,
                               JSObject * const obj,
                               uintN argc,
                               jsval * const argv)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10367,7 +10428,7 @@ JSBool VrmlMatrix::getElement(JSContext * const cx,
                               JSObject * const obj,
                               const jsval id,
                               jsval * const vp)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10391,7 +10452,7 @@ JSBool VrmlMatrix::getElement(JSContext * const cx,
 }
 
 JSBool VrmlMatrix::setElement(JSContext *, JSObject *, jsval, jsval *)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return JS_TRUE;
 }
@@ -10401,7 +10462,7 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
                                 const uintN argc,
                                 jsval * const argv,
                                 jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10488,7 +10549,7 @@ JSBool VrmlMatrix::getTransform(JSContext * const cx,
                                 const uintN argc,
                                 jsval * const argv,
                                 jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using openvrml::mat4f;
     using openvrml::rotation;
@@ -10553,7 +10614,7 @@ JSBool VrmlMatrix::inverse(JSContext * const cx,
                            uintN,
                            jsval *,
                            jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10579,7 +10640,7 @@ JSBool VrmlMatrix::transpose(JSContext * const cx,
                              uintN,
                              jsval *,
                              jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10605,7 +10666,7 @@ JSBool VrmlMatrix::multLeft(JSContext * const cx,
                             uintN,
                             jsval * const argv,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10649,7 +10710,7 @@ JSBool VrmlMatrix::multRight(JSContext * const cx,
                              const uintN argc,
                              jsval * const argv,
                              jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10692,7 +10753,7 @@ JSBool VrmlMatrix::multVecMatrix(JSContext * const cx,
                                  uintN,
                                  jsval * const argv,
                                  jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10745,7 +10806,7 @@ JSBool VrmlMatrix::multMatrixVec(JSContext * const cx,
                                  uintN,
                                  jsval * const argv,
                                  jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10795,7 +10856,7 @@ JSBool VrmlMatrix::toString(JSContext * const cx,
                             uintN,
                             jsval *,
                             jsval * const rval)
-    throw ()
+    OPENVRML_NOTHROW
 {
     assert(cx);
     assert(obj);
@@ -10820,7 +10881,8 @@ JSBool VrmlMatrix::toString(JSContext * const cx,
     return JS_TRUE;
 }
 
-void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj) throw ()
+void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj)
+    OPENVRML_NOTHROW
 {
     delete static_cast<openvrml::mat4f *>(JS_GetPrivate(cx, obj));
     JS_SetPrivate(cx, obj, 0);

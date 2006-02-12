@@ -44,63 +44,64 @@ namespace openvrml {
         float rgb[3];
 
     public:
-        color() throw ();
-        explicit color(const float (&rgb)[3]) throw ();
-        color(float r, float g, float b) throw ();
+        color() OPENVRML_NOTHROW;
+        explicit color(const float (&rgb)[3]) OPENVRML_NOTHROW;
+        color(float r, float g, float b) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const throw ();
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        float r() const throw ();
-        float g() const throw ();
-        float b() const throw ();
+        float r() const OPENVRML_NOTHROW;
+        float g() const OPENVRML_NOTHROW;
+        float b() const OPENVRML_NOTHROW;
 
-        void r(float value) throw ();
-        void g(float value) throw ();
-        void b(float value) throw ();
+        void r(float value) OPENVRML_NOTHROW;
+        void g(float value) OPENVRML_NOTHROW;
+        void b(float value) OPENVRML_NOTHROW;
 
-        void hsv(float (&result)[3]) const throw ();
-        void hsv(float h, float s, float v) throw ();
+        void hsv(float (&result)[3]) const OPENVRML_NOTHROW;
+        void hsv(float h, float s, float v) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const color & lhs, const color & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const color & lhs, const color & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color & c);
 
-    inline const float & color::operator[](const size_t index) const throw ()
+    inline const float & color::operator[](const size_t index) const
+        OPENVRML_NOTHROW
     {
         assert(index < 3);
         return this->rgb[index];
     }
 
-    inline float color::r() const throw ()
+    inline float color::r() const OPENVRML_NOTHROW
     {
         return this->rgb[0];
     }
 
-    inline float color::g() const throw ()
+    inline float color::g() const OPENVRML_NOTHROW
     {
         return this->rgb[1];
     }
 
-    inline float color::b() const throw ()
+    inline float color::b() const OPENVRML_NOTHROW
     {
         return this->rgb[2];
     }
 
-    inline void color::r(const float value) throw ()
+    inline void color::r(const float value) OPENVRML_NOTHROW
     {
         this->rgb[0] = value;
     }
 
-    inline void color::g(const float value) throw ()
+    inline void color::g(const float value) OPENVRML_NOTHROW
     {
         this->rgb[1] = value;
     }
 
-    inline void color::b(const float value) throw ()
+    inline void color::b(const float value) OPENVRML_NOTHROW
     {
         this->rgb[2] = value;
     }
@@ -110,78 +111,78 @@ namespace openvrml {
         float rgba[4];
 
     public:
-        color_rgba() throw ();
-        explicit color_rgba(const float (&rgba)[4]) throw ();
-        color_rgba(float r, float g, float b, float a = 1.0f) throw ();
+        color_rgba() OPENVRML_NOTHROW;
+        explicit color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW;
+        color_rgba(float r, float g, float b, float a = 1.0f) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const throw ();
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        float r() const throw ();
-        float g() const throw ();
-        float b() const throw ();
-        float a() const throw ();
+        float r() const OPENVRML_NOTHROW;
+        float g() const OPENVRML_NOTHROW;
+        float b() const OPENVRML_NOTHROW;
+        float a() const OPENVRML_NOTHROW;
 
-        void r(float value) throw ();
-        void g(float value) throw ();
-        void b(float value) throw ();
-        void a(float value) throw ();
+        void r(float value) OPENVRML_NOTHROW;
+        void g(float value) OPENVRML_NOTHROW;
+        void b(float value) OPENVRML_NOTHROW;
+        void a(float value) OPENVRML_NOTHROW;
 
-        void hsv(float (&result)[4]) const throw ();
-        void hsv(float h, float s, float v, float a = 1.0f) throw ();
+        void hsv(float (&result)[4]) const OPENVRML_NOTHROW;
+        void hsv(float h, float s, float v, float a = 1.0f) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const color_rgba & lhs,
                                  const color_rgba & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const color_rgba & lhs,
                                  const color_rgba & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color_rgba & c);
 
     inline const float & color_rgba::operator[](const size_t index) const
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->rgba[index];
     }
 
-    inline float color_rgba::r() const throw ()
+    inline float color_rgba::r() const OPENVRML_NOTHROW
     {
         return this->rgba[0];
     }
 
-    inline float color_rgba::g() const throw ()
+    inline float color_rgba::g() const OPENVRML_NOTHROW
     {
         return this->rgba[1];
     }
 
-    inline float color_rgba::b() const throw ()
+    inline float color_rgba::b() const OPENVRML_NOTHROW
     {
         return this->rgba[2];
     }
 
-    inline float color_rgba::a() const throw ()
+    inline float color_rgba::a() const OPENVRML_NOTHROW
     {
         return this->rgba[3];
     }
 
-    inline void color_rgba::r(const float value) throw ()
+    inline void color_rgba::r(const float value) OPENVRML_NOTHROW
     {
         this->rgba[0] = value;
     }
 
-    inline void color_rgba::g(const float value) throw ()
+    inline void color_rgba::g(const float value) OPENVRML_NOTHROW
     {
         this->rgba[1] = value;
     }
 
-    inline void color_rgba::b(const float value) throw ()
+    inline void color_rgba::b(const float value) OPENVRML_NOTHROW
     {
         this->rgba[2] = value;
     }
 
-    inline void color_rgba::a(const float value) throw ()
+    inline void color_rgba::a(const float value) OPENVRML_NOTHROW
     {
         this->rgba[3] = value;
     }
@@ -192,68 +193,68 @@ namespace openvrml {
         T vec[2];
 
     public:
-        vec2() throw ();
-        explicit vec2(const T (&vec)[2]) throw ();
-        explicit vec2(T x, T y) throw ();
+        vec2() OPENVRML_NOTHROW;
+        explicit vec2(const T (&vec)[2]) OPENVRML_NOTHROW;
+        explicit vec2(T x, T y) OPENVRML_NOTHROW;
 
-        vec2<T> & operator*=(T scalar) throw ();
-        vec2<T> & operator/=(T scalar) throw ();
-        vec2<T> & operator+=(const vec2<T> & vec) throw ();
-        vec2<T> & operator-=(const vec2<T> & vec) throw ();
+        vec2<T> & operator*=(T scalar) OPENVRML_NOTHROW;
+        vec2<T> & operator/=(T scalar) OPENVRML_NOTHROW;
+        vec2<T> & operator+=(const vec2<T> & vec) OPENVRML_NOTHROW;
+        vec2<T> & operator-=(const vec2<T> & vec) OPENVRML_NOTHROW;
 
-        const vec2<T> operator-() const throw ();
-        const vec2<T> operator*(T rhs) const throw ();
-        const vec2<T> operator/(T rhs) const throw ();
-        const vec2<T> operator+(const vec2<T> & rhs) const throw ();
-        const vec2<T> operator-(const vec2<T> & rhs) const throw ();
-        bool operator==(const vec2<T> & rhs) const throw ();
-        bool operator!=(const vec2<T> & rhs) const throw ();
+        const vec2<T> operator-() const OPENVRML_NOTHROW;
+        const vec2<T> operator*(T rhs) const OPENVRML_NOTHROW;
+        const vec2<T> operator/(T rhs) const OPENVRML_NOTHROW;
+        const vec2<T> operator+(const vec2<T> & rhs) const OPENVRML_NOTHROW;
+        const vec2<T> operator-(const vec2<T> & rhs) const OPENVRML_NOTHROW;
+        bool operator==(const vec2<T> & rhs) const OPENVRML_NOTHROW;
+        bool operator!=(const vec2<T> & rhs) const OPENVRML_NOTHROW;
 
-        const T & operator[](size_t index) const throw ();
+        const T & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        T x() const throw ();
-        T y() const throw ();
+        T x() const OPENVRML_NOTHROW;
+        T y() const OPENVRML_NOTHROW;
 
-        void x(T value) throw ();
-        void y(T value) throw ();
+        void x(T value) OPENVRML_NOTHROW;
+        void y(T value) OPENVRML_NOTHROW;
 
-        T dot(const vec2<T> & vec) const throw ();
-        T length() const throw ();
-        const vec2<T> normalize() const throw ();
+        T dot(const vec2<T> & vec) const OPENVRML_NOTHROW;
+        T length() const OPENVRML_NOTHROW;
+        const vec2<T> normalize() const OPENVRML_NOTHROW;
     };
 
     OPENVRML_API const vec2<float> operator*(float lhs,
                                              const vec2<float> & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2<float> & v);
     OPENVRML_API const vec2<double> operator*(double lhs,
                                               const vec2<double> & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2<double> & v);
 
     template<typename T>
-    inline const T & vec2<T>::operator[](const size_t index) const throw ()
+    inline const T & vec2<T>::operator[](const size_t index) const OPENVRML_NOTHROW
     {
         assert(index < 2);
         return this->vec[index];
     }
 
     template<typename T>
-    inline T vec2<T>::x() const throw ()
+    inline T vec2<T>::x() const OPENVRML_NOTHROW
     {
         return this->vec[0];
     }
 
     template<typename T>
-    inline T vec2<T>::y() const throw ()
+    inline T vec2<T>::y() const OPENVRML_NOTHROW
     {
         return this->vec[1];
     }
 
     template<typename T>
-    inline void vec2<T>::x(const T value) throw ()
+    inline void vec2<T>::x(const T value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -264,7 +265,7 @@ namespace openvrml {
     }
 
     template<typename T>
-    inline void vec2<T>::y(const T value) throw ()
+    inline void vec2<T>::y(const T value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -285,87 +286,88 @@ namespace openvrml {
         T vec[3];
 
     public:
-        vec3() throw ();
-        explicit vec3(const T (&vec)[3]) throw ();
-        vec3(T x, T y, T z) throw ();
+        vec3() OPENVRML_NOTHROW;
+        explicit vec3(const T (&vec)[3]) OPENVRML_NOTHROW;
+        vec3(T x, T y, T z) OPENVRML_NOTHROW;
 
-        vec3<T> & operator*=(const vec3<T> & vec) throw ();
-        vec3<T> & operator*=(const mat4f & mat) throw ();
-        vec3<T> & operator*=(T scalar) throw ();
-        vec3<T> & operator/=(T scalar) throw ();
-        vec3<T> & operator+=(const vec3<T> & vec) throw ();
-        vec3<T> & operator-=(const vec3<T> & vec) throw ();
+        vec3<T> & operator*=(const vec3<T> & vec) OPENVRML_NOTHROW;
+        vec3<T> & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
+        vec3<T> & operator*=(T scalar) OPENVRML_NOTHROW;
+        vec3<T> & operator/=(T scalar) OPENVRML_NOTHROW;
+        vec3<T> & operator+=(const vec3<T> & vec) OPENVRML_NOTHROW;
+        vec3<T> & operator-=(const vec3<T> & vec) OPENVRML_NOTHROW;
 
-        const vec3<T> operator-() const throw ();
-        const vec3<T> operator*(const vec3<T> & rhs) const throw ();
-        const vec3<T> operator*(const T rhs) const throw ();
-        const vec3<T> operator*(const mat4f & mat) const throw ();
-        const vec3<T> operator/(const T rhs) const throw ();
-        const vec3<T> operator+(const vec3<T> & rhs) const throw ();
-        const vec3<T> operator-(const vec3<T> & rhs) const throw ();
-        bool operator==(const vec3<T> & rhs) const throw ();
-        bool operator!=(const vec3<T> & rhs) const throw ();
+        const vec3<T> operator-() const OPENVRML_NOTHROW;
+        const vec3<T> operator*(const vec3<T> & rhs) const OPENVRML_NOTHROW;
+        const vec3<T> operator*(const T rhs) const OPENVRML_NOTHROW;
+        const vec3<T> operator*(const mat4f & mat) const OPENVRML_NOTHROW;
+        const vec3<T> operator/(const T rhs) const OPENVRML_NOTHROW;
+        const vec3<T> operator+(const vec3<T> & rhs) const OPENVRML_NOTHROW;
+        const vec3<T> operator-(const vec3<T> & rhs) const OPENVRML_NOTHROW;
+        bool operator==(const vec3<T> & rhs) const OPENVRML_NOTHROW;
+        bool operator!=(const vec3<T> & rhs) const OPENVRML_NOTHROW;
 
-        const T & operator[](size_t index) const throw ();
+        const T & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        T x() const throw ();
-        T y() const throw ();
-        T z() const throw ();
+        T x() const OPENVRML_NOTHROW;
+        T y() const OPENVRML_NOTHROW;
+        T z() const OPENVRML_NOTHROW;
 
-        void x(T value) throw ();
-        void y(T value) throw ();
-        void z(T value) throw ();
+        void x(T value) OPENVRML_NOTHROW;
+        void y(T value) OPENVRML_NOTHROW;
+        void z(T value) OPENVRML_NOTHROW;
 
-        T dot(const vec3<T> & vec) const throw ();
-        T length() const throw ();
-        const vec3<T> normalize() const throw ();
+        T dot(const vec3<T> & vec) const OPENVRML_NOTHROW;
+        T length() const OPENVRML_NOTHROW;
+        const vec3<T> normalize() const OPENVRML_NOTHROW;
     };
 
     OPENVRML_API const vec3<float> operator*(const float lhs,
                                              const vec3<float> & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const vec3<float> operator*(const mat4f & mat,
                                              const vec3<float> & vec)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec3<float> & v);
     OPENVRML_API const vec3<double> operator*(const double lhs,
                                               const vec3<double> & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const vec3<double> operator*(const mat4f & mat,
                                               const vec3<double> & vec)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec3<double> & v);
 
 
     template<typename T>
-    inline const T & vec3<T>::operator[](const size_t index) const throw ()
+    inline const T & vec3<T>::operator[](const size_t index) const
+        OPENVRML_NOTHROW
     {
         assert(index < 3);
         return this->vec[index];
     }
 
     template<typename T>
-    inline T vec3<T>::x() const throw ()
+    inline T vec3<T>::x() const OPENVRML_NOTHROW
     {
         return this->vec[0];
     }
 
     template<typename T>
-    inline T vec3<T>::y() const throw ()
+    inline T vec3<T>::y() const OPENVRML_NOTHROW
     {
         return this->vec[1];
     }
 
     template<typename T>
-    inline T vec3<T>::z() const throw ()
+    inline T vec3<T>::z() const OPENVRML_NOTHROW
     {
         return this->vec[2];
     }
 
     template<typename T>
-    inline void vec3<T>::x(const T value) throw ()
+    inline void vec3<T>::x(const T value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -376,7 +378,7 @@ namespace openvrml {
     }
 
     template<typename T>
-    inline void vec3<T>::y(const T value) throw ()
+    inline void vec3<T>::y(const T value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -387,7 +389,7 @@ namespace openvrml {
     }
 
     template<typename T>
-    inline void vec3<T>::z(const T value) throw ()
+    inline void vec3<T>::z(const T value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -407,77 +409,78 @@ namespace openvrml {
         float rot[4];
 
     public:
-        rotation() throw ();
-        explicit rotation(const float (&rot)[4]) throw ();
-        rotation(float x, float y, float z, float angle) throw ();
-        rotation(const vec3f & axis, float angle) throw ();
-        rotation(const vec3f & from_vec, const vec3f & to_vec) throw ();
-        explicit rotation(const quatf & quat) throw ();
+        rotation() OPENVRML_NOTHROW;
+        explicit rotation(const float (&rot)[4]) OPENVRML_NOTHROW;
+        rotation(float x, float y, float z, float angle) OPENVRML_NOTHROW;
+        rotation(const vec3f & axis, float angle) OPENVRML_NOTHROW;
+        rotation(const vec3f & from_vec, const vec3f & to_vec)
+            OPENVRML_NOTHROW;
+        explicit rotation(const quatf & quat) OPENVRML_NOTHROW;
 
-        rotation & operator*=(const rotation & rot) throw ();
+        rotation & operator*=(const rotation & rot) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const throw ();
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        float x() const throw ();
-        float y() const throw ();
-        float z() const throw ();
-        const vec3f axis() const throw ();
-        float angle() const throw ();
+        float x() const OPENVRML_NOTHROW;
+        float y() const OPENVRML_NOTHROW;
+        float z() const OPENVRML_NOTHROW;
+        const vec3f axis() const OPENVRML_NOTHROW;
+        float angle() const OPENVRML_NOTHROW;
 
-        void x(float value) throw ();
-        void y(float value) throw ();
-        void z(float value) throw ();
-        void axis(const vec3f & axis) throw ();
-        void angle(float value) throw ();
+        void x(float value) OPENVRML_NOTHROW;
+        void y(float value) OPENVRML_NOTHROW;
+        void z(float value) OPENVRML_NOTHROW;
+        void axis(const vec3f & axis) OPENVRML_NOTHROW;
+        void angle(float value) OPENVRML_NOTHROW;
 
-        const rotation inverse() const throw ();
+        const rotation inverse() const OPENVRML_NOTHROW;
         const rotation slerp(const rotation & dest_rot, float t) const
-            throw ();
+            OPENVRML_NOTHROW;
     };
 
     const rotation OPENVRML_API operator*(const rotation & lhs,
                                           const rotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator==(const rotation & lhs, const rotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const rotation & lhs, const rotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const rotation & r);
 
     inline const float & rotation::operator[](const size_t index) const
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->rot[index];
     }
 
-    inline float rotation::x() const throw ()
+    inline float rotation::x() const OPENVRML_NOTHROW
     {
         return this->rot[0];
     }
 
-    inline float rotation::y() const throw ()
+    inline float rotation::y() const OPENVRML_NOTHROW
     {
         return this->rot[1];
     }
 
-    inline float rotation::z() const throw ()
+    inline float rotation::z() const OPENVRML_NOTHROW
     {
         return this->rot[2];
     }
 
-    inline const vec3f rotation::axis() const throw ()
+    inline const vec3f rotation::axis() const OPENVRML_NOTHROW
     {
         return vec3f(this->rot[0], this->rot[1], this->rot[2]);
     }
 
-    inline float rotation::angle() const throw ()
+    inline float rotation::angle() const OPENVRML_NOTHROW
     {
         return this->rot[3];
     }
 
-    inline void rotation::angle(const float value) throw ()
+    inline void rotation::angle(const float value) OPENVRML_NOTHROW
     {
         this->rot[3] = value;
     }
@@ -487,67 +490,68 @@ namespace openvrml {
         float mat[4][4];
 
     public:
-        static const mat4f rotation(const openvrml::rotation & rot) throw ();
-        static const mat4f rotation(const quatf & quat) throw ();
-        static const mat4f scale(float s) throw ();
-        static const mat4f scale(const vec3f & s) throw ();
-        static const mat4f translation(const vec3f & t) throw ();
+        static const mat4f rotation(const openvrml::rotation & rot)
+            OPENVRML_NOTHROW;
+        static const mat4f rotation(const quatf & quat) OPENVRML_NOTHROW;
+        static const mat4f scale(float s) OPENVRML_NOTHROW;
+        static const mat4f scale(const vec3f & s) OPENVRML_NOTHROW;
+        static const mat4f translation(const vec3f & t) OPENVRML_NOTHROW;
         static const mat4f transformation(const vec3f & t,
                                           const openvrml::rotation & r,
                                           const vec3f & s,
                                           const openvrml::rotation & sr,
-                                          const vec3f & c) throw ();
+                                          const vec3f & c) OPENVRML_NOTHROW;
 
-        mat4f() throw ();
+        mat4f() OPENVRML_NOTHROW;
         mat4f(float f11, float f12, float f13, float f14,
               float f21, float f22, float f23, float f24,
               float f31, float f32, float f33, float f34,
-              float f41, float f42, float f43, float f44) throw ();
-        explicit mat4f(const float mat[16]) throw ();
-        explicit mat4f(const float (&mat)[4][4]) throw ();
+              float f41, float f42, float f43, float f44) OPENVRML_NOTHROW;
+        explicit mat4f(const float mat[16]) OPENVRML_NOTHROW;
+        explicit mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW;
 
         // Use compiler-defined operator= and copy constructor.
 
-        mat4f & operator*=(float scalar) throw ();
-        mat4f & operator*=(const mat4f & mat) throw ();
+        mat4f & operator*=(float scalar) OPENVRML_NOTHROW;
+        mat4f & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
 
-        float (&operator[](const size_t index) throw ())[4];
-        const float (&operator[](const size_t index) const throw ())[4];
+        float (&operator[](const size_t index) OPENVRML_NOTHROW)[4];
+        const float (&operator[](const size_t index) const OPENVRML_NOTHROW)[4];
 
         void transformation(vec3f & t, openvrml::rotation & r, vec3f & s) const
-            throw ();
+            OPENVRML_NOTHROW;
         void transformation(vec3f & t, openvrml::rotation & r, vec3f & s,
                             vec3f & shear) const
-            throw ();
+            OPENVRML_NOTHROW;
 
-        const mat4f inverse() const throw ();
-        const mat4f transpose() const throw ();
-        float det() const throw ();
+        const mat4f inverse() const OPENVRML_NOTHROW;
+        const mat4f transpose() const OPENVRML_NOTHROW;
+        float det() const OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const mat4f & lhs, const mat4f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mat4f & lhs, const mat4f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
-    inline float (&mat4f::operator[](size_t index) throw ())[4]
+    inline float (&mat4f::operator[](size_t index) OPENVRML_NOTHROW)[4]
     {
         assert(index < 4);
         return this->mat[index];
     }
 
-    inline const float (&mat4f::operator[](size_t index) const throw ())[4]
+    inline const float (&mat4f::operator[](size_t index) const OPENVRML_NOTHROW)[4]
     {
         assert(index < 4);
         return this->mat[index];
     }
 
     OPENVRML_API const mat4f operator*(const mat4f & lhs, const mat4f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const mat4f operator*(const mat4f & mat, float scalar)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const mat4f operator*(float scalar, const mat4f & mat)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const mat4f & mat);
 
@@ -556,106 +560,106 @@ namespace openvrml {
         float quat[4];
 
     public:
-        quatf() throw ();
-        quatf(float x, float y, float z, float w) throw ();
-        explicit quatf(const float (&quat)[4]) throw ();
-        explicit quatf(const rotation & rot) throw ();
-        explicit quatf(const mat4f & mat) throw ();
+        quatf() OPENVRML_NOTHROW;
+        quatf(float x, float y, float z, float w) OPENVRML_NOTHROW;
+        explicit quatf(const float (&quat)[4]) OPENVRML_NOTHROW;
+        explicit quatf(const rotation & rot) OPENVRML_NOTHROW;
+        explicit quatf(const mat4f & mat) OPENVRML_NOTHROW;
 
         // use compiler-defined operator= and copy constructor.
 
-        quatf & operator*=(const quatf & quat) throw ();
-        quatf & operator*=(float scalar) throw ();
-        quatf & operator/=(float scalar) throw ();
-        quatf & operator+=(const quatf & quat) throw ();
-        quatf & operator-=(const quatf & quat) throw ();
+        quatf & operator*=(const quatf & quat) OPENVRML_NOTHROW;
+        quatf & operator*=(float scalar) OPENVRML_NOTHROW;
+        quatf & operator/=(float scalar) OPENVRML_NOTHROW;
+        quatf & operator+=(const quatf & quat) OPENVRML_NOTHROW;
+        quatf & operator-=(const quatf & quat) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const throw ();
-        float & operator[](size_t index) throw ();
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        float & operator[](size_t index) OPENVRML_NOTHROW;
 
-        float x() const throw ();
-        float y() const throw ();
-        float z() const throw ();
-        float w() const throw ();
+        float x() const OPENVRML_NOTHROW;
+        float y() const OPENVRML_NOTHROW;
+        float z() const OPENVRML_NOTHROW;
+        float w() const OPENVRML_NOTHROW;
 
-        void x(float value) throw ();
-        void y(float value) throw ();
-        void z(float value) throw ();
-        void w(float value) throw ();
+        void x(float value) OPENVRML_NOTHROW;
+        void y(float value) OPENVRML_NOTHROW;
+        void z(float value) OPENVRML_NOTHROW;
+        void w(float value) OPENVRML_NOTHROW;
 
-        const quatf conjugate() const throw ();
-        const quatf inverse() const throw ();
-        float norm() const throw ();
-        const quatf normalize() const throw ();
+        const quatf conjugate() const OPENVRML_NOTHROW;
+        const quatf inverse() const OPENVRML_NOTHROW;
+        float norm() const OPENVRML_NOTHROW;
+        const quatf normalize() const OPENVRML_NOTHROW;
     };
 
     OPENVRML_API const quatf operator*(const quatf & lhs, const quatf & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator*(const quatf & quat, const float scalar)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator*(const float scalar, const quatf & quat)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator/(const quatf & quat, const float scalar)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator+(const quatf & lhs, const quatf & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator-(const quatf & lhs, const quatf & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator==(const quatf & lhs, const quatf & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const quatf & lhs, const quatf & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const quatf & quat);
 
-    inline const float & quatf::operator[](size_t index) const throw ()
+    inline const float & quatf::operator[](size_t index) const OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->quat[index];
     }
 
-    inline float & quatf::operator[](size_t index) throw ()
+    inline float & quatf::operator[](size_t index) OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->quat[index];
     }
 
-    inline float quatf::x() const throw ()
+    inline float quatf::x() const OPENVRML_NOTHROW
     {
         return this->quat[0];
     }
 
-    inline float quatf::y() const throw ()
+    inline float quatf::y() const OPENVRML_NOTHROW
     {
         return this->quat[1];
     }
 
-    inline float quatf::z() const throw ()
+    inline float quatf::z() const OPENVRML_NOTHROW
     {
         return this->quat[2];
     }
 
-    inline float quatf::w() const throw ()
+    inline float quatf::w() const OPENVRML_NOTHROW
     {
         return this->quat[3];
     }
 
-    inline void quatf::x(const float value) throw ()
+    inline void quatf::x(const float value) OPENVRML_NOTHROW
     {
         this->quat[0] = value;
     }
 
-    inline void quatf::y(const float value) throw ()
+    inline void quatf::y(const float value) OPENVRML_NOTHROW
     {
         this->quat[1] = value;
     }
 
-    inline void quatf::z(const float value) throw ()
+    inline void quatf::z(const float value) OPENVRML_NOTHROW
     {
         this->quat[2] = value;
     }
 
-    inline void quatf::w(const float value) throw ()
+    inline void quatf::w(const float value) OPENVRML_NOTHROW
     {
         this->quat[3] = value;
     }
@@ -668,45 +672,46 @@ namespace openvrml {
         std::vector<unsigned char> array_;
 
     public:
-        image() throw ();
-        image(size_t x, size_t y, size_t comp) throw (std::bad_alloc);
+        image() OPENVRML_NOTHROW;
+        image(size_t x, size_t y, size_t comp) OPENVRML_THROW1(std::bad_alloc);
         image(size_t x, size_t y, size_t comp,
-              const std::vector<unsigned char> & array) throw (std::bad_alloc);
+              const std::vector<unsigned char> & array)
+            OPENVRML_THROW1(std::bad_alloc);
         template <typename InputIterator>
         image(size_t x, size_t y, size_t comp,
               InputIterator array_begin, InputIterator array_end)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         // Use compiler-defined operator= and copy constructor.
 
-        void swap(image & img) throw ();
+        void swap(image & img) OPENVRML_NOTHROW;
 
-        size_t x() const throw ();
-        void x(size_t value) throw (std::bad_alloc);
+        size_t x() const OPENVRML_NOTHROW;
+        void x(size_t value) OPENVRML_THROW1(std::bad_alloc);
 
-        size_t y() const throw ();
-        void y(size_t value) throw (std::bad_alloc);
+        size_t y() const OPENVRML_NOTHROW;
+        void y(size_t value) OPENVRML_THROW1(std::bad_alloc);
 
-        void resize(size_t x, size_t y) throw (std::bad_alloc);
+        void resize(size_t x, size_t y) OPENVRML_THROW1(std::bad_alloc);
 
-        size_t comp() const throw ();
-        void comp(size_t value) throw (std::bad_alloc);
+        size_t comp() const OPENVRML_NOTHROW;
+        void comp(size_t value) OPENVRML_THROW1(std::bad_alloc);
 
-        const std::vector<unsigned char> & array() const throw ();
-        void array(const std::vector<unsigned char> & value) throw ();
+        const std::vector<unsigned char> & array() const OPENVRML_NOTHROW;
+        void array(const std::vector<unsigned char> & value) OPENVRML_NOTHROW;
         template <typename InputIterator>
-        void array(InputIterator begin, InputIterator end) throw ();
+        void array(InputIterator begin, InputIterator end) OPENVRML_NOTHROW;
 
-        unsigned long pixel(size_t index) const throw ();
-        void pixel(size_t index, unsigned long value) throw ();
-        unsigned long pixel(size_t x, size_t y) const throw ();
-        void pixel(size_t x, size_t y, unsigned long value) throw ();
+        unsigned long pixel(size_t index) const OPENVRML_NOTHROW;
+        void pixel(size_t index, unsigned long value) OPENVRML_NOTHROW;
+        unsigned long pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
+        void pixel(size_t x, size_t y, unsigned long value) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const image & lhs, const image & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const image & lhs, const image & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     template <typename InputIterator>
     image::image(const size_t x,
@@ -714,7 +719,7 @@ namespace openvrml {
                  const size_t comp,
                  InputIterator array_begin,
                  InputIterator array_end)
-        throw (std::bad_alloc):
+        OPENVRML_THROW1(std::bad_alloc):
         x_(x),
         y_(y),
         comp_(comp),
@@ -728,40 +733,43 @@ namespace openvrml {
                <= difference_type(x * y * comp));
     }
 
-    inline size_t image::x() const throw ()
+    inline size_t image::x() const OPENVRML_NOTHROW
     {
         return this->x_;
     }
 
-    inline size_t image::y() const throw ()
+    inline size_t image::y() const OPENVRML_NOTHROW
     {
         return this->y_;
     }
 
-    inline size_t image::comp() const throw ()
+    inline size_t image::comp() const OPENVRML_NOTHROW
     {
         return this->comp_;
     }
 
-    inline const std::vector<unsigned char> & image::array() const throw ()
+    inline const std::vector<unsigned char> & image::array() const
+        OPENVRML_NOTHROW
     {
         return this->array_;
     }
 
-    inline void image::array(const std::vector<unsigned char> & value) throw ()
+    inline void image::array(const std::vector<unsigned char> & value)
+        OPENVRML_NOTHROW
     {
         assert(value.size() <= (this->x_ * this->y_ * this->comp_));
         std::copy(value.begin(), value.end(), this->array_.begin());
     }
 
     template <typename InputIterator>
-    void image::array(InputIterator begin, InputIterator end) throw ()
+    void image::array(InputIterator begin, InputIterator end) OPENVRML_NOTHROW
     {
         assert(std::distance(begin, end) <= this->x_ * this->y_ * this->comp_);
         std::copy(begin, end, this->array_.begin());
     }
 
-    inline unsigned long image::pixel(const size_t index) const throw ()
+    inline unsigned long image::pixel(const size_t index) const
+        OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
         unsigned long retval = 0x00000000;
@@ -776,7 +784,7 @@ namespace openvrml {
     }
 
     inline void image::pixel(const size_t index, const unsigned long value)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
         for (size_t component = this->comp_, i = index * this->comp_;
@@ -789,7 +797,7 @@ namespace openvrml {
     }
 
     inline unsigned long image::pixel(const size_t x, const size_t y) const
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
         return this->pixel(y * this->x_ + x);
@@ -798,7 +806,7 @@ namespace openvrml {
     inline void image::pixel(const size_t x,
                              const size_t y,
                              const unsigned long value)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
         this->pixel(y * this->x_ + x, value);

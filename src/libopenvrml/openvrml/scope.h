@@ -48,12 +48,12 @@ namespace openvrml {
                        const boost::shared_ptr<scope> & parent =
                        boost::shared_ptr<scope>());
 
-        const std::string & id() const throw ();
+        const std::string & id() const OPENVRML_NOTHROW;
 
-        const boost::shared_ptr<scope> & parent() const throw ();
+        const boost::shared_ptr<scope> & parent() const OPENVRML_NOTHROW;
 
         bool add_type(const boost::shared_ptr<node_type> & type)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         const boost::shared_ptr<node_type> &
         find_type(const std::string & id) const;

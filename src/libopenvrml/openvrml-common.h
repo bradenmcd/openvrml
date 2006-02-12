@@ -24,4 +24,20 @@
 
 #   include <openvrml-config.h>
 
+#   if OPENVRML_ENABLE_EXCEPTION_SPECS
+#     define OPENVRML_NOTHROW throw ()
+#     define OPENVRML_THROW1(ex_) throw (ex_)
+#     define OPENVRML_THROW2(ex1_, ex2_) throw (ex1_, ex2_)
+#     define OPENVRML_THROW3(ex1_, ex2_, ex3_) throw (ex1_, ex2_, ex3_)
+#     define OPENVRML_THROW4(ex1_, ex2_, ex3_, ex4_) throw (ex1_, ex2_, ex3_, ex4_)
+#     define OPENVRML_THROW5(ex1_, ex2_, ex3_, ex4_, ex5_) throw (ex1_, ex2_, ex3_, ex4_, ex5_)
+#   else
+#     define OPENVRML_NOTHROW
+#     define OPENVRML_THROW1(ex_)
+#     define OPENVRML_THROW2(ex1_, ex2_)
+#     define OPENVRML_THROW3(ex1_, ex2_, ex3_)
+#     define OPENVRML_THROW4(ex1_, ex2_, ex3_, ex4_)
+#     define OPENVRML_THROW5(ex1_, ex2_, ex3_, ex4_, ex5_)
+#   endif
+
 # endif // ifndef OPENVRML_COMMON_H

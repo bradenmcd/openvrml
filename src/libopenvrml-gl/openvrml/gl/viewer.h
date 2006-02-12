@@ -147,7 +147,7 @@ namespace openvrml {
 
             void step(float, float, float);
             void zoom(float);
-            void rotate(const openvrml::rotation & rot) throw ();
+            void rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW;
 
             void handleKey(int);
             void handleButton(event_info * e);
@@ -158,7 +158,7 @@ namespace openvrml {
 
         public:
             viewer();
-            virtual ~viewer() throw ();
+            virtual ~viewer() OPENVRML_NOTHROW;
 
             virtual rendering_mode mode();
             virtual double frame_rate();

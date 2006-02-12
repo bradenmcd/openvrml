@@ -95,7 +95,7 @@ openvrml::scope::scope(const std::string & id,
  *
  * @return the <code>scope</code> identifier.
  */
-const std::string & openvrml::scope::id() const throw ()
+const std::string & openvrml::scope::id() const OPENVRML_NOTHROW
 {
     return this->id_;
 }
@@ -107,7 +107,7 @@ const std::string & openvrml::scope::id() const throw ()
  *         a root <code>scope</code>.
  */
 const boost::shared_ptr<openvrml::scope> & openvrml::scope::parent() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->parent_;
 }
@@ -128,7 +128,7 @@ const boost::shared_ptr<openvrml::scope> & openvrml::scope::parent() const
  * @pre @p type is not null.
  */
 bool openvrml::scope::add_type(const boost::shared_ptr<node_type> & type)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     assert(type);
     if (this->find_type(type->id())) { return false; }

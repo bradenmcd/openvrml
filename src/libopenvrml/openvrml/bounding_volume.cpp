@@ -69,7 +69,7 @@
 /**
  * @brief Destroy.
  */
-openvrml::bounding_volume::~bounding_volume() throw ()
+openvrml::bounding_volume::~bounding_volume() OPENVRML_NOTHROW
 {}
 
 /**
@@ -105,7 +105,7 @@ void openvrml::bounding_volume::maximize()
  *
  * @see openvrml::bounding_volume::maximize
  */
-bool openvrml::bounding_volume::maximized() const throw ()
+bool openvrml::bounding_volume::maximized() const OPENVRML_NOTHROW
 {
     return this->do_maximized();
 }
@@ -333,7 +333,7 @@ openvrml::bounding_sphere::bounding_sphere():
 /**
  * @brief Destroy.
  */
-openvrml::bounding_sphere::~bounding_sphere() throw ()
+openvrml::bounding_sphere::~bounding_sphere() OPENVRML_NOTHROW
 {}
 
 namespace {
@@ -751,7 +751,8 @@ void openvrml::bounding_sphere::do_transform(const mat4f & t)
 /**
  * @brief Destroy.
  */
-openvrml::axis_aligned_bounding_box::~axis_aligned_bounding_box() throw ()
+openvrml::axis_aligned_bounding_box::~axis_aligned_bounding_box()
+    OPENVRML_NOTHROW
 {}
 
 /**

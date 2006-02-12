@@ -48,13 +48,13 @@ namespace openvrml {
     protected:
         class counted_impl_base {
         public:
-            virtual ~counted_impl_base() throw ();
+            virtual ~counted_impl_base() OPENVRML_NOTHROW;
             std::auto_ptr<counted_impl_base> clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
 
         private:
             virtual std::auto_ptr<counted_impl_base> do_clone() const
-                throw (std::bad_alloc) = 0;
+                OPENVRML_THROW1(std::bad_alloc) = 0;
         };
 
         template <typename ValueType>
@@ -64,19 +64,19 @@ namespace openvrml {
 
         public:
             explicit counted_impl(const ValueType & value)
-                throw (std::bad_alloc);
-            counted_impl(const counted_impl<ValueType> & ci) throw ();
-            virtual ~counted_impl() throw ();
+                OPENVRML_THROW1(std::bad_alloc);
+            counted_impl(const counted_impl<ValueType> & ci) OPENVRML_NOTHROW;
+            virtual ~counted_impl() OPENVRML_NOTHROW;
 
-            const ValueType & value() const throw ();
-            void value(const ValueType & val) throw (std::bad_alloc);
+            const ValueType & value() const OPENVRML_NOTHROW;
+            void value(const ValueType & val) OPENVRML_THROW1(std::bad_alloc);
 
         private:
             counted_impl<ValueType> &
             operator=(const counted_impl<ValueType> &);
 
             virtual std::auto_ptr<counted_impl_base> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
     private:
@@ -118,24 +118,25 @@ namespace openvrml {
         };
 
         static std::auto_ptr<field_value> create(type_id type)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
-        virtual ~field_value() throw () = 0;
+        virtual ~field_value() OPENVRML_NOTHROW = 0;
 
-        std::auto_ptr<field_value> clone() const throw (std::bad_alloc);
+        std::auto_ptr<field_value> clone() const
+            OPENVRML_THROW1(std::bad_alloc);
         field_value & assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        type_id type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        type_id type() const OPENVRML_NOTHROW;
 
         template <typename FieldValue>
-        const typename FieldValue::value_type & value() const throw ();
+        const typename FieldValue::value_type & value() const OPENVRML_NOTHROW;
 
         template <typename FieldValue>
         void value(const typename FieldValue::value_type & val)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         template <typename FieldValue>
-        void swap(FieldValue & val) throw ();
+        void swap(FieldValue & val) OPENVRML_NOTHROW;
 
     protected:
         struct value_type_constructor_tag {};
@@ -143,35 +144,35 @@ namespace openvrml {
         template <typename ValueType>
         field_value(const ValueType & value,
                     const value_type_constructor_tag &)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
-        field_value(const field_value & value) throw (std::bad_alloc);
+        field_value(const field_value & value) OPENVRML_THROW1(std::bad_alloc);
 
         template <typename FieldValue>
         FieldValue & operator=(const FieldValue & value)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc) = 0;
+            OPENVRML_THROW1(std::bad_alloc) = 0;
 
         virtual field_value & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc) = 0;
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc) = 0;
 
-        virtual type_id do_type() const throw () = 0;
+        virtual type_id do_type() const OPENVRML_NOTHROW = 0;
 
         virtual void print(std::ostream & out) const = 0;
     };
 
     template <typename ValueType>
     field_value::counted_impl<ValueType>::
-    counted_impl(const ValueType & value) throw (std::bad_alloc):
+    counted_impl(const ValueType & value) OPENVRML_THROW1(std::bad_alloc):
         value_(new ValueType(value))
     {}
 
     template <typename ValueType>
     field_value::counted_impl<ValueType>::
-    counted_impl(const counted_impl<ValueType> & ci) throw ():
+    counted_impl(const counted_impl<ValueType> & ci) OPENVRML_NOTHROW:
         counted_impl_base()
     {
         boost::mutex::scoped_lock lock(ci.mutex_);
@@ -179,12 +180,12 @@ namespace openvrml {
     }
 
     template <typename ValueType>
-    field_value::counted_impl<ValueType>::~counted_impl() throw ()
+    field_value::counted_impl<ValueType>::~counted_impl() OPENVRML_NOTHROW
     {}
 
     template <typename ValueType>
     const ValueType & field_value::counted_impl<ValueType>::value() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         boost::mutex::scoped_lock lock(this->mutex_);
         assert(this->value_);
@@ -193,7 +194,7 @@ namespace openvrml {
 
     template <typename ValueType>
     void field_value::counted_impl<ValueType>::value(const ValueType & val)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         boost::mutex::scoped_lock lock(this->mutex_);
         assert(this->value_);
@@ -207,7 +208,7 @@ namespace openvrml {
     template <typename ValueType>
     std::auto_ptr<field_value::counted_impl_base>
     field_value::counted_impl<ValueType>::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<counted_impl_base>(
             new counted_impl<ValueType>(*this));
@@ -216,13 +217,13 @@ namespace openvrml {
     template <typename ValueType>
     field_value::field_value(const ValueType & value,
                              const value_type_constructor_tag &)
-        throw (std::bad_alloc):
+        OPENVRML_THROW1(std::bad_alloc):
         counted_impl_(new counted_impl<ValueType>(value))
     {}
 
     template <typename FieldValue>
     FieldValue & field_value::operator=(const FieldValue & fv)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         if (this != &fv) {
             counted_impl_ = fv.counted_impl_->clone();
@@ -231,7 +232,8 @@ namespace openvrml {
     }
 
     template <typename FieldValue>
-    const typename FieldValue::value_type & field_value::value() const throw ()
+    const typename FieldValue::value_type & field_value::value() const
+        OPENVRML_NOTHROW
     {
         assert(this->counted_impl_.get());
         return boost::polymorphic_downcast<
@@ -241,7 +243,7 @@ namespace openvrml {
 
     template <typename FieldValue>
     void field_value::value(const typename FieldValue::value_type & val)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->counted_impl_.get());
         boost::polymorphic_downcast<
@@ -250,7 +252,7 @@ namespace openvrml {
     }
 
     template <typename FieldValue>
-    void field_value::swap(FieldValue & val) throw ()
+    void field_value::swap(FieldValue & val) OPENVRML_NOTHROW
     {
         std::auto_ptr<counted_impl_base> temp = this->counted_impl_;
         this->counted_impl_ = val.counted_impl_;
@@ -307,29 +309,29 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfbool(value_type value = false) throw ();
+        explicit sfbool(value_type value = false) OPENVRML_NOTHROW;
         sfbool(const sfbool & sfb);
-        virtual ~sfbool() throw ();
+        virtual ~sfbool() OPENVRML_NOTHROW;
 
-        sfbool & operator=(const sfbool & sfb) throw (std::bad_alloc);
+        sfbool & operator=(const sfbool & sfb) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfbool & sfb) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfbool & sfb) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfbool & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sfbool & lhs, const sfbool & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfbool & lhs, const sfbool & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfcolor : public field_value {
@@ -338,29 +340,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfcolor(const value_type & value = color()) throw ();
+        explicit sfcolor(const value_type & value = color()) OPENVRML_NOTHROW;
         sfcolor(const sfcolor & sfc);
-        virtual ~sfcolor() throw ();
+        virtual ~sfcolor() OPENVRML_NOTHROW;
 
-        sfcolor & operator=(const sfcolor & sfc) throw (std::bad_alloc);
+        sfcolor & operator=(const sfcolor & sfc)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfcolor & sfc) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfcolor & sfc) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfcolor & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sfcolor & lhs, const sfcolor & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfcolor & lhs, const sfcolor & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfcolorrgba : public field_value {
@@ -369,29 +372,33 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfcolorrgba(const value_type & value = color_rgba()) throw ();
+        explicit sfcolorrgba(const value_type & value = color_rgba())
+            OPENVRML_NOTHROW;
         sfcolorrgba(const sfcolorrgba & sfc);
-        virtual ~sfcolorrgba() throw ();
+        virtual ~sfcolorrgba() OPENVRML_NOTHROW;
 
-        sfcolorrgba & operator=(const sfcolorrgba & sfc) throw (std::bad_alloc);
+        sfcolorrgba & operator=(const sfcolorrgba & sfc)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfcolorrgba & sfc) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfcolorrgba & sfc) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfcolorrgba & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
-    OPENVRML_API bool operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
-        throw ();
-    OPENVRML_API bool operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
-        throw ();
+    OPENVRML_API bool operator==(const sfcolorrgba & lhs,
+                                 const sfcolorrgba & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const sfcolorrgba & lhs,
+                                 const sfcolorrgba & rhs)
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sffloat : public field_value {
@@ -400,29 +407,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sffloat(float value = 0.0) throw ();
+        explicit sffloat(float value = 0.0) OPENVRML_NOTHROW;
         sffloat(const sffloat & sff);
-        virtual ~sffloat() throw ();
+        virtual ~sffloat() OPENVRML_NOTHROW;
 
-        sffloat & operator=(const sffloat & sff) throw (std::bad_alloc);
+        sffloat & operator=(const sffloat & sff)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sffloat & sff) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sffloat & sff) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sffloat & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sffloat & lhs, const sffloat & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sffloat & lhs, const sffloat & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API sfdouble : public field_value {
     public:
@@ -430,29 +438,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfdouble(double value = 0.0) throw ();
+        explicit sfdouble(double value = 0.0) OPENVRML_NOTHROW;
         sfdouble(const sfdouble & sfd);
-        virtual ~sfdouble() throw ();
+        virtual ~sfdouble() OPENVRML_NOTHROW;
 
-        sfdouble & operator=(const sfdouble & sfd) throw (std::bad_alloc);
+        sfdouble & operator=(const sfdouble & sfd)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfdouble & sfd) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfdouble & sfd) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfdouble & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sfdouble & lhs, const sfdouble & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfdouble & lhs, const sfdouble & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API sfimage : public field_value {
     public:
@@ -460,29 +469,31 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfimage(const image & value = image()) throw (std::bad_alloc);
+        explicit sfimage(const image & value = image())
+            OPENVRML_THROW1(std::bad_alloc);
         sfimage(const sfimage & sfi);
-        virtual ~sfimage() throw ();
+        virtual ~sfimage() OPENVRML_NOTHROW;
 
-        sfimage & operator=(const sfimage & sfi) throw (std::bad_alloc);
+        sfimage & operator=(const sfimage & sfi)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfimage & sfi) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfimage & sfi) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfimage & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sfimage & lhs, const sfimage & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfimage & lhs, const sfimage & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfint32 : public field_value {
@@ -491,34 +502,35 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfint32(int32 value = 0) throw ();
+        explicit sfint32(int32 value = 0) OPENVRML_NOTHROW;
         sfint32(const sfint32 & sfi);
-        virtual ~sfint32() throw ();
+        virtual ~sfint32() OPENVRML_NOTHROW;
 
-        sfint32 & operator=(const sfint32 & sfi) throw (std::bad_alloc);
+        sfint32 & operator=(const sfint32 & sfi)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfint32 & sfi) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfint32 & sfi) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfint32 & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfint32 & lhs, const sfint32 & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfint32 & lhs, const sfint32 & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class node;
-    void intrusive_ptr_add_ref(const node *) throw ();
-    void intrusive_ptr_release(const node *) throw ();
+    void intrusive_ptr_add_ref(const node *) OPENVRML_NOTHROW;
+    void intrusive_ptr_release(const node *) OPENVRML_NOTHROW;
 
     class OPENVRML_API sfnode : public field_value {
     public:
@@ -526,29 +538,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfnode(const value_type & node = value_type(0)) throw ();
+        explicit sfnode(const value_type & node = value_type(0))
+            OPENVRML_NOTHROW;
         sfnode(const sfnode & sfn);
-        virtual ~sfnode() throw ();
+        virtual ~sfnode() OPENVRML_NOTHROW;
 
-        sfnode & operator=(const sfnode & sfn) throw (std::bad_alloc);
+        sfnode & operator=(const sfnode & sfn) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfnode & sfn) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfnode & sfn) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfnode & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfnode & lhs, const sfnode & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfnode & lhs, const sfnode & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfrotation : public field_value {
@@ -557,31 +570,33 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfrotation(const rotation & rot = rotation()) throw ();
+        explicit sfrotation(const rotation & rot = rotation())
+            OPENVRML_NOTHROW;
         sfrotation(const sfrotation & sfr);
-        virtual ~sfrotation() throw ();
+        virtual ~sfrotation() OPENVRML_NOTHROW;
 
-        sfrotation & operator=(const sfrotation & sfr) throw (std::bad_alloc);
+        sfrotation & operator=(const sfrotation & sfr)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfrotation & sfr) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfrotation & sfr) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfrotation & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream & out) const;
     };
 
     OPENVRML_API bool operator==(const sfrotation & lhs,
                                  const sfrotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfrotation & lhs,
                                  const sfrotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfstring : public field_value {
@@ -591,29 +606,30 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit sfstring(const std::string & value = std::string())
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         sfstring(const sfstring & sfs);
-        virtual ~sfstring() throw ();
+        virtual ~sfstring() OPENVRML_NOTHROW;
 
-        sfstring & operator=(const sfstring & sfs) throw (std::bad_alloc);
+        sfstring & operator=(const sfstring & sfs)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfstring & sfs) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfstring & sfs) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfstring & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfstring & lhs, const sfstring & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfstring & lhs, const sfstring & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sftime : public field_value {
@@ -622,29 +638,29 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sftime(double value = 0.0) throw ();
+        explicit sftime(double value = 0.0) OPENVRML_NOTHROW;
         sftime(const sftime & sft);
-        virtual ~sftime() throw ();
+        virtual ~sftime() OPENVRML_NOTHROW;
 
-        sftime & operator=(const sftime & sft) throw (std::bad_alloc);
+        sftime & operator=(const sftime & sft) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sftime & sft) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sftime & sft) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sftime & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sftime & lhs, const sftime & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sftime & lhs, const sftime & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfvec2f : public field_value {
@@ -653,29 +669,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfvec2f(const vec2f & vec = vec2f()) throw ();
+        explicit sfvec2f(const vec2f & vec = vec2f()) OPENVRML_NOTHROW;
         sfvec2f(const sfvec2f & sfv);
-        virtual ~sfvec2f() throw ();
+        virtual ~sfvec2f() OPENVRML_NOTHROW;
 
-        sfvec2f & operator=(const sfvec2f & sfv) throw (std::bad_alloc);
+        sfvec2f & operator=(const sfvec2f & sfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfvec2f & sfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfvec2f & sfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfvec2f & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfvec2f & lhs, const sfvec2f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API sfvec2d : public field_value {
     public:
@@ -683,29 +700,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfvec2d(const vec2d & vec = vec2d()) throw ();
+        explicit sfvec2d(const vec2d & vec = vec2d()) OPENVRML_NOTHROW;
         sfvec2d(const sfvec2d & sfv);
-        virtual ~sfvec2d() throw ();
+        virtual ~sfvec2d() OPENVRML_NOTHROW;
 
-        sfvec2d & operator=(const sfvec2d & sfv) throw (std::bad_alloc);
+        sfvec2d & operator=(const sfvec2d & sfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfvec2d & sfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfvec2d & sfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfvec2d & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfvec2d & lhs, const sfvec2d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API sfvec3f : public field_value {
@@ -714,29 +732,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfvec3f(const vec3f & vec = vec3f()) throw ();
+        explicit sfvec3f(const vec3f & vec = vec3f()) OPENVRML_NOTHROW;
         sfvec3f(const sfvec3f & sfv);
-        virtual ~sfvec3f() throw ();
+        virtual ~sfvec3f() OPENVRML_NOTHROW;
 
-        sfvec3f & operator=(const sfvec3f & sfv) throw (std::bad_alloc);
+        sfvec3f & operator=(const sfvec3f & sfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfvec3f & sfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfvec3f & sfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfvec3f & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfvec3f & lhs, const sfvec3f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API sfvec3d : public field_value {
     public:
@@ -744,29 +763,30 @@ namespace openvrml {
 
         static const type_id field_value_type_id;
 
-        explicit sfvec3d(const vec3d & vec = vec3d()) throw ();
+        explicit sfvec3d(const vec3d & vec = vec3d()) OPENVRML_NOTHROW;
         sfvec3d(const sfvec3d & sfv);
-        virtual ~sfvec3d() throw ();
+        virtual ~sfvec3d() OPENVRML_NOTHROW;
 
-        sfvec3d & operator=(const sfvec3d & sfv) throw (std::bad_alloc);
+        sfvec3d & operator=(const sfvec3d & sfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(sfvec3d & sfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(sfvec3d & sfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual sfvec3d & do_assign(const field_value & value)
-            throw (std::bad_cast);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW1(std::bad_cast);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const sfvec3d & lhs, const sfvec3d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfbool : public field_value {
     public:
@@ -775,30 +795,31 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit mfbool(value_type::size_type n = 0, bool value = false)
-            throw (std::bad_alloc);
-        explicit mfbool(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfbool(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfbool(const mfbool & mfc);
-        virtual ~mfbool() throw ();
+        virtual ~mfbool() OPENVRML_NOTHROW;
 
-        mfbool & operator=(const mfbool & mfc) throw (std::bad_alloc);
+        mfbool & operator=(const mfbool & mfc) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfbool & mfc) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfbool & mfc) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfbool & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfbool & lhs, const mfbool & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfbool & lhs, const mfbool & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfcolor : public field_value {
     public:
@@ -808,30 +829,32 @@ namespace openvrml {
 
         explicit mfcolor(std::vector<color>::size_type n = 0,
                          const color & value = color())
-            throw (std::bad_alloc);
-        explicit mfcolor(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfcolor(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfcolor(const mfcolor & mfc);
-        virtual ~mfcolor() throw ();
+        virtual ~mfcolor() OPENVRML_NOTHROW;
 
-        mfcolor & operator=(const mfcolor & mfc) throw (std::bad_alloc);
+        mfcolor & operator=(const mfcolor & mfc)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfcolor & mfc) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfcolor & mfc) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfcolor & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfcolor & lhs, const mfcolor & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfcolor & lhs, const mfcolor & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfcolorrgba : public field_value {
     public:
@@ -841,33 +864,34 @@ namespace openvrml {
 
         explicit mfcolorrgba(value_type::size_type n = 0,
                              const color_rgba & value = color_rgba())
-            throw (std::bad_alloc);
-        explicit mfcolorrgba(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfcolorrgba(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfcolorrgba(const mfcolorrgba & mfc);
-        virtual ~mfcolorrgba() throw ();
+        virtual ~mfcolorrgba() OPENVRML_NOTHROW;
 
         mfcolorrgba & operator=(const mfcolorrgba & mfc)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfcolorrgba & mfc) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfcolorrgba & mfc) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfcolorrgba & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfcolorrgba & lhs,
                                  const mfcolorrgba & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfcolorrgba & lhs,
                                  const mfcolorrgba & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mffloat : public field_value {
     public:
@@ -877,30 +901,32 @@ namespace openvrml {
 
         explicit mffloat(std::vector<float>::size_type n = 0,
                          float value = 0.0f)
-            throw (std::bad_alloc);
-        explicit mffloat(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mffloat(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mffloat(const mffloat & mff);
-        virtual ~mffloat() throw ();
+        virtual ~mffloat() OPENVRML_NOTHROW;
 
-        mffloat & operator=(const mffloat & mff) throw (std::bad_alloc);
+        mffloat & operator=(const mffloat & mff)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mffloat & mff) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mffloat & mff) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mffloat & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mffloat & lhs, const mffloat & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mffloat & lhs, const mffloat & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfdouble : public field_value {
     public:
@@ -910,30 +936,32 @@ namespace openvrml {
 
         explicit mfdouble(std::vector<double>::size_type n = 0,
                           double value = 0.0f)
-            throw (std::bad_alloc);
-        explicit mfdouble(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfdouble(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfdouble(const mfdouble & mfd);
-        virtual ~mfdouble() throw ();
+        virtual ~mfdouble() OPENVRML_NOTHROW;
 
-        mfdouble & operator=(const mfdouble & mfd) throw (std::bad_alloc);
+        mfdouble & operator=(const mfdouble & mfd)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfdouble & mfd) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfdouble & mfd) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfdouble & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfdouble & lhs, const mfdouble & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfdouble & lhs, const mfdouble & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfimage : public field_value {
     public:
@@ -943,30 +971,32 @@ namespace openvrml {
 
         explicit mfimage(value_type::size_type n = 0,
                          const image & value = image())
-            throw (std::bad_alloc);
-        explicit mfimage(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfimage(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfimage(const mfimage & mfi);
-        virtual ~mfimage() throw ();
+        virtual ~mfimage() OPENVRML_NOTHROW;
 
-        mfimage & operator=(const mfimage & mfi) throw (std::bad_alloc);
+        mfimage & operator=(const mfimage & mfi)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfimage & mfi) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfimage & mfi) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfimage & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfimage & lhs, const mfimage & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfimage & lhs, const mfimage & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfint32 : public field_value {
     public:
@@ -975,30 +1005,31 @@ namespace openvrml {
         static const type_id field_value_type_id;
 
         explicit mfint32(std::vector<int32>::size_type n = 0, int32 value = 0)
-            throw (std::bad_alloc);
-        explicit mfint32(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfint32(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfint32(const mfint32 & mfi);
-        virtual ~mfint32() throw ();
+        virtual ~mfint32() OPENVRML_NOTHROW;
 
-        mfint32 & operator=(const mfint32 &) throw (std::bad_alloc);
+        mfint32 & operator=(const mfint32 &) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfint32 & mfi) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfint32 & mfi) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfint32 & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfint32 & lhs, const mfint32 & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfint32 & lhs, const mfint32 & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfnode : public field_value {
@@ -1010,30 +1041,31 @@ namespace openvrml {
         explicit mfnode(value_type::size_type n = 0,
                         const value_type::value_type & value =
                         value_type::value_type())
-            throw (std::bad_alloc);
-        explicit mfnode(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfnode(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfnode(const mfnode & mfn);
-        virtual ~mfnode() throw ();
+        virtual ~mfnode() OPENVRML_NOTHROW;
 
-        mfnode & operator=(const mfnode & mfn) throw (std::bad_alloc);
+        mfnode & operator=(const mfnode & mfn) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfnode & mfn) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfnode & mfn) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfnode & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfnode & lhs, const mfnode & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfnode & lhs, const mfnode & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfrotation : public field_value {
@@ -1044,32 +1076,34 @@ namespace openvrml {
 
         explicit mfrotation(std::vector<rotation>::size_type n = 0,
                             const rotation & value = rotation())
-            throw (std::bad_alloc);
-        explicit mfrotation(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfrotation(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfrotation(const mfrotation & mfr);
-        virtual ~mfrotation() throw ();
+        virtual ~mfrotation() OPENVRML_NOTHROW;
 
-        mfrotation & operator=(const mfrotation & mfr) throw (std::bad_alloc);
+        mfrotation & operator=(const mfrotation & mfr)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfrotation & mfr) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfrotation & mfr) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfrotation & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfrotation & lhs,
                                  const mfrotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfrotation & lhs,
                                  const mfrotation & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfstring : public field_value {
@@ -1080,30 +1114,32 @@ namespace openvrml {
 
         explicit mfstring(std::vector<std::string>::size_type n = 0,
                           const std::string & value = std::string())
-            throw (std::bad_alloc);
-        explicit mfstring(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfstring(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfstring(const mfstring & mfs);
-        virtual ~mfstring() throw ();
+        virtual ~mfstring() OPENVRML_NOTHROW;
 
-        mfstring & operator=(const mfstring & mfs) throw (std::bad_alloc);
+        mfstring & operator=(const mfstring & mfs)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfstring & mfs) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfstring & mfs) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfstring & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfstring & lhs, const mfstring & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfstring & lhs, const mfstring & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mftime : public field_value {
@@ -1114,30 +1150,31 @@ namespace openvrml {
 
         explicit mftime(std::vector<double>::size_type n = 0,
                         double value = 0.0)
-            throw (std::bad_alloc);
-        explicit mftime(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mftime(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mftime(const mftime & mft);
-        virtual ~mftime() throw ();
+        virtual ~mftime() OPENVRML_NOTHROW;
 
-        mftime & operator=(const mftime & mft) throw (std::bad_alloc);
+        mftime & operator=(const mftime & mft) OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mftime & mft) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mftime & mft) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mftime & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mftime & lhs, const mftime & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mftime & lhs, const mftime & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfvec2f : public field_value {
@@ -1148,30 +1185,32 @@ namespace openvrml {
 
         explicit mfvec2f(std::vector<vec2f>::size_type n = 0,
                          const vec2f & value = vec2f())
-            throw (std::bad_alloc);
-        explicit mfvec2f(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfvec2f(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfvec2f(const mfvec2f & mfv);
-        virtual ~mfvec2f() throw ();
+        virtual ~mfvec2f() OPENVRML_NOTHROW;
 
-        mfvec2f & operator=(const mfvec2f & mfv) throw (std::bad_alloc);
+        mfvec2f & operator=(const mfvec2f & mfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfvec2f & mfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfvec2f & mfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfvec2f & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfvec2f & lhs, const mfvec2f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfvec2d : public field_value {
@@ -1182,30 +1221,32 @@ namespace openvrml {
 
         explicit mfvec2d(std::vector<vec2d>::size_type n = 0,
                          const vec2d & value = vec2d())
-            throw (std::bad_alloc);
-        explicit mfvec2d(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfvec2d(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfvec2d(const mfvec2d & mfv);
-        virtual ~mfvec2d() throw ();
+        virtual ~mfvec2d() OPENVRML_NOTHROW;
 
-        mfvec2d & operator=(const mfvec2d & mfv) throw (std::bad_alloc);
+        mfvec2d & operator=(const mfvec2d & mfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfvec2d & mfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfvec2d & mfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfvec2d & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfvec2d & lhs, const mfvec2d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API mfvec3f : public field_value {
@@ -1216,30 +1257,32 @@ namespace openvrml {
 
         explicit mfvec3f(std::vector<vec3f>::size_type n = 0,
                          const vec3f & value = vec3f())
-            throw (std::bad_alloc);
-        explicit mfvec3f(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfvec3f(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfvec3f(const mfvec3f & mfv);
-        virtual ~mfvec3f() throw ();
+        virtual ~mfvec3f() OPENVRML_NOTHROW;
 
-        mfvec3f & operator=(const mfvec3f & mfv) throw (std::bad_alloc);
+        mfvec3f & operator=(const mfvec3f & mfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfvec3f & mfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfvec3f & mfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfvec3f & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfvec3f & lhs, const mfvec3f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 
     class OPENVRML_API mfvec3d : public field_value {
     public:
@@ -1249,30 +1292,32 @@ namespace openvrml {
 
         explicit mfvec3d(std::vector<vec3d>::size_type n = 0,
                          const vec3d & value = vec3d())
-            throw (std::bad_alloc);
-        explicit mfvec3d(const value_type & value) throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        explicit mfvec3d(const value_type & value)
+            OPENVRML_THROW1(std::bad_alloc);
         mfvec3d(const mfvec3d & mfv);
-        virtual ~mfvec3d() throw ();
+        virtual ~mfvec3d() OPENVRML_NOTHROW;
 
-        mfvec3d & operator=(const mfvec3d & mfv) throw (std::bad_alloc);
+        mfvec3d & operator=(const mfvec3d & mfv)
+            OPENVRML_THROW1(std::bad_alloc);
 
-        const value_type & value() const throw ();
-        void value(const value_type & val) throw (std::bad_alloc);
-        void swap(mfvec3d & mfv) throw ();
+        const value_type & value() const OPENVRML_NOTHROW;
+        void value(const value_type & val) OPENVRML_THROW1(std::bad_alloc);
+        void swap(mfvec3d & mfv) OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<field_value> do_clone() const
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual mfvec3d & do_assign(const field_value & value)
-            throw (std::bad_cast, std::bad_alloc);
-        virtual type_id do_type() const throw ();
+            OPENVRML_THROW2(std::bad_cast, std::bad_alloc);
+        virtual type_id do_type() const OPENVRML_NOTHROW;
         virtual void print(std::ostream &) const;
     };
 
     OPENVRML_API bool operator==(const mfvec3d & lhs, const mfvec3d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
-        throw ();
+        OPENVRML_NOTHROW;
 }
 
 namespace std {

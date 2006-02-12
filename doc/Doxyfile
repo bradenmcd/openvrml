@@ -184,14 +184,20 @@ PERLMOD_MAKEVAR_PREFIX =
 #---------------------------------------------------------------------------
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
-EXPAND_ONLY_PREDEF     = YES
+EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
 PREDEFINED             = BOOST_CLASS_REQUIRE(a,b,c)= \
                          OPENVRML_API= \
                          OPENVRML_LOCAL= \
-                         OPENVRML_GL_CALLBACK_= 
+                         OPENVRML_GL_CALLBACK_= \
+                         OPENVRML_NOTHROW="throw ()" \
+                         OPENVRML_THROW1(a)="throw (a)" \
+                         OPENVRML_THROW2(a,b)="throw (a, b)" \
+                         OPENVRML_THROW3(a,b,c)="throw (a, b, c)" \
+                         OPENVRML_THROW4(a,b,c,d)="throw (a, b, c, d)" \
+                         OPENVRML_THROW5(a,b,c,d,e)="throw (a, b, c, d, e)"
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

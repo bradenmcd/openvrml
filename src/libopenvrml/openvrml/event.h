@@ -33,12 +33,12 @@ namespace openvrml {
 
     class OPENVRML_API event_listener : boost::noncopyable {
     public:
-        virtual ~event_listener() throw () = 0;
+        virtual ~event_listener() OPENVRML_NOTHROW = 0;
 
-        virtual field_value::type_id type() const throw () = 0;
+        virtual field_value::type_id type() const OPENVRML_NOTHROW = 0;
 
     protected:
-        event_listener() throw ();
+        event_listener() OPENVRML_NOTHROW;
     };
 
 
@@ -46,16 +46,16 @@ namespace openvrml {
         openvrml::node * node_;
 
     public:
-        virtual ~node_event_listener() throw ();
+        virtual ~node_event_listener() OPENVRML_NOTHROW;
 
-        openvrml::node & node() const throw ();
-        const std::string eventin_id() const throw ();
+        openvrml::node & node() const OPENVRML_NOTHROW;
+        const std::string eventin_id() const OPENVRML_NOTHROW;
 
     protected:
-        explicit node_event_listener(openvrml::node & n) throw ();
+        explicit node_event_listener(openvrml::node & n) OPENVRML_NOTHROW;
 
     private:
-        virtual const std::string do_eventin_id() const throw () = 0;
+        virtual const std::string do_eventin_id() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -64,41 +64,41 @@ namespace openvrml {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
-        virtual ~field_value_listener() throw () = 0;
+        virtual ~field_value_listener() OPENVRML_NOTHROW = 0;
         void process_event(const FieldValue & value, double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
-        virtual field_value::type_id type() const throw ();
+        virtual field_value::type_id type() const OPENVRML_NOTHROW;
 
     protected:
-        explicit field_value_listener() throw ();
+        explicit field_value_listener() OPENVRML_NOTHROW;
 
     private:
         virtual void do_process_event(const FieldValue & value,
                                       double timestamp)
-            throw (std::bad_alloc) = 0;
+            OPENVRML_THROW1(std::bad_alloc) = 0;
     };
 
     template <typename FieldValue>
-    field_value_listener<FieldValue>::field_value_listener() throw ()
+    field_value_listener<FieldValue>::field_value_listener() OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
-    field_value_listener<FieldValue>::~field_value_listener() throw ()
+    field_value_listener<FieldValue>::~field_value_listener() OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
     void
     field_value_listener<FieldValue>::process_event(const FieldValue & value,
                                                     const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         this->do_process_event(value, timestamp);
     }
 
     template <typename FieldValue>
     field_value::type_id field_value_listener<FieldValue>::type() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return FieldValue::field_value_type_id;
     }
@@ -140,22 +140,23 @@ namespace openvrml {
         public virtual node_event_listener,
         public field_value_listener<FieldValue> {
     public:
-        virtual ~node_field_value_listener() throw ();
+        virtual ~node_field_value_listener() OPENVRML_NOTHROW;
 
     protected:
-        explicit node_field_value_listener(openvrml::node & n) throw ();
+        explicit node_field_value_listener(openvrml::node & n)
+            OPENVRML_NOTHROW;
     };
 
     template <typename FieldValue>
     node_field_value_listener<FieldValue>::
     node_field_value_listener(openvrml::node & n)
-        throw ():
+        OPENVRML_NOTHROW:
         node_event_listener(n)
     {}
 
     template <typename FieldValue>
     node_field_value_listener<FieldValue>::~node_field_value_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -170,23 +171,24 @@ namespace openvrml {
     public:
         typedef std::set<event_listener *> listener_set;
 
-        virtual ~event_emitter() throw () = 0;
+        virtual ~event_emitter() OPENVRML_NOTHROW = 0;
 
-        const field_value & value() const throw ();
-        const std::string eventout_id() const throw ();
-        const listener_set & listeners() const throw ();
-        double last_time() const throw ();
+        const field_value & value() const OPENVRML_NOTHROW;
+        const std::string eventout_id() const OPENVRML_NOTHROW;
+        const listener_set & listeners() const OPENVRML_NOTHROW;
+        double last_time() const OPENVRML_NOTHROW;
 
     protected:
-        boost::recursive_mutex & mutex() const throw ();
-        listener_set & listeners() throw ();
-        void last_time(double t) throw ();
+        boost::recursive_mutex & mutex() const OPENVRML_NOTHROW;
+        listener_set & listeners() OPENVRML_NOTHROW;
+        void last_time(double t) OPENVRML_NOTHROW;
 
-        explicit event_emitter(const field_value & value) throw ();
+        explicit event_emitter(const field_value & value) OPENVRML_NOTHROW;
 
     private:
-        virtual const std::string do_eventout_id() const throw () = 0;
-        virtual void emit_event(double timestamp) throw (std::bad_alloc) = 0;
+        virtual const std::string do_eventout_id() const OPENVRML_NOTHROW = 0;
+        virtual void emit_event(double timestamp)
+            OPENVRML_THROW1(std::bad_alloc) = 0;
     };
 
 
@@ -195,31 +197,34 @@ namespace openvrml {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
-        explicit field_value_emitter(const FieldValue & value) throw ();
-        virtual ~field_value_emitter() throw () = 0;
+        explicit field_value_emitter(const FieldValue & value)
+            OPENVRML_NOTHROW;
+        virtual ~field_value_emitter() OPENVRML_NOTHROW = 0;
 
         bool add(field_value_listener<FieldValue> & listener)
-            throw (std::bad_alloc);
-        bool remove(field_value_listener<FieldValue> & listener) throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        bool remove(field_value_listener<FieldValue> & listener)
+            OPENVRML_NOTHROW;
 
     private:
-        virtual void emit_event(double timestamp) throw (std::bad_alloc);
+        virtual void emit_event(double timestamp) OPENVRML_THROW1(std::bad_alloc);
     };
 
     template <typename FieldValue>
     inline field_value_emitter<FieldValue>::field_value_emitter(
         const FieldValue & value)
-        throw ():
+        OPENVRML_NOTHROW:
         event_emitter(value)
     {}
 
     template <typename FieldValue>
-    inline field_value_emitter<FieldValue>::~field_value_emitter() throw ()
+    inline field_value_emitter<FieldValue>::~field_value_emitter()
+        OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
     void field_value_emitter<FieldValue>::emit_event(const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         boost::recursive_mutex::scoped_lock lock(this->mutex());
         for (typename listener_set::iterator listener =
@@ -238,7 +243,8 @@ namespace openvrml {
     template <typename FieldValue>
     inline bool
     field_value_emitter<FieldValue>::
-    add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
+    add(field_value_listener<FieldValue> & listener)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         boost::recursive_mutex::scoped_lock lock(this->mutex());
         return this->listeners().insert(&listener).second;
@@ -247,7 +253,7 @@ namespace openvrml {
     template <typename FieldValue>
     inline bool
     field_value_emitter<FieldValue>::
-    remove(field_value_listener<FieldValue> & listener) throw ()
+    remove(field_value_listener<FieldValue> & listener) OPENVRML_NOTHROW
     {
         boost::recursive_mutex::scoped_lock lock(this->mutex());
         return (this->listeners().erase(&listener) > 0);

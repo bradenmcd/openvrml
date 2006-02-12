@@ -39,10 +39,10 @@ namespace openvrml {
             inside = 1
         };
 
-        virtual ~bounding_volume() throw () = 0;
+        virtual ~bounding_volume() OPENVRML_NOTHROW = 0;
 
         void maximize();
-        bool maximized() const throw ();
+        bool maximized() const OPENVRML_NOTHROW;
         intersection
         intersect_frustum(const openvrml::frustum & frustum) const;
         void extend(const vec3f & p);
@@ -71,7 +71,7 @@ namespace openvrml {
 
     public:
         bounding_sphere();
-        virtual ~bounding_sphere() throw ();
+        virtual ~bounding_sphere() OPENVRML_NOTHROW;
 
         void center(const vec3f & c);
         const vec3f & center() const;
@@ -94,7 +94,7 @@ namespace openvrml {
 
     class OPENVRML_API axis_aligned_bounding_box : public bounding_volume {
     public:
-        virtual ~axis_aligned_bounding_box() throw ();
+        virtual ~axis_aligned_bounding_box() OPENVRML_NOTHROW;
 
     private:
         virtual void do_maximize();

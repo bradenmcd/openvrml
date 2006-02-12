@@ -62,9 +62,9 @@ namespace openvrml {
         typedef long object_t;
         typedef long texture_object_t;
 
-        virtual ~viewer() throw () = 0;
+        virtual ~viewer() OPENVRML_NOTHROW = 0;
 
-        openvrml::browser * browser() const throw ();
+        openvrml::browser * browser() const OPENVRML_NOTHROW;
 
         virtual rendering_mode mode() = 0;
         virtual double frame_rate() = 0;
@@ -207,7 +207,7 @@ namespace openvrml {
                              bounding_volume::intersection intersection) = 0;
 
     protected:
-        viewer() throw ();
+        viewer() OPENVRML_NOTHROW;
     };
 }
 

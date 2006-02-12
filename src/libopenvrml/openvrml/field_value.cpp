@@ -70,7 +70,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
 /**
  * @brief Destroy.
  */
-openvrml::field_value::counted_impl_base::~counted_impl_base() throw ()
+openvrml::field_value::counted_impl_base::~counted_impl_base() OPENVRML_NOTHROW
 {}
 
 /**
@@ -83,13 +83,13 @@ openvrml::field_value::counted_impl_base::~counted_impl_base() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value::counted_impl_base>
-openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
+openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad_alloc)
 {
     return this->do_clone();
 }
 
 /**
- * @fn std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl_base::do_clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl_base::do_clone() const
  *
  * @brief Clone.
  *
@@ -135,7 +135,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
- * @fn openvrml::field_value::counted_impl::counted_impl(const counted_impl<ValueType> & ci) throw ()
+ * @fn openvrml::field_value::counted_impl::counted_impl(const counted_impl<ValueType> & ci)
  *
  * @brief Construct a copy.
  *
@@ -143,7 +143,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
- * @fn openvrml::field_value::counted_impl::~counted_impl() throw ()
+ * @fn openvrml::field_value::counted_impl::~counted_impl()
  *
  * @brief Destroy.
  */
@@ -155,7 +155,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
- * @fn const ValueType & openvrml::field_value::counted_impl::value() const throw ()
+ * @fn const ValueType & openvrml::field_value::counted_impl::value() const
  *
  * @brief Access.
  *
@@ -163,7 +163,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::field_value::counted_impl::value(const ValueType & val) throw (std::bad_alloc)
+ * @fn void openvrml::field_value::counted_impl::value(const ValueType & val)
  *
  * @brief Mutate.
  *
@@ -173,7 +173,7 @@ openvrml::field_value::counted_impl_base::clone() const throw (std::bad_alloc)
  */
 
 /**
- * @fn std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl::do_clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl::do_clone() const
  *
  * @brief Polymorphically construct a copy.
  *
@@ -381,7 +381,7 @@ namespace {
  */
 std::auto_ptr<openvrml::field_value>
 openvrml::field_value::create(const type_id type)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
     using openvrml_::field_value_types;
@@ -400,7 +400,7 @@ openvrml::field_value::create(const type_id type)
  */
 
 /**
- * @fn openvrml::field_value::field_value(const ValueType & value, const value_type_constructor_tag &) throw (std::bad_alloc)
+ * @fn openvrml::field_value::field_value(const ValueType & value, const value_type_constructor_tag &)
  *
  * @brief Construct.
  *
@@ -417,7 +417,7 @@ openvrml::field_value::create(const type_id type)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::field_value::field_value(const field_value & fv)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     counted_impl_(fv.counted_impl_->clone())
 {}
 
@@ -425,11 +425,11 @@ openvrml::field_value::field_value(const field_value & fv)
 /**
  * @brief Destroy.
  */
-openvrml::field_value::~field_value() throw ()
+openvrml::field_value::~field_value() OPENVRML_NOTHROW
 {}
 
 /**
- * @fn FieldValue & openvrml::field_value::operator=(const FieldValue & fv) throw ()
+ * @fn FieldValue & openvrml::field_value::operator=(const FieldValue & fv)
  *
  * @brief Assignment operator.
  *
@@ -446,7 +446,7 @@ openvrml::field_value::~field_value() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::field_value::clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     std::auto_ptr<field_value> result = this->do_clone();
     assert(typeid(*result) == typeid(*this)
@@ -455,7 +455,7 @@ std::auto_ptr<openvrml::field_value> openvrml::field_value::clone() const
 }
 
 /**
- * @fn std::auto_ptr<openvrml::field_value> openvrml::field_value::do_clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<openvrml::field_value> openvrml::field_value::do_clone() const
  *
  * @brief Polymorphically construct a copy.
  *
@@ -475,7 +475,7 @@ std::auto_ptr<openvrml::field_value> openvrml::field_value::clone() const
  */
 openvrml::field_value &
 openvrml::field_value::assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     field_value & this_ = this->do_assign(value);
     assert(typeid(this_) == typeid(*this)
@@ -484,7 +484,7 @@ openvrml::field_value::assign(const field_value & value)
 }
 
 /**
- * @fn openvrml::field_value & openvrml::field_value::do_assign(const field_value & value) throw (std::bad_cast, std::bad_alloc)
+ * @fn openvrml::field_value & openvrml::field_value::do_assign(const field_value & value)
  *
  * @brief Virtual assignment.
  *
@@ -498,7 +498,7 @@ openvrml::field_value::assign(const field_value & value)
  */
 
 /**
- * @fn void openvrml::field_value::swap(FieldValue & val) throw ()
+ * @fn void openvrml::field_value::swap(FieldValue & val)
  *
  * @brief Swap.
  *
@@ -521,13 +521,14 @@ openvrml::field_value::assign(const field_value & value)
  * @return the <code>type_id</code> enumerant corresponding to the
  *        <code>field_value</code>'s type.
  */
-openvrml::field_value::type_id openvrml::field_value::type() const throw ()
+openvrml::field_value::type_id openvrml::field_value::type() const
+    OPENVRML_NOTHROW
 {
     return this->do_type();
 }
 
 /**
- * @fn openvrml::field_value::type_id openvrml::field_value::do_type() const throw ()
+ * @fn openvrml::field_value::type_id openvrml::field_value::do_type() const
  *
  * @brief Get the field type.
  *
@@ -535,7 +536,7 @@ openvrml::field_value::type_id openvrml::field_value::type() const throw ()
  */
 
 /**
- * @fn const typename FieldValue::value_type & openvrml::field_value::value() const throw ()
+ * @fn const typename FieldValue::value_type & openvrml::field_value::value() const
  *
  * @brief Access.
  *
@@ -543,7 +544,7 @@ openvrml::field_value::type_id openvrml::field_value::type() const throw ()
  */
 
 /**
- * @fn void openvrml::field_value::value(const typename FieldValue::value_type & val) throw (std::bad_alloc)
+ * @fn void openvrml::field_value::value(const typename FieldValue::value_type & val)
  *
  * @brief Mutate.
  *
@@ -772,7 +773,7 @@ openvrml::sfbool::field_value_type_id(sfbool_id);
  *
  * @param value initial value
  */
-openvrml::sfbool::sfbool(const value_type value) throw ():
+openvrml::sfbool::sfbool(const value_type value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -788,7 +789,7 @@ openvrml::sfbool::sfbool(const sfbool & sfb):
 /**
  * @brief Destroy.
  */
-openvrml::sfbool::~sfbool() throw ()
+openvrml::sfbool::~sfbool() OPENVRML_NOTHROW
 {}
 
 /**
@@ -801,7 +802,7 @@ openvrml::sfbool::~sfbool() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfbool & openvrml::sfbool::operator=(const sfbool & sfb)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfb);
 }
@@ -811,7 +812,8 @@ openvrml::sfbool & openvrml::sfbool::operator=(const sfbool & sfb)
  *
  * @return the boolean value.
  */
-const openvrml::sfbool::value_type & openvrml::sfbool::value() const throw ()
+const openvrml::sfbool::value_type & openvrml::sfbool::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfbool>();
 }
@@ -823,7 +825,8 @@ const openvrml::sfbool::value_type & openvrml::sfbool::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfbool::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfbool::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfbool>(val);
 }
@@ -833,7 +836,7 @@ void openvrml::sfbool::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfb   the value to swap with this one.
  */
-void openvrml::sfbool::swap(sfbool & sfb) throw ()
+void openvrml::sfbool::swap(sfbool & sfb) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfbool>(sfb);
 }
@@ -846,7 +849,7 @@ void openvrml::sfbool::swap(sfbool & sfb) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfbool::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfbool(*this));
 }
@@ -861,7 +864,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfbool::do_clone() const
  * @exception std::bad_cast if @p value is not an sfbool.
  */
 openvrml::sfbool & openvrml::sfbool::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfbool &>(value));
 }
@@ -881,7 +884,8 @@ void openvrml::sfbool::print(std::ostream & out) const
  *
  * @return @c field_value::sfbool.
  */
-openvrml::field_value::type_id openvrml::sfbool::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfbool::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfbool_id;
 }
@@ -897,7 +901,8 @@ openvrml::field_value::type_id openvrml::sfbool::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfbool & lhs, const sfbool & rhs) throw ()
+bool openvrml::operator==(const sfbool & lhs, const sfbool & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -913,7 +918,8 @@ bool openvrml::operator==(const sfbool & lhs, const sfbool & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs) throw ()
+bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -947,7 +953,8 @@ openvrml::sfcolor::field_value_type_id(sfcolor_id);
  *
  * @param value initial value.
  */
-openvrml::sfcolor::sfcolor(const value_type & value) throw ():
+openvrml::sfcolor::sfcolor(const value_type & value)
+    OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -963,7 +970,7 @@ openvrml::sfcolor::sfcolor(const sfcolor & sfc):
 /**
  * @brief Destroy.
  */
-openvrml::sfcolor::~sfcolor() throw ()
+openvrml::sfcolor::~sfcolor() OPENVRML_NOTHROW
 {}
 
 /**
@@ -976,7 +983,7 @@ openvrml::sfcolor::~sfcolor() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfcolor & openvrml::sfcolor::operator=(const sfcolor & sfc)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfc);
 }
@@ -986,7 +993,8 @@ openvrml::sfcolor & openvrml::sfcolor::operator=(const sfcolor & sfc)
  *
  * @return the color value.
  */
-const openvrml::sfcolor::value_type & openvrml::sfcolor::value() const throw ()
+const openvrml::sfcolor::value_type & openvrml::sfcolor::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfcolor>();
 }
@@ -998,7 +1006,8 @@ const openvrml::sfcolor::value_type & openvrml::sfcolor::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfcolor::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfcolor::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfcolor>(val);
 }
@@ -1008,7 +1017,7 @@ void openvrml::sfcolor::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfc   the value to swap with this one.
  */
-void openvrml::sfcolor::swap(sfcolor & sfc) throw ()
+void openvrml::sfcolor::swap(sfcolor & sfc) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfcolor>(sfc);
 }
@@ -1021,7 +1030,7 @@ void openvrml::sfcolor::swap(sfcolor & sfc) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfcolor::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfcolor(*this));
 }
@@ -1036,7 +1045,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfcolor::do_clone() const
  * @exception std::bad_cast if @p value is not an SFColor.
  */
 openvrml::sfcolor & openvrml::sfcolor::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfcolor &>(value));
 }
@@ -1056,7 +1065,8 @@ void openvrml::sfcolor::print(std::ostream & out) const
  *
  * @return @c field_value::sfcolor.
  */
-openvrml::field_value::type_id openvrml::sfcolor::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfcolor::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfcolor_id;
 }
@@ -1072,7 +1082,8 @@ openvrml::field_value::type_id openvrml::sfcolor::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
+bool openvrml::operator==(const sfcolor & lhs, const sfcolor & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1088,7 +1099,8 @@ bool openvrml::operator==(const sfcolor & lhs, const sfcolor & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs) throw ()
+bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1121,7 +1133,8 @@ openvrml::sfcolorrgba::field_value_type_id(sfcolorrgba_id);
  *
  * @param value initial value.
  */
-openvrml::sfcolorrgba::sfcolorrgba(const value_type & value) throw ():
+openvrml::sfcolorrgba::sfcolorrgba(const value_type & value)
+    OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -1137,7 +1150,7 @@ openvrml::sfcolorrgba::sfcolorrgba(const sfcolorrgba & sfc):
 /**
  * @brief Destroy.
  */
-openvrml::sfcolorrgba::~sfcolorrgba() throw ()
+openvrml::sfcolorrgba::~sfcolorrgba() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1149,8 +1162,9 @@ openvrml::sfcolorrgba::~sfcolorrgba() throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::sfcolorrgba & openvrml::sfcolorrgba::operator=(const sfcolorrgba & sfc)
-     throw (std::bad_alloc)
+openvrml::sfcolorrgba &
+openvrml::sfcolorrgba::operator=(const sfcolorrgba & sfc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfc);
 }
@@ -1160,7 +1174,8 @@ openvrml::sfcolorrgba & openvrml::sfcolorrgba::operator=(const sfcolorrgba & sfc
  *
  * @return the color_rgba value.
  */
-const openvrml::sfcolorrgba::value_type & openvrml::sfcolorrgba::value() const throw ()
+const openvrml::sfcolorrgba::value_type & openvrml::sfcolorrgba::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfcolorrgba>();
 }
@@ -1172,7 +1187,8 @@ const openvrml::sfcolorrgba::value_type & openvrml::sfcolorrgba::value() const t
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfcolorrgba::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfcolorrgba::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfcolorrgba>(val);
 }
@@ -1182,7 +1198,7 @@ void openvrml::sfcolorrgba::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfc   the value to swap with this one.
  */
-void openvrml::sfcolorrgba::swap(sfcolorrgba & sfc) throw ()
+void openvrml::sfcolorrgba::swap(sfcolorrgba & sfc) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfcolorrgba>(sfc);
 }
@@ -1195,7 +1211,7 @@ void openvrml::sfcolorrgba::swap(sfcolorrgba & sfc) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfcolorrgba::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfcolorrgba(*this));
 }
@@ -1209,8 +1225,9 @@ std::auto_ptr<openvrml::field_value> openvrml::sfcolorrgba::do_clone() const
  *
  * @exception std::bad_cast if @p value is not an SFColor.
  */
-openvrml::sfcolorrgba & openvrml::sfcolorrgba::do_assign(const field_value & value)
-    throw (std::bad_cast)
+openvrml::sfcolorrgba &
+openvrml::sfcolorrgba::do_assign(const field_value & value)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfcolorrgba &>(value));
 }
@@ -1230,7 +1247,8 @@ void openvrml::sfcolorrgba::print(std::ostream & out) const
  *
  * @return @c field_value::sfcolorrgba.
  */
-openvrml::field_value::type_id openvrml::sfcolorrgba::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfcolorrgba::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfcolorrgba_id;
 }
@@ -1246,7 +1264,8 @@ openvrml::field_value::type_id openvrml::sfcolorrgba::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs) throw ()
+bool openvrml::operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1262,7 +1281,8 @@ bool openvrml::operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs) thro
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs) throw ()
+bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1295,7 +1315,7 @@ openvrml::sffloat::field_value_type_id(sffloat_id);
  *
  * @param value initial value
  */
-openvrml::sffloat::sffloat(const value_type value) throw ():
+openvrml::sffloat::sffloat(const value_type value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -1311,7 +1331,7 @@ openvrml::sffloat::sffloat(const sffloat & sff):
 /**
  * @brief Destroy.
  */
-openvrml::sffloat::~sffloat() throw ()
+openvrml::sffloat::~sffloat() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1324,7 +1344,7 @@ openvrml::sffloat::~sffloat() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sffloat & openvrml::sffloat::operator=(const sffloat & sff)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sff);
 }
@@ -1334,7 +1354,8 @@ openvrml::sffloat & openvrml::sffloat::operator=(const sffloat & sff)
  *
  * @return the floating point value.
  */
-const openvrml::sffloat::value_type & openvrml::sffloat::value() const throw ()
+const openvrml::sffloat::value_type & openvrml::sffloat::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sffloat>();
 }
@@ -1346,7 +1367,8 @@ const openvrml::sffloat::value_type & openvrml::sffloat::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sffloat::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sffloat::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sffloat>(val);
 }
@@ -1356,7 +1378,7 @@ void openvrml::sffloat::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sff   the value to swap with this one.
  */
-void openvrml::sffloat::swap(sffloat & sff) throw ()
+void openvrml::sffloat::swap(sffloat & sff) OPENVRML_NOTHROW
 {
     this->field_value::swap<sffloat>(sff);
 }
@@ -1379,7 +1401,7 @@ void openvrml::sffloat::print(std::ostream & out) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sffloat::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sffloat(*this));
 }
@@ -1394,7 +1416,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sffloat::do_clone() const
  * @exception std::bad_cast if @p value is not an sffloat.
  */
 openvrml::sffloat & openvrml::sffloat::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sffloat &>(value));
 }
@@ -1404,7 +1426,8 @@ openvrml::sffloat & openvrml::sffloat::do_assign(const field_value & value)
  *
  * @return @c field_value::sffloat.
  */
-openvrml::field_value::type_id openvrml::sffloat::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sffloat::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sffloat_id;
 }
@@ -1420,7 +1443,8 @@ openvrml::field_value::type_id openvrml::sffloat::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sffloat & lhs, const sffloat & rhs) throw ()
+bool openvrml::operator==(const sffloat & lhs, const sffloat & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1436,7 +1460,8 @@ bool openvrml::operator==(const sffloat & lhs, const sffloat & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs) throw ()
+bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1469,7 +1494,8 @@ openvrml::sfdouble::field_value_type_id(sfdouble_id);
  *
  * @param value initial value
  */
-openvrml::sfdouble::sfdouble(const value_type value) throw ():
+openvrml::sfdouble::sfdouble(const value_type value)
+    OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -1485,7 +1511,7 @@ openvrml::sfdouble::sfdouble(const sfdouble & sfd):
 /**
  * @brief Destroy.
  */
-openvrml::sfdouble::~sfdouble() throw ()
+openvrml::sfdouble::~sfdouble() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1498,7 +1524,7 @@ openvrml::sfdouble::~sfdouble() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfdouble & openvrml::sfdouble::operator=(const sfdouble & sfd)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfd);
 }
@@ -1509,7 +1535,7 @@ openvrml::sfdouble & openvrml::sfdouble::operator=(const sfdouble & sfd)
  * @return the double-precision value.
  */
 const openvrml::sfdouble::value_type & openvrml::sfdouble::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfdouble>();
 }
@@ -1521,7 +1547,8 @@ const openvrml::sfdouble::value_type & openvrml::sfdouble::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfdouble::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfdouble::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfdouble>(val);
 }
@@ -1531,7 +1558,7 @@ void openvrml::sfdouble::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfd   the value to swap with this one.
  */
-void openvrml::sfdouble::swap(sfdouble & sfd) throw ()
+void openvrml::sfdouble::swap(sfdouble & sfd) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfdouble>(sfd);
 }
@@ -1554,7 +1581,7 @@ void openvrml::sfdouble::print(std::ostream & out) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfdouble::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfdouble(*this));
 }
@@ -1569,7 +1596,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfdouble::do_clone() const
  * @exception std::bad_cast if @p value is not an sfdouble.
  */
 openvrml::sfdouble & openvrml::sfdouble::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfdouble &>(value));
 }
@@ -1579,7 +1606,8 @@ openvrml::sfdouble & openvrml::sfdouble::do_assign(const field_value & value)
  *
  * @return @c field_value::sfdouble.
  */
-openvrml::field_value::type_id openvrml::sfdouble::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfdouble::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfdouble_id;
 }
@@ -1595,7 +1623,8 @@ openvrml::field_value::type_id openvrml::sfdouble::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfdouble & lhs, const sfdouble & rhs) throw ()
+bool openvrml::operator==(const sfdouble & lhs, const sfdouble & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1611,7 +1640,8 @@ bool openvrml::operator==(const sfdouble & lhs, const sfdouble & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs) throw ()
+bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1646,7 +1676,8 @@ openvrml::sfimage::field_value_type_id(sfimage_id);
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::sfimage::sfimage(const image & value) throw (std::bad_alloc):
+openvrml::sfimage::sfimage(const image & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -1662,7 +1693,7 @@ openvrml::sfimage::sfimage(const sfimage & sfi):
 /**
  * @brief Destroy.
  */
-openvrml::sfimage::~sfimage() throw ()
+openvrml::sfimage::~sfimage() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1675,7 +1706,7 @@ openvrml::sfimage::~sfimage() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfimage & openvrml::sfimage::operator=(const sfimage & sfi)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfi);
 }
@@ -1685,7 +1716,8 @@ openvrml::sfimage & openvrml::sfimage::operator=(const sfimage & sfi)
  *
  * @return the image value.
  */
-const openvrml::sfimage::value_type & openvrml::sfimage::value() const throw ()
+const openvrml::sfimage::value_type & openvrml::sfimage::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfimage>();
 }
@@ -1697,7 +1729,8 @@ const openvrml::sfimage::value_type & openvrml::sfimage::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfimage::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfimage::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfimage>(val);
 }
@@ -1707,7 +1740,7 @@ void openvrml::sfimage::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfi   the value to swap with this one.
  */
-void openvrml::sfimage::swap(sfimage & sfi) throw ()
+void openvrml::sfimage::swap(sfimage & sfi) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfimage>(sfi);
 }
@@ -1730,7 +1763,7 @@ void openvrml::sfimage::print(std::ostream & out) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfimage::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfimage(*this));
 }
@@ -1746,7 +1779,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfimage::do_clone() const
  * @exception std::bad_alloc if memory allocation fails.
  */
 openvrml::sfimage & openvrml::sfimage::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const sfimage &>(value));
 }
@@ -1756,7 +1789,8 @@ openvrml::sfimage & openvrml::sfimage::do_assign(const field_value & value)
  *
  * @return @c field_value::sfimage.
  */
-openvrml::field_value::type_id openvrml::sfimage::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfimage::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfimage_id;
 }
@@ -1772,7 +1806,8 @@ openvrml::field_value::type_id openvrml::sfimage::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfimage & lhs, const sfimage & rhs) throw ()
+bool openvrml::operator==(const sfimage & lhs, const sfimage & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1788,7 +1823,8 @@ bool openvrml::operator==(const sfimage & lhs, const sfimage & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs) throw ()
+bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1822,7 +1858,7 @@ openvrml::sfint32::field_value_type_id(sfint32_id);
  *
  * @param value initial value.
  */
-openvrml::sfint32::sfint32(const int32 value) throw ():
+openvrml::sfint32::sfint32(const int32 value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -1838,7 +1874,7 @@ openvrml::sfint32::sfint32(const sfint32 & sfi):
 /**
  * @brief Destroy.
  */
-openvrml::sfint32::~sfint32() throw ()
+openvrml::sfint32::~sfint32() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1851,7 +1887,7 @@ openvrml::sfint32::~sfint32() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfint32 & openvrml::sfint32::operator=(const sfint32 & sfi)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfi);
 }
@@ -1861,7 +1897,8 @@ openvrml::sfint32 & openvrml::sfint32::operator=(const sfint32 & sfi)
  *
  * @return the integer value.
  */
-const openvrml::sfint32::value_type & openvrml::sfint32::value() const throw ()
+const openvrml::sfint32::value_type & openvrml::sfint32::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfint32>();
 }
@@ -1873,7 +1910,8 @@ const openvrml::sfint32::value_type & openvrml::sfint32::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfint32::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfint32::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfint32>(val);
 }
@@ -1883,7 +1921,7 @@ void openvrml::sfint32::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfi   the value to swap with this one.
  */
-void openvrml::sfint32::swap(sfint32 & sfi) throw ()
+void openvrml::sfint32::swap(sfint32 & sfi) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfint32>(sfi);
 }
@@ -1906,7 +1944,7 @@ void openvrml::sfint32::print(std::ostream & out) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfint32::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfint32(*this));
 }
@@ -1921,7 +1959,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfint32::do_clone() const
  * @exception std::bad_cast if @p value is not an sfint32.
  */
 openvrml::sfint32 & openvrml::sfint32::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfint32 &>(value));
 }
@@ -1931,7 +1969,8 @@ openvrml::sfint32 & openvrml::sfint32::do_assign(const field_value & value)
  *
  * @return @c field_value::sfint32.
  */
-openvrml::field_value::type_id openvrml::sfint32::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfint32::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfint32_id;
 }
@@ -1947,7 +1986,8 @@ openvrml::field_value::type_id openvrml::sfint32::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
+bool openvrml::operator==(const sfint32 & lhs, const sfint32 & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -1963,7 +2003,8 @@ bool openvrml::operator==(const sfint32 & lhs, const sfint32 & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs) throw ()
+bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1997,7 +2038,7 @@ openvrml::sfnode::field_value_type_id(sfnode_id);
  *
  * @param node  a pointer to a node.
  */
-openvrml::sfnode::sfnode(const value_type & node) throw ():
+openvrml::sfnode::sfnode(const value_type & node) OPENVRML_NOTHROW:
     field_value(node, value_type_constructor_tag())
 {}
 
@@ -2013,7 +2054,7 @@ openvrml::sfnode::sfnode(const sfnode & sfn):
 /**
  * @brief Destroy.
  */
-openvrml::sfnode::~sfnode() throw ()
+openvrml::sfnode::~sfnode() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2026,7 +2067,7 @@ openvrml::sfnode::~sfnode() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfnode & openvrml::sfnode::operator=(const sfnode & sfn)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfn);
 }
@@ -2036,7 +2077,8 @@ openvrml::sfnode & openvrml::sfnode::operator=(const sfnode & sfn)
  *
  * @return the node pointer.
  */
-const openvrml::sfnode::value_type & openvrml::sfnode::value() const throw ()
+const openvrml::sfnode::value_type & openvrml::sfnode::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfnode>();
 }
@@ -2048,7 +2090,8 @@ const openvrml::sfnode::value_type & openvrml::sfnode::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfnode::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfnode::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfnode>(val);
 }
@@ -2058,7 +2101,7 @@ void openvrml::sfnode::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfn   the value to swap with this one.
  */
-void openvrml::sfnode::swap(sfnode & sfn) throw ()
+void openvrml::sfnode::swap(sfnode & sfn) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfnode>(sfn);
 }
@@ -2085,7 +2128,7 @@ void openvrml::sfnode::print(std::ostream & out) const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfnode::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfnode(*this));
 }
@@ -2100,7 +2143,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfnode::do_clone() const
  * @exception std::bad_cast if @p value is not an sfnode.
  */
 openvrml::sfnode & openvrml::sfnode::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfnode &>(value));
 }
@@ -2110,7 +2153,8 @@ openvrml::sfnode & openvrml::sfnode::do_assign(const field_value & value)
  *
  * @return @c field_value::sfnode.
  */
-openvrml::field_value::type_id openvrml::sfnode::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfnode::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfnode_id;
 }
@@ -2127,7 +2171,8 @@ openvrml::field_value::type_id openvrml::sfnode::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfnode & lhs, const sfnode & rhs) throw ()
+bool openvrml::operator==(const sfnode & lhs, const sfnode & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -2143,7 +2188,8 @@ bool openvrml::operator==(const sfnode & lhs, const sfnode & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs) throw ()
+bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2190,7 +2236,7 @@ openvrml::sfrotation::field_value_type_id(sfrotation_id);
  *
  * @param rot   initial value.
  */
-openvrml::sfrotation::sfrotation(const rotation & rot) throw ():
+openvrml::sfrotation::sfrotation(const rotation & rot) OPENVRML_NOTHROW:
     field_value(rot, value_type_constructor_tag())
 {}
 
@@ -2206,7 +2252,7 @@ openvrml::sfrotation::sfrotation(const sfrotation & sfr):
 /**
  * @brief Destroy.
  */
-openvrml::sfrotation::~sfrotation() throw ()
+openvrml::sfrotation::~sfrotation() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2219,7 +2265,7 @@ openvrml::sfrotation::~sfrotation() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfrotation & openvrml::sfrotation::operator=(const sfrotation & sfr)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfr);
 }
@@ -2230,7 +2276,7 @@ openvrml::sfrotation & openvrml::sfrotation::operator=(const sfrotation & sfr)
  * @return the rotation value.
  */
 const openvrml::sfrotation::value_type & openvrml::sfrotation::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfrotation>();
 }
@@ -2242,7 +2288,8 @@ const openvrml::sfrotation::value_type & openvrml::sfrotation::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfrotation::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfrotation::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfrotation>(val);
 }
@@ -2252,7 +2299,7 @@ void openvrml::sfrotation::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfr   the value to swap with this one.
  */
-void openvrml::sfrotation::swap(sfrotation & sfr) throw ()
+void openvrml::sfrotation::swap(sfrotation & sfr) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfrotation>(sfr);
 }
@@ -2265,7 +2312,7 @@ void openvrml::sfrotation::swap(sfrotation & sfr) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfrotation::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfrotation(*this));
 }
@@ -2279,8 +2326,9 @@ std::auto_ptr<openvrml::field_value> openvrml::sfrotation::do_clone() const
  *
  * @exception std::bad_cast if @p value is not an sfrotation.
  */
-openvrml::sfrotation & openvrml::sfrotation::do_assign(const field_value & value)
-    throw (std::bad_cast)
+openvrml::sfrotation &
+openvrml::sfrotation::do_assign(const field_value & value)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfrotation &>(value));
 }
@@ -2290,7 +2338,8 @@ openvrml::sfrotation & openvrml::sfrotation::do_assign(const field_value & value
  *
  * @return @c field_value::sfrotation.
  */
-openvrml::field_value::type_id openvrml::sfrotation::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfrotation::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfrotation_id;
 }
@@ -2317,7 +2366,7 @@ void openvrml::sfrotation::print(std::ostream & out) const
  *         otherwise.
  */
 bool openvrml::operator==(const sfrotation & lhs, const sfrotation & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -2334,7 +2383,7 @@ bool openvrml::operator==(const sfrotation & lhs, const sfrotation & rhs)
  *      otherwise.
  */
 bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2370,8 +2419,9 @@ openvrml::sfstring::field_value_type_id(sfstring_id);
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::sfstring::sfstring(const std::string & value) throw (std::bad_alloc):
-   field_value(value, value_type_constructor_tag())
+openvrml::sfstring::sfstring(const std::string & value)
+    OPENVRML_THROW1(std::bad_alloc):
+    field_value(value, value_type_constructor_tag())
 {}
 
 /**
@@ -2386,7 +2436,7 @@ openvrml::sfstring::sfstring(const sfstring & sfs):
 /**
  * @brief Destroy.
  */
-openvrml::sfstring::~sfstring() throw ()
+openvrml::sfstring::~sfstring() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2399,7 +2449,7 @@ openvrml::sfstring::~sfstring() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfstring & openvrml::sfstring::operator=(const sfstring & sfs)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfs);
 }
@@ -2410,7 +2460,7 @@ openvrml::sfstring & openvrml::sfstring::operator=(const sfstring & sfs)
  * @return the string value.
  */
 const openvrml::sfstring::value_type & openvrml::sfstring::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfstring>();
 }
@@ -2422,7 +2472,8 @@ const openvrml::sfstring::value_type & openvrml::sfstring::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfstring::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfstring::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfstring>(val);
 }
@@ -2432,7 +2483,7 @@ void openvrml::sfstring::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfs   the value to swap with this one.
  */
-void openvrml::sfstring::swap(sfstring & sfs) throw ()
+void openvrml::sfstring::swap(sfstring & sfs) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfstring>(sfs);
 }
@@ -2445,7 +2496,7 @@ void openvrml::sfstring::swap(sfstring & sfs) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfstring::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfstring(*this));
 }
@@ -2461,7 +2512,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfstring::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfstring & openvrml::sfstring::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const sfstring &>(value));
 }
@@ -2481,7 +2532,8 @@ void openvrml::sfstring::print(std::ostream & out) const
  *
  * @return @c field_value::sfstring.
  */
-openvrml::field_value::type_id openvrml::sfstring::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfstring::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfstring_id;
 }
@@ -2497,7 +2549,8 @@ openvrml::field_value::type_id openvrml::sfstring::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfstring & lhs, const sfstring & rhs) throw ()
+bool openvrml::operator==(const sfstring & lhs, const sfstring & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -2513,7 +2566,8 @@ bool openvrml::operator==(const sfstring & lhs, const sfstring & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs) throw ()
+bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2547,7 +2601,7 @@ openvrml::sftime::field_value_type_id(sftime_id);
  *
  * @param value initial value
  */
-openvrml::sftime::sftime(double value) throw ():
+openvrml::sftime::sftime(double value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -2563,7 +2617,7 @@ openvrml::sftime::sftime(const sftime & sft):
 /**
  * @brief Destroy.
  */
-openvrml::sftime::~sftime() throw ()
+openvrml::sftime::~sftime() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2576,7 +2630,7 @@ openvrml::sftime::~sftime() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sftime & openvrml::sftime::operator=(const sftime & sft)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sft);
 }
@@ -2586,7 +2640,8 @@ openvrml::sftime & openvrml::sftime::operator=(const sftime & sft)
  *
  * @return the time value.
  */
-const openvrml::sftime::value_type & openvrml::sftime::value() const throw ()
+const openvrml::sftime::value_type & openvrml::sftime::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sftime>();
 }
@@ -2598,7 +2653,8 @@ const openvrml::sftime::value_type & openvrml::sftime::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sftime::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sftime::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sftime>(val);
 }
@@ -2608,7 +2664,7 @@ void openvrml::sftime::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfb   the value to swap with this one.
  */
-void openvrml::sftime::swap(sftime & sft) throw ()
+void openvrml::sftime::swap(sftime & sft) OPENVRML_NOTHROW
 {
     this->field_value::swap<sftime>(sft);
 }
@@ -2621,7 +2677,7 @@ void openvrml::sftime::swap(sftime & sft) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sftime::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sftime(*this));
 }
@@ -2636,7 +2692,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sftime::do_clone() const
  * @exception std::bad_cast if @p value is not an sftime.
  */
 openvrml::sftime & openvrml::sftime::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sftime &>(value));
 }
@@ -2656,7 +2712,8 @@ void openvrml::sftime::print(std::ostream & out) const
  *
  * @return @c field_value::sftime.
  */
-openvrml::field_value::type_id openvrml::sftime::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sftime::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sftime_id;
 }
@@ -2672,7 +2729,8 @@ openvrml::field_value::type_id openvrml::sftime::do_type() const throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sftime & lhs, const sftime & rhs) throw ()
+bool openvrml::operator==(const sftime & lhs, const sftime & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -2689,7 +2747,8 @@ bool openvrml::operator==(const sftime & lhs, const sftime & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sftime & lhs, const sftime & rhs) throw ()
+bool openvrml::operator!=(const sftime & lhs, const sftime & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2723,7 +2782,7 @@ openvrml::sfvec2f::field_value_type_id(sfvec2f_id);
  *
  * @param vec   initial value.
  */
-openvrml::sfvec2f::sfvec2f(const vec2f & vec) throw ():
+openvrml::sfvec2f::sfvec2f(const vec2f & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
 {}
 
@@ -2739,7 +2798,7 @@ openvrml::sfvec2f::sfvec2f(const sfvec2f & sfv):
 /**
  * @brief Destroy.
  */
-openvrml::sfvec2f::~sfvec2f() throw ()
+openvrml::sfvec2f::~sfvec2f() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2752,7 +2811,7 @@ openvrml::sfvec2f::~sfvec2f() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfvec2f & openvrml::sfvec2f::operator=(const sfvec2f & sfv)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfv);
 }
@@ -2762,7 +2821,8 @@ openvrml::sfvec2f & openvrml::sfvec2f::operator=(const sfvec2f & sfv)
  *
  * @return the vector value.
  */
-const openvrml::sfvec2f::value_type & openvrml::sfvec2f::value() const throw ()
+const openvrml::sfvec2f::value_type & openvrml::sfvec2f::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfvec2f>();
 }
@@ -2774,7 +2834,8 @@ const openvrml::sfvec2f::value_type & openvrml::sfvec2f::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfvec2f::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfvec2f::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfvec2f>(val);
 }
@@ -2784,7 +2845,7 @@ void openvrml::sfvec2f::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfv   the value to swap with this one.
  */
-void openvrml::sfvec2f::swap(sfvec2f & sfv) throw ()
+void openvrml::sfvec2f::swap(sfvec2f & sfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfvec2f>(sfv);
 }
@@ -2797,7 +2858,7 @@ void openvrml::sfvec2f::swap(sfvec2f & sfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfvec2f::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfvec2f(*this));
 }
@@ -2812,7 +2873,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2f::do_clone() const
  * @exception std::bad_cast if @p value is not an sfvec2f.
  */
 openvrml::sfvec2f & openvrml::sfvec2f::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfvec2f &>(value));
 }
@@ -2822,7 +2883,8 @@ openvrml::sfvec2f & openvrml::sfvec2f::do_assign(const field_value & value)
  *
  * @return @c field_value::sfvec2f.
  */
-openvrml::field_value::type_id openvrml::sfvec2f::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfvec2f::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfvec2f_id;
 }
@@ -2848,7 +2910,8 @@ void openvrml::sfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
+bool openvrml::operator==(const sfvec2f & lhs, const sfvec2f & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -2864,7 +2927,8 @@ bool openvrml::operator==(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs) throw ()
+bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2897,7 +2961,7 @@ openvrml::sfvec2d::field_value_type_id(sfvec2d_id);
  *
  * @param vec   initial value.
  */
-openvrml::sfvec2d::sfvec2d(const vec2d & vec) throw ():
+openvrml::sfvec2d::sfvec2d(const vec2d & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
 {}
 
@@ -2913,7 +2977,7 @@ openvrml::sfvec2d::sfvec2d(const sfvec2d & sfv):
 /**
  * @brief Destroy.
  */
-openvrml::sfvec2d::~sfvec2d() throw ()
+openvrml::sfvec2d::~sfvec2d() OPENVRML_NOTHROW
 {}
 
 /**
@@ -2926,7 +2990,7 @@ openvrml::sfvec2d::~sfvec2d() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfvec2d & openvrml::sfvec2d::operator=(const sfvec2d & sfv)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfv);
 }
@@ -2936,7 +3000,8 @@ openvrml::sfvec2d & openvrml::sfvec2d::operator=(const sfvec2d & sfv)
  *
  * @return the vector value.
  */
-const openvrml::sfvec2d::value_type & openvrml::sfvec2d::value() const throw ()
+const openvrml::sfvec2d::value_type & openvrml::sfvec2d::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfvec2d>();
 }
@@ -2948,7 +3013,8 @@ const openvrml::sfvec2d::value_type & openvrml::sfvec2d::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfvec2d::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfvec2d::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfvec2d>(val);
 }
@@ -2958,7 +3024,7 @@ void openvrml::sfvec2d::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfv   the value to swap with this one.
  */
-void openvrml::sfvec2d::swap(sfvec2d & sfv) throw ()
+void openvrml::sfvec2d::swap(sfvec2d & sfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfvec2d>(sfv);
 }
@@ -2971,7 +3037,7 @@ void openvrml::sfvec2d::swap(sfvec2d & sfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfvec2d::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfvec2d(*this));
 }
@@ -2986,7 +3052,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2d::do_clone() const
  * @exception std::bad_cast if @p value is not an sfvec2d.
  */
 openvrml::sfvec2d & openvrml::sfvec2d::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     //allow to convert from a float to a double
     const sfvec2f * float_val = dynamic_cast<const sfvec2f *>(&value);
@@ -3004,7 +3070,8 @@ openvrml::sfvec2d & openvrml::sfvec2d::do_assign(const field_value & value)
  *
  * @return @c field_value::sfvec2d.
  */
-openvrml::field_value::type_id openvrml::sfvec2d::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfvec2d::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfvec2d_id;
 }
@@ -3030,7 +3097,8 @@ void openvrml::sfvec2d::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfvec2d & lhs, const sfvec2d & rhs) throw ()
+bool openvrml::operator==(const sfvec2d & lhs, const sfvec2d & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -3046,7 +3114,8 @@ bool openvrml::operator==(const sfvec2d & lhs, const sfvec2d & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs) throw ()
+bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3080,7 +3149,7 @@ openvrml::sfvec3f::field_value_type_id(sfvec3f_id);
  *
  * @param vec   initial value.
  */
-openvrml::sfvec3f::sfvec3f(const vec3f & vec) throw ():
+openvrml::sfvec3f::sfvec3f(const vec3f & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
 {}
 
@@ -3096,7 +3165,7 @@ openvrml::sfvec3f::sfvec3f(const sfvec3f & sfv):
 /**
  * @brief Destroy.
  */
-openvrml::sfvec3f::~sfvec3f() throw ()
+openvrml::sfvec3f::~sfvec3f() OPENVRML_NOTHROW
 {}
 
 /**
@@ -3109,7 +3178,7 @@ openvrml::sfvec3f::~sfvec3f() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfvec3f & openvrml::sfvec3f::operator=(const sfvec3f & sfv)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfv);
 }
@@ -3119,7 +3188,8 @@ openvrml::sfvec3f & openvrml::sfvec3f::operator=(const sfvec3f & sfv)
  *
  * @return the vector value.
  */
-const openvrml::sfvec3f::value_type & openvrml::sfvec3f::value() const throw ()
+const openvrml::sfvec3f::value_type & openvrml::sfvec3f::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfvec3f>();
 }
@@ -3131,7 +3201,8 @@ const openvrml::sfvec3f::value_type & openvrml::sfvec3f::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfvec3f::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfvec3f::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfvec3f>(val);
 }
@@ -3141,7 +3212,7 @@ void openvrml::sfvec3f::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfv   the value to swap with this one.
  */
-void openvrml::sfvec3f::swap(sfvec3f & sfv) throw ()
+void openvrml::sfvec3f::swap(sfvec3f & sfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfvec3f>(sfv);
 }
@@ -3154,7 +3225,7 @@ void openvrml::sfvec3f::swap(sfvec3f & sfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfvec3f::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfvec3f(*this));
 }
@@ -3169,7 +3240,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3f::do_clone() const
  * @exception std::bad_cast if @p value is not an SFBool.
  */
 openvrml::sfvec3f & openvrml::sfvec3f::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfvec3f &>(value));
 }
@@ -3179,7 +3250,8 @@ openvrml::sfvec3f & openvrml::sfvec3f::do_assign(const field_value & value)
  *
  * @return @c field_value::sfvec3f.
  */
-openvrml::field_value::type_id openvrml::sfvec3f::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfvec3f::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfvec3f_id;
 }
@@ -3205,7 +3277,8 @@ void openvrml::sfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
+bool openvrml::operator==(const sfvec3f & lhs, const sfvec3f & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -3221,7 +3294,8 @@ bool openvrml::operator==(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs) throw ()
+bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3254,7 +3328,7 @@ openvrml::sfvec3d::field_value_type_id(sfvec3d_id);
  *
  * @param vec   initial value.
  */
-openvrml::sfvec3d::sfvec3d(const vec3d & vec) throw ():
+openvrml::sfvec3d::sfvec3d(const vec3d & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
 {}
 
@@ -3270,7 +3344,7 @@ openvrml::sfvec3d::sfvec3d(const sfvec3d & sfv):
 /**
  * @brief Destroy.
  */
-openvrml::sfvec3d::~sfvec3d() throw ()
+openvrml::sfvec3d::~sfvec3d() OPENVRML_NOTHROW
 {}
 
 /**
@@ -3283,7 +3357,7 @@ openvrml::sfvec3d::~sfvec3d() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::sfvec3d & openvrml::sfvec3d::operator=(const sfvec3d & sfv)
-     throw (std::bad_alloc)
+     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(sfv);
 }
@@ -3293,7 +3367,8 @@ openvrml::sfvec3d & openvrml::sfvec3d::operator=(const sfvec3d & sfv)
  *
  * @return the vector value.
  */
-const openvrml::sfvec3d::value_type & openvrml::sfvec3d::value() const throw ()
+const openvrml::sfvec3d::value_type & openvrml::sfvec3d::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<sfvec3d>();
 }
@@ -3305,7 +3380,8 @@ const openvrml::sfvec3d::value_type & openvrml::sfvec3d::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::sfvec3d::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::sfvec3d::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<sfvec3d>(val);
 }
@@ -3315,7 +3391,7 @@ void openvrml::sfvec3d::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param sfv   the value to swap with this one.
  */
-void openvrml::sfvec3d::swap(sfvec3d & sfv) throw ()
+void openvrml::sfvec3d::swap(sfvec3d & sfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<sfvec3d>(sfv);
 }
@@ -3328,7 +3404,7 @@ void openvrml::sfvec3d::swap(sfvec3d & sfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::sfvec3d::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new sfvec3d(*this));
 }
@@ -3343,7 +3419,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3d::do_clone() const
  * @exception std::bad_cast if @p value is not an SFBool.
  */
 openvrml::sfvec3d & openvrml::sfvec3d::do_assign(const field_value & value)
-    throw (std::bad_cast)
+    OPENVRML_THROW1(std::bad_cast)
 {
     return (*this = dynamic_cast<const sfvec3d &>(value));
 }
@@ -3353,7 +3429,8 @@ openvrml::sfvec3d & openvrml::sfvec3d::do_assign(const field_value & value)
  *
  * @return @c field_value::sfvec3d.
  */
-openvrml::field_value::type_id openvrml::sfvec3d::do_type() const throw ()
+openvrml::field_value::type_id openvrml::sfvec3d::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::sfvec3d_id;
 }
@@ -3379,7 +3456,8 @@ void openvrml::sfvec3d::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
+bool openvrml::operator==(const sfvec3d & lhs, const sfvec3d & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -3395,7 +3473,8 @@ bool openvrml::operator==(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs) throw ()
+bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3437,7 +3516,7 @@ openvrml::mfbool::field_value_type_id(mfbool_id);
  * @post size is @p n. Every element is a copy of @p value.
  */
 openvrml::mfbool::mfbool(const value_type::size_type n, const bool value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value_type(n, value), value_type_constructor_tag())
 {}
 
@@ -3448,7 +3527,8 @@ openvrml::mfbool::mfbool(const value_type::size_type n, const bool value)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfbool::mfbool(const value_type & value) throw (std::bad_alloc):
+openvrml::mfbool::mfbool(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -3467,7 +3547,7 @@ openvrml::mfbool::mfbool(const mfbool & mfb):
  * Each of the <code>mfbool</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfbool::~mfbool() throw ()
+openvrml::mfbool::~mfbool() OPENVRML_NOTHROW
 {}
 
 /**
@@ -3480,7 +3560,7 @@ openvrml::mfbool::~mfbool() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfbool & openvrml::mfbool::operator=(const mfbool & mfb)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfb);
 }
@@ -3490,7 +3570,8 @@ openvrml::mfbool & openvrml::mfbool::operator=(const mfbool & mfb)
  *
  * @return the bool values.
  */
-const openvrml::mfbool::value_type & openvrml::mfbool::value() const throw ()
+const openvrml::mfbool::value_type & openvrml::mfbool::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfbool>();
 }
@@ -3502,7 +3583,8 @@ const openvrml::mfbool::value_type & openvrml::mfbool::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfbool::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfbool::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfbool>(val);
 }
@@ -3512,7 +3594,7 @@ void openvrml::mfbool::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfc   the value to swap with this one.
  */
-void openvrml::mfbool::swap(mfbool & mfb) throw ()
+void openvrml::mfbool::swap(mfbool & mfb) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfbool>(mfb);
 }
@@ -3525,7 +3607,7 @@ void openvrml::mfbool::swap(mfbool & mfb) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfbool::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfbool(*this));
 }
@@ -3539,7 +3621,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfbool::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfbool & openvrml::mfbool::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfbool &>(value));
 }
@@ -3549,7 +3631,8 @@ openvrml::mfbool & openvrml::mfbool::do_assign(const field_value & value)
  *
  * @return @c field_value::mfbool.
  */
-openvrml::field_value::type_id openvrml::mfbool::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfbool::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfbool_id;
 }
@@ -3585,7 +3668,8 @@ void openvrml::mfbool::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfbool & lhs, const mfbool & rhs) throw ()
+bool openvrml::operator==(const mfbool & lhs, const mfbool & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -3601,7 +3685,8 @@ bool openvrml::operator==(const mfbool & lhs, const mfbool & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs) throw ()
+bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3645,7 +3730,7 @@ openvrml::mfcolor::field_value_type_id(mfcolor_id);
  */
 openvrml::mfcolor::mfcolor(const std::vector<color>::size_type n,
                            const color & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<color>(n, value), value_type_constructor_tag())
 {}
 
@@ -3656,7 +3741,8 @@ openvrml::mfcolor::mfcolor(const std::vector<color>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfcolor::mfcolor(const value_type & value) throw (std::bad_alloc):
+openvrml::mfcolor::mfcolor(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -3675,7 +3761,7 @@ openvrml::mfcolor::mfcolor(const mfcolor & mfc):
  * Each of the <code>mfcolor</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfcolor::~mfcolor() throw ()
+openvrml::mfcolor::~mfcolor() OPENVRML_NOTHROW
 {}
 
 /**
@@ -3688,7 +3774,7 @@ openvrml::mfcolor::~mfcolor() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfcolor & openvrml::mfcolor::operator=(const mfcolor & mfc)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfc);
 }
@@ -3698,7 +3784,8 @@ openvrml::mfcolor & openvrml::mfcolor::operator=(const mfcolor & mfc)
  *
  * @return the color values.
  */
-const openvrml::mfcolor::value_type & openvrml::mfcolor::value() const throw ()
+const openvrml::mfcolor::value_type & openvrml::mfcolor::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfcolor>();
 }
@@ -3710,7 +3797,8 @@ const openvrml::mfcolor::value_type & openvrml::mfcolor::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfcolor::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfcolor::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfcolor>(val);
 }
@@ -3720,7 +3808,7 @@ void openvrml::mfcolor::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfc   the value to swap with this one.
  */
-void openvrml::mfcolor::swap(mfcolor & mfc) throw ()
+void openvrml::mfcolor::swap(mfcolor & mfc) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfcolor>(mfc);
 }
@@ -3733,7 +3821,7 @@ void openvrml::mfcolor::swap(mfcolor & mfc) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfcolor::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfcolor(*this));
 }
@@ -3747,7 +3835,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfcolor::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfcolor & openvrml::mfcolor::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfcolor &>(value));
 }
@@ -3757,7 +3845,8 @@ openvrml::mfcolor & openvrml::mfcolor::do_assign(const field_value & value)
  *
  * @return @c field_value::mfcolor.
  */
-openvrml::field_value::type_id openvrml::mfcolor::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfcolor::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfcolor_id;
 }
@@ -3793,7 +3882,8 @@ void openvrml::mfcolor::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
+bool openvrml::operator==(const mfcolor & lhs, const mfcolor & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -3809,7 +3899,8 @@ bool openvrml::operator==(const mfcolor & lhs, const mfcolor & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs) throw ()
+bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3851,7 +3942,7 @@ openvrml::mfcolorrgba::field_value_type_id(mfcolorrgba_id);
  */
 openvrml::mfcolorrgba::mfcolorrgba(const value_type::size_type n,
                                    const color_rgba & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value_type(n, value),
                 value_type_constructor_tag())
 {}
@@ -3864,7 +3955,7 @@ openvrml::mfcolorrgba::mfcolorrgba(const value_type::size_type n,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfcolorrgba::mfcolorrgba(const value_type & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -3883,7 +3974,7 @@ openvrml::mfcolorrgba::mfcolorrgba(const mfcolorrgba & mfc):
  * Each of the <code>mfcolorrgba</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfcolorrgba::~mfcolorrgba() throw ()
+openvrml::mfcolorrgba::~mfcolorrgba() OPENVRML_NOTHROW
 {}
 
 /**
@@ -3897,7 +3988,7 @@ openvrml::mfcolorrgba::~mfcolorrgba() throw ()
  */
 openvrml::mfcolorrgba &
 openvrml::mfcolorrgba::operator=(const mfcolorrgba & mfc)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfc);
 }
@@ -3908,7 +3999,7 @@ openvrml::mfcolorrgba::operator=(const mfcolorrgba & mfc)
  * @return the color_rgba values.
  */
 const openvrml::mfcolorrgba::value_type & openvrml::mfcolorrgba::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfcolorrgba>();
 }
@@ -3921,7 +4012,7 @@ const openvrml::mfcolorrgba::value_type & openvrml::mfcolorrgba::value() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void openvrml::mfcolorrgba::value(const value_type & val)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfcolorrgba>(val);
 }
@@ -3931,7 +4022,7 @@ void openvrml::mfcolorrgba::value(const value_type & val)
  *
  * @param mfc   the value to swap with this one.
  */
-void openvrml::mfcolorrgba::swap(mfcolorrgba & mfc) throw ()
+void openvrml::mfcolorrgba::swap(mfcolorrgba & mfc) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfcolorrgba>(mfc);
 }
@@ -3944,7 +4035,7 @@ void openvrml::mfcolorrgba::swap(mfcolorrgba & mfc) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfcolorrgba::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfcolorrgba(*this));
 }
@@ -3959,7 +4050,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfcolorrgba::do_clone() const
  */
 openvrml::mfcolorrgba &
 openvrml::mfcolorrgba::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfcolorrgba &>(value));
 }
@@ -3969,7 +4060,8 @@ openvrml::mfcolorrgba::do_assign(const field_value & value)
  *
  * @return @c field_value::mfcolorrgba.
  */
-openvrml::field_value::type_id openvrml::mfcolorrgba::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfcolorrgba::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfcolorrgba_id;
 }
@@ -4006,7 +4098,7 @@ void openvrml::mfcolorrgba::print(std::ostream & out) const
  *         otherwise.
  */
 bool openvrml::operator==(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -4023,7 +4115,7 @@ bool openvrml::operator==(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
  *         otherwise.
  */
 bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4066,7 +4158,7 @@ openvrml::mffloat::field_value_type_id(mffloat_id);
  */
 openvrml::mffloat::mffloat(const std::vector<float>::size_type n,
                            const float value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<float>(n, value), value_type_constructor_tag())
 {}
 
@@ -4077,7 +4169,8 @@ openvrml::mffloat::mffloat(const std::vector<float>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mffloat::mffloat(const value_type & value) throw (std::bad_alloc):
+openvrml::mffloat::mffloat(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -4096,7 +4189,7 @@ openvrml::mffloat::mffloat(const mffloat & mff):
  * Each of the <code>mffloat</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mffloat::~mffloat() throw ()
+openvrml::mffloat::~mffloat() OPENVRML_NOTHROW
 {}
 
 /**
@@ -4109,7 +4202,7 @@ openvrml::mffloat::~mffloat() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mffloat & openvrml::mffloat::operator=(const mffloat & mff)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mff);
 }
@@ -4119,7 +4212,8 @@ openvrml::mffloat & openvrml::mffloat::operator=(const mffloat & mff)
  *
  * @return the floating point values.
  */
-const openvrml::mffloat::value_type & openvrml::mffloat::value() const throw ()
+const openvrml::mffloat::value_type & openvrml::mffloat::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mffloat>();
 }
@@ -4131,7 +4225,8 @@ const openvrml::mffloat::value_type & openvrml::mffloat::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mffloat::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mffloat::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mffloat>(val);
 }
@@ -4141,7 +4236,7 @@ void openvrml::mffloat::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mff   the value to swap with this one.
  */
-void openvrml::mffloat::swap(mffloat & mff) throw ()
+void openvrml::mffloat::swap(mffloat & mff) OPENVRML_NOTHROW
 {
     this->field_value::swap<mffloat>(mff);
 }
@@ -4154,7 +4249,7 @@ void openvrml::mffloat::swap(mffloat & mff) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mffloat::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mffloat(*this));
 }
@@ -4168,7 +4263,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mffloat::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mffloat & openvrml::mffloat::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mffloat &>(value));
 }
@@ -4178,7 +4273,8 @@ openvrml::mffloat & openvrml::mffloat::do_assign(const field_value & value)
  *
  * @return @c field_value::mffloat_id.
  */
-openvrml::field_value::type_id openvrml::mffloat::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mffloat::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mffloat_id;
 }
@@ -4214,7 +4310,8 @@ void openvrml::mffloat::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mffloat & lhs, const mffloat & rhs) throw ()
+bool openvrml::operator==(const mffloat & lhs, const mffloat & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -4230,7 +4327,8 @@ bool openvrml::operator==(const mffloat & lhs, const mffloat & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs) throw ()
+bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4272,7 +4370,7 @@ openvrml::mfdouble::field_value_type_id(mfdouble_id);
  */
 openvrml::mfdouble::mfdouble(const std::vector<double>::size_type n,
                            const double value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<double>(n, value), value_type_constructor_tag())
 {}
 
@@ -4283,7 +4381,8 @@ openvrml::mfdouble::mfdouble(const std::vector<double>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfdouble::mfdouble(const value_type & value) throw (std::bad_alloc):
+openvrml::mfdouble::mfdouble(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -4302,7 +4401,7 @@ openvrml::mfdouble::mfdouble(const mfdouble & mfd):
  * Each of the <code>mfdouble</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfdouble::~mfdouble() throw ()
+openvrml::mfdouble::~mfdouble() OPENVRML_NOTHROW
 {}
 
 /**
@@ -4315,7 +4414,7 @@ openvrml::mfdouble::~mfdouble() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfdouble & openvrml::mfdouble::operator=(const mfdouble & mfd)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfd);
 }
@@ -4326,7 +4425,7 @@ openvrml::mfdouble & openvrml::mfdouble::operator=(const mfdouble & mfd)
  * @return the double-precision values.
  */
 const openvrml::mfdouble::value_type & openvrml::mfdouble::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfdouble>();
 }
@@ -4338,7 +4437,8 @@ const openvrml::mfdouble::value_type & openvrml::mfdouble::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfdouble::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfdouble::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfdouble>(val);
 }
@@ -4348,7 +4448,7 @@ void openvrml::mfdouble::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfd   the value to swap with this one.
  */
-void openvrml::mfdouble::swap(mfdouble & mfd) throw ()
+void openvrml::mfdouble::swap(mfdouble & mfd) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfdouble>(mfd);
 }
@@ -4361,7 +4461,7 @@ void openvrml::mfdouble::swap(mfdouble & mfd) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfdouble::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfdouble(*this));
 }
@@ -4375,7 +4475,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfdouble::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfdouble & openvrml::mfdouble::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfdouble &>(value));
 }
@@ -4385,7 +4485,8 @@ openvrml::mfdouble & openvrml::mfdouble::do_assign(const field_value & value)
  *
  * @return @c field_value::mfdouble_id.
  */
-openvrml::field_value::type_id openvrml::mfdouble::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfdouble::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfdouble_id;
 }
@@ -4421,7 +4522,8 @@ void openvrml::mfdouble::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfdouble & lhs, const mfdouble & rhs) throw ()
+bool openvrml::operator==(const mfdouble & lhs, const mfdouble & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -4437,7 +4539,8 @@ bool openvrml::operator==(const mfdouble & lhs, const mfdouble & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs) throw ()
+bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4479,7 +4582,7 @@ openvrml::mfimage::field_value_type_id(mfimage_id);
  */
 openvrml::mfimage::mfimage(const value_type::size_type n,
                            const image & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value_type(n, value), value_type_constructor_tag())
 {}
 
@@ -4490,7 +4593,8 @@ openvrml::mfimage::mfimage(const value_type::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfimage::mfimage(const value_type & value) throw (std::bad_alloc):
+openvrml::mfimage::mfimage(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -4509,7 +4613,7 @@ openvrml::mfimage::mfimage(const mfimage & mfi):
  * Each of the <code>mfimage</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfimage::~mfimage() throw ()
+openvrml::mfimage::~mfimage() OPENVRML_NOTHROW
 {}
 
 /**
@@ -4522,7 +4626,7 @@ openvrml::mfimage::~mfimage() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfimage & openvrml::mfimage::operator=(const mfimage & mfi)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfi);
 }
@@ -4532,7 +4636,8 @@ openvrml::mfimage & openvrml::mfimage::operator=(const mfimage & mfi)
  *
  * @return the image values.
  */
-const openvrml::mfimage::value_type & openvrml::mfimage::value() const throw ()
+const openvrml::mfimage::value_type & openvrml::mfimage::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfimage>();
 }
@@ -4544,7 +4649,8 @@ const openvrml::mfimage::value_type & openvrml::mfimage::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfimage::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfimage::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfimage>(val);
 }
@@ -4554,7 +4660,7 @@ void openvrml::mfimage::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfi   the value to swap with this one.
  */
-void openvrml::mfimage::swap(mfimage & mfi) throw ()
+void openvrml::mfimage::swap(mfimage & mfi) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfimage>(mfi);
 }
@@ -4567,7 +4673,7 @@ void openvrml::mfimage::swap(mfimage & mfi) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfimage::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfimage(*this));
 }
@@ -4581,7 +4687,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfimage::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfimage & openvrml::mfimage::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfimage &>(value));
 }
@@ -4591,7 +4697,8 @@ openvrml::mfimage & openvrml::mfimage::do_assign(const field_value & value)
  *
  * @return @c field_value::mfimage.
  */
-openvrml::field_value::type_id openvrml::mfimage::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfimage::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfimage_id;
 }
@@ -4627,7 +4734,8 @@ void openvrml::mfimage::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfimage & lhs, const mfimage & rhs) throw ()
+bool openvrml::operator==(const mfimage & lhs, const mfimage & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -4643,7 +4751,8 @@ bool openvrml::operator==(const mfimage & lhs, const mfimage & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs) throw ()
+bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4685,7 +4794,7 @@ openvrml::mfint32::field_value_type_id(mfint32_id);
  */
 openvrml::mfint32::mfint32(const std::vector<int32>::size_type n,
                            const int32 value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<int32>(n, value), value_type_constructor_tag())
 {}
 
@@ -4696,7 +4805,8 @@ openvrml::mfint32::mfint32(const std::vector<int32>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfint32::mfint32(const value_type & value) throw (std::bad_alloc):
+openvrml::mfint32::mfint32(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -4715,7 +4825,7 @@ openvrml::mfint32::mfint32(const mfint32 & mfi):
  * Each of the <code>mfint32</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfint32::~mfint32() throw ()
+openvrml::mfint32::~mfint32() OPENVRML_NOTHROW
 {}
 
 /**
@@ -4728,7 +4838,7 @@ openvrml::mfint32::~mfint32() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfint32 & openvrml::mfint32::operator=(const mfint32 & mfi)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfi);
 }
@@ -4738,7 +4848,8 @@ openvrml::mfint32 & openvrml::mfint32::operator=(const mfint32 & mfi)
  *
  * @return the integer values.
  */
-const openvrml::mfint32::value_type & openvrml::mfint32::value() const throw ()
+const openvrml::mfint32::value_type & openvrml::mfint32::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfint32>();
 }
@@ -4750,7 +4861,8 @@ const openvrml::mfint32::value_type & openvrml::mfint32::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfint32::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfint32::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfint32>(val);
 }
@@ -4760,7 +4872,7 @@ void openvrml::mfint32::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfi   the value to swap with this one.
  */
-void openvrml::mfint32::swap(mfint32 & mfi) throw ()
+void openvrml::mfint32::swap(mfint32 & mfi) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfint32>(mfi);
 }
@@ -4773,7 +4885,7 @@ void openvrml::mfint32::swap(mfint32 & mfi) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfint32::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfint32(*this));
 }
@@ -4787,7 +4899,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfint32::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfint32 & openvrml::mfint32::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfint32 &>(value));
 }
@@ -4797,7 +4909,8 @@ openvrml::mfint32 & openvrml::mfint32::do_assign(const field_value & value)
  *
  * @return @c field_value::mfint32_id.
  */
-openvrml::field_value::type_id openvrml::mfint32::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfint32::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfint32_id;
 }
@@ -4833,7 +4946,8 @@ void openvrml::mfint32::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
+bool openvrml::operator==(const mfint32 & lhs, const mfint32 & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -4849,7 +4963,8 @@ bool openvrml::operator==(const mfint32 & lhs, const mfint32 & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs) throw ()
+bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4892,7 +5007,7 @@ openvrml::mfnode::field_value_type_id(mfnode_id);
  */
 openvrml::mfnode::mfnode(const value_type::size_type n,
                          const value_type::value_type & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value_type(n, value), value_type_constructor_tag())
 {}
 
@@ -4903,7 +5018,8 @@ openvrml::mfnode::mfnode(const value_type::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfnode::mfnode(const value_type & value) throw (std::bad_alloc):
+openvrml::mfnode::mfnode(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -4922,7 +5038,7 @@ openvrml::mfnode::mfnode(const mfnode & mfn):
  * Each of the <code>mfnode</code>'s @a value elements is destroyed, and memory
  * allocated for them (if any) is deallocated.
  */
-openvrml::mfnode::~mfnode() throw ()
+openvrml::mfnode::~mfnode() OPENVRML_NOTHROW
 {}
 
 /**
@@ -4935,7 +5051,7 @@ openvrml::mfnode::~mfnode() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfnode & openvrml::mfnode::operator=(const mfnode & mfn)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfn);
 }
@@ -4945,7 +5061,8 @@ openvrml::mfnode & openvrml::mfnode::operator=(const mfnode & mfn)
  *
  * @return the node pointers.
  */
-const openvrml::mfnode::value_type & openvrml::mfnode::value() const throw ()
+const openvrml::mfnode::value_type & openvrml::mfnode::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfnode>();
 }
@@ -4957,7 +5074,8 @@ const openvrml::mfnode::value_type & openvrml::mfnode::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfnode::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfnode::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfnode>(val);
 }
@@ -4967,7 +5085,7 @@ void openvrml::mfnode::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfn   the value to swap with this one.
  */
-void openvrml::mfnode::swap(mfnode & mfn) throw ()
+void openvrml::mfnode::swap(mfnode & mfn) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfnode>(mfn);
 }
@@ -4980,7 +5098,7 @@ void openvrml::mfnode::swap(mfnode & mfn) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfnode::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfnode(*this));
 }
@@ -4994,7 +5112,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfnode::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfnode & openvrml::mfnode::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfnode &>(value));
 }
@@ -5004,7 +5122,8 @@ openvrml::mfnode & openvrml::mfnode::do_assign(const field_value & value)
  *
  * @return @c field_value::mfnode_id.
  */
-openvrml::field_value::type_id openvrml::mfnode::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfnode::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfnode_id;
 }
@@ -5043,7 +5162,8 @@ void openvrml::mfnode::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfnode & lhs, const mfnode & rhs) throw ()
+bool openvrml::operator==(const mfnode & lhs, const mfnode & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -5059,7 +5179,8 @@ bool openvrml::operator==(const mfnode & lhs, const mfnode & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs) throw ()
+bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -5102,7 +5223,7 @@ openvrml::mfrotation::field_value_type_id(mfrotation_id);
  */
 openvrml::mfrotation::mfrotation(const std::vector<rotation>::size_type n,
                                  const rotation & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<rotation>(n, value), value_type_constructor_tag())
 {}
 
@@ -5114,7 +5235,7 @@ openvrml::mfrotation::mfrotation(const std::vector<rotation>::size_type n,
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfrotation::mfrotation(const value_type & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -5133,7 +5254,7 @@ openvrml::mfrotation::mfrotation(const mfrotation & mfr):
  * Each of the <code>mfrotation</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfrotation::~mfrotation() throw ()
+openvrml::mfrotation::~mfrotation() OPENVRML_NOTHROW
 {}
 
 /**
@@ -5146,7 +5267,7 @@ openvrml::mfrotation::~mfrotation() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfrotation & openvrml::mfrotation::operator=(const mfrotation & mfr)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfr);
 }
@@ -5157,7 +5278,7 @@ openvrml::mfrotation & openvrml::mfrotation::operator=(const mfrotation & mfr)
  * @return the rotation values.
  */
 const openvrml::mfrotation::value_type & openvrml::mfrotation::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfrotation>();
 }
@@ -5169,7 +5290,8 @@ const openvrml::mfrotation::value_type & openvrml::mfrotation::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfrotation::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfrotation::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfrotation>(val);
 }
@@ -5179,7 +5301,7 @@ void openvrml::mfrotation::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfr   the value to swap with this one.
  */
-void openvrml::mfrotation::swap(mfrotation & mfr) throw ()
+void openvrml::mfrotation::swap(mfrotation & mfr) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfrotation>(mfr);
 }
@@ -5192,7 +5314,7 @@ void openvrml::mfrotation::swap(mfrotation & mfr) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfrotation::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfrotation(*this));
 }
@@ -5205,8 +5327,9 @@ std::auto_ptr<openvrml::field_value> openvrml::mfrotation::do_clone() const
  * @exception std::bad_cast     if  @p value is not an mfrotation object.
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfrotation & openvrml::mfrotation::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+openvrml::mfrotation &
+openvrml::mfrotation::do_assign(const field_value & value)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfrotation &>(value));
 }
@@ -5216,7 +5339,8 @@ openvrml::mfrotation & openvrml::mfrotation::do_assign(const field_value & value
  *
  * @return @c field_value::mfrotation_id.
  */
-openvrml::field_value::type_id openvrml::mfrotation::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfrotation::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfrotation_id;
 }
@@ -5253,7 +5377,7 @@ void openvrml::mfrotation::print(std::ostream & out) const
  *         otherwise.
  */
 bool openvrml::operator==(const mfrotation & lhs, const mfrotation & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -5270,7 +5394,7 @@ bool openvrml::operator==(const mfrotation & lhs, const mfrotation & rhs)
  *      otherwise.
  */
 bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -5314,7 +5438,7 @@ openvrml::mfstring::field_value_type_id(mfstring_id);
  */
 openvrml::mfstring::mfstring(const std::vector<std::string>::size_type n,
                              const std::string & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<std::string>(n, value),
                 value_type_constructor_tag())
 {}
@@ -5326,7 +5450,8 @@ openvrml::mfstring::mfstring(const std::vector<std::string>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfstring::mfstring(const value_type & value) throw (std::bad_alloc):
+openvrml::mfstring::mfstring(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -5345,7 +5470,7 @@ openvrml::mfstring::mfstring(const mfstring & mfs):
  * Each of the <code>mfstring</code>'s elements is destroyed, and memory
  * allocated for them (if any) is deallocated.
  */
-openvrml::mfstring::~mfstring() throw ()
+openvrml::mfstring::~mfstring() OPENVRML_NOTHROW
 {}
 
 /**
@@ -5358,7 +5483,7 @@ openvrml::mfstring::~mfstring() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfstring & openvrml::mfstring::operator=(const mfstring & mfs)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfs);
 }
@@ -5369,7 +5494,7 @@ openvrml::mfstring & openvrml::mfstring::operator=(const mfstring & mfs)
  * @return the string values.
  */
 const openvrml::mfstring::value_type & openvrml::mfstring::value() const
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfstring>();
 }
@@ -5381,7 +5506,8 @@ const openvrml::mfstring::value_type & openvrml::mfstring::value() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfstring::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfstring::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfstring>(val);
 }
@@ -5391,7 +5517,7 @@ void openvrml::mfstring::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfs   the value to swap with this one.
  */
-void openvrml::mfstring::swap(mfstring & mfs) throw ()
+void openvrml::mfstring::swap(mfstring & mfs) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfstring>(mfs);
 }
@@ -5404,7 +5530,7 @@ void openvrml::mfstring::swap(mfstring & mfs) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfstring::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfstring(*this));
 }
@@ -5418,7 +5544,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfstring::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfstring & openvrml::mfstring::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfstring &>(value));
 }
@@ -5428,7 +5554,8 @@ openvrml::mfstring & openvrml::mfstring::do_assign(const field_value & value)
  *
  * @return @c field_value::mfstring_id.
  */
-openvrml::field_value::type_id openvrml::mfstring::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfstring::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfstring_id;
 }
@@ -5464,7 +5591,8 @@ void openvrml::mfstring::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfstring & lhs, const mfstring & rhs) throw ()
+bool openvrml::operator==(const mfstring & lhs, const mfstring & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -5480,7 +5608,8 @@ bool openvrml::operator==(const mfstring & lhs, const mfstring & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs) throw ()
+bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -5524,7 +5653,7 @@ openvrml::mftime::field_value_type_id(mftime_id);
  */
 openvrml::mftime::mftime(const std::vector<double>::size_type n,
                          const double value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<double>(n, value), value_type_constructor_tag())
 {}
 
@@ -5535,7 +5664,8 @@ openvrml::mftime::mftime(const std::vector<double>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mftime::mftime(const value_type & value) throw (std::bad_alloc):
+openvrml::mftime::mftime(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -5554,7 +5684,7 @@ openvrml::mftime::mftime(const mftime & mft):
  * Each of the openvrml::mftime's @a value elements is destroyed, and memory
  * allocated for them (if any) is deallocated.
  */
-openvrml::mftime::~mftime() throw ()
+openvrml::mftime::~mftime() OPENVRML_NOTHROW
 {}
 
 /**
@@ -5567,7 +5697,7 @@ openvrml::mftime::~mftime() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mftime & openvrml::mftime::operator=(const mftime & mft)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mft);
 }
@@ -5577,7 +5707,8 @@ openvrml::mftime & openvrml::mftime::operator=(const mftime & mft)
  *
  * @return the time values.
  */
-const openvrml::mftime::value_type & openvrml::mftime::value() const throw ()
+const openvrml::mftime::value_type & openvrml::mftime::value()
+    const OPENVRML_NOTHROW
 {
     return this->field_value::value<mftime>();
 }
@@ -5589,7 +5720,8 @@ const openvrml::mftime::value_type & openvrml::mftime::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mftime::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mftime::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mftime>(val);
 }
@@ -5599,7 +5731,7 @@ void openvrml::mftime::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mft   the value to swap with this one.
  */
-void openvrml::mftime::swap(mftime & mft) throw ()
+void openvrml::mftime::swap(mftime & mft) OPENVRML_NOTHROW
 {
     this->field_value::swap<mftime>(mft);
 }
@@ -5612,7 +5744,7 @@ void openvrml::mftime::swap(mftime & mft) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value>
-openvrml::mftime::do_clone() const throw (std::bad_alloc)
+openvrml::mftime::do_clone() const OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mftime(*this));
 }
@@ -5627,7 +5759,7 @@ openvrml::mftime::do_clone() const throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mftime & openvrml::mftime::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mftime &>(value));
 }
@@ -5637,7 +5769,8 @@ openvrml::mftime & openvrml::mftime::do_assign(const field_value & value)
  *
  * @return @c field_value::mftime_id.
  */
-openvrml::field_value::type_id openvrml::mftime::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mftime::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mftime_id;
 }
@@ -5673,7 +5806,8 @@ void openvrml::mftime::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mftime & lhs, const mftime & rhs) throw ()
+bool openvrml::operator==(const mftime & lhs, const mftime & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -5689,7 +5823,8 @@ bool openvrml::operator==(const mftime & lhs, const mftime & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mftime & lhs, const mftime & rhs) throw ()
+bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -5733,7 +5868,7 @@ openvrml::mfvec2f::field_value_type_id(mfvec2f_id);
  */
 openvrml::mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n,
                            const vec2f & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<vec2f>(n, value), value_type_constructor_tag())
 {}
 
@@ -5744,7 +5879,8 @@ openvrml::mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec2f::mfvec2f(const value_type & value) throw (std::bad_alloc):
+openvrml::mfvec2f::mfvec2f(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -5763,7 +5899,7 @@ openvrml::mfvec2f::mfvec2f(const mfvec2f & mfv):
  * Each of the <code>mfvec2f</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfvec2f::~mfvec2f() throw ()
+openvrml::mfvec2f::~mfvec2f() OPENVRML_NOTHROW
 {}
 
 /**
@@ -5776,7 +5912,7 @@ openvrml::mfvec2f::~mfvec2f() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec2f & openvrml::mfvec2f::operator=(const mfvec2f & mfv)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfv);
 }
@@ -5786,7 +5922,8 @@ openvrml::mfvec2f & openvrml::mfvec2f::operator=(const mfvec2f & mfv)
  *
  * @return the vector values.
  */
-const openvrml::mfvec2f::value_type & openvrml::mfvec2f::value() const throw ()
+const openvrml::mfvec2f::value_type & openvrml::mfvec2f::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfvec2f>();
 }
@@ -5798,7 +5935,8 @@ const openvrml::mfvec2f::value_type & openvrml::mfvec2f::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfvec2f::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfvec2f::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfvec2f>(val);
 }
@@ -5808,7 +5946,7 @@ void openvrml::mfvec2f::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfv   the value to swap with this one.
  */
-void openvrml::mfvec2f::swap(mfvec2f & mfv) throw ()
+void openvrml::mfvec2f::swap(mfvec2f & mfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfvec2f>(mfv);
 }
@@ -5821,7 +5959,7 @@ void openvrml::mfvec2f::swap(mfvec2f & mfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value>
-openvrml::mfvec2f::do_clone() const throw (std::bad_alloc)
+openvrml::mfvec2f::do_clone() const OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfvec2f(*this));
 }
@@ -5835,7 +5973,7 @@ openvrml::mfvec2f::do_clone() const throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec2f & openvrml::mfvec2f::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec2f &>(value));
 }
@@ -5845,7 +5983,8 @@ openvrml::mfvec2f & openvrml::mfvec2f::do_assign(const field_value & value)
  *
  * @return @c field_value::mfvec2f_id.
  */
-openvrml::field_value::type_id openvrml::mfvec2f::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfvec2f::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfvec2f_id;
 }
@@ -5881,7 +6020,8 @@ void openvrml::mfvec2f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
+bool openvrml::operator==(const mfvec2f & lhs, const mfvec2f & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -5897,7 +6037,8 @@ bool openvrml::operator==(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs) throw ()
+bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -5940,7 +6081,7 @@ openvrml::mfvec2d::field_value_type_id(mfvec2d_id);
  */
 openvrml::mfvec2d::mfvec2d(const std::vector<vec2d>::size_type n,
                            const vec2d & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<vec2d>(n, value), value_type_constructor_tag())
 {}
 
@@ -5951,7 +6092,8 @@ openvrml::mfvec2d::mfvec2d(const std::vector<vec2d>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec2d::mfvec2d(const value_type & value) throw (std::bad_alloc):
+openvrml::mfvec2d::mfvec2d(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -5970,7 +6112,7 @@ openvrml::mfvec2d::mfvec2d(const mfvec2d & mfv):
  * Each of the <code>mfvec2d</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfvec2d::~mfvec2d() throw ()
+openvrml::mfvec2d::~mfvec2d() OPENVRML_NOTHROW
 {}
 
 /**
@@ -5983,7 +6125,7 @@ openvrml::mfvec2d::~mfvec2d() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec2d & openvrml::mfvec2d::operator=(const mfvec2d & mfv)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfv);
 }
@@ -5993,7 +6135,8 @@ openvrml::mfvec2d & openvrml::mfvec2d::operator=(const mfvec2d & mfv)
  *
  * @return the vector values.
  */
-const openvrml::mfvec2d::value_type & openvrml::mfvec2d::value() const throw ()
+const openvrml::mfvec2d::value_type & openvrml::mfvec2d::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfvec2d>();
 }
@@ -6005,7 +6148,8 @@ const openvrml::mfvec2d::value_type & openvrml::mfvec2d::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfvec2d::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfvec2d::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfvec2d>(val);
 }
@@ -6015,7 +6159,7 @@ void openvrml::mfvec2d::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfv   the value to swap with this one.
  */
-void openvrml::mfvec2d::swap(mfvec2d & mfv) throw ()
+void openvrml::mfvec2d::swap(mfvec2d & mfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfvec2d>(mfv);
 }
@@ -6028,7 +6172,7 @@ void openvrml::mfvec2d::swap(mfvec2d & mfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value>
-openvrml::mfvec2d::do_clone() const throw (std::bad_alloc)
+openvrml::mfvec2d::do_clone() const OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfvec2d(*this));
 }
@@ -6042,7 +6186,7 @@ openvrml::mfvec2d::do_clone() const throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec2d & openvrml::mfvec2d::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec2d &>(value));
 }
@@ -6052,7 +6196,8 @@ openvrml::mfvec2d & openvrml::mfvec2d::do_assign(const field_value & value)
  *
  * @return @c field_value::mfvec2d_id.
  */
-openvrml::field_value::type_id openvrml::mfvec2d::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfvec2d::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfvec2d_id;
 }
@@ -6088,7 +6233,8 @@ void openvrml::mfvec2d::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
+bool openvrml::operator==(const mfvec2d & lhs, const mfvec2d & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -6104,7 +6250,8 @@ bool openvrml::operator==(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs) throw ()
+bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -6148,7 +6295,7 @@ openvrml::mfvec3f::field_value_type_id(mfvec3f_id);
  */
 openvrml::mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n,
                            const vec3f & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<vec3f>(n, value), value_type_constructor_tag())
 {}
 
@@ -6159,7 +6306,8 @@ openvrml::mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec3f::mfvec3f(const value_type & value) throw (std::bad_alloc):
+openvrml::mfvec3f::mfvec3f(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -6178,7 +6326,7 @@ openvrml::mfvec3f::mfvec3f(const mfvec3f & mfv):
  * Each of the <code>mfvec3f</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfvec3f::~mfvec3f() throw ()
+openvrml::mfvec3f::~mfvec3f() OPENVRML_NOTHROW
 {}
 
 /**
@@ -6191,7 +6339,7 @@ openvrml::mfvec3f::~mfvec3f() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec3f & openvrml::mfvec3f::operator=(const mfvec3f & mfv)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfv);
 }
@@ -6201,7 +6349,8 @@ openvrml::mfvec3f & openvrml::mfvec3f::operator=(const mfvec3f & mfv)
  *
  * @return the vector values.
  */
-const openvrml::mfvec3f::value_type & openvrml::mfvec3f::value() const throw ()
+const openvrml::mfvec3f::value_type & openvrml::mfvec3f::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfvec3f>();
 }
@@ -6213,7 +6362,8 @@ const openvrml::mfvec3f::value_type & openvrml::mfvec3f::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfvec3f::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfvec3f::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfvec3f>(val);
 }
@@ -6223,7 +6373,7 @@ void openvrml::mfvec3f::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfv   the value to swap with this one.
  */
-void openvrml::mfvec3f::swap(mfvec3f & mfv) throw ()
+void openvrml::mfvec3f::swap(mfvec3f & mfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfvec3f>(mfv);
 }
@@ -6236,7 +6386,7 @@ void openvrml::mfvec3f::swap(mfvec3f & mfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfvec3f::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfvec3f(*this));
 }
@@ -6251,7 +6401,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfvec3f::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec3f & openvrml::mfvec3f::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec3f &>(value));
 }
@@ -6261,7 +6411,8 @@ openvrml::mfvec3f & openvrml::mfvec3f::do_assign(const field_value & value)
  *
  * @return @c field_value::mfvec3f_id.
  */
-openvrml::field_value::type_id openvrml::mfvec3f::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfvec3f::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfvec3f_id;
 }
@@ -6297,7 +6448,8 @@ void openvrml::mfvec3f::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
+bool openvrml::operator==(const mfvec3f & lhs, const mfvec3f & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -6313,7 +6465,8 @@ bool openvrml::operator==(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs) throw ()
+bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -6356,7 +6509,7 @@ openvrml::mfvec3d::field_value_type_id(mfvec3d_id);
  */
 openvrml::mfvec3d::mfvec3d(const std::vector<vec3d>::size_type n,
                            const vec3d & value)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<vec3d>(n, value), value_type_constructor_tag())
 {}
 
@@ -6367,7 +6520,8 @@ openvrml::mfvec3d::mfvec3d(const std::vector<vec3d>::size_type n,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec3d::mfvec3d(const value_type & value) throw (std::bad_alloc):
+openvrml::mfvec3d::mfvec3d(const value_type & value)
+    OPENVRML_THROW1(std::bad_alloc):
     field_value(value, value_type_constructor_tag())
 {}
 
@@ -6386,7 +6540,7 @@ openvrml::mfvec3d::mfvec3d(const mfvec3d & mfv):
  * Each of the <code>mfvec3d</code>'s @a value elements is destroyed, and
  * memory allocated for them (if any) is deallocated.
  */
-openvrml::mfvec3d::~mfvec3d() throw ()
+openvrml::mfvec3d::~mfvec3d() OPENVRML_NOTHROW
 {}
 
 /**
@@ -6399,7 +6553,7 @@ openvrml::mfvec3d::~mfvec3d() throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec3d & openvrml::mfvec3d::operator=(const mfvec3d & mfv)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return this->field_value::operator=(mfv);
 }
@@ -6409,7 +6563,8 @@ openvrml::mfvec3d & openvrml::mfvec3d::operator=(const mfvec3d & mfv)
  *
  * @return the vector values.
  */
-const openvrml::mfvec3d::value_type & openvrml::mfvec3d::value() const throw ()
+const openvrml::mfvec3d::value_type & openvrml::mfvec3d::value() const
+    OPENVRML_NOTHROW
 {
     return this->field_value::value<mfvec3d>();
 }
@@ -6421,7 +6576,8 @@ const openvrml::mfvec3d::value_type & openvrml::mfvec3d::value() const throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::mfvec3d::value(const value_type & val) throw (std::bad_alloc)
+void openvrml::mfvec3d::value(const value_type & val)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->field_value::value<mfvec3d>(val);
 }
@@ -6431,7 +6587,7 @@ void openvrml::mfvec3d::value(const value_type & val) throw (std::bad_alloc)
  *
  * @param mfv   the value to swap with this one.
  */
-void openvrml::mfvec3d::swap(mfvec3d & mfv) throw ()
+void openvrml::mfvec3d::swap(mfvec3d & mfv) OPENVRML_NOTHROW
 {
     this->field_value::swap<mfvec3d>(mfv);
 }
@@ -6444,7 +6600,7 @@ void openvrml::mfvec3d::swap(mfvec3d & mfv) throw ()
  * @exception std::bad_alloc    if memory allocation fails.
  */
 std::auto_ptr<openvrml::field_value> openvrml::mfvec3d::do_clone() const
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     return std::auto_ptr<field_value>(new mfvec3d(*this));
 }
@@ -6459,7 +6615,7 @@ std::auto_ptr<openvrml::field_value> openvrml::mfvec3d::do_clone() const
  * @exception std::bad_alloc    if memory allocation fails.
  */
 openvrml::mfvec3d & openvrml::mfvec3d::do_assign(const field_value & value)
-    throw (std::bad_cast, std::bad_alloc)
+    OPENVRML_THROW2(std::bad_cast, std::bad_alloc)
 {
     return (*this = dynamic_cast<const mfvec3d &>(value));
 }
@@ -6469,7 +6625,8 @@ openvrml::mfvec3d & openvrml::mfvec3d::do_assign(const field_value & value)
  *
  * @return @c field_value::mfvec3d_id.
  */
-openvrml::field_value::type_id openvrml::mfvec3d::do_type() const throw ()
+openvrml::field_value::type_id openvrml::mfvec3d::do_type() const
+    OPENVRML_NOTHROW
 {
     return field_value::mfvec3d_id;
 }
@@ -6505,7 +6662,8 @@ void openvrml::mfvec3d::print(std::ostream & out) const
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
+bool openvrml::operator==(const mfvec3d & lhs, const mfvec3d & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.value() == rhs.value();
 }
@@ -6521,7 +6679,8 @@ bool openvrml::operator==(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
  */
-bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs) throw ()
+bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }

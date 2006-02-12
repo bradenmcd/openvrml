@@ -34,17 +34,17 @@
 /**
  * @brief Construct.
  */
-openvrml::event_listener::event_listener() throw ()
+openvrml::event_listener::event_listener() OPENVRML_NOTHROW
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::event_listener::~event_listener() throw ()
+openvrml::event_listener::~event_listener() OPENVRML_NOTHROW
 {}
 
 /**
- * @fn openvrml::field_value::type_id openvrml::event_listener::type() const throw ()
+ * @fn openvrml::field_value::type_id openvrml::event_listener::type() const
  *
  * @brief The <code>field_value::type_id</code> for the type accepted by the
  *        event listener.
@@ -76,14 +76,14 @@ openvrml::event_listener::~event_listener() throw ()
  *          belongs.
  */
 openvrml::node_event_listener::node_event_listener(openvrml::node & n)
-    throw ():
+    OPENVRML_NOTHROW:
     node_(&n)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::node_event_listener::~node_event_listener() throw ()
+openvrml::node_event_listener::~node_event_listener() OPENVRML_NOTHROW
 {}
 
 /**
@@ -93,7 +93,7 @@ openvrml::node_event_listener::~node_event_listener() throw ()
  * @return the <code>node</code> to which the <code>node_event_listener</code>
  *         belongs.
  */
-openvrml::node & openvrml::node_event_listener::node() const throw ()
+openvrml::node & openvrml::node_event_listener::node() const OPENVRML_NOTHROW
 {
     return *this->node_;
 }
@@ -105,13 +105,13 @@ openvrml::node & openvrml::node_event_listener::node() const throw ()
  *
  * @return the associated eventIn identifier.
  */
-const std::string openvrml::node_event_listener::eventin_id() const throw ()
+const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOTHROW
 {
     return this->do_eventin_id();
 }
 
 /**
- * @fn const std::string openvrml::node_event_listener::do_eventin_id() const throw ()
+ * @fn const std::string openvrml::node_event_listener::do_eventin_id() const
  *
  * @brief The associated eventIn identifier.
  *
@@ -128,7 +128,7 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::field_value_listener::field_value_listener() throw ()
+ * @fn openvrml::field_value_listener::field_value_listener()
  *
  * @brief Construct.
  *
@@ -136,13 +136,13 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::field_value_listener::~field_value_listener() throw ()
+ * @fn openvrml::field_value_listener::~field_value_listener()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn openvrml::field_value::type_id openvrml::field_value_listener::type() const throw ()
+ * @fn openvrml::field_value::type_id openvrml::field_value_listener::type() const
  *
  * @brief <code>FieldValue::field_value_type_id</code>.
  *
@@ -150,7 +150,7 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn void openvrml::field_value_listener::process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::field_value_listener::process_event(const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
  *
@@ -161,7 +161,7 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn void openvrml::field_value_listener::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::field_value_listener::do_process_event(const FieldValue & value, double timestamp)
  *
  * @brief Called by
  *      <code>field_value_listener&lt;FieldValue&gt;::do_process_event</code>.
@@ -364,7 +364,7 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::node_field_value_listener::node_field_value_listener(openvrml::node & n) throw ()
+ * @fn openvrml::node_field_value_listener::node_field_value_listener(openvrml::node & n)
  *
  * @brief Construct.
  *
@@ -372,7 +372,7 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  */
 
 /**
- * @fn openvrml::node_field_value_listener::~node_field_value_listener() throw ()
+ * @fn openvrml::node_field_value_listener::~node_field_value_listener()
  *
  * @brief Destroy.
  */
@@ -437,14 +437,14 @@ const std::string openvrml::node_event_listener::eventin_id() const throw ()
  *
  * @param value <code>field_value</code> associated with this emitter.
  */
-openvrml::event_emitter::event_emitter(const field_value & value) throw ():
+openvrml::event_emitter::event_emitter(const field_value & value) OPENVRML_NOTHROW:
     value_(value)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::event_emitter::~event_emitter() throw ()
+openvrml::event_emitter::~event_emitter() OPENVRML_NOTHROW
 {}
 
 /**
@@ -452,7 +452,7 @@ openvrml::event_emitter::~event_emitter() throw ()
  *
  * @return a reference to the <code>event_emitter</code>'s mutex.
  */
-boost::recursive_mutex & openvrml::event_emitter::mutex() const throw ()
+boost::recursive_mutex & openvrml::event_emitter::mutex() const OPENVRML_NOTHROW
 {
     return this->mutex_;
 }
@@ -464,7 +464,7 @@ boost::recursive_mutex & openvrml::event_emitter::mutex() const throw ()
  * @return a reference to the <code>field_value</code> for the
  *         <code>event_emitter</code>.
  */
-const openvrml::field_value & openvrml::event_emitter::value() const throw ()
+const openvrml::field_value & openvrml::event_emitter::value() const OPENVRML_NOTHROW
 {
     return this->value_;
 }
@@ -476,13 +476,13 @@ const openvrml::field_value & openvrml::event_emitter::value() const throw ()
  *
  * @return the associated eventOut identifier.
  */
-const std::string openvrml::event_emitter::eventout_id() const throw ()
+const std::string openvrml::event_emitter::eventout_id() const OPENVRML_NOTHROW
 {
     return this->do_eventout_id();
 }
 
 /**
- * @fn const std::string openvrml::event_emitter::do_eventout_id() const throw ()
+ * @fn const std::string openvrml::event_emitter::do_eventout_id() const
  *
  * @brief The associated eventOut identifier.
  *
@@ -497,7 +497,7 @@ const std::string openvrml::event_emitter::eventout_id() const throw ()
  * @return the set of registered event_listeners.
  */
 const openvrml::event_emitter::listener_set &
-openvrml::event_emitter::listeners() const throw ()
+openvrml::event_emitter::listeners() const OPENVRML_NOTHROW
 {
     return this->listeners_;
 }
@@ -508,7 +508,7 @@ openvrml::event_emitter::listeners() const throw ()
  * @return the set of registered event_listeners.
  */
 openvrml::event_emitter::listener_set & openvrml::event_emitter::listeners()
-    throw ()
+    OPENVRML_NOTHROW
 {
     return this->listeners_;
 }
@@ -518,7 +518,7 @@ openvrml::event_emitter::listener_set & openvrml::event_emitter::listeners()
  *
  * @return the timestamp of the last event emitted.
  */
-double openvrml::event_emitter::last_time() const throw ()
+double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->last_time_;
@@ -529,14 +529,14 @@ double openvrml::event_emitter::last_time() const throw ()
  *
  * @param t the timestamp of the last event emitted.
  */
-void openvrml::event_emitter::last_time(const double t) throw ()
+void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->last_time_ = t;
 }
 
 /**
- * @fn void openvrml::event_emitter::emit_event(double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::event_emitter::emit_event(double timestamp)
  *
  * @brief Emit an event.
  *
@@ -555,19 +555,19 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
- * @fn openvrml::field_value_emitter::field_value_emitter(const FieldValue & value) throw ()
+ * @fn openvrml::field_value_emitter::field_value_emitter(const FieldValue & value)
  *
  * @brief Construct.
  */
 
 /**
- * @fn openvrml::field_value_emitter::~field_value_emitter() throw ()
+ * @fn openvrml::field_value_emitter::~field_value_emitter()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void openvrml::field_value_emitter::emit_event(double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::field_value_emitter::emit_event(double timestamp)
  *
  * @brief Emit an event.
  *
@@ -577,7 +577,7 @@ void openvrml::event_emitter::last_time(const double t) throw ()
  */
 
 /**
- * @fn bool openvrml::field_value_emitter::add(field_value_listener<FieldValue> & listener) throw (std::bad_alloc)
+ * @fn bool openvrml::field_value_emitter::add(field_value_listener<FieldValue> & listener)
  *
  * @brief Add an event listener.
  *

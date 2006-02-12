@@ -110,7 +110,8 @@ namespace {
         GLint max_modelview_stack_depth;
         GLint max_texture_size;
 
-        static const gl_capabilities & instance() throw (std::bad_alloc);
+        static const gl_capabilities & instance()
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         static boost::scoped_ptr<const gl_capabilities> instance_;
@@ -120,7 +121,8 @@ namespace {
 
     boost::scoped_ptr<const gl_capabilities> gl_capabilities::instance_;
 
-    const gl_capabilities & gl_capabilities::instance() throw (std::bad_alloc)
+    const gl_capabilities & gl_capabilities::instance()
+        OPENVRML_THROW1(std::bad_alloc)
     {
         if (!gl_capabilities::instance_) {
             gl_capabilities::instance_.reset(new gl_capabilities);
@@ -931,7 +933,7 @@ viewer::viewer():
 /**
  * @brief Destroy.
  */
-viewer::~viewer() throw ()
+viewer::~viewer() OPENVRML_NOTHROW
 {
     gluDeleteTess(this->tesselator);
 }
@@ -3809,7 +3811,7 @@ void viewer::input(event_info * e)
  *
  * @param rot   rotation.
  */
-void viewer::rotate(const openvrml::rotation & rot) throw ()
+void viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
 {
     assert(this->browser());
 

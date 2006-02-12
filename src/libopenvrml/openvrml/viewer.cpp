@@ -118,14 +118,14 @@
 /**
  * @brief Construct.
  */
-openvrml::viewer::viewer() throw ():
+openvrml::viewer::viewer() OPENVRML_NOTHROW:
     browser_(0)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::viewer::~viewer() throw ()
+openvrml::viewer::~viewer() OPENVRML_NOTHROW
 {}
 
 /**
@@ -136,7 +136,7 @@ openvrml::viewer::~viewer() throw ()
  *         <code>viewer</code> is currently associated, or 0 if the
  *         <code>viewer</code> is not associated with a <code>browser</code>.
  */
-openvrml::browser * openvrml::viewer::browser() const throw ()
+openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
 {
     return this->browser_;
 }

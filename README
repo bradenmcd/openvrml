@@ -136,6 +136,10 @@ for details.
 that modify what features are built and/or what packages OpenVRML
 depends on.
 
+ --disable-exception-specs
+     Disable use of C++ exception specifications.  This is likely to
+     improve performance.  Note that this changes the library ABI.
+
  --disable-png-textures
      Disable support for rendering PNG images as textures.  OpenVRML
      uses libpng to read PNG images.

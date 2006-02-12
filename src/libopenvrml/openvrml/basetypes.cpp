@@ -32,7 +32,7 @@ namespace {
 
     OPENVRML_LOCAL inline void rgb_to_hsv(const float * const inrgb,
                                           float * const outhsv)
-        throw ()
+        OPENVRML_NOTHROW
     {
         const float maxrgb = *std::max_element(inrgb, inrgb + 3);
         const float minrgb = *std::min_element(inrgb, inrgb + 3);
@@ -63,7 +63,7 @@ namespace {
                                           const float s,
                                           const float v,
                                           float * const outhsv)
-        throw ()
+        OPENVRML_NOTHROW
     {
         if (s == 0.0) {
             outhsv[0] = outhsv[1] = outhsv[2] = v;
@@ -122,7 +122,7 @@ namespace {
 /**
  * @brief Construct.
  */
-openvrml::color::color() throw ()
+openvrml::color::color() OPENVRML_NOTHROW
 {}
 
 /**
@@ -130,7 +130,7 @@ openvrml::color::color() throw ()
  *
  * @param rgb   an array comprising red, green, and blue components.
  */
-openvrml::color::color(const float (&rgb)[3]) throw ()
+openvrml::color::color(const float (&rgb)[3]) OPENVRML_NOTHROW
 {
     assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
     this->rgb[0] = rgb[0];
@@ -147,7 +147,7 @@ openvrml::color::color(const float (&rgb)[3]) throw ()
  * @param g green component.
  * @param b blue component.
  */
-openvrml::color::color(float r, float g, float b) throw ()
+openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
 {
     assert(r >= 0.0 && r <= 1.0);
     this->rgb[0] = r;
@@ -158,7 +158,7 @@ openvrml::color::color(float r, float g, float b) throw ()
 }
 
 /**
- * @fn const float & openvrml::color::operator[](const size_t index) const throw ()
+ * @fn const float & openvrml::color::operator[](const size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -169,7 +169,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn float openvrml::color::r() const throw ()
+ * @fn float openvrml::color::r() const
  *
  * @brief Get the red component.
  *
@@ -177,7 +177,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn float openvrml::color::g() const throw ()
+ * @fn float openvrml::color::g() const
  *
  * @brief Get the green component.
  *
@@ -185,7 +185,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn float openvrml::color::b() const throw ()
+ * @fn float openvrml::color::b() const
  *
  * @brief Get the blue component.
  *
@@ -193,7 +193,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn void openvrml::color::r(float value) throw ()
+ * @fn void openvrml::color::r(float value)
  *
  * @brief Set the red component.
  *
@@ -201,7 +201,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn void openvrml::color::g(float value) throw ()
+ * @fn void openvrml::color::g(float value)
  *
  * @brief Set the green component.
  *
@@ -209,7 +209,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  */
 
 /**
- * @fn void openvrml::color::b(float value) throw ()
+ * @fn void openvrml::color::b(float value)
  *
  * @brief Set the blue component.
  *
@@ -224,7 +224,7 @@ openvrml::color::color(float r, float g, float b) throw ()
  *
  * @retval result   the hue, saturation, and value.
  */
-void openvrml::color::hsv(float (&result)[3]) const throw ()
+void openvrml::color::hsv(float (&result)[3]) const OPENVRML_NOTHROW
 {
     rgb_to_hsv(&rgb[0], &result[0]);
 }
@@ -236,7 +236,7 @@ void openvrml::color::hsv(float (&result)[3]) const throw ()
  * @param s saturation.
  * @param v value.
  */
-void openvrml::color::hsv(float h, const float s, const float v) throw ()
+void openvrml::color::hsv(float h, const float s, const float v) OPENVRML_NOTHROW
 {
     hsv_to_rgb(h, s, v, &rgb[0]);
 }
@@ -252,7 +252,7 @@ void openvrml::color::hsv(float h, const float s, const float v) throw ()
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const color & lhs, const color & rhs) throw ()
+bool openvrml::operator==(const color & lhs, const color & rhs) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
@@ -269,7 +269,7 @@ bool openvrml::operator==(const color & lhs, const color & rhs) throw ()
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const color & lhs, const color & rhs) throw ()
+bool openvrml::operator!=(const color & lhs, const color & rhs) OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -312,7 +312,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 /**
  * @brief Construct.
  */
-openvrml::color_rgba::color_rgba() throw ()
+openvrml::color_rgba::color_rgba() OPENVRML_NOTHROW
 {}
 
 /**
@@ -320,7 +320,7 @@ openvrml::color_rgba::color_rgba() throw ()
  *
  * @param rgba   an array comprising red, green, and blue components.
  */
-openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
+openvrml::color_rgba::color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW
 {
     assert(rgba[0] >= 0.0 && rgba[0] <= 1.0);
     this->rgba[0] = rgba[0];
@@ -340,7 +340,7 @@ openvrml::color_rgba::color_rgba(const float (&rgba)[4]) throw ()
  * @param b blue component.
  * @param a alpha component.
  */
-openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
+openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NOTHROW
 {
     assert(r >= 0.0 && r <= 1.0);
     this->rgba[0] = r;
@@ -353,7 +353,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
 }
 
 /**
- * @fn const float & openvrml::color_rgba::operator[](const size_t index) const throw ()
+ * @fn const float & openvrml::color_rgba::operator[](const size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -364,7 +364,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn float openvrml::color_rgba::r() const throw ()
+ * @fn float openvrml::color_rgba::r() const
  *
  * @brief Get the red component.
  *
@@ -372,7 +372,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn float openvrml::color_rgba::g() const throw ()
+ * @fn float openvrml::color_rgba::g() const
  *
  * @brief Get the green component.
  *
@@ -380,7 +380,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn float openvrml::color_rgba::b() const throw ()
+ * @fn float openvrml::color_rgba::b() const
  *
  * @brief Get the blue component.
  *
@@ -388,7 +388,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn float openvrml::color_rgba::a() const throw ()
+ * @fn float openvrml::color_rgba::a() const
  *
  * @brief Get the alpha component.
  *
@@ -396,7 +396,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn void openvrml::color_rgba::r(float value) throw ()
+ * @fn void openvrml::color_rgba::r(float value)
  *
  * @brief Set the red component.
  *
@@ -404,7 +404,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn void openvrml::color_rgba::g(float value) throw ()
+ * @fn void openvrml::color_rgba::g(float value)
  *
  * @brief Set the green component.
  *
@@ -412,7 +412,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn void openvrml::color_rgba::b(float value) throw ()
+ * @fn void openvrml::color_rgba::b(float value)
  *
  * @brief Set the blue component.
  *
@@ -420,7 +420,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  */
 
 /**
- * @fn void openvrml::color_rgba::a(float value) throw ()
+ * @fn void openvrml::color_rgba::a(float value)
  *
  * @brief Set the alpha component.
  *
@@ -432,7 +432,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) throw ()
  *
  * @retval result   the hue, saturation, and value.
  */
-void openvrml::color_rgba::hsv(float (&result)[4]) const throw ()
+void openvrml::color_rgba::hsv(float (&result)[4]) const OPENVRML_NOTHROW
 {
     rgb_to_hsv(&rgba[0], &result[0]);
     result[3] = rgba[3]; // Copy the alpha.
@@ -450,7 +450,7 @@ void openvrml::color_rgba::hsv(const float h,
                                const float s,
                                const float v,
                                const float a)
-    throw ()
+    OPENVRML_NOTHROW
 {
     hsv_to_rgb(h, s, v, &rgba[0]);
     assert(a >= 0.0 && a <= 1.0);
@@ -469,7 +469,7 @@ void openvrml::color_rgba::hsv(const float h,
  *         otherwise.
  */
 bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
@@ -486,7 +486,7 @@ bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs)
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs) throw ()
+bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs) OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -527,7 +527,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
  * @brief Construct.
  */
 template<typename T>
-openvrml::vec2<T>::vec2() throw ()
+openvrml::vec2<T>::vec2() OPENVRML_NOTHROW
 {
     this->vec[0] = 0.0;
     this->vec[1] = 0.0;
@@ -541,7 +541,7 @@ openvrml::vec2<T>::vec2() throw ()
  * @param vec   an array comprising the vector components.
  */
 template<typename T>
-openvrml::vec2<T>::vec2(const T (&vec)[2]) throw ()
+openvrml::vec2<T>::vec2(const T (&vec)[2]) OPENVRML_NOTHROW
 {
     //
     // Ensure elements of vec are not NaN.
@@ -562,7 +562,7 @@ openvrml::vec2<T>::vec2(const T (&vec)[2]) throw ()
  * @param y y component.
  */
 template<typename T>
-openvrml::vec2<T>::vec2(const T x, const T y) throw ()
+openvrml::vec2<T>::vec2(const T x, const T y) OPENVRML_NOTHROW
 {
     //
     // Ensure x and y are not NaN.
@@ -582,7 +582,7 @@ openvrml::vec2<T>::vec2(const T x, const T y) throw ()
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) throw ()
+openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) OPENVRML_NOTHROW
 {
     this->vec[0] *= scalar;
     this->vec[1] *= scalar;
@@ -598,7 +598,7 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator*=(const T scalar) throw ()
  */
 template<typename T>
 const openvrml::vec2<T> openvrml::vec2<T>::operator*(const T rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<T> result(*this);
     return result *= rhs;
@@ -615,7 +615,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator*(const T rhs) const
  * @return the result vector.
  */
 const openvrml::vec2<float> openvrml::operator*(const float lhs, const vec2<float> & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<float> result(rhs);
     return result *= lhs;
@@ -631,7 +631,7 @@ const openvrml::vec2<float> openvrml::operator*(const float lhs, const vec2<floa
  * @return the result vector.
  */
 const openvrml::vec2<double> openvrml::operator*(const double lhs, const vec2<double> & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<double> result(rhs);
     return result *= lhs;
@@ -647,7 +647,7 @@ const openvrml::vec2<double> openvrml::operator*(const double lhs, const vec2<do
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) throw ()
+openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) OPENVRML_NOTHROW
 {
     assert(scalar != 0.0);
     this->vec[0] /= scalar;
@@ -666,7 +666,7 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator/=(const T scalar) throw ()
  */
 template<typename T>
 const openvrml::vec2<T> openvrml::vec2<T>::operator/(const T rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<T> result(*this);
     return result /= rhs;
@@ -680,7 +680,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator/(const T rhs) const
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) throw ()
+openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) OPENVRML_NOTHROW
 {
     this->vec[0] += vec[0];
     this->vec[1] += vec[1];
@@ -696,7 +696,7 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator+=(const vec2<T> & vec) throw ()
  */
 template<typename T>
 const openvrml::vec2<T> openvrml::vec2<T>::operator+(const vec2<T> & rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<T> result(*this);
     return result += rhs;
@@ -710,7 +710,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator+(const vec2<T> & rhs) const
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) throw ()
+openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) OPENVRML_NOTHROW
 {
     this->vec[0] -= vec[0];
     this->vec[1] -= vec[1];
@@ -726,7 +726,7 @@ openvrml::vec2<T> & openvrml::vec2<T>::operator-=(const vec2<T> & vec) throw ()
  */
 template<typename T>
 const openvrml::vec2<T> openvrml::vec2<T>::operator-( const vec2<T> & rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec2<T> result(*this);
     return result -= rhs;
@@ -738,13 +738,13 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-( const vec2<T> & rhs) const
  * @return the additive inverse of the vector.
  */
 template<typename T>
-const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
+const openvrml::vec2<T> openvrml::vec2<T>::operator-() const OPENVRML_NOTHROW
 {
     return vec2<T>(-this->vec[0], -this->vec[1]);
 }
 
 /**
- * @fn const T & openvrml::vec2::operator[](const size_t index) const throw ()
+ * @fn const T & openvrml::vec2::operator[](const size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -757,7 +757,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn T openvrml::vec2::x() const throw ()
+ * @fn T openvrml::vec2::x() const
  *
  * @brief Get the x component.
  *
@@ -765,7 +765,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn T openvrml::vec2::y() const throw ()
+ * @fn T openvrml::vec2::y() const
  *
  * @brief Get the y component.
  *
@@ -773,7 +773,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2::x(T value) throw ()
+ * @fn void openvrml::vec2::x(T value)
  *
  * @brief Set the x component.
  *
@@ -783,7 +783,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  */
 
 /**
- * @fn void openvrml::vec2::y(T value) throw ()
+ * @fn void openvrml::vec2::y(T value)
  *
  * @brief Set the y component.
  *
@@ -800,7 +800,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::operator-() const throw ()
  * @return the dot product of the vector and @p vec.
  */
 template<typename T>
-T openvrml::vec2<T>::dot(const vec2<T> & vec) const throw ()
+T openvrml::vec2<T>::dot(const vec2<T> & vec) const OPENVRML_NOTHROW
 {
     return this->vec[0] * vec[0]
         + this->vec[1] * vec[1];
@@ -812,7 +812,7 @@ T openvrml::vec2<T>::dot(const vec2<T> & vec) const throw ()
  * @return the length of the vector.
  */
 template<typename T>
-T openvrml::vec2<T>::length() const throw ()
+T openvrml::vec2<T>::length() const OPENVRML_NOTHROW
 {
     return T(sqrt(this->dot(*this)));
 }
@@ -823,7 +823,7 @@ T openvrml::vec2<T>::length() const throw ()
  * @return a <code>vec2\<T\></code> that is the vector normalized.
  */
 template<typename T>
-const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
+const openvrml::vec2<T> openvrml::vec2<T>::normalize() const OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     const T len = this->length();
@@ -841,7 +841,7 @@ const openvrml::vec2<T> openvrml::vec2<T>::normalize() const throw ()
  *         otherwise.
  */
 template<typename T>
-bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const throw ()
+bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&(*this)[0], &(*this)[0] + 2, &rhs[0], fequal<T>());
@@ -856,7 +856,7 @@ bool openvrml::vec2<T>::operator==(const vec2<T> & rhs) const throw ()
  *         otherwise.
  */
 template<typename T>
-bool openvrml::vec2<T>::operator!=(const vec2<T> & rhs) const throw ()
+bool openvrml::vec2<T>::operator!=(const vec2<T> & rhs) const OPENVRML_NOTHROW
 {
     return !(*this == rhs);
 }
@@ -932,7 +932,7 @@ template class openvrml::vec2<double>;
  * @brief Construct.
  */
 template<typename T>
-openvrml::vec3<T>::vec3() throw ()
+openvrml::vec3<T>::vec3() OPENVRML_NOTHROW
 {
     this->vec[0] = 0.0;
     this->vec[1] = 0.0;
@@ -947,7 +947,7 @@ openvrml::vec3<T>::vec3() throw ()
  * @param vec   an array comprising the vector components.
  */
 template<typename T>
-openvrml::vec3<T>::vec3(const T (&vec)[3]) throw ()
+openvrml::vec3<T>::vec3(const T (&vec)[3]) OPENVRML_NOTHROW
 {
     //
     // Ensure the elements of vec are not NaN.
@@ -971,7 +971,7 @@ openvrml::vec3<T>::vec3(const T (&vec)[3]) throw ()
  * @param z z component.
  */
 template<typename T>
-openvrml::vec3<T>::vec3(const T x, const T y, const T z) throw ()
+openvrml::vec3<T>::vec3(const T x, const T y, const T z) OPENVRML_NOTHROW
 {
     //
     // Ensure x, y, and z are not NaN.
@@ -993,7 +993,7 @@ openvrml::vec3<T>::vec3(const T x, const T y, const T z) throw ()
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) OPENVRML_NOTHROW
 {
     vec3<T> temp;
     temp.x(this->y() * vec.z() - this->z() * vec.y());
@@ -1012,7 +1012,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const vec3<T> & vec) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator*(const vec3<T> & rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result *= rhs;
@@ -1026,7 +1026,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator*(const vec3<T> & rhs) const
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) OPENVRML_NOTHROW
 {
     const T x = this->vec[0] * mat[0][0] + this->vec[1] * mat[1][0]
                     + this->vec[2] * mat[2][0] + mat[3][0];
@@ -1051,7 +1051,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const mat4f & mat) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator*(const mat4f & mat) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result *= mat;
@@ -1061,7 +1061,7 @@ namespace {
     template<typename T>
     const openvrml::vec3<T> do_vec3_mat_mult(const openvrml::mat4f & mat,
                                              const openvrml::vec3<T> & vec)
-        throw ()
+        OPENVRML_NOTHROW
     {
         const T x = mat[0][0] * vec[0] + mat[0][1] * vec[1]
                         + mat[0][2] * vec[2] + mat[0][3];
@@ -1086,7 +1086,7 @@ namespace {
  */
 const openvrml::vec3<float> openvrml::operator*(const mat4f & mat,
                                                 const vec3<float> & vec)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return do_vec3_mat_mult(mat, vec);
 }
@@ -1103,7 +1103,7 @@ const openvrml::vec3<float> openvrml::operator*(const mat4f & mat,
  */
 const openvrml::vec3<double> openvrml::operator*(const mat4f & mat,
                                                  const vec3<double> & vec)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return do_vec3_mat_mult(mat, vec);
 }
@@ -1116,7 +1116,7 @@ const openvrml::vec3<double> openvrml::operator*(const mat4f & mat,
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) OPENVRML_NOTHROW
 {
     this->vec[0] *= scalar;
     this->vec[1] *= scalar;
@@ -1133,7 +1133,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator*=(const T scalar) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator*(const T rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result *= rhs;
@@ -1151,7 +1151,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator*(const T rhs) const
  */
 const openvrml::vec3<float>
 openvrml::operator*(const float lhs, const openvrml::vec3<float> & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<float> result(rhs);
     return result *= lhs;
@@ -1169,7 +1169,7 @@ openvrml::operator*(const float lhs, const openvrml::vec3<float> & rhs)
  */
 const openvrml::vec3<double>
 openvrml::operator*(const double lhs, const openvrml::vec3<double> & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<double> result(rhs);
     return result *= lhs;
@@ -1185,7 +1185,7 @@ openvrml::operator*(const double lhs, const openvrml::vec3<double> & rhs)
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) OPENVRML_NOTHROW
 {
     assert(scalar != 0.0);
     this->vec[0] /= scalar;
@@ -1205,7 +1205,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator/=(const T scalar) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator/(const T rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result /= rhs;
@@ -1219,7 +1219,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator/(const T rhs) const
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) OPENVRML_NOTHROW
 {
     this->vec[0] += vec[0];
     this->vec[1] += vec[1];
@@ -1236,7 +1236,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator+=(const vec3<T> & vec) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator+(const vec3<T> & rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result += rhs;
@@ -1250,7 +1250,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator+(const vec3<T> & rhs) const
  * @return a reference to the object.
  */
 template<typename T>
-openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) throw ()
+openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) OPENVRML_NOTHROW
 {
     this->vec[0] -= vec[0];
     this->vec[1] -= vec[1];
@@ -1267,7 +1267,7 @@ openvrml::vec3<T> & openvrml::vec3<T>::operator-=(const vec3<T> & vec) throw ()
  */
 template<typename T>
 const openvrml::vec3<T> openvrml::vec3<T>::operator-(const vec3<T> & rhs) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     vec3<T> result(*this);
     return result -= rhs;
@@ -1279,13 +1279,13 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-(const vec3<T> & rhs) const
  * @return the additive inverse of the vector.
  */
 template<typename T>
-const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
+const openvrml::vec3<T> openvrml::vec3<T>::operator-() const OPENVRML_NOTHROW
 {
     return vec3<T>(-this->vec[0], -this->vec[1], -this->vec[2]);
 }
 
 /**
- * @fn const T & openvrml::vec3::operator[](size_t index) const throw ()
+ * @fn const T & openvrml::vec3::operator[](size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -1298,7 +1298,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3::x() const throw ()
+ * @fn T openvrml::vec3::x() const
  *
  * @brief Get the x component.
  *
@@ -1306,7 +1306,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3::y() const throw ()
+ * @fn T openvrml::vec3::y() const
  *
  * @brief Get the y component.
  *
@@ -1314,7 +1314,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn T openvrml::vec3::z() const throw ()
+ * @fn T openvrml::vec3::z() const
  *
  * @brief Get the z component.
  *
@@ -1322,7 +1322,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3::x(T value) throw ()
+ * @fn void openvrml::vec3::x(T value)
  *
  * @brief Set the x component.
  *
@@ -1332,7 +1332,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3::y(T value) throw ()
+ * @fn void openvrml::vec3::y(T value)
  *
  * @brief Set the y component.
  *
@@ -1342,7 +1342,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  */
 
 /**
- * @fn void openvrml::vec3::z(T value) throw ()
+ * @fn void openvrml::vec3::z(T value)
  *
  * @brief Set the z component.
  *
@@ -1359,7 +1359,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::operator-() const throw()
  * @return the dot product of the vector and @p vec.
  */
 template<typename T>
-T openvrml::vec3<T>::dot(const vec3<T> & vec) const throw()
+T openvrml::vec3<T>::dot(const vec3<T> & vec) const OPENVRML_NOTHROW
 {
     return this->vec[0] * vec[0]
         + this->vec[1] * vec[1]
@@ -1372,7 +1372,7 @@ T openvrml::vec3<T>::dot(const vec3<T> & vec) const throw()
  * @return the length of the vector.
  */
 template<typename T>
-T openvrml::vec3<T>::length() const throw ()
+T openvrml::vec3<T>::length() const OPENVRML_NOTHROW
 {
     return T(sqrt(this->dot(*this)));
 }
@@ -1383,7 +1383,7 @@ T openvrml::vec3<T>::length() const throw ()
  * @return a vec3<T> that is the vector normalized.
  */
 template<typename T>
-const openvrml::vec3<T> openvrml::vec3<T>::normalize() const throw ()
+const openvrml::vec3<T> openvrml::vec3<T>::normalize() const OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     const T len = this->length();
@@ -1401,7 +1401,7 @@ const openvrml::vec3<T> openvrml::vec3<T>::normalize() const throw ()
  *         otherwise.
  */
 template<typename T>
-bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const throw ()
+bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&(*this)[0], &(*this)[0] + 3, &rhs[0], fequal<T>());
@@ -1416,7 +1416,7 @@ bool openvrml::vec3<T>::operator==(const vec3<T> & rhs) const throw ()
  *      otherwise.
  */
 template<typename T>
-bool openvrml::vec3<T>::operator!=(const vec3<T> & rhs) const throw ()
+bool openvrml::vec3<T>::operator!=(const vec3<T> & rhs) const OPENVRML_NOTHROW
 {
     return !(*this == rhs);
 }
@@ -1498,7 +1498,7 @@ template class openvrml::vec3<double>;
 /**
  * @brief Construct.
  */
-openvrml::rotation::rotation() throw ()
+openvrml::rotation::rotation() OPENVRML_NOTHROW
 {
     this->rot[0] = 0.0;
     this->rot[1] = 0.0;
@@ -1514,7 +1514,7 @@ openvrml::rotation::rotation() throw ()
  * @pre The vector represented by the first three components of @p rot is
  *      normalized.
  */
-openvrml::rotation::rotation(const float (&rot)[4]) throw ()
+openvrml::rotation::rotation(const float (&rot)[4]) OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -1538,7 +1538,7 @@ openvrml::rotation::rotation(const float x,
                              const float y,
                              const float z,
                              const float angle)
-    throw ()
+    OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -1559,7 +1559,7 @@ openvrml::rotation::rotation(const float x,
  *
  * @pre @p axis is a normalized vector.
  */
-openvrml::rotation::rotation(const vec3f & axis, const float angle) throw ()
+openvrml::rotation::rotation(const vec3f & axis, const float angle) OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -1579,7 +1579,7 @@ openvrml::rotation::rotation(const vec3f & axis, const float angle) throw ()
  * @param to_vec    the ending vector.
  */
 openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
-    throw ()
+    OPENVRML_NOTHROW
 {
     this->axis(from_vec * to_vec);
     this->rot[3] = float(acos(from_vec.dot(to_vec)
@@ -1591,7 +1591,7 @@ openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
  *
  * @param quat  a quaternion.
  */
-openvrml::rotation::rotation(const quatf & quat) throw ()
+openvrml::rotation::rotation(const quatf & quat) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
 
@@ -1619,7 +1619,7 @@ openvrml::rotation::rotation(const quatf & quat) throw ()
  * @return a reference to the object.
  */
 openvrml::rotation & openvrml::rotation::operator*=(const rotation & rot)
-    throw ()
+    OPENVRML_NOTHROW
 {
     return *this = rotation(quatf(*this) * quatf(rot));
 }
@@ -1635,7 +1635,7 @@ openvrml::rotation & openvrml::rotation::operator*=(const rotation & rot)
  * @return the product of @p lhs and @p rhs.
  */
 const openvrml::rotation openvrml::operator*(const rotation & lhs,
-                                             const rotation & rhs) throw ()
+                                             const rotation & rhs) OPENVRML_NOTHROW
 {
     rotation result(lhs);
     return result *= rhs;
@@ -1643,7 +1643,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
 
 
 /**
- * @fn const float & openvrml::rotation::operator[](const size_t index) const throw ()
+ * @fn const float & openvrml::rotation::operator[](const size_t index) const
  *
  * @brief Index-based element access.
  *
@@ -1652,7 +1652,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  */
 
 /**
- * @fn float openvrml::rotation::x() const throw ()
+ * @fn float openvrml::rotation::x() const
  *
  * @brief Get the x axis component.
  *
@@ -1660,7 +1660,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  */
 
 /**
- * @fn float openvrml::rotation::y() const throw ()
+ * @fn float openvrml::rotation::y() const
  *
  * @brief Get the y axis component.
  *
@@ -1668,7 +1668,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  */
 
 /**
- * @fn float openvrml::rotation::z() const throw ()
+ * @fn float openvrml::rotation::z() const
  *
  * @brief Get the z axis component.
  *
@@ -1676,7 +1676,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  */
 
 /**
- * @fn const openvrml::vec3f openvrml::rotation::axis() const throw ()
+ * @fn const openvrml::vec3f openvrml::rotation::axis() const
  *
  * @brief Get the axis of rotation.
  *
@@ -1684,7 +1684,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  */
 
 /**
- * @fn float openvrml::rotation::angle() const throw ()
+ * @fn float openvrml::rotation::angle() const
  *
  * @brief Get the rotation angle.
  *
@@ -1709,7 +1709,7 @@ namespace {
         }
     }
 
-    void normalize_axis_(float axis[3]) throw ()
+    void normalize_axis_(float axis[3]) OPENVRML_NOTHROW
     {
         using openvrml_::fequal;
         const float axis_length = float(length_(axis));
@@ -1726,7 +1726,7 @@ namespace {
  *
  * @param value new x axis component value.
  */
-void openvrml::rotation::x(const float value) throw ()
+void openvrml::rotation::x(const float value) OPENVRML_NOTHROW
 {
     this->rot[0] = value;
     normalize_axis_(this->rot);
@@ -1737,7 +1737,7 @@ void openvrml::rotation::x(const float value) throw ()
  *
  * @param value new y axis component value.
  */
-void openvrml::rotation::y(const float value) throw ()
+void openvrml::rotation::y(const float value) OPENVRML_NOTHROW
 {
     this->rot[1] = value;
     normalize_axis_(this->rot);
@@ -1748,7 +1748,7 @@ void openvrml::rotation::y(const float value) throw ()
  *
  * @param value new z axis component value.
  */
-void openvrml::rotation::z(const float value) throw ()
+void openvrml::rotation::z(const float value) OPENVRML_NOTHROW
 {
     this->rot[2] = value;
     normalize_axis_(this->rot);
@@ -1759,7 +1759,7 @@ void openvrml::rotation::z(const float value) throw ()
  *
  * @param axis  new axis of rotation.
  */
-void openvrml::rotation::axis(const vec3f & axis) throw ()
+void openvrml::rotation::axis(const vec3f & axis) OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -1772,7 +1772,7 @@ void openvrml::rotation::axis(const vec3f & axis) throw ()
 }
 
 /**
- * @fn void openvrml::rotation::angle(float value) throw ()
+ * @fn void openvrml::rotation::angle(float value)
  *
  * @brief Set the rotation angle.
  *
@@ -1784,7 +1784,7 @@ void openvrml::rotation::axis(const vec3f & axis) throw ()
  *
  * @return the inverse rotation.
  */
-const openvrml::rotation openvrml::rotation::inverse() const throw ()
+const openvrml::rotation openvrml::rotation::inverse() const OPENVRML_NOTHROW
 {
     rotation result(*this);
     result.rot[3] = -this->rot[3];
@@ -1803,7 +1803,7 @@ const openvrml::rotation openvrml::rotation::inverse() const throw ()
  */
 const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
                                                    const float t) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
 
@@ -1862,7 +1862,7 @@ const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
  *
  * @return @c true if @p lhs is equal to @p rhs; @c false otherwise.
  */
-bool openvrml::operator==(const rotation & lhs, const rotation & rhs) throw ()
+bool openvrml::operator==(const rotation & lhs, const rotation & rhs) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
@@ -1878,7 +1878,7 @@ bool openvrml::operator==(const rotation & lhs, const rotation & rhs) throw ()
  *
  * @return @c true if @p lhs is not equal to @p rhs; @c false otherwise.
  */
-bool openvrml::operator!=(const rotation & lhs, const rotation & rhs) throw ()
+bool openvrml::operator!=(const rotation & lhs, const rotation & rhs) OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -1925,7 +1925,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
  * @return a matrix representation of @p rot.
  */
 const openvrml::mat4f openvrml::mat4f::rotation(const openvrml::rotation & rot)
-    throw ()
+    OPENVRML_NOTHROW
 {
     const double s = sin(rot.angle());
     const double c = cos(rot.angle());
@@ -1959,7 +1959,7 @@ const openvrml::mat4f openvrml::mat4f::rotation(const openvrml::rotation & rot)
  *
  * @return a matrix representation of @p quat.
  */
-const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat) throw ()
+const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat) OPENVRML_NOTHROW
 {
     const float x = quat.x();
     const float y = quat.y();
@@ -1991,7 +1991,7 @@ const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat) throw ()
  *
  * @return a uniform scale matrix.
  */
-const openvrml::mat4f openvrml::mat4f::scale(const float s) throw ()
+const openvrml::mat4f openvrml::mat4f::scale(const float s) OPENVRML_NOTHROW
 {
     return mat4f(s,   0.0, 0.0, 0.0,
                  0.0, s,   0.0, 0.0,
@@ -2006,7 +2006,7 @@ const openvrml::mat4f openvrml::mat4f::scale(const float s) throw ()
  *
  * @return a scale matrix.
  */
-const openvrml::mat4f openvrml::mat4f::scale(const vec3f & s) throw ()
+const openvrml::mat4f openvrml::mat4f::scale(const vec3f & s) OPENVRML_NOTHROW
 {
     return mat4f(s.x(), 0.0,   0.0,   0.0,
                  0.0,   s.y(), 0.0,   0.0,
@@ -2021,7 +2021,7 @@ const openvrml::mat4f openvrml::mat4f::scale(const vec3f & s) throw ()
  *
  * @return a translation matrix.
  */
-const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t) throw ()
+const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t) OPENVRML_NOTHROW
 {
     return mat4f(1.0,   0.0,   0.0,   0.0,
                  0.0,   1.0,   0.0,   0.0,
@@ -2047,7 +2047,7 @@ openvrml::mat4f::transformation(const vec3f & t,
                                 const vec3f & s,
                                 const openvrml::rotation & sr,
                                 const vec3f & c)
-    throw ()
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
 
@@ -2083,7 +2083,7 @@ openvrml::mat4f::transformation(const vec3f & t,
  *
  * Matrix is initialized to the identity matrix.
  */
-openvrml::mat4f::mat4f() throw ()
+openvrml::mat4f::mat4f() OPENVRML_NOTHROW
 {
     this->mat[0][0] = 1.0;
     this->mat[0][1] = 0.0;
@@ -2130,7 +2130,7 @@ openvrml::mat4f::mat4f(float f11, float f12, float f13, float f14,
                        float f21, float f22, float f23, float f24,
                        float f31, float f32, float f33, float f34,
                        float f41, float f42, float f43, float f44)
-    throw ()
+    OPENVRML_NOTHROW
 {
     this->mat[0][0] = f11;
     this->mat[0][1] = f12;
@@ -2158,7 +2158,7 @@ openvrml::mat4f::mat4f(float f11, float f12, float f13, float f14,
  *
  * @param mat   an array of values in row-major order.
  */
-openvrml::mat4f::mat4f(const float mat[16]) throw ()
+openvrml::mat4f::mat4f(const float mat[16]) OPENVRML_NOTHROW
 {
     std::copy(mat, mat + 16, &this->mat[0][0]);
 }
@@ -2168,7 +2168,7 @@ openvrml::mat4f::mat4f(const float mat[16]) throw ()
  *
  * @param mat   a 4x4 array of elements in row-major order.
  */
-openvrml::mat4f::mat4f(const float (&mat)[4][4]) throw ()
+openvrml::mat4f::mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW
 {
     std::copy(&mat[0][0], &mat[0][0] + 16, &this->mat[0][0]);
 }
@@ -2180,7 +2180,7 @@ openvrml::mat4f::mat4f(const float (&mat)[4][4]) throw ()
  *
  * @return a reference to the object.
  */
-openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar) throw ()
+openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar) OPENVRML_NOTHROW
 {
     this->mat[0][0] *= scalar;
     this->mat[0][1] *= scalar;
@@ -2212,7 +2212,7 @@ openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar) throw ()
  * @return the result matrix.
  */
 const openvrml::mat4f openvrml::operator*(const mat4f & mat,
-                                          const float scalar) throw ()
+                                          const float scalar) OPENVRML_NOTHROW
 {
     mat4f result(mat);
     return result *= scalar;
@@ -2229,7 +2229,7 @@ const openvrml::mat4f openvrml::operator*(const mat4f & mat,
  * @return the result matrix.
  */
 const openvrml::mat4f openvrml::operator*(const float scalar,
-                                          const mat4f & mat) throw ()
+                                          const mat4f & mat) OPENVRML_NOTHROW
 {
     mat4f result(mat);
     return result *= scalar;
@@ -2244,7 +2244,7 @@ const openvrml::mat4f openvrml::operator*(const float scalar,
  *
  * @return a reference to the object.
  */
-openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat) throw ()
+openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat) OPENVRML_NOTHROW
 {
     mat4f temp;
 
@@ -2287,7 +2287,7 @@ openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat) throw ()
  * @return the result matrix.
  */
 const openvrml::mat4f openvrml::operator*(const mat4f & lhs, const mat4f & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     mat4f result(lhs);
     return result *= rhs;
@@ -2297,7 +2297,7 @@ const openvrml::mat4f openvrml::operator*(const mat4f & lhs, const mat4f & rhs)
 namespace {
 
     float det3(const openvrml::mat4f & mat,
-               int r1, int r2, int r3, int c1, int c2, int c3) throw ()
+               int r1, int r2, int r3, int c1, int c2, int c3) OPENVRML_NOTHROW
     {
         return mat[r1][c1] * mat[r2][c2] * mat[r3][c3]
              - mat[r1][c1] * mat[r2][c3] * mat[r3][c2]
@@ -2323,7 +2323,7 @@ namespace {
 void openvrml::mat4f::transformation(vec3f & t,
                                      openvrml::rotation & r,
                                      vec3f & s) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // Some portions are taken from Graphics Gems 2.
@@ -2419,7 +2419,7 @@ void openvrml::mat4f::transformation(vec3f & t,
                                      openvrml::rotation & r,
                                      vec3f & s,
                                      vec3f & shear) const
-    throw ()
+    OPENVRML_NOTHROW
 {
     //
     // Some portions are taken from Graphics Gems 2.
@@ -2622,7 +2622,7 @@ namespace {
  *
  * @pre the current matrix must be affine.
  */
-const openvrml::mat4f openvrml::mat4f::inverse() const throw ()
+const openvrml::mat4f openvrml::mat4f::inverse() const OPENVRML_NOTHROW
 {
     mat4f out;
     get_affine_inverse(*this, out);
@@ -2634,7 +2634,7 @@ const openvrml::mat4f openvrml::mat4f::inverse() const throw ()
  *
  * @return a transposed copy of the matrix.
  */
-const openvrml::mat4f openvrml::mat4f::transpose() const throw ()
+const openvrml::mat4f openvrml::mat4f::transpose() const OPENVRML_NOTHROW
 {
     return mat4f(this->mat[0][0],
                  this->mat[1][0],
@@ -2659,7 +2659,7 @@ const openvrml::mat4f openvrml::mat4f::transpose() const throw ()
  *
  * @return the determinant.
  */
-float openvrml::mat4f::det() const throw ()
+float openvrml::mat4f::det() const OPENVRML_NOTHROW
 {
     return (  this->mat[0][0] * det3(*this, 1, 2, 3, 1, 2, 3)
             + this->mat[0][1] * det3(*this, 1, 2, 3, 0, 2, 3)
@@ -2668,7 +2668,7 @@ float openvrml::mat4f::det() const throw ()
 }
 
 /**
- * @fn float (&openvrml::mat4f::operator[](size_t index) throw ())[4]
+ * @fn float (&openvrml::mat4f::operator[](size_t index))[4]
  *
  * @brief Row access.
  *
@@ -2678,7 +2678,7 @@ float openvrml::mat4f::det() const throw ()
  */
 
 /**
- * @fn float (&openvrml::mat4f::operator[](size_t index) const throw ())[4]
+ * @fn float (&openvrml::mat4f::operator[](size_t index) const)[4]
  *
  * @brief Row access.
  *
@@ -2726,7 +2726,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const mat4f & mat)
  *
  * @return @c true if @p lhs and @p rhs are equivalent; @c false otherwise.
  */
-bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs) throw ()
+bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0],
@@ -2743,7 +2743,7 @@ bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs) throw ()
  *
  * @return @c true if @p lhs and @p rhs are not equivalent; @c false otherwise.
  */
-bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
+bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs) OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2768,7 +2768,7 @@ bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs) throw ()
 /**
  * @brief Default constructor.
  */
-openvrml::quatf::quatf() throw ()
+openvrml::quatf::quatf() OPENVRML_NOTHROW
 {
     this->quat[0] = 0.0;
     this->quat[1] = 0.0;
@@ -2788,7 +2788,7 @@ openvrml::quatf::quatf(const float x,
                        const float y,
                        const float z,
                        const float w)
-    throw ()
+    OPENVRML_NOTHROW
 {
     this->quat[0] = x;
     this->quat[1] = y;
@@ -2803,7 +2803,7 @@ openvrml::quatf::quatf(const float x,
  *              z vector components, respectively. The fourth value in the
  *              array is used for the scalar part of the quaternion.
  */
-openvrml::quatf::quatf(const float (&quat)[4]) throw ()
+openvrml::quatf::quatf(const float (&quat)[4]) OPENVRML_NOTHROW
 {
     this->quat[0] = quat[0];
     this->quat[1] = quat[1];
@@ -2816,7 +2816,7 @@ openvrml::quatf::quatf(const float (&quat)[4]) throw ()
  *
  * @param mat   a rotation matrix.
  */
-openvrml::quatf::quatf(const mat4f & mat) throw ()
+openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
 {
     float diagonal, s;
     diagonal = mat[0][0] + mat[1][1] + mat[2][2];
@@ -2853,7 +2853,7 @@ openvrml::quatf::quatf(const mat4f & mat) throw ()
  *
  * @param rot   a rotation.
  */
-openvrml::quatf::quatf(const rotation & rot) throw ()
+openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -2882,7 +2882,7 @@ openvrml::quatf::quatf(const rotation & rot) throw ()
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat) throw ()
+openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat) OPENVRML_NOTHROW
 {
     *this = quatf(this->quat[1] * quat[2] - this->quat[2] * quat[1]
                     + quat[3] * this->quat[0] + this->quat[3] * quat[0],
@@ -2907,7 +2907,7 @@ openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat) throw ()
  * @return the product of @p lhs and @p rhs.
  */
 const openvrml::quatf openvrml::operator*(const quatf & lhs, const quatf & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     quatf result(lhs);
     return result *= rhs;
@@ -2920,7 +2920,7 @@ const openvrml::quatf openvrml::operator*(const quatf & lhs, const quatf & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator*=(const float scalar) throw ()
+openvrml::quatf & openvrml::quatf::operator*=(const float scalar) OPENVRML_NOTHROW
 {
     this->quat[0] *= scalar;
     this->quat[1] *= scalar;
@@ -2940,7 +2940,7 @@ openvrml::quatf & openvrml::quatf::operator*=(const float scalar) throw ()
  * @return the product of @p quat and @p scalar.
  */
 const openvrml::quatf openvrml::operator*(const quatf & quat,
-                                          const float scalar) throw ()
+                                          const float scalar) OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result *= scalar;
@@ -2957,7 +2957,7 @@ const openvrml::quatf openvrml::operator*(const quatf & quat,
  * @return the product of @p scalar and @p quat.
  */
 const openvrml::quatf openvrml::operator*(const float scalar,
-                                          const quatf & quat) throw ()
+                                          const quatf & quat) OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result *= scalar;
@@ -2970,7 +2970,7 @@ const openvrml::quatf openvrml::operator*(const float scalar,
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator/=(const float scalar) throw ()
+openvrml::quatf & openvrml::quatf::operator/=(const float scalar) OPENVRML_NOTHROW
 {
     assert(scalar != 0.0);
     this->quat[0] /= scalar;
@@ -2991,7 +2991,7 @@ openvrml::quatf & openvrml::quatf::operator/=(const float scalar) throw ()
  * @return the result of dividing @p quat by @p scalar.
  */
 const openvrml::quatf openvrml::operator/(const quatf & quat,
-                                          const float scalar) throw ()
+                                          const float scalar) OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result /= scalar;
@@ -3004,7 +3004,7 @@ const openvrml::quatf openvrml::operator/(const quatf & quat,
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat) throw ()
+openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat) OPENVRML_NOTHROW
 {
     this->quat[0] += quat[0];
     this->quat[1] += quat[1];
@@ -3024,7 +3024,7 @@ openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat) throw ()
  * @return the sum of @p lhs and @p rhs.
  */
 const openvrml::quatf openvrml::operator+(const quatf & lhs, const quatf & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     quatf result(lhs);
     return result += rhs;
@@ -3037,7 +3037,7 @@ const openvrml::quatf openvrml::operator+(const quatf & lhs, const quatf & rhs)
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat) throw ()
+openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat) OPENVRML_NOTHROW
 {
     this->quat[0] -= quat[0];
     this->quat[1] -= quat[1];
@@ -3057,14 +3057,14 @@ openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat) throw ()
  * @return the difference between @p lhs and @p rhs.
  */
 const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
-    throw ()
+    OPENVRML_NOTHROW
 {
     quatf result(lhs);
     return result -= rhs;
 }
 
 /**
- * @fn float openvrml::quatf::operator[](size_t index) const throw ()
+ * @fn float openvrml::quatf::operator[](size_t index) const
  *
  * @brief Array element dereference operator (const version).
  *
@@ -3074,7 +3074,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float & openvrml::quatf::operator[](size_t index) throw ()
+ * @fn float & openvrml::quatf::operator[](size_t index)
  *
  * @brief Array element dereference operator (non-const version).
  *
@@ -3084,7 +3084,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float openvrml::quatf::x() const throw ()
+ * @fn float openvrml::quatf::x() const
  *
  * @brief Get the x component.
  *
@@ -3092,7 +3092,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn void openvrml::quatf::x(float value) throw ()
+ * @fn void openvrml::quatf::x(float value)
  *
  * @brief Set the x component.
  *
@@ -3100,7 +3100,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float openvrml::quatf::y() const throw ()
+ * @fn float openvrml::quatf::y() const
  *
  * @brief Get the y component.
  *
@@ -3108,7 +3108,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn void openvrml::quatf::y(float value) throw ()
+ * @fn void openvrml::quatf::y(float value)
  *
  * @brief Set the y component.
  *
@@ -3116,7 +3116,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float openvrml::quatf::z() const throw ()
+ * @fn float openvrml::quatf::z() const
  *
  * @brief Get the z component.
  *
@@ -3124,7 +3124,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn void openvrml::quatf::z(float value) throw ()
+ * @fn void openvrml::quatf::z(float value)
  *
  * @brief Set the z component.
  *
@@ -3132,7 +3132,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float openvrml::quatf::w() const throw ()
+ * @fn float openvrml::quatf::w() const
  *
  * @brief Get the w component.
  *
@@ -3140,7 +3140,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn void openvrml::quatf::w(float value) throw ()
+ * @fn void openvrml::quatf::w(float value)
  *
  * @brief Set the w component.
  *
@@ -3155,7 +3155,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @return the conjugate of the quaternion.
  */
-const openvrml::quatf openvrml::quatf::conjugate() const throw ()
+const openvrml::quatf openvrml::quatf::conjugate() const OPENVRML_NOTHROW
 {
     const quatf q(-this->quat[0],
                   -this->quat[1],
@@ -3171,7 +3171,7 @@ const openvrml::quatf openvrml::quatf::conjugate() const throw ()
  *
  * @return the multiplicative inverse.
  */
-const openvrml::quatf openvrml::quatf::inverse() const throw ()
+const openvrml::quatf openvrml::quatf::inverse() const OPENVRML_NOTHROW
 {
     return this->conjugate() / this->norm();
 }
@@ -3186,7 +3186,7 @@ const openvrml::quatf openvrml::quatf::inverse() const throw ()
  *
  * @return the norm.
  */
-float openvrml::quatf::norm() const throw ()
+float openvrml::quatf::norm() const OPENVRML_NOTHROW
 {
     return this->quat[0] * this->quat[0]
             + this->quat[1] * this->quat[1]
@@ -3199,7 +3199,7 @@ float openvrml::quatf::norm() const throw ()
  *
  * @return a unit quaternion derived from the quaternion.
  */
-const openvrml::quatf openvrml::quatf::normalize() const throw ()
+const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
 {
     const float n = this->norm();
     const quatf q(this->quat[0] / n,
@@ -3235,7 +3235,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const quatf & quat)
  *
  * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
  */
-bool openvrml::operator==(const quatf & lhs, const quatf & rhs) throw ()
+bool openvrml::operator==(const quatf & lhs, const quatf & rhs) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
@@ -3251,7 +3251,7 @@ bool openvrml::operator==(const quatf & lhs, const quatf & rhs) throw ()
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
-bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) throw ()
+bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3313,7 +3313,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) throw ()
 /**
  * @brief Construct.
  */
-openvrml::image::image() throw ():
+openvrml::image::image() OPENVRML_NOTHROW:
     x_(0),
     y_(0),
     comp_(0)
@@ -3329,7 +3329,7 @@ openvrml::image::image() throw ():
 openvrml::image::image(const size_t x,
                        const size_t y,
                        const size_t comp)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     x_(x),
     y_(y),
     comp_(comp),
@@ -3350,7 +3350,7 @@ openvrml::image::image(const size_t x,
                        const size_t y,
                        const size_t comp,
                        const std::vector<unsigned char> & array)
-    throw (std::bad_alloc):
+    OPENVRML_THROW1(std::bad_alloc):
     x_(x),
     y_(y),
     comp_(comp),
@@ -3360,7 +3360,7 @@ openvrml::image::image(const size_t x,
 }
 
 /**
- * @fn template <typename InputIterator> openvrml::image::image(size_t x, size_t y, size_t comp, InputIterator array_begin, InputIterator array_end) throw (std::bad_alloc)
+ * @fn template <typename InputIterator> openvrml::image::image(size_t x, size_t y, size_t comp, InputIterator array_begin, InputIterator array_end)
  *
  * @brief Construct.
  *
@@ -3380,7 +3380,7 @@ openvrml::image::image(const size_t x,
  *
  * @param img   an image.
  */
-void openvrml::image::swap(image & img) throw ()
+void openvrml::image::swap(image & img) OPENVRML_NOTHROW
 {
     using std::swap;
     swap(this->x_, img.x_);
@@ -3390,7 +3390,7 @@ void openvrml::image::swap(image & img) throw ()
 }
 
 /**
- * @fn size_t openvrml::image::x() const throw ()
+ * @fn size_t openvrml::image::x() const
  *
  * @brief Pixels in the <var>x</var>-dimension.
  *
@@ -3404,7 +3404,7 @@ void openvrml::image::swap(image & img) throw ()
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::image::x(const size_t value) throw (std::bad_alloc)
+void openvrml::image::x(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     //
     // Throws std::bad_alloc.
@@ -3414,7 +3414,7 @@ void openvrml::image::x(const size_t value) throw (std::bad_alloc)
 }
 
 /**
- * @fn size_t openvrml::image::y() const throw ()
+ * @fn size_t openvrml::image::y() const
  *
  * @brief Pixels in the <var>y</var>-dimension.
  *
@@ -3428,7 +3428,7 @@ void openvrml::image::x(const size_t value) throw (std::bad_alloc)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::image::y(const size_t value) throw (std::bad_alloc)
+void openvrml::image::y(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     //
     // Throws std::bad_alloc.
@@ -3446,7 +3446,7 @@ void openvrml::image::y(const size_t value) throw (std::bad_alloc)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 void openvrml::image::resize(const size_t x, const size_t y)
-    throw (std::bad_alloc)
+    OPENVRML_THROW1(std::bad_alloc)
 {
     this->array_.resize(x * y * this->comp_); // Throws std::bad_alloc.
     this->x_ = x;
@@ -3454,7 +3454,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
 }
 
 /**
- * @fn size_t openvrml::image::comp() const throw ()
+ * @fn size_t openvrml::image::comp() const
  *
  * @brief Number of components.
  *
@@ -3468,7 +3468,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
  *
  * @param value number of components.
  */
-void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
+void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     assert(value <= 4);
     this->array_.resize(this->x_ * this->y_ * value);
@@ -3477,7 +3477,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
 
 
 /**
- * @fn const std::vector<unsigned char> & openvrml::image::array() const throw ()
+ * @fn const std::vector<unsigned char> & openvrml::image::array() const
  *
  * @brief Pixel value array.
  *
@@ -3485,7 +3485,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::array(const std::vector<unsigned char> & value) throw ()
+ * @fn void openvrml::image::array(const std::vector<unsigned char> & value)
  *
  * @brief Set the pixel value array.
  *
@@ -3495,7 +3495,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn template <typename InputIterator> void openvrml::image::array(InputIterator begin, InputIterator end) throw ()
+ * @fn template <typename InputIterator> void openvrml::image::array(InputIterator begin, InputIterator end)
  *
  * @brief Set the pixel value array.
  *
@@ -3507,7 +3507,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn unsigned long openvrml::image::pixel(size_t index) const throw ()
+ * @fn unsigned long openvrml::image::pixel(size_t index) const
  *
  * @brief Pixel value.
  *
@@ -3519,7 +3519,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t index, unsigned long value) throw ()
+ * @fn void openvrml::image::pixel(size_t index, unsigned long value)
  *
  * @brief Set a pixel value.
  *
@@ -3530,7 +3530,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn unsigned long openvrml::image::pixel(size_t x, size_t y) const throw ()
+ * @fn unsigned long openvrml::image::pixel(size_t x, size_t y) const
  *
  * @brief Pixel value.
  *
@@ -3543,7 +3543,7 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t x, size_t y, unsigned long value) throw ()
+ * @fn void openvrml::image::pixel(size_t x, size_t y, unsigned long value)
  *
  * @brief Set a pixel value.
  *
@@ -3564,7 +3564,8 @@ void openvrml::image::comp(const size_t value) throw (std::bad_alloc)
  *
  * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
  */
-bool openvrml::operator==(const image & lhs, const image & rhs) throw ()
+bool openvrml::operator==(const image & lhs, const image & rhs)
+    OPENVRML_NOTHROW
 {
     return lhs.x() == rhs.x()
         && lhs.y() == rhs.y()
@@ -3582,7 +3583,8 @@ bool openvrml::operator==(const image & lhs, const image & rhs) throw ()
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
-bool openvrml::operator!=(const image & lhs, const image & rhs) throw ()
+bool openvrml::operator!=(const image & lhs, const image & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }

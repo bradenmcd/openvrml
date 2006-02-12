@@ -51,13 +51,14 @@ namespace openvrml {
 
         explicit script(script_node & node);
 
-        bool direct_output() const throw ();
-        bool must_evaluate() const throw ();
+        bool direct_output() const OPENVRML_NOTHROW;
+        bool must_evaluate() const OPENVRML_NOTHROW;
         void field(const std::string & id, const field_value & value)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+            OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                            std::bad_alloc);
         void direct_output(event_listener & listener,
                            const boost::shared_ptr<field_value> & value)
-            throw (field_value_type_mismatch, std::bad_alloc);
+            OPENVRML_THROW2(field_value_type_mismatch, std::bad_alloc);
 
     private:
         virtual void do_initialize(double timestamp) = 0;
@@ -74,13 +75,13 @@ namespace openvrml {
     class OPENVRML_API script_node_class : public node_class {
     public:
         script_node_class(openvrml::browser & browser);
-        virtual ~script_node_class() throw ();
+        virtual ~script_node_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw ();
+            OPENVRML_NOTHROW;
     };
 
 
@@ -99,17 +100,17 @@ namespace openvrml {
 
         public:
             eventout(field_value::type_id type, script_node & node)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
 
-            const field_value & value() const throw ();
+            const field_value & value() const OPENVRML_NOTHROW;
             void value(const field_value & val)
-                throw (std::bad_alloc, std::bad_cast);
+                OPENVRML_THROW2(std::bad_alloc, std::bad_cast);
 
-            bool modified() const throw ();
+            bool modified() const OPENVRML_NOTHROW;
 
-            openvrml::event_emitter & emitter() throw ();
+            openvrml::event_emitter & emitter() OPENVRML_NOTHROW;
 
-            void emit_event(double timestamp) throw (std::bad_alloc);
+            void emit_event(double timestamp) OPENVRML_THROW1(std::bad_alloc);
         };
 
         typedef boost::shared_ptr<eventout> eventout_ptr;
@@ -121,17 +122,19 @@ namespace openvrml {
 
         public:
             explicit script_node_type(script_node_class & class_);
-            virtual ~script_node_type() throw ();
+            virtual ~script_node_type() OPENVRML_NOTHROW;
 
             void add_interface(const node_interface & interface)
-                throw (std::bad_alloc, std::invalid_argument);
+                OPENVRML_THROW2(std::bad_alloc, std::invalid_argument);
 
         private:
-            virtual const node_interface_set & do_interfaces() const throw ();
+            virtual const node_interface_set & do_interfaces() const
+                OPENVRML_NOTHROW;
             virtual const boost::intrusive_ptr<node>
             do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                            const initial_value_map & initial_values) const
-                throw (unsupported_interface, std::bad_cast, std::bad_alloc);
+                OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                                std::bad_alloc);
         };
 
         template <typename FieldValue>
@@ -142,13 +145,13 @@ namespace openvrml {
 
         public:
             script_event_listener(const std::string & id, script_node & node);
-            virtual ~script_event_listener() throw ();
+            virtual ~script_event_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventin_id() const throw ();
+            virtual const std::string do_eventin_id() const OPENVRML_NOTHROW;
             virtual void do_process_event(const FieldValue & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         typedef script_event_listener<sfbool> sfbool_listener;
@@ -214,7 +217,7 @@ namespace openvrml {
         static const boost::shared_ptr<openvrml::event_listener>
         create_listener(field_value::type_id type, const std::string & id,
                         script_node & node)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         template <typename FieldValue>
         class script_event_emitter :
@@ -228,7 +231,7 @@ namespace openvrml {
             {
                 explicit event_emitter_equal_to(
                     const script_event_emitter<FieldValue> & emitter)
-                    throw ():
+                    OPENVRML_NOTHROW:
                     emitter_(&emitter)
                 {}
 
@@ -244,11 +247,11 @@ namespace openvrml {
 
         public:
             script_event_emitter(script_node & node, const FieldValue & value)
-                throw ();
-            virtual ~script_event_emitter() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~script_event_emitter() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventout_id() const throw ();
+            virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
         };
 
         struct OPENVRML_LOCAL script_event_emitter_creator {
@@ -281,49 +284,49 @@ namespace openvrml {
 
         static std::auto_ptr<openvrml::event_emitter>
         create_emitter(script_node & node, const field_value & value)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         class set_url_listener_t : public node_field_value_listener<mfstring> {
         public:
             explicit set_url_listener_t(script_node & node);
-            virtual ~set_url_listener_t() throw ();
+            virtual ~set_url_listener_t() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventin_id() const throw ();
+            virtual const std::string do_eventin_id() const OPENVRML_NOTHROW;
             virtual void do_process_event(const mfstring & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class url_changed_emitter : public openvrml::mfstring_emitter {
         public:
-            explicit url_changed_emitter(const mfstring & value) throw ();
-            virtual ~url_changed_emitter() throw ();
+            explicit url_changed_emitter(const mfstring & value) OPENVRML_NOTHROW;
+            virtual ~url_changed_emitter() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventout_id() const throw ();
+            virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
         };
 
         class set_metadata_listener :
             public node_field_value_listener<sfnode> {
         public:
             explicit set_metadata_listener(script_node & node);
-            virtual ~set_metadata_listener() throw ();
+            virtual ~set_metadata_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventin_id() const throw ();
+            virtual const std::string do_eventin_id() const OPENVRML_NOTHROW;
             virtual void do_process_event(const sfnode & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class metadata_changed_emitter : public openvrml::sfnode_emitter {
         public:
-            explicit metadata_changed_emitter(const sfnode & value) throw ();
-            virtual ~metadata_changed_emitter() throw ();
+            explicit metadata_changed_emitter(const sfnode & value) OPENVRML_NOTHROW;
+            virtual ~metadata_changed_emitter() OPENVRML_NOTHROW;
 
         private:
-            virtual const std::string do_eventout_id() const throw ();
+            virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
         };
 
         script_node_type type;
@@ -348,37 +351,38 @@ namespace openvrml {
                     const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & interfaces,
                     const initial_value_map & initial_values)
-            throw (unsupported_interface, std::bad_cast, std::bad_alloc,
-                   std::invalid_argument);
-        virtual ~script_node() throw ();
+            OPENVRML_THROW4(unsupported_interface, std::bad_cast,
+                            std::bad_alloc, std::invalid_argument);
+        virtual ~script_node() OPENVRML_NOTHROW;
 
         void update(double current_time);
 
-        const field_value_map_t & field_value_map() const throw ();
-        const eventout_map_t & eventout_map() const throw ();
+        const field_value_map_t & field_value_map() const OPENVRML_NOTHROW;
+        const eventout_map_t & eventout_map() const OPENVRML_NOTHROW;
 
     private:
         OPENVRML_LOCAL script * create_script();
 
         OPENVRML_LOCAL void assign_with_self_ref_check(const sfnode &,
                                                        sfnode &) const
-            throw ();
+            OPENVRML_NOTHROW;
         OPENVRML_LOCAL void assign_with_self_ref_check(const mfnode &,
                                                        mfnode &) const
-            throw ();
+            OPENVRML_NOTHROW;
 
-        virtual script_node * to_script() throw ();
+        virtual script_node * to_script() OPENVRML_NOTHROW;
 
-        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
+        virtual void do_initialize(double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
-            throw (unsupported_interface);
+            OPENVRML_THROW1(unsupported_interface);
         virtual openvrml::event_listener &
         do_event_listener(const std::string & id)
-            throw (unsupported_interface);
+            OPENVRML_THROW1(unsupported_interface);
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
-            throw (unsupported_interface);
-        virtual void do_shutdown(double timestamp) throw ();
+            OPENVRML_THROW1(unsupported_interface);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_render_child(viewer & v, rendering_context context);
     };
 
@@ -393,13 +397,13 @@ namespace openvrml {
 
     template <typename FieldValue>
     script_node::script_event_listener<FieldValue>::~script_event_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
     const std::string
     script_node::script_event_listener<FieldValue>::do_eventin_id() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return this->id;
     }
@@ -408,7 +412,7 @@ namespace openvrml {
     void script_node::script_event_listener<FieldValue>::do_process_event(
         const FieldValue & value,
         const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(dynamic_cast<openvrml::script_node *>(&this->node()));
         openvrml::script_node & script_node =
@@ -423,7 +427,7 @@ namespace openvrml {
     script_node::script_event_emitter<FieldValue>::
     script_event_emitter(script_node & node,
                          const FieldValue & value)
-        throw ():
+        OPENVRML_NOTHROW:
         openvrml::event_emitter(value),
         openvrml::field_value_emitter<FieldValue>(value),
         node_(&node)
@@ -431,13 +435,13 @@ namespace openvrml {
 
     template <typename FieldValue>
     script_node::script_event_emitter<FieldValue>::~script_event_emitter()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
     const std::string
     script_node::script_event_emitter<FieldValue>::do_eventout_id() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         const eventout_map_t::const_iterator pos =
             std::find_if(this->node_->eventout_map_.begin(),
@@ -449,13 +453,13 @@ namespace openvrml {
     
 
     inline const script_node::field_value_map_t &
-    script_node::field_value_map() const throw ()
+    script_node::field_value_map() const OPENVRML_NOTHROW
     {
         return this->field_value_map_;
     }
 
     inline const script_node::eventout_map_t &
-    script_node::eventout_map() const throw ()
+    script_node::eventout_map() const OPENVRML_NOTHROW
     {
         return this->eventout_map_;
     }

@@ -31,14 +31,14 @@ namespace openvrml {
         template <typename MemberBase, typename Object>
         class ptr_to_polymorphic_mem {
         public:
-            virtual ~ptr_to_polymorphic_mem() throw () = 0;
+            virtual ~ptr_to_polymorphic_mem() OPENVRML_NOTHROW = 0;
             virtual MemberBase & deref(Object & obj) = 0;
             virtual const MemberBase & deref(const Object & obj) = 0;
         };
 
         template <typename MemberBase, typename Object>
         ptr_to_polymorphic_mem<MemberBase, Object>::~ptr_to_polymorphic_mem()
-            throw ()
+            OPENVRML_NOTHROW
         {}
 
 
@@ -50,7 +50,7 @@ namespace openvrml {
 
         public:
             explicit ptr_to_polymorphic_mem_impl(Member Object::* ptr_to_mem);
-            virtual ~ptr_to_polymorphic_mem_impl() throw ();
+            virtual ~ptr_to_polymorphic_mem_impl() OPENVRML_NOTHROW;
 
             virtual MemberBase & deref(Object & obj);
             virtual const MemberBase & deref(const Object & obj);
@@ -64,7 +64,7 @@ namespace openvrml {
 
         template <typename MemberBase, typename Member, typename Object>
         ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        ~ptr_to_polymorphic_mem_impl() throw ()
+        ~ptr_to_polymorphic_mem_impl() OPENVRML_NOTHROW
         {}
 
         template <typename MemberBase, typename Member, typename Object>
@@ -86,17 +86,17 @@ namespace openvrml {
 
         class OPENVRML_API abstract_node_type : public openvrml::node_type {
         public:
-            virtual ~abstract_node_type() throw () = 0;
+            virtual ~abstract_node_type() OPENVRML_NOTHROW = 0;
             virtual const openvrml::field_value &
             field_value(const openvrml::node & node,
                         const std::string & id) const
-                throw (openvrml::unsupported_interface) = 0;
+                OPENVRML_THROW1(openvrml::unsupported_interface) = 0;
             virtual openvrml::event_listener &
             event_listener(openvrml::node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface) = 0;
+                OPENVRML_THROW1(openvrml::unsupported_interface) = 0;
             virtual openvrml::event_emitter &
             event_emitter(openvrml::node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface) = 0;
+                OPENVRML_THROW1(openvrml::unsupported_interface) = 0;
 
         protected:
             abstract_node_type(const openvrml::node_class & node_class,
@@ -168,67 +168,67 @@ namespace openvrml {
         public:
             node_type_impl(const openvrml::node_class & node_class,
                                   const std::string & id);
-            virtual ~node_type_impl() throw ();
+            virtual ~node_type_impl() OPENVRML_NOTHROW;
 
             void add_eventin(openvrml::field_value::type_id type,
                              const std::string & id,
                              const event_listener_ptr_ptr & event_listener)
-                throw (std::invalid_argument, std::bad_alloc);
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
             void add_eventout(openvrml::field_value::type_id type,
                               const std::string & id,
                               const event_emitter_ptr_ptr & event_emitter)
-                throw (std::invalid_argument, std::bad_alloc);
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
             void add_exposedfield(openvrml::field_value::type_id type,
                                   const std::string & id,
                                   const event_listener_ptr_ptr & event_listener,
                                   const field_ptr_ptr & field,
                                   const event_emitter_ptr_ptr & event_emitter)
-                throw (std::invalid_argument, std::bad_alloc);
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
             void add_field(openvrml::field_value::type_id type,
                            const std::string & id,
                            const field_ptr_ptr & fieldPtrPtr)
-                throw (std::invalid_argument, std::bad_alloc);
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
             virtual const openvrml::field_value &
             field_value(const openvrml::node & node,
                         const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
             virtual openvrml::event_listener &
             event_listener(openvrml::node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
             virtual openvrml::event_emitter &
             event_emitter(openvrml::node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
 
         private:
             virtual const openvrml::node_interface_set & do_interfaces() const
-                throw ();
+                OPENVRML_NOTHROW;
             virtual const boost::intrusive_ptr<openvrml::node>
             do_create_node(
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const openvrml::initial_value_map & initial_values) const
-                throw (openvrml::unsupported_interface, std::bad_cast,
-                       std::bad_alloc);
+                OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
+                                std::bad_alloc);
 
             const openvrml::field_value &
             do_field_value(const Node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
             openvrml::event_listener &
             do_event_listener(Node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
             openvrml::event_emitter &
             do_event_emitter(Node & node, const std::string & id) const
-                throw (openvrml::unsupported_interface);
+                OPENVRML_THROW1(openvrml::unsupported_interface);
         };
 
 
         template <typename Node>
         class event_listener_base : public virtual node_event_listener {
         public:
-            virtual ~event_listener_base() throw () = 0;
+            virtual ~event_listener_base() OPENVRML_NOTHROW = 0;
 
         protected:
-            explicit event_listener_base(openvrml::node & n) throw ();
+            explicit event_listener_base(openvrml::node & n) OPENVRML_NOTHROW;
 
         private:
             typedef node_type_impl<Node> node_type_t;
@@ -261,22 +261,22 @@ namespace openvrml {
                 const node_event_listener * listener_;
             };
 
-            virtual const std::string do_eventin_id() const throw ();
+            virtual const std::string do_eventin_id() const OPENVRML_NOTHROW;
         };
 
         template <typename Node>
         event_listener_base<Node>::event_listener_base(openvrml::node & n)
-            throw ():
+            OPENVRML_NOTHROW:
             node_event_listener(n)
         {}
 
         template <typename Node>
-        event_listener_base<Node>::~event_listener_base() throw ()
+        event_listener_base<Node>::~event_listener_base() OPENVRML_NOTHROW
         {}
 
         template <typename Node>
         const std::string
-        event_listener_base<Node>::do_eventin_id() const throw ()
+        event_listener_base<Node>::do_eventin_id() const OPENVRML_NOTHROW
         {
             const node_type_t & node_type =
                 static_cast<const node_type_t &>(this->node().type());
@@ -296,13 +296,13 @@ namespace openvrml {
             openvrml::node * node_;
 
         public:
-            virtual ~event_emitter_base() throw () = 0;
+            virtual ~event_emitter_base() OPENVRML_NOTHROW = 0;
 
-            openvrml::node & node() const throw ();
+            openvrml::node & node() const OPENVRML_NOTHROW;
 
         protected:
             event_emitter_base(openvrml::node & n, const field_value & value)
-                throw ();
+                OPENVRML_NOTHROW;
 
         private:
             typedef node_type_impl<Node> node_type_t;
@@ -331,31 +331,31 @@ namespace openvrml {
                 const event_emitter_base<Node> * emitter_;
             };
 
-            virtual const std::string do_eventout_id() const throw ();
+            virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
         };
 
         template <typename Node>
         event_emitter_base<Node>::
         event_emitter_base(openvrml::node & n, const field_value & value)
-            throw ():
+            OPENVRML_NOTHROW:
             event_emitter(value),
             node_(&n)
         {}
 
         template <typename Node>
-        event_emitter_base<Node>::~event_emitter_base() throw ()
+        event_emitter_base<Node>::~event_emitter_base() OPENVRML_NOTHROW
         {}
 
         template <typename Node>
         openvrml::node &
-        event_emitter_base<Node>::node() const throw ()
+        event_emitter_base<Node>::node() const OPENVRML_NOTHROW
         {
             return *this->node_;
         }
 
         template <typename Node>
         const std::string
-        event_emitter_base<Node>::do_eventout_id() const throw ()
+        event_emitter_base<Node>::do_eventout_id() const OPENVRML_NOTHROW
         {
             const node_type_t & node_type =
                 static_cast<const node_type_t &>(this->node().type());
@@ -373,7 +373,7 @@ namespace openvrml {
         template <typename Derived>
         class abstract_node : public virtual node {
         public:
-            virtual ~abstract_node() throw () = 0;
+            virtual ~abstract_node() OPENVRML_NOTHROW = 0;
 
         protected:
             typedef Derived self_t;
@@ -411,7 +411,7 @@ namespace openvrml {
                 public openvrml::field_value_emitter<FieldValue> {
             public:
                 event_emitter(openvrml::node & node, const FieldValue & value);
-                virtual ~event_emitter() throw ();
+                virtual ~event_emitter() OPENVRML_NOTHROW;
             };
 
             typedef event_emitter<sfbool> sfbool_emitter;
@@ -453,12 +453,13 @@ namespace openvrml {
 #   else
                     typename FieldValue::value_type());
 # endif
-                exposedfield(const exposedfield<FieldValue> & obj) throw ();
-                virtual ~exposedfield() throw ();
+                exposedfield(const exposedfield<FieldValue> & obj)
+                    OPENVRML_NOTHROW;
+                virtual ~exposedfield() OPENVRML_NOTHROW;
 
             private:
                 virtual std::auto_ptr<field_value> do_clone() const
-                    throw (std::bad_alloc);
+                    OPENVRML_THROW1(std::bad_alloc);
             };
 
             exposedfield<sfnode> metadata;
@@ -468,15 +469,15 @@ namespace openvrml {
 
         private:
             virtual const field_value & do_field(const std::string & id) const
-                throw (unsupported_interface);
+                OPENVRML_THROW1(unsupported_interface);
 
             virtual openvrml::event_listener &
             do_event_listener(const std::string & id)
-                throw (unsupported_interface);
+                OPENVRML_THROW1(unsupported_interface);
 
             virtual openvrml::event_emitter &
             do_event_emitter(const std::string & id)
-                throw (unsupported_interface);
+                OPENVRML_THROW1(unsupported_interface);
         };
 
         template <typename Derived>
@@ -491,7 +492,7 @@ namespace openvrml {
         template <typename Derived>
         template <typename FieldValue>
         abstract_node<Derived>::event_emitter<FieldValue>::~event_emitter()
-            throw ()
+            OPENVRML_NOTHROW
         {}
 
         template <typename Derived>
@@ -512,7 +513,7 @@ namespace openvrml {
         template <typename Derived>
         template <typename FieldValue>
         abstract_node<Derived>::exposedfield<FieldValue>::
-        exposedfield(const exposedfield<FieldValue> & obj) throw ():
+        exposedfield(const exposedfield<FieldValue> & obj) OPENVRML_NOTHROW:
             openvrml::event_listener(),
             node_event_listener(obj.node_event_listener::node()),
             openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -529,14 +530,14 @@ namespace openvrml {
         template <typename Derived>
         template <typename FieldValue>
         abstract_node<Derived>::exposedfield<FieldValue>::
-        ~exposedfield() throw ()
+        ~exposedfield() OPENVRML_NOTHROW
         {}
 
         template <typename Derived>
         template <typename FieldValue>
         std::auto_ptr<field_value>
         abstract_node<Derived>::exposedfield<FieldValue>::do_clone() const
-            throw (std::bad_alloc)
+            OPENVRML_THROW1(std::bad_alloc)
         {
             return std::auto_ptr<field_value>(
                 new exposedfield<FieldValue>(*this));
@@ -551,39 +552,42 @@ namespace openvrml {
         {}
 
         template <typename Derived>
-        abstract_node<Derived>::~abstract_node() throw ()
+        abstract_node<Derived>::~abstract_node() OPENVRML_NOTHROW
         {}
 
         template <typename Derived>
         const field_value &
         abstract_node<Derived>::do_field(const std::string & id) const
-            throw (unsupported_interface)
+            OPENVRML_THROW1(unsupported_interface)
         {
             using boost::polymorphic_downcast;
             const abstract_node_type & type =
-                *polymorphic_downcast<const abstract_node_type *>(&this->type());
+                *polymorphic_downcast<const abstract_node_type *>(
+                    &this->type());
             return type.field_value(*this, id);
         }
 
         template <typename Derived>
         event_listener &
         abstract_node<Derived>::do_event_listener(const std::string & id)
-            throw (unsupported_interface)
+            OPENVRML_THROW1(unsupported_interface)
         {
             using boost::polymorphic_downcast;
             const abstract_node_type & type =
-                *polymorphic_downcast<const abstract_node_type *>(&this->type());
+                *polymorphic_downcast<const abstract_node_type *>(
+                    &this->type());
             return type.event_listener(*this, id);
         }
 
         template <typename Derived>
         event_emitter &
         abstract_node<Derived>::do_event_emitter(const std::string & id)
-            throw (unsupported_interface)
+            OPENVRML_THROW1(unsupported_interface)
         {
             using boost::polymorphic_downcast;
             const abstract_node_type & type =
-                *polymorphic_downcast<const abstract_node_type *>(&this->type());
+                *polymorphic_downcast<const abstract_node_type *>(
+                    &this->type());
             return type.event_emitter(*this, id);
         }
 
@@ -641,13 +645,13 @@ namespace openvrml {
         template <typename Node>
         class event_listener_ptr {
         public:
-            virtual ~event_listener_ptr() throw () = 0;
+            virtual ~event_listener_ptr() OPENVRML_NOTHROW = 0;
             virtual openvrml::event_listener &
-            dereference(Node & obj) throw () = 0;
+            dereference(Node & obj) OPENVRML_NOTHROW = 0;
         };
 
         template <typename Node>
-        inline event_listener_ptr<Node>::~event_listener_ptr() throw ()
+        inline event_listener_ptr<Node>::~event_listener_ptr() OPENVRML_NOTHROW
         {}
 
 
@@ -658,24 +662,25 @@ namespace openvrml {
 
         public:
             event_listener_ptr_impl(ConcreteEventListener Node::* ptr)
-                throw ():
+                OPENVRML_NOTHROW:
                 its_ptr(ptr)
                 {}
 
-            virtual ~event_listener_ptr_impl() throw ();
+            virtual ~event_listener_ptr_impl() OPENVRML_NOTHROW;
 
-            virtual openvrml::event_listener & dereference(Node &) throw ();
+            virtual openvrml::event_listener & dereference(Node &)
+                OPENVRML_NOTHROW;
         };
 
         template <typename Node, typename ConcreteEventListener>
         inline event_listener_ptr_impl<Node, ConcreteEventListener>::
-        ~event_listener_ptr_impl() throw ()
+        ~event_listener_ptr_impl() OPENVRML_NOTHROW
         {}
 
         template <typename Node, typename ConcreteEventListener>
         inline openvrml::event_listener &
         event_listener_ptr_impl<Node, ConcreteEventListener>::
-        dereference(Node & obj) throw ()
+        dereference(Node & obj) OPENVRML_NOTHROW
         {
             return obj.*its_ptr;
         }
@@ -684,13 +689,13 @@ namespace openvrml {
         template <typename Node>
         class event_emitter_ptr {
         public:
-            virtual ~event_emitter_ptr() throw () = 0;
+            virtual ~event_emitter_ptr() OPENVRML_NOTHROW = 0;
             virtual openvrml::event_emitter & dereference(Node & obj)
-                throw () = 0;
+                OPENVRML_NOTHROW = 0;
         };
 
         template <typename Node>
-        inline event_emitter_ptr<Node>::~event_emitter_ptr() throw ()
+        inline event_emitter_ptr<Node>::~event_emitter_ptr() OPENVRML_NOTHROW
         {}
 
 
@@ -699,29 +704,32 @@ namespace openvrml {
             ConcreteEventEmitter Node::* its_ptr;
 
         public:
-            event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr) throw ();
-            virtual ~event_emitter_ptr_impl() throw ();
+            event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr)
+                OPENVRML_NOTHROW;
+            virtual ~event_emitter_ptr_impl() OPENVRML_NOTHROW;
 
-            virtual openvrml::event_emitter & dereference(Node &) throw ();
+            virtual openvrml::event_emitter & dereference(Node &)
+                OPENVRML_NOTHROW;
         };
 
         template <typename Node, typename ConcreteEventEmitter>
         inline event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
-        event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr) throw ():
+        event_emitter_ptr_impl(ConcreteEventEmitter Node::* ptr)
+            OPENVRML_NOTHROW:
             its_ptr(ptr)
         {}
 
         template <typename Node, typename ConcreteEventEmitter>
         inline event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
         ~event_emitter_ptr_impl()
-            throw ()
+            OPENVRML_NOTHROW
         {}
 
         template <typename Node, typename ConcreteEventEmitter>
         inline openvrml::event_emitter &
         event_emitter_ptr_impl<Node, ConcreteEventEmitter>::
         dereference(Node & obj)
-            throw ()
+            OPENVRML_NOTHROW
         {
             return obj.*its_ptr;
         }
@@ -761,7 +769,7 @@ namespace openvrml {
         {}
 
         template <typename Node>
-        node_type_impl<Node>::~node_type_impl() throw ()
+        node_type_impl<Node>::~node_type_impl() OPENVRML_NOTHROW
         {}
 
         template <typename Node>
@@ -769,7 +777,7 @@ namespace openvrml {
         add_eventin(const openvrml::field_value::type_id type,
                     const std::string & id,
                     const event_listener_ptr_ptr & event_listener)
-            throw (std::invalid_argument, std::bad_alloc)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
 
@@ -793,7 +801,7 @@ namespace openvrml {
         add_eventout(const openvrml::field_value::type_id type,
                      const std::string & id,
                      const event_emitter_ptr_ptr & event_emitter)
-            throw (std::invalid_argument, std::bad_alloc)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
 
@@ -819,7 +827,7 @@ namespace openvrml {
             const event_listener_ptr_ptr & event_listener,
             const field_ptr_ptr & field,
             const event_emitter_ptr_ptr & event_emitter)
-            throw (std::invalid_argument, std::bad_alloc)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
 
@@ -856,7 +864,7 @@ namespace openvrml {
             const openvrml::field_value::type_id type,
             const std::string & id,
             const field_ptr_ptr & nodeFieldPtrPtr)
-            throw (std::invalid_argument, std::bad_alloc)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
 
@@ -877,7 +885,7 @@ namespace openvrml {
         const openvrml::field_value &
         node_type_impl<Node>::field_value(const openvrml::node & node,
                                                  const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             assert(dynamic_cast<const Node *>(&node));
             return this->do_field_value(dynamic_cast<const Node &>(node), id);
@@ -887,7 +895,7 @@ namespace openvrml {
         const openvrml::field_value &
         node_type_impl<Node>::
         do_field_value(const Node & node, const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             using namespace openvrml;
 
@@ -905,7 +913,7 @@ namespace openvrml {
         openvrml::event_listener &
         node_type_impl<Node>::
         event_listener(openvrml::node & node, const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             assert(dynamic_cast<Node *>(&node));
             return this->do_event_listener(dynamic_cast<Node &>(node), id);
@@ -915,7 +923,7 @@ namespace openvrml {
         openvrml::event_listener &
         node_type_impl<Node>::
         do_event_listener(Node & node, const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             using namespace openvrml;
 
@@ -938,7 +946,7 @@ namespace openvrml {
         openvrml::event_emitter &
         node_type_impl<Node>::
         event_emitter(openvrml::node & node, const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             assert(dynamic_cast<Node *>(&node));
             return this->do_event_emitter(dynamic_cast<Node &>(node), id);
@@ -948,7 +956,7 @@ namespace openvrml {
         openvrml::event_emitter &
         node_type_impl<Node>::
         do_event_emitter(Node & node, const std::string & id) const
-            throw (openvrml::unsupported_interface)
+            OPENVRML_THROW1(openvrml::unsupported_interface)
         {
             using namespace openvrml;
 
@@ -970,7 +978,7 @@ namespace openvrml {
         template <typename Node>
         const openvrml::node_interface_set &
         node_type_impl<Node>::do_interfaces() const
-            throw ()
+            OPENVRML_NOTHROW
         {
             return this->interfaces_;
         }
@@ -981,8 +989,8 @@ namespace openvrml {
         do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
                        const openvrml::initial_value_map & initial_values)
             const
-            throw (openvrml::unsupported_interface, std::bad_cast,
-                   std::bad_alloc)
+            OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
+                            std::bad_alloc)
         {
             using namespace openvrml;
 

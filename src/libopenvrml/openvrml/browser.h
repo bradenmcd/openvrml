@@ -31,23 +31,25 @@ namespace openvrml {
     public:
         virtual ~resource_istream() = 0;
 
-        const std::string url() const throw (std::bad_alloc);
-        const std::string type() const throw (std::bad_alloc);
-        bool data_available() const throw ();
+        const std::string url() const OPENVRML_THROW1(std::bad_alloc);
+        const std::string type() const OPENVRML_THROW1(std::bad_alloc);
+        bool data_available() const OPENVRML_NOTHROW;
 
     protected:
         explicit resource_istream(std::streambuf * streambuf);
 
     private:
-        virtual const std::string do_url() const throw (std::bad_alloc) = 0;
-        virtual const std::string do_type() const throw (std::bad_alloc) = 0;
-        virtual bool do_data_available() const throw () = 0;
+        virtual const std::string do_url() const
+            OPENVRML_THROW1(std::bad_alloc) = 0;
+        virtual const std::string do_type() const
+            OPENVRML_THROW1(std::bad_alloc) = 0;
+        virtual bool do_data_available() const OPENVRML_NOTHROW = 0;
     };
 
 
     class OPENVRML_API stream_listener {
     public:
-        virtual ~stream_listener() throw () = 0;
+        virtual ~stream_listener() OPENVRML_NOTHROW = 0;
 
         void stream_available(const std::string & uri,
                               const std::string & media_type);
@@ -102,7 +104,8 @@ namespace openvrml {
 
     class OPENVRML_API bad_media_type : public bad_url {
     public:
-        explicit bad_media_type(const std::string & received_type) throw ();
+        explicit bad_media_type(const std::string & received_type)
+            OPENVRML_NOTHROW;
         virtual ~bad_media_type() throw ();
     };
 
@@ -136,11 +139,11 @@ namespace openvrml {
         browser * source_;
         type_id id_;
 
-        OPENVRML_LOCAL browser_event(browser & b, type_id id) throw ();
+        OPENVRML_LOCAL browser_event(browser & b, type_id id) OPENVRML_NOTHROW;
 
     public:
-        type_id id() const throw ();
-        browser & source() const throw ();
+        type_id id() const OPENVRML_NOTHROW;
+        browser & source() const OPENVRML_NOTHROW;
     };
 
 
@@ -148,7 +151,7 @@ namespace openvrml {
         friend class browser;
 
     public:
-        virtual ~browser_listener() throw () = 0;
+        virtual ~browser_listener() OPENVRML_NOTHROW = 0;
 
     private:
         OPENVRML_LOCAL void browser_changed(const browser_event & event);
@@ -170,7 +173,7 @@ namespace openvrml {
 
     class OPENVRML_API invalid_profile : public std::logic_error {
     public:
-        invalid_profile() throw ();
+        invalid_profile() OPENVRML_NOTHROW;
         virtual ~invalid_profile() throw ();
     };
 
@@ -180,9 +183,9 @@ namespace openvrml {
 
     public:
         node_class_id(const char * id)
-            throw (std::invalid_argument, std::bad_alloc);
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         node_class_id(const std::string & id)
-            throw (std::invalid_argument, std::bad_alloc);
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         operator std::string() const;
     };
 
@@ -207,7 +210,7 @@ namespace openvrml {
 
         public:
             node_class_map();
-            ~node_class_map() throw ();
+            ~node_class_map() OPENVRML_NOTHROW;
 
             node_class_map & operator=(const node_class_map & ncm);
 
@@ -258,59 +261,65 @@ namespace openvrml {
         double frame_rate_;
 
     public:
-        static double current_time() throw ();
+        static double current_time() OPENVRML_NOTHROW;
 
         std::ostream & out;
         std::ostream & err;
         bool flags_need_updating;
 
-        browser(std::ostream & out, std::ostream & err) throw (std::bad_alloc);
+        browser(std::ostream & out, std::ostream & err)
+            OPENVRML_THROW1(std::bad_alloc);
         browser(profile_id profile, std::ostream & out, std::ostream & err)
-            throw (std::bad_alloc);
-        virtual ~browser() throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        virtual ~browser() OPENVRML_NOTHROW;
 
         void add_node_class(const node_class_id & id,
                             const boost::shared_ptr<openvrml::node_class> & nc)
-            throw (std::invalid_argument, std::bad_alloc);
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         const boost::shared_ptr<openvrml::node_class>
-        node_class(const node_class_id & id) const throw ();
+        node_class(const node_class_id & id) const OPENVRML_NOTHROW;
 
         const std::vector<boost::intrusive_ptr<node> > & root_nodes() const
-            throw ();
-        const node_path find_node(const node & n) const throw (std::bad_alloc);
-        viewpoint_node & active_viewpoint() const throw ();
-        void active_viewpoint(viewpoint_node & viewpoint) throw ();
-        void reset_default_viewpoint() throw ();
-        navigation_info_node & active_navigation_info() const throw ();
-        void active_navigation_info(navigation_info_node & nav_info) throw ();
-        void reset_default_navigation_info() throw ();
-        void add_viewpoint(viewpoint_node & viewpoint) throw (std::bad_alloc);
-        void remove_viewpoint(viewpoint_node & viewpoint) throw ();
-        const std::list<viewpoint_node *> & viewpoints() const throw ();
-        void viewer(openvrml::viewer * v) throw (viewer_in_use);
-        openvrml::viewer * viewer() const throw ();
+            OPENVRML_NOTHROW;
+        const node_path find_node(const node & n) const
+            OPENVRML_THROW1(std::bad_alloc);
+        viewpoint_node & active_viewpoint() const OPENVRML_NOTHROW;
+        void active_viewpoint(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
+        void reset_default_viewpoint() OPENVRML_NOTHROW;
+        navigation_info_node & active_navigation_info() const OPENVRML_NOTHROW;
+        void active_navigation_info(navigation_info_node & nav_info)
+            OPENVRML_NOTHROW;
+        void reset_default_navigation_info() OPENVRML_NOTHROW;
+        void add_viewpoint(viewpoint_node & viewpoint)
+            OPENVRML_THROW1(std::bad_alloc);
+        void remove_viewpoint(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
+        const std::list<viewpoint_node *> & viewpoints() const
+            OPENVRML_NOTHROW;
+        void viewer(openvrml::viewer * v) OPENVRML_THROW1(viewer_in_use);
+        openvrml::viewer * viewer() const OPENVRML_NOTHROW;
         std::auto_ptr<resource_istream> get_resource(const std::string & uri);
 
-        virtual const char * name() const throw ();
-        virtual const char * version() const throw ();
+        virtual const char * name() const OPENVRML_NOTHROW;
+        virtual const char * version() const OPENVRML_NOTHROW;
         float current_speed();
-        const std::string world_url() const throw (std::bad_alloc);
+        const std::string world_url() const OPENVRML_THROW1(std::bad_alloc);
         void set_world(resource_istream & in);
         void replace_world(
             const std::vector<boost::intrusive_ptr<node> > & nodes);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual void description(const std::string & description);
         const std::vector<boost::intrusive_ptr<node> >
         create_vrml_from_stream(std::istream & in);
         void create_vrml_from_url(const std::vector<std::string> & url,
                                   const boost::intrusive_ptr<node> & node,
                                   const std::string & event)
-            throw (unsupported_interface, std::bad_cast,
-                   boost::thread_resource_error);
-        bool add_listener(browser_listener & listener) throw (std::bad_alloc);
-        bool remove_listener(browser_listener & listener) throw ();
+            OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                            boost::thread_resource_error);
+        bool add_listener(browser_listener & listener)
+            OPENVRML_THROW1(std::bad_alloc);
+        bool remove_listener(browser_listener & listener) OPENVRML_NOTHROW;
 
         void sensitive_event(node * object, double timestamp,
                              bool is_over, bool is_active,
@@ -368,30 +377,30 @@ namespace openvrml {
         explicit scene(openvrml::browser & browser,
                        profile_id profile = invalid_profile_id,
                        scene * parent = 0)
-            throw ();
-        scene(openvrml::browser & browser, scene * parent) throw ();
-        virtual ~scene() throw ();
+            OPENVRML_NOTHROW;
+        scene(openvrml::browser & browser, scene * parent) OPENVRML_NOTHROW;
+        virtual ~scene() OPENVRML_NOTHROW;
 
-        openvrml::browser & browser() const throw ();
-        scene * parent() const throw ();
-        profile_id profile() const throw ();
+        openvrml::browser & browser() const OPENVRML_NOTHROW;
+        scene * parent() const OPENVRML_NOTHROW;
+        profile_id profile() const OPENVRML_NOTHROW;
         void load(const std::vector<std::string> & url)
-            throw (boost::thread_resource_error, std::bad_alloc);
+            OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         void load(resource_istream & in);
-        void initialize(double timestamp) throw (std::bad_alloc);
+        void initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
         const std::vector<boost::intrusive_ptr<node> > & nodes() const
-            throw ();
+            OPENVRML_NOTHROW;
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
-            throw (std::bad_alloc);
-        const std::string url() const throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
+        const std::string url() const OPENVRML_THROW1(std::bad_alloc);
         void render(openvrml::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         std::auto_ptr<resource_istream>
         get_resource(const std::vector<std::string> & url) const
-            throw (no_alternative_url, std::bad_alloc);
-        void shutdown(double timestamp) throw ();
+            OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
+        void shutdown(double timestamp) OPENVRML_NOTHROW;
 
     private:
         virtual void scene_loaded();

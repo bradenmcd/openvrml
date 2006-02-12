@@ -1,3 +1,69 @@
+2006-02-12 Braden McDaniel  <braden@endoframe.com>
+
+	Made use of exception specifications a configure option.
+
+	* README: Added documentation for option
+	--disable-exception-specs.
+	* configure.ac: Added option --disable-exception-specs.
+	* openvrml.spec.in: Disable exception specifications when building
+	the RPM.
+	* doc/Doxyfile (PREDEFINED): Defined exception specification
+	macros.
+	* src/libopenvrml/openvrml-common.h: Defined exception
+	specification macros.
+	* src/libopenvrml/openvrml-config.h.in: Defined
+	OPENVRML_ENABLE_EXCEPTION_SPECS.
+	* src/libopenvrml/openvrml/basetypes.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/basetypes.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/bounding_volume.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/bounding_volume.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/browser.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/browser.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/event.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/event.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/exposedfield.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/exposedfield.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/field_value.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/field_value.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/node.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/node.h: Applied exception specification
+	macros.
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/node_impl_util.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/scope.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/scope.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/script.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/script.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/viewer.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/viewer.h: Applied exception
+	specification macros.
+	* src/libopenvrml/openvrml/vrml97node.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Applied exception
+	specification macros.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h: Applied exception
+	specification macros.
+
 2006-02-11 Braden McDaniel  <braden@endoframe.com>
 
 	Removed externproto_node_type::owning_ptr_to_class, as this

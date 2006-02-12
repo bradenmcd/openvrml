@@ -54,7 +54,7 @@
  */
 
 /**
- * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem<MemberBase, Object>::~ptr_to_polymorphic_mem() throw ()
+ * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem<MemberBase, Object>::~ptr_to_polymorphic_mem()
  *
  * @brief Destroy.
  */
@@ -99,7 +99,7 @@
  */
 
 /**
- * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::~ptr_to_polymorphic_mem_impl() throw ()
+ * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::~ptr_to_polymorphic_mem_impl()
  *
  * @brief Destroy.
  */
@@ -147,11 +147,12 @@ abstract_node_type(const openvrml::node_class & node_class,
 /**
  * @brief Destroy.
  */
-openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
+openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
+    OPENVRML_NOTHROW
 {}
 
 /**
- * @fn const openvrml::field_value & openvrml::node_impl_util::abstract_node_type::field_value(const openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn const openvrml::field_value & openvrml::node_impl_util::abstract_node_type::field_value(const openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's field_value corresponding to @p id.
  *
@@ -167,7 +168,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::event_listener & openvrml::node_impl_util::abstract_node_type::event_listener(openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn const openvrml::event_listener & openvrml::node_impl_util::abstract_node_type::event_listener(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_listener</code> corresponding to
  *        the eventIn identifier @p id.
@@ -184,7 +185,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::event_emitter & openvrml::node_impl_util::abstract_node_type::event_emitter(openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn const openvrml::event_emitter & openvrml::node_impl_util::abstract_node_type::event_emitter(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_emitter</code> corresponding to
  *        the eventOut identifier @p id.
@@ -348,7 +349,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::event_listener_base::event_listener_base(openvrml::node & n) throw ()
+ * @fn openvrml::node_impl_util::event_listener_base::event_listener_base(openvrml::node & n)
  *
  * @brief Construct.
  *
@@ -357,13 +358,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::event_listener_base::~event_listener_base() throw ()
+ * @fn openvrml::node_impl_util::event_listener_base::~event_listener_base()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn const std::string openvrml::node_impl_util::event_listener_base::do_eventin_id() const throw ()
+ * @fn const std::string openvrml::node_impl_util::event_listener_base::do_eventin_id() const
  *
  * @brief The associated eventIn identifier.
  *
@@ -433,7 +434,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::event_emitter_base::event_emitter_base(openvrml::node & n, const field_value & value) throw ()
+ * @fn openvrml::node_impl_util::event_emitter_base::event_emitter_base(openvrml::node & n, const field_value & value)
  *
  * @brief Construct.
  *
@@ -444,19 +445,19 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::event_emitter_base::~event_emitter_base() throw ()
+ * @fn openvrml::node_impl_util::event_emitter_base::~event_emitter_base()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn openvrml::node & openvrml::node_impl_util::event_emitter_base::node() const throw ()
+ * @fn openvrml::node & openvrml::node_impl_util::event_emitter_base::node() const
  *
  * @brief The node with which the <code>event_emitter</code> is associated.
  */
 
 /**
- * @fn const std::string openvrml::node_impl_util::event_emitter_base::do_eventout_id() const throw ()
+ * @fn const std::string openvrml::node_impl_util::event_emitter_base::do_eventout_id() const
  *
  * @brief The associated eventOut identifier.
  *
@@ -645,7 +646,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::abstract_node::event_emitter::~event_emitter() throw ()
+ * @fn openvrml::node_impl_util::abstract_node::event_emitter::~event_emitter()
  *
  * @brief Destroy.
  */
@@ -816,7 +817,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::abstract_node::exposedfield::exposedfield(const exposedfield<FieldValue> & obj) throw ()
+ * @fn openvrml::node_impl_util::abstract_node::exposedfield::exposedfield(const exposedfield<FieldValue> & obj)
  *
  * @brief Construct a copy.
  *
@@ -824,13 +825,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::abstract_node::exposedfield::~exposedfield() throw ()
+ * @fn openvrml::node_impl_util::abstract_node::exposedfield::~exposedfield()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn std::auto_ptr<openvrml::field_value> openvrml::node_impl_util::abstract_node::exposedfield::do_clone() const throw (std::bad_alloc)
+ * @fn std::auto_ptr<openvrml::field_value> openvrml::node_impl_util::abstract_node::exposedfield::do_clone() const
  *
  * @brief Polymorphically construct a copy.
  */
@@ -851,13 +852,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::abstract_node::~abstract_node() throw ()
+ * @fn openvrml::node_impl_util::abstract_node::~abstract_node()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn const openvrml::field_value & openvrml::node_impl_util::abstract_node::do_field(const std::string & id) const throw (unsupported_interface)
+ * @fn const openvrml::field_value & openvrml::node_impl_util::abstract_node::do_field(const std::string & id) const
  *
  * @brief Get a field value for a node.
  *
@@ -867,7 +868,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_listener & openvrml::node_impl_util::abstract_node::do_event_listener(const std::string & id) throw (unsupported_interface)
+ * @fn openvrml::event_listener & openvrml::node_impl_util::abstract_node::do_event_listener(const std::string & id)
  *
  * @brief Get an event listener.
  *
@@ -881,7 +882,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_emitter & openvrml::node_impl_util::abstract_node::do_event_emitter(const std::string & id) throw (unsupported_interface)
+ * @fn openvrml::event_emitter & openvrml::node_impl_util::abstract_node::do_event_emitter(const std::string & id)
  *
  * @brief Get an event emitter.
  *
@@ -949,13 +950,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::node_impl_util::node_type_impl::~node_type_impl() throw ()
+ * @fn openvrml::node_impl_util::node_type_impl::~node_type_impl()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_eventin(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener) throw (std::invalid_argument, std::bad_alloc)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_eventin(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener)
  *
  * @brief Add an eventIn.
  *
@@ -971,7 +972,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_eventout(const openvrml::field_value::type_id type, const std::string & id, const event_emitter_ptr_ptr & event_emitter) throw (std::invalid_argument, std::bad_alloc)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_eventout(const openvrml::field_value::type_id type, const std::string & id, const event_emitter_ptr_ptr & event_emitter)
  *
  * @brief Add an eventOut.
  *
@@ -987,7 +988,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener, const field_ptr_ptr & field, const event_emitter_ptr_ptr & event_emitter) throw (std::invalid_argument, std::bad_alloc)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener, const field_ptr_ptr & field, const event_emitter_ptr_ptr & event_emitter)
  *
  * @brief Add an exposedField.
  *
@@ -1007,7 +1008,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & nodeFieldPtrPtr) throw (std::invalid_argument, std::bad_alloc)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & nodeFieldPtrPtr)
  *
  * @brief Add a field.
  *
@@ -1023,7 +1024,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::field_value & openvrml::node_impl_util::node_type_impl::field_value(const openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn const openvrml::field_value & openvrml::node_impl_util::node_type_impl::field_value(const openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::field_value</code> corresponding to the
  *        field identifier @p id.
@@ -1042,7 +1043,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::field_value & openvrml::node_impl_util::node_type_impl::do_field_value(const Node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn const openvrml::field_value & openvrml::node_impl_util::node_type_impl::do_field_value(const Node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::field_value</code> corresponding to the
  *        field identifier @p id.
@@ -1059,7 +1060,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::event_listener(openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::event_listener(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_listener</code> corresponding to
  *        the eventIn identifier @p id.
@@ -1079,7 +1080,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::do_event_listener(Node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::do_event_listener(Node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_listener</code> corresponding to
  *        the eventIn identifier @p id.
@@ -1096,7 +1097,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::event_emitter(openvrml::node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::event_emitter(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_emitter</code> corresponding to
  *        the eventOut identifier @p id.
@@ -1115,7 +1116,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::do_event_emitter(Node & node, const std::string & id) const throw (openvrml::unsupported_interface)
+ * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::do_event_emitter(Node & node, const std::string & id) const
  *
  * @brief @p node's <code>openvrml::event_emitter</code> corresponding to
  *        the eventOut identifier @p id.
@@ -1134,7 +1135,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const openvrml::node_interface_set & openvrml::node_impl_util::node_type_impl::do_interfaces() const throw ()
+ * @fn const openvrml::node_interface_set & openvrml::node_impl_util::node_type_impl::do_interfaces() const
  *
  * @brief The set of <code>node_interface</code>s supported by the
  *        <code>node_type</code>.
@@ -1144,7 +1145,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type() throw ()
  */
 
 /**
- * @fn const boost::intrusive_ptr<openvrml::node> openvrml::node_impl_util::node_type_impl::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const openvrml::initial_value_map & initial_values) const throw (openvrml::unsupported_interface, std::bad_cast, std::bad_alloc)
+ * @fn const boost::intrusive_ptr<openvrml::node> openvrml::node_impl_util::node_type_impl::do_create_node(const boost::shared_ptr<openvrml::scope> & scope, const openvrml::initial_value_map & initial_values) const
  *
  * @brief Create a node instance.
  *

@@ -65,13 +65,13 @@ namespace {
     class OPENVRML_LOCAL anchor_class : public node_class {
     public:
         explicit anchor_class(openvrml::browser & browser);
-        virtual ~anchor_class() throw ();
+        virtual ~anchor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
     /**
@@ -80,13 +80,13 @@ namespace {
     class OPENVRML_LOCAL appearance_class : public node_class {
     public:
         explicit appearance_class(openvrml::browser & browser);
-        virtual ~appearance_class() throw ();
+        virtual ~appearance_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -96,13 +96,13 @@ namespace {
     class OPENVRML_LOCAL audio_clip_class : public node_class {
     public:
         explicit audio_clip_class(openvrml::browser & browser);
-        virtual ~audio_clip_class() throw ();
+        virtual ~audio_clip_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -119,26 +119,26 @@ namespace {
 
     public:
         explicit background_class(openvrml::browser & browser);
-        virtual ~background_class() throw ();
+        virtual ~background_class() OPENVRML_NOTHROW;
 
-        void set_first(background_node & background) throw ();
-        void reset_first() throw ();
-        bool has_first() const throw ();
-        bool is_first(background_node & background) throw ();
+        void set_first(background_node & background) OPENVRML_NOTHROW;
+        void reset_first() OPENVRML_NOTHROW;
+        bool has_first() const OPENVRML_NOTHROW;
+        bool is_first(background_node & background) OPENVRML_NOTHROW;
         void bind(background_node & background, double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         void unbind(background_node & background, double timestamp)
-            throw ();
+            OPENVRML_NOTHROW;
 
     private:
         virtual void
         do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                      double timestamp) throw ();
-        virtual void do_render(viewer & v) const throw ();
+                      double timestamp) OPENVRML_NOTHROW;
+        virtual void do_render(viewer & v) const OPENVRML_NOTHROW;
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
     /**
@@ -165,13 +165,13 @@ namespace {
     class OPENVRML_LOCAL billboard_class : public node_class {
     public:
         explicit billboard_class(openvrml::browser & browser);
-        virtual ~billboard_class() throw ();
+        virtual ~billboard_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -181,13 +181,13 @@ namespace {
     class OPENVRML_LOCAL box_class : public node_class {
     public:
         explicit box_class(openvrml::browser & browser);
-        virtual ~box_class() throw ();
+        virtual ~box_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -197,13 +197,13 @@ namespace {
     class OPENVRML_LOCAL collision_class : public node_class {
     public:
         explicit collision_class(openvrml::browser & browser);
-        virtual ~collision_class() throw ();
+        virtual ~collision_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -213,13 +213,13 @@ namespace {
     class OPENVRML_LOCAL color_class : public node_class {
     public:
         explicit color_class(openvrml::browser & browser);
-        virtual ~color_class() throw ();
+        virtual ~color_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -229,13 +229,13 @@ namespace {
     class OPENVRML_LOCAL color_interpolator_class : public node_class {
     public:
         explicit color_interpolator_class(openvrml::browser & browser);
-        virtual ~color_interpolator_class() throw ();
+        virtual ~color_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -245,13 +245,13 @@ namespace {
     class OPENVRML_LOCAL cone_class : public node_class {
     public:
         explicit cone_class(openvrml::browser & browser);
-        virtual ~cone_class() throw ();
+        virtual ~cone_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -261,13 +261,13 @@ namespace {
     class OPENVRML_LOCAL coordinate_class : public node_class {
     public:
         explicit coordinate_class(openvrml::browser & browser);
-        virtual ~coordinate_class() throw ();
+        virtual ~coordinate_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -277,13 +277,13 @@ namespace {
     class OPENVRML_LOCAL coordinate_interpolator_class : public node_class {
     public:
         explicit coordinate_interpolator_class(openvrml::browser & browser);
-        virtual ~coordinate_interpolator_class() throw ();
+        virtual ~coordinate_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -293,13 +293,13 @@ namespace {
     class OPENVRML_LOCAL cylinder_class : public node_class {
     public:
         explicit cylinder_class(openvrml::browser & browser);
-        virtual ~cylinder_class() throw ();
+        virtual ~cylinder_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -309,13 +309,13 @@ namespace {
     class OPENVRML_LOCAL cylinder_sensor_class : public node_class {
     public:
         explicit cylinder_sensor_class(openvrml::browser & browser);
-        virtual ~cylinder_sensor_class() throw ();
+        virtual ~cylinder_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -325,13 +325,13 @@ namespace {
     class OPENVRML_LOCAL directional_light_class : public node_class {
     public:
         explicit directional_light_class(openvrml::browser & browser);
-        virtual ~directional_light_class() throw ();
+        virtual ~directional_light_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -341,13 +341,13 @@ namespace {
     class OPENVRML_LOCAL elevation_grid_class : public node_class {
     public:
         explicit elevation_grid_class(openvrml::browser & browser);
-        virtual ~elevation_grid_class() throw ();
+        virtual ~elevation_grid_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -357,13 +357,13 @@ namespace {
     class OPENVRML_LOCAL extrusion_class : public node_class {
     public:
         explicit extrusion_class(openvrml::browser & browser);
-        virtual ~extrusion_class() throw ();
+        virtual ~extrusion_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -380,24 +380,24 @@ namespace {
 
     public:
         explicit fog_class(openvrml::browser & browser);
-        virtual ~fog_class() throw ();
+        virtual ~fog_class() OPENVRML_NOTHROW;
 
-        void set_first(fog_node & fog) throw ();
-        void reset_first() throw ();
-        bool has_first() const throw ();
-        bool is_first(fog_node & fog) throw ();
-        void bind(fog_node & fog, double timestamp) throw (std::bad_alloc);
-        void unbind(fog_node & fog, double timestamp) throw ();
+        void set_first(fog_node & fog) OPENVRML_NOTHROW;
+        void reset_first() OPENVRML_NOTHROW;
+        bool has_first() const OPENVRML_NOTHROW;
+        bool is_first(fog_node & fog) OPENVRML_NOTHROW;
+        void bind(fog_node & fog, double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        void unbind(fog_node & fog, double timestamp) OPENVRML_NOTHROW;
 
     private:
         virtual void
         do_initialize(openvrml::viewpoint_node * initialViewpoint,
-                      double timestamp) throw ();
-        virtual void do_render(viewer & v) const throw ();
+                      double timestamp) OPENVRML_NOTHROW;
+        virtual void do_render(viewer & v) const OPENVRML_NOTHROW;
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
     /**
@@ -425,13 +425,13 @@ namespace {
     class OPENVRML_LOCAL font_style_class : public node_class {
     public:
         explicit font_style_class(openvrml::browser & browser);
-        virtual ~font_style_class() throw ();
+        virtual ~font_style_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -441,13 +441,13 @@ namespace {
     class OPENVRML_LOCAL group_class : public node_class {
     public:
         explicit group_class(openvrml::browser & browser);
-        virtual ~group_class() throw ();
+        virtual ~group_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -457,13 +457,13 @@ namespace {
     class OPENVRML_LOCAL image_texture_class : public node_class {
     public:
         explicit image_texture_class(openvrml::browser & browser);
-        virtual ~image_texture_class() throw ();
+        virtual ~image_texture_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -473,13 +473,13 @@ namespace {
     class OPENVRML_LOCAL indexed_face_set_class : public node_class {
     public:
         explicit indexed_face_set_class(openvrml::browser & browser);
-        virtual ~indexed_face_set_class() throw ();
+        virtual ~indexed_face_set_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -489,13 +489,13 @@ namespace {
     class OPENVRML_LOCAL indexed_line_set_class : public node_class {
     public:
         explicit indexed_line_set_class(openvrml::browser & browser);
-        virtual ~indexed_line_set_class() throw ();
+        virtual ~indexed_line_set_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -505,13 +505,13 @@ namespace {
     class OPENVRML_LOCAL inline_class : public node_class {
     public:
         explicit inline_class(openvrml::browser & browser);
-        virtual ~inline_class() throw ();
+        virtual ~inline_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -521,13 +521,13 @@ namespace {
     class OPENVRML_LOCAL lod_class : public node_class {
     public:
         explicit lod_class(openvrml::browser & browser);
-        virtual ~lod_class() throw ();
+        virtual ~lod_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -537,13 +537,13 @@ namespace {
     class OPENVRML_LOCAL material_class : public node_class {
     public:
         explicit material_class(openvrml::browser & browser);
-        virtual ~material_class() throw ();
+        virtual ~material_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -553,13 +553,13 @@ namespace {
     class OPENVRML_LOCAL movie_texture_class : public node_class {
     public:
         explicit movie_texture_class(openvrml::browser & browser);
-        virtual ~movie_texture_class() throw ();
+        virtual ~movie_texture_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -576,25 +576,25 @@ namespace {
 
     public:
         explicit navigation_info_class(openvrml::browser & browser);
-        virtual ~navigation_info_class() throw ();
+        virtual ~navigation_info_class() OPENVRML_NOTHROW;
 
-        void set_first(navigation_info_node & nav_info) throw ();
-        void reset_first() throw ();
-        bool has_first() const throw ();
-        bool is_first(navigation_info_node & nav_info) throw ();
+        void set_first(navigation_info_node & nav_info) OPENVRML_NOTHROW;
+        void reset_first() OPENVRML_NOTHROW;
+        bool has_first() const OPENVRML_NOTHROW;
+        bool is_first(navigation_info_node & nav_info) OPENVRML_NOTHROW;
         void bind(navigation_info_node & nav_info, double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         void unbind(navigation_info_node & nav_info, double timestamp)
-            throw ();
+            OPENVRML_NOTHROW;
 
     private:
         virtual void
         do_initialize(openvrml::viewpoint_node * initial_viewpoint,
-                      double timestamp) throw ();
+                      double timestamp) OPENVRML_NOTHROW;
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -604,13 +604,13 @@ namespace {
     class OPENVRML_LOCAL normal_class : public node_class {
     public:
         explicit normal_class(openvrml::browser & browser);
-        virtual ~normal_class() throw ();
+        virtual ~normal_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -620,13 +620,13 @@ namespace {
     class OPENVRML_LOCAL normal_interpolator_class : public node_class {
     public:
         explicit normal_interpolator_class(openvrml::browser & browser);
-        virtual ~normal_interpolator_class() throw ();
+        virtual ~normal_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -637,13 +637,13 @@ namespace {
     public:
         explicit orientation_interpolator_class(
             openvrml::browser & browser);
-        virtual ~orientation_interpolator_class() throw ();
+        virtual ~orientation_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -653,13 +653,13 @@ namespace {
     class OPENVRML_LOCAL pixel_texture_class : public node_class {
     public:
         explicit pixel_texture_class(openvrml::browser & browser);
-        virtual ~pixel_texture_class() throw ();
+        virtual ~pixel_texture_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -669,13 +669,13 @@ namespace {
     class OPENVRML_LOCAL plane_sensor_class : public node_class {
     public:
         explicit plane_sensor_class(openvrml::browser & browser);
-        virtual ~plane_sensor_class() throw ();
+        virtual ~plane_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -685,13 +685,13 @@ namespace {
     class OPENVRML_LOCAL point_light_class : public node_class {
     public:
         explicit point_light_class(openvrml::browser & browser);
-        virtual ~point_light_class() throw ();
+        virtual ~point_light_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -701,13 +701,13 @@ namespace {
     class OPENVRML_LOCAL point_set_class : public node_class {
     public:
         explicit point_set_class(openvrml::browser & browser);
-        virtual ~point_set_class() throw ();
+        virtual ~point_set_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -717,13 +717,13 @@ namespace {
     class OPENVRML_LOCAL position_interpolator_class : public node_class {
     public:
         explicit position_interpolator_class(openvrml::browser & browser);
-        virtual ~position_interpolator_class() throw ();
+        virtual ~position_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -733,13 +733,13 @@ namespace {
     class OPENVRML_LOCAL proximity_sensor_class : public node_class {
     public:
         explicit proximity_sensor_class(openvrml::browser & browser);
-        virtual ~proximity_sensor_class() throw ();
+        virtual ~proximity_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -749,13 +749,13 @@ namespace {
     class OPENVRML_LOCAL scalar_interpolator_class : public node_class {
     public:
         explicit scalar_interpolator_class(openvrml::browser & browser);
-        virtual ~scalar_interpolator_class() throw ();
+        virtual ~scalar_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -765,13 +765,13 @@ namespace {
     class OPENVRML_LOCAL shape_class : public node_class {
     public:
         explicit shape_class(openvrml::browser & browser);
-        virtual ~shape_class() throw ();
+        virtual ~shape_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -781,13 +781,13 @@ namespace {
     class OPENVRML_LOCAL sound_class : public node_class {
     public:
         explicit sound_class(openvrml::browser & browser);
-        virtual ~sound_class() throw ();
+        virtual ~sound_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -797,13 +797,13 @@ namespace {
     class OPENVRML_LOCAL sphere_class : public node_class {
     public:
         explicit sphere_class(openvrml::browser & browser);
-        virtual ~sphere_class() throw ();
+        virtual ~sphere_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -813,13 +813,13 @@ namespace {
     class OPENVRML_LOCAL sphere_sensor_class : public node_class {
     public:
         explicit sphere_sensor_class(openvrml::browser & browser);
-        virtual ~sphere_sensor_class() throw ();
+        virtual ~sphere_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -829,13 +829,13 @@ namespace {
     class OPENVRML_LOCAL spot_light_class : public node_class {
     public:
         explicit spot_light_class(openvrml::browser & browser);
-        virtual ~spot_light_class() throw ();
+        virtual ~spot_light_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -845,13 +845,13 @@ namespace {
     class OPENVRML_LOCAL switch_class : public node_class {
     public:
         explicit switch_class(openvrml::browser & browser);
-        virtual ~switch_class() throw ();
+        virtual ~switch_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -865,13 +865,13 @@ namespace {
 # endif
 
         explicit text_class(openvrml::browser & browser);
-        virtual ~text_class() throw ();
+        virtual ~text_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -881,13 +881,13 @@ namespace {
     class OPENVRML_LOCAL texture_coordinate_class : public node_class {
     public:
         explicit texture_coordinate_class(openvrml::browser & browser);
-        virtual ~texture_coordinate_class() throw ();
+        virtual ~texture_coordinate_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -897,13 +897,13 @@ namespace {
     class OPENVRML_LOCAL texture_transform_class : public node_class {
     public:
         explicit texture_transform_class(openvrml::browser & browser);
-        virtual ~texture_transform_class() throw ();
+        virtual ~texture_transform_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -913,13 +913,13 @@ namespace {
     class OPENVRML_LOCAL time_sensor_class : public node_class {
     public:
         explicit time_sensor_class(openvrml::browser & browser);
-        virtual ~time_sensor_class() throw ();
+        virtual ~time_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -929,13 +929,13 @@ namespace {
     class OPENVRML_LOCAL touch_sensor_class : public node_class {
     public:
         explicit touch_sensor_class(openvrml::browser & browser);
-        virtual ~touch_sensor_class() throw ();
+        virtual ~touch_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -945,13 +945,13 @@ namespace {
     class OPENVRML_LOCAL transform_class : public node_class {
     public:
         explicit transform_class(openvrml::browser & browser);
-        virtual ~transform_class() throw ();
+        virtual ~transform_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -968,25 +968,25 @@ namespace {
 
     public:
         explicit viewpoint_class(openvrml::browser & browser);
-        virtual ~viewpoint_class() throw ();
+        virtual ~viewpoint_class() OPENVRML_NOTHROW;
 
-        void set_first(viewpoint_node & viewpoint) throw ();
-        void reset_first() throw ();
-        bool has_first() const throw ();
-        bool is_first(viewpoint_node & viewpoint) throw ();
+        void set_first(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
+        void reset_first() OPENVRML_NOTHROW;
+        bool has_first() const OPENVRML_NOTHROW;
+        bool is_first(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
         void bind(viewpoint_node & viewpoint, double timestamp)
-            throw (std::bad_alloc);
-        void unbind(viewpoint_node & viewpoint, double timestamp) throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        void unbind(viewpoint_node & viewpoint, double timestamp) OPENVRML_NOTHROW;
 
     private:
         virtual void
         do_initialize(openvrml::viewpoint_node * initial_viewpoint,
                       double timestamp)
-            throw ();
+            OPENVRML_NOTHROW;
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -996,13 +996,13 @@ namespace {
     class OPENVRML_LOCAL visibility_sensor_class : public node_class {
     public:
         explicit visibility_sensor_class(openvrml::browser & browser);
-        virtual ~visibility_sensor_class() throw ();
+        virtual ~visibility_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -1012,13 +1012,13 @@ namespace {
     class OPENVRML_LOCAL world_info_class : public node_class {
     public:
         explicit world_info_class(openvrml::browser & browser);
-        virtual ~world_info_class() throw ();
+        virtual ~world_info_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -1157,12 +1157,12 @@ namespace {
         public:
             explicit set_color_index_listener(
                 abstract_indexed_set_node & node);
-            virtual ~set_color_index_listener() throw ();
+            virtual ~set_color_index_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfint32 & color_index,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_coord_index_listener :
@@ -1171,12 +1171,12 @@ namespace {
         public:
             explicit set_coord_index_listener(
                 abstract_indexed_set_node & node);
-            virtual ~set_coord_index_listener() throw ();
+            virtual ~set_coord_index_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfint32 & coord_index,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_color_index_listener set_color_index_;
@@ -1190,11 +1190,11 @@ namespace {
         mfint32 coord_index_;
 
     public:
-        virtual ~abstract_indexed_set_node() throw () = 0;
+        virtual ~abstract_indexed_set_node() OPENVRML_NOTHROW = 0;
 
         virtual bool modified() const;
 
-        virtual const openvrml::color_node * color() const throw ();
+        virtual const openvrml::color_node * color() const OPENVRML_NOTHROW;
 
     protected:
         abstract_indexed_set_node(
@@ -1228,7 +1228,7 @@ namespace {
      */
     template <typename Derived>
     abstract_indexed_set_node<Derived>::set_color_index_listener::
-    ~set_color_index_listener() throw ()
+    ~set_color_index_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1243,7 +1243,7 @@ namespace {
     void
     abstract_indexed_set_node<Derived>::set_color_index_listener::
     do_process_event(const mfint32 & color_index, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         abstract_indexed_set_node * abstract_indexed_set =
             dynamic_cast<abstract_indexed_set_node *>(&this->node());
@@ -1278,7 +1278,7 @@ namespace {
      */
     template <typename Derived>
     abstract_indexed_set_node<Derived>::set_coord_index_listener::
-    ~set_coord_index_listener() throw ()
+    ~set_coord_index_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1293,7 +1293,7 @@ namespace {
     void
     abstract_indexed_set_node<Derived>::set_coord_index_listener::
     do_process_event(const mfint32 & coord_index, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         abstract_indexed_set_node * abstract_indexed_set =
             dynamic_cast<abstract_indexed_set_node *>(&this->node());
@@ -1370,7 +1370,7 @@ namespace {
      */
     template <typename Derived>
     abstract_indexed_set_node<Derived>::~abstract_indexed_set_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -1396,7 +1396,7 @@ namespace {
      */
     template <typename Derived>
     const openvrml::color_node *
-    abstract_indexed_set_node<Derived>::color() const throw ()
+    abstract_indexed_set_node<Derived>::color() const OPENVRML_NOTHROW
     {
         return node_cast<openvrml::color_node *>(
             this->color_.sfnode::value().get());
@@ -1419,12 +1419,12 @@ namespace {
         typename abstract_node<Derived>::template exposedfield<sfbool> on_;
 
     public:
-        virtual ~abstract_light_node() throw () = 0;
+        virtual ~abstract_light_node() OPENVRML_NOTHROW = 0;
 
-        float ambient_intensity() const throw ();
-        float intensity() const throw ();
-        bool on() const throw ();
-        const openvrml::color & color() const throw ();
+        float ambient_intensity() const OPENVRML_NOTHROW;
+        float intensity() const OPENVRML_NOTHROW;
+        bool on() const OPENVRML_NOTHROW;
+        const openvrml::color & color() const OPENVRML_NOTHROW;
 
     protected:
         abstract_light_node(
@@ -1481,7 +1481,7 @@ namespace {
      * @brief Destroy.
      */
     template <typename Derived>
-    abstract_light_node<Derived>::~abstract_light_node() throw ()
+    abstract_light_node<Derived>::~abstract_light_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1490,7 +1490,7 @@ namespace {
      * @return the ambient intensity.
      */
     template <typename Derived>
-    float abstract_light_node<Derived>::ambient_intensity() const throw ()
+    float abstract_light_node<Derived>::ambient_intensity() const OPENVRML_NOTHROW
     {
         return this->ambient_intensity_.sffloat::value;
     }
@@ -1501,7 +1501,7 @@ namespace {
      * @return the intensity.
      */
     template <typename Derived>
-    float abstract_light_node<Derived>::intensity() const throw ()
+    float abstract_light_node<Derived>::intensity() const OPENVRML_NOTHROW
     {
         return this->intensity_.sffloat::value;
     }
@@ -1512,7 +1512,7 @@ namespace {
      * @return @c true if the light is on; @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_light_node<Derived>::on() const throw ()
+    bool abstract_light_node<Derived>::on() const OPENVRML_NOTHROW
     {
         return this->on_.sfbool::value;
     }
@@ -1524,7 +1524,7 @@ namespace {
      */
     template <typename Derived>
     const openvrml::color &
-    abstract_light_node<Derived>::color() const throw ()
+    abstract_light_node<Derived>::color() const OPENVRML_NOTHROW
     {
         return this->color_.sfcolor::value;
     }
@@ -1542,13 +1542,13 @@ namespace {
         sfbool repeat_t_;
 
     public:
-        virtual ~abstract_texture_node() throw () = 0;
+        virtual ~abstract_texture_node() OPENVRML_NOTHROW = 0;
 
         //
         // texture_node implementation.
         //
-        virtual bool repeat_s() const throw ();
-        virtual bool repeat_t() const throw ();
+        virtual bool repeat_s() const OPENVRML_NOTHROW;
+        virtual bool repeat_t() const OPENVRML_NOTHROW;
 
     protected:
         abstract_texture_node(
@@ -1590,7 +1590,7 @@ namespace {
      * @brief Destroy.
      */
     template <typename Derived>
-    abstract_texture_node<Derived>::~abstract_texture_node() throw ()
+    abstract_texture_node<Derived>::~abstract_texture_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1600,7 +1600,7 @@ namespace {
      *         direction, @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_texture_node<Derived>::repeat_s() const throw ()
+    bool abstract_texture_node<Derived>::repeat_s() const OPENVRML_NOTHROW
     {
         return this->repeat_s_.value();
     }
@@ -1612,7 +1612,7 @@ namespace {
      *         direction, @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_texture_node<Derived>::repeat_t() const throw ()
+    bool abstract_texture_node<Derived>::repeat_t() const OPENVRML_NOTHROW
     {
         return this->repeat_t_.value();
     }
@@ -1633,12 +1633,12 @@ namespace {
         public:
             explicit add_children_listener(
                 grouping_node_base<Derived> & node);
-            virtual ~add_children_listener() throw ();
+            virtual ~add_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_children_listener :
@@ -1647,33 +1647,33 @@ namespace {
         public:
             explicit remove_children_listener(
                 grouping_node_base<Derived> & node);
-            virtual ~remove_children_listener() throw ();
+            virtual ~remove_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class children_exposedfield :
             public abstract_node<Derived>::template exposedfield<mfnode> {
         public:
-            explicit children_exposedfield(openvrml::node & node) throw ();
-            children_exposedfield(const children_exposedfield & obj) throw ();
-            virtual ~children_exposedfield() throw ();
+            explicit children_exposedfield(openvrml::node & node) OPENVRML_NOTHROW;
+            children_exposedfield(const children_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~children_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfnode & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         // so it can be overridden by switch node.
         virtual void do_children_event_side_effect(const mfnode & value,
                                                    double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         sfvec3f bbox_center_;
         sfvec3f bbox_size_;
@@ -1689,7 +1689,7 @@ namespace {
         grouping_node_base(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~grouping_node_base() throw ();
+        virtual ~grouping_node_base() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -1699,7 +1699,7 @@ namespace {
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
         virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const throw ();
+        do_children() const OPENVRML_NOTHROW;
 
         virtual void recalc_bsphere();
         void render_nocull(openvrml::viewer & viewer,
@@ -1732,7 +1732,7 @@ namespace {
     */
     template <typename Derived>
     grouping_node_base<Derived>::add_children_listener::
-    ~add_children_listener() throw ()
+    ~add_children_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1751,7 +1751,7 @@ namespace {
     void
     grouping_node_base<Derived>::add_children_listener::
     do_process_event(const mfnode & value, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         Derived & group = dynamic_cast<Derived &>(this->node());
 
@@ -1820,7 +1820,7 @@ namespace {
      */
     template <typename Derived>
     grouping_node_base<Derived>::remove_children_listener::
-    ~remove_children_listener() throw ()
+    ~remove_children_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1830,7 +1830,7 @@ namespace {
     void
     grouping_node_base<Derived>::remove_children_listener::
     do_process_event(const mfnode & value, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         self_t & group = dynamic_cast<self_t &>(this->node());
 
@@ -1867,7 +1867,7 @@ namespace {
      */
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
-    children_exposedfield(openvrml::node & node) throw ():
+    children_exposedfield(openvrml::node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
         abstract_node<Derived>::mfnode_listener(node),
@@ -1882,7 +1882,7 @@ namespace {
      */
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
-    children_exposedfield(const children_exposedfield & obj) throw ():
+    children_exposedfield(const children_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -1896,7 +1896,7 @@ namespace {
      */
     template <typename Derived>
     grouping_node_base<Derived>::children_exposedfield::
-    ~children_exposedfield() throw ()
+    ~children_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1905,7 +1905,7 @@ namespace {
     template <typename Derived>
     std::auto_ptr<openvrml::field_value>
     grouping_node_base<Derived>::children_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new children_exposedfield(*this));
@@ -1918,7 +1918,7 @@ namespace {
     void
     grouping_node_base<Derived>::children_exposedfield::
     event_side_effect(const mfnode & value, double time)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         grouping_node_base<Derived> & group = 
             dynamic_cast<grouping_node_base<Derived> &>(
@@ -1932,7 +1932,7 @@ namespace {
     template <typename Derived>
     void grouping_node_base<Derived>::
     do_children_event_side_effect(const mfnode & value, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
         children_t children;
@@ -2029,7 +2029,7 @@ namespace {
      * @brief Destroy.
      */
     template <typename Derived>
-    grouping_node_base<Derived>::~grouping_node_base() throw ()
+    grouping_node_base<Derived>::~grouping_node_base() OPENVRML_NOTHROW
     {
         // delete viewerObject...
     }
@@ -2157,7 +2157,7 @@ namespace {
      */
     template <typename Derived>
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    grouping_node_base<Derived>::do_children() const throw ()
+    grouping_node_base<Derived>::do_children() const OPENVRML_NOTHROW
     {
         return this->children_.mfnode::value();
     }
@@ -2212,7 +2212,7 @@ namespace {
     public:
         anchor_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~anchor_node() throw ();
+        virtual ~anchor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -2237,16 +2237,16 @@ namespace {
     public:
         appearance_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~appearance_node() throw ();
+        virtual ~appearance_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
         //
         // appearance_node implementation
         //
-        virtual const boost::intrusive_ptr<node> & material() const throw ();
-        virtual const boost::intrusive_ptr<node> & texture() const throw ();
-        virtual const boost::intrusive_ptr<node> & texture_transform() const throw ();
+        virtual const boost::intrusive_ptr<node> & material() const OPENVRML_NOTHROW;
+        virtual const boost::intrusive_ptr<node> & texture() const OPENVRML_NOTHROW;
+        virtual const boost::intrusive_ptr<node> & texture_transform() const OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_appearance(viewer & v,
@@ -2281,11 +2281,11 @@ namespace {
     public:
         audio_clip_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~audio_clip_node() throw ();
+        virtual ~audio_clip_node() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_update(double time);
     };
 
@@ -2300,99 +2300,99 @@ namespace {
                                   public sfbool_listener {
         public:
             explicit set_bind_listener(background_node & node);
-            virtual ~set_bind_listener() throw ();
+            virtual ~set_bind_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class back_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit back_url_exposedfield(background_node & node) throw ();
-            back_url_exposedfield(const back_url_exposedfield & obj) throw ();
-            virtual ~back_url_exposedfield() throw ();
+            explicit back_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            back_url_exposedfield(const back_url_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~back_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class bottom_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit bottom_url_exposedfield(background_node & node) throw ();
+            explicit bottom_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
             bottom_url_exposedfield(const bottom_url_exposedfield & obj)
-                throw ();
-            virtual ~bottom_url_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~bottom_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class front_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit front_url_exposedfield(background_node & node) throw ();
+            explicit front_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
             front_url_exposedfield(const front_url_exposedfield & obj)
-                throw ();
-            virtual ~front_url_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~front_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class left_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit left_url_exposedfield(background_node & node) throw ();
-            left_url_exposedfield(const left_url_exposedfield & obj) throw ();
-            virtual ~left_url_exposedfield() throw ();
+            explicit left_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            left_url_exposedfield(const left_url_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~left_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class right_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit right_url_exposedfield(background_node & node) throw ();
+            explicit right_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
             right_url_exposedfield(const right_url_exposedfield & obj)
-                throw ();
-            virtual ~right_url_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~right_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class top_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit top_url_exposedfield(background_node & node) throw ();
-            top_url_exposedfield(const top_url_exposedfield & obj) throw ();
-            virtual ~top_url_exposedfield() throw ();
+            explicit top_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            top_url_exposedfield(const top_url_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~top_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & value,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_bind_listener set_bind_listener_;
@@ -2430,11 +2430,11 @@ namespace {
     public:
         background_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~background_node() throw ();
+        virtual ~background_node() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw ();
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
         void update_textures();
     };
@@ -2454,7 +2454,7 @@ namespace {
 
         billboard_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~billboard_node() throw ();
+        virtual ~billboard_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -2474,7 +2474,7 @@ namespace {
     public:
         box_node(const node_type & type,
                  const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~box_node() throw ();
+        virtual ~box_node() OPENVRML_NOTHROW;
 
     private:
         virtual const openvrml::bounding_volume &
@@ -2500,7 +2500,7 @@ namespace {
     public:
         collision_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~collision_node() throw ();
+        virtual ~collision_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     };
@@ -2515,13 +2515,13 @@ namespace {
     public:
         color_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~color_node() throw ();
+        virtual ~color_node() OPENVRML_NOTHROW;
 
         //
         // color_node implementation
         //
         virtual const std::vector<openvrml::color> & color() const
-            throw ();
+            OPENVRML_NOTHROW;
     };
 
 
@@ -2536,12 +2536,12 @@ namespace {
             public sffloat_listener {
         public:
             explicit set_fraction_listener(color_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -2554,7 +2554,7 @@ namespace {
         color_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~color_interpolator_node() throw ();
+        virtual ~color_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -2571,7 +2571,7 @@ namespace {
     public:
         cone_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~cone_node() throw ();
+        virtual ~cone_node() OPENVRML_NOTHROW;
 
     private:
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
@@ -2590,12 +2590,12 @@ namespace {
     public:
         coordinate_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~coordinate_node() throw ();
+        virtual ~coordinate_node() OPENVRML_NOTHROW;
 
         //
         // coordinate_node implementation
         //
-        virtual const std::vector<vec3f> & point() const throw ();
+        virtual const std::vector<vec3f> & point() const OPENVRML_NOTHROW;
     };
 
 
@@ -2610,12 +2610,12 @@ namespace {
         public:
             explicit set_fraction_listener(
                 coordinate_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -2628,7 +2628,7 @@ namespace {
         coordinate_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~coordinate_interpolator_node() throw ();
+        virtual ~coordinate_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -2646,7 +2646,7 @@ namespace {
     public:
         cylinder_node(const node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~cylinder_node() throw ();
+        virtual ~cylinder_node() OPENVRML_NOTHROW;
 
     private:
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
@@ -2685,7 +2685,7 @@ namespace {
     public:
         cylinder_sensor_node(const node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~cylinder_sensor_node() throw ();
+        virtual ~cylinder_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -2706,7 +2706,7 @@ namespace {
         directional_light_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~directional_light_node() throw ();
+        virtual ~directional_light_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -2724,12 +2724,12 @@ namespace {
                                     public mffloat_listener {
         public:
             explicit set_height_listener(elevation_grid_node & node);
-            virtual ~set_height_listener() throw ();
+            virtual ~set_height_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mffloat & height,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_height_listener set_height_listener_;
@@ -2750,7 +2750,7 @@ namespace {
     public:
         elevation_grid_node(const node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~elevation_grid_node() throw ();
+        virtual ~elevation_grid_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -2770,48 +2770,48 @@ namespace {
             public mfvec2f_listener {
         public:
             explicit set_cross_section_listener(extrusion_node & node);
-            virtual ~set_cross_section_listener() throw ();
+            virtual ~set_cross_section_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfvec2f & cross_section,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_orientation_listener : public event_listener_base<self_t>,
                                          public mfrotation_listener {
         public:
             explicit set_orientation_listener(extrusion_node & node);
-            virtual ~set_orientation_listener() throw ();
+            virtual ~set_orientation_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfrotation & orientation,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_scale_listener : public event_listener_base<self_t>,
                                    public mfvec2f_listener {
         public:
             explicit set_scale_listener(extrusion_node & node);
-            virtual ~set_scale_listener() throw ();
+            virtual ~set_scale_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfvec2f & scale,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_spine_listener : public event_listener_base<self_t>,
                                    public mfvec3f_listener {
         public:
             explicit set_spine_listener(extrusion_node & node);
-            virtual ~set_spine_listener() throw ();
+            virtual ~set_spine_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfvec3f & spine,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_cross_section_listener set_cross_section_listener_;
@@ -2832,7 +2832,7 @@ namespace {
     public:
         extrusion_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~extrusion_node() throw ();
+        virtual ~extrusion_node() OPENVRML_NOTHROW;
 
     private:
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
@@ -2848,12 +2848,12 @@ namespace {
                                   public sfbool_listener {
         public:
             explicit set_bind_listener(fog_node & node);
-            virtual ~set_bind_listener() throw ();
+            virtual ~set_bind_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & bind,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_bind_listener set_bind_listener_;
@@ -2868,11 +2868,11 @@ namespace {
     public:
         fog_node(const node_type & type,
                  const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~fog_node() throw ();
+        virtual ~fog_node() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw ();
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
     };
 
 
@@ -2895,20 +2895,20 @@ namespace {
     public:
         font_style_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~font_style_node() throw ();
+        virtual ~font_style_node() OPENVRML_NOTHROW;
 
         //
         // font_style_node implementation
         //
-        virtual const std::vector<std::string> & family() const throw ();
-        virtual bool horizontal() const throw ();
-        virtual const std::vector<std::string> & justify() const throw ();
-        virtual const std::string & language() const throw ();
-        virtual bool left_to_right() const throw ();
-        virtual float size() const throw ();
-        virtual float spacing() const throw ();
-        virtual const std::string & style() const throw ();
-        virtual bool top_to_bottom() const throw ();
+        virtual const std::vector<std::string> & family() const OPENVRML_NOTHROW;
+        virtual bool horizontal() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & justify() const OPENVRML_NOTHROW;
+        virtual const std::string & language() const OPENVRML_NOTHROW;
+        virtual bool left_to_right() const OPENVRML_NOTHROW;
+        virtual float size() const OPENVRML_NOTHROW;
+        virtual float spacing() const OPENVRML_NOTHROW;
+        virtual const std::string & style() const OPENVRML_NOTHROW;
+        virtual bool top_to_bottom() const OPENVRML_NOTHROW;
     };
 
 
@@ -2918,7 +2918,7 @@ namespace {
     public:
         group_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~group_node() throw ();
+        virtual ~group_node() OPENVRML_NOTHROW;
     };
 
 
@@ -2930,15 +2930,15 @@ namespace {
         class url_exposedfield : public exposedfield<mfstring> {
         public:
             explicit url_exposedfield(image_texture_node & node);
-            url_exposedfield(const url_exposedfield & obj) throw ();
-            virtual ~url_exposedfield() throw ();
+            url_exposedfield(const url_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & url,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         url_exposedfield url_;
@@ -2950,9 +2950,9 @@ namespace {
         image_texture_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~image_texture_node() throw ();
+        virtual ~image_texture_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::image & image() const throw ();
+        virtual const openvrml::image & image() const OPENVRML_NOTHROW;
 
     private:
         virtual viewer::texture_object_t do_render_texture(viewer & v);
@@ -2972,12 +2972,12 @@ namespace {
         public:
             explicit set_normal_index_listener(
                 indexed_face_set_node & node);
-            virtual ~set_normal_index_listener() throw ();
+            virtual ~set_normal_index_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfint32 & normal_index,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_tex_coord_index_listener :
@@ -2986,12 +2986,12 @@ namespace {
         public:
             explicit set_tex_coord_index_listener(
                 indexed_face_set_node & node);
-            virtual ~set_tex_coord_index_listener() throw ();
+            virtual ~set_tex_coord_index_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfint32 & tex_coord_index,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_normal_index_listener set_normal_index_listener_;
@@ -3012,7 +3012,7 @@ namespace {
         indexed_face_set_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~indexed_face_set_node() throw ();
+        virtual ~indexed_face_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -3038,12 +3038,12 @@ namespace {
         indexed_line_set_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~indexed_line_set_node() throw ();
+        virtual ~indexed_line_set_node() OPENVRML_NOTHROW;
 
     private:
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
                                                     rendering_context context);
-        virtual bool do_emissive() const throw ();
+        virtual bool do_emissive() const OPENVRML_NOTHROW;
     };
 
 
@@ -3062,13 +3062,13 @@ namespace {
     public:
         inline_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~inline_node() throw ();
+        virtual ~inline_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const throw ();
+        do_children() const OPENVRML_NOTHROW;
 
         void load();
     };
@@ -3085,7 +3085,7 @@ namespace {
     public:
         lod_node(const node_type & type,
                  const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~lod_node() throw ();
+        virtual ~lod_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -3093,7 +3093,7 @@ namespace {
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const throw ();
+        do_children() const OPENVRML_NOTHROW;
         virtual void recalc_bsphere();
     };
 
@@ -3112,17 +3112,17 @@ namespace {
     public:
         material_node(const node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~material_node() throw ();
+        virtual ~material_node() OPENVRML_NOTHROW;
 
         //
         // material_node implementation
         //
-        virtual float ambient_intensity() const throw ();
-        virtual const color & diffuse_color() const throw ();
-        virtual const color & emissive_color() const throw ();
-        virtual float shininess() const throw ();
-        virtual const color & specular_color() const throw ();
-        virtual float transparency() const throw ();
+        virtual float ambient_intensity() const OPENVRML_NOTHROW;
+        virtual const color & diffuse_color() const OPENVRML_NOTHROW;
+        virtual const color & emissive_color() const OPENVRML_NOTHROW;
+        virtual float shininess() const OPENVRML_NOTHROW;
+        virtual const color & specular_color() const OPENVRML_NOTHROW;
+        virtual float transparency() const OPENVRML_NOTHROW;
     };
 
 
@@ -3136,12 +3136,12 @@ namespace {
                                    public sffloat_listener {
         public:
             explicit set_speed_listener(movie_texture_node & node);
-            virtual ~set_speed_listener() throw ();
+            virtual ~set_speed_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & speed,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         exposedfield<sfbool> loop_;
@@ -3167,13 +3167,13 @@ namespace {
     public:
         movie_texture_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~movie_texture_node() throw ();
+        virtual ~movie_texture_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::image & image() const throw ();
+        virtual const openvrml::image & image() const OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual viewer::texture_object_t do_render_texture(viewer & v);
         virtual void do_update(double time);
     };
@@ -3189,12 +3189,12 @@ namespace {
                                   public sfbool_listener {
         public:
             explicit set_bind_listener(navigation_info_node & node);
-            virtual ~set_bind_listener() throw ();
+            virtual ~set_bind_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & bind,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_bind_listener set_bind_listener_;
@@ -3213,17 +3213,17 @@ namespace {
         navigation_info_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~navigation_info_node() throw ();
+        virtual ~navigation_info_node() OPENVRML_NOTHROW;
 
-        virtual const std::vector<float> & avatar_size() const throw ();
-        virtual bool headlight() const throw ();
-        virtual float speed() const throw ();
-        virtual const std::vector<std::string> & type() const throw ();
-        virtual float visibility_limit() const throw ();
+        virtual const std::vector<float> & avatar_size() const OPENVRML_NOTHROW;
+        virtual bool headlight() const OPENVRML_NOTHROW;
+        virtual float speed() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & type() const OPENVRML_NOTHROW;
+        virtual float visibility_limit() const OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw ();
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
     };
 
 
@@ -3236,12 +3236,12 @@ namespace {
     public:
         normal_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~normal_node() throw ();
+        virtual ~normal_node() OPENVRML_NOTHROW;
 
         //
         // normal_node implementation.
         //
-        virtual const std::vector<vec3f> & vector() const throw ();
+        virtual const std::vector<vec3f> & vector() const OPENVRML_NOTHROW;
     };
 
 
@@ -3255,12 +3255,12 @@ namespace {
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(normal_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -3273,7 +3273,7 @@ namespace {
         normal_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~normal_interpolator_node() throw ();
+        virtual ~normal_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -3288,12 +3288,12 @@ namespace {
         public:
             explicit set_fraction_listener(
                 orientation_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -3306,7 +3306,7 @@ namespace {
         orientation_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~orientation_interpolator_node() throw ();
+        virtual ~orientation_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -3320,9 +3320,9 @@ namespace {
     public:
         pixel_texture_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~pixel_texture_node() throw ();
+        virtual ~pixel_texture_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::image & image() const throw ();
+        virtual const openvrml::image & image() const OPENVRML_NOTHROW;
 
     private:
         virtual viewer::texture_object_t do_render_texture(viewer & v);
@@ -3358,7 +3358,7 @@ namespace {
     public:
         plane_sensor_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~plane_sensor_node() throw ();
+        virtual ~plane_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -3381,11 +3381,11 @@ namespace {
     public:
         point_light_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~point_light_node() throw ();
+        virtual ~point_light_node() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_render_scoped_light(viewer & v);
     };
 
@@ -3403,7 +3403,7 @@ namespace {
     public:
         point_set_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~point_set_node() throw ();
+        virtual ~point_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -3413,7 +3413,7 @@ namespace {
 
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
                                                     rendering_context context);
-        virtual bool do_emissive() const throw ();
+        virtual bool do_emissive() const OPENVRML_NOTHROW;
 
         void recalc_bsphere();
     };
@@ -3429,12 +3429,12 @@ namespace {
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(position_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -3447,7 +3447,7 @@ namespace {
         position_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~position_interpolator_node() throw ();
+        virtual ~position_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -3477,7 +3477,7 @@ namespace {
         proximity_sensor_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~proximity_sensor_node() throw ();
+        virtual ~proximity_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -3495,12 +3495,12 @@ namespace {
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(scalar_interpolator_node & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -3513,7 +3513,7 @@ namespace {
         scalar_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~scalar_interpolator_node() throw ();
+        virtual ~scalar_interpolator_node() OPENVRML_NOTHROW;
     };
 
 
@@ -3531,7 +3531,7 @@ namespace {
     public:
         shape_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~shape_node() throw ();
+        virtual ~shape_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -3561,7 +3561,7 @@ namespace {
     public:
         sound_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~sound_node() throw ();
+        virtual ~sound_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -3580,7 +3580,7 @@ namespace {
     public:
         sphere_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~sphere_node() throw ();
+        virtual ~sphere_node() OPENVRML_NOTHROW;
 
     private:
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
@@ -3615,7 +3615,7 @@ namespace {
     public:
         sphere_sensor_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~sphere_sensor_node() throw ();
+        virtual ~sphere_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -3641,12 +3641,12 @@ namespace {
     public:
         spot_light_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~spot_light_node() throw ();
+        virtual ~spot_light_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_initialize(double timestamp)
-            throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_render_scoped_light(viewer & v);
     };
 
@@ -3658,15 +3658,15 @@ namespace {
         public:
             explicit which_choice_exposedfield(switch_node & node);
             which_choice_exposedfield(const which_choice_exposedfield & obj)
-                throw ();
-            virtual ~which_choice_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~which_choice_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfint32 & which_choice,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         which_choice_exposedfield which_choice_;
@@ -3675,19 +3675,19 @@ namespace {
     public:
         switch_node(const node_type & type,
                     const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~switch_node() throw ();
+        virtual ~switch_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
     private:
         virtual void do_children_event_side_effect(const mfnode & choice,
                                                    double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
 
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const throw ();
+        do_children() const OPENVRML_NOTHROW;
         virtual void recalc_bsphere();
     };
 
@@ -3699,59 +3699,59 @@ namespace {
         class string_exposedfield : public exposedfield<mfstring> {
         public:
             explicit string_exposedfield(text_node & node);
-            string_exposedfield(const string_exposedfield & obj) throw ();
-            virtual ~string_exposedfield() throw ();
+            string_exposedfield(const string_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~string_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mfstring & string,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class font_style_exposedfield : public exposedfield<sfnode> {
         public:
             explicit font_style_exposedfield(text_node & node);
             font_style_exposedfield(const font_style_exposedfield & obj)
-                throw ();
-            virtual ~font_style_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~font_style_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfnode & font_style,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class length_exposedfield : public exposedfield<mffloat> {
         public:
             explicit length_exposedfield(text_node & node);
-            length_exposedfield(const length_exposedfield & obj) throw ();
-            virtual ~length_exposedfield() throw ();
+            length_exposedfield(const length_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~length_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const mffloat & length,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class max_extent_exposedfield : public exposedfield<sffloat> {
         public:
             explicit max_extent_exposedfield(text_node & node);
             max_extent_exposedfield(const max_extent_exposedfield & obj)
-                throw ();
-            virtual ~max_extent_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~max_extent_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sffloat & max_extent,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         string_exposedfield string_;
@@ -3769,7 +3769,7 @@ namespace {
             glyph_geometry(const std::vector<std::vector<vec2f> > & contours,
                            float advance_width,
                            float advance_height)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         struct text_geometry {
@@ -3792,7 +3792,7 @@ namespace {
     public:
         text_node(const node_type & type,
                   const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~text_node() throw ();
+        virtual ~text_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
 
@@ -3801,12 +3801,12 @@ namespace {
                                                     rendering_context context);
 
         virtual void do_initialize(double timestamp)
-            throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
-        void update_ucs4() throw (std::bad_alloc);
-        void update_face() throw (std::bad_alloc);
-        void update_geometry() throw (std::bad_alloc);
+        void update_ucs4() OPENVRML_THROW1(std::bad_alloc);
+        void update_face() OPENVRML_THROW1(std::bad_alloc);
+        void update_geometry() OPENVRML_THROW1(std::bad_alloc);
     };
 
 
@@ -3822,7 +3822,7 @@ namespace {
         texture_coordinate_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~texture_coordinate_node() throw ();
+        virtual ~texture_coordinate_node() OPENVRML_NOTHROW;
 
         //
         // texture_coordinate_node implementation.
@@ -3846,7 +3846,7 @@ namespace {
         texture_transform_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~texture_transform_node() throw ();
+        virtual ~texture_transform_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_texture_transform(viewer & v);
@@ -3864,38 +3864,38 @@ namespace {
                                             public sftime_listener {
         public:
             explicit set_cycle_interval_listener(time_sensor_node & node);
-            virtual ~set_cycle_interval_listener() throw ();
+            virtual ~set_cycle_interval_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sftime & cycle_interval,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class enabled_exposedfield : public exposedfield<sfbool> {
         public:
             explicit enabled_exposedfield(time_sensor_node & node);
-            enabled_exposedfield(const enabled_exposedfield & obj) throw ();
-            virtual ~enabled_exposedfield() throw ();
+            enabled_exposedfield(const enabled_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~enabled_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfbool & enabled,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_start_time_listener : public event_listener_base<self_t>,
                                         public sftime_listener {
         public:
             explicit set_start_time_listener(time_sensor_node & node);
-            virtual ~set_start_time_listener() throw ();
+            virtual ~set_start_time_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sftime & start_time,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_cycle_interval_listener set_cycle_interval_listener_;
@@ -3927,12 +3927,12 @@ namespace {
     public:
         time_sensor_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~time_sensor_node() throw ();
+        virtual ~time_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_initialize(double timestamp)
-            throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+            OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_update(double time);
     };
 
@@ -3961,7 +3961,7 @@ namespace {
     public:
         touch_sensor_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~touch_sensor_node() throw ();
+        virtual ~touch_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_activate(double timestamp, bool over, bool active,
@@ -3978,43 +3978,43 @@ namespace {
         class center_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit center_exposedfield(transform_node & node);
-            center_exposedfield(const center_exposedfield & obj) throw ();
-            virtual ~center_exposedfield() throw ();
+            center_exposedfield(const center_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~center_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & center,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class rotation_exposedfield : public exposedfield<sfrotation> {
         public:
             explicit rotation_exposedfield(transform_node & node);
-            rotation_exposedfield(const rotation_exposedfield & obj) throw ();
-            virtual ~rotation_exposedfield() throw ();
+            rotation_exposedfield(const rotation_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~rotation_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfrotation & rotation,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class scale_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit scale_exposedfield(transform_node & node);
-            scale_exposedfield(const scale_exposedfield & obj) throw ();
-            virtual ~scale_exposedfield() throw ();
+            scale_exposedfield(const scale_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~scale_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & scale,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class scale_orientation_exposedfield :
@@ -4022,31 +4022,31 @@ namespace {
         public:
             explicit scale_orientation_exposedfield(transform_node & node);
             scale_orientation_exposedfield(
-                const scale_orientation_exposedfield & obj) throw ();
-            virtual ~scale_orientation_exposedfield() throw ();
+                const scale_orientation_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~scale_orientation_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void
             event_side_effect(const sfrotation & scale_orientation,
                               double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class translation_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit translation_exposedfield(transform_node & node);
             translation_exposedfield(const translation_exposedfield & obj)
-                throw ();
-            virtual ~translation_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~translation_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & translation,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         center_exposedfield center_;
@@ -4062,16 +4062,16 @@ namespace {
     public:
         transform_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~transform_node() throw ();
+        virtual ~transform_node() OPENVRML_NOTHROW;
 
-        virtual const mat4f & transform() const throw ();
+        virtual const mat4f & transform() const OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
 
         void recalc_bsphere();
-        void update_transform() const throw ();
+        void update_transform() const OPENVRML_NOTHROW;
     };
 
 
@@ -4085,41 +4085,41 @@ namespace {
                                   public sfbool_listener {
         public:
             explicit set_bind_listener(viewpoint_node & node);
-            virtual ~set_bind_listener() throw ();
+            virtual ~set_bind_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & value,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class orientation_exposedfield : public exposedfield<sfrotation> {
         public:
             explicit orientation_exposedfield(viewpoint_node & node);
             orientation_exposedfield(const orientation_exposedfield & obj)
-                throw ();
-            virtual ~orientation_exposedfield() throw ();
+                OPENVRML_NOTHROW;
+            virtual ~orientation_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfrotation & orientation,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class position_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit position_exposedfield(viewpoint_node & node);
-            position_exposedfield(const position_exposedfield & obj) throw ();
-            virtual ~position_exposedfield() throw ();
+            position_exposedfield(const position_exposedfield & obj) OPENVRML_NOTHROW;
+            virtual ~position_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
             virtual void event_side_effect(const sfvec3f & position,
                                            double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_bind_listener set_bind_listener_;
@@ -4143,23 +4143,23 @@ namespace {
     public:
         viewpoint_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~viewpoint_node() throw ();
+        virtual ~viewpoint_node() OPENVRML_NOTHROW;
 
-        virtual const mat4f & transformation() const throw ();
-        virtual const mat4f & user_view_transform() const throw ();
-        virtual void user_view_transform(const mat4f & transform) throw ();
-        virtual const std::string & description() const throw ();
-        virtual float field_of_view() const throw ();
+        virtual const mat4f & transformation() const OPENVRML_NOTHROW;
+        virtual const mat4f & user_view_transform() const OPENVRML_NOTHROW;
+        virtual void user_view_transform(const mat4f & transform) OPENVRML_NOTHROW;
+        virtual const std::string & description() const OPENVRML_NOTHROW;
+        virtual float field_of_view() const OPENVRML_NOTHROW;
 
         const sfrotation & orientation() const;
         const sfvec3f & position() const;
 
     private:
-        virtual void do_initialize(double timestamp) throw ();
-        virtual void do_relocate() throw (std::bad_alloc);
-        virtual void do_shutdown(double timestamp) throw ();
+        virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
+        virtual void do_relocate() OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
-        void update_final_transformation() const throw ();
+        void update_final_transformation() const OPENVRML_NOTHROW;
     };
 
 
@@ -4183,7 +4183,7 @@ namespace {
         visibility_sensor_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~visibility_sensor_node() throw ();
+        virtual ~visibility_sensor_node() OPENVRML_NOTHROW;
 
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -4203,7 +4203,7 @@ namespace {
     public:
         world_info_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~world_info_node() throw ();
+        virtual ~world_info_node() OPENVRML_NOTHROW;
     };
 
 
@@ -4219,7 +4219,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    anchor_class::~anchor_class() throw ()
+    anchor_class::~anchor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4237,7 +4237,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     anchor_class::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -4451,7 +4451,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    anchor_node::~anchor_node() throw ()
+    anchor_node::~anchor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4506,7 +4506,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    appearance_class::~appearance_class() throw ()
+    appearance_class::~appearance_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4526,7 +4526,7 @@ namespace {
     appearance_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -4714,7 +4714,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    appearance_node::~appearance_node() throw ()
+    appearance_node::~appearance_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4741,7 +4741,7 @@ namespace {
      *          this Appearance.
      */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::material() const throw ()
+    appearance_node::material() const OPENVRML_NOTHROW
     {
         return this->material_.sfnode::value();
     }
@@ -4753,7 +4753,7 @@ namespace {
  *         this Appearance.
  */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::texture() const throw ()
+    appearance_node::texture() const OPENVRML_NOTHROW
     {
         return this->texture_.sfnode::value();
     }
@@ -4765,7 +4765,7 @@ namespace {
      *         associated with this Appearance.
      */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::texture_transform() const throw ()
+    appearance_node::texture_transform() const OPENVRML_NOTHROW
     {
         return this->texture_transform_.sfnode::value();
     }
@@ -4855,7 +4855,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    audio_clip_class::~audio_clip_class() throw ()
+    audio_clip_class::~audio_clip_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4875,7 +4875,7 @@ namespace {
     audio_clip_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 13> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -5215,7 +5215,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    audio_clip_node::~audio_clip_node() throw ()
+    audio_clip_node::~audio_clip_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5237,7 +5237,7 @@ namespace {
      */
     void
     audio_clip_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         this->scene()->browser().add_time_dependent(*this);
@@ -5249,7 +5249,7 @@ namespace {
      * @param timestamp the current time.
      */
     void
-    audio_clip_node::do_shutdown(double) throw ()
+    audio_clip_node::do_shutdown(double) OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().remove_time_dependent(*this);
@@ -5270,7 +5270,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    background_class::~background_class() throw ()
+    background_class::~background_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5284,7 +5284,7 @@ namespace {
      */
     void
     background_class::
-    set_first(background_node & background) throw ()
+    set_first(background_node & background) OPENVRML_NOTHROW
     {
         this->first = &background;
     }
@@ -5295,7 +5295,7 @@ namespace {
      *
      * This function is called by <code>background_node::do_shutdown</code>.
      */
-    void background_class::reset_first() throw ()
+    void background_class::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -5308,7 +5308,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool background_class::has_first() const throw ()
+    bool background_class::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -5322,7 +5322,7 @@ namespace {
      */
     bool
     background_class::is_first(background_node & background)
-        throw ()
+        OPENVRML_NOTHROW
     {
         return &background == this->first;
     }
@@ -5338,7 +5338,7 @@ namespace {
     void
     background_class::bind(background_node & background,
                            const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using std::find;
 
@@ -5386,7 +5386,7 @@ namespace {
     void
     background_class::unbind(background_node & background,
                              const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::find;
 
@@ -5418,7 +5418,7 @@ namespace {
      */
     void
     background_class::
-    do_initialize(openvrml::viewpoint_node *, const double timestamp) throw ()
+    do_initialize(openvrml::viewpoint_node *, const double timestamp) OPENVRML_NOTHROW
     {
         if (this->first) {
             try {
@@ -5440,7 +5440,7 @@ namespace {
      * @param v viewer.
      */
     void background_class::do_render(viewer & v) const
-        throw ()
+        OPENVRML_NOTHROW
     {
         if (this->bound_nodes.empty()) {
             //
@@ -5519,7 +5519,7 @@ namespace {
     background_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -5819,7 +5819,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::set_bind_listener::~set_bind_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -5833,7 +5833,7 @@ namespace {
     void
     background_node::set_bind_listener::
     do_process_event(const sfbool & value, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             background_node & node =
@@ -5866,7 +5866,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::back_url_exposedfield::
-    back_url_exposedfield(background_node & node) throw ():
+    back_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -5879,7 +5879,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::back_url_exposedfield::
-    back_url_exposedfield(const back_url_exposedfield & obj) throw ():
+    back_url_exposedfield(const back_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -5891,7 +5891,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::back_url_exposedfield::
-    ~back_url_exposedfield() throw ()
+    ~back_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5903,7 +5903,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::back_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new back_url_exposedfield(*this));
@@ -5920,7 +5920,7 @@ namespace {
     void
     background_node::back_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -5944,7 +5944,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::bottom_url_exposedfield::
-    bottom_url_exposedfield(background_node & node) throw ():
+    bottom_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -5957,7 +5957,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::bottom_url_exposedfield::
-    bottom_url_exposedfield(const bottom_url_exposedfield & obj) throw ():
+    bottom_url_exposedfield(const bottom_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -5969,7 +5969,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::bottom_url_exposedfield::
-    ~bottom_url_exposedfield() throw ()
+    ~bottom_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5981,7 +5981,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::bottom_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new bottom_url_exposedfield(*this));
@@ -5998,7 +5998,7 @@ namespace {
     void
     background_node::bottom_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -6022,7 +6022,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::front_url_exposedfield::
-    front_url_exposedfield(background_node & node) throw ():
+    front_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -6035,7 +6035,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::front_url_exposedfield::
-    front_url_exposedfield(const front_url_exposedfield & obj) throw ():
+    front_url_exposedfield(const front_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -6047,7 +6047,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::front_url_exposedfield::
-    ~front_url_exposedfield() throw ()
+    ~front_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -6059,7 +6059,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::front_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new front_url_exposedfield(*this));
@@ -6076,7 +6076,7 @@ namespace {
     void
     background_node::front_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -6100,7 +6100,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::left_url_exposedfield::
-    left_url_exposedfield(background_node & node) throw ():
+    left_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -6113,7 +6113,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::left_url_exposedfield::
-    left_url_exposedfield(const left_url_exposedfield & obj) throw ():
+    left_url_exposedfield(const left_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -6125,7 +6125,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::left_url_exposedfield::
-    ~left_url_exposedfield() throw ()
+    ~left_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -6137,7 +6137,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::left_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new left_url_exposedfield(*this));
@@ -6154,7 +6154,7 @@ namespace {
     void
     background_node::left_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -6178,7 +6178,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::right_url_exposedfield::
-    right_url_exposedfield(background_node & node) throw ():
+    right_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -6191,7 +6191,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::right_url_exposedfield::
-    right_url_exposedfield(const right_url_exposedfield & obj) throw ():
+    right_url_exposedfield(const right_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -6203,7 +6203,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::right_url_exposedfield::
-    ~right_url_exposedfield() throw ()
+    ~right_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -6215,7 +6215,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::right_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new right_url_exposedfield(*this));
@@ -6232,7 +6232,7 @@ namespace {
     void
     background_node::right_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -6256,7 +6256,7 @@ namespace {
      * @param node  background_node.
      */
     background_node::top_url_exposedfield::
-    top_url_exposedfield(background_node & node) throw ():
+    top_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
@@ -6269,7 +6269,7 @@ namespace {
      * @param obj   instance to copy.
      */
     background_node::top_url_exposedfield::
-    top_url_exposedfield(const top_url_exposedfield & obj) throw ():
+    top_url_exposedfield(const top_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -6281,7 +6281,7 @@ namespace {
      * @brief Destroy.
      */
     background_node::top_url_exposedfield::
-    ~top_url_exposedfield() throw ()
+    ~top_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -6293,7 +6293,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     background_node::top_url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new top_url_exposedfield(*this));
@@ -6310,7 +6310,7 @@ namespace {
     void
     background_node::top_url_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
@@ -6514,7 +6514,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    background_node::~background_node() throw ()
+    background_node::~background_node() OPENVRML_NOTHROW
     {
         // remove d_viewerObject...
     }
@@ -6524,7 +6524,7 @@ namespace {
      *
      * @param timestamp the current time.
      */
-    void background_node::do_initialize(double) throw ()
+    void background_node::do_initialize(double) OPENVRML_NOTHROW
     {
         assert(dynamic_cast<const background_class *>(
                    &this->type().node_class()));
@@ -6544,7 +6544,7 @@ namespace {
      */
     void
     background_node::do_shutdown(const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         background_class & node_class =
             const_cast<background_class &>(
@@ -6583,7 +6583,7 @@ namespace {
 
         class image_reader {
         public:
-            virtual ~image_reader() throw () = 0;
+            virtual ~image_reader() OPENVRML_NOTHROW = 0;
             void read(const std::vector<unsigned char> & data);
 
         private:
@@ -6610,7 +6610,7 @@ namespace {
             bool gray_palette;
 
             explicit png_reader(image_stream_listener & stream_listener);
-            virtual ~png_reader() throw ();
+            virtual ~png_reader() OPENVRML_NOTHROW;
 
         private:
             virtual void do_read(const std::vector<unsigned char> & data);
@@ -6661,7 +6661,7 @@ namespace {
             bool progressive_scan_started;
 
             explicit jpeg_reader(image_stream_listener & stream_listener);
-            virtual ~jpeg_reader() throw ();
+            virtual ~jpeg_reader() OPENVRML_NOTHROW;
 
         private:
             virtual void do_read(const std::vector<unsigned char> & data);
@@ -6676,7 +6676,7 @@ namespace {
         image_stream_listener(openvrml::image & image,
                               openvrml::node & node,
                               boost::recursive_mutex & node_mutex);
-        virtual ~image_stream_listener() throw ();
+        virtual ~image_stream_listener() OPENVRML_NOTHROW;
 
     private:
         virtual void
@@ -6687,7 +6687,7 @@ namespace {
         do_data_available(const std::vector<unsigned char> & data);
     };
 
-    image_stream_listener::image_reader::~image_reader() throw ()
+    image_stream_listener::image_reader::~image_reader() OPENVRML_NOTHROW
     {}
 
     void
@@ -6879,7 +6879,7 @@ namespace {
         guard.dismiss();
     }
 
-    image_stream_listener::png_reader::~png_reader() throw ()
+    image_stream_listener::png_reader::~png_reader() OPENVRML_NOTHROW
     {
         png_destroy_read_struct(&this->png_ptr_,
                                 &this->info_ptr_,
@@ -7021,7 +7021,7 @@ namespace {
             reinterpret_cast<jpeg_source_mgr *>(&this->source_mgr_);
     }
 
-    image_stream_listener::jpeg_reader::~jpeg_reader() throw ()
+    image_stream_listener::jpeg_reader::~jpeg_reader() OPENVRML_NOTHROW
     {
         jpeg_destroy_decompress(&this->cinfo_);
     }
@@ -7216,7 +7216,7 @@ namespace {
         node_(node)
     {}
 
-    image_stream_listener::~image_stream_listener() throw ()
+    image_stream_listener::~image_stream_listener() OPENVRML_NOTHROW
     {}
 
     void
@@ -7360,7 +7360,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    billboard_class::~billboard_class() throw ()
+    billboard_class::~billboard_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7380,7 +7380,7 @@ namespace {
     billboard_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -7624,7 +7624,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    billboard_node::~billboard_node() throw ()
+    billboard_node::~billboard_node() OPENVRML_NOTHROW
     {
         // delete xformObject...
     }
@@ -7679,7 +7679,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    box_class::~box_class() throw ()
+    box_class::~box_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7699,7 +7699,7 @@ namespace {
     box_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -7805,7 +7805,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    box_node::~box_node() throw ()
+    box_node::~box_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7856,7 +7856,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    collision_class::~collision_class() throw ()
+    collision_class::~collision_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7876,7 +7876,7 @@ namespace {
     collision_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -8106,7 +8106,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    collision_node::~collision_node() throw ()
+    collision_node::~collision_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8134,7 +8134,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    color_class::~color_class() throw () {}
+    color_class::~color_class() OPENVRML_NOTHROW {}
 
     /**
      * @brief Create a node_type.
@@ -8153,7 +8153,7 @@ namespace {
     color_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -8249,7 +8249,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    color_node::~color_node() throw ()
+    color_node::~color_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8258,7 +8258,7 @@ namespace {
      * @return the color array associated with the node.
      */
     const std::vector<openvrml::color> &
-    color_node::color() const throw ()
+    color_node::color() const OPENVRML_NOTHROW
     {
         return this->color_.mfcolor::value();
     }
@@ -8278,7 +8278,7 @@ namespace {
      * @brief Destroy.
      */
     color_interpolator_class::~color_interpolator_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -8299,7 +8299,7 @@ namespace {
     color_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -8444,7 +8444,7 @@ namespace {
      */
     color_interpolator_node::set_fraction_listener::
     ~set_fraction_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -8458,7 +8458,7 @@ namespace {
     void
     color_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & value, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using std::vector;
 
@@ -8572,7 +8572,7 @@ namespace {
      * @brief Destroy.
      */
     color_interpolator_node::~color_interpolator_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -8589,7 +8589,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cone_class::~cone_class() throw ()
+    cone_class::~cone_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8609,7 +8609,7 @@ namespace {
     cone_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -8759,7 +8759,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cone_node::~cone_node() throw ()
+    cone_node::~cone_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8795,7 +8795,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    coordinate_class::~coordinate_class() throw ()
+    coordinate_class::~coordinate_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8815,7 +8815,7 @@ namespace {
     coordinate_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -8911,7 +8911,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    coordinate_node::~coordinate_node() throw ()
+    coordinate_node::~coordinate_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8920,7 +8920,7 @@ namespace {
      * @return the array of points for this node.
      */
     const std::vector<openvrml::vec3f> &
-    coordinate_node::point() const throw ()
+    coordinate_node::point() const OPENVRML_NOTHROW
     {
         return this->point_.mfvec3f::value();
     }
@@ -8940,7 +8940,7 @@ namespace {
      * @brief Destroy.
      */
     coordinate_interpolator_class::
-    ~coordinate_interpolator_class() throw ()
+    ~coordinate_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8961,7 +8961,7 @@ namespace {
     coordinate_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -9107,7 +9107,7 @@ namespace {
      * @brief Destroy.
      */
     coordinate_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9121,7 +9121,7 @@ namespace {
     void
     coordinate_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & fraction, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             using std::vector;
@@ -9230,7 +9230,7 @@ namespace {
      * @brief Destroy.
      */
     coordinate_interpolator_node::
-    ~coordinate_interpolator_node() throw ()
+    ~coordinate_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -9247,7 +9247,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cylinder_class::~cylinder_class() throw ()
+    cylinder_class::~cylinder_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9267,7 +9267,7 @@ namespace {
     cylinder_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -9434,7 +9434,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cylinder_node::~cylinder_node() throw ()
+    cylinder_node::~cylinder_node() OPENVRML_NOTHROW
     {
         // need access to viewer to remove d_viewerObject...
     }
@@ -9473,7 +9473,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cylinder_sensor_class::~cylinder_sensor_class() throw ()
+    cylinder_sensor_class::~cylinder_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9493,7 +9493,7 @@ namespace {
     cylinder_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -9876,7 +9876,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    cylinder_sensor_node::~cylinder_sensor_node() throw ()
+    cylinder_sensor_node::~cylinder_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10009,7 +10009,7 @@ namespace {
      * @brief Destroy.
      */
     directional_light_class::~directional_light_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -10030,7 +10030,7 @@ namespace {
     directional_light_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -10218,7 +10218,7 @@ namespace {
      * @brief Destroy.
      */
     directional_light_node::~directional_light_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -10256,7 +10256,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    elevation_grid_class::~elevation_grid_class() throw ()
+    elevation_grid_class::~elevation_grid_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10276,7 +10276,7 @@ namespace {
     elevation_grid_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 15> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -10521,7 +10521,7 @@ namespace {
      * @brief Destroy.
      */
     elevation_grid_node::set_height_listener::
-    ~set_height_listener() throw ()
+    ~set_height_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10535,7 +10535,7 @@ namespace {
     void
     elevation_grid_node::set_height_listener::
     do_process_event(const mffloat & height, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             elevation_grid_node & elevation_grid =
@@ -10663,7 +10663,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    elevation_grid_node::~elevation_grid_node() throw ()
+    elevation_grid_node::~elevation_grid_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10771,7 +10771,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    extrusion_class::~extrusion_class() throw ()
+    extrusion_class::~extrusion_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10791,7 +10791,7 @@ namespace {
     extrusion_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 15> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -11012,7 +11012,7 @@ namespace {
      * @brief Destroy.
      */
     extrusion_node::set_cross_section_listener::
-    ~set_cross_section_listener() throw ()
+    ~set_cross_section_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11026,7 +11026,7 @@ namespace {
     void
     extrusion_node::set_cross_section_listener::
     do_process_event(const mfvec2f & cross_section, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             extrusion_node & extrusion =
@@ -11062,7 +11062,7 @@ namespace {
      * @brief Destroy.
      */
     extrusion_node::set_orientation_listener::
-    ~set_orientation_listener() throw ()
+    ~set_orientation_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11076,7 +11076,7 @@ namespace {
     void
     extrusion_node::set_orientation_listener::
     do_process_event(const mfrotation & orientation, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             extrusion_node & extrusion =
@@ -11112,7 +11112,7 @@ namespace {
      * @brief Destroy.
      */
     extrusion_node::set_scale_listener::
-    ~set_scale_listener() throw ()
+    ~set_scale_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11125,7 +11125,7 @@ namespace {
      */
     void
     extrusion_node::set_scale_listener::
-    do_process_event(const mfvec2f & scale, double) throw (std::bad_alloc)
+    do_process_event(const mfvec2f & scale, double) OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             extrusion_node & extrusion =
@@ -11161,7 +11161,7 @@ namespace {
      * @brief Destroy.
      */
     extrusion_node::set_spine_listener::
-    ~set_spine_listener() throw ()
+    ~set_spine_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11174,7 +11174,7 @@ namespace {
      */
     void
     extrusion_node::set_spine_listener::
-    do_process_event(const mfvec3f & spine, double) throw (std::bad_alloc)
+    do_process_event(const mfvec3f & spine, double) OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             extrusion_node & extrusion =
@@ -11331,7 +11331,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    extrusion_node::~extrusion_node() throw () {}
+    extrusion_node::~extrusion_node() OPENVRML_NOTHROW {}
 
     /**
      * @brief Insert this geometry into @p viewer's display list.
@@ -11377,7 +11377,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    fog_class::~fog_class() throw ()
+    fog_class::~fog_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11388,7 +11388,7 @@ namespace {
      *
      * @param fog   a Fog node.
      */
-    void fog_class::set_first(fog_node & fog) throw ()
+    void fog_class::set_first(fog_node & fog) OPENVRML_NOTHROW
     {
         this->first = &fog;
     }
@@ -11398,7 +11398,7 @@ namespace {
      *
      * This function is called by <code>fog_node::do_shutdown</code>.
      */
-    void fog_class::reset_first() throw ()
+    void fog_class::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -11411,7 +11411,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool fog_class::has_first() const throw ()
+    bool fog_class::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -11423,7 +11423,7 @@ namespace {
      *
      * @return @c true if @p fog is the fist node; @c false otherwise.
      */
-    bool fog_class::is_first(fog_node & fog) throw ()
+    bool fog_class::is_first(fog_node & fog) OPENVRML_NOTHROW
     {
         return &fog == this->first;
     }
@@ -11436,7 +11436,7 @@ namespace {
      */
     void fog_class::bind(fog_node & fog,
                          const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using std::find;
 
@@ -11480,7 +11480,7 @@ namespace {
      * @param timestamp the current time.
      */
     void fog_class::unbind(fog_node & fog,
-                           const double timestamp) throw ()
+                           const double timestamp) OPENVRML_NOTHROW
     {
         using std::find;
 
@@ -11511,7 +11511,7 @@ namespace {
      */
     void
     fog_class::
-    do_initialize(openvrml::viewpoint_node *, const double timestamp) throw ()
+    do_initialize(openvrml::viewpoint_node *, const double timestamp) OPENVRML_NOTHROW
     {
         if (this->first) {
             try {
@@ -11532,7 +11532,7 @@ namespace {
      *
      * @param v a viewer.
      */
-    void fog_class::do_render(viewer & v) const throw ()
+    void fog_class::do_render(viewer & v) const OPENVRML_NOTHROW
     {
         if (!this->bound_nodes.empty()) {
             fog_node & fog =
@@ -11560,7 +11560,7 @@ namespace {
     fog_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -11727,7 +11727,7 @@ namespace {
      * @brief Destroy.
      */
     fog_node::set_bind_listener::~set_bind_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -11741,7 +11741,7 @@ namespace {
     void
     fog_node::set_bind_listener::
     do_process_event(const sfbool & bind, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             fog_node & fog = dynamic_cast<fog_node &>(this->node());
@@ -11818,7 +11818,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    fog_node::~fog_node() throw ()
+    fog_node::~fog_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11827,7 +11827,7 @@ namespace {
      * @param timestamp the current time.
      */
     void fog_node::do_initialize(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         fog_class & nodeClass =
             const_cast<fog_class &>(
@@ -11843,7 +11843,7 @@ namespace {
      * @param timestamp the current time.
      */
     void fog_node::do_shutdown(const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         fog_class & node_class =
             const_cast<fog_class &>(
@@ -11867,7 +11867,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    font_style_class::~font_style_class() throw ()
+    font_style_class::~font_style_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11887,7 +11887,7 @@ namespace {
     font_style_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -12114,7 +12114,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    font_style_node::~font_style_node() throw ()
+    font_style_node::~font_style_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -12124,7 +12124,7 @@ namespace {
      *         this <code>font_style_node</code>.
      */
     const std::vector<std::string> &
-    font_style_node::family() const throw ()
+    font_style_node::family() const OPENVRML_NOTHROW
     {
         return this->family_.value();
     }
@@ -12136,7 +12136,7 @@ namespace {
      * @return @c true if the text should be horizontal, or @c false if the
      *         text should be vertical.
      */
-    bool font_style_node::horizontal() const throw ()
+    bool font_style_node::horizontal() const OPENVRML_NOTHROW
     {
         return this->horizontal_.value();
     }
@@ -12148,7 +12148,7 @@ namespace {
      *         justification.
      */
     const std::vector<std::string> &
-    font_style_node::justify() const throw ()
+    font_style_node::justify() const OPENVRML_NOTHROW
     {
         return this->justify_.value();
     }
@@ -12159,7 +12159,7 @@ namespace {
      * @return the language code.
      */
     const std::string & font_style_node::language() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return this->language_.value();
     }
@@ -12171,7 +12171,7 @@ namespace {
      * @return @c true if the text should be rendered left-to-right, or
      *         @c false if the text should be rendered right-to-left.
      */
-    bool font_style_node::left_to_right() const throw ()
+    bool font_style_node::left_to_right() const OPENVRML_NOTHROW
     {
         return this->leftToRight.value();
     }
@@ -12181,7 +12181,7 @@ namespace {
      *
      * @return the size of the text.
      */
-    float font_style_node::size() const throw ()
+    float font_style_node::size() const OPENVRML_NOTHROW
     {
         return this->size_.value();
     }
@@ -12191,7 +12191,7 @@ namespace {
      *
      * @return the spacing for the text.
      */
-    float font_style_node::spacing() const throw ()
+    float font_style_node::spacing() const OPENVRML_NOTHROW
     {
         return this->spacing_.value();
     }
@@ -12202,7 +12202,7 @@ namespace {
      * @return an string descriptor of the text style.
      */
     const std::string & font_style_node::style() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return this->style_.value();
     }
@@ -12214,7 +12214,7 @@ namespace {
      * @return @c true if the text should be rendered top-to-bottom, or
      *         @c false if the text should be rendered bottom-to-top.
      */
-    bool font_style_node::top_to_bottom() const throw ()
+    bool font_style_node::top_to_bottom() const OPENVRML_NOTHROW
     {
         return this->topToBottom.value();
     }
@@ -12232,7 +12232,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    group_class::~group_class() throw () {}
+    group_class::~group_class() OPENVRML_NOTHROW {}
 
     /**
      * @brief Create a node_type.
@@ -12251,7 +12251,7 @@ namespace {
     group_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -12380,7 +12380,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    group_node::~group_node() throw ()
+    group_node::~group_node() OPENVRML_NOTHROW
     {}
 
 
@@ -12397,7 +12397,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    image_texture_class::~image_texture_class() throw ()
+    image_texture_class::~image_texture_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -12417,7 +12417,7 @@ namespace {
     image_texture_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -12536,7 +12536,7 @@ namespace {
      * @param obj   instance to copy.
      */
     image_texture_node::url_exposedfield::
-    url_exposedfield(const url_exposedfield & obj) throw ():
+    url_exposedfield(const url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -12548,7 +12548,7 @@ namespace {
      * @brief Destroy.
      */
     image_texture_node::url_exposedfield::
-    ~url_exposedfield() throw ()
+    ~url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -12560,7 +12560,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     image_texture_node::url_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new url_exposedfield(*this));
@@ -12577,7 +12577,7 @@ namespace {
     void
     image_texture_node::url_exposedfield::
     event_side_effect(const mfstring & url, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             image_texture_node & image_texture =
@@ -12628,7 +12628,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    image_texture_node::~image_texture_node() throw ()
+    image_texture_node::~image_texture_node() OPENVRML_NOTHROW
     {
         // delete texObject...
     }
@@ -12639,7 +12639,7 @@ namespace {
      * @return the image.
      */
     const openvrml::image &
-    image_texture_node::image() const throw ()
+    image_texture_node::image() const OPENVRML_NOTHROW
     {
         return this->image_;
     }
@@ -12696,7 +12696,7 @@ namespace {
      * @brief Destroy.
      */
     indexed_face_set_class::~indexed_face_set_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -12717,7 +12717,7 @@ namespace {
     indexed_face_set_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 19> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -13021,7 +13021,7 @@ namespace {
      * @brief Destroy.
      */
     indexed_face_set_node::set_normal_index_listener::
-    ~set_normal_index_listener() throw ()
+    ~set_normal_index_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13035,7 +13035,7 @@ namespace {
     void
     indexed_face_set_node::set_normal_index_listener::
     do_process_event(const mfint32 & normal_index, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             indexed_face_set_node & indexed_face_set =
@@ -13072,7 +13072,7 @@ namespace {
      * @brief Destroy.
      */
     indexed_face_set_node::set_tex_coord_index_listener::
-    ~set_tex_coord_index_listener() throw ()
+    ~set_tex_coord_index_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13086,7 +13086,7 @@ namespace {
     void
     indexed_face_set_node::set_tex_coord_index_listener::
     do_process_event(const mfint32 & tex_coord_index, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             indexed_face_set_node & indexed_face_set =
@@ -13205,7 +13205,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    indexed_face_set_node::~indexed_face_set_node() throw ()
+    indexed_face_set_node::~indexed_face_set_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13362,7 +13362,7 @@ namespace {
      * @brief Destroy.
      */
     indexed_line_set_class::~indexed_line_set_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -13383,7 +13383,7 @@ namespace {
     indexed_line_set_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -13570,7 +13570,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    indexed_line_set_node::~indexed_line_set_node() throw ()
+    indexed_line_set_node::~indexed_line_set_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13617,7 +13617,7 @@ namespace {
      *
      * @return @c true.
      */
-    bool indexed_line_set_node::do_emissive() const throw ()
+    bool indexed_line_set_node::do_emissive() const OPENVRML_NOTHROW
     {
         return true;
     }
@@ -13635,7 +13635,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    inline_class::~inline_class() throw ()
+    inline_class::~inline_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13655,7 +13655,7 @@ namespace {
     inline_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -13821,7 +13821,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    inline_node::~inline_node() throw ()
+    inline_node::~inline_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13847,7 +13847,7 @@ namespace {
      * @return the child nodes in the scene graph.
      */
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    inline_node::do_children() const throw ()
+    inline_node::do_children() const OPENVRML_NOTHROW
     {
         static const std::vector<boost::intrusive_ptr<openvrml::node> > empty;
         return this->inlineScene
@@ -13900,7 +13900,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    lod_class::~lod_class() throw ()
+    lod_class::~lod_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13920,7 +13920,7 @@ namespace {
     lod_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -14126,7 +14126,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    lod_node::~lod_node() throw ()
+    lod_node::~lod_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14207,7 +14207,7 @@ namespace {
      * @return the child nodes in the scene graph.
      */
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    lod_node::do_children() const throw ()
+    lod_node::do_children() const OPENVRML_NOTHROW
     {
         return this->current_children_.value();
     }
@@ -14258,7 +14258,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    material_class::~material_class() throw ()
+    material_class::~material_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14278,7 +14278,7 @@ namespace {
     material_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -14504,7 +14504,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    material_node::~material_node() throw ()
+    material_node::~material_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14512,7 +14512,7 @@ namespace {
      *
      * @return the ambient intensity.
      */
-    float material_node::ambient_intensity() const throw ()
+    float material_node::ambient_intensity() const OPENVRML_NOTHROW
     {
         return this->ambient_intensity_.sffloat::value();
     }
@@ -14523,7 +14523,7 @@ namespace {
      * @return the diffuse color.
      */
     const openvrml::color &
-    material_node::diffuse_color() const throw ()
+    material_node::diffuse_color() const OPENVRML_NOTHROW
     {
         return this->diffuse_color_.sfcolor::value();
     }
@@ -14534,7 +14534,7 @@ namespace {
      * @return the emissive color.
      */
     const openvrml::color &
-    material_node::emissive_color() const throw ()
+    material_node::emissive_color() const OPENVRML_NOTHROW
     {
         return this->emissive_color_.sfcolor::value();
     }
@@ -14544,7 +14544,7 @@ namespace {
      *
      * @return the shininess.
      */
-    float material_node::shininess() const throw ()
+    float material_node::shininess() const OPENVRML_NOTHROW
     {
         return this->shininess_.sffloat::value();
     }
@@ -14555,7 +14555,7 @@ namespace {
      * @return the specular color.
      */
     const openvrml::color &
-    material_node::specular_color() const throw ()
+    material_node::specular_color() const OPENVRML_NOTHROW
     {
         return this->specular_color_.sfcolor::value();
     }
@@ -14565,7 +14565,7 @@ namespace {
      *
      * @return the transparency.
      */
-    float material_node::transparency() const throw ()
+    float material_node::transparency() const OPENVRML_NOTHROW
     {
         return this->transparency_.sffloat::value();
     }
@@ -14584,7 +14584,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    movie_texture_class::~movie_texture_class() throw ()
+    movie_texture_class::~movie_texture_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14604,7 +14604,7 @@ namespace {
     movie_texture_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -14885,7 +14885,7 @@ namespace {
      * @brief Destroy.
      */
     movie_texture_node::set_speed_listener::
-    ~set_speed_listener() throw ()
+    ~set_speed_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14899,7 +14899,7 @@ namespace {
     void
     movie_texture_node::set_speed_listener::
     do_process_event(const sffloat & speed, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             movie_texture_node & node =
@@ -15020,7 +15020,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    movie_texture_node::~movie_texture_node() throw ()
+    movie_texture_node::~movie_texture_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15170,7 +15170,7 @@ namespace {
      * @return the image.
      */
     const openvrml::image &
-    movie_texture_node::image() const throw ()
+    movie_texture_node::image() const OPENVRML_NOTHROW
     {
         return this->image_;
     }
@@ -15184,7 +15184,7 @@ namespace {
      */
     void
     movie_texture_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         this->scene()->browser().add_time_dependent(*this);
@@ -15197,7 +15197,7 @@ namespace {
      */
     void
     movie_texture_node::do_shutdown(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().remove_time_dependent(*this);
@@ -15266,7 +15266,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    navigation_info_class::~navigation_info_class() throw ()
+    navigation_info_class::~navigation_info_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15280,7 +15280,7 @@ namespace {
      */
     void
     navigation_info_class::
-    set_first(navigation_info_node & nav_info) throw ()
+    set_first(navigation_info_node & nav_info) OPENVRML_NOTHROW
     {
         this->first = &nav_info;
     }
@@ -15292,7 +15292,7 @@ namespace {
      * This function is called by
      * <code>navigation_info_node::do_shutdown</code>.
      */
-    void navigation_info_class::reset_first() throw ()
+    void navigation_info_class::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -15305,7 +15305,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool navigation_info_class::has_first() const throw ()
+    bool navigation_info_class::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -15319,7 +15319,7 @@ namespace {
      */
     bool
     navigation_info_class::
-    is_first(navigation_info_node & nav_info) throw ()
+    is_first(navigation_info_node & nav_info) OPENVRML_NOTHROW
     {
         return &nav_info == this->first;
     }
@@ -15335,7 +15335,7 @@ namespace {
     void
     navigation_info_class::
     bind(navigation_info_node & nav_info, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using std::find;
 
@@ -15387,7 +15387,7 @@ namespace {
     void
     navigation_info_class::
     unbind(navigation_info_node & nav_info, const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::find;
 
@@ -15424,7 +15424,7 @@ namespace {
     void
     navigation_info_class::
     do_initialize(openvrml::viewpoint_node *, const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         if (this->first) {
             try {
@@ -15455,7 +15455,7 @@ namespace {
     navigation_info_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -15695,7 +15695,7 @@ namespace {
      * @brief Destroy.
      */
     navigation_info_node::set_bind_listener::
-    ~set_bind_listener() throw ()
+    ~set_bind_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15710,7 +15710,7 @@ namespace {
     navigation_info_node::set_bind_listener::
     do_process_event(const sfbool & bind,
                      const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             navigation_info_node & node =
@@ -15810,7 +15810,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    navigation_info_node::~navigation_info_node() throw ()
+    navigation_info_node::~navigation_info_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15819,7 +15819,7 @@ namespace {
      * @return the avatar size.
      */
     const std::vector<float> &
-    navigation_info_node::avatar_size() const throw ()
+    navigation_info_node::avatar_size() const OPENVRML_NOTHROW
     {
         return this->avatar_size_.mffloat::value();
     }
@@ -15829,7 +15829,7 @@ namespace {
      *
      * @return @c true if the headlight is on; @c false otherwise.
      */
-    bool navigation_info_node::headlight() const throw ()
+    bool navigation_info_node::headlight() const OPENVRML_NOTHROW
     {
         return this->headlight_.sfbool::value();
     }
@@ -15839,7 +15839,7 @@ namespace {
      *
      * @return the speed.
      */
-    float navigation_info_node::speed() const throw ()
+    float navigation_info_node::speed() const OPENVRML_NOTHROW
     {
         return this->speed_.sffloat::value();
     }
@@ -15850,7 +15850,7 @@ namespace {
      * @return the navigation type.
      */
     const std::vector<std::string> &
-    navigation_info_node::type() const throw ()
+    navigation_info_node::type() const OPENVRML_NOTHROW
     {
         return this->type_.mfstring::value();
     }
@@ -15861,7 +15861,7 @@ namespace {
      * @return the visibility limit.
      */
     float navigation_info_node::visibility_limit() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return this->visibility_limit_.sffloat::value();
     }
@@ -15872,7 +15872,7 @@ namespace {
      * @param timestamp the current time.
      */
     void
-    navigation_info_node::do_initialize(double) throw ()
+    navigation_info_node::do_initialize(double) OPENVRML_NOTHROW
     {
         using boost::polymorphic_downcast;
 
@@ -15890,7 +15890,7 @@ namespace {
      */
     void
     navigation_info_node::
-    do_shutdown(const double timestamp) throw ()
+    do_shutdown(const double timestamp) OPENVRML_NOTHROW
     {
         using boost::polymorphic_downcast;
 
@@ -15916,7 +15916,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    normal_class::~normal_class() throw ()
+    normal_class::~normal_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15936,7 +15936,7 @@ namespace {
     normal_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -16032,7 +16032,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    normal_node::~normal_node() throw ()
+    normal_node::~normal_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16041,7 +16041,7 @@ namespace {
      * @return the array of normal vectors.
      */
     const std::vector<openvrml::vec3f> &
-    normal_node::vector() const throw ()
+    normal_node::vector() const OPENVRML_NOTHROW
     {
         return this->vector_.mfvec3f::value();
     }
@@ -16061,7 +16061,7 @@ namespace {
      * @brief Destroy.
      */
     normal_interpolator_class::~normal_interpolator_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -16082,7 +16082,7 @@ namespace {
     normal_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -16227,7 +16227,7 @@ namespace {
      */
     normal_interpolator_node::set_fraction_listener::
     ~set_fraction_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -16241,7 +16241,7 @@ namespace {
     void
     normal_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & fraction, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             using std::vector;
@@ -16369,7 +16369,7 @@ namespace {
      * @brief Destroy.
      */
     normal_interpolator_node::~normal_interpolator_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -16387,7 +16387,7 @@ namespace {
      * @brief Destroy.
      */
     orientation_interpolator_class::
-    ~orientation_interpolator_class() throw ()
+    ~orientation_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16408,7 +16408,7 @@ namespace {
     orientation_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -16554,7 +16554,7 @@ namespace {
      * @brief Destroy.
      */
     orientation_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16568,7 +16568,7 @@ namespace {
     void
     orientation_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & fraction, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             using std::vector;
@@ -16698,7 +16698,7 @@ namespace {
      * @brief Destroy.
      */
     orientation_interpolator_node::
-    ~orientation_interpolator_node() throw ()
+    ~orientation_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -16715,7 +16715,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    pixel_texture_class::~pixel_texture_class() throw ()
+    pixel_texture_class::~pixel_texture_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16735,7 +16735,7 @@ namespace {
     pixel_texture_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -16849,7 +16849,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    pixel_texture_node::~pixel_texture_node() throw ()
+    pixel_texture_node::~pixel_texture_node() OPENVRML_NOTHROW
     {
         // viewer.remove_texture_object(this->texObject); ...
     }
@@ -16860,7 +16860,7 @@ namespace {
      * @return the image.
      */
     const openvrml::image &
-    pixel_texture_node::image() const throw ()
+    pixel_texture_node::image() const OPENVRML_NOTHROW
     {
         return this->image_.sfimage::value();
     }
@@ -16895,7 +16895,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    plane_sensor_class::~plane_sensor_class() throw ()
+    plane_sensor_class::~plane_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16915,7 +16915,7 @@ namespace {
     plane_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -17246,7 +17246,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    plane_sensor_node::~plane_sensor_node() throw ()
+    plane_sensor_node::~plane_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17370,7 +17370,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    point_light_class::~point_light_class() throw ()
+    point_light_class::~point_light_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17390,7 +17390,7 @@ namespace {
     point_light_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 8> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -17617,7 +17617,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    point_light_node::~point_light_node() throw ()
+    point_light_node::~point_light_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17656,7 +17656,7 @@ namespace {
      */
     void
     point_light_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         this->scene()->browser().add_scoped_light(*this);
@@ -17669,7 +17669,7 @@ namespace {
      */
     void
     point_light_node::do_shutdown(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().remove_scoped_light(*this);
@@ -17689,7 +17689,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    point_set_class::~point_set_class() throw ()
+    point_set_class::~point_set_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17709,7 +17709,7 @@ namespace {
     point_set_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -17840,7 +17840,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    point_set_node::~point_set_node() throw ()
+    point_set_node::~point_set_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17906,7 +17906,7 @@ namespace {
      *
      * @return @c true.
      */
-    bool point_set_node::do_emissive() const throw ()
+    bool point_set_node::do_emissive() const OPENVRML_NOTHROW
     {
         return true;
     }
@@ -17959,7 +17959,7 @@ namespace {
      * @brief Destroy.
      */
     position_interpolator_class::
-    ~position_interpolator_class() throw ()
+    ~position_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17980,7 +17980,7 @@ namespace {
     position_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -18125,7 +18125,7 @@ namespace {
      * @brief Destroy.
      */
     position_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -18139,7 +18139,7 @@ namespace {
     void
     position_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & fraction, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             using std::vector;
@@ -18232,7 +18232,7 @@ namespace {
      * @brief Destroy.
      */
     position_interpolator_node::
-    ~position_interpolator_node() throw ()
+    ~position_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -18250,7 +18250,7 @@ namespace {
      * @brief Destroy.
      */
     proximity_sensor_class::~proximity_sensor_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -18271,7 +18271,7 @@ namespace {
     proximity_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -18567,7 +18567,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    proximity_sensor_node::~proximity_sensor_node() throw ()
+    proximity_sensor_node::~proximity_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -18679,7 +18679,7 @@ namespace {
      * @brief Destroy.
      */
     scalar_interpolator_class::~scalar_interpolator_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -18700,7 +18700,7 @@ namespace {
     scalar_interpolator_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -18841,7 +18841,7 @@ namespace {
      * @brief Destroy.
      */
     scalar_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -18855,7 +18855,7 @@ namespace {
     void
     scalar_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & fraction, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             using std::vector;
@@ -18947,7 +18947,7 @@ namespace {
      * @brief Destroy.
      */
     scalar_interpolator_node::~scalar_interpolator_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -18963,7 +18963,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    shape_class::~shape_class() throw ()
+    shape_class::~shape_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -18983,7 +18983,7 @@ namespace {
     shape_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -19139,7 +19139,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    shape_node::~shape_node() throw ()
+    shape_node::~shape_node() OPENVRML_NOTHROW
     {
         // need viewer to free viewerObject ...
     }
@@ -19281,7 +19281,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sound_class::~sound_class() throw ()
+    sound_class::~sound_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19301,7 +19301,7 @@ namespace {
     sound_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -19623,7 +19623,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sound_node::~sound_node() throw ()
+    sound_node::~sound_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19657,7 +19657,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sphere_class::~sphere_class() throw ()
+    sphere_class::~sphere_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19677,7 +19677,7 @@ namespace {
     sphere_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -19784,7 +19784,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sphere_node::~sphere_node() throw ()
+    sphere_node::~sphere_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19833,7 +19833,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sphere_sensor_class::~sphere_sensor_class() throw ()
+    sphere_sensor_class::~sphere_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19853,7 +19853,7 @@ namespace {
     sphere_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -20128,7 +20128,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    sphere_sensor_node::~sphere_sensor_node() throw ()
+    sphere_sensor_node::~sphere_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20264,7 +20264,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    spot_light_class::~spot_light_class() throw ()
+    spot_light_class::~spot_light_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20284,7 +20284,7 @@ namespace {
     spot_light_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -20589,7 +20589,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    spot_light_node::~spot_light_node() throw ()
+    spot_light_node::~spot_light_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20631,7 +20631,7 @@ namespace {
      */
     void
     spot_light_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         this->scene()->browser().add_scoped_light(*this);
@@ -20644,7 +20644,7 @@ namespace {
      */
     void
     spot_light_node::do_shutdown(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().remove_scoped_light(*this);
@@ -20663,7 +20663,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    switch_class::~switch_class() throw ()
+    switch_class::~switch_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20683,7 +20683,7 @@ namespace {
     switch_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 8> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -20844,7 +20844,7 @@ namespace {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     void switch_node::do_children_event_side_effect(const mfnode &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             const int32 which_choice = this->which_choice_.sfint32::value();
@@ -20890,7 +20890,7 @@ namespace {
      * @param obj   instance to copy.
      */
     switch_node::which_choice_exposedfield::
-    which_choice_exposedfield(const which_choice_exposedfield & obj) throw ():
+    which_choice_exposedfield(const which_choice_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -20902,7 +20902,7 @@ namespace {
      * @brief Destroy.
      */
     switch_node::which_choice_exposedfield::
-    ~which_choice_exposedfield() throw ()
+    ~which_choice_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20914,7 +20914,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     switch_node::which_choice_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new which_choice_exposedfield(*this));
@@ -20931,7 +20931,7 @@ namespace {
     void
     switch_node::which_choice_exposedfield::
     event_side_effect(const sfint32 & which_choice, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             switch_node & n =
@@ -20982,7 +20982,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    switch_node::~switch_node() throw ()
+    switch_node::~switch_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -21027,7 +21027,7 @@ namespace {
      * @return the child nodes in the scene graph.
      */
     const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    switch_node::do_children() const throw ()
+    switch_node::do_children() const OPENVRML_NOTHROW
     {
         return this->current_children_.value();
     }
@@ -21082,7 +21082,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    text_class::~text_class() throw ()
+    text_class::~text_class() OPENVRML_NOTHROW
     {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
@@ -21111,7 +21111,7 @@ namespace {
     text_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -21271,7 +21271,7 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::string_exposedfield::
-    string_exposedfield(const string_exposedfield & obj) throw ():
+    string_exposedfield(const string_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -21283,7 +21283,7 @@ namespace {
      * @brief Destroy.
      */
     text_node::string_exposedfield::
-    ~string_exposedfield() throw ()
+    ~string_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -21295,7 +21295,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     text_node::string_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new string_exposedfield(*this));
@@ -21312,7 +21312,7 @@ namespace {
     void
     text_node::string_exposedfield::
     event_side_effect(const mfstring &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             text_node & node =
@@ -21351,7 +21351,7 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::font_style_exposedfield::
-    font_style_exposedfield(const font_style_exposedfield & obj) throw ():
+    font_style_exposedfield(const font_style_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -21362,7 +21362,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    text_node::font_style_exposedfield::~font_style_exposedfield() throw ()
+    text_node::font_style_exposedfield::~font_style_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -21374,7 +21374,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     text_node::font_style_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new font_style_exposedfield(*this));
@@ -21391,7 +21391,7 @@ namespace {
     void
     text_node::font_style_exposedfield::
     event_side_effect(const sfnode &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             text_node & node =
@@ -21430,7 +21430,7 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::length_exposedfield::
-    length_exposedfield(const length_exposedfield & obj) throw ():
+    length_exposedfield(const length_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -21442,7 +21442,7 @@ namespace {
      * @brief Destroy.
      */
     text_node::length_exposedfield::~length_exposedfield()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -21454,7 +21454,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     text_node::length_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new length_exposedfield(*this));
@@ -21471,7 +21471,7 @@ namespace {
     void
     text_node::length_exposedfield::
     event_side_effect(const mffloat &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             text_node & node =
@@ -21509,7 +21509,7 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::max_extent_exposedfield::
-    max_extent_exposedfield(const max_extent_exposedfield & obj) throw ():
+    max_extent_exposedfield(const max_extent_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -21521,7 +21521,7 @@ namespace {
      * @brief Destroy.
      */
     text_node::max_extent_exposedfield::
-    ~max_extent_exposedfield() throw ()
+    ~max_extent_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -21533,7 +21533,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     text_node::max_extent_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new max_extent_exposedfield(*this));
@@ -21550,7 +21550,7 @@ namespace {
     void
     text_node::max_extent_exposedfield::
     event_side_effect(const sffloat &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             text_node & node =
@@ -21638,7 +21638,7 @@ namespace {
     OPENVRML_LOCAL int ccw_(const openvrml::vec2f & p0,
                             const openvrml::vec2f & p1,
                             const openvrml::vec2f & p2)
-        throw ()
+        OPENVRML_NOTHROW
     {
         const float dx1 = p1.x() - p0.x();
         const float dy1 = p1.y() - p0.y();
@@ -21670,7 +21670,7 @@ namespace {
                                    const openvrml::vec2f & l0p1,
                                    const openvrml::vec2f & l1p0,
                                    const openvrml::vec2f & l1p1)
-        throw ()
+        OPENVRML_NOTHROW
     {
         return ccw_(l0p0, l0p1, l1p0) * ccw_(l0p0, l0p1, l1p1) <= 0
             && ccw_(l1p0, l1p1, l0p0) * ccw_(l1p0, l1p1, l0p1) <= 0;
@@ -21693,7 +21693,7 @@ namespace {
     intersects_segment_in_contour(const openvrml::vec2f & v0,
                                   const openvrml::vec2f & v1,
                                   const std::vector<openvrml::vec2f> & contour)
-        throw ()
+        OPENVRML_NOTHROW
     {
         for (size_t j = 0; j < contour.size() - 1; ++j) {
             using openvrml::vec2f;
@@ -21739,7 +21739,7 @@ namespace {
         const std::vector<const std::vector<openvrml::vec2f> *> &
         interior_contours,
         const openvrml::vec2f & interior_vertex)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(exterior_contour.size() > 1);
         assert(!interior_contours.empty());
@@ -21776,7 +21776,7 @@ namespace {
     OPENVRML_LOCAL bool
     inside_contour_(const std::vector<openvrml::vec2f> & contour,
                     const openvrml::vec2f & point)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using openvrml::vec2f;
 
@@ -21800,7 +21800,7 @@ namespace {
     OPENVRML_LOCAL contour_type_
     get_type_(const std::vector<openvrml::vec2f> & contour,
               const std::vector<std::vector<openvrml::vec2f> > & contours)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::vector;
 
@@ -21847,7 +21847,7 @@ namespace {
 
     OPENVRML_LOCAL const std::vector<polygon_>
     get_polygons_(const std::vector<std::vector<openvrml::vec2f> > & contours)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -21903,7 +21903,7 @@ namespace {
     OPENVRML_LOCAL long
     get_vertex_index_(const std::vector<openvrml::vec2f> & vertices,
                       const openvrml::vec2f & vertex)
-        throw ()
+        OPENVRML_NOTHROW
     {
         for (size_t i = 0; i < vertices.size(); ++i) {
             if (vertices[i] == vertex) { return i; }
@@ -21928,7 +21928,7 @@ namespace {
     glyph_geometry(const std::vector<std::vector<vec2f> > & contours,
                    const float advance_width,
                    const float advance_height)
-        throw (std::bad_alloc):
+        OPENVRML_THROW1(std::bad_alloc):
         advance_width(advance_width),
         advance_height(advance_height)
     {
@@ -22117,7 +22117,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    text_node::~text_node() throw ()
+    text_node::~text_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -22168,7 +22168,7 @@ namespace {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     void text_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         this->update_ucs4();
         this->update_face();
@@ -22181,7 +22181,7 @@ namespace {
      * @param timestamp the current time.
      */
     void text_node::do_shutdown(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
         if (this->face) {
@@ -22196,7 +22196,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void text_node::update_ucs4() throw (std::bad_alloc)
+    void text_node::update_ucs4() OPENVRML_THROW1(std::bad_alloc)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         this->ucs4_string.clear();
@@ -22362,7 +22362,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void text_node::update_face() throw (std::bad_alloc)
+    void text_node::update_face() OPENVRML_THROW1(std::bad_alloc)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         static const char * const fcResultMessage[] = { "match",
@@ -22376,7 +22376,7 @@ namespace {
                 std::runtime_error(fcResultMessage[result])
                 {}
 
-            virtual ~FontconfigError() throw ()
+            virtual ~FontconfigError() OPENVRML_NOTHROW
                 {}
         };
 
@@ -22392,7 +22392,7 @@ namespace {
                 std::runtime_error("FreeType error")
                 {}
 
-            virtual ~FreeTypeError() throw ()
+            virtual ~FreeTypeError() OPENVRML_NOTHROW
                 {}
         };
 
@@ -22552,7 +22552,7 @@ namespace {
     const float stepSize_ = 0.2;
 
     OPENVRML_LOCAL int moveTo_(FT_Vector * const to, void * const user)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::vector;
         using openvrml::vec2f;
@@ -22570,7 +22570,7 @@ namespace {
     }
 
     OPENVRML_LOCAL int lineTo_(FT_Vector * const to, void * const user)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
@@ -22612,7 +22612,7 @@ namespace {
     OPENVRML_LOCAL void evaluateCurve_(openvrml::vec2f * const buffer,
                                        const size_t npoints,
                                        std::vector<openvrml::vec2f> & contour)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         for (size_t i = 1; i <= (1 / stepSize_); i++){
             const float t = i * stepSize_; // Parametric points 0 <= t <= 1
@@ -22635,7 +22635,7 @@ namespace {
     OPENVRML_LOCAL int conicTo_(FT_Vector * const control,
                                 FT_Vector * const to,
                                 void * const user)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::vector;
         using openvrml::vec2f;
@@ -22671,7 +22671,7 @@ namespace {
                                 FT_Vector * const control2,
                                 FT_Vector * const to,
                                 void * const user)
-        throw ()
+        OPENVRML_NOTHROW
     {
         using std::vector;
         using openvrml::vec2f;
@@ -22711,7 +22711,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void text_node::update_geometry() throw (std::bad_alloc)
+    void text_node::update_geometry() OPENVRML_THROW1(std::bad_alloc)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::pair;
@@ -23051,7 +23051,7 @@ namespace {
      * @brief Destroy.
      */
     texture_coordinate_class::~texture_coordinate_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
    /**
@@ -23072,7 +23072,7 @@ namespace {
     texture_coordinate_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -23173,7 +23173,7 @@ namespace {
      * @brief Destroy.
      */
     texture_coordinate_node::~texture_coordinate_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23182,7 +23182,7 @@ namespace {
      * @return the mfvec2f array of points for this node.
      */
     const std::vector<openvrml::vec2f> &
-    texture_coordinate_node::point() const throw ()
+    texture_coordinate_node::point() const OPENVRML_NOTHROW
     {
         return this->point_.mfvec2f::value();
     }
@@ -23202,7 +23202,7 @@ namespace {
      * @brief Destroy.
      */
     texture_transform_class::~texture_transform_class()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23223,7 +23223,7 @@ namespace {
     texture_transform_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -23411,7 +23411,7 @@ namespace {
      * @brief Destroy.
      */
     texture_transform_node::~texture_transform_node()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23443,7 +23443,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    time_sensor_class::~time_sensor_class() throw ()
+    time_sensor_class::~time_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -23463,7 +23463,7 @@ namespace {
     time_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 14> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -23738,7 +23738,7 @@ namespace {
      */
     time_sensor_node::set_cycle_interval_listener::
     ~set_cycle_interval_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23752,7 +23752,7 @@ namespace {
     void
     time_sensor_node::set_cycle_interval_listener::
     do_process_event(const sftime & cycle_interval, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             time_sensor_node & node =
@@ -23796,7 +23796,7 @@ namespace {
      * @param obj   instance to copy.
      */
     time_sensor_node::enabled_exposedfield::
-    enabled_exposedfield(const enabled_exposedfield & obj) throw ():
+    enabled_exposedfield(const enabled_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -23809,7 +23809,7 @@ namespace {
      */
     time_sensor_node::enabled_exposedfield::
     ~enabled_exposedfield()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23821,7 +23821,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     time_sensor_node::enabled_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new enabled_exposedfield(*this));
@@ -23838,7 +23838,7 @@ namespace {
     void
     time_sensor_node::enabled_exposedfield::
     event_side_effect(const sfbool & enabled, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             time_sensor_node & node =
@@ -23907,7 +23907,7 @@ namespace {
      */
     time_sensor_node::set_start_time_listener::
     ~set_start_time_listener()
-        throw ()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -23921,7 +23921,7 @@ namespace {
     void
     time_sensor_node::set_start_time_listener::
     do_process_event(const sftime & start_time, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             time_sensor_node & node =
@@ -24083,7 +24083,7 @@ namespace {
 /**
  * @brief Destroy.
  */
-    time_sensor_node::~time_sensor_node() throw ()
+    time_sensor_node::~time_sensor_node() OPENVRML_NOTHROW
     {}
 
 /**
@@ -24204,7 +24204,7 @@ namespace {
      */
     void
     time_sensor_node::do_initialize(double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         this->scene()->browser().add_time_dependent(*this);
@@ -24217,7 +24217,7 @@ namespace {
      */
     void
     time_sensor_node::do_shutdown(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().remove_time_dependent(*this);
@@ -24237,7 +24237,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    touch_sensor_class::~touch_sensor_class() throw ()
+    touch_sensor_class::~touch_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24257,7 +24257,7 @@ namespace {
     touch_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -24524,7 +24524,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    touch_sensor_node::~touch_sensor_node() throw ()
+    touch_sensor_node::~touch_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24569,7 +24569,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    transform_class::~transform_class() throw ()
+    transform_class::~transform_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24589,7 +24589,7 @@ namespace {
     transform_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -24826,7 +24826,7 @@ namespace {
      * @param obj   instance to copy.
      */
     transform_node::center_exposedfield::
-    center_exposedfield(const center_exposedfield & obj) throw ():
+    center_exposedfield(const center_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -24837,7 +24837,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    transform_node::center_exposedfield::~center_exposedfield() throw ()
+    transform_node::center_exposedfield::~center_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24849,7 +24849,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     transform_node::center_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new center_exposedfield(*this));
@@ -24866,7 +24866,7 @@ namespace {
     void
     transform_node::center_exposedfield::event_side_effect(const sfvec3f &,
                                                            double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             transform_node & node =
@@ -24905,7 +24905,7 @@ namespace {
      * @param obj   instance to copy.
      */
     transform_node::rotation_exposedfield::
-    rotation_exposedfield(const rotation_exposedfield & obj) throw ():
+    rotation_exposedfield(const rotation_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -24916,7 +24916,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    transform_node::rotation_exposedfield::~rotation_exposedfield() throw ()
+    transform_node::rotation_exposedfield::~rotation_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24928,7 +24928,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     transform_node::rotation_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new rotation_exposedfield(*this));
@@ -24945,7 +24945,7 @@ namespace {
     void
     transform_node::rotation_exposedfield::
     event_side_effect(const sfrotation &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             transform_node & node =
@@ -24984,7 +24984,7 @@ namespace {
      * @param obj   instance to copy.
      */
     transform_node::scale_exposedfield::
-    scale_exposedfield(const scale_exposedfield & obj) throw ():
+    scale_exposedfield(const scale_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -24996,7 +24996,7 @@ namespace {
      * @brief Destroy.
      */
     transform_node::scale_exposedfield::
-    ~scale_exposedfield() throw ()
+    ~scale_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25008,7 +25008,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     transform_node::scale_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new scale_exposedfield(*this));
@@ -25025,7 +25025,7 @@ namespace {
     void
     transform_node::scale_exposedfield::event_side_effect(const sfvec3f &,
                                                           double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             transform_node & node =
@@ -25065,7 +25065,7 @@ namespace {
      */
     transform_node::scale_orientation_exposedfield::
     scale_orientation_exposedfield(const scale_orientation_exposedfield & obj)
-        throw ():
+        OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -25077,7 +25077,7 @@ namespace {
      * @brief Destroy.
      */
     transform_node::scale_orientation_exposedfield::
-    ~scale_orientation_exposedfield() throw ()
+    ~scale_orientation_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25089,7 +25089,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     transform_node::scale_orientation_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new scale_orientation_exposedfield(*this));
@@ -25105,7 +25105,7 @@ namespace {
      */
     void
     transform_node::scale_orientation_exposedfield::
-    event_side_effect(const sfrotation &, double) throw (std::bad_alloc)
+    event_side_effect(const sfrotation &, double) OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             transform_node & node =
@@ -25144,7 +25144,7 @@ namespace {
      * @param obj   instance to copy.
      */
     transform_node::translation_exposedfield::
-    translation_exposedfield(const translation_exposedfield & obj) throw ():
+    translation_exposedfield(const translation_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -25156,7 +25156,7 @@ namespace {
      * @brief Destroy.
      */
     transform_node::translation_exposedfield::
-    ~translation_exposedfield() throw ()
+    ~translation_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25168,7 +25168,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     transform_node::translation_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new translation_exposedfield(*this));
@@ -25185,7 +25185,7 @@ namespace {
     void
     transform_node::translation_exposedfield::
     event_side_effect(const sfvec3f &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             transform_node & node =
@@ -25274,7 +25274,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    transform_node::~transform_node() throw ()
+    transform_node::~transform_node() OPENVRML_NOTHROW
     {
         // delete xformObject...
     }
@@ -25285,7 +25285,7 @@ namespace {
      * @return the transformation associated with the node.
      */
     const openvrml::mat4f &
-    transform_node::transform() const throw ()
+    transform_node::transform() const OPENVRML_NOTHROW
     {
         this->update_transform();
         return this->transform_;
@@ -25363,7 +25363,7 @@ namespace {
      *
      * @note P' = T × C × R × SR × S × -SR × -C × P
      */
-    void transform_node::update_transform() const throw ()
+    void transform_node::update_transform() const OPENVRML_NOTHROW
     {
         if (this->transform_dirty) {
             this->transform_ =
@@ -25410,7 +25410,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    viewpoint_class::~viewpoint_class() throw ()
+    viewpoint_class::~viewpoint_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25423,7 +25423,7 @@ namespace {
      */
     void
     viewpoint_class::set_first(viewpoint_node & viewpoint)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(!this->has_first());
         this->first = &viewpoint;
@@ -25435,7 +25435,7 @@ namespace {
      *
      * This function is called by <code>viewpoint_node::do_shutdown</code>.
      */
-    void viewpoint_class::reset_first() throw ()
+    void viewpoint_class::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -25448,7 +25448,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool viewpoint_class::has_first() const throw ()
+    bool viewpoint_class::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -25462,7 +25462,7 @@ namespace {
      */
     bool
     viewpoint_class::is_first(viewpoint_node & viewpoint)
-        throw ()
+        OPENVRML_NOTHROW
     {
         return &viewpoint == this->first;
     }
@@ -25477,7 +25477,7 @@ namespace {
      */
     void
     viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //
         // If the node is already the active node, do nothing.
@@ -25524,7 +25524,7 @@ namespace {
      */
     void viewpoint_class::unbind(viewpoint_node & viewpoint,
                                  const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         const bound_nodes_t::iterator pos =
             std::find(this->bound_nodes.begin(), this->bound_nodes.end(),
@@ -25560,7 +25560,7 @@ namespace {
     viewpoint_class::
     do_initialize(openvrml::viewpoint_node * initial_viewpoint,
                   const double timestamp)
-        throw ()
+        OPENVRML_NOTHROW
     {
         if (!initial_viewpoint) { initial_viewpoint = this->first; }
         if (initial_viewpoint) {
@@ -25592,7 +25592,7 @@ namespace {
     viewpoint_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -25828,7 +25828,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    viewpoint_node::set_bind_listener::~set_bind_listener() throw ()
+    viewpoint_node::set_bind_listener::~set_bind_listener() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25842,7 +25842,7 @@ namespace {
     void
     viewpoint_node::set_bind_listener::
     do_process_event(const sfbool & value, const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             viewpoint_node & node =
@@ -25888,7 +25888,7 @@ namespace {
      * @param obj   instance to copy.
      */
     viewpoint_node::orientation_exposedfield::
-    orientation_exposedfield(const orientation_exposedfield & obj) throw ():
+    orientation_exposedfield(const orientation_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -25900,7 +25900,7 @@ namespace {
      * @brief Destroy.
      */
     viewpoint_node::orientation_exposedfield::
-    ~orientation_exposedfield() throw ()
+    ~orientation_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25912,7 +25912,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     viewpoint_node::orientation_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new orientation_exposedfield(*this));
@@ -25929,7 +25929,7 @@ namespace {
     void
     viewpoint_node::orientation_exposedfield::
     event_side_effect(const sfrotation &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             viewpoint_node & node =
@@ -25967,7 +25967,7 @@ namespace {
      * @param obj   instance to copy.
      */
     viewpoint_node::position_exposedfield::
-    position_exposedfield(const position_exposedfield & obj) throw ():
+    position_exposedfield(const position_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
@@ -25978,7 +25978,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    viewpoint_node::position_exposedfield::~position_exposedfield() throw ()
+    viewpoint_node::position_exposedfield::~position_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25990,7 +25990,7 @@ namespace {
      */
     std::auto_ptr<openvrml::field_value>
     viewpoint_node::position_exposedfield::do_clone() const
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
             new position_exposedfield(*this));
@@ -26007,7 +26007,7 @@ namespace {
     void
     viewpoint_node::position_exposedfield::event_side_effect(const sfvec3f &,
                                                              double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             viewpoint_node & node =
@@ -26138,7 +26138,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    viewpoint_node::~viewpoint_node() throw ()
+    viewpoint_node::~viewpoint_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -26148,7 +26148,7 @@ namespace {
      * @return the transformation of the viewpoint_node in the global
      *         coordinate system.
      */
-    const openvrml::mat4f & viewpoint_node::transformation() const throw ()
+    const openvrml::mat4f & viewpoint_node::transformation() const OPENVRML_NOTHROW
     {
         this->update_final_transformation();
         return this->final_transformation;
@@ -26162,7 +26162,7 @@ namespace {
      *         viewpoint_node.
      */
     const openvrml::mat4f & viewpoint_node::user_view_transform() const
-        throw ()
+        OPENVRML_NOTHROW
     {
         return this->user_view_transform_;
     }
@@ -26174,7 +26174,7 @@ namespace {
     * @param transform the new transformation.
     */
     void
-    viewpoint_node::user_view_transform(const mat4f & transform) throw ()
+    viewpoint_node::user_view_transform(const mat4f & transform) OPENVRML_NOTHROW
     {
         this->user_view_transform_ = transform;
     }
@@ -26184,7 +26184,7 @@ namespace {
      *
      * @return the description.
      */
-    const std::string & viewpoint_node::description() const throw ()
+    const std::string & viewpoint_node::description() const OPENVRML_NOTHROW
     {
         return this->description_.sfstring::value();
     }
@@ -26194,7 +26194,7 @@ namespace {
      *
      * @return the field of view in radians.
      */
-    float viewpoint_node::field_of_view() const throw ()
+    float viewpoint_node::field_of_view() const OPENVRML_NOTHROW
     {
         return this->field_of_view_.sffloat::value();
     }
@@ -26226,7 +26226,7 @@ namespace {
      */
     void
     viewpoint_node::do_initialize(double)
-        throw ()
+        OPENVRML_NOTHROW
     {
         assert(this->scene());
         this->scene()->browser().add_viewpoint(*this);
@@ -26242,11 +26242,11 @@ namespace {
     struct OPENVRML_LOCAL accumulate_transform_ :
         std::unary_function<openvrml::node *, void> {
 
-        explicit accumulate_transform_(openvrml::mat4f & transform) throw ():
+        explicit accumulate_transform_(openvrml::mat4f & transform) OPENVRML_NOTHROW:
             transform(&transform)
         {}
 
-        void operator()(openvrml::node * node) const throw ()
+        void operator()(openvrml::node * node) const OPENVRML_NOTHROW
         {
             using openvrml::node_cast;
             using openvrml::transform_node;
@@ -26264,7 +26264,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void viewpoint_node::do_relocate() throw (std::bad_alloc)
+    void viewpoint_node::do_relocate() OPENVRML_THROW1(std::bad_alloc)
     {
         assert(this->scene());
         const node_path path = this->scene()->browser().find_node(*this);
@@ -26280,7 +26280,7 @@ namespace {
      *
      * @param timestamp the current time.
      */
-    void viewpoint_node::do_shutdown(const double timestamp) throw ()
+    void viewpoint_node::do_shutdown(const double timestamp) OPENVRML_NOTHROW
     {
         viewpoint_class & node_class =
             const_cast<viewpoint_class &>(
@@ -26300,7 +26300,7 @@ namespace {
      * @a final_transformation and sets @a final_transformation_dirty to
      * @c false; otherwise, do nothing.
      */
-    void viewpoint_node::update_final_transformation() const throw ()
+    void viewpoint_node::update_final_transformation() const OPENVRML_NOTHROW
     {
         if (this->final_transformation_dirty) {
             static const vec3f scale(1.0, 1.0, 1.0);
@@ -26331,7 +26331,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    visibility_sensor_class::~visibility_sensor_class() throw ()
+    visibility_sensor_class::~visibility_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -26352,7 +26352,7 @@ namespace {
     visibility_sensor_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -26588,7 +26588,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    visibility_sensor_node::~visibility_sensor_node() throw ()
+    visibility_sensor_node::~visibility_sensor_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -26677,7 +26677,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    world_info_class::~world_info_class() throw ()
+    world_info_class::~world_info_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -26697,7 +26697,7 @@ namespace {
     world_info_class::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -26800,6 +26800,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    world_info_node::~world_info_node() throw ()
+    world_info_node::~world_info_node() OPENVRML_NOTHROW
     {}
 }

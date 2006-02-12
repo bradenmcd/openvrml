@@ -59,13 +59,13 @@
  */
 
 /**
- * @fn openvrml::exposedfield::~exposedfield() throw ()
+ * @fn openvrml::exposedfield::~exposedfield()
  *
  * @brief Destroy.
  */
 
 /**
- * @fn void openvrml::exposedfield::do_process_event(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::exposedfield::do_process_event(const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
  *
@@ -87,7 +87,7 @@
  */
 
 /**
- * @fn void openvrml::exposedfield::event_side_effect(const FieldValue & value, double timestamp) throw (std::bad_alloc)
+ * @fn void openvrml::exposedfield::event_side_effect(const FieldValue & value, double timestamp)
  *
  * @brief Called by <code>exposedfield<FieldValue>::do_process_event</code>.
  *

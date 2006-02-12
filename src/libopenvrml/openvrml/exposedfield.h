@@ -33,7 +33,7 @@ namespace openvrml {
         public virtual node_field_value_listener<FieldValue>,
         public field_value_emitter<FieldValue> {
     public:
-        virtual ~exposedfield() throw ();
+        virtual ~exposedfield() OPENVRML_NOTHROW;
 
     protected:
         exposedfield(openvrml::node & node,
@@ -44,10 +44,10 @@ namespace openvrml {
     private:
         virtual void do_process_event(const FieldValue & value,
                                       double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
         virtual void event_side_effect(const FieldValue & value,
                                        double timestamp)
-            throw (std::bad_alloc);
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     template <typename FieldValue>
@@ -73,14 +73,14 @@ namespace openvrml {
     {}
 
     template <typename FieldValue>
-    inline exposedfield<FieldValue>::~exposedfield() throw ()
+    inline exposedfield<FieldValue>::~exposedfield() OPENVRML_NOTHROW
     {}
 
     template <typename FieldValue>
     inline void
     exposedfield<FieldValue>::do_process_event(const FieldValue & value,
                                                const double timestamp)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         static_cast<FieldValue &>(*this) = value;
         this->event_side_effect(value, timestamp);
@@ -91,7 +91,7 @@ namespace openvrml {
     template <typename FieldValue>
     inline void
     exposedfield<FieldValue>::event_side_effect(const FieldValue &, double)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {}
 }
 
