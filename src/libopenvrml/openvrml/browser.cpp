@@ -35,6 +35,7 @@
 # endif
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/bind.hpp>
+# include <boost/enable_shared_from_this.hpp>
 # include <boost/functional.hpp>
 # include <boost/mpl/for_each.hpp>
 # include <boost/spirit.hpp>
@@ -2257,16 +2258,20 @@ namespace {
     /**
      * @brief <code>node_class</code> for <code>EXTERNPROTO</code>s.
      */
-    class OPENVRML_LOCAL externproto_node_class : public openvrml::node_class {
+    class OPENVRML_LOCAL externproto_node_class :
+        public boost::enable_shared_from_this<externproto_node_class>,
+        public openvrml::node_class {
+
         struct load_proto;
 
         mutable boost::mutex mutex_;
-        boost::shared_ptr<openvrml::node_class> proto_node_class_;
+        boost::weak_ptr<openvrml::proto_node_class> proto_node_class_;
 
-        typedef std::vector<boost::shared_ptr<externproto_node_type> >
+        typedef std::vector<boost::weak_ptr<externproto_node_type> >
             externproto_node_types;
 
         mutable externproto_node_types externproto_node_types_;
+        bool externproto_node_types_cleared_;
 
         boost::scoped_ptr<boost::thread> load_proto_thread_;
 
@@ -2276,6 +2281,8 @@ namespace {
             OPENVRML_THROW1(boost::thread_resource_error);
         virtual ~externproto_node_class() OPENVRML_NOTHROW;
 
+        bool externproto_node_types_cleared() const OPENVRML_NOTHROW;
+
     private:
         virtual const boost::shared_ptr<openvrml::node_type>
         do_create_type(const std::string & id,
@@ -2283,12 +2290,16 @@ namespace {
             OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
 
         void set_proto_node_class(
-            const boost::shared_ptr<openvrml::proto_node_class> & proto_node_class)
+            const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class = boost::weak_ptr<openvrml::proto_node_class>())
             OPENVRML_THROW1(std::bad_alloc);
+
+        void clear_externproto_node_types() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
+        const boost::shared_ptr<const externproto_node_class> node_class_;
+
         mutable boost::mutex mutex_;
         openvrml::node_interface_set interfaces_;
 
@@ -2300,15 +2311,18 @@ namespace {
         boost::shared_ptr<openvrml::proto_node_type> proto_node_type_;
 
     public:
-        externproto_node_type(const openvrml::node_class & c,
-                              const std::string & id,
-                              const openvrml::node_interface_set & interfaces)
+        externproto_node_type(
+            const boost::shared_ptr<const externproto_node_class> & c,
+            const std::string & id,
+            const openvrml::node_interface_set & interfaces)
             OPENVRML_THROW1(std::bad_alloc);
 
         virtual ~externproto_node_type() OPENVRML_NOTHROW;
 
         void set_proto_node_type(openvrml::proto_node_class & proto_node_class)
             OPENVRML_THROW1(std::bad_alloc);
+
+        void clear_externproto_nodes() OPENVRML_NOTHROW;
 
     private:
         virtual const openvrml::node_interface_set & do_interfaces() const
@@ -5555,6 +5569,14 @@ namespace {
                 using boost::shared_ptr;
                 using openvrml::resource_istream;
                 using openvrml::node_class_id;
+                using openvrml_::scope_guard;
+                using openvrml_::make_obj_guard;
+
+                scope_guard guard =
+                    make_obj_guard(
+                        *this->externproto_node_class_,
+                        &externproto_node_class::clear_externproto_node_types);
+                boost::ignore_unused_variable_warning(guard);
 
                 auto_ptr<resource_istream> in =
                     this->scene_->get_resource(this->alt_uris_);
@@ -5643,6 +5665,7 @@ namespace {
                            const std::vector<std::string> & uris)
         OPENVRML_THROW1(boost::thread_resource_error):
         node_class(scene.browser()),
+        externproto_node_types_cleared_(false),
         load_proto_thread_(
             new boost::thread(
                 boost::function0<void>(load_proto(*this, scene, uris))))
@@ -5656,6 +5679,13 @@ namespace {
         this->load_proto_thread_->join();
     }
 
+    bool externproto_node_class::externproto_node_types_cleared() const
+        OPENVRML_NOTHROW
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->externproto_node_types_cleared_;
+    }
+
     const boost::shared_ptr<openvrml::node_type>
     externproto_node_class::
     do_create_type(const std::string & id,
@@ -5664,13 +5694,17 @@ namespace {
     {
         boost::mutex::scoped_lock lock(this->mutex_);
 
-        if (this->proto_node_class_) {
-            return this->proto_node_class_->create_type(id, interfaces);
+        using boost::shared_ptr;
+
+        shared_ptr<openvrml::proto_node_class> shared;
+        if ((shared = this->proto_node_class_.lock())) {
+            return shared->create_type(id, interfaces);
         }
 
-        using boost::shared_ptr;
         const shared_ptr<externproto_node_type> node_type(
-            new externproto_node_type(*this, id, interfaces));
+            new externproto_node_type(this->shared_from_this(),
+                                      id,
+                                      interfaces));
 
         this->externproto_node_types_.push_back(node_type);
 
@@ -5678,13 +5712,14 @@ namespace {
     }
 
     void externproto_node_class::set_proto_node_class(
-        const boost::shared_ptr<openvrml::proto_node_class> & proto_node_class)
+        const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class)
         OPENVRML_THROW1(std::bad_alloc)
     {
         using boost::shared_ptr;
         using boost::static_pointer_cast;
 
         boost::mutex::scoped_lock lock(this->mutex_);
+
         this->proto_node_class_ = proto_node_class;
 
         //
@@ -5692,23 +5727,44 @@ namespace {
         // externproto_node_types we've created so that they can in turn
         // tell the externproto_nodes they've created.
         //
+        const shared_ptr<openvrml::proto_node_class> shared_proto_node_class =
+            proto_node_class.lock();
+        assert(shared_proto_node_class);
         for (externproto_node_types::const_iterator node_type =
                  this->externproto_node_types_.begin();
              node_type != this->externproto_node_types_.end();
              ++node_type) {
-            assert(*node_type);
-            (*node_type)->set_proto_node_type(*proto_node_class);
+            assert(!node_type->expired());
+            node_type->lock()->set_proto_node_type(*shared_proto_node_class);
+        }
+    }
+
+    void externproto_node_class::clear_externproto_node_types()
+        OPENVRML_NOTHROW
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+
+        using boost::shared_ptr;
+
+        for (externproto_node_types::const_iterator node_type =
+                 this->externproto_node_types_.begin();
+             node_type != this->externproto_node_types_.end();
+             ++node_type) {
+            assert(!node_type->expired());
+            node_type->lock()->clear_externproto_nodes();
         }
         this->externproto_node_types_.clear();
+        this->externproto_node_types_cleared_ = true;
     }
 
 
     externproto_node_type::externproto_node_type(
-        const openvrml::node_class & c,
+        const boost::shared_ptr<const externproto_node_class> & c,
         const std::string & id,
         const openvrml::node_interface_set & interfaces)
         OPENVRML_THROW1(std::bad_alloc):
-        node_type(c, id),
+        node_type(*c, id),
+        node_class_(c),
         interfaces_(interfaces)
     {}
 
@@ -5728,8 +5784,7 @@ namespace {
 
         this->proto_node_type_ =
             static_pointer_cast<openvrml::proto_node_type>(
-                proto_node_class.create_type(this->id(),
-                                             this->interfaces_));
+                proto_node_class.create_type(this->id(), this->interfaces_));
 
         for (externproto_nodes::const_iterator node =
                  this->externproto_nodes_.begin();
@@ -5737,6 +5792,11 @@ namespace {
              ++node) {
             (*node)->set_proto_node(*this->proto_node_type_);
         }
+    }
+
+    void externproto_node_type::clear_externproto_nodes() OPENVRML_NOTHROW
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
         this->externproto_nodes_.clear();
     }
 
@@ -5763,7 +5823,13 @@ namespace {
         const boost::intrusive_ptr<externproto_node> result(
             new externproto_node(*this, scope, initial_values));
 
-        this->externproto_nodes_.push_back(result);
+        const externproto_node_class & node_class =
+            static_cast<const externproto_node_class &>(this->node_class());
+        if (!node_class.externproto_node_types_cleared()) {
+            this->externproto_nodes_.push_back(result);
+        } else {
+            assert(this->externproto_nodes_.empty());
+        }
         return result;
     }
 } // namespace
@@ -6973,6 +7039,28 @@ openvrml::node_class_id::operator std::string() const
 openvrml::browser::node_class_map::node_class_map()
 {}
 
+# ifndef NDEBUG
+namespace {
+    struct OPENVRML_LOCAL node_class_equals_ :
+        public std::unary_function<std::pair<std::string,
+                                             boost::shared_ptr<openvrml::node_class> >,
+                                   bool> {
+        explicit node_class_equals_(
+            const boost::shared_ptr<openvrml::node_class> & node_class):
+            node_class_(node_class)
+        {}
+
+        bool operator()(const argument_type & arg) const
+        {
+            return arg.second == this->node_class_;
+        }
+
+    private:
+        boost::shared_ptr<openvrml::node_class> node_class_;
+    };
+}
+# endif
+
 /**
  * @brief Destroy.
  */
@@ -6982,8 +7070,14 @@ openvrml::browser::node_class_map::~node_class_map() OPENVRML_NOTHROW
     for (map_t::const_iterator entry = this->map_.begin();
          entry != this->map_.end();
          ++entry) {
-        assert(entry->second.unique()
-               && "shared_ptr<node_class> was not unique when destroying the browser's node_class_map");
+        typedef std::iterator_traits<map_t::iterator>::difference_type
+            difference_type;
+        const difference_type count =
+            std::count_if(this->map_.begin(),
+                          this->map_.end(),
+                          node_class_equals_(entry->second));
+        assert(entry->second.use_count() == count
+               && "shared_ptr<node_class> use_count does not match the number of entries in the browser's node_class_map");
     }
 # endif
 }

@@ -1,3 +1,58 @@
+2006-02-14 Braden McDaniel  <braden@endoframe.com>
+
+	Ensure that externproto_node_type and externproto_node references
+	are cleared even if PROTO loading fails.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_class): Inherit boost::enable_shared_from_this.
+	Changed proto_node_class_ from a shared_ptr to a weak_ptr.
+	Changed externproto_node_types_ from a vector of shared_ptrs to a
+	vector of weak_ptrs.  Added member
+	externproto_node_types_cleared_.  Added member functions
+	externproto_node_types_cleared and clear_externproto_node_types.
+	(externproto_node_type): Added member node_class_.  Added member
+	function clear_externproto_nodes.
+	(externproto_node_class::load_proto::operator()() const): Use a
+	scope_guard to call
+	externproto_node_class::clear_externproto_node_types; this
+	function should be called regardless of whether a PROTO is
+	successfully loaded.
+	(externproto_node_class::externproto_node_class(openvrml::scene &,
+	const std::vector<std::string> &>)): Initialize
+	externproto_node_types_cleared_ to false.
+	(externproto_node_class::externproto_node_types_cleared() const):
+	Added function.  Indicate whether the list of
+	externproto_node_types has been cleared.
+	(externproto_node_class::do_create_type(const std::string &, const
+	openvrml::node_interface_set &) const): Lock the proto_node_class_
+	weak_ptr; pass a shared_ptr to this to the externproto_node_type
+	constructor.
+	(externproto_node_class::set_proto_node_class(const
+	boost::weak_ptr<openvrml::proto_node_class> &)): Changed to take a
+	weak_ptr argument.  Lock the externproto_node_type weak_ptrs.
+	(externproto_node_class::clear_externproto_node_types()): Added
+	function.  Call externproto_node_type::clear_externproto_nodes for
+	each node type in the list and clear the list.
+	(externproto_node_type::externproto_node_type(const
+	boost::Shared_ptr<const externproto_node_class> &, const
+	std::string &, const openvrml::node_interface_set &)): Changed to
+	take a shared_ptr to the externproto_node_class.
+	(externproto_node_type::set_proto_node_type(openvrml::proto_node_class&)):
+	Moved clearing the externproto_nodes_ to
+	externproto_node_type::clear_externproto_nodes.
+	(externproto_node_type::clear_externproto_nodes()): Clear the list
+	of externproto_nodes.
+	(externproto_node_type::do_create_node(const
+	boost::shared_ptr<openvrml::scope> &, const
+	openvrml::initial_value_map &) const): Only add the created node
+	to the externproto_node_type's list of nodes if
+	externproto_node_class::externproto_node_types_cleared returns
+	false.
+	(openvrml::browser::node_class_map::~node_class_map()): Added
+	debugging code to confirm that the node_class shared_ptrs in the
+	node_class_map are the only remaining owning references to the
+	node_classes.
+
 2006-02-12 Braden McDaniel  <braden@endoframe.com>
 
 	Made use of exception specifications a configure option.
