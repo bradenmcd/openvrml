@@ -1,5 +1,9 @@
 2006-02-16 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Require automake 1.9 (for tar-pax option).
+
+2006-02-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp: Use
 	boost::polymorphic_downcast where appropriate.
 

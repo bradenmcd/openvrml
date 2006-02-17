@@ -1,6 +1,6 @@
 AC_INIT([OpenVRML], [0.15.99], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
-AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005 Braden McDaniel])
+AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
                 [doc/Makefile]
                 [m4/Makefile]
@@ -26,7 +26,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.spec])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.7 foreign subdir-objects check-news tar-pax])
+AM_INIT_AUTOMAKE([1.9 foreign subdir-objects check-news tar-pax])
 AM_CONFIG_HEADER([config.h])
 
 #
