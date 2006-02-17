@@ -188,73 +188,70 @@ namespace openvrml {
     }
 
 
-    template<typename T>
-    class OPENVRML_API vec2 {
-        T vec[2];
+    class OPENVRML_API vec2f {
+        float vec[2];
 
     public:
-        vec2() OPENVRML_NOTHROW;
-        explicit vec2(const T (&vec)[2]) OPENVRML_NOTHROW;
-        explicit vec2(T x, T y) OPENVRML_NOTHROW;
+        vec2f() OPENVRML_NOTHROW;
+        explicit vec2f(const float (&vec)[2]) OPENVRML_NOTHROW;
+        vec2f(float x, float y) OPENVRML_NOTHROW;
 
-        vec2<T> & operator*=(T scalar) OPENVRML_NOTHROW;
-        vec2<T> & operator/=(T scalar) OPENVRML_NOTHROW;
-        vec2<T> & operator+=(const vec2<T> & vec) OPENVRML_NOTHROW;
-        vec2<T> & operator-=(const vec2<T> & vec) OPENVRML_NOTHROW;
+        vec2f & operator*=(float scalar) OPENVRML_NOTHROW;
+        vec2f & operator/=(float scalar) OPENVRML_NOTHROW;
+        vec2f & operator+=(const vec2f & vec) OPENVRML_NOTHROW;
+        vec2f & operator-=(const vec2f & vec) OPENVRML_NOTHROW;
 
-        const vec2<T> operator-() const OPENVRML_NOTHROW;
-        const vec2<T> operator*(T rhs) const OPENVRML_NOTHROW;
-        const vec2<T> operator/(T rhs) const OPENVRML_NOTHROW;
-        const vec2<T> operator+(const vec2<T> & rhs) const OPENVRML_NOTHROW;
-        const vec2<T> operator-(const vec2<T> & rhs) const OPENVRML_NOTHROW;
-        bool operator==(const vec2<T> & rhs) const OPENVRML_NOTHROW;
-        bool operator!=(const vec2<T> & rhs) const OPENVRML_NOTHROW;
+        const vec2f operator-() const OPENVRML_NOTHROW;
 
-        const T & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        T x() const OPENVRML_NOTHROW;
-        T y() const OPENVRML_NOTHROW;
+        float x() const OPENVRML_NOTHROW;
+        void x(float value) OPENVRML_NOTHROW;
 
-        void x(T value) OPENVRML_NOTHROW;
-        void y(T value) OPENVRML_NOTHROW;
+        float y() const OPENVRML_NOTHROW;
+        void y(float value) OPENVRML_NOTHROW;
 
-        T dot(const vec2<T> & vec) const OPENVRML_NOTHROW;
-        T length() const OPENVRML_NOTHROW;
-        const vec2<T> normalize() const OPENVRML_NOTHROW;
+        float dot(const vec2f & vec) const OPENVRML_NOTHROW;
+        float length() const OPENVRML_NOTHROW;
+        const vec2f normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec2<float> operator*(float lhs,
-                                             const vec2<float> & rhs)
+    OPENVRML_API const vec2f operator*(const vec2f & lhs, float rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec2<float> & v);
-    OPENVRML_API const vec2<double> operator*(double lhs,
-                                              const vec2<double> & rhs)
+    OPENVRML_API const vec2f operator*(float lhs, const vec2f & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec2<double> & v);
+    OPENVRML_API const vec2f operator/(const vec2f & lhs, float rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2f operator+(const vec2f & lhs, const vec2f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2f operator-(const vec2f & lhs, const vec2f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator==(const vec2f & lhs, const vec2f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const vec2f & lhs, const vec2f & rhs)
+        OPENVRML_NOTHROW;
 
-    template<typename T>
-    inline const T & vec2<T>::operator[](const size_t index) const OPENVRML_NOTHROW
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec2f & v);
+
+    inline const float & vec2f::operator[](const size_t index) const
+        OPENVRML_NOTHROW
     {
         assert(index < 2);
         return this->vec[index];
     }
 
-    template<typename T>
-    inline T vec2<T>::x() const OPENVRML_NOTHROW
+    inline float vec2f::x() const OPENVRML_NOTHROW
     {
         return this->vec[0];
     }
 
-    template<typename T>
-    inline T vec2<T>::y() const OPENVRML_NOTHROW
+    inline float vec2f::y() const OPENVRML_NOTHROW
     {
         return this->vec[1];
     }
 
-    template<typename T>
-    inline void vec2<T>::x(const T value) OPENVRML_NOTHROW
+    inline void vec2f::x(const float value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -264,8 +261,7 @@ namespace openvrml {
         this->vec[0] = value;
     }
 
-    template<typename T>
-    inline void vec2<T>::y(const T value) OPENVRML_NOTHROW
+    inline void vec2f::y(const float value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -275,99 +271,174 @@ namespace openvrml {
         this->vec[1] = value;
     }
 
-    typedef vec2<float> vec2f;
-    typedef vec2<double> vec2d;
+
+    class OPENVRML_API vec2d {
+        double vec[2];
+
+    public:
+        vec2d() OPENVRML_NOTHROW;
+        explicit vec2d(const double (&vec)[2]) OPENVRML_NOTHROW;
+        vec2d(double x, double y) OPENVRML_NOTHROW;
+
+        vec2d & operator*=(double scalar) OPENVRML_NOTHROW;
+        vec2d & operator/=(double scalar) OPENVRML_NOTHROW;
+        vec2d & operator+=(const vec2d & vec) OPENVRML_NOTHROW;
+        vec2d & operator-=(const vec2d & vec) OPENVRML_NOTHROW;
+
+        const vec2d operator-() const OPENVRML_NOTHROW;
+
+        const double & operator[](size_t index) const OPENVRML_NOTHROW;
+
+        double x() const OPENVRML_NOTHROW;
+        void x(double value) OPENVRML_NOTHROW;
+
+        double y() const OPENVRML_NOTHROW;
+        void y(double value) OPENVRML_NOTHROW;
+
+        double dot(const vec2d & vec) const OPENVRML_NOTHROW;
+        double length() const OPENVRML_NOTHROW;
+        const vec2d normalize() const OPENVRML_NOTHROW;
+    };
+
+    OPENVRML_API const vec2d operator*(const vec2d & lhs, double rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2d operator*(double lhs, const vec2d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2d operator/(const vec2d & lhs, double rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2d operator+(const vec2d & lhs, const vec2d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec2d operator-(const vec2d & lhs, const vec2d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator==(const vec2d & lhs, const vec2d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const vec2d & lhs, const vec2d & rhs)
+        OPENVRML_NOTHROW;
+
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec2d & v);
+
+    inline const double & vec2d::operator[](const size_t index) const
+        OPENVRML_NOTHROW
+    {
+        assert(index < 2);
+        return this->vec[index];
+    }
+
+    inline double vec2d::x() const OPENVRML_NOTHROW
+    {
+        return this->vec[0];
+    }
+
+    inline double vec2d::y() const OPENVRML_NOTHROW
+    {
+        return this->vec[1];
+    }
+
+    inline void vec2d::x(const double value) OPENVRML_NOTHROW
+    {
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
+        this->vec[0] = value;
+    }
+
+    inline void vec2d::y(const double value) OPENVRML_NOTHROW
+    {
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
+        this->vec[1] = value;
+    }
 
 
     class mat4f;
 
-    template<typename T>
-    class OPENVRML_API vec3 {
-        T vec[3];
+    class vec3f {
+        float vec[3];
 
     public:
-        vec3() OPENVRML_NOTHROW;
-        explicit vec3(const T (&vec)[3]) OPENVRML_NOTHROW;
-        vec3(T x, T y, T z) OPENVRML_NOTHROW;
+        vec3f() OPENVRML_NOTHROW;
+        explicit vec3f(const float (&vec)[3]) OPENVRML_NOTHROW;
+        vec3f(float x, float y, float z) OPENVRML_NOTHROW;
 
-        vec3<T> & operator*=(const vec3<T> & vec) OPENVRML_NOTHROW;
-        vec3<T> & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
-        vec3<T> & operator*=(T scalar) OPENVRML_NOTHROW;
-        vec3<T> & operator/=(T scalar) OPENVRML_NOTHROW;
-        vec3<T> & operator+=(const vec3<T> & vec) OPENVRML_NOTHROW;
-        vec3<T> & operator-=(const vec3<T> & vec) OPENVRML_NOTHROW;
+        vec3f & operator*=(const vec3f & vec) OPENVRML_NOTHROW;
+        vec3f & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
+        vec3f & operator*=(float scalar) OPENVRML_NOTHROW;
+        vec3f & operator/=(float scalar) OPENVRML_NOTHROW;
+        vec3f & operator+=(const vec3f & vec) OPENVRML_NOTHROW;
+        vec3f & operator-=(const vec3f & vec) OPENVRML_NOTHROW;
 
-        const vec3<T> operator-() const OPENVRML_NOTHROW;
-        const vec3<T> operator*(const vec3<T> & rhs) const OPENVRML_NOTHROW;
-        const vec3<T> operator*(const T rhs) const OPENVRML_NOTHROW;
-        const vec3<T> operator*(const mat4f & mat) const OPENVRML_NOTHROW;
-        const vec3<T> operator/(const T rhs) const OPENVRML_NOTHROW;
-        const vec3<T> operator+(const vec3<T> & rhs) const OPENVRML_NOTHROW;
-        const vec3<T> operator-(const vec3<T> & rhs) const OPENVRML_NOTHROW;
-        bool operator==(const vec3<T> & rhs) const OPENVRML_NOTHROW;
-        bool operator!=(const vec3<T> & rhs) const OPENVRML_NOTHROW;
+        const vec3f operator-() const OPENVRML_NOTHROW;
 
-        const T & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
-        T x() const OPENVRML_NOTHROW;
-        T y() const OPENVRML_NOTHROW;
-        T z() const OPENVRML_NOTHROW;
+        float x() const OPENVRML_NOTHROW;
+        void x(float value) OPENVRML_NOTHROW;
 
-        void x(T value) OPENVRML_NOTHROW;
-        void y(T value) OPENVRML_NOTHROW;
-        void z(T value) OPENVRML_NOTHROW;
+        float y() const OPENVRML_NOTHROW;
+        void y(float value) OPENVRML_NOTHROW;
 
-        T dot(const vec3<T> & vec) const OPENVRML_NOTHROW;
-        T length() const OPENVRML_NOTHROW;
-        const vec3<T> normalize() const OPENVRML_NOTHROW;
+        float z() const OPENVRML_NOTHROW;
+        void z(float value) OPENVRML_NOTHROW;
+
+        float dot(const vec3f & vec) const OPENVRML_NOTHROW;
+        float length() const OPENVRML_NOTHROW;
+        const vec3f normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec3<float> operator*(const float lhs,
-                                             const vec3<float> & rhs)
+    OPENVRML_API const vec3f operator*(const vec3f & lhs, const vec3f & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API const vec3<float> operator*(const mat4f & mat,
-                                             const vec3<float> & vec)
+    OPENVRML_API const vec3f operator*(const vec3f & lhs, float rhs)
         OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator*(float lhs, const vec3f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator*(const vec3f & lhs, const mat4f & mat)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator*(const mat4f & mat, const vec3f & vec)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator/(const vec3f & lhs, float rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator+(const vec3f & lhs, const vec3f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3f operator-(const vec3f & lhs, const vec3f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator==(const vec3f & lhs, const vec3f & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const vec3f & lhs, const vec3f & rhs)
+        OPENVRML_NOTHROW;
+
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec3<float> & v);
-    OPENVRML_API const vec3<double> operator*(const double lhs,
-                                              const vec3<double> & rhs)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const vec3<double> operator*(const mat4f & mat,
-                                              const vec3<double> & vec)
-        OPENVRML_NOTHROW;
-    OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const vec3<double> & v);
+                                           const vec3f & v);
 
 
-    template<typename T>
-    inline const T & vec3<T>::operator[](const size_t index) const
+    inline const float & vec3f::operator[](const size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 3);
         return this->vec[index];
     }
 
-    template<typename T>
-    inline T vec3<T>::x() const OPENVRML_NOTHROW
+    inline float vec3f::x() const OPENVRML_NOTHROW
     {
         return this->vec[0];
     }
 
-    template<typename T>
-    inline T vec3<T>::y() const OPENVRML_NOTHROW
+    inline float vec3f::y() const OPENVRML_NOTHROW
     {
         return this->vec[1];
     }
 
-    template<typename T>
-    inline T vec3<T>::z() const OPENVRML_NOTHROW
+    inline float vec3f::z() const OPENVRML_NOTHROW
     {
         return this->vec[2];
     }
 
-    template<typename T>
-    inline void vec3<T>::x(const T value) OPENVRML_NOTHROW
+    inline void vec3f::x(const float value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -377,8 +448,7 @@ namespace openvrml {
         this->vec[0] = value;
     }
 
-    template<typename T>
-    inline void vec3<T>::y(const T value) OPENVRML_NOTHROW
+    inline void vec3f::y(const float value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -388,8 +458,7 @@ namespace openvrml {
         this->vec[1] = value;
     }
 
-    template<typename T>
-    inline void vec3<T>::z(const T value) OPENVRML_NOTHROW
+    inline void vec3f::z(const float value) OPENVRML_NOTHROW
     {
         //
         // Ensure value is not NaN.
@@ -399,8 +468,116 @@ namespace openvrml {
         this->vec[2] = value;
     }
 
-    typedef vec3<float> vec3f;
-    typedef vec3<double> vec3d;
+
+    class vec3d {
+        double vec[3];
+
+    public:
+        vec3d() OPENVRML_NOTHROW;
+        explicit vec3d(const double (&vec)[3]) OPENVRML_NOTHROW;
+        vec3d(double x, double y, double z) OPENVRML_NOTHROW;
+
+        vec3d & operator*=(const vec3d & vec) OPENVRML_NOTHROW;
+        vec3d & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
+        vec3d & operator*=(double scalar) OPENVRML_NOTHROW;
+        vec3d & operator/=(double scalar) OPENVRML_NOTHROW;
+        vec3d & operator+=(const vec3d & vec) OPENVRML_NOTHROW;
+        vec3d & operator-=(const vec3d & vec) OPENVRML_NOTHROW;
+
+        const vec3d operator-() const OPENVRML_NOTHROW;
+
+        const double & operator[](size_t index) const OPENVRML_NOTHROW;
+
+        double x() const OPENVRML_NOTHROW;
+        void x(double value) OPENVRML_NOTHROW;
+
+        double y() const OPENVRML_NOTHROW;
+        void y(double value) OPENVRML_NOTHROW;
+
+        double z() const OPENVRML_NOTHROW;
+        void z(double value) OPENVRML_NOTHROW;
+
+        double dot(const vec3d & vec) const OPENVRML_NOTHROW;
+        double length() const OPENVRML_NOTHROW;
+        const vec3d normalize() const OPENVRML_NOTHROW;
+    };
+
+    OPENVRML_API const vec3d operator*(const vec3d & lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator*(const vec3d & lhs, double rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator*(double lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator*(const vec3d & lhs, const mat4f & mat)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator*(const mat4f & mat, const vec3d & vec)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator/(const vec3d & lhs, double rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator+(const vec3d & lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const vec3d operator-(const vec3d & lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator==(const vec3d & lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const vec3d & lhs, const vec3d & rhs)
+        OPENVRML_NOTHROW;
+
+    OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                           const vec3d & v);
+
+
+    inline const double & vec3d::operator[](const size_t index) const
+        OPENVRML_NOTHROW
+    {
+        assert(index < 3);
+        return this->vec[index];
+    }
+
+    inline double vec3d::x() const OPENVRML_NOTHROW
+    {
+        return this->vec[0];
+    }
+
+    inline double vec3d::y() const OPENVRML_NOTHROW
+    {
+        return this->vec[1];
+    }
+
+    inline double vec3d::z() const OPENVRML_NOTHROW
+    {
+        return this->vec[2];
+    }
+
+    inline void vec3d::x(const double value) OPENVRML_NOTHROW
+    {
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
+        this->vec[0] = value;
+    }
+
+    inline void vec3d::y(const double value) OPENVRML_NOTHROW
+    {
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
+        this->vec[1] = value;
+    }
+
+    inline void vec3d::z(const double value) OPENVRML_NOTHROW
+    {
+        //
+        // Ensure value is not NaN.
+        //
+        assert(value == value);
+
+        this->vec[2] = value;
+    }
 
 
     class quatf;

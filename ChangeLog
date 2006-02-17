@@ -1,5 +1,16 @@
 2006-02-17 Braden McDaniel  <braden@endoframe.com>
 
+	Define openvrml::vec2f, openvrml::vec2d, openvrml::vec3f, and
+	openvrml::vec3d as classes rather than class template instances.
+	The approach of keeping the function template definitions in the
+	implementations and providing explicit template instantiations
+	plays poorly with gcc's symbol visibility (and culling) machinery.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+
+2006-02-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(text_node::update_face()): Moved FontconfigError and
 	FreeTypeError exception classes out of the function so that they
