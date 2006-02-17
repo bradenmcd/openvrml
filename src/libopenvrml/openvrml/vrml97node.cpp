@@ -22357,6 +22357,45 @@ namespace {
     }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+
+    const char * const fcResultMessage[] = { "match",
+                                             "no match",
+                                             "type mismatch",
+                                             "no id" };
+
+    //
+    // FontconfigError and FreeTypeError are never thrown out of the library.
+    //
+
+    class OPENVRML_LOCAL FontconfigError : public std::runtime_error {
+    public:
+        explicit FontconfigError(const FcResult result):
+            std::runtime_error(fcResultMessage[result])
+        {}
+
+        virtual ~FontconfigError() OPENVRML_NOTHROW
+        {}
+    };
+
+    class OPENVRML_LOCAL FreeTypeError : public std::runtime_error {
+    public:
+        //
+        // The normal build of FreeType doesn't include a means of mapping
+        // error codes to human-readable strings.  There's a means of
+        // letting client apps do this by defining some macros, but that's
+        // too much trouble for now.
+        //
+        explicit FreeTypeError(FT_Error):
+            std::runtime_error("FreeType error")
+        {}
+
+        virtual ~FreeTypeError() OPENVRML_NOTHROW
+        {}
+    };
+
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
+
     /**
      * @brief Called when @a fontStyle changes to update the font face.
      *
@@ -22365,37 +22404,6 @@ namespace {
     void text_node::update_face() OPENVRML_THROW1(std::bad_alloc)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-        static const char * const fcResultMessage[] = { "match",
-                                                        "no match",
-                                                        "type mismatch",
-                                                        "no id" };
-
-        class FontconfigError : public std::runtime_error {
-        public:
-            explicit FontconfigError(const FcResult result):
-                std::runtime_error(fcResultMessage[result])
-                {}
-
-            virtual ~FontconfigError() OPENVRML_NOTHROW
-                {}
-        };
-
-        class FreeTypeError : public std::runtime_error {
-        public:
-            //
-            // The normal build of FreeType doesn't include a means of mapping
-            // error codes to human-readable strings.  There's a means of
-            // letting client apps do this by defining some macros, but that's
-            // too much trouble for now.
-            //
-            explicit FreeTypeError(FT_Error):
-                std::runtime_error("FreeType error")
-                {}
-
-            virtual ~FreeTypeError() OPENVRML_NOTHROW
-                {}
-        };
-
         using std::string;
         typedef std::basic_string<FcChar8, FcChar8_traits> FcChar8_string;
 
