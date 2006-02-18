@@ -66,7 +66,39 @@
 #   include <limits>
 #   include <boost/concept_check.hpp>
 #   include <boost/mpl/vector.hpp>
-#   include <openvrml/field_value.h>
+
+namespace openvrml {
+    class sfbool;
+    class sfcolor;
+    class sfcolorrgba;
+    class sfdouble;
+    class sffloat;
+    class sfimage;
+    class sfint32;
+    class sfnode;
+    class sfrotation;
+    class sfstring;
+    class sftime;
+    class sfvec2d;
+    class sfvec2f;
+    class sfvec3d;
+    class sfvec3f;
+    class mfbool;
+    class mfcolor;
+    class mfcolorrgba;
+    class mfdouble;
+    class mffloat;
+    class mfimage;
+    class mfint32;
+    class mfnode;
+    class mfrotation;
+    class mfstring;
+    class mftime;
+    class mfvec2d;
+    class mfvec2f;
+    class mfvec3d;
+    class mfvec3f;
+}
 
 namespace {
     namespace openvrml_ {
