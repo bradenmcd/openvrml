@@ -1,5 +1,15 @@
 2006-02-20 Braden McDaniel  <braden@endoframe.com>
 
+	Prefer std::ostringstream for string concatentation.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::resolve_against(const uri &) const): Use std::ostringstream
+	for string concatentation instead of std::string operator+.
+	(create_file_url(const uri &)): Use std::ostringstream for string
+	concatentation instead of std::string operator+.
+
+2006-02-20 Braden McDaniel  <braden@endoframe.com>
+
 	Set the scene profile in scene::load(resource_istream&).  The
 	profile stuff is inadequate; but this hack will let it hobble
 	along until a comprehensive fix is applied.  That is, it should

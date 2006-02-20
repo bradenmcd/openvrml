@@ -3691,31 +3691,38 @@ namespace {
     {
         using std::list;
         using std::string;
+        using std::ostringstream;
 
         assert(relative(*this));
         assert(!relative(absolute_uri));
 
-        string result = absolute_uri.scheme() + ':';
+        ostringstream result;
+        result.unsetf(ostringstream::skipws);
+        result << absolute_uri.scheme() << ':';
 
         if (!this->authority().empty()) {
-            return uri(result + this->scheme_specific_part());
+            result << this->scheme_specific_part();
+            return uri(result.str());
         } else {
-            result += "//" + absolute_uri.authority();
+            result << "//" << absolute_uri.authority();
         }
 
-        string path = absolute_uri.path();
-        const string::size_type last_slash_index = path.find_last_of('/');
+        ostringstream path;
+        path.unsetf(ostringstream::skipws);
+        path << absolute_uri.path();
+        const string::size_type last_slash_index =
+            path.str().find_last_of('/');
 
         //
         // Chop off the leading slash and the last path segment (typically a
         // file name).
         //
-        path = path.substr(1, last_slash_index);
+        path.str(path.str().substr(1, last_slash_index));
 
         //
         // Append the relative path.
         //
-        path += this->path();
+        path << this->path();
 
         //
         // Put the path segments in a list to process them.
@@ -3724,9 +3731,10 @@ namespace {
         string::size_type slash_index = 0;
         string::size_type segment_start_index = 0;
         do {
-            slash_index = path.find('/', segment_start_index);
-            string segment = path.substr(segment_start_index,
-                                         slash_index - segment_start_index);
+            slash_index = path.str().find('/', segment_start_index);
+            string segment =
+                path.str().substr(segment_start_index,
+                                  slash_index - segment_start_index);
             if (!segment.empty()) {
                 path_segments.push_back(segment);
             }
@@ -3753,27 +3761,27 @@ namespace {
         //
         // Reconstruct the path.
         //
-        path = string();
+        path.str(string());
         for (pos = path_segments.begin(); pos != path_segments.end(); ++pos) {
-            path += '/' + *pos;
+            path << '/' << *pos;
         }
 
         //
         // End in a slash?
         //
-        if (*(this->path().end() - 1) == '/') { path += '/'; }
+        if (*(this->path().end() - 1) == '/') { path << '/'; }
 
-        result += path;
+        result << path.str();
 
         const string query = this->query();
-        if (!query.empty()) { result += '?' + query; }
+        if (!query.empty()) { result << '?' << query; }
 
         const string fragment = this->fragment();
-        if (!fragment.empty()) { result += '#' + fragment; }
+        if (!fragment.empty()) { result << '#' << fragment; }
 
         uri result_uri;
         try {
-            result_uri = uri(result);
+            result_uri = uri(result.str());
         } catch (openvrml::invalid_url &) {
             assert(false); // If we constructed a bad URI, something is wrong.
         }
@@ -8878,8 +8886,11 @@ namespace {
         assert(relative(relative_uri));
 
         using std::string;
+        using std::ostringstream;
 
-        string result = "file://";
+        ostringstream result;
+        result.unsetf(ostringstream::skipws);
+        result << "file://";
         uri result_uri;
 
         try {
@@ -8912,15 +8923,15 @@ namespace {
             }
 # endif
 
-            result += resolved_path;
+            result << resolved_path;
 
             const string query = relative_uri.query();
-            if (!query.empty()) { result += '?' + query; }
+            if (!query.empty()) { result << '?' << query; }
 
             const string fragment = relative_uri.fragment();
-            if (!fragment.empty()) { result += '#' + fragment; }
+            if (!fragment.empty()) { result << '#' << fragment; }
 
-            result_uri = uri(result);
+            result_uri = uri(result.str());
 
         } catch (openvrml::invalid_url &) {
             assert(false); // If we constructed a bad URI, something is wrong.
