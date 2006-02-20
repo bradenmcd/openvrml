@@ -1,5 +1,12 @@
 2006-02-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/field_value.h
+	(openvrml::field_value): The Microsoft C/C++ compiler 14.0 seems
+	picky about requiring the OPENVRML_API macro in the friend
+	declaration of operator<<.
+
+2006-02-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.h
 	(openvrml::vec3f): Added missing OPENVRML_API.
 	(openvrml::vec3d): Added missing OPENVRML_API.

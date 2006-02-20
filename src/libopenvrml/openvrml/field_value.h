@@ -42,8 +42,8 @@ namespace openvrml {
                                            const field_value & value);
 
     class OPENVRML_API field_value {
-        friend std::ostream & operator<<(std::ostream & out,
-                                         const field_value & value);
+        friend OPENVRML_API std::ostream &
+        operator<<(std::ostream & out, const field_value & value);
 
     protected:
         class counted_impl_base {
