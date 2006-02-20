@@ -1,5 +1,17 @@
 2006-02-19 Braden McDaniel  <braden@endoframe.com>
 
+	Removed OPENVRML_API from class templates.  The Microsoft compiler
+	doesn't like it there; and it probably shouldn't be there anyway.
+
+	* src/libopenvrml/openvrml/event.h
+	(openvrml::field_value_listener<FieldValue>): Removed
+	OPENVRML_API.
+	(openvrml::node_field_value_listener<FieldValue>): Removed
+	OPENVRML_API.
+	(openvrml::field_value_emitter<FieldValue>): Removed OPENVRML_API.
+
+2006-02-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field_value.h
 	(openvrml::field_value): The Microsoft C/C++ compiler 14.0 seems
 	picky about requiring the OPENVRML_API macro in the friend
