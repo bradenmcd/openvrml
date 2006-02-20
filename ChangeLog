@@ -1,3 +1,9 @@
+2006-02-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node::scope() const): Return a reference to a const
+	scope.
+
 2006-02-18 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/private.h: Forward declare field_value types to

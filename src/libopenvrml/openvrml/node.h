@@ -434,7 +434,7 @@ namespace openvrml {
         const std::string & id() const OPENVRML_NOTHROW;
         void id(const std::string & node_id) OPENVRML_THROW1(std::bad_alloc);
 
-        openvrml::scope & scope() const OPENVRML_NOTHROW;
+        const openvrml::scope & scope() const OPENVRML_NOTHROW;
 
         openvrml::scene * scene() const OPENVRML_NOTHROW;
 
@@ -481,7 +481,8 @@ namespace openvrml {
         boost::recursive_mutex & mutex() const OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_initialize(double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
             OPENVRML_THROW1(unsupported_interface) = 0;
         virtual openvrml::event_listener &
@@ -554,7 +555,7 @@ namespace openvrml {
         n->release();
     }
 
-    inline scope & node::scope() const OPENVRML_NOTHROW
+    inline const scope & node::scope() const OPENVRML_NOTHROW
     {
         assert(this->scope_);
         return *this->scope_;
