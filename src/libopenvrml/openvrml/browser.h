@@ -281,6 +281,7 @@ namespace openvrml {
 
         const std::vector<boost::intrusive_ptr<node> > & root_nodes() const
             OPENVRML_NOTHROW;
+        const scope * root_scope() const OPENVRML_NOTHROW;
         const node_path find_node(const node & n) const
             OPENVRML_THROW1(std::bad_alloc);
         viewpoint_node & active_viewpoint() const OPENVRML_NOTHROW;
@@ -392,6 +393,7 @@ namespace openvrml {
             OPENVRML_NOTHROW;
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
             OPENVRML_THROW1(std::bad_alloc);
+        const scope * root_scope() const OPENVRML_NOTHROW;
         const std::string url() const OPENVRML_THROW1(std::bad_alloc);
         void render(openvrml::viewer & viewer, rendering_context context);
         void load_url(const std::vector<std::string> & url,
@@ -405,6 +407,8 @@ namespace openvrml {
     private:
         virtual void scene_loaded();
     };
+
+    OPENVRML_API const scope * root_scope(const scene & s) OPENVRML_NOTHROW;
 }
 
 # endif // OPENVRML_BROWSER_H

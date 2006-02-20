@@ -1,5 +1,19 @@
 2006-02-19 Braden McDaniel  <braden@endoframe.com>
 
+	Added member functions to return the root scope from
+	openvrml::browser and openvrml::scene.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::root_scope() const): Added function.  Return
+	the root scope.
+	(openvrml::scene::root_scope() const): Added function.  Return
+	the root scope.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Added member function root_scope.
+	(openvrml::scene): Added member function root_scope.
+
+2006-02-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.h
 	(openvrml::node::scope() const): Return a reference to a const
 	scope.

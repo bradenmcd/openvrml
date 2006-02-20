@@ -7574,6 +7574,18 @@ openvrml::browser::root_nodes() const
 }
 
 /**
+ * @brief Get the root scope.
+ *
+ * @return the root scope.
+ */
+const openvrml::scope * openvrml::browser::root_scope() const OPENVRML_NOTHROW
+{
+    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    assert(this->scene_);
+    return this->scene_->root_scope();
+}
+
+/**
  * @brief Get the path to a node in the scene graph.
  *
  * @param n  the objective node.
@@ -9151,6 +9163,20 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     this->nodes_ = n;
+}
+
+/**
+ * @brief Get the root scope.
+ *
+ * @return the root scope.
+ */
+const openvrml::scope * openvrml::scene::root_scope() const
+    OPENVRML_NOTHROW
+{
+    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    return this->nodes_.empty()
+        ? 0
+        : &this->nodes_.front()->scope();
 }
 
 /**
