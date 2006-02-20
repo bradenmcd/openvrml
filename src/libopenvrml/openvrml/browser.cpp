@@ -9095,10 +9095,12 @@ void openvrml::scene::load(resource_istream & in)
 
         if (iequals(in.type(), "model/vrml")
             || iequals(in.type(), "x-world/x-vrml")) {
+            this->profile_ = vrml97_profile_id;
             Vrml97Scanner scanner(in);
             Vrml97Parser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);
         } else if (iequals(in.type(), "model/x3d+vrml")) {
+            this->profile_ = x3d_full_profile_id;
             X3DVrmlScanner scanner(in);
             X3DVrmlParser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);

@@ -1,3 +1,13 @@
+2006-02-20 Braden McDaniel  <braden@endoframe.com>
+
+	Set the scene profile in scene::load(resource_istream&).  The
+	profile stuff is inadequate; but this hack will let it hobble
+	along until a comprehensive fix is applied.  That is, it should
+	allow VRML97 to continue to work.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::load(resource_istream &)): Set the scene profile.
+
 2006-02-19 Braden McDaniel  <braden@endoframe.com>
 
 	Removed OPENVRML_API from class templates.  The Microsoft compiler
