@@ -358,7 +358,7 @@ namespace openvrml {
 
     class mat4f;
 
-    class vec3f {
+    class OPENVRML_API vec3f {
         float vec[3];
 
     public:
@@ -469,7 +469,7 @@ namespace openvrml {
     }
 
 
-    class vec3d {
+    class OPENVRML_API vec3d {
         double vec[3];
 
     public:

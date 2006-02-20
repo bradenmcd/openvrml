@@ -1,5 +1,11 @@
 2006-02-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::vec3f): Added missing OPENVRML_API.
+	(openvrml::vec3d): Added missing OPENVRML_API.
+
+2006-02-19 Braden McDaniel  <braden@endoframe.com>
+
 	Added member functions to return the root scope from
 	openvrml::browser and openvrml::scene.
 
