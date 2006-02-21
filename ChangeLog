@@ -1,5 +1,15 @@
 2006-02-21 Braden McDaniel  <braden@endoframe.com>
 
+	Removed Visual C++ 7.1 compatibility property page and enabled
+	link-time code generation for Release configurations.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
+2006-02-21 Braden McDaniel  <braden@endoframe.com>
+
 	Visual C++ 2005 project file updates.
 
 	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Added file.

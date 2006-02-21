@@ -20,7 +20,6 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(OutDir)"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -90,8 +89,8 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(OutDir)"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -162,7 +161,6 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -241,7 +239,6 @@
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -262,9 +259,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm400"
-				Optimization="2"
+				Optimization="3"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
 				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL"
 				StringPooling="true"
@@ -291,6 +289,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				LinkTimeCodeGeneration="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
