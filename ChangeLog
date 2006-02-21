@@ -1,5 +1,17 @@
 2006-02-21 Braden McDaniel  <braden@endoframe.com>
 
+	Visual C++ 2005 project file updates.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Added file.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml-config.h:
+	Build without exception specifications.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
+2006-02-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/scope.cpp (has_id_): Added missing
 	OPENVRML_LOCAL.
 

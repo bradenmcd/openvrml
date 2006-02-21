@@ -37,4 +37,6 @@
 
 #   define OPENVRML_LOCAL
 
+#   define OPENVRML_ENABLE_EXCEPTION_SPECS 0
+
 # endif // ifndef OPENVRML_CONFIG_H

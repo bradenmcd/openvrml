@@ -161,7 +161,7 @@
 			Name="Debug DLL|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
 			>
@@ -185,10 +185,10 @@
 				AdditionalOptions="/Zm400"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
@@ -196,7 +196,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4226;4250;4290;4355;4800"
+				DisableSpecificWarnings="4226;4250;4251;4275;4290;4355;4661;4800"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -209,10 +209,13 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -222,6 +225,12 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -257,7 +266,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -268,7 +277,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4226;4250;4290;4355;4800"
+				DisableSpecificWarnings="4226;4250;4251;4275;4290;4355;4661;4800"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

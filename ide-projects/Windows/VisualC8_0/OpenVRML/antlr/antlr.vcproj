@@ -180,7 +180,7 @@
 				AdditionalIncludeDirectories="..\..\..\..\..\lib\antlr"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
 				RuntimeTypeInfo="true"
