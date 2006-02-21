@@ -112,10 +112,8 @@ namespace {
      * @brief Class object for Background nodes.
      */
     class OPENVRML_LOCAL background_class : public node_class {
-        typedef std::vector<background_node *> bound_nodes_t;
-
         background_node * first;
-        bound_nodes_t bound_nodes;
+        bound_node_stack<background_node> bound_nodes;
 
     public:
         explicit background_class(openvrml::browser & browser);
@@ -128,7 +126,7 @@ namespace {
         void bind(background_node & background, double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
         void unbind(background_node & background, double timestamp)
-            OPENVRML_NOTHROW;
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void
@@ -373,10 +371,8 @@ namespace {
      * @brief Class object for Fog nodes.
      */
     class OPENVRML_LOCAL fog_class : public node_class {
-        typedef std::vector<fog_node *> bound_nodes_t;
-
         fog_node * first;
-        bound_nodes_t bound_nodes;
+        bound_node_stack<fog_node> bound_nodes;
 
     public:
         explicit fog_class(openvrml::browser & browser);
@@ -386,8 +382,10 @@ namespace {
         void reset_first() OPENVRML_NOTHROW;
         bool has_first() const OPENVRML_NOTHROW;
         bool is_first(fog_node & fog) OPENVRML_NOTHROW;
-        void bind(fog_node & fog, double timestamp) OPENVRML_THROW1(std::bad_alloc);
-        void unbind(fog_node & fog, double timestamp) OPENVRML_NOTHROW;
+        void bind(fog_node & fog, double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
+        void unbind(fog_node & fog, double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void
@@ -569,10 +567,8 @@ namespace {
      * @brief Class object for NavigationInfo nodes.
      */
     class OPENVRML_LOCAL navigation_info_class : public node_class {
-        typedef std::vector<navigation_info_node *> bound_nodes_t;
-
         navigation_info_node * first;
-        bound_nodes_t bound_nodes;
+        bound_node_stack<navigation_info_node> bound_nodes;
 
     public:
         explicit navigation_info_class(openvrml::browser & browser);
@@ -585,7 +581,7 @@ namespace {
         void bind(navigation_info_node & nav_info, double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
         void unbind(navigation_info_node & nav_info, double timestamp)
-            OPENVRML_NOTHROW;
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void
@@ -961,10 +957,8 @@ namespace {
      * @brief Class object for Viewpoint nodes.
      */
     class OPENVRML_LOCAL viewpoint_class : public node_class {
-        typedef std::vector<viewpoint_node *> bound_nodes_t;
-
         viewpoint_node * first;
-        bound_nodes_t bound_nodes;
+        bound_node_stack<viewpoint_node> bound_nodes;
 
     public:
         explicit viewpoint_class(openvrml::browser & browser);
@@ -976,7 +970,8 @@ namespace {
         bool is_first(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
         void bind(viewpoint_node & viewpoint, double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
-        void unbind(viewpoint_node & viewpoint, double timestamp) OPENVRML_NOTHROW;
+        void unbind(viewpoint_node & viewpoint, double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void
@@ -2310,8 +2305,10 @@ namespace {
 
         class back_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit back_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
-            back_url_exposedfield(const back_url_exposedfield & obj) OPENVRML_NOTHROW;
+            explicit back_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
+            back_url_exposedfield(const back_url_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~back_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -2324,7 +2321,8 @@ namespace {
 
         class bottom_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit bottom_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            explicit bottom_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
             bottom_url_exposedfield(const bottom_url_exposedfield & obj)
                 OPENVRML_NOTHROW;
             virtual ~bottom_url_exposedfield() OPENVRML_NOTHROW;
@@ -2339,7 +2337,8 @@ namespace {
 
         class front_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit front_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            explicit front_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
             front_url_exposedfield(const front_url_exposedfield & obj)
                 OPENVRML_NOTHROW;
             virtual ~front_url_exposedfield() OPENVRML_NOTHROW;
@@ -2354,8 +2353,10 @@ namespace {
 
         class left_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit left_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
-            left_url_exposedfield(const left_url_exposedfield & obj) OPENVRML_NOTHROW;
+            explicit left_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
+            left_url_exposedfield(const left_url_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~left_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -2368,7 +2369,8 @@ namespace {
 
         class right_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit right_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
+            explicit right_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
             right_url_exposedfield(const right_url_exposedfield & obj)
                 OPENVRML_NOTHROW;
             virtual ~right_url_exposedfield() OPENVRML_NOTHROW;
@@ -2383,8 +2385,10 @@ namespace {
 
         class top_url_exposedfield : public exposedfield<mfstring> {
         public:
-            explicit top_url_exposedfield(background_node & node) OPENVRML_NOTHROW;
-            top_url_exposedfield(const top_url_exposedfield & obj) OPENVRML_NOTHROW;
+            explicit top_url_exposedfield(background_node & node)
+                OPENVRML_NOTHROW;
+            top_url_exposedfield(const top_url_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~top_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -2431,6 +2435,8 @@ namespace {
         background_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~background_node() OPENVRML_NOTHROW;
+
+        void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
@@ -2870,6 +2876,8 @@ namespace {
                  const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~fog_node() OPENVRML_NOTHROW;
 
+        void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
+
     private:
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
@@ -3215,7 +3223,10 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~navigation_info_node() OPENVRML_NOTHROW;
 
-        virtual const std::vector<float> & avatar_size() const OPENVRML_NOTHROW;
+        void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
+
+        virtual const std::vector<float> & avatar_size() const
+            OPENVRML_NOTHROW;
         virtual bool headlight() const OPENVRML_NOTHROW;
         virtual float speed() const OPENVRML_NOTHROW;
         virtual const std::vector<std::string> & type() const OPENVRML_NOTHROW;
@@ -4111,7 +4122,8 @@ namespace {
         class position_exposedfield : public exposedfield<sfvec3f> {
         public:
             explicit position_exposedfield(viewpoint_node & node);
-            position_exposedfield(const position_exposedfield & obj) OPENVRML_NOTHROW;
+            position_exposedfield(const position_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~position_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -4145,9 +4157,12 @@ namespace {
                        const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~viewpoint_node() OPENVRML_NOTHROW;
 
+        void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
+
         virtual const mat4f & transformation() const OPENVRML_NOTHROW;
         virtual const mat4f & user_view_transform() const OPENVRML_NOTHROW;
-        virtual void user_view_transform(const mat4f & transform) OPENVRML_NOTHROW;
+        virtual void user_view_transform(const mat4f & transform)
+            OPENVRML_NOTHROW;
         virtual const std::string & description() const OPENVRML_NOTHROW;
         virtual float field_of_view() const OPENVRML_NOTHROW;
 
@@ -5335,46 +5350,11 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    background_class::bind(background_node & background,
-                           const double timestamp)
+    void background_class::bind(background_node & background,
+                                const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        //
-        // If the node is already the active node, do nothing.
-        //
-        if (!this->bound_nodes.empty()
-            && &background == this->bound_nodes.back()) {
-            return;
-        }
-
-        //
-        // If the node is already on the stack, remove it.
-        //
-        const bound_nodes_t::iterator pos = find(this->bound_nodes.begin(),
-                                                 this->bound_nodes.end(),
-                                                 &background);
-        if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-        //
-        // Send FALSE from the currently active node's isBound.
-        //
-        if (!this->bound_nodes.empty()) {
-            background_node & current =
-                dynamic_cast<background_node &>(*this->bound_nodes.back());
-            current.is_bound_.value(false);
-            node::emit_event(current.is_bound_emitter_, timestamp);
-        }
-
-        //
-        // Push the node to the top of the stack, and have it send isBound
-        // TRUE.
-        //
-        this->bound_nodes.push_back(&background);
-        background.is_bound_.value(true);
-        node::emit_event(background.is_bound_emitter_, timestamp);
+        this->bound_nodes.bind(background, timestamp);
     }
 
     /**
@@ -5382,31 +5362,14 @@ namespace {
      *
      * @param background    the node to unbind.
      * @param timestamp     the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    background_class::unbind(background_node & background,
-                             const double timestamp)
-        OPENVRML_NOTHROW
+    void background_class::unbind(background_node & background,
+                                  const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        const bound_nodes_t::iterator pos = find(this->bound_nodes.begin(),
-                                                 this->bound_nodes.end(),
-                                                 &background);
-        if (pos != this->bound_nodes.end()) {
-            background.is_bound_.value(false);
-            node::emit_event(background.is_bound_emitter_, timestamp);
-
-            if (pos == this->bound_nodes.end() - 1
-                && this->bound_nodes.size() > 1) {
-                background_node & newActive =
-                    dynamic_cast<background_node &>(
-                        **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value(true);
-                node::emit_event(newActive.is_bound_emitter_, timestamp);
-            }
-            this->bound_nodes.erase(pos);
-        }
+        this->bound_nodes.unbind(background, timestamp);
     }
 
     /**
@@ -5418,7 +5381,8 @@ namespace {
      */
     void
     background_class::
-    do_initialize(openvrml::viewpoint_node *, const double timestamp) OPENVRML_NOTHROW
+    do_initialize(openvrml::viewpoint_node *, const double timestamp)
+        OPENVRML_NOTHROW
     {
         if (this->first) {
             try {
@@ -5468,8 +5432,8 @@ namespace {
                                 top,
                                 bottom);
         } else {
-            assert(this->bound_nodes.back());
-            background_node & background = *this->bound_nodes.back();
+            assert(this->bound_nodes.top());
+            background_node & background = *this->bound_nodes.top();
 
             // Background isn't selectable, so don't waste the time.
             if (v.mode() == viewer::pick_mode) { return; }
@@ -6517,6 +6481,26 @@ namespace {
     background_node::~background_node() OPENVRML_NOTHROW
     {
         // remove d_viewerObject...
+    }
+
+    /**
+     * @brief Set the bind state.
+     *
+     * This function is called by
+     * <code>bound_node_stack<BindableNode>::bind</code>.  It sets the
+     * "bind" state and fires an event; it does not actually put the
+     * node onto the bound node stack.
+     *
+     * @param[in] val       the bind state.
+     * @param[in] timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void background_node::bind(const bool val, const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        this->is_bound_.value(val);
+        node::emit_event(this->is_bound_emitter_, timestamp);
     }
 
     /**
@@ -11433,44 +11417,13 @@ namespace {
      *
      * @param fog       the node to bind.
      * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    void fog_class::bind(fog_node & fog,
-                         const double timestamp)
+    void fog_class::bind(fog_node & fog, const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        //
-        // If the node is already the active node, do nothing.
-        //
-        if (!this->bound_nodes.empty() && &fog == this->bound_nodes.back()) {
-            return;
-        }
-
-        //
-        // If the node is already on the stack, remove it.
-        //
-        const bound_nodes_t::iterator pos =
-            find(this->bound_nodes.begin(), this->bound_nodes.end(), &fog);
-        if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-        //
-        // Send FALSE from the currently active node's isBound.
-        //
-        if (!this->bound_nodes.empty()) {
-            fog_node & current =
-                dynamic_cast<fog_node &>(*this->bound_nodes.back());
-            current.is_bound_.value(false);
-            node::emit_event(current.is_bound_emitter_, timestamp);
-        }
-
-        //
-        // Push the node to the top of the stack, and have it send isBound
-        // TRUE.
-        //
-        this->bound_nodes.push_back(&fog);
-        fog.is_bound_.value(true);
-        node::emit_event(fog.is_bound_emitter_, timestamp);
+        this->bound_nodes.bind(fog, timestamp);
     }
 
     /**
@@ -11478,28 +11431,13 @@ namespace {
      *
      * @param fog       the node to unbind.
      * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    void fog_class::unbind(fog_node & fog,
-                           const double timestamp) OPENVRML_NOTHROW
+    void fog_class::unbind(fog_node & fog, const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        const bound_nodes_t::iterator pos = find(this->bound_nodes.begin(),
-                                                 this->bound_nodes.end(),
-                                                 &fog);
-        if (pos != this->bound_nodes.end()) {
-            fog.is_bound_.value(false);
-            node::emit_event(fog.is_bound_emitter_, timestamp);
-
-            if (pos == this->bound_nodes.end() - 1
-                && this->bound_nodes.size() > 1) {
-                fog_node & newActive =
-                    dynamic_cast<fog_node &>(**(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value(true);
-                node::emit_event(newActive.is_bound_emitter_, timestamp);
-            }
-            this->bound_nodes.erase(pos);
-        }
+        this->bound_nodes.unbind(fog, timestamp);
     }
 
     /**
@@ -11510,8 +11448,9 @@ namespace {
      * @param timestamp         the current time.
      */
     void
-    fog_class::
-    do_initialize(openvrml::viewpoint_node *, const double timestamp) OPENVRML_NOTHROW
+    fog_class::do_initialize(openvrml::viewpoint_node *,
+                             const double timestamp)
+        OPENVRML_NOTHROW
     {
         if (this->first) {
             try {
@@ -11536,7 +11475,7 @@ namespace {
     {
         if (!this->bound_nodes.empty()) {
             fog_node & fog =
-                dynamic_cast<fog_node &>(*this->bound_nodes.back());
+                dynamic_cast<fog_node &>(*this->bound_nodes.top());
             v.set_fog(fog.color_.sfcolor::value(),
                       fog.visibility_range_.sffloat::value(),
                       fog.fog_type_.sfstring::value().c_str());
@@ -11820,6 +11759,26 @@ namespace {
      */
     fog_node::~fog_node() OPENVRML_NOTHROW
     {}
+
+    /**
+     * @brief Set the bind state.
+     *
+     * This function is called by
+     * <code>bound_node_stack<BindableNode>::bind</code>.  It sets the
+     * "bind" state and fires an event; it does not actually put the
+     * node onto the bound node stack.
+     *
+     * @param[in] val       the bind state.
+     * @param[in] timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void fog_node::bind(const bool val, const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        this->is_bound_.value(val);
+        node::emit_event(this->is_bound_emitter_, timestamp);
+    }
 
     /**
      * @brief Initialize.
@@ -15332,49 +15291,11 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    navigation_info_class::
-    bind(navigation_info_node & nav_info, const double timestamp)
+    void navigation_info_class::bind(navigation_info_node & nav_info,
+                                     const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        //
-        // If the node is already the active node, do nothing.
-        //
-        if (!this->bound_nodes.empty()
-            && &nav_info == this->bound_nodes.back())
-        {
-            return;
-        }
-
-        //
-        // If the node is already on the stack, remove it.
-        //
-        const bound_nodes_t::iterator pos = find(this->bound_nodes.begin(),
-                                                 this->bound_nodes.end(),
-                                                 &nav_info);
-        if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-        //
-        // Send FALSE from the currently active node's isBound.
-        //
-        if (!this->bound_nodes.empty()) {
-            navigation_info_node & current =
-                dynamic_cast<navigation_info_node &>(
-                    *this->bound_nodes.back());
-            current.is_bound_.value(false);
-            node::emit_event(current.is_bound_emitter_, timestamp);
-        }
-
-        //
-        // Push the node to the top of the stack, and have it send isBound
-        // TRUE.
-        //
-        this->bound_nodes.push_back(&nav_info);
-        nav_info.is_bound_.value(true);
-        node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
+        this->bound_nodes.bind(nav_info, timestamp);
         this->browser().active_navigation_info(nav_info);
     }
 
@@ -15383,34 +15304,18 @@ namespace {
      *
      * @param nav_info    the node to unbind.
      * @param timestamp     the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    navigation_info_class::
-    unbind(navigation_info_node & nav_info, const double timestamp)
-        OPENVRML_NOTHROW
+    void navigation_info_class::unbind(navigation_info_node & nav_info,
+                                       const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::find;
-
-        const bound_nodes_t::iterator pos = find(this->bound_nodes.begin(),
-                                                 this->bound_nodes.end(),
-                                                 &nav_info);
-        if (pos != this->bound_nodes.end()) {
-            nav_info.is_bound_.value(false);
-            node::emit_event(nav_info.is_bound_emitter_, timestamp);
-
-            if (pos == this->bound_nodes.end() - 1
-                && this->bound_nodes.size() > 1) {
-                navigation_info_node & newActive =
-                    dynamic_cast<navigation_info_node &>(
-                        **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value(true);
-                node::emit_event(newActive.is_bound_emitter_, timestamp);
-
-                this->browser().active_navigation_info(nav_info);
-            } else {
-                this->browser().reset_default_navigation_info();
-            }
-            this->bound_nodes.erase(pos);
+        this->bound_nodes.unbind(nav_info, timestamp);
+        if (this->bound_nodes.empty()) {
+            this->browser().reset_default_navigation_info();
+        } else {
+            this->browser().active_navigation_info(*this->bound_nodes.top());
         }
     }
 
@@ -15812,6 +15717,26 @@ namespace {
      */
     navigation_info_node::~navigation_info_node() OPENVRML_NOTHROW
     {}
+
+    /**
+     * @brief Set the bind state.
+     *
+     * This function is called by
+     * <code>bound_node_stack<BindableNode>::bind</code>.  It sets the
+     * "bind" state and fires an event; it does not actually put the
+     * node onto the bound node stack.
+     *
+     * @param[in] val       the bind state.
+     * @param[in] timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void navigation_info_node::bind(const bool val, const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        this->is_bound_.value(val);
+        node::emit_event(this->is_bound_emitter_, timestamp);
+    }
 
     /**
      * @brief The avatar size.
@@ -25483,44 +25408,11 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void
-    viewpoint_class::bind(viewpoint_node & viewpoint, const double timestamp)
+    void viewpoint_class::bind(viewpoint_node & viewpoint,
+                               const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        //
-        // If the node is already the active node, do nothing.
-        //
-        if (!this->bound_nodes.empty()
-            && &viewpoint == this->bound_nodes.back()) {
-            return;
-        }
-
-        //
-        // If the node is already on the stack, remove it.
-        //
-        const bound_nodes_t::iterator pos =
-            std::find(this->bound_nodes.begin(), this->bound_nodes.end(),
-                      &viewpoint);
-        if (pos != this->bound_nodes.end()) { this->bound_nodes.erase(pos); }
-
-        //
-        // Send FALSE from the currently active node's isBound.
-        //
-        if (!this->bound_nodes.empty()) {
-            viewpoint_node & current =
-                dynamic_cast<viewpoint_node &>(*this->bound_nodes.back());
-            current.is_bound_.value(false);
-            node::emit_event(current.is_bound_emitter_, timestamp);
-        }
-
-        //
-        // Push the node to the top of the stack, and have it send isBound
-        // TRUE.
-        //
-        this->bound_nodes.push_back(&viewpoint);
-        viewpoint.is_bound_.value(true);
-        node::emit_event(viewpoint.is_bound_emitter_, timestamp);
-
+        this->bound_nodes.bind(viewpoint, timestamp);
         this->browser().active_viewpoint(viewpoint);
     }
 
@@ -25529,31 +25421,18 @@ namespace {
      *
      * @param viewpoint    the node to unbind.
      * @param timestamp    the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
     void viewpoint_class::unbind(viewpoint_node & viewpoint,
                                  const double timestamp)
-        OPENVRML_NOTHROW
+        OPENVRML_THROW1(std::bad_alloc)
     {
-        const bound_nodes_t::iterator pos =
-            std::find(this->bound_nodes.begin(), this->bound_nodes.end(),
-                      &viewpoint);
-        if (pos != this->bound_nodes.end()) {
-            viewpoint.is_bound_.value(false);
-            node::emit_event(viewpoint.is_bound_emitter_, timestamp);
-
-            if (pos == this->bound_nodes.end() - 1
-                && this->bound_nodes.size() > 1) {
-                viewpoint_node & newActive =
-                    dynamic_cast<viewpoint_node &>(
-                        **(this->bound_nodes.end() - 2));
-                newActive.is_bound_.value(true);
-                node::emit_event(newActive.is_bound_emitter_, timestamp);
-
-                this->browser().active_viewpoint(viewpoint);
-            } else {
-                this->browser().reset_default_viewpoint();
-            }
-            this->bound_nodes.erase(pos);
+        this->bound_nodes.unbind(viewpoint, timestamp);
+        if (this->bound_nodes.empty()) {
+            this->browser().reset_default_viewpoint();
+        } else {
+            this->browser().active_viewpoint(*this->bound_nodes.top());
         }
     }
 
@@ -26148,6 +26027,26 @@ namespace {
      */
     viewpoint_node::~viewpoint_node() OPENVRML_NOTHROW
     {}
+
+    /**
+     * @brief Set the bind state.
+     *
+     * This function is called by
+     * <code>bound_node_stack<BindableNode>::bind</code>.  It sets the
+     * "bind" state and fires an event; it does not actually put the
+     * node onto the bound node stack.
+     *
+     * @param[in] val       the bind state.
+     * @param[in] timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void viewpoint_node::bind(const bool val, const double timestamp)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        this->is_bound_.value(val);
+        node::emit_event(this->is_bound_emitter_, timestamp);
+    }
 
     /**
      * @brief Get the transformation of the viewpoint_node in the global

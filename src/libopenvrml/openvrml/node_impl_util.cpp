@@ -1164,3 +1164,61 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *                                              the <code>node_type</code>.
  * @exception std::bad_alloc                    if memory allocation fails.
  */
+
+
+/**
+ * @class openvrml::node_impl_util::bound_node_stack
+ *
+ * @brief A stack of bindable nodes.
+ *
+ * The node at the top of the stack is considered the <em>active</em>
+ * node.  <em>Binding</em> a node makes it the active node, moving it
+ * to the top of the stack if it already exists in the stack.
+ * <em>Unbinding</em> a node removes it from the stack, regardless of
+ * its position in the stack.  See 4.6.10 of the VRML97 specification
+ * for further details of the semantics.
+ *
+ * @sa http://www.web3d.org/x3d/specifications/vrml/ISO-IEC-14772-VRML97/part1/concepts.html#4.6.10
+ */
+
+/**
+ * @internal
+ *
+ * @typedef std::stack<BindableNode *>::container_type openvrml::node_impl_util::bound_node_stack<BindableNode>::container_type
+ *
+ * @brief The container type.
+ */
+
+/**
+ * @fn bool openvrml::node_impl_util::bound_node_stack<BindableNode>::bind(BindableNode & n, double timestamp)
+ *
+ * @brief Bind a node.
+ *
+ * Call <code>top()->bind(false)</code>.  Push @p n onto the top of
+ * the stack, making it the active node.  Call
+ * <code>n.bind(true)</code>.
+ *
+ * @post <code>top() == &n</code>
+ *
+ * @param[in,out] n         the node to bind.
+ * @param[in]     timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+
+/**
+ * @fn bool openvrml::node_impl_util::bound_node_stack<BindableNode>::unbind(BindableNode & n, double timestamp)
+ *
+ * @brief Unbind a node.
+ *
+ * Call <code>n.bind(false)</code>.  Remove @p n from the top of the
+ * stack. The next node on the stack becomes the active node.  Call
+ * <code>top()->bind(true)</code>.
+ *
+ * @post <code>&n</code> is not on the stack.
+ *
+ * @param[in,out] n         the node to unbind.
+ * @param[in]     timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */

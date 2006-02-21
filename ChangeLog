@@ -1,3 +1,42 @@
+2006-02-21 Braden McDaniel  <braden@endoframe.com>
+
+	Factored bound node stack logic into a class template.
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added documentation
+	for openvrml::node_impl_util::bound_node_stack.
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::bound_node_stack): Added class
+	template.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(background_class): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(fog_class): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(navigation_info_class): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(viewpoint_class): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(background_node): Added member function bind(bool, double).
+	(fog_node): Added member function bind(bool, double).
+	(navigation_info_node): Added member function bind(bool, double).
+	(viewpoint_node): Added member function bind(bool, double).
+	(background_class::bind(background_node &, double)): Changed to
+	use openvrml::node_impl_util::bound_node_stack.
+	(background_class::unbind(background_node &, double)): Changed to
+	use openvrml::node_impl_util::bound_node_stack.
+	(fog_class::bind(fog_node &, double)): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(fog_class::unbind(fog_node &, double)): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(navigation_info_class::bind(navigation_info_node &, double)):
+	Changed to use openvrml::node_impl_util::bound_node_stack.
+	(navigation_info_class::unbind(navigation_info_node &, double)):
+	Changed to use openvrml::node_impl_util::bound_node_stack.
+	(viewpoint_class::bind(viewpoint_node &, double)): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+	(viewpoint_class::unbind(viewpoint_node &, double)): Changed to use
+	openvrml::node_impl_util::bound_node_stack.
+
 2006-02-20 Braden McDaniel  <braden@endoframe.com>
 
 	Prefer std::ostringstream for string concatentation.

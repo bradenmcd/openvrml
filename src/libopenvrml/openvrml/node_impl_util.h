@@ -22,6 +22,7 @@
 # ifndef OPENVRML_NODE_IMPL_UTIL
 #   define OPENVRML_NODE_IMPL_UTIL
 
+# include <stack>
 # include <openvrml/exposedfield.h>
 
 namespace openvrml {
@@ -449,10 +450,11 @@ namespace openvrml {
                     openvrml::node & node,
                     const typename FieldValue::value_type & value =
 #   if defined(_MSC_VER) && (_MSC_VER == 1400)
-                    FieldValue::value_type());
+                    FieldValue::value_type()
 #   else
-                    typename FieldValue::value_type());
-# endif
+                    typename FieldValue::value_type()
+#   endif
+                    );
                 exposedfield(const exposedfield<FieldValue> & obj)
                     OPENVRML_NOTHROW;
                 virtual ~exposedfield() OPENVRML_NOTHROW;
@@ -1011,6 +1013,77 @@ namespace openvrml {
                     .assign(*initial_value->second);
             }
             return result;
+        }
+
+
+        template <typename BindableNode>
+        class bound_node_stack : private std::stack<BindableNode *> {
+            typedef typename std::stack<BindableNode *>::container_type
+                container_type;
+
+        public:
+            using std::stack<BindableNode *>::empty;
+            using std::stack<BindableNode *>::top;
+
+            bool bind(BindableNode & node, double timestamp)
+                OPENVRML_THROW1(std::bad_alloc);
+            bool unbind(BindableNode & node, double timestamp)
+                OPENVRML_THROW1(std::bad_alloc);
+        };
+
+        template <typename BindableNode>
+        bool bound_node_stack<BindableNode>::bind(BindableNode & n,
+                                                  const double timestamp)
+            OPENVRML_THROW1(std::bad_alloc)
+        {
+            //
+            // If the node is already the active node, do nothing.
+            //
+            if (this->empty() && (&n == this->top())) { return false; }
+
+            //
+            // If the node is already on the stack, remove it.
+            //
+            const typename container_type::iterator pos =
+                std::find(this->c.begin(), this->c.end(), &n);
+            if (pos != this->c.end()) { this->c.erase(pos); }
+
+            //
+            // Send FALSE from the currently active node's isBound.
+            //
+            if (!this->empty()) {
+                BindableNode & current = *this->top();
+                current.bind(false, timestamp);
+            }
+
+            //
+            // Push the node to the top of the stack and have it send
+            // isBound TRUE.
+            //
+            this->push(&n);
+            n.bind(true, timestamp);
+
+            return true;
+        }
+
+        template <typename BindableNode>
+        bool bound_node_stack<BindableNode>::unbind(BindableNode & n,
+                                                    const double timestamp)
+            OPENVRML_THROW1(std::bad_alloc)
+        {
+            const typename container_type::iterator pos =
+                std::find(this->c.begin(), this->c.end(), &n);
+
+            if (pos == this->c.end()) { return false; }
+
+            n.bind(false, timestamp);
+            BindableNode & old_active = *this->top();
+            this->c.erase(pos);
+            if (&n == &old_active && this->size() > 1) {
+                BindableNode & new_active = *this->top();
+                new_active.bind(true, timestamp);
+            }
+            return true;
         }
     }
 }
