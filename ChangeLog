@@ -1,5 +1,10 @@
 2006-02-21 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/scope.cpp (has_id_): Added missing
+	OPENVRML_LOCAL.
+
+2006-02-21 Braden McDaniel  <braden@endoframe.com>
+
 	Factored bound node stack logic into a class template.
 
 	* src/libopenvrml/openvrml/node_impl_util.cpp: Added documentation

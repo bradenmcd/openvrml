@@ -137,7 +137,7 @@ bool openvrml::scope::add_type(const boost::shared_ptr<node_type> & type)
 }
 
 namespace {
-    struct has_id_ :
+    struct OPENVRML_LOCAL has_id_ :
         std::unary_function<boost::shared_ptr<openvrml::node_type>, bool> {
         explicit has_id_(const std::string & id):
             id(&id)
