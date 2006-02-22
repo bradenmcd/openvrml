@@ -171,6 +171,32 @@ td.invalid {
   background-color: rgb(75%, 75%, 75%);
 }
 
+.memitem {
+  background-color: rgb(95%, 95%, 95%);
+  border-color: rgb(80%, 80%, 80%);
+}
+
+.memproto {
+  background-color: rgb(90%, 90%, 90%);
+  border-color: rgb(65%, 65%, 65%);
+}
+
+div.tabs {
+  background-image: url("tab_b-openvrml.png");
+}
+
+div.tabs span {
+  background-image: url("tab_l-openvrml.png");
+}
+
+div.tabs a {
+  background-image: url("tab_r-openvrml.png");
+  border-bottom: 1px solid #a5a5a5;
+}
+
+div.tabs a:link, div.tabs a:visited, div.tabs a:active, div.tabs a:hover {
+  color: black;
+}
 </style>
 </head>
 <body>

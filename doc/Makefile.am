@@ -44,7 +44,15 @@ DOCUMENTED_SOURCE_FILES = \
 
 EXTRA_DIST = $(DOCUMENTATION_FILES) manual
 
-MAINTAINERCLEANFILES = $(srcdir)/manual/*
+MAINTAINERCLEANFILES = \
+        $(srcdir)/manual/*.css \
+        $(srcdir)/manual/*.html \
+        $(srcdir)/manual/*.map \
+        $(srcdir)/manual/*.md5 \
+        $(srcdir)/manual/*inherit__graph*.png \
+        $(srcdir)/manual/doxygen.png \
+        $(srcdir)/manual/graph_legend.* \
+        $(srcdir)/manual/tab_?.gif
 
 html-local: manual/index.html
 
