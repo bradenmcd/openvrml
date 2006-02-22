@@ -1,3 +1,9 @@
+2006-02-22 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::bound_node_stack<BindableNode>::bind(BindableNode&,
+	double)): Fixed check to see if the node is already active.
+
 2006-02-21 Braden McDaniel  <braden@endoframe.com>
 
 	Changed doxygen styles and images to be consistent with OpenVRML

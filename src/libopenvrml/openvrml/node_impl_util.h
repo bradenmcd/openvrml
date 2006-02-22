@@ -1039,7 +1039,7 @@ namespace openvrml {
             //
             // If the node is already the active node, do nothing.
             //
-            if (this->empty() && (&n == this->top())) { return false; }
+            if (!this->empty() && (&n == this->top())) { return false; }
 
             //
             // If the node is already on the stack, remove it.
