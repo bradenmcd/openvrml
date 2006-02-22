@@ -1,5 +1,14 @@
 2006-02-22 Braden McDaniel  <braden@endoframe.com>
 
+	Moved openvrml::script_node::script_event_listener<FieldValue> and
+	openvrml::script_node::script_event_emitter<FieldValue> out of the
+	header.
+
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+
+2006-02-22 Braden McDaniel  <braden@endoframe.com>
+
 	Moved openvrml::script_node::script_event_listener_creator and
 	openvrml::script_node::script_event_emitter_creator out of the
 	header.

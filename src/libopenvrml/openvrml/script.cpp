@@ -655,10 +655,24 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
 /**
  * @internal
  *
- * @class openvrml::script_node::script_event_listener
- *
  * @brief Event listener.
  */
+template <typename FieldValue>
+class openvrml::script_node::script_event_listener :
+    public node_field_value_listener<FieldValue> {
+
+    const std::string id;
+
+public:
+    script_event_listener(const std::string & id, script_node & node);
+    virtual ~script_event_listener() OPENVRML_NOTHROW;
+
+private:
+    virtual const std::string do_eventin_id() const OPENVRML_NOTHROW;
+    virtual void do_process_event(const FieldValue & value, double timestamp)
+        OPENVRML_THROW1(std::bad_alloc);
+};
+
 
 /**
  * @var const std::string openvrml::script_node::script_event_listener::id
@@ -667,31 +681,42 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  */
 
 /**
- * @fn openvrml::script_node::script_event_listener::script_event_listener(const std::string & id, script_node & node)
- *
  * @brief Construct.
  *
  * @param id    eventIn identifier.
  * @param node  script_node.
  */
+template <typename FieldValue>
+openvrml::script_node::script_event_listener<FieldValue>::
+script_event_listener(const std::string & id,
+                      script_node & node):
+    node_event_listener(node),
+    node_field_value_listener<FieldValue>(node),
+    id(id)
+{}
 
 /**
- * @fn openvrml::script_node::script_event_listener::~script_event_listener()
- *
  * @brief Destroy.
  */
+template <typename FieldValue>
+openvrml::script_node::script_event_listener<FieldValue>::
+~script_event_listener() OPENVRML_NOTHROW
+{}
 
 /**
- * @fn const std::string openvrml::script_node::script_event_listener::do_eventin_id() const
- *
  * @brief The associated eventIn identifier.
  *
  * @return the associated eventIn identifier.
  */
+template <typename FieldValue>
+const std::string
+openvrml::script_node::script_event_listener<FieldValue>::do_eventin_id() const
+    OPENVRML_NOTHROW
+{
+    return this->id;
+}
 
 /**
- * @fn void openvrml::script_node::script_event_listener::do_process_event(const FieldValue & value, double timestamp)
- *
  * @brief Process an event.
  *
  * @param value     event value.
@@ -699,6 +724,20 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
+template <typename FieldValue>
+void openvrml::script_node::script_event_listener<FieldValue>::
+do_process_event(const FieldValue & value,
+                 const double timestamp)
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    assert(dynamic_cast<openvrml::script_node *>(&this->node()));
+    openvrml::script_node & script_node =
+        dynamic_cast<openvrml::script_node &>(this->node());
+    if (script_node.script_) {
+        script_node.script_->process_event(this->id, value, timestamp);
+    }
+    ++script_node.events_received;
+}
 
 /**
  * @internal
@@ -1002,6 +1041,91 @@ openvrml::script_node::create_listener(const field_value::type_id type,
     return listener;
 }
 
+/**
+ * @internal
+ *
+ * @brief Event emitter.
+ */
+template <typename FieldValue>
+class openvrml::script_node::script_event_emitter :
+    public openvrml::field_value_emitter<FieldValue> {
+    BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
+
+    script_node * node_;
+
+    struct event_emitter_equal_to :
+        std::unary_function<typename eventout_map_t::value_type, bool> {
+        explicit event_emitter_equal_to(
+            const script_event_emitter<FieldValue> & emitter)
+            OPENVRML_NOTHROW:
+            emitter_(&emitter)
+        {}
+
+        bool operator()(const typename eventout_map_t::value_type & arg) const
+        {
+            return this->emitter_ == &arg.second->emitter();
+        }
+
+    private:
+        const script_event_emitter * emitter_;
+    };
+
+public:
+    script_event_emitter(script_node & node, const FieldValue & value)
+        OPENVRML_NOTHROW;
+    virtual ~script_event_emitter() OPENVRML_NOTHROW;
+
+private:
+    virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
+};
+
+/**
+ * @var openvrml::script_node * openvrml::script_node::script_event_emitter::node_
+ *
+ * @brief The @c script_node.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] node  the @c script_node.
+ * @param[in] value the field value with which the emitter is associated.
+ */
+template <typename FieldValue>
+openvrml::script_node::script_event_emitter<FieldValue>::
+script_event_emitter(script_node & node, const FieldValue & value)
+    OPENVRML_NOTHROW:
+    openvrml::event_emitter(value),
+    openvrml::field_value_emitter<FieldValue>(value),
+    node_(&node)
+{}
+
+/**
+ * @brief Destroy.
+ */
+template <typename FieldValue>
+openvrml::script_node::script_event_emitter<FieldValue>::
+~script_event_emitter() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief The eventOut identifier.
+ *
+ * @return the eventOut identifier.
+ */
+template <typename FieldValue>
+const std::string
+openvrml::script_node::script_event_emitter<FieldValue>::do_eventout_id() const
+    OPENVRML_NOTHROW
+{
+    const eventout_map_t::const_iterator pos =
+        std::find_if(this->node_->eventout_map_.begin(),
+                     this->node_->eventout_map_.end(),
+                     event_emitter_equal_to(*this));
+    assert(pos != this->node_->eventout_map_.end());
+    return pos->first;
+}
+    
 /**
  * @internal
  *
