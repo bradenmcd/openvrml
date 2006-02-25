@@ -131,7 +131,7 @@ div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
   font-weight: bold;
 }
 
-td.memItemLeft, td.memItemRight, .mdRow td {
+td.memItemLeft, td.memItemRight, .memproto td {
   font-family: "Bitstream Vera Sans Mono",
                "LucidaTypewriter",
                "Lucida Console",
@@ -142,19 +142,11 @@ td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
   background-color: rgb(95%, 95%, 95%);
 }
 
-.mdRow {
-  background-color: rgb(95%, 95%, 95%);
-}
-
 .mdTable {
   background-color: rgb(95%, 95%, 95%);
 }
 
-.mdRow td {
-  background-color: rgb(95%, 95%, 95%);
-}
-
-.mdRow td code {
+.memproto td code {
   font-family: sans-serif;
   font-style: italic;
 }

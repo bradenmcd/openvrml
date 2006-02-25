@@ -1,3 +1,8 @@
+2006-02-25 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/doxygen-header: Updated to reflect changes to Doxygen style
+	sheet.
+
 2006-02-22 Braden McDaniel  <braden@endoframe.com>
 
 	Moved openvrml::script_node::script_event_listener<FieldValue> and
