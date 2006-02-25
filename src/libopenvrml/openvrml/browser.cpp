@@ -6829,26 +6829,6 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 
 
 /**
- * @class openvrml::invalid_profile
- *
- * @brief Thrown to indicate that a <code>scene</code> has an invalid profile.
- */
-
-/**
- * @brief Construct.
- */
-openvrml::invalid_profile::invalid_profile() OPENVRML_NOTHROW:
-    std::logic_error("invalid profile")
-{}
-
-/**
- * @brief Destroy.
- */
-openvrml::invalid_profile::~invalid_profile() throw ()
-{}
-
-
-/**
  * @class openvrml::node_class_id
  *
  * @brief Identifier for <code>node_class</code>es.
@@ -7450,43 +7430,7 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     null_node_class_(new null_node_class(*this)),
     null_node_type_(new null_node_type(*null_node_class_)),
     script_node_class_(*this),
-    scene_(new scene(*this, invalid_profile_id)),
-    default_viewpoint_(new default_viewpoint(*null_node_type_)),
-    active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
-    default_navigation_info_(new default_navigation_info(*null_node_type_)),
-    active_navigation_info_(
-        node_cast<navigation_info_node *>(default_navigation_info_.get())),
-    new_view(false),
-    delta_time(DEFAULT_DELTA),
-    viewer_(0),
-    modified_(false),
-    frame_rate_(0.0),
-    out(out),
-    err(err),
-    flags_need_updating(false)
-{
-    assert(this->active_viewpoint_);
-    assert(this->active_navigation_info_);
-    register_node_classes(*this);
-}
-
-/**
- * @brief Constructor.
- *
- * @param[in] profile   the profile of the root scene.
- * @param[in] out       output stream for console output.
- * @param[in] err       output stream for error console output.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
-openvrml::browser::browser(profile_id profile,
-                           std::ostream & out,
-                           std::ostream & err)
-    OPENVRML_THROW1(std::bad_alloc):
-    null_node_class_(new null_node_class(*this)),
-    null_node_type_(new null_node_type(*null_node_class_)),
-    script_node_class_(*this),
-    scene_(new scene(*this, profile)),
+    scene_(new scene(*this)),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
     default_navigation_info_(new default_navigation_info(*null_node_type_)),
@@ -8191,7 +8135,8 @@ namespace {
  * @exception std::bad_alloc    if memory allocation fails.
  */
 const std::vector<boost::intrusive_ptr<openvrml::node> >
-openvrml::browser::create_vrml_from_stream(std::istream & in)
+openvrml::browser::create_vrml_from_stream(std::istream & in,
+                                           const std::string & type)
 {
     using std::string;
     using std::vector;
@@ -8207,29 +8152,22 @@ openvrml::browser::create_vrml_from_stream(std::istream & in)
 
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
+        using boost::algorithm::iequals;
+
         assert(this->scene_);
-        switch (this->scene_->profile()) {
-        case vrml97_profile_id:
-        {
+
+        if (iequals(type, "model/vrml")
+            || iequals(type, "x-world/x-vrml")) {
             Vrml97Scanner scanner(in);
             Vrml97Parser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
-        }
-        break;
-        case x3d_core_profile_id:
-        case x3d_interchange_profile_id:
-        case x3d_interactive_profile_id:
-        case x3d_mpeg4_interactive_profile_id:
-        case x3d_immersive_profile_id:
-        case x3d_full_profile_id:
-        {
+        } else if (iequals(type, "model/x3d+vrml")) {
             X3DVrmlScanner scanner(in);
             X3DVrmlParser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
-        }
-        break;
-        case invalid_profile_id:
-            throw invalid_profile();
+        } else {
+            throw std::invalid_argument("unrecognized content type \""
+                                        + type + "\"");
         }
     } catch (antlr::RecognitionException & ex) {
         throw invalid_vrml(ex.getFilename(),
@@ -8816,14 +8754,6 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 /**
  * @internal
  *
- * @var openvrml::profile_id openvrml::scene::profile_
- *
- * @brief The profile to which the scene conforms.
- */
-
-/**
- * @internal
- *
  * @var boost::recursive_mutex openvrml::scene::nodes_mutex_
  *
  * @brief Mutex protecting @a nodes_.
@@ -8948,27 +8878,7 @@ namespace {
 openvrml::scene::scene(openvrml::browser & browser, scene * parent)
     OPENVRML_NOTHROW:
     browser_(&browser),
-    parent_(parent),
-    profile_(invalid_profile_id)
-{}
-
-/**
- * @brief Construct.
- *
- * If @p profile is <code>openvrml::invalid_profile_id</code>, the profile of
- * the scene will be set according to the resource loaded by
- * <code>scene::load</code>.
- *
- * @param[in] browser   the browser associated with the scene.
- * @param[in] profile   the profile for the scene.
- * @param[in] parent    the parent scene.
- */
-openvrml::scene::scene(openvrml::browser & browser,
-                       const profile_id profile,
-                       scene * parent) OPENVRML_NOTHROW:
-    browser_(&browser),
-    parent_(parent),
-    profile_(profile)
+    parent_(parent)
 {}
 
 /**
@@ -8998,22 +8908,6 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
     return this->parent_;
 }
 
-/**
- * @brief Get the profile for the <code>scene</code>.
- *
- * The profile can be set when constructing the <code>scene</code>.  It is
- * overridden by calls to <code>scene::load</code> with the profile of the
- * loaded resource.  If the <code>scene</code> is not constructed with a
- * profile and no resource has been loaded, this function returns
- * <code>invalid_profile_id</code>.
- *
- * @return the profile for the scene.
- */
-openvrml::profile_id openvrml::scene::profile() const OPENVRML_NOTHROW
-{
-    return this->profile_;
-}
-
 struct OPENVRML_LOCAL openvrml::scene::load_scene {
 
     load_scene(openvrml::scene & scene,
@@ -9022,7 +8916,8 @@ struct OPENVRML_LOCAL openvrml::scene::load_scene {
         url_(&url)
     {}
 
-    void operator()() const OPENVRML_NOTHROW try {
+    void operator()() const OPENVRML_NOTHROW
+    try {
         using std::endl;
         using std::string;
         using std::vector;
@@ -9104,12 +8999,10 @@ void openvrml::scene::load(resource_istream & in)
 
         if (iequals(in.type(), "model/vrml")
             || iequals(in.type(), "x-world/x-vrml")) {
-            this->profile_ = vrml97_profile_id;
             Vrml97Scanner scanner(in);
             Vrml97Parser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);
         } else if (iequals(in.type(), "model/x3d+vrml")) {
-            this->profile_ = x3d_full_profile_id;
             X3DVrmlScanner scanner(in);
             X3DVrmlParser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);

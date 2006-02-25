@@ -198,32 +198,17 @@ vrmlScene[openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
 options { defaultErrorHandler=false; }
 {
-    profile_id profile = invalid_profile_id;
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
         create_root_scope(scene.browser(), this->uri);
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
-    :   profile=profileStatement { scene.profile_ = profile; }
+    :   profileStatement
         (componentStatement)* (metaStatement)*
         (statement[scene, nodes, root_scope])*
     ;
 
 profileStatement
-returns [openvrml::profile_id profile = invalid_profile_id]
-    :   KEYWORD_PROFILE id:ID {
-            std::string profile_id = id->getText();
-            // XXX
-            // XXX Checks for supported profiles should go here.
-            // XXX
-            if (false) {
-            } else {
-                throw antlr::SemanticException("unsupported profile \""
-                                               + id->getText() + "\"",
-                                               this->uri,
-                                               id->getLine(),
-                                               id->getColumn());
-            }
-        }
+    :   KEYWORD_PROFILE id:ID
     ;
 
 componentStatement

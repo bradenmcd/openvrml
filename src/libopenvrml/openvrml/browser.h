@@ -159,25 +159,6 @@ namespace openvrml {
     };
 
 
-    enum profile_id {
-        invalid_profile_id,
-        vrml97_profile_id,
-        x3d_core_profile_id,
-        x3d_interchange_profile_id,
-        x3d_interactive_profile_id,
-        x3d_mpeg4_interactive_profile_id,
-        x3d_immersive_profile_id,
-        x3d_full_profile_id
-    };
-
-
-    class OPENVRML_API invalid_profile : public std::logic_error {
-    public:
-        invalid_profile() OPENVRML_NOTHROW;
-        virtual ~invalid_profile() throw ();
-    };
-
-
     class OPENVRML_API node_class_id {
         std::string id_;
 
@@ -269,8 +250,6 @@ namespace openvrml {
 
         browser(std::ostream & out, std::ostream & err)
             OPENVRML_THROW1(std::bad_alloc);
-        browser(profile_id profile, std::ostream & out, std::ostream & err)
-            OPENVRML_THROW1(std::bad_alloc);
         virtual ~browser() OPENVRML_NOTHROW;
 
         void add_node_class(const node_class_id & id,
@@ -312,7 +291,8 @@ namespace openvrml {
             OPENVRML_THROW1(std::bad_alloc);
         virtual void description(const std::string & description);
         const std::vector<boost::intrusive_ptr<node> >
-        create_vrml_from_stream(std::istream & in);
+        create_vrml_from_stream(std::istream & in,
+                                const std::string & type = "model/vrml");
         void create_vrml_from_url(const std::vector<std::string> & url,
                                   const boost::intrusive_ptr<node> & node,
                                   const std::string & event)
@@ -359,14 +339,10 @@ namespace openvrml {
 
 
     class OPENVRML_API scene : boost::noncopyable {
-        friend class X3DVrmlParser;
-
         struct load_scene;
 
         openvrml::browser * const browser_;
         scene * const parent_;
-
-        profile_id profile_;
 
         mutable boost::recursive_mutex nodes_mutex_;
         std::vector<boost::intrusive_ptr<node> > nodes_;
@@ -375,16 +351,12 @@ namespace openvrml {
         std::string url_;
 
     public:
-        explicit scene(openvrml::browser & browser,
-                       profile_id profile = invalid_profile_id,
-                       scene * parent = 0)
+        explicit scene(openvrml::browser & browser, scene * parent = 0)
             OPENVRML_NOTHROW;
-        scene(openvrml::browser & browser, scene * parent) OPENVRML_NOTHROW;
         virtual ~scene() OPENVRML_NOTHROW;
 
         openvrml::browser & browser() const OPENVRML_NOTHROW;
         scene * parent() const OPENVRML_NOTHROW;
-        profile_id profile() const OPENVRML_NOTHROW;
         void load(const std::vector<std::string> & url)
             OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         void load(resource_istream & in);

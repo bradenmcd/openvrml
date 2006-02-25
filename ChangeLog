@@ -1,5 +1,38 @@
 2006-02-25 Braden McDaniel  <braden@endoframe.com>
 
+	Removed openvrml::profile_id enumeration.  (Identification of X3D
+	profiles will be done another way.)
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Removed code that set the scene profile.
+	(profileStatement): Removed placeholder code to pick an
+	openvrml::profile_id.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::invalid_profile::invalid_profile()): Removed.
+	(openvrml::invalid_profile::~invalid_profile()): Removed.
+	(openvrml::browser::browser(profile_id, std::ostream &,
+	std::ostream &): Removed.
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Added string parameter to specify the MIME
+	content type; defaults to "model/vrml".
+	(openvrml::scene::scene(openvrml::browser &, profile_id, scene*)):
+	Removed.
+	(openvrml::scene::profile() const): Removed.
+	(openvrml::scene::load(resource_istream &)): Removed code setting
+	openvrml::scene::profile_.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::profile_id): Removed.
+	(openvrml::invalid_profile): Removed.
+	(openvrml::browser): Removed constructor taking an
+	openvrml::profile_id; added string parameter to
+	create_vrml_from_stream to specify the MIME content type; defaults
+	to "model/vrml".
+	(openvrml::scene): Removed friend declaration for X3DVrmlParser;
+	removed profile_ member; removed constructor taking an
+	openvrml::profile_id; removed profile accessor.
+
+2006-02-25 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements; added direction (in, out) to param
 	directives.
 
