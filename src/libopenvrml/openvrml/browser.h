@@ -379,8 +379,6 @@ namespace openvrml {
     private:
         virtual void scene_loaded();
     };
-
-    OPENVRML_API const scope * root_scope(const scene & s) OPENVRML_NOTHROW;
 }
 
 # endif // OPENVRML_BROWSER_H
