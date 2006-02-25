@@ -78,8 +78,8 @@
 /**
  * @brief Construct.
  *
- * @param id        the identifier for the scope.
- * @param parent    the parent scope.
+ * @param[in] id        the identifier for the scope.
+ * @param[in] parent    the parent scope.
  *
  * For the root scope, @p id should be the URI of the world. For child scopes,
  * @p id should be the name of the PROTO to which the scope corresponds.
@@ -117,7 +117,7 @@ const boost::shared_ptr<openvrml::scope> & openvrml::scope::parent() const
  *
  * Print an error message if the argument type is already defined.
  *
- * @param type  a node_type.
+ * @param[in] type  a node_type.
  *
  * @return @c true if @p type is successfully added to the scope; @c false
  *         otherwise (if a node_type with the same id is already defined for

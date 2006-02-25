@@ -39,8 +39,8 @@
 /**
  * @brief Stream output.
  *
- * @param out   an output stream.
- * @param value a field value.
+ * @param[in,out] out   an output stream.
+ * @param[in] value a field value.
  *
  * @return @p out.
  */
@@ -129,7 +129,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -139,7 +139,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Construct a copy.
  *
- * @param ci    the instance to copy.
+ * @param[in] ci    the instance to copy.
  */
 
 /**
@@ -167,7 +167,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -373,7 +373,7 @@ namespace {
 /**
  * @brief Create a default instance of the type specified by @p type.
  *
- * @param type  field value type identifier.
+ * @param[in] type  field value type identifier.
  *
  * @return a default instance of the type specified by @p type.
  *
@@ -404,7 +404,7 @@ openvrml::field_value::create(const type_id type)
  *
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -412,7 +412,7 @@ openvrml::field_value::create(const type_id type)
 /**
  * @brief Construct a copy.
  *
- * @param fv    field value to copy.
+ * @param[in] fv    field value to copy.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -433,7 +433,7 @@ openvrml::field_value::~field_value() OPENVRML_NOTHROW
  *
  * @brief Assignment operator.
  *
- * @param value field value to assign.
+ * @param[in] value field value to assign.
  */
 
 /**
@@ -469,7 +469,7 @@ std::auto_ptr<openvrml::field_value> openvrml::field_value::clone() const
  *
  * Thus function delegates to <code>field_value::do_assign</code>.
  *
- * @param value the value to assign to the object.
+ * @param[in] value the value to assign to the object.
  *
  * @return this object.
  */
@@ -488,7 +488,7 @@ openvrml::field_value::assign(const field_value & value)
  *
  * @brief Virtual assignment.
  *
- * @param value the value to assign to the object.
+ * @param[in] value the value to assign to the object.
  *
  * @return this object.
  *
@@ -502,7 +502,7 @@ openvrml::field_value::assign(const field_value & value)
  *
  * @brief Swap.
  *
- * @param val   the value to swap with this one.
+ * @param[in,out] val   the value to swap with this one.
  */
 
 /**
@@ -510,7 +510,7 @@ openvrml::field_value::assign(const field_value & value)
  *
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 
 /**
@@ -548,7 +548,7 @@ openvrml::field_value::type_id openvrml::field_value::type() const
  *
  * @brief Mutate.
  *
- * @param val   new value.
+ * @param[in] val   new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -598,8 +598,8 @@ namespace {
  * If @p type is <code>field_value::invalid_type</code>, @c failbit is set on
  * @p out.
  *
- * @param out       output stream.
- * @param type_id   <code>field_value</code> type identifier.
+ * @param[in,out] out       output stream.
+ * @param[in] type_id   <code>field_value</code> type identifier.
  *
  * @return @p out.
  */
@@ -619,8 +619,8 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  *
  * @relatesalso openvrml::field_value
  *
- * @param in        input stream.
- * @param type_id   <code>field_value</code> type identifier.
+ * @param[in,out] in        input stream.
+ * @param[in] type_id   <code>field_value</code> type identifier.
  *
  * @return @p in.
  */
@@ -771,7 +771,7 @@ openvrml::sfbool::field_value_type_id(sfbool_id);
 /**
  * @brief Construct.
  *
- * @param value initial value
+ * @param[in] value initial value
  */
 openvrml::sfbool::sfbool(const value_type value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
@@ -780,7 +780,7 @@ openvrml::sfbool::sfbool(const value_type value) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfb   the instance to copy.
+ * @param[in] sfb   the instance to copy.
  */
 openvrml::sfbool::sfbool(const sfbool & sfb):
     field_value(sfb)
@@ -795,7 +795,7 @@ openvrml::sfbool::~sfbool() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfb   the value to assign.
+ * @param[in] sfb   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -821,7 +821,7 @@ const openvrml::sfbool::value_type & openvrml::sfbool::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -834,7 +834,7 @@ void openvrml::sfbool::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfb   the value to swap with this one.
+ * @param[in,out] sfb   the value to swap with this one.
  */
 void openvrml::sfbool::swap(sfbool & sfb) OPENVRML_NOTHROW
 {
@@ -857,7 +857,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfbool::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -872,7 +872,7 @@ openvrml::sfbool & openvrml::sfbool::do_assign(const field_value & value)
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfbool::print(std::ostream & out) const
 {
@@ -895,8 +895,8 @@ openvrml::field_value::type_id openvrml::sfbool::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -912,8 +912,8 @@ bool openvrml::operator==(const sfbool & lhs, const sfbool & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -951,7 +951,7 @@ openvrml::sfcolor::field_value_type_id(sfcolor_id);
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  */
 openvrml::sfcolor::sfcolor(const value_type & value)
     OPENVRML_NOTHROW:
@@ -961,7 +961,7 @@ openvrml::sfcolor::sfcolor(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param sfc   the instance to copy.
+ * @param[in] sfc   the instance to copy.
  */
 openvrml::sfcolor::sfcolor(const sfcolor & sfc):
     field_value(sfc)
@@ -976,7 +976,7 @@ openvrml::sfcolor::~sfcolor() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfc   the value to assign.
+ * @param[in] sfc   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1002,7 +1002,7 @@ const openvrml::sfcolor::value_type & openvrml::sfcolor::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1015,7 +1015,7 @@ void openvrml::sfcolor::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfc   the value to swap with this one.
+ * @param[in,out] sfc   the value to swap with this one.
  */
 void openvrml::sfcolor::swap(sfcolor & sfc) OPENVRML_NOTHROW
 {
@@ -1038,7 +1038,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfcolor::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1053,7 +1053,7 @@ openvrml::sfcolor & openvrml::sfcolor::do_assign(const field_value & value)
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfcolor::print(std::ostream & out) const
 {
@@ -1076,8 +1076,8 @@ openvrml::field_value::type_id openvrml::sfcolor::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1093,8 +1093,8 @@ bool openvrml::operator==(const sfcolor & lhs, const sfcolor & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -1131,7 +1131,7 @@ openvrml::sfcolorrgba::field_value_type_id(sfcolorrgba_id);
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  */
 openvrml::sfcolorrgba::sfcolorrgba(const value_type & value)
     OPENVRML_NOTHROW:
@@ -1141,7 +1141,7 @@ openvrml::sfcolorrgba::sfcolorrgba(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param sfc   the instance to copy.
+ * @param[in] sfc   the instance to copy.
  */
 openvrml::sfcolorrgba::sfcolorrgba(const sfcolorrgba & sfc):
     field_value(sfc)
@@ -1156,7 +1156,7 @@ openvrml::sfcolorrgba::~sfcolorrgba() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfc   the value to assign.
+ * @param[in] sfc   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1183,7 +1183,7 @@ const openvrml::sfcolorrgba::value_type & openvrml::sfcolorrgba::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1196,7 +1196,7 @@ void openvrml::sfcolorrgba::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfc   the value to swap with this one.
+ * @param[in,out] sfc   the value to swap with this one.
  */
 void openvrml::sfcolorrgba::swap(sfcolorrgba & sfc) OPENVRML_NOTHROW
 {
@@ -1219,7 +1219,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfcolorrgba::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1235,7 +1235,7 @@ openvrml::sfcolorrgba::do_assign(const field_value & value)
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfcolorrgba::print(std::ostream & out) const
 {
@@ -1258,8 +1258,8 @@ openvrml::field_value::type_id openvrml::sfcolorrgba::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1275,8 +1275,8 @@ bool openvrml::operator==(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -1313,7 +1313,7 @@ openvrml::sffloat::field_value_type_id(sffloat_id);
 /**
  * @brief Construct.
  *
- * @param value initial value
+ * @param[in] value initial value
  */
 openvrml::sffloat::sffloat(const value_type value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
@@ -1322,7 +1322,7 @@ openvrml::sffloat::sffloat(const value_type value) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sff   the instance to copy.
+ * @param[in] sff   the instance to copy.
  */
 openvrml::sffloat::sffloat(const sffloat & sff):
     field_value(sff)
@@ -1337,7 +1337,7 @@ openvrml::sffloat::~sffloat() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sff   the value to assign.
+ * @param[in] sff   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1363,7 +1363,7 @@ const openvrml::sffloat::value_type & openvrml::sffloat::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1376,7 +1376,7 @@ void openvrml::sffloat::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sff   the value to swap with this one.
+ * @param[in,out] sff   the value to swap with this one.
  */
 void openvrml::sffloat::swap(sffloat & sff) OPENVRML_NOTHROW
 {
@@ -1386,7 +1386,7 @@ void openvrml::sffloat::swap(sffloat & sff) OPENVRML_NOTHROW
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sffloat::print(std::ostream & out) const
 {
@@ -1409,7 +1409,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sffloat::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1437,8 +1437,8 @@ openvrml::field_value::type_id openvrml::sffloat::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1454,8 +1454,8 @@ bool openvrml::operator==(const sffloat & lhs, const sffloat & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -1492,7 +1492,7 @@ openvrml::sfdouble::field_value_type_id(sfdouble_id);
 /**
  * @brief Construct.
  *
- * @param value initial value
+ * @param[in] value initial value
  */
 openvrml::sfdouble::sfdouble(const value_type value)
     OPENVRML_NOTHROW:
@@ -1502,7 +1502,7 @@ openvrml::sfdouble::sfdouble(const value_type value)
 /**
  * @brief Construct a copy.
  *
- * @param sfd   the instance to copy.
+ * @param[in] sfd   the instance to copy.
  */
 openvrml::sfdouble::sfdouble(const sfdouble & sfd):
     field_value(sfd)
@@ -1517,7 +1517,7 @@ openvrml::sfdouble::~sfdouble() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfd   the value to assign.
+ * @param[in] sfd   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1543,7 +1543,7 @@ const openvrml::sfdouble::value_type & openvrml::sfdouble::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1556,7 +1556,7 @@ void openvrml::sfdouble::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfd   the value to swap with this one.
+ * @param[in,out] sfd   the value to swap with this one.
  */
 void openvrml::sfdouble::swap(sfdouble & sfd) OPENVRML_NOTHROW
 {
@@ -1566,7 +1566,7 @@ void openvrml::sfdouble::swap(sfdouble & sfd) OPENVRML_NOTHROW
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfdouble::print(std::ostream & out) const
 {
@@ -1589,7 +1589,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfdouble::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1617,8 +1617,8 @@ openvrml::field_value::type_id openvrml::sfdouble::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1634,8 +1634,8 @@ bool openvrml::operator==(const sfdouble & lhs, const sfdouble & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -1672,7 +1672,7 @@ openvrml::sfimage::field_value_type_id(sfimage_id);
 /**
  * Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1684,7 +1684,7 @@ openvrml::sfimage::sfimage(const image & value)
 /**
  * @brief Construct a copy.
  *
- * @param sfi   the instance to copy.
+ * @param[in] sfi   the instance to copy.
  */
 openvrml::sfimage::sfimage(const sfimage & sfi):
     field_value(sfi)
@@ -1699,7 +1699,7 @@ openvrml::sfimage::~sfimage() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfi   the value to assign.
+ * @param[in] sfi   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1725,7 +1725,7 @@ const openvrml::sfimage::value_type & openvrml::sfimage::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1738,7 +1738,7 @@ void openvrml::sfimage::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfi   the value to swap with this one.
+ * @param[in,out] sfi   the value to swap with this one.
  */
 void openvrml::sfimage::swap(sfimage & sfi) OPENVRML_NOTHROW
 {
@@ -1748,7 +1748,7 @@ void openvrml::sfimage::swap(sfimage & sfi) OPENVRML_NOTHROW
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfimage::print(std::ostream & out) const
 {
@@ -1771,7 +1771,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfimage::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1800,8 +1800,8 @@ openvrml::field_value::type_id openvrml::sfimage::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1817,8 +1817,8 @@ bool openvrml::operator==(const sfimage & lhs, const sfimage & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -1856,7 +1856,7 @@ openvrml::sfint32::field_value_type_id(sfint32_id);
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  */
 openvrml::sfint32::sfint32(const int32 value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
@@ -1865,7 +1865,7 @@ openvrml::sfint32::sfint32(const int32 value) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfi   the instance to copy.
+ * @param[in] sfi   the instance to copy.
  */
 openvrml::sfint32::sfint32(const sfint32 & sfi):
     field_value(sfi)
@@ -1880,7 +1880,7 @@ openvrml::sfint32::~sfint32() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfi   the value to assign.
+ * @param[in] sfi   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -1906,7 +1906,7 @@ const openvrml::sfint32::value_type & openvrml::sfint32::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1919,7 +1919,7 @@ void openvrml::sfint32::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfi   the value to swap with this one.
+ * @param[in,out] sfi   the value to swap with this one.
  */
 void openvrml::sfint32::swap(sfint32 & sfi) OPENVRML_NOTHROW
 {
@@ -1929,7 +1929,7 @@ void openvrml::sfint32::swap(sfint32 & sfi) OPENVRML_NOTHROW
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfint32::print(std::ostream & out) const
 {
@@ -1952,7 +1952,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfint32::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -1980,8 +1980,8 @@ openvrml::field_value::type_id openvrml::sfint32::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1997,8 +1997,8 @@ bool openvrml::operator==(const sfint32 & lhs, const sfint32 & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2036,7 +2036,7 @@ openvrml::sfnode::field_value_type_id(sfnode_id);
 /**
  * @brief Construct.
  *
- * @param node  a pointer to a node.
+ * @param[in] node  a pointer to a node.
  */
 openvrml::sfnode::sfnode(const value_type & node) OPENVRML_NOTHROW:
     field_value(node, value_type_constructor_tag())
@@ -2045,7 +2045,7 @@ openvrml::sfnode::sfnode(const value_type & node) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfn   the instance to copy.
+ * @param[in] sfn   the instance to copy.
  */
 openvrml::sfnode::sfnode(const sfnode & sfn):
     field_value(sfn)
@@ -2060,7 +2060,7 @@ openvrml::sfnode::~sfnode() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfn   the value to assign.
+ * @param[in] sfn   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -2086,7 +2086,7 @@ const openvrml::sfnode::value_type & openvrml::sfnode::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2099,7 +2099,7 @@ void openvrml::sfnode::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfn   the value to swap with this one.
+ * @param[in,out] sfn   the value to swap with this one.
  */
 void openvrml::sfnode::swap(sfnode & sfn) OPENVRML_NOTHROW
 {
@@ -2109,7 +2109,7 @@ void openvrml::sfnode::swap(sfnode & sfn) OPENVRML_NOTHROW
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfnode::print(std::ostream & out) const
 {
@@ -2136,7 +2136,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfnode::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -2165,8 +2165,8 @@ openvrml::field_value::type_id openvrml::sfnode::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2182,8 +2182,8 @@ bool openvrml::operator==(const sfnode & lhs, const sfnode & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2234,7 +2234,7 @@ openvrml::sfrotation::field_value_type_id(sfrotation_id);
 /**
  * @brief Construct.
  *
- * @param rot   initial value.
+ * @param[in] rot   initial value.
  */
 openvrml::sfrotation::sfrotation(const rotation & rot) OPENVRML_NOTHROW:
     field_value(rot, value_type_constructor_tag())
@@ -2243,7 +2243,7 @@ openvrml::sfrotation::sfrotation(const rotation & rot) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfr   the instance to copy.
+ * @param[in] sfr   the instance to copy.
  */
 openvrml::sfrotation::sfrotation(const sfrotation & sfr):
     field_value(sfr)
@@ -2258,7 +2258,7 @@ openvrml::sfrotation::~sfrotation() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfr   the value to assign.
+ * @param[in] sfr   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -2284,7 +2284,7 @@ const openvrml::sfrotation::value_type & openvrml::sfrotation::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2297,7 +2297,7 @@ void openvrml::sfrotation::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfr   the value to swap with this one.
+ * @param[in,out] sfr   the value to swap with this one.
  */
 void openvrml::sfrotation::swap(sfrotation & sfr) OPENVRML_NOTHROW
 {
@@ -2320,7 +2320,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfrotation::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -2347,7 +2347,7 @@ openvrml::field_value::type_id openvrml::sfrotation::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfrotation::print(std::ostream & out) const
 {
@@ -2359,8 +2359,8 @@ void openvrml::sfrotation::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2376,8 +2376,8 @@ bool openvrml::operator==(const sfrotation & lhs, const sfrotation & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2415,7 +2415,7 @@ openvrml::sfstring::field_value_type_id(sfstring_id);
 /**
  * @brief Construct.
  *
- * @param value
+ * @param[in] value
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2427,7 +2427,7 @@ openvrml::sfstring::sfstring(const std::string & value)
 /**
  * @brief Construct a copy.
  *
- * @param sfs   the instance to copy.
+ * @param[in] sfs   the instance to copy.
  */
 openvrml::sfstring::sfstring(const sfstring & sfs):
     field_value(sfs)
@@ -2442,7 +2442,7 @@ openvrml::sfstring::~sfstring() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfs   the value to assign.
+ * @param[in] sfs   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -2468,7 +2468,7 @@ const openvrml::sfstring::value_type & openvrml::sfstring::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2481,7 +2481,7 @@ void openvrml::sfstring::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfs   the value to swap with this one.
+ * @param[in,out] sfs   the value to swap with this one.
  */
 void openvrml::sfstring::swap(sfstring & sfs) OPENVRML_NOTHROW
 {
@@ -2504,7 +2504,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfstring::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -2520,7 +2520,7 @@ openvrml::sfstring & openvrml::sfstring::do_assign(const field_value & value)
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfstring::print(std::ostream & out) const
 {
@@ -2543,8 +2543,8 @@ openvrml::field_value::type_id openvrml::sfstring::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2560,8 +2560,8 @@ bool openvrml::operator==(const sfstring & lhs, const sfstring & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2599,7 +2599,7 @@ openvrml::sftime::field_value_type_id(sftime_id);
 /**
  * @brief Construct.
  *
- * @param value initial value
+ * @param[in] value initial value
  */
 openvrml::sftime::sftime(double value) OPENVRML_NOTHROW:
     field_value(value, value_type_constructor_tag())
@@ -2608,7 +2608,7 @@ openvrml::sftime::sftime(double value) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sft   the instance to copy.
+ * @param[in] sft   the instance to copy.
  */
 openvrml::sftime::sftime(const sftime & sft):
     field_value(sft)
@@ -2623,7 +2623,7 @@ openvrml::sftime::~sftime() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sft   the value to assign.
+ * @param[in] sft   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -2649,7 +2649,7 @@ const openvrml::sftime::value_type & openvrml::sftime::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2662,7 +2662,7 @@ void openvrml::sftime::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfb   the value to swap with this one.
+ * @param[in,out] sfb   the value to swap with this one.
  */
 void openvrml::sftime::swap(sftime & sft) OPENVRML_NOTHROW
 {
@@ -2685,7 +2685,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sftime::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -2700,7 +2700,7 @@ openvrml::sftime & openvrml::sftime::do_assign(const field_value & value)
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sftime::print(std::ostream & out) const
 {
@@ -2723,8 +2723,8 @@ openvrml::field_value::type_id openvrml::sftime::do_type() const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2741,8 +2741,8 @@ bool openvrml::operator==(const sftime & lhs, const sftime & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2780,7 +2780,7 @@ openvrml::sfvec2f::field_value_type_id(sfvec2f_id);
 /**
  * @brief Construct.
  *
- * @param vec   initial value.
+ * @param[in] vec   initial value.
  */
 openvrml::sfvec2f::sfvec2f(const vec2f & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
@@ -2789,7 +2789,7 @@ openvrml::sfvec2f::sfvec2f(const vec2f & vec) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfv   the instance to copy.
+ * @param[in] sfv   the instance to copy.
  */
 openvrml::sfvec2f::sfvec2f(const sfvec2f & sfv):
     field_value(sfv)
@@ -2804,7 +2804,7 @@ openvrml::sfvec2f::~sfvec2f() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfv   the value to assign.
+ * @param[in] sfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -2830,7 +2830,7 @@ const openvrml::sfvec2f::value_type & openvrml::sfvec2f::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -2843,7 +2843,7 @@ void openvrml::sfvec2f::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfv   the value to swap with this one.
+ * @param[in,out] sfv   the value to swap with this one.
  */
 void openvrml::sfvec2f::swap(sfvec2f & sfv) OPENVRML_NOTHROW
 {
@@ -2866,7 +2866,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2f::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -2892,7 +2892,7 @@ openvrml::field_value::type_id openvrml::sfvec2f::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfvec2f::print(std::ostream & out) const
 {
@@ -2904,8 +2904,8 @@ void openvrml::sfvec2f::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2921,8 +2921,8 @@ bool openvrml::operator==(const sfvec2f & lhs, const sfvec2f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -2959,7 +2959,7 @@ openvrml::sfvec2d::field_value_type_id(sfvec2d_id);
 /**
  * @brief Construct.
  *
- * @param vec   initial value.
+ * @param[in] vec   initial value.
  */
 openvrml::sfvec2d::sfvec2d(const vec2d & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
@@ -2968,7 +2968,7 @@ openvrml::sfvec2d::sfvec2d(const vec2d & vec) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfv   the instance to copy.
+ * @param[in] sfv   the instance to copy.
  */
 openvrml::sfvec2d::sfvec2d(const sfvec2d & sfv):
     field_value(sfv)
@@ -2983,7 +2983,7 @@ openvrml::sfvec2d::~sfvec2d() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfv   the value to assign.
+ * @param[in] sfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -3009,7 +3009,7 @@ const openvrml::sfvec2d::value_type & openvrml::sfvec2d::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3022,7 +3022,7 @@ void openvrml::sfvec2d::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfv   the value to swap with this one.
+ * @param[in,out] sfv   the value to swap with this one.
  */
 void openvrml::sfvec2d::swap(sfvec2d & sfv) OPENVRML_NOTHROW
 {
@@ -3045,7 +3045,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2d::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -3079,7 +3079,7 @@ openvrml::field_value::type_id openvrml::sfvec2d::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfvec2d::print(std::ostream & out) const
 {
@@ -3091,8 +3091,8 @@ void openvrml::sfvec2d::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -3108,8 +3108,8 @@ bool openvrml::operator==(const sfvec2d & lhs, const sfvec2d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -3147,7 +3147,7 @@ openvrml::sfvec3f::field_value_type_id(sfvec3f_id);
 /**
  * @brief Construct.
  *
- * @param vec   initial value.
+ * @param[in] vec   initial value.
  */
 openvrml::sfvec3f::sfvec3f(const vec3f & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
@@ -3156,7 +3156,7 @@ openvrml::sfvec3f::sfvec3f(const vec3f & vec) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfv   the instance to copy.
+ * @param[in] sfv   the instance to copy.
  */
 openvrml::sfvec3f::sfvec3f(const sfvec3f & sfv):
     field_value(sfv)
@@ -3171,7 +3171,7 @@ openvrml::sfvec3f::~sfvec3f() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfv   the value to assign.
+ * @param[in] sfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -3197,7 +3197,7 @@ const openvrml::sfvec3f::value_type & openvrml::sfvec3f::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3210,7 +3210,7 @@ void openvrml::sfvec3f::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfv   the value to swap with this one.
+ * @param[in,out] sfv   the value to swap with this one.
  */
 void openvrml::sfvec3f::swap(sfvec3f & sfv) OPENVRML_NOTHROW
 {
@@ -3233,7 +3233,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3f::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -3259,7 +3259,7 @@ openvrml::field_value::type_id openvrml::sfvec3f::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfvec3f::print(std::ostream & out) const
 {
@@ -3271,8 +3271,8 @@ void openvrml::sfvec3f::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -3288,8 +3288,8 @@ bool openvrml::operator==(const sfvec3f & lhs, const sfvec3f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -3326,7 +3326,7 @@ openvrml::sfvec3d::field_value_type_id(sfvec3d_id);
 /**
  * @brief Construct.
  *
- * @param vec   initial value.
+ * @param[in] vec   initial value.
  */
 openvrml::sfvec3d::sfvec3d(const vec3d & vec) OPENVRML_NOTHROW:
     field_value(vec, value_type_constructor_tag())
@@ -3335,7 +3335,7 @@ openvrml::sfvec3d::sfvec3d(const vec3d & vec) OPENVRML_NOTHROW:
 /**
  * @brief Construct a copy.
  *
- * @param sfv   the instance to copy.
+ * @param[in] sfv   the instance to copy.
  */
 openvrml::sfvec3d::sfvec3d(const sfvec3d & sfv):
     field_value(sfv)
@@ -3350,7 +3350,7 @@ openvrml::sfvec3d::~sfvec3d() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param sfv   the value to assign.
+ * @param[in] sfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -3376,7 +3376,7 @@ const openvrml::sfvec3d::value_type & openvrml::sfvec3d::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3389,7 +3389,7 @@ void openvrml::sfvec3d::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param sfv   the value to swap with this one.
+ * @param[in,out] sfv   the value to swap with this one.
  */
 void openvrml::sfvec3d::swap(sfvec3d & sfv) OPENVRML_NOTHROW
 {
@@ -3412,7 +3412,7 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec3d::do_clone() const
 /**
  * @brief Virtual assignment.
  *
- * @param value the new value to give the object.
+ * @param[in] value the new value to give the object.
  *
  * @return a reference to the object.
  *
@@ -3438,7 +3438,7 @@ openvrml::field_value::type_id openvrml::sfvec3d::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::sfvec3d::print(std::ostream & out) const
 {
@@ -3450,8 +3450,8 @@ void openvrml::sfvec3d::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -3467,8 +3467,8 @@ bool openvrml::operator==(const sfvec3d & lhs, const sfvec3d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -3508,8 +3508,8 @@ openvrml::mfbool::field_value_type_id(mfbool_id);
  *
  * Creates an <code>mfbool</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the mfbool.
- * @param value used to initialize the mfbool.
+ * @param[in] n     the number elements in the mfbool.
+ * @param[in] value used to initialize the mfbool.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -3523,7 +3523,7 @@ openvrml::mfbool::mfbool(const value_type::size_type n, const bool value)
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3535,7 +3535,7 @@ openvrml::mfbool::mfbool(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfb   the instance to copy.
+ * @param[in] mfb   the instance to copy.
  */
 openvrml::mfbool::mfbool(const mfbool & mfb):
     field_value(mfb)
@@ -3553,7 +3553,7 @@ openvrml::mfbool::~mfbool() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfb   the value to assign.
+ * @param[in] mfb   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -3579,7 +3579,7 @@ const openvrml::mfbool::value_type & openvrml::mfbool::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3592,7 +3592,7 @@ void openvrml::mfbool::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfc   the value to swap with this one.
+ * @param[in,out] mfc   the value to swap with this one.
  */
 void openvrml::mfbool::swap(mfbool & mfb) OPENVRML_NOTHROW
 {
@@ -3640,7 +3640,7 @@ openvrml::field_value::type_id openvrml::mfbool::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfbool::print(std::ostream & out) const
 {
@@ -3662,8 +3662,8 @@ void openvrml::mfbool::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -3679,8 +3679,8 @@ bool openvrml::operator==(const mfbool & lhs, const mfbool & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -3721,8 +3721,8 @@ openvrml::mfcolor::field_value_type_id(mfcolor_id);
  *
  * Creates an <code>mfcolor</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the mfcolor.
- * @param value used to initialize the mfcolor.
+ * @param[in] n     the number elements in the mfcolor.
+ * @param[in] value used to initialize the mfcolor.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -3737,7 +3737,7 @@ openvrml::mfcolor::mfcolor(const std::vector<color>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3749,7 +3749,7 @@ openvrml::mfcolor::mfcolor(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfc   the instance to copy.
+ * @param[in] mfc   the instance to copy.
  */
 openvrml::mfcolor::mfcolor(const mfcolor & mfc):
     field_value(mfc)
@@ -3767,7 +3767,7 @@ openvrml::mfcolor::~mfcolor() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfc   the value to assign.
+ * @param[in] mfc   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -3793,7 +3793,7 @@ const openvrml::mfcolor::value_type & openvrml::mfcolor::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3806,7 +3806,7 @@ void openvrml::mfcolor::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfc   the value to swap with this one.
+ * @param[in,out] mfc   the value to swap with this one.
  */
 void openvrml::mfcolor::swap(mfcolor & mfc) OPENVRML_NOTHROW
 {
@@ -3854,7 +3854,7 @@ openvrml::field_value::type_id openvrml::mfcolor::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfcolor::print(std::ostream & out) const
 {
@@ -3876,8 +3876,8 @@ void openvrml::mfcolor::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -3893,8 +3893,8 @@ bool openvrml::operator==(const mfcolor & lhs, const mfcolor & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -3933,8 +3933,8 @@ openvrml::mfcolorrgba::field_value_type_id(mfcolorrgba_id);
  *
  * Creates an <code>mfcolorrgba</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the mfcolorrgba.
- * @param value used to initialize the mfcolorrgba.
+ * @param[in] n     the number elements in the mfcolorrgba.
+ * @param[in] value used to initialize the mfcolorrgba.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -3950,7 +3950,7 @@ openvrml::mfcolorrgba::mfcolorrgba(const value_type::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -3962,7 +3962,7 @@ openvrml::mfcolorrgba::mfcolorrgba(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfc   the instance to copy.
+ * @param[in] mfc   the instance to copy.
  */
 openvrml::mfcolorrgba::mfcolorrgba(const mfcolorrgba & mfc):
     field_value(mfc)
@@ -3980,7 +3980,7 @@ openvrml::mfcolorrgba::~mfcolorrgba() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfc   the value to assign.
+ * @param[in] mfc   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -4007,7 +4007,7 @@ const openvrml::mfcolorrgba::value_type & openvrml::mfcolorrgba::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4020,7 +4020,7 @@ void openvrml::mfcolorrgba::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfc   the value to swap with this one.
+ * @param[in,out] mfc   the value to swap with this one.
  */
 void openvrml::mfcolorrgba::swap(mfcolorrgba & mfc) OPENVRML_NOTHROW
 {
@@ -4069,7 +4069,7 @@ openvrml::field_value::type_id openvrml::mfcolorrgba::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfcolorrgba::print(std::ostream & out) const
 {
@@ -4091,8 +4091,8 @@ void openvrml::mfcolorrgba::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -4108,8 +4108,8 @@ bool openvrml::operator==(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -4149,8 +4149,8 @@ openvrml::mffloat::field_value_type_id(mffloat_id);
  *
  * Creates an <code>mffloat</code> with @p n copies of @p value.
  *
- * @param n     the number of elements in the <code>mffloat</code>.
- * @param value used to initialize the <code>mffloat</code>.
+ * @param[in] n     the number of elements in the <code>mffloat</code>.
+ * @param[in] value used to initialize the <code>mffloat</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4165,7 +4165,7 @@ openvrml::mffloat::mffloat(const std::vector<float>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4177,7 +4177,7 @@ openvrml::mffloat::mffloat(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mff   the instance to copy.
+ * @param[in] mff   the instance to copy.
  */
 openvrml::mffloat::mffloat(const mffloat & mff):
     field_value(mff)
@@ -4195,7 +4195,7 @@ openvrml::mffloat::~mffloat() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mff   the value to assign.
+ * @param[in] mff   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -4221,7 +4221,7 @@ const openvrml::mffloat::value_type & openvrml::mffloat::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4234,7 +4234,7 @@ void openvrml::mffloat::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mff   the value to swap with this one.
+ * @param[in,out] mff   the value to swap with this one.
  */
 void openvrml::mffloat::swap(mffloat & mff) OPENVRML_NOTHROW
 {
@@ -4282,7 +4282,7 @@ openvrml::field_value::type_id openvrml::mffloat::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mffloat::print(std::ostream & out) const
 {
@@ -4304,8 +4304,8 @@ void openvrml::mffloat::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -4321,8 +4321,8 @@ bool openvrml::operator==(const mffloat & lhs, const mffloat & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -4361,8 +4361,8 @@ openvrml::mfdouble::field_value_type_id(mfdouble_id);
  *
  * Creates an <code>mfdouble</code> with @p n copies of @p value.
  *
- * @param n     the number of elements in the <code>mfdouble</code>.
- * @param value used to initialize the <code>mfdouble</code>.
+ * @param[in] n     the number of elements in the <code>mfdouble</code>.
+ * @param[in] value used to initialize the <code>mfdouble</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4377,7 +4377,7 @@ openvrml::mfdouble::mfdouble(const std::vector<double>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4389,7 +4389,7 @@ openvrml::mfdouble::mfdouble(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfd   the instance to copy.
+ * @param[in] mfd   the instance to copy.
  */
 openvrml::mfdouble::mfdouble(const mfdouble & mfd):
     field_value(mfd)
@@ -4407,7 +4407,7 @@ openvrml::mfdouble::~mfdouble() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfd   the value to assign.
+ * @param[in] mfd   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -4433,7 +4433,7 @@ const openvrml::mfdouble::value_type & openvrml::mfdouble::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4446,7 +4446,7 @@ void openvrml::mfdouble::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfd   the value to swap with this one.
+ * @param[in,out] mfd   the value to swap with this one.
  */
 void openvrml::mfdouble::swap(mfdouble & mfd) OPENVRML_NOTHROW
 {
@@ -4494,7 +4494,7 @@ openvrml::field_value::type_id openvrml::mfdouble::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfdouble::print(std::ostream & out) const
 {
@@ -4516,8 +4516,8 @@ void openvrml::mfdouble::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -4533,8 +4533,8 @@ bool openvrml::operator==(const mfdouble & lhs, const mfdouble & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -4573,8 +4573,8 @@ openvrml::mfimage::field_value_type_id(mfimage_id);
  *
  * Creates an <code>mfimage</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the mfimage.
- * @param value used to initialize the mfimage.
+ * @param[in] n     the number elements in the mfimage.
+ * @param[in] value used to initialize the mfimage.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4589,7 +4589,7 @@ openvrml::mfimage::mfimage(const value_type::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4601,7 +4601,7 @@ openvrml::mfimage::mfimage(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfi   the instance to copy.
+ * @param[in] mfi   the instance to copy.
  */
 openvrml::mfimage::mfimage(const mfimage & mfi):
     field_value(mfi)
@@ -4619,7 +4619,7 @@ openvrml::mfimage::~mfimage() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfi   the value to assign.
+ * @param[in] mfi   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -4645,7 +4645,7 @@ const openvrml::mfimage::value_type & openvrml::mfimage::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4658,7 +4658,7 @@ void openvrml::mfimage::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfi   the value to swap with this one.
+ * @param[in,out] mfi   the value to swap with this one.
  */
 void openvrml::mfimage::swap(mfimage & mfi) OPENVRML_NOTHROW
 {
@@ -4706,7 +4706,7 @@ openvrml::field_value::type_id openvrml::mfimage::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfimage::print(std::ostream & out) const
 {
@@ -4728,8 +4728,8 @@ void openvrml::mfimage::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -4745,8 +4745,8 @@ bool openvrml::operator==(const mfimage & lhs, const mfimage & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
@@ -4785,8 +4785,8 @@ openvrml::mfint32::field_value_type_id(mfint32_id);
  *
  * Creates an <code>mfint32</code> with @p n copies of @p value.
  *
- * @param n     the number of elements in the <code>mfint32</code>.
- * @param value used to initialize the <code>mfint32</code>.
+ * @param[in] n     the number of elements in the <code>mfint32</code>.
+ * @param[in] value used to initialize the <code>mfint32</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4801,7 +4801,7 @@ openvrml::mfint32::mfint32(const std::vector<int32>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4813,7 +4813,7 @@ openvrml::mfint32::mfint32(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfi   the instance to copy.
+ * @param[in] mfi   the instance to copy.
  */
 openvrml::mfint32::mfint32(const mfint32 & mfi):
     field_value(mfi)
@@ -4831,7 +4831,7 @@ openvrml::mfint32::~mfint32() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfi   the value to assign.
+ * @param[in] mfi   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -4857,7 +4857,7 @@ const openvrml::mfint32::value_type & openvrml::mfint32::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4870,7 +4870,7 @@ void openvrml::mfint32::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfi   the value to swap with this one.
+ * @param[in,out] mfi   the value to swap with this one.
  */
 void openvrml::mfint32::swap(mfint32 & mfi) OPENVRML_NOTHROW
 {
@@ -4918,7 +4918,7 @@ openvrml::field_value::type_id openvrml::mfint32::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfint32::print(std::ostream & out) const
 {
@@ -4940,8 +4940,8 @@ void openvrml::mfint32::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -4957,8 +4957,8 @@ bool openvrml::operator==(const mfint32 & lhs, const mfint32 & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -4998,8 +4998,8 @@ openvrml::mfnode::field_value_type_id(mfnode_id);
  *
  * Creates an <code>mfnode</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the <code>mfnode</code>.
- * @param value used to initialize the <code>mfnode</code>.
+ * @param[in] n     the number elements in the <code>mfnode</code>.
+ * @param[in] value used to initialize the <code>mfnode</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5014,7 +5014,7 @@ openvrml::mfnode::mfnode(const value_type::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5026,7 +5026,7 @@ openvrml::mfnode::mfnode(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfn   the instance to copy.
+ * @param[in] mfn   the instance to copy.
  */
 openvrml::mfnode::mfnode(const mfnode & mfn):
     field_value(mfn)
@@ -5044,7 +5044,7 @@ openvrml::mfnode::~mfnode() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfn   the value to assign.
+ * @param[in] mfn   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -5070,7 +5070,7 @@ const openvrml::mfnode::value_type & openvrml::mfnode::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5083,7 +5083,7 @@ void openvrml::mfnode::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfn   the value to swap with this one.
+ * @param[in,out] mfn   the value to swap with this one.
  */
 void openvrml::mfnode::swap(mfnode & mfn) OPENVRML_NOTHROW
 {
@@ -5134,7 +5134,7 @@ openvrml::field_value::type_id openvrml::mfnode::do_type() const
  * Any null elements in the mfnode will not get printed; VRML97 syntax does not
  * accommodate NULL in an mfnode.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfnode::print(std::ostream & out) const
 {
@@ -5156,8 +5156,8 @@ void openvrml::mfnode::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -5173,8 +5173,8 @@ bool openvrml::operator==(const mfnode & lhs, const mfnode & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -5214,8 +5214,8 @@ openvrml::mfrotation::field_value_type_id(mfrotation_id);
  *
  * Creates an <code>mfrotation</code> with @p n copies of @p value.
  *
- * @param n     the number elements in the <code>mfrotation</code>.
- * @param value used to initialize the <code>mfrotation</code>.
+ * @param[in] n     the number elements in the <code>mfrotation</code>.
+ * @param[in] value used to initialize the <code>mfrotation</code>.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5230,7 +5230,7 @@ openvrml::mfrotation::mfrotation(const std::vector<rotation>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5242,7 +5242,7 @@ openvrml::mfrotation::mfrotation(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfr   the instance to copy.
+ * @param[in] mfr   the instance to copy.
  */
 openvrml::mfrotation::mfrotation(const mfrotation & mfr):
     field_value(mfr)
@@ -5260,7 +5260,7 @@ openvrml::mfrotation::~mfrotation() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfr   the value to assign.
+ * @param[in] mfr   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -5286,7 +5286,7 @@ const openvrml::mfrotation::value_type & openvrml::mfrotation::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5299,7 +5299,7 @@ void openvrml::mfrotation::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfr   the value to swap with this one.
+ * @param[in,out] mfr   the value to swap with this one.
  */
 void openvrml::mfrotation::swap(mfrotation & mfr) OPENVRML_NOTHROW
 {
@@ -5348,7 +5348,7 @@ openvrml::field_value::type_id openvrml::mfrotation::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfrotation::print(std::ostream & out) const
 {
@@ -5370,8 +5370,8 @@ void openvrml::mfrotation::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -5387,8 +5387,8 @@ bool openvrml::operator==(const mfrotation & lhs, const mfrotation & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -5428,8 +5428,8 @@ openvrml::mfstring::field_value_type_id(mfstring_id);
  *
  * Creates an <code>mfstring</code> with @p n copies of @p value.
  *
- * @param n     the number elements in @a mfstring::value.
- * @param value used to initialize @a mfstring::value.
+ * @param[in] n     the number elements in @a mfstring::value.
+ * @param[in] value used to initialize @a mfstring::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5446,7 +5446,7 @@ openvrml::mfstring::mfstring(const std::vector<std::string>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5458,7 +5458,7 @@ openvrml::mfstring::mfstring(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfs   the instance to copy.
+ * @param[in] mfs   the instance to copy.
  */
 openvrml::mfstring::mfstring(const mfstring & mfs):
     field_value(mfs)
@@ -5476,7 +5476,7 @@ openvrml::mfstring::~mfstring() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfs   the value to assign.
+ * @param[in] mfs   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -5502,7 +5502,7 @@ const openvrml::mfstring::value_type & openvrml::mfstring::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5515,7 +5515,7 @@ void openvrml::mfstring::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfs   the value to swap with this one.
+ * @param[in,out] mfs   the value to swap with this one.
  */
 void openvrml::mfstring::swap(mfstring & mfs) OPENVRML_NOTHROW
 {
@@ -5563,7 +5563,7 @@ openvrml::field_value::type_id openvrml::mfstring::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfstring::print(std::ostream & out) const
 {
@@ -5585,8 +5585,8 @@ void openvrml::mfstring::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -5602,8 +5602,8 @@ bool openvrml::operator==(const mfstring & lhs, const mfstring & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -5643,8 +5643,8 @@ openvrml::mftime::field_value_type_id(mftime_id);
  *
  * Creates an <code>mftime</code> with @p n copies of @p value.
  *
- * @param n     the number of elements in @a mftime::value.
- * @param value used to initialize @a mftime::value.
+ * @param[in] n     the number of elements in @a mftime::value.
+ * @param[in] value used to initialize @a mftime::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5660,7 +5660,7 @@ openvrml::mftime::mftime(const std::vector<double>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5672,7 +5672,7 @@ openvrml::mftime::mftime(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mft   the instance to copy.
+ * @param[in] mft   the instance to copy.
  */
 openvrml::mftime::mftime(const mftime & mft):
     field_value(mft)
@@ -5690,7 +5690,7 @@ openvrml::mftime::~mftime() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mft   the value to assign.
+ * @param[in] mft   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -5716,7 +5716,7 @@ const openvrml::mftime::value_type & openvrml::mftime::value()
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5729,7 +5729,7 @@ void openvrml::mftime::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mft   the value to swap with this one.
+ * @param[in,out] mft   the value to swap with this one.
  */
 void openvrml::mftime::swap(mftime & mft) OPENVRML_NOTHROW
 {
@@ -5778,7 +5778,7 @@ openvrml::field_value::type_id openvrml::mftime::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mftime::print(std::ostream & out) const
 {
@@ -5800,8 +5800,8 @@ void openvrml::mftime::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -5817,8 +5817,8 @@ bool openvrml::operator==(const mftime & lhs, const mftime & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -5858,8 +5858,8 @@ openvrml::mfvec2f::field_value_type_id(mfvec2f_id);
  *
  * Creates an <code>mfvec2f</code> with @p n copies of @p value.
  *
- * @param n     the number elements in @a mfvec2f::value.
- * @param value used to initialize @a mfvec2f::value.
+ * @param[in] n     the number elements in @a mfvec2f::value.
+ * @param[in] value used to initialize @a mfvec2f::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5875,7 +5875,7 @@ openvrml::mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5887,7 +5887,7 @@ openvrml::mfvec2f::mfvec2f(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfv   the instance to copy.
+ * @param[in] mfv   the instance to copy.
  */
 openvrml::mfvec2f::mfvec2f(const mfvec2f & mfv):
     field_value(mfv)
@@ -5905,7 +5905,7 @@ openvrml::mfvec2f::~mfvec2f() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfv   the value to assign.
+ * @param[in] mfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -5931,7 +5931,7 @@ const openvrml::mfvec2f::value_type & openvrml::mfvec2f::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -5944,7 +5944,7 @@ void openvrml::mfvec2f::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfv   the value to swap with this one.
+ * @param[in,out] mfv   the value to swap with this one.
  */
 void openvrml::mfvec2f::swap(mfvec2f & mfv) OPENVRML_NOTHROW
 {
@@ -5992,7 +5992,7 @@ openvrml::field_value::type_id openvrml::mfvec2f::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfvec2f::print(std::ostream & out) const
 {
@@ -6014,8 +6014,8 @@ void openvrml::mfvec2f::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -6031,8 +6031,8 @@ bool openvrml::operator==(const mfvec2f & lhs, const mfvec2f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -6071,8 +6071,8 @@ openvrml::mfvec2d::field_value_type_id(mfvec2d_id);
  *
  * Creates an <code>mfvec2d</code> with @p n copies of @p value.
  *
- * @param n     the number elements in @a mfvec2d::value.
- * @param value used to initialize @a mfvec2d::value.
+ * @param[in] n     the number elements in @a mfvec2d::value.
+ * @param[in] value used to initialize @a mfvec2d::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -6088,7 +6088,7 @@ openvrml::mfvec2d::mfvec2d(const std::vector<vec2d>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6100,7 +6100,7 @@ openvrml::mfvec2d::mfvec2d(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfv   the instance to copy.
+ * @param[in] mfv   the instance to copy.
  */
 openvrml::mfvec2d::mfvec2d(const mfvec2d & mfv):
     field_value(mfv)
@@ -6118,7 +6118,7 @@ openvrml::mfvec2d::~mfvec2d() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfv   the value to assign.
+ * @param[in] mfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -6144,7 +6144,7 @@ const openvrml::mfvec2d::value_type & openvrml::mfvec2d::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6157,7 +6157,7 @@ void openvrml::mfvec2d::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfv   the value to swap with this one.
+ * @param[in,out] mfv   the value to swap with this one.
  */
 void openvrml::mfvec2d::swap(mfvec2d & mfv) OPENVRML_NOTHROW
 {
@@ -6205,7 +6205,7 @@ openvrml::field_value::type_id openvrml::mfvec2d::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfvec2d::print(std::ostream & out) const
 {
@@ -6227,8 +6227,8 @@ void openvrml::mfvec2d::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -6244,8 +6244,8 @@ bool openvrml::operator==(const mfvec2d & lhs, const mfvec2d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -6285,8 +6285,8 @@ openvrml::mfvec3f::field_value_type_id(mfvec3f_id);
  *
  * Creates an <code>mfvec3f</code> with @p n copies of @p value.
  *
- * @param n     the number elements in @a mfvec3f::value.
- * @param value used to initialize @a mfvec3f::value.
+ * @param[in] n     the number elements in @a mfvec3f::value.
+ * @param[in] value used to initialize @a mfvec3f::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -6302,7 +6302,7 @@ openvrml::mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6314,7 +6314,7 @@ openvrml::mfvec3f::mfvec3f(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfv   the instance to copy.
+ * @param[in] mfv   the instance to copy.
  */
 openvrml::mfvec3f::mfvec3f(const mfvec3f & mfv):
     field_value(mfv)
@@ -6332,7 +6332,7 @@ openvrml::mfvec3f::~mfvec3f() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfv   the value to assign.
+ * @param[in] mfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -6358,7 +6358,7 @@ const openvrml::mfvec3f::value_type & openvrml::mfvec3f::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6371,7 +6371,7 @@ void openvrml::mfvec3f::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfv   the value to swap with this one.
+ * @param[in,out] mfv   the value to swap with this one.
  */
 void openvrml::mfvec3f::swap(mfvec3f & mfv) OPENVRML_NOTHROW
 {
@@ -6420,7 +6420,7 @@ openvrml::field_value::type_id openvrml::mfvec3f::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfvec3f::print(std::ostream & out) const
 {
@@ -6442,8 +6442,8 @@ void openvrml::mfvec3f::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -6459,8 +6459,8 @@ bool openvrml::operator==(const mfvec3f & lhs, const mfvec3f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -6499,8 +6499,8 @@ openvrml::mfvec3d::field_value_type_id(mfvec3d_id);
  *
  * Creates an <code>mfvec3d</code> with @p n copies of @p value.
  *
- * @param n     the number elements in @a mfvec3d::value.
- * @param value used to initialize @a mfvec3d::value.
+ * @param[in] n     the number elements in @a mfvec3d::value.
+ * @param[in] value used to initialize @a mfvec3d::value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -6516,7 +6516,7 @@ openvrml::mfvec3d::mfvec3d(const std::vector<vec3d>::size_type n,
 /**
  * @brief Construct.
  *
- * @param value initial value.
+ * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6528,7 +6528,7 @@ openvrml::mfvec3d::mfvec3d(const value_type & value)
 /**
  * @brief Construct a copy.
  *
- * @param mfv   the instance to copy.
+ * @param[in] mfv   the instance to copy.
  */
 openvrml::mfvec3d::mfvec3d(const mfvec3d & mfv):
     field_value(mfv)
@@ -6546,7 +6546,7 @@ openvrml::mfvec3d::~mfvec3d() OPENVRML_NOTHROW
 /**
  * @brief Assign.
  *
- * @param mfv   the value to assign.
+ * @param[in] mfv   the value to assign.
  *
  * @return a reference to the instance.
  *
@@ -6572,7 +6572,7 @@ const openvrml::mfvec3d::value_type & openvrml::mfvec3d::value() const
 /**
  * @brief Mutate.
  *
- * @param val   the new value.
+ * @param[in] val   the new value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6585,7 +6585,7 @@ void openvrml::mfvec3d::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param mfv   the value to swap with this one.
+ * @param[in,out] mfv   the value to swap with this one.
  */
 void openvrml::mfvec3d::swap(mfvec3d & mfv) OPENVRML_NOTHROW
 {
@@ -6634,7 +6634,7 @@ openvrml::field_value::type_id openvrml::mfvec3d::do_type() const
 /**
  * @brief Print to an output stream.
  *
- * @param out   an output stream.
+ * @param[in,out] out   an output stream.
  */
 void openvrml::mfvec3d::print(std::ostream & out) const
 {
@@ -6656,8 +6656,8 @@ void openvrml::mfvec3d::print(std::ostream & out) const
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -6673,8 +6673,8 @@ bool openvrml::operator==(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *      otherwise.
@@ -6694,8 +6694,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6707,8 +6707,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6720,8 +6720,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6733,8 +6733,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6746,8 +6746,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6759,8 +6759,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6772,8 +6772,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6785,8 +6785,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6798,8 +6798,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6811,8 +6811,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6824,8 +6824,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6837,8 +6837,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6850,8 +6850,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6863,8 +6863,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6876,8 +6876,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6889,8 +6889,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6902,8 +6902,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6915,8 +6915,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6928,8 +6928,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6941,8 +6941,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6954,8 +6954,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6967,8 +6967,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6980,8 +6980,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -6993,8 +6993,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7006,8 +7006,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7019,8 +7019,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7032,8 +7032,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7045,8 +7045,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7058,8 +7058,8 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */
 
 /**
@@ -7071,6 +7071,6 @@ bool openvrml::operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */

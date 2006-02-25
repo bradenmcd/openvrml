@@ -46,8 +46,8 @@
  *
  * @brief Construct.
  *
- * @param node  a reference to the node to which the exposedField belongs.
- * @param value default value.
+ * @param[in] node  a reference to the node to which the exposedField belongs.
+ * @param[in] value default value.
  */
 
 /**
@@ -55,7 +55,7 @@
  *
  * @brief Construct a copy.
  *
- * @param obj   the instance to copy.
+ * @param[in] obj   the instance to copy.
  */
 
 /**
@@ -80,8 +80,8 @@
  *          should override
  *          <code>exposedfield<FieldValue>::event_side_effect</code> instead.
  *
- * @param value     new value.
- * @param timestamp the current time.
+ * @param[in] value     new value.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -95,8 +95,8 @@
  * functionality specific to a particular exposedField. The default
  * implementation of this function does nothing.
  *
- * @param value     new value.
- * @param timestamp the current time.
+ * @param[in] value     new value.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */

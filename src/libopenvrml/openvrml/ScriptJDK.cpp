@@ -195,9 +195,9 @@ JNIEnv *ScriptJDK::d_env = 0;
  * This method requires that className.class exists either in the
  * given classDir or somewhere within the CLASSPATH.
  *
- * @param scriptNode Reference to the ScriptNode that uses this Script.
- * @param className Name of the Java class.
- * @param classDir Location of Java class.
+ * @param[in] scriptNode Reference to the ScriptNode that uses this Script.
+ * @param[in] className Name of the Java class.
+ * @param[in] classDir Location of Java class.
  */
 ScriptJDK::ScriptJDK(script_node & node,
                      const char * className,
@@ -309,10 +309,10 @@ namespace {
     /**
      * @brief Get the JNI fieldID for the given member name and type.
      *
-     * @param env JNI environment
-     * @param obj JNI object
-     * @param membername Name of desired member of JNI object
-     * @param sig Data type of member
+     * @param[in] env JNI environment
+     * @param[in] obj JNI object
+     * @param[in] membername Name of desired member of JNI object
+     * @param[in] sig Data type of member
      * @return JNI fieldID of member on the given object
      */
     OPENVRML_LOCAL jfieldID getFid(JNIEnv * env,
@@ -329,8 +329,8 @@ namespace {
      * @brief Method to retrieve the corresponding field value pointer
      * in OpenVRML from a field in Java.
      *
-     * @param env JNI environment
-     * @param obj JNI version of a Java field object
+     * @param[in] env JNI environment
+     * @param[in] obj JNI version of a Java field object
      * @return OpenVRML field value pointer representing the passed in Java
      *         field object.
      *
@@ -384,8 +384,8 @@ namespace {
      * @brief This method converts a JNI VRML field object to its
      *        string representation.
      *
-     * @param env JNI environment
-     * @param obj JNI version of a Java field object
+     * @param[in] env JNI environment
+     * @param[in] obj JNI version of a Java field object
      * @return String representation of a VRML field
      */
     OPENVRML_LOCAL jstring fieldToString(JNIEnv *env, jobject obj)
@@ -403,7 +403,7 @@ namespace {
 /**
  * @brief Initialize the Script object.
  *
- * @param timestamp Time at which script is being initialized.
+ * @param[in] timestamp Time at which script is being initialized.
  */
 void ScriptJDK::do_initialize(const double timestamp)
 {
@@ -415,9 +415,9 @@ void ScriptJDK::do_initialize(const double timestamp)
 /**
  * @brief Called to process an event that has occurred.
  *
- * @param id Name of the event.
- * @param value Value of the event.
- * @param timestamp Time at which event occurred.
+ * @param[in] id Name of the event.
+ * @param[in] value Value of the event.
+ * @param[in] timestamp Time at which event occurred.
  */
 void ScriptJDK::do_process_event(const std::string & id,
                                  const field_value & value,
@@ -431,7 +431,7 @@ void ScriptJDK::do_process_event(const std::string & id,
 /**
  * @brief Called to process one or more events that have occurred.
  *
- * @param timestamp Time at which last event occurred.
+ * @param[in] timestamp Time at which last event occurred.
  */
 void ScriptJDK::do_events_processed(const double timestamp)
 {
@@ -444,7 +444,7 @@ void ScriptJDK::do_events_processed(const double timestamp)
  * @brief Called when the script is deleted or the world containing
  * the script is unloaded or replaced
  *
- * @param timestamp Time at which script is being destroyed.
+ * @param[in] timestamp Time at which script is being destroyed.
  */
 void ScriptJDK::do_shutdown(const double timestamp)
 {
@@ -456,10 +456,10 @@ void ScriptJDK::do_shutdown(const double timestamp)
 /**
  * @brief Run a specified script.
  *
- * @param timeStamp Time at which script is being run.
- * @param fname Script name
- * @param argc Number of arguments to pass to script
- * @param argv Array of arguments
+ * @param[in] timeStamp Time at which script is being run.
+ * @param[in] fname Script name
+ * @param[in] argc Number of arguments to pass to script
+ * @param[in] argv Array of arguments
  */
 void ScriptJDK::activate( double timeStamp,
               const std::string& fname,
@@ -511,7 +511,7 @@ void ScriptJDK::activate( double timeStamp,
 /**
  * @brief Create a new field_value of the given type.
  *
- * @param fieldtype Type of field to create.
+ * @param[in] fieldtype Type of field to create.
  * @return New field_value of given type
  */
 static field_value* newField(field_value::type_id fieldtype)
@@ -582,8 +582,8 @@ static field_value* newField(field_value::type_id fieldtype)
 /**
  * @brief Clone a JNI VRML field object.
  *
- * @param env JNI environment
- * @param obj JNI version of a VRML field object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a VRML field object.
  * @return Cloned copy of JNI version of a VRML field object.
  *
  * @todo revisit this method
@@ -635,9 +635,9 @@ void JNICALL JNI_OnUnload(JavaVM *, void *)
 /**
  * @brief JNI implementation of ConstSFBool::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFBool object
- * @param value Initial value of ConstSFBool field
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFBool object
+ * @param[in] value Initial value of ConstSFBool field
  */
 void JNICALL Java_vrml_field_ConstSFBool_CreateObject
   (JNIEnv *env, jobject obj, jboolean value)
@@ -662,8 +662,8 @@ void JNICALL Java_vrml_field_ConstSFBool_CreateObject
 /**
  * @brief JNI implementation of ConstSFBool::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFBool object
  * @return Value of ConstSFBool field
  */
 jboolean JNICALL Java_vrml_field_ConstSFBool_getValue(JNIEnv * env,
@@ -677,8 +677,8 @@ jboolean JNICALL Java_vrml_field_ConstSFBool_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFBool::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFBool object
  * @return String representation of ConstSFBool field.
  */
 jstring JNICALL Java_vrml_field_ConstSFBool_toString
@@ -690,9 +690,9 @@ jstring JNICALL Java_vrml_field_ConstSFBool_toString
 /**
  * @brief JNI implementation of SFBool::CreateObject.
  *
- * @param env JNI environment
- * @param obj SFBool object
- * @param value Initial value of SFBool object.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFBool object
+ * @param[in] value Initial value of SFBool object.
  */
 void JNICALL Java_vrml_field_SFBool_CreateObject
   (JNIEnv *env, jobject obj, jboolean value)
@@ -703,8 +703,8 @@ void JNICALL Java_vrml_field_SFBool_CreateObject
 /**
  * @brief JNI implementation of SFBool::getValue.
  *
- * @param env JNI environment
- * @param obj SFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj SFBool object
  * @return Value of SFBool object.
  */
 jboolean JNICALL Java_vrml_field_SFBool_getValue
@@ -716,9 +716,9 @@ jboolean JNICALL Java_vrml_field_SFBool_getValue
 /**
  * @brief JNI implementation of SFBool::setValue.
  *
- * @param env JNI environment
- * @param obj SFBool object
- * @param value Desired value of SFBool object.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFBool object
+ * @param[in] value Desired value of SFBool object.
  */
 void JNICALL Java_vrml_field_SFBool_setValue__Z(JNIEnv * env,
                                                 jobject obj,
@@ -732,9 +732,9 @@ void JNICALL Java_vrml_field_SFBool_setValue__Z(JNIEnv * env,
 /**
  * @brief JNI implementation of SFBool::setValue.
  *
- * @param env JNI environment
- * @param obj SFBool object
- * @param value Desired value of SFBool object.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFBool object
+ * @param[in] value Desired value of SFBool object.
  */
 void JNICALL
 Java_vrml_field_SFBool_setValue__Lvrml_field_ConstSFBool_2
@@ -749,9 +749,9 @@ Java_vrml_field_SFBool_setValue__Lvrml_field_ConstSFBool_2
 /**
  * @brief JNI implementation of SFBool::setValue.
  *
- * @param env JNI environment
- * @param obj SFBool object
- * @param value Desired value of SFBool object.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFBool object
+ * @param[in] value Desired value of SFBool object.
  */
 void JNICALL
 Java_vrml_field_SFBool_setValue__Lvrml_field_SFBool_2
@@ -763,8 +763,8 @@ Java_vrml_field_SFBool_setValue__Lvrml_field_SFBool_2
 /**
  * @brief JNI implementation of SFBool::toString.
  *
- * @param env JNI environment
- * @param obj SFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj SFBool object
  * @return String representation of SFBool field.
  */
 jstring JNICALL Java_vrml_field_SFBool_toString
@@ -776,11 +776,11 @@ jstring JNICALL Java_vrml_field_SFBool_toString
 /**
  * @brief JNI implementation of ConstSFColor::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object.
- * @param r Red component of Color
- * @param g Green component of Color
- * @param b Blue component of Color
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFColor object.
+ * @param[in] r Red component of Color
+ * @param[in] g Green component of Color
+ * @param[in] b Blue component of Color
  */
 void JNICALL Java_vrml_field_ConstSFColor_CreateObject
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
@@ -806,9 +806,9 @@ void JNICALL Java_vrml_field_ConstSFColor_CreateObject
 /**
  * @brief JNI implementation of ConstSFColor::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object
- * @param jarr Array to fill with RGB values of SFColor.
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFColor object
+ * @param[out] jarr Array to fill with RGB values of SFColor.
  */
 void JNICALL Java_vrml_field_ConstSFColor_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -823,8 +823,8 @@ void JNICALL Java_vrml_field_ConstSFColor_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFColor::getRed.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFColor object
  * @return Red component of SFColor
  */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getRed(JNIEnv * env, jobject obj)
@@ -837,8 +837,8 @@ jfloat JNICALL Java_vrml_field_ConstSFColor_getRed(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFColor::getGreen.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFColor object
  * @return Green component of SFColor
  */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getGreen(JNIEnv * env,
@@ -852,8 +852,8 @@ jfloat JNICALL Java_vrml_field_ConstSFColor_getGreen(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFColor::getBlue.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFColor object
  * @return Blue component of SFColor
  */
 jfloat JNICALL Java_vrml_field_ConstSFColor_getBlue(JNIEnv * env, jobject obj)
@@ -866,8 +866,8 @@ jfloat JNICALL Java_vrml_field_ConstSFColor_getBlue(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFColor::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFColor object.
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFColor object.
  * @return String representation of ConstSFColor.
  */
 jstring JNICALL Java_vrml_field_ConstSFColor_toString
@@ -879,11 +879,11 @@ jstring JNICALL Java_vrml_field_ConstSFColor_toString
 /**
  * @brief JNI implementation of SFColor::CreateObject
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param r Red component of Color
- * @param g Green component of Color
- * @param b Blue component of Color
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFColor object
+ * @param[in] r Red component of Color
+ * @param[in] g Green component of Color
+ * @param[in] b Blue component of Color
  */
 void JNICALL Java_vrml_field_SFColor_CreateObject
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
@@ -894,9 +894,9 @@ void JNICALL Java_vrml_field_SFColor_CreateObject
 /**
  * @brief JNI implementation of SFColor::getValue
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param jarr Array to populate with SFColor RGB components.
+ * @param[in] env JNI environment
+ * @param[in] obj SFColor object
+ * @param[out] jarr Array to populate with SFColor RGB components.
  */
 void JNICALL Java_vrml_field_SFColor_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
@@ -907,8 +907,8 @@ void JNICALL Java_vrml_field_SFColor_getValue
 /**
  * @brief JNI implementation of SFColor::getRed.
  *
- * @param env JNI environment
- * @param obj SFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj SFColor object
  * @return Red component of SFColor.
  */
 jfloat JNICALL Java_vrml_field_SFColor_getRed
@@ -920,8 +920,8 @@ jfloat JNICALL Java_vrml_field_SFColor_getRed
 /**
  * @brief JNI implementation of SFColor::getGreen.
  *
- * @param env JNI environment
- * @param obj SFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj SFColor object
  * @return Green component of SFColor.
  */
 jfloat JNICALL Java_vrml_field_SFColor_getGreen
@@ -933,8 +933,8 @@ jfloat JNICALL Java_vrml_field_SFColor_getGreen
 /**
  * @brief JNI implementation of SFColor::getBlue.
  *
- * @param env JNI environment
- * @param obj SFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj SFColor object
  * @return Blue component of SFColor.
  */
 jfloat JNICALL Java_vrml_field_SFColor_getBlue
@@ -946,9 +946,9 @@ jfloat JNICALL Java_vrml_field_SFColor_getBlue
 /**
  * @brief JNI implementation of SFColor::setValue.
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param jarr Array containing RGB components of desired SFColor.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFColor object
+ * @param[in] jarr Array containing RGB components of desired SFColor.
  */
 void JNICALL Java_vrml_field_SFColor_setValue___3F(JNIEnv * env,
                                                    jobject obj,
@@ -964,11 +964,11 @@ void JNICALL Java_vrml_field_SFColor_setValue___3F(JNIEnv * env,
 /**
  * @brief JNI implementation of SFColor::setValue.
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param r Red component of desired color.
- * @param g Green component of desired color.
- * @param b Blue component of desired color.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFColor object
+ * @param[in] r Red component of desired color.
+ * @param[in] g Green component of desired color.
+ * @param[in] b Blue component of desired color.
  */
 void JNICALL Java_vrml_field_SFColor_setValue__FFF
   (JNIEnv *env, jobject obj, jfloat r, jfloat g, jfloat b)
@@ -981,9 +981,9 @@ void JNICALL Java_vrml_field_SFColor_setValue__FFF
 /**
  * @brief JNI implementation of SFColor::setValue.
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param value ConstSFColor object to copy color from.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFColor object
+ * @param[in] value ConstSFColor object to copy color from.
  */
 void JNICALL
 Java_vrml_field_SFColor_setValue__Lvrml_field_ConstSFColor_2
@@ -998,9 +998,9 @@ Java_vrml_field_SFColor_setValue__Lvrml_field_ConstSFColor_2
 /**
  * @brief JNI implementation of SFColor::setValue.
  *
- * @param env JNI environment
- * @param obj SFColor object
- * @param value SFColor object to copy color from.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFColor object
+ * @param[in] value SFColor object to copy color from.
  */
 void JNICALL
 Java_vrml_field_SFColor_setValue__Lvrml_field_SFColor_2
@@ -1013,8 +1013,8 @@ Java_vrml_field_SFColor_setValue__Lvrml_field_SFColor_2
 /**
  * @brief JNI implementation of SFColor::toString.
  *
- * @param env JNI environment
- * @param obj SFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj SFColor object
  * @return String representation of SFColor.
  */
 jstring JNICALL Java_vrml_field_SFColor_toString
@@ -1026,9 +1026,9 @@ jstring JNICALL Java_vrml_field_SFColor_toString
 /**
  * @brief JNI implementation of ConstSFFloat::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFFloat object
- * @param value Initial value for object
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFFloat object
+ * @param[in] value Initial value for object
  */
 void JNICALL Java_vrml_field_ConstSFFloat_CreateObject
   (JNIEnv *env, jobject obj, jfloat value)
@@ -1053,8 +1053,8 @@ void JNICALL Java_vrml_field_ConstSFFloat_CreateObject
 /**
  * @brief JNI implementation of ConstSFFloat::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFFloat object
  * @return Value of field.
  */
 jfloat JNICALL Java_vrml_field_ConstSFFloat_getValue(JNIEnv * env,
@@ -1068,8 +1068,8 @@ jfloat JNICALL Java_vrml_field_ConstSFFloat_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFFloat::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFFloat object
  * @return String representation of ConstSFFloat.
  */
 jstring JNICALL Java_vrml_field_ConstSFFloat_toString
@@ -1081,9 +1081,9 @@ jstring JNICALL Java_vrml_field_ConstSFFloat_toString
 /**
  * @brief JNI implementation of SFFloat::CreateObject.
  *
- * @param env JNI environment
- * @param obj SFFloat object
- * @param value Initial value for object
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFFloat object
+ * @param[in] value Initial value for object
  */
 void JNICALL Java_vrml_field_SFFloat_CreateObject
   (JNIEnv *env, jobject obj, jfloat value)
@@ -1094,8 +1094,8 @@ void JNICALL Java_vrml_field_SFFloat_CreateObject
 /**
  * @brief JNI implementation of SFFloat::getValue.
  *
- * @param env JNI environment
- * @param obj SFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj SFFloat object
  * @return Value of field.
  */
 jfloat JNICALL Java_vrml_field_SFFloat_getValue
@@ -1107,9 +1107,9 @@ jfloat JNICALL Java_vrml_field_SFFloat_getValue
 /**
  * @brief JNI implementation of SFFloat::setValue.
  *
- * @param env JNI environment
- * @param obj SFFloat object
- * @param f Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFFloat object
+ * @param[in] f Desired value
  */
 void JNICALL Java_vrml_field_SFFloat_setValue__F(JNIEnv * env,
                                                  jobject obj,
@@ -1123,9 +1123,9 @@ void JNICALL Java_vrml_field_SFFloat_setValue__F(JNIEnv * env,
 /**
  * @brief JNI implementation of SFFloat::setValue.
  *
- * @param env JNI environment
- * @param obj SFFloat object
- * @param value Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFFloat object
+ * @param[in] value Desired value
  */
 void JNICALL
 Java_vrml_field_SFFloat_setValue__Lvrml_field_ConstSFFloat_2
@@ -1140,9 +1140,9 @@ Java_vrml_field_SFFloat_setValue__Lvrml_field_ConstSFFloat_2
 /**
  * @brief JNI implementation of SFFloat::setValue.
  *
- * @param env JNI environment
- * @param obj SFFloat object
- * @param value Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFFloat object
+ * @param[in] value Desired value
  */
 void JNICALL
 Java_vrml_field_SFFloat_setValue__Lvrml_field_SFFloat_2
@@ -1155,8 +1155,8 @@ Java_vrml_field_SFFloat_setValue__Lvrml_field_SFFloat_2
 /**
  * @brief JNI implementation of SFFloat::toString.
  *
- * @param env JNI environment
- * @param obj SFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj SFFloat object
  * @return String representation of SFFloat.
  */
 jstring JNICALL Java_vrml_field_SFFloat_toString
@@ -1169,9 +1169,9 @@ adsfadsf
 /**
  * @brief JNI implementation of ConstSFDouble::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFDouble object
- * @param value Initial value for object
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFDouble object
+ * @param[in] value Initial value for object
  */
 void JNICALL Java_vrml_field_ConstSFDouble_CreateObject
   (JNIEnv *env, jobject obj, jdouble value)
@@ -1196,8 +1196,8 @@ void JNICALL Java_vrml_field_ConstSFDouble_CreateObject
 /**
  * @brief JNI implementation of ConstSFDouble::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFDouble object
  * @return Value of field.
  */
 jdouble JNICALL Java_vrml_field_ConstSFDouble_getValue(JNIEnv * env,
@@ -1211,8 +1211,8 @@ jdouble JNICALL Java_vrml_field_ConstSFDouble_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFDouble::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFDouble object
  * @return String representation of ConstSFDouble.
  */
 jstring JNICALL Java_vrml_field_ConstSFDouble_toString
@@ -1224,9 +1224,9 @@ jstring JNICALL Java_vrml_field_ConstSFDouble_toString
 /**
  * @brief JNI implementation of SFDouble::CreateObject.
  *
- * @param env JNI environment
- * @param obj SFDouble object
- * @param value Initial value for object
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFDouble object
+ * @param[in] value Initial value for object
  */
 void JNICALL Java_vrml_field_SFDouble_CreateObject
   (JNIEnv *env, jobject obj, jdouble value)
@@ -1237,8 +1237,8 @@ void JNICALL Java_vrml_field_SFDouble_CreateObject
 /**
  * @brief JNI implementation of SFDouble::getValue.
  *
- * @param env JNI environment
- * @param obj SFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj SFDouble object
  * @return Value of field.
  */
 jdouble JNICALL Java_vrml_field_SFDouble_getValue
@@ -1250,9 +1250,9 @@ jdouble JNICALL Java_vrml_field_SFDouble_getValue
 /**
  * @brief JNI implementation of SFDouble::setValue.
  *
- * @param env JNI environment
- * @param obj SFDouble object
- * @param f Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFDouble object
+ * @param[in] f Desired value
  */
 void JNICALL Java_vrml_field_SFDouble_setValue__F(JNIEnv * env,
                                                  jobject obj,
@@ -1266,9 +1266,9 @@ void JNICALL Java_vrml_field_SFDouble_setValue__F(JNIEnv * env,
 /**
  * @brief JNI implementation of SFDouble::setValue.
  *
- * @param env JNI environment
- * @param obj SFDouble object
- * @param value Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFDouble object
+ * @param[in] value Desired value
  */
 void JNICALL
 Java_vrml_field_SFDouble_setValue__Lvrml_field_ConstSFDouble_2
@@ -1283,9 +1283,9 @@ Java_vrml_field_SFDouble_setValue__Lvrml_field_ConstSFDouble_2
 /**
  * @brief JNI implementation of SFDouble::setValue.
  *
- * @param env JNI environment
- * @param obj SFDouble object
- * @param value Desired value
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFDouble object
+ * @param[in] value Desired value
  */
 void JNICALL
 Java_vrml_field_SFDouble_setValue__Lvrml_field_SFDouble_2
@@ -1298,8 +1298,8 @@ Java_vrml_field_SFDouble_setValue__Lvrml_field_SFDouble_2
 /**
  * @brief JNI implementation of SFDouble::toString.
  *
- * @param env JNI environment
- * @param obj SFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj SFDouble object
  * @return String representation of SFDouble.
  */
 jstring JNICALL Java_vrml_field_SFDouble_toString
@@ -1310,12 +1310,12 @@ jstring JNICALL Java_vrml_field_SFDouble_toString
 /**
  * @brief JNI implementation of ConstSFImage::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
- * @param width Initial width
- * @param height Initial height
- * @param components Initial number of components
- * @param pixels Initial set of pixels
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFImage object
+ * @param[in] width Initial width
+ * @param[in] height Initial height
+ * @param[in] components Initial number of components
+ * @param[in] pixels Initial set of pixels
  */
 void JNICALL Java_vrml_field_ConstSFImage_CreateObject
   (JNIEnv *env, jobject obj, jint width, jint height,
@@ -1353,8 +1353,8 @@ void JNICALL Java_vrml_field_ConstSFImage_CreateObject
 /**
  * @brief JNI implementation of ConstSFImage::getWidth.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFImage object
  * @return Width of ConstSFImage
  */
 jint JNICALL Java_vrml_field_ConstSFImage_getWidth(JNIEnv *env, jobject obj)
@@ -1367,8 +1367,8 @@ jint JNICALL Java_vrml_field_ConstSFImage_getWidth(JNIEnv *env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFImage::getHeight.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFImage object
  * @return Height of ConstSFImage
  */
 jint JNICALL Java_vrml_field_ConstSFImage_getHeight(JNIEnv *env, jobject obj)
@@ -1381,8 +1381,8 @@ jint JNICALL Java_vrml_field_ConstSFImage_getHeight(JNIEnv *env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFImage::getComponents.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFImage object
  * @return Number of components in ConstSFImage
  */
 jint JNICALL Java_vrml_field_ConstSFImage_getComponents(JNIEnv * env,
@@ -1396,9 +1396,9 @@ jint JNICALL Java_vrml_field_ConstSFImage_getComponents(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFImage::getPixels.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
- * @param pixels Array to fill with ConstSFImage pixels
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFImage object
+ * @param[out] pixels Array to fill with ConstSFImage pixels
  */
 void JNICALL Java_vrml_field_ConstSFImage_getPixels(JNIEnv *env,
                                                     jobject obj,
@@ -1416,8 +1416,8 @@ void JNICALL Java_vrml_field_ConstSFImage_getPixels(JNIEnv *env,
 /**
  * @brief JNI implementation of ConstSFImage::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFImage object
  * @return String representation of ConstSFImage.
  */
 jstring JNICALL Java_vrml_field_ConstSFImage_toString
@@ -1429,12 +1429,12 @@ jstring JNICALL Java_vrml_field_ConstSFImage_toString
 /**
  * @brief JNI implementation of SFImage::CreateObject.
  *
- * @param env JNI environment
- * @param obj SFImage object
- * @param width Initial width
- * @param height Initial height
- * @param components Initial number of components
- * @param pixels Initial set of pixels
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFImage object
+ * @param[in] width Initial width
+ * @param[in] height Initial height
+ * @param[in] components Initial number of components
+ * @param[in] pixels Initial set of pixels
  */
 void JNICALL Java_vrml_field_SFImage_CreateObject
   (JNIEnv *env, jobject obj, jint width, jint height,
@@ -1447,8 +1447,8 @@ void JNICALL Java_vrml_field_SFImage_CreateObject
 /**
  * @brief JNI implementation of SFImage::getWidth.
  *
- * @param env JNI environment
- * @param obj SFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj SFImage object
  * @return Width of SFImage
  */
 jint JNICALL Java_vrml_field_SFImage_getWidth
@@ -1460,8 +1460,8 @@ jint JNICALL Java_vrml_field_SFImage_getWidth
 /**
  * @brief JNI implementation of SFImage::getHeight.
  *
- * @param env JNI environment
- * @param obj SFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj SFImage object
  * @return Height of SFImage
  */
 jint JNICALL Java_vrml_field_SFImage_getHeight
@@ -1473,8 +1473,8 @@ jint JNICALL Java_vrml_field_SFImage_getHeight
 /**
  * @brief JNI implementation of SFImage::getComponents.
  *
- * @param env JNI environment
- * @param obj SFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj SFImage object
  * @return Number of components in SFImage
  */
 jint JNICALL Java_vrml_field_SFImage_getComponents
@@ -1486,9 +1486,9 @@ jint JNICALL Java_vrml_field_SFImage_getComponents
 /**
  * @brief JNI implementation of SFImage::getPixels.
  *
- * @param env JNI environment
- * @param obj SFImage object
- * @param pixels Array to fill with SFImage pixels
+ * @param[in] env JNI environment
+ * @param[in] obj SFImage object
+ * @param[out] pixels Array to fill with SFImage pixels
  */
 void JNICALL Java_vrml_field_SFImage_getPixels
   (JNIEnv *env, jobject obj, jbyteArray pixels)
@@ -1499,12 +1499,12 @@ void JNICALL Java_vrml_field_SFImage_getPixels
 /**
  * @brief JNI implementation of SFImage::setValue.
  *
- * @param env JNI environment
- * @param obj SFImage object
- * @param width New width
- * @param height New height
- * @param components Number of components
- * @param pixels New set of pixels
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFImage object
+ * @param[in] width New width
+ * @param[in] height New height
+ * @param[in] components Number of components
+ * @param[in] pixels New set of pixels
  */
 void JNICALL Java_vrml_field_SFImage_setValue__III_3B(JNIEnv * env,
                                                       jobject obj,
@@ -1524,9 +1524,9 @@ void JNICALL Java_vrml_field_SFImage_setValue__III_3B(JNIEnv * env,
 /**
  * @brief JNI implementation of SFImage::setValue.
  *
- * @param env JNI environment
- * @param obj SFImage object
- * @param value ConstSFImage to copy value from
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFImage object
+ * @param[in] value ConstSFImage to copy value from
  */
 void JNICALL
 Java_vrml_field_SFImage_setValue__Lvrml_field_ConstSFImage_2(JNIEnv * env,
@@ -1546,9 +1546,9 @@ Java_vrml_field_SFImage_setValue__Lvrml_field_ConstSFImage_2(JNIEnv * env,
 /**
  * @brief JNI implementation of SFImage::setValue.
  *
- * @param env JNI environment
- * @param obj SFImage object
- * @param value SFImage to copy value from
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFImage object
+ * @param[in] value SFImage to copy value from
  */
 void JNICALL
 Java_vrml_field_SFImage_setValue__Lvrml_field_SFImage_2
@@ -1561,8 +1561,8 @@ Java_vrml_field_SFImage_setValue__Lvrml_field_SFImage_2
 /**
  * @brief JNI implementation of SFImage::toString.
  *
- * @param env JNI environment
- * @param obj SFImage object
+ * @param[in] env JNI environment
+ * @param[in] obj SFImage object
  * @return String representation of SFImage.
  */
 jstring JNICALL Java_vrml_field_SFImage_toString
@@ -1594,8 +1594,8 @@ void JNICALL Java_vrml_field_ConstSFInt32_CreateObject
 /**
  * @brief JNI implementation of ConstSFInt32::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFInt32 object
  * @return Value of field
  */
 jint JNICALL Java_vrml_field_ConstSFInt32_getValue(JNIEnv * env, jobject obj)
@@ -1608,8 +1608,8 @@ jint JNICALL Java_vrml_field_ConstSFInt32_getValue(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFInt32::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFInt32 object
  * @return String representation of ConstSFInt32.
  */
 jstring JNICALL Java_vrml_field_ConstSFInt32_toString
@@ -1627,8 +1627,8 @@ void JNICALL Java_vrml_field_SFInt32_CreateObject
 /**
  * @brief JNI implementation of SFInt32::getValue.
  *
- * @param env JNI environment
- * @param obj SFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj SFInt32 object
  * @return Value of field
  */
 jint JNICALL Java_vrml_field_SFInt32_getValue
@@ -1640,9 +1640,9 @@ jint JNICALL Java_vrml_field_SFInt32_getValue
 /**
  * @brief JNI implementation of SFInt32::setValue.
  *
- * @param env JNI environment
- * @param obj SFInt32 object
- * @param value New value of SFInt32
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFInt32 object
+ * @param[in] value New value of SFInt32
  */
 void JNICALL Java_vrml_field_SFInt32_setValue__I(JNIEnv * env,
                                                  jobject obj,
@@ -1656,9 +1656,9 @@ void JNICALL Java_vrml_field_SFInt32_setValue__I(JNIEnv * env,
 /**
  * @brief JNI implementation of SFInt32::setValue.
  *
- * @param env JNI environment
- * @param obj SFInt32 object
- * @param value New value of SFInt32
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFInt32 object
+ * @param[in] value New value of SFInt32
  */
 void JNICALL
 Java_vrml_field_SFInt32_setValue__Lvrml_field_ConstSFInt32_2(JNIEnv * env,
@@ -1674,9 +1674,9 @@ Java_vrml_field_SFInt32_setValue__Lvrml_field_ConstSFInt32_2(JNIEnv * env,
 /**
  * @brief JNI implementation of SFInt32::setValue.
  *
- * @param env JNI environment
- * @param obj SFInt32 object
- * @param value New value of SFInt32
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFInt32 object
+ * @param[in] value New value of SFInt32
  */
 void JNICALL
 Java_vrml_field_SFInt32_setValue__Lvrml_field_SFInt32_2
@@ -1689,8 +1689,8 @@ Java_vrml_field_SFInt32_setValue__Lvrml_field_SFInt32_2
 /**
  * @brief JNI implementation of SFInt32::toString.
  *
- * @param env JNI environment
- * @param obj SFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj SFInt32 object
  * @return String representation of SFInt32.
  */
 jstring JNICALL Java_vrml_field_SFInt32_toString
@@ -1702,9 +1702,9 @@ jstring JNICALL Java_vrml_field_SFInt32_toString
 /**
  * @brief JNI implementation of ConstSFNode::CreateObject.
  *
- * @param env JNI environment
- * @param obj ConstSFNode object
- * @param value BaseNode object to initialize field with.
+ * @param[in] env JNI environment
+ * @param[in,out] obj ConstSFNode object
+ * @param[in] value BaseNode object to initialize field with.
  */
 void JNICALL Java_vrml_field_ConstSFNode_CreateObject(JNIEnv * env,
                                                       jobject obj,
@@ -1744,8 +1744,8 @@ void JNICALL Java_vrml_field_ConstSFNode_CreateObject(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFNode::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFNode object
  * @return BaseNode contained in SFNode.
  */
 jobject JNICALL Java_vrml_field_ConstSFNode_getValue(JNIEnv * env, jobject obj)
@@ -1763,8 +1763,8 @@ jobject JNICALL Java_vrml_field_ConstSFNode_getValue(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFNode::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFNode object
  * @return String representation of ConstSFNode.
  */
 jstring JNICALL Java_vrml_field_ConstSFNode_toString
@@ -1776,9 +1776,9 @@ jstring JNICALL Java_vrml_field_ConstSFNode_toString
 /**
  * @brief JNI implementation of SFNode::CreateObject.
  *
- * @param env JNI environment
- * @param obj SFNode object
- * @param value BaseNode object to initialize field with.
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFNode object
+ * @param[in] value BaseNode object to initialize field with.
  */
 void JNICALL Java_vrml_field_SFNode_CreateObject
   (JNIEnv *env, jobject obj, jobject value)
@@ -1789,8 +1789,8 @@ void JNICALL Java_vrml_field_SFNode_CreateObject
 /**
  * @brief JNI implementation of SFNode::getValue.
  *
- * @param env JNI environment
- * @param obj SFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj SFNode object
  * @return BaseNode contained in SFNode.
  */
 jobject JNICALL Java_vrml_field_SFNode_getValue
@@ -1802,9 +1802,9 @@ jobject JNICALL Java_vrml_field_SFNode_getValue
 /**
  * @brief JNI implementation of SFNode::setValue.
  *
- * @param env JNI environment
- * @param obj SFNode object
- * @param value New value of SFNode
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFNode object
+ * @param[in] value New value of SFNode
  */
 void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2(JNIEnv * env,
                                                                jobject obj,
@@ -1821,9 +1821,9 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_BaseNode_2(JNIEnv * env,
 /**
  * @brief JNI implementation of SFNode::setValue.
  *
- * @param env JNI environment
- * @param obj SFNode object
- * @param value New value of SFNode
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFNode object
+ * @param[in] value New value of SFNode
  */
 void JNICALL
 Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2(JNIEnv * env,
@@ -1839,9 +1839,9 @@ Java_vrml_field_SFNode_setValue__Lvrml_field_ConstSFNode_2(JNIEnv * env,
 /**
  * @brief JNI implementation of SFNode::setValue.
  *
- * @param env JNI environment
- * @param obj SFNode object
- * @param value New value of SFNode
+ * @param[in] env JNI environment
+ * @param[in,out] obj SFNode object
+ * @param[in] value New value of SFNode
  */
 void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_field_SFNode_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -1852,8 +1852,8 @@ void JNICALL Java_vrml_field_SFNode_setValue__Lvrml_field_SFNode_2
 /**
  * @brief JNI implementation of SFNode::toString.
  *
- * @param env JNI environment
- * @param obj SFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj SFNode object
  * @return String representation of SFNode.
  */
 jstring JNICALL Java_vrml_field_SFNode_toString
@@ -1900,8 +1900,8 @@ void JNICALL Java_vrml_field_ConstSFRotation_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFRotation::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFRotation object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFRotation object
  * @return String representation of ConstSFRotation.
  */
 jstring JNICALL Java_vrml_field_ConstSFRotation_toString
@@ -2002,8 +2002,8 @@ Java_vrml_field_SFRotation_setValue__Lvrml_field_SFRotation_2
 /**
  * @brief JNI implementation of SFRotation::toString.
  *
- * @param env JNI environment
- * @param obj SFRotation object
+ * @param[in] env JNI environment
+ * @param[in] obj SFRotation object
  * @return String representation of SFRotation.
  */
 jstring JNICALL Java_vrml_field_SFRotation_toString
@@ -2047,8 +2047,8 @@ void JNICALL Java_vrml_field_ConstSFString_CreateObject(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFString::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFString object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFString object
  * @return Value of field
  */
 jstring JNICALL Java_vrml_field_ConstSFString_getValue(JNIEnv * env,
@@ -2062,8 +2062,8 @@ jstring JNICALL Java_vrml_field_ConstSFString_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFString::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFString object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFString object
  * @return String representation of ConstSFString.
  */
 jstring JNICALL Java_vrml_field_ConstSFString_toString
@@ -2081,8 +2081,8 @@ void JNICALL Java_vrml_field_SFString_CreateObject
 /**
  * @brief JNI implementation of SFString::getValue.
  *
- * @param env JNI environment
- * @param obj SFString object
+ * @param[in] env JNI environment
+ * @param[in] obj SFString object
  * @return Value of field
  */
 jstring JNICALL Java_vrml_field_SFString_getValue
@@ -2126,8 +2126,8 @@ Java_vrml_field_SFString_setValue__Lvrml_field_SFString_2
 /**
  * @brief JNI implementation of SFString::toString.
  *
- * @param env JNI environment
- * @param obj SFString object
+ * @param[in] env JNI environment
+ * @param[in] obj SFString object
  * @return String representation of SFString.
  */
 jstring JNICALL Java_vrml_field_SFString_toString
@@ -2159,8 +2159,8 @@ void JNICALL Java_vrml_field_ConstSFTime_CreateObject
 /**
  * @brief JNI implementation of ConstSFTime::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFTime object
  * @return Value of field
  */
 jdouble JNICALL Java_vrml_field_ConstSFTime_getValue(JNIEnv * env, jobject obj)
@@ -2173,8 +2173,8 @@ jdouble JNICALL Java_vrml_field_ConstSFTime_getValue(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFTime::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFTime object
  * @return String representation of ConstSFTime.
  */
 jstring JNICALL Java_vrml_field_ConstSFTime_toString
@@ -2192,8 +2192,8 @@ void JNICALL Java_vrml_field_SFTime_CreateObject
 /**
  * @brief JNI implementation of SFTime::getValue.
  *
- * @param env JNI environment
- * @param obj SFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj SFTime object
  * @return Value of field
  */
 jdouble JNICALL Java_vrml_field_SFTime_getValue
@@ -2232,8 +2232,8 @@ void JNICALL Java_vrml_field_SFTime_setValue__Lvrml_field_SFTime_2
 /**
  * @brief JNI implementation of SFTime::toString.
  *
- * @param env JNI environment
- * @param obj SFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj SFTime object
  * @return String representation of SFTime.
  */
 jstring JNICALL Java_vrml_field_SFTime_toString
@@ -2266,9 +2266,9 @@ void JNICALL Java_vrml_field_ConstSFVec2f_CreateObject
 /**
  * @brief JNI implementation of ConstSFVec2f::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2f object
- * @param jarr Value of field as a float array
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2f object
+ * @param[out] jarr Value of field as a float array
  */
 void JNICALL Java_vrml_field_ConstSFVec2f_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -2282,8 +2282,8 @@ void JNICALL Java_vrml_field_ConstSFVec2f_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec2f::getX.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2f object
  * @return X-component of vector
  */
 jfloat JNICALL Java_vrml_field_ConstSFVec2f_getX(JNIEnv * env, jobject obj)
@@ -2296,8 +2296,8 @@ jfloat JNICALL Java_vrml_field_ConstSFVec2f_getX(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec2f::getY.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2f object
  * @return Y-component of vector
  */
 jfloat JNICALL Java_vrml_field_ConstSFVec2f_getY(JNIEnv * env, jobject obj)
@@ -2310,8 +2310,8 @@ jfloat JNICALL Java_vrml_field_ConstSFVec2f_getY(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec2f::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2f object
  * @return String representation of ConstSFVec2f.
  */
 jstring JNICALL Java_vrml_field_ConstSFVec2f_toString
@@ -2329,9 +2329,9 @@ void JNICALL Java_vrml_field_SFVec2f_CreateObject
 /**
  * @brief JNI implementation of SFVec2f::getValue.
  *
- * @param env JNI environment
- * @param obj SFVec2f object
- * @param jarr Value of field as a float array
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2f object
+ * @param[out] jarr Value of field as a float array
  */
 void JNICALL Java_vrml_field_SFVec2f_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
@@ -2342,8 +2342,8 @@ void JNICALL Java_vrml_field_SFVec2f_getValue
 /**
  * @brief JNI implementation of SFVec2f::getX.
  *
- * @param env JNI environment
- * @param obj SFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2f object
  * @return X-component of vector
  */
 jfloat JNICALL Java_vrml_field_SFVec2f_getX
@@ -2355,8 +2355,8 @@ jfloat JNICALL Java_vrml_field_SFVec2f_getX
 /**
  * @brief JNI implementation of SFVec2f::getY.
  *
- * @param env JNI environment
- * @param obj SFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2f object
  * @return Y-component of vector
  */
 jfloat JNICALL Java_vrml_field_SFVec2f_getY
@@ -2408,8 +2408,8 @@ Java_vrml_field_SFVec2f_setValue__Lvrml_field_SFVec2f_2
 /**
  * @brief JNI implementation of SFVec2f::toString.
  *
- * @param env JNI environment
- * @param obj SFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2f object
  * @return String representation of SFVec2f.
  */
 jstring JNICALL Java_vrml_field_SFVec2f_toString
@@ -2466,9 +2466,9 @@ void JNICALL Java_vrml_field_ConstSFVec2d_CreateObject
 /**
  * @brief JNI implementation of ConstSFVec2d::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2d object
- * @param jarr Value of field as a double array
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2d object
+ * @param[out] jarr Value of field as a double array
  */
 void JNICALL Java_vrml_field_ConstSFVec2d_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -2482,8 +2482,8 @@ void JNICALL Java_vrml_field_ConstSFVec2d_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec2d::getX.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2d object
  * @return X-component of vector
  */
 jdouble JNICALL Java_vrml_field_ConstSFVec2d_getX(JNIEnv * env, jobject obj)
@@ -2496,8 +2496,8 @@ jdouble JNICALL Java_vrml_field_ConstSFVec2d_getX(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec2d::getY.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2d object
  * @return Y-component of vector
  */
 jdouble JNICALL Java_vrml_field_ConstSFVec2d_getY(JNIEnv * env, jobject obj)
@@ -2510,8 +2510,8 @@ jdouble JNICALL Java_vrml_field_ConstSFVec2d_getY(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec2d::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec2d object
  * @return String representation of ConstSFVec2d.
  */
 jstring JNICALL Java_vrml_field_ConstSFVec2d_toString
@@ -2529,9 +2529,9 @@ void JNICALL Java_vrml_field_SFVec2d_CreateObject
 /**
  * @brief JNI implementation of SFVec2d::getValue.
  *
- * @param env JNI environment
- * @param obj SFVec2d object
- * @param jarr Value of field as a double array
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2d object
+ * @param[out] jarr Value of field as a double array
  */
 void JNICALL Java_vrml_field_SFVec2d_getValue
   (JNIEnv *env, jobject obj, jdoubleArray jarr)
@@ -2542,8 +2542,8 @@ void JNICALL Java_vrml_field_SFVec2d_getValue
 /**
  * @brief JNI implementation of SFVec2d::getX.
  *
- * @param env JNI environment
- * @param obj SFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2d object
  * @return X-component of vector
  */
 jdouble JNICALL Java_vrml_field_SFVec2d_getX
@@ -2555,8 +2555,8 @@ jdouble JNICALL Java_vrml_field_SFVec2d_getX
 /**
  * @brief JNI implementation of SFVec2d::getY.
  *
- * @param env JNI environment
- * @param obj SFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2d object
  * @return Y-component of vector
  */
 jdouble JNICALL Java_vrml_field_SFVec2d_getY
@@ -2608,8 +2608,8 @@ Java_vrml_field_SFVec2d_setValue__Lvrml_field_SFVec2d_2
 /**
  * @brief JNI implementation of SFVec2d::toString.
  *
- * @param env JNI environment
- * @param obj SFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec2d object
  * @return String representation of SFVec2d.
  */
 jstring JNICALL Java_vrml_field_SFVec2d_toString
@@ -2645,9 +2645,9 @@ void JNICALL Java_vrml_field_ConstSFVec3f_CreateObject(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec3f::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3f object
- * @param jarr Value of field as a float array
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3f object
+ * @param[out] jarr Value of field as a float array
  */
 void JNICALL Java_vrml_field_ConstSFVec3f_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -2661,8 +2661,8 @@ void JNICALL Java_vrml_field_ConstSFVec3f_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec3f::getX.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3f object
  * @return X-component of vector
  */
 jfloat JNICALL Java_vrml_field_ConstSFVec3f_getX(JNIEnv * env, jobject obj)
@@ -2675,8 +2675,8 @@ jfloat JNICALL Java_vrml_field_ConstSFVec3f_getX(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3f::getY.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3f object
  * @return Y-component of vector
  */
 jfloat JNICALL Java_vrml_field_ConstSFVec3f_getY(JNIEnv * env, jobject obj)
@@ -2689,8 +2689,8 @@ jfloat JNICALL Java_vrml_field_ConstSFVec3f_getY(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3f::getZ.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3f object
  * @return Z-component of vector
  */
 jfloat JNICALL Java_vrml_field_ConstSFVec3f_getZ(JNIEnv * env, jobject obj)
@@ -2703,8 +2703,8 @@ jfloat JNICALL Java_vrml_field_ConstSFVec3f_getZ(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3f::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3f object
  * @return String representation of ConstSFVec3f.
  */
 jstring JNICALL Java_vrml_field_ConstSFVec3f_toString
@@ -2722,9 +2722,9 @@ void JNICALL Java_vrml_field_SFVec3f_CreateObject
 /**
  * @brief JNI implementation of SFVec3f::getValue.
  *
- * @param env JNI environment
- * @param obj SFVec3f object
- * @param jarr Value of field as a float array
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3f object
+ * @param[out] jarr Value of field as a float array
  */
 void JNICALL Java_vrml_field_SFVec3f_getValue
   (JNIEnv *env, jobject obj, jfloatArray jarr)
@@ -2735,8 +2735,8 @@ void JNICALL Java_vrml_field_SFVec3f_getValue
 /**
  * @brief JNI implementation of SFVec3f::getX.
  *
- * @param env JNI environment
- * @param obj SFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3f object
  * @return X-component of vector
  */
 jfloat JNICALL Java_vrml_field_SFVec3f_getX
@@ -2748,8 +2748,8 @@ jfloat JNICALL Java_vrml_field_SFVec3f_getX
 /**
  * @brief JNI implementation of SFVec3f::getY.
  *
- * @param env JNI environment
- * @param obj SFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3f object
  * @return Y-component of vector
  */
 jfloat JNICALL Java_vrml_field_SFVec3f_getY
@@ -2761,8 +2761,8 @@ jfloat JNICALL Java_vrml_field_SFVec3f_getY
 /**
  * @brief JNI implementation of SFVec3f::getZ.
  *
- * @param env JNI environment
- * @param obj SFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3f object
  * @return Z-component of vector
  */
 jfloat JNICALL Java_vrml_field_SFVec3f_getZ
@@ -2815,8 +2815,8 @@ Java_vrml_field_SFVec3f_setValue__Lvrml_field_SFVec3f_2
 /**
  * @brief JNI implementation of SFVec3f::toString.
  *
- * @param env JNI environment
- * @param obj SFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3f object
  * @return String representation of SFVec3f.
  */
 jstring JNICALL Java_vrml_field_SFVec3f_toString
@@ -2853,9 +2853,9 @@ void JNICALL Java_vrml_field_ConstSFVec3d_CreateObject(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec3d::getValue.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3d object
- * @param jarr Value of field as a double array
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3d object
+ * @param[out] jarr Value of field as a double array
  */
 void JNICALL Java_vrml_field_ConstSFVec3d_getValue(JNIEnv * env,
                                                    jobject obj,
@@ -2869,8 +2869,8 @@ void JNICALL Java_vrml_field_ConstSFVec3d_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstSFVec3d::getX.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3d object
  * @return X-component of vector
  */
 jdouble JNICALL Java_vrml_field_ConstSFVec3d_getX(JNIEnv * env, jobject obj)
@@ -2883,8 +2883,8 @@ jdouble JNICALL Java_vrml_field_ConstSFVec3d_getX(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3d::getY.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3d object
  * @return Y-component of vector
  */
 jdouble JNICALL Java_vrml_field_ConstSFVec3d_getY(JNIEnv * env, jobject obj)
@@ -2897,8 +2897,8 @@ jdouble JNICALL Java_vrml_field_ConstSFVec3d_getY(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3d::getZ.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3d object
  * @return Z-component of vector
  */
 jdouble JNICALL Java_vrml_field_ConstSFVec3d_getZ(JNIEnv * env, jobject obj)
@@ -2911,8 +2911,8 @@ jdouble JNICALL Java_vrml_field_ConstSFVec3d_getZ(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of ConstSFVec3d::toString.
  *
- * @param env JNI environment
- * @param obj ConstSFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstSFVec3d object
  * @return String representation of ConstSFVec3d.
  */
 jstring JNICALL Java_vrml_field_ConstSFVec3d_toString
@@ -2930,9 +2930,9 @@ void JNICALL Java_vrml_field_SFVec3d_CreateObject
 /**
  * @brief JNI implementation of SFVec3d::getValue.
  *
- * @param env JNI environment
- * @param obj SFVec3d object
- * @param jarr Value of field as a double array
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3d object
+ * @param[out] jarr Value of field as a double array
  */
 void JNICALL Java_vrml_field_SFVec3d_getValue
   (JNIEnv *env, jobject obj, jdoubleArray jarr)
@@ -2943,8 +2943,8 @@ void JNICALL Java_vrml_field_SFVec3d_getValue
 /**
  * @brief JNI implementation of SFVec3d::getX.
  *
- * @param env JNI environment
- * @param obj SFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3d object
  * @return X-component of vector
  */
 jdouble JNICALL Java_vrml_field_SFVec3d_getX
@@ -2956,8 +2956,8 @@ jdouble JNICALL Java_vrml_field_SFVec3d_getX
 /**
  * @brief JNI implementation of SFVec3d::getY.
  *
- * @param env JNI environment
- * @param obj SFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3d object
  * @return Y-component of vector
  */
 jdouble JNICALL Java_vrml_field_SFVec3d_getY
@@ -2969,8 +2969,8 @@ jdouble JNICALL Java_vrml_field_SFVec3d_getY
 /**
  * @brief JNI implementation of SFVec3d::getZ.
  *
- * @param env JNI environment
- * @param obj SFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3d object
  * @return Z-component of vector
  */
 jdouble JNICALL Java_vrml_field_SFVec3d_getZ
@@ -3023,8 +3023,8 @@ Java_vrml_field_SFVec3d_setValue__Lvrml_field_SFVec3d_2
 /**
  * @brief JNI implementation of SFVec3d::toString.
  *
- * @param env JNI environment
- * @param obj SFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj SFVec3d object
  * @return String representation of SFVec3d.
  */
 jstring JNICALL Java_vrml_field_SFVec3d_toString
@@ -3091,8 +3091,8 @@ jbool JNICALL Java_vrml_field_ConstMFBool_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFBool::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFBool object
  * @return String representation of ConstMFBool.
  */
 jstring JNICALL Java_vrml_field_ConstMFBool_toString(JNIEnv * env,
@@ -3265,9 +3265,9 @@ Java_vrml_field_MFBool_set1Value__ILvrml_field_SFBool_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFBool.addValue.
  *
- * @param env JNI environment
- * @param obj MFBool object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFBool object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFBool_addValue__F(JNIEnv * env,
                                                 jobject obj,
@@ -3292,9 +3292,9 @@ void JNICALL Java_vrml_field_MFBool_addValue__F(JNIEnv * env,
 /**
  * @brief JNI implementation of MFBool.addValue.
  *
- * @param env JNI environment
- * @param obj MFBool object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFBool object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFBool_addValue__Lvrml_field_ConstSFBool_2(JNIEnv * env,
@@ -3321,9 +3321,9 @@ Java_vrml_field_MFBool_addValue__Lvrml_field_ConstSFBool_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFBool.addValue.
  *
- * @param env JNI environment
- * @param obj MFBool object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFBool object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFBool_addValue__Lvrml_field_SFBool_2(JNIEnv * env,
@@ -3393,8 +3393,8 @@ Java_vrml_field_MFBool_insertValue__ILvrml_field_SFBool_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFBool.toString.
  *
- * @param env JNI environment
- * @param obj MFBool object
+ * @param[in] env JNI environment
+ * @param[in] obj MFBool object
  * @return String representation of MFBool.
  */
 jstring JNICALL Java_vrml_field_MFBool_toString(JNIEnv * env, jobject obj)
@@ -3555,8 +3555,8 @@ Java_vrml_field_ConstMFColor_get1Value__ILvrml_field_SFColor_2(
 /**
  * @brief JNI implementation of ConstMFColor::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFColor object
  * @return String representation of ConstMFColor.
  */
 jstring JNICALL Java_vrml_field_ConstMFColor_toString
@@ -3833,9 +3833,9 @@ void JNICALL Java_vrml_field_MFColor_set1Value__IFFF
 /**
  * @brief JNI implementation of MFColor::addValue.
  *
- * @param env JNI environment
- * @param obj MFColor object
- * @param sfcolorObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFColor object
+ * @param[in] sfcolorObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFColor_addValue__Lvrml_field_ConstSFColor_2(
@@ -3863,9 +3863,9 @@ Java_vrml_field_MFColor_addValue__Lvrml_field_ConstSFColor_2(
 /**
  * @brief JNI implementation of MFColor::addValue.
  *
- * @param env JNI environment
- * @param obj MFColor object
- * @param sfcolor Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFColor object
+ * @param[in] sfcolor Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFColor_addValue__Lvrml_field_SFColor_2
@@ -3878,11 +3878,11 @@ Java_vrml_field_MFColor_addValue__Lvrml_field_SFColor_2
 /**
  * @brief JNI implementation of MFColor::addValue.
  *
- * @param env JNI environment
- * @param obj MFColor object
- * @param red Red component of color to add to end of list
- * @param green Green component of color to add to end of list
- * @param blue Blue component of color to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFColor object
+ * @param[in] red Red component of color to add to end of list
+ * @param[in] green Green component of color to add to end of list
+ * @param[in] blue Blue component of color to add to end of list
  */
 void JNICALL Java_vrml_field_MFColor_addValue__FFF(JNIEnv * env,
                                                    jobject obj,
@@ -3969,8 +3969,8 @@ void JNICALL Java_vrml_field_MFColor_insertValue__IFFF(JNIEnv * env,
 /**
  * @brief JNI implementation of MFColor::toString.
  *
- * @param env JNI environment
- * @param obj MFColor object
+ * @param[in] env JNI environment
+ * @param[in] obj MFColor object
  * @return String representation of MFColor.
  */
 jstring JNICALL Java_vrml_field_MFColor_toString
@@ -4034,8 +4034,8 @@ jfloat JNICALL Java_vrml_field_ConstMFFloat_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFFloat::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFFloat object
  * @return String representation of ConstMFFloat.
  */
 jstring JNICALL Java_vrml_field_ConstMFFloat_toString
@@ -4200,9 +4200,9 @@ Java_vrml_field_MFFloat_set1Value__ILvrml_field_SFFloat_2
 /**
  * @brief JNI implementation of MFFloat::addValue.
  *
- * @param env JNI environment
- * @param obj MFFloat object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFFloat object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFFloat_addValue__F(JNIEnv * env,
                                                  jobject obj,
@@ -4227,9 +4227,9 @@ void JNICALL Java_vrml_field_MFFloat_addValue__F(JNIEnv * env,
 /**
  * @brief JNI implementation of MFFloat::addValue.
  *
- * @param env JNI environment
- * @param obj MFFloat object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFFloat object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFFloat_addValue__Lvrml_field_ConstSFFloat_2(JNIEnv * env,
@@ -4256,9 +4256,9 @@ Java_vrml_field_MFFloat_addValue__Lvrml_field_ConstSFFloat_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFFloat::addValue.
  *
- * @param env JNI environment
- * @param obj MFFloat object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFFloat object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFFloat_addValue__Lvrml_field_SFFloat_2
@@ -4322,8 +4322,8 @@ Java_vrml_field_MFFloat_insertValue__ILvrml_field_SFFloat_2
 /**
  * @brief JNI implementation of MFFloat::toString.
  *
- * @param env JNI environment
- * @param obj MFFloat object
+ * @param[in] env JNI environment
+ * @param[in] obj MFFloat object
  * @return String representation of MFFloat.
  */
 jstring JNICALL Java_vrml_field_MFFloat_toString
@@ -4388,8 +4388,8 @@ jdouble JNICALL Java_vrml_field_ConstMFDouble_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFDouble::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFDouble object
  * @return String representation of ConstMFDouble.
  */
 jstring JNICALL Java_vrml_field_ConstMFDouble_toString
@@ -4554,9 +4554,9 @@ Java_vrml_field_MFDouble_set1Value__ILvrml_field_SFDouble_2
 /**
  * @brief JNI implementation of MFDouble::addValue.
  *
- * @param env JNI environment
- * @param obj MFDouble object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFDouble object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFDouble_addValue__F(JNIEnv * env,
                                                  jobject obj,
@@ -4581,9 +4581,9 @@ void JNICALL Java_vrml_field_MFDouble_addValue__F(JNIEnv * env,
 /**
  * @brief JNI implementation of MFDouble::addValue.
  *
- * @param env JNI environment
- * @param obj MFDouble object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFDouble object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFDouble_addValue__Lvrml_field_ConstSFDouble_2(JNIEnv * env,
@@ -4610,9 +4610,9 @@ Java_vrml_field_MFDouble_addValue__Lvrml_field_ConstSFDouble_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFDouble::addValue.
  *
- * @param env JNI environment
- * @param obj MFDouble object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFDouble object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFDouble_addValue__Lvrml_field_SFDouble_2
@@ -4676,8 +4676,8 @@ Java_vrml_field_MFDouble_insertValue__ILvrml_field_SFDouble_2
 /**
  * @brief JNI implementation of MFDouble::toString.
  *
- * @param env JNI environment
- * @param obj MFDouble object
+ * @param[in] env JNI environment
+ * @param[in] obj MFDouble object
  * @return String representation of MFDouble.
  */
 jstring JNICALL Java_vrml_field_MFDouble_toString
@@ -4756,8 +4756,8 @@ jint JNICALL Java_vrml_field_ConstMFInt32_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFInt32::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFInt32 object
  * @return String representation of ConstMFInt32.
  */
 jstring JNICALL Java_vrml_field_ConstMFInt32_toString
@@ -4923,9 +4923,9 @@ Java_vrml_field_MFInt32_set1Value__ILvrml_field_SFInt32_2
 /**
  * @brief JNI implementation of MFInt32::addValue.
  *
- * @param env JNI environment
- * @param obj MFInt32 object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFInt32 object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFInt32_addValue__I(JNIEnv * env,
                                                  jobject obj,
@@ -4950,9 +4950,9 @@ void JNICALL Java_vrml_field_MFInt32_addValue__I(JNIEnv * env,
 /**
  * @brief JNI implementation of MFInt32::addValue.
  *
- * @param env JNI environment
- * @param obj MFInt32 object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFInt32 object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFInt32_addValue__Lvrml_field_ConstSFInt32_2(JNIEnv * env,
@@ -4979,9 +4979,9 @@ Java_vrml_field_MFInt32_addValue__Lvrml_field_ConstSFInt32_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFInt32::addValue.
  *
- * @param env JNI environment
- * @param obj MFInt32 object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFInt32 object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFInt32_addValue__Lvrml_field_SFInt32_2(JNIEnv *env,
@@ -5046,8 +5046,8 @@ Java_vrml_field_MFInt32_insertValue__ILvrml_field_SFInt32_2
 /**
  * @brief JNI implementation of MFInt32::toString.
  *
- * @param env JNI environment
- * @param obj MFInt32 object
+ * @param[in] env JNI environment
+ * @param[in] obj MFInt32 object
  * @return String representation of MFInt32.
  */
 jstring JNICALL Java_vrml_field_MFInt32_toString
@@ -5118,9 +5118,9 @@ void JNICALL Java_vrml_field_ConstMFNode_getValue(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFNode::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFNode object
- * @param index Position of desired element
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFNode object
+ * @param[in] index Position of desired element
  * @return Element at specified position
  */
 jobject JNICALL Java_vrml_field_ConstMFNode_get1Value(JNIEnv * env,
@@ -5141,8 +5141,8 @@ jobject JNICALL Java_vrml_field_ConstMFNode_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFNode::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFNode object
  * @return String representation of ConstMFNode.
  */
 jstring JNICALL Java_vrml_field_ConstMFNode_toString
@@ -5200,9 +5200,9 @@ void JNICALL Java_vrml_field_MFNode_getValue
 /**
  * @brief JNI implementation of MFNode::get1Value.
  *
- * @param env JNI environment
- * @param obj MFNode object
- * @param index Position of desired element
+ * @param[in] env JNI environment
+ * @param[in] obj MFNode object
+ * @param[in] index Position of desired element
  * @return Element at specified position
  */
 jobject JNICALL Java_vrml_field_MFNode_get1Value
@@ -5214,10 +5214,10 @@ jobject JNICALL Java_vrml_field_MFNode_get1Value
 /**
  * @brief JNI implementation of MFNode::setValue
  *
- * @param env JNI environment.
- * @param obj MFNode object.
- * @param size Number of elements to set
- * @param basenode Array of BaseNodes to set value of field to
+ * @param[in] env JNI environment.
+ * @param[in,out] obj MFNode object.
+ * @param[in] size Number of elements to set
+ * @param[in] basenode Array of BaseNodes to set value of field to
  *
  * @todo Implement me!
  */
@@ -5297,9 +5297,9 @@ Java_vrml_field_MFNode_set1Value__ILvrml_field_SFNode_2
 /**
  * @brief JNI implementation of MFNode::addValue.
  *
- * @param env JNI environment
- * @param obj MFNode object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFNode object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2(JNIEnv * env,
                                                                jobject obj,
@@ -5329,9 +5329,9 @@ void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_BaseNode_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFNode::addValue.
  *
- * @param env JNI environment
- * @param obj MFNode object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFNode object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2(JNIEnv * env,
@@ -5358,9 +5358,9 @@ Java_vrml_field_MFNode_addValue__Lvrml_field_ConstSFNode_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFNode::addValue.
  *
- * @param env JNI environment
- * @param obj MFNode object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFNode object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFNode_addValue__Lvrml_field_SFNode_2
   (JNIEnv *env, jobject obj, jobject value)
@@ -5451,8 +5451,8 @@ Java_vrml_field_MFNode_insertValue__ILvrml_field_SFNode_2
 /**
  * @brief JNI implementation of MFNode::toString.
  *
- * @param env JNI environment
- * @param obj MFNode object
+ * @param[in] env JNI environment
+ * @param[in] obj MFNode object
  * @return String representation of MFNode.
  */
 jstring JNICALL Java_vrml_field_MFNode_toString
@@ -5601,8 +5601,8 @@ Java_vrml_field_ConstMFRotation_get1Value__ILvrml_field_SFRotation_2(
 /**
  * @brief JNI implementation of ConstMFRotation::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFRotation object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFRotation object
  * @return String representation of ConstMFRotation.
  */
 jstring JNICALL Java_vrml_field_ConstMFRotation_toString
@@ -5837,9 +5837,9 @@ void JNICALL Java_vrml_field_MFRotation_set1Value__IFFFF(JNIEnv * env,
 /**
  * @brief JNI implementation of MFRotation::addValue.
  *
- * @param env JNI environment
- * @param obj MFRotation object
- * @param sfrotationObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFRotation object
+ * @param[in] sfrotationObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFRotation_addValue__Lvrml_field_ConstSFRotation_2(
@@ -5868,9 +5868,9 @@ Java_vrml_field_MFRotation_addValue__Lvrml_field_ConstSFRotation_2(
 /**
  * @brief JNI implementation of MFRotation::addValue.
  *
- * @param env JNI environment
- * @param obj MFRotation object
- * @param sfrotation Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFRotation object
+ * @param[in] sfrotation Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFRotation_addValue__Lvrml_field_SFRotation_2
@@ -5883,12 +5883,12 @@ Java_vrml_field_MFRotation_addValue__Lvrml_field_SFRotation_2
 /**
  * @brief JNI implementation of MFRotation::addValue.
  *
- * @param env JNI environment
- * @param obj MFRotation object
- * @param axisX X-component of value to add to end of list
- * @param axisY Y-component of value to add to end of list
- * @param axisZ Z-component of value to add to end of list
- * @param angle Angle of value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFRotation object
+ * @param[in] axisX X-component of value to add to end of list
+ * @param[in] axisY Y-component of value to add to end of list
+ * @param[in] axisZ Z-component of value to add to end of list
+ * @param[in] angle Angle of value to add to end of list
  */
 void JNICALL Java_vrml_field_MFRotation_addValue__FFFF(JNIEnv * env,
                                                        jobject obj,
@@ -5977,8 +5977,8 @@ void JNICALL Java_vrml_field_MFRotation_insertValue__IFFFF(JNIEnv * env,
 /**
  * @brief JNI implementation of MFRotation::toString.
  *
- * @param env JNI environment
- * @param obj MFRotation object
+ * @param[in] env JNI environment
+ * @param[in] obj MFRotation object
  * @return String representation of MFRotation.
  */
 jstring JNICALL Java_vrml_field_MFRotation_toString
@@ -6053,8 +6053,8 @@ jstring JNICALL Java_vrml_field_ConstMFString_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFString::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFString object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFString object
  * @return String representation of ConstMFString.
  */
 jstring JNICALL Java_vrml_field_ConstMFString_toString
@@ -6217,9 +6217,9 @@ Java_vrml_field_MFString_set1Value__ILvrml_field_SFString_2
 /**
  * @brief JNI implementation of MFString::addValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFString_addValue__Ljava_lang_String_2(JNIEnv * env,
@@ -6248,9 +6248,9 @@ Java_vrml_field_MFString_addValue__Ljava_lang_String_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFString::addValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param sfstringObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] sfstringObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFString_addValue__Lvrml_field_ConstSFString_2(
@@ -6279,9 +6279,9 @@ Java_vrml_field_MFString_addValue__Lvrml_field_ConstSFString_2(
 /**
  * @brief JNI implementation of MFString::addValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param sfstring Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] sfstring Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFString_addValue__Lvrml_field_SFString_2
@@ -6294,10 +6294,10 @@ Java_vrml_field_MFString_addValue__Lvrml_field_SFString_2
 /**
  * @brief JNI implementation of MFString::insertValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param index Position to insert value at
- * @param value Value to insert.
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] index Position to insert value at
+ * @param[in] value Value to insert.
  */
 void JNICALL
 Java_vrml_field_MFString_insertValue__ILjava_lang_String_2(JNIEnv * env,
@@ -6327,10 +6327,10 @@ Java_vrml_field_MFString_insertValue__ILjava_lang_String_2(JNIEnv * env,
 /**
  * @brief JNI implementation of MFString::insertValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param index Position to insert value at
- * @param sfstringObj Value to insert.
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] index Position to insert value at
+ * @param[in] sfstringObj Value to insert.
  */
 void JNICALL
 Java_vrml_field_MFString_insertValue__ILvrml_field_ConstSFString_2(
@@ -6360,10 +6360,10 @@ Java_vrml_field_MFString_insertValue__ILvrml_field_ConstSFString_2(
 /**
  * @brief JNI implementation of MFString::insertValue.
  *
- * @param env JNI environment
- * @param obj MFString object
- * @param index Position to insert value at
- * @param sfstring Value to insert.
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFString object
+ * @param[in] index Position to insert value at
+ * @param[in] sfstring Value to insert.
  */
 void JNICALL
 Java_vrml_field_MFString_insertValue__ILvrml_field_SFString_2
@@ -6376,8 +6376,8 @@ Java_vrml_field_MFString_insertValue__ILvrml_field_SFString_2
 /**
  * @brief JNI implementation of MFString::toString.
  *
- * @param env JNI environment
- * @param obj MFString object
+ * @param[in] env JNI environment
+ * @param[in] obj MFString object
  * @return String representation of MFString.
  */
 jstring JNICALL Java_vrml_field_MFString_toString
@@ -6455,8 +6455,8 @@ jdouble JNICALL Java_vrml_field_ConstMFTime_get1Value(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFTime::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFTime object
  * @return String representation of ConstMFTime.
  */
 jstring JNICALL Java_vrml_field_ConstMFTime_toString
@@ -6648,9 +6648,9 @@ Java_vrml_field_MFTime_set1Value__ILvrml_field_SFTime_2
 /**
  * @brief JNI implementation of MFTime::addValue.
  *
- * @param env JNI environment
- * @param obj MFTime object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFTime object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL Java_vrml_field_MFTime_addValue__D(JNIEnv * env,
                                                 jobject obj,
@@ -6675,9 +6675,9 @@ void JNICALL Java_vrml_field_MFTime_addValue__D(JNIEnv * env,
 /**
  * @brief JNI implementation of MFTime::addValue.
  *
- * @param env JNI environment
- * @param obj MFTime object
- * @param sftimeObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFTime object
+ * @param[in] sftimeObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFTime_addValue__Lvrml_field_ConstSFTime_2(
@@ -6705,9 +6705,9 @@ Java_vrml_field_MFTime_addValue__Lvrml_field_ConstSFTime_2(
 /**
  * @brief JNI implementation of MFTime::addValue.
  *
- * @param env JNI environment
- * @param obj MFTime object
- * @param sftime Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFTime object
+ * @param[in] sftime Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFTime_addValue__Lvrml_field_SFTime_2
@@ -6773,8 +6773,8 @@ Java_vrml_field_MFTime_insertValue__ILvrml_field_SFTime_2
 /**
  * @brief JNI implementation of MFTime::toString.
  *
- * @param env JNI environment
- * @param obj MFTime object
+ * @param[in] env JNI environment
+ * @param[in] obj MFTime object
  * @return String representation of MFTime.
  */
 jstring JNICALL Java_vrml_field_MFTime_toString
@@ -6879,10 +6879,10 @@ void JNICALL Java_vrml_field_ConstMFVec2f_getValue___3F(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFVec2f::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2f object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y value
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y value
  */
 void JNICALL Java_vrml_field_ConstMFVec2f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
@@ -6909,10 +6909,10 @@ void JNICALL Java_vrml_field_ConstMFVec2f_get1Value__I_3F
 /**
  * @brief JNI implementation of ConstMFVec2f::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2f object
- * @param element Position of object to retrieve
- * @param sfvec2fObj SFVec2f to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec2fObj SFVec2f to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_ConstMFVec2f_get1Value__ILvrml_field_SFVec2f_2(
@@ -6945,8 +6945,8 @@ Java_vrml_field_ConstMFVec2f_get1Value__ILvrml_field_SFVec2f_2(
 /**
  * @brief JNI implementation of ConstMFVec2f::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2f object
  * @return String representation of ConstMFVec2f.
  */
 jstring JNICALL Java_vrml_field_ConstMFVec2f_toString
@@ -7015,10 +7015,10 @@ void JNICALL Java_vrml_field_MFVec2f_getValue___3F
 /**
  * @brief JNI implementation of MFVec2f::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y value
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec2f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y value
  */
 void JNICALL Java_vrml_field_MFVec2f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
@@ -7029,10 +7029,10 @@ void JNICALL Java_vrml_field_MFVec2f_get1Value__I_3F
 /**
  * @brief JNI implementation of MFVec2f::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
- * @param element Position of object to retrieve
- * @param sfvec2f SFVec2f to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec2f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec2f SFVec2f to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_MFVec2f_get1Value__ILvrml_field_SFVec2f_2
@@ -7207,10 +7207,10 @@ Java_vrml_field_MFVec2f_set1Value__ILvrml_field_SFVec2f_2
 /**
  * @brief JNI implementation of MFVec2f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
- * @param x X-component of vector to add to end of list
- * @param y Y-component of vector to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2f object
+ * @param[in] x X-component of vector to add to end of list
+ * @param[in] y Y-component of vector to add to end of list
  */
 void JNICALL Java_vrml_field_MFVec2f_addValue__FF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y)
@@ -7234,9 +7234,9 @@ void JNICALL Java_vrml_field_MFVec2f_addValue__FF
 /**
  * @brief JNI implementation of MFVec2f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
- * @param sfvec2fObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2f object
+ * @param[in] sfvec2fObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec2f_addValue__Lvrml_field_ConstSFVec2f_2
@@ -7262,9 +7262,9 @@ Java_vrml_field_MFVec2f_addValue__Lvrml_field_ConstSFVec2f_2
 /**
  * @brief JNI implementation of MFVec2f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
- * @param sfvec2f Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2f object
+ * @param[in] sfvec2f Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec2f_addValue__Lvrml_field_SFVec2f_2
@@ -7418,10 +7418,10 @@ void JNICALL Java_vrml_field_ConstMFVec2d_getValue___3F(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFVec2d::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2d object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y value
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y value
  */
 void JNICALL Java_vrml_field_ConstMFVec2d_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
@@ -7448,10 +7448,10 @@ void JNICALL Java_vrml_field_ConstMFVec2d_get1Value__I_3F
 /**
  * @brief JNI implementation of ConstMFVec2d::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2d object
- * @param element Position of object to retrieve
- * @param sfvec2dObj SFVec2d to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec2dObj SFVec2d to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_ConstMFVec2d_get1Value__ILvrml_field_SFVec2d_2(
@@ -7484,8 +7484,8 @@ Java_vrml_field_ConstMFVec2d_get1Value__ILvrml_field_SFVec2d_2(
 /**
  * @brief JNI implementation of ConstMFVec2d::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFVec2d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec2d object
  * @return String representation of ConstMFVec2d.
  */
 jstring JNICALL Java_vrml_field_ConstMFVec2d_toString
@@ -7554,10 +7554,10 @@ void JNICALL Java_vrml_field_MFVec2d_getValue___3F
 /**
  * @brief JNI implementation of MFVec2d::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec2d object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y value
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec2d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y value
  */
 void JNICALL Java_vrml_field_MFVec2d_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
@@ -7568,10 +7568,10 @@ void JNICALL Java_vrml_field_MFVec2d_get1Value__I_3F
 /**
  * @brief JNI implementation of MFVec2d::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec2d object
- * @param element Position of object to retrieve
- * @param sfvec2d SFVec2d to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec2d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec2d SFVec2d to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_MFVec2d_get1Value__ILvrml_field_SFVec2d_2
@@ -7746,10 +7746,10 @@ Java_vrml_field_MFVec2d_set1Value__ILvrml_field_SFVec2d_2
 /**
  * @brief JNI implementation of MFVec2d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2d object
- * @param x X-component of vector to add to end of list
- * @param y Y-component of vector to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2d object
+ * @param[in] x X-component of vector to add to end of list
+ * @param[in] y Y-component of vector to add to end of list
  */
 void JNICALL Java_vrml_field_MFVec2d_addValue__FF
   (JNIEnv *env, jobject obj, jdouble x, jdouble y)
@@ -7773,9 +7773,9 @@ void JNICALL Java_vrml_field_MFVec2d_addValue__FF
 /**
  * @brief JNI implementation of MFVec2d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2d object
- * @param sfvec2dObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2d object
+ * @param[in] sfvec2dObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec2d_addValue__Lvrml_field_ConstSFVec2d_2
@@ -7801,9 +7801,9 @@ Java_vrml_field_MFVec2d_addValue__Lvrml_field_ConstSFVec2d_2
 /**
  * @brief JNI implementation of MFVec2d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec2d object
- * @param sfvec2d Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec2d object
+ * @param[in] sfvec2d Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec2d_addValue__Lvrml_field_SFVec2d_2
@@ -7864,8 +7864,8 @@ Java_vrml_field_MFVec2d_insertValue__ILvrml_field_SFVec2d_2
 /**
  * @brief JNI implementation of MFVec2f::toString.
  *
- * @param env JNI environment
- * @param obj MFVec2f object
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec2f object
  * @return String representation of MFVec2f.
  */
 jstring JNICALL Java_vrml_field_MFVec2f_toString
@@ -7970,10 +7970,10 @@ void JNICALL Java_vrml_field_ConstMFVec3f_getValue___3F(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFVec3f::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3f object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y,z value
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y,z value
  */
 void JNICALL Java_vrml_field_ConstMFVec3f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
@@ -8000,10 +8000,10 @@ void JNICALL Java_vrml_field_ConstMFVec3f_get1Value__I_3F
 /**
  * @brief JNI implementation of ConstMFVec3f::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3f object
- * @param element Position of object to retrieve
- * @param sfvec3fObj SFVec3f to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec3fObj SFVec3f to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_ConstMFVec3f_get1Value__ILvrml_field_SFVec3f_2(
@@ -8036,8 +8036,8 @@ Java_vrml_field_ConstMFVec3f_get1Value__ILvrml_field_SFVec3f_2(
 /**
  * @brief JNI implementation of ConstMFVec3f::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3f object
  * @return String representation of ConstMFVec3f.
  */
 jstring JNICALL Java_vrml_field_ConstMFVec3f_toString
@@ -8106,10 +8106,10 @@ void JNICALL Java_vrml_field_MFVec3f_getValue___3F
 /**
  * @brief JNI implementation of MFVec3f::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y,z value
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y,z value
  */
 void JNICALL Java_vrml_field_MFVec3f_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jfloatArray jarr)
@@ -8120,10 +8120,10 @@ void JNICALL Java_vrml_field_MFVec3f_get1Value__I_3F
 /**
  * @brief JNI implementation of MFVec3f::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
- * @param element Position of object to retrieve
- * @param sfvec3f SFVec3f to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3f object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec3f SFVec3f to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_MFVec3f_get1Value__ILvrml_field_SFVec3f_2
@@ -8298,11 +8298,11 @@ Java_vrml_field_MFVec3f_set1Value__ILvrml_field_SFVec3f_2
 /**
  * @brief JNI implementation of MFVec3f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
- * @param x X-component of vector to add to end of list
- * @param y Y-component of vector to add to end of list
- * @param z Z-component of vector to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3f object
+ * @param[in] x X-component of vector to add to end of list
+ * @param[in] y Y-component of vector to add to end of list
+ * @param[in] z Z-component of vector to add to end of list
  */
 void JNICALL Java_vrml_field_MFVec3f_addValue__FFF
   (JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat z)
@@ -8326,9 +8326,9 @@ void JNICALL Java_vrml_field_MFVec3f_addValue__FFF
 /**
  * @brief JNI implementation of MFVec3f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
- * @param sfvec3fObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3f object
+ * @param[in] sfvec3fObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec3f_addValue__Lvrml_field_ConstSFVec3f_2
@@ -8354,9 +8354,9 @@ Java_vrml_field_MFVec3f_addValue__Lvrml_field_ConstSFVec3f_2
 /**
  * @brief JNI implementation of MFVec3f::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3f object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec3f_addValue__Lvrml_field_SFVec3f_2
@@ -8423,8 +8423,8 @@ Java_vrml_field_MFVec3f_insertValue__ILvrml_field_SFVec3f_2
 /**
  * @brief JNI implementation of MFVec3f::toString.
  *
- * @param env JNI environment
- * @param obj MFVec3f object
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3f object
  * @return String representation of MFVec3f.
  */
 jstring JNICALL Java_vrml_field_MFVec3f_toString
@@ -8530,10 +8530,10 @@ void JNICALL Java_vrml_field_ConstMFVec3d_getValue___3F(JNIEnv * env,
 /**
  * @brief JNI implementation of ConstMFVec3d::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3d object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y,z value
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y,z value
  */
 void JNICALL Java_vrml_field_ConstMFVec3d_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
@@ -8560,10 +8560,10 @@ void JNICALL Java_vrml_field_ConstMFVec3d_get1Value__I_3F
 /**
  * @brief JNI implementation of ConstMFVec3d::get1Value.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3d object
- * @param element Position of object to retrieve
- * @param sfvec3dObj SFVec3d to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec3dObj SFVec3d to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_ConstMFVec3d_get1Value__ILvrml_field_SFVec3d_2(
@@ -8596,8 +8596,8 @@ Java_vrml_field_ConstMFVec3d_get1Value__ILvrml_field_SFVec3d_2(
 /**
  * @brief JNI implementation of ConstMFVec3d::toString.
  *
- * @param env JNI environment
- * @param obj ConstMFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj ConstMFVec3d object
  * @return String representation of ConstMFVec3d.
  */
 jstring JNICALL Java_vrml_field_ConstMFVec3d_toString
@@ -8666,10 +8666,10 @@ void JNICALL Java_vrml_field_MFVec3d_getValue___3F
 /**
  * @brief JNI implementation of MFVec3d::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
- * @param element Position of object to retrieve
- * @param jarr Array to store retrieved x,y,z value
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] jarr Array to store retrieved x,y,z value
  */
 void JNICALL Java_vrml_field_MFVec3d_get1Value__I_3F
   (JNIEnv *env, jobject obj, jint element, jdoubleArray jarr)
@@ -8680,10 +8680,10 @@ void JNICALL Java_vrml_field_MFVec3d_get1Value__I_3F
 /**
  * @brief JNI implementation of MFVec3d::get1Value.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
- * @param element Position of object to retrieve
- * @param sfvec3d SFVec3d to store retrieved object in
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3d object
+ * @param[in] element Position of object to retrieve
+ * @param[out] sfvec3d SFVec3d to store retrieved object in
  */
 void JNICALL
 Java_vrml_field_MFVec3d_get1Value__ILvrml_field_SFVec3d_2
@@ -8858,11 +8858,11 @@ Java_vrml_field_MFVec3d_set1Value__ILvrml_field_SFVec3d_2
 /**
  * @brief JNI implementation of MFVec3d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
- * @param x X-component of vector to add to end of list
- * @param y Y-component of vector to add to end of list
- * @param z Z-component of vector to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3d object
+ * @param[in] x X-component of vector to add to end of list
+ * @param[in] y Y-component of vector to add to end of list
+ * @param[in] z Z-component of vector to add to end of list
  */
 void JNICALL Java_vrml_field_MFVec3d_addValue__FFF
   (JNIEnv *env, jobject obj, jdouble x, jdouble y, jdouble z)
@@ -8886,9 +8886,9 @@ void JNICALL Java_vrml_field_MFVec3d_addValue__FFF
 /**
  * @brief JNI implementation of MFVec3d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
- * @param sfvec3dObj Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3d object
+ * @param[in] sfvec3dObj Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec3d_addValue__Lvrml_field_ConstSFVec3d_2
@@ -8914,9 +8914,9 @@ Java_vrml_field_MFVec3d_addValue__Lvrml_field_ConstSFVec3d_2
 /**
  * @brief JNI implementation of MFVec3d::addValue.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
- * @param value Value to add to end of list
+ * @param[in] env JNI environment
+ * @param[in,out] obj MFVec3d object
+ * @param[in] value Value to add to end of list
  */
 void JNICALL
 Java_vrml_field_MFVec3d_addValue__Lvrml_field_SFVec3d_2
@@ -8983,8 +8983,8 @@ Java_vrml_field_MFVec3d_insertValue__ILvrml_field_SFVec3d_2
 /**
  * @brief JNI implementation of MFVec3d::toString.
  *
- * @param env JNI environment
- * @param obj MFVec3d object
+ * @param[in] env JNI environment
+ * @param[in] obj MFVec3d object
  * @return String representation of MFVec3d.
  */
 jstring JNICALL Java_vrml_field_MFVec3d_toString
@@ -8996,9 +8996,9 @@ jstring JNICALL Java_vrml_field_MFVec3d_toString
 /**
  * @brief JNI implementation of Script::getField.
  *
- * @param env JNI environment
- * @param obj Script object
- * @param jstrFieldName Name of desired exposed field
+ * @param[in] env JNI environment
+ * @param[in] obj Script object
+ * @param[in] jstrFieldName Name of desired exposed field
  * @return Exposed field object
  */
 jobject JNICALL Java_vrml_node_Script_getField(JNIEnv * env,
@@ -9049,9 +9049,9 @@ jobject JNICALL Java_vrml_node_Script_getField(JNIEnv * env,
 /**
  * @brief JNI implementation of Script::getEventOut.
  *
- * @param env JNI environment
- * @param obj Script object
- * @param jstrEventOutName Name of desired eventOut
+ * @param[in] env JNI environment
+ * @param[in] obj Script object
+ * @param[in] jstrEventOutName Name of desired eventOut
  * @return eventOut object
  */
 jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
@@ -9115,9 +9115,9 @@ jobject JNICALL Java_vrml_node_Script_getEventOut(JNIEnv * env,
 /**
  * @brief JNI implementation of Script::getEventIn.
  *
- * @param env JNI environment
- * @param obj Script object
- * @param jstrEventInName EventIn name
+ * @param[in] env JNI environment
+ * @param[in] obj Script object
+ * @param[in] jstrEventInName EventIn name
  * @return EventIn field object.
  */
 jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
@@ -9169,8 +9169,8 @@ jobject JNICALL Java_vrml_node_Script_getEventIn(JNIEnv * env,
 /**
  * @brief JNI implementation of Script::toString.
  *
- * @param JNI environment.
- * @param Script object.
+ * @param[in] JNI environment.
+ * @param[in] Script object.
  * @return String representation of Script object.
  */
 jstring JNICALL Java_vrml_node_Script_toString(JNIEnv * env, jobject obj)
@@ -9190,8 +9190,8 @@ jstring JNICALL Java_vrml_node_Script_toString(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of BaseNode::getType.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java node object
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java node object
  * @return Type of node
  */
 jstring JNICALL Java_vrml_BaseNode_getType(JNIEnv * env, jobject obj)
@@ -9206,8 +9206,8 @@ jstring JNICALL Java_vrml_BaseNode_getType(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of BaseNode::getBrowser.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java node object
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java node object
  * @return Browser object
  */
 jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
@@ -9247,9 +9247,9 @@ jobject JNICALL Java_vrml_BaseNode_getBrowser(JNIEnv * const env,
 /**
  * @brief JNI implementation of Node::getEventIn.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java node object
- * @param jstrEventInName Name of the eventIn
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java node object
+ * @param[in] jstrEventInName Name of the eventIn
  * @return EventIn field object
  *
  * @todo Implement me! Need to throw InvalidEventInException if
@@ -9290,9 +9290,9 @@ jobject JNICALL Java_vrml_node_Node_getEventIn(JNIEnv * const env,
 /**
  * @brief JNI Implementation of Node::getEventOut.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java node object
- * @param jstrEventOutName Name of the eventOut
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java node object
+ * @param[in] jstrEventOutName Name of the eventOut
  * @return EventOut field object
  *
  * @todo Implement me. Need to throw InvalidEventOutException
@@ -9330,9 +9330,9 @@ jobject JNICALL Java_vrml_node_Node_getEventOut(JNIEnv * /* env */,
 /**
  * @brief JNI Implementation of Node::getExposedField
  *
- * @param env JNI environment
- * @param obj JNI version of a Java node object
- * @param jstrEventOutName Name of the exposed field
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java node object
+ * @param[in] jstrEventOutName Name of the exposed field
  * @return Exposed field object
  *
  * @todo Implement me. Need to throw InvalidEventOutException
@@ -9373,8 +9373,8 @@ Java_vrml_node_Node_getExposedField(JNIEnv * /* env */,
 /**
  * @brief JNI implementation of Node::toString.
  *
- * @param env JNI environment
- * @param obj Node object.
+ * @param[in] env JNI environment
+ * @param[in] obj Node object.
  * @return Stringified version of node.
  */
 jstring JNICALL Java_vrml_node_Node_toString(JNIEnv * const env, jobject obj)
@@ -9392,8 +9392,8 @@ jstring JNICALL Java_vrml_node_Node_toString(JNIEnv * const env, jobject obj)
 /**
  * @brief JNI implementation of Event::getName.
  *
- * @param env JNI environment
- * @param obj Event object.
+ * @param[in] env JNI environment
+ * @param[in] obj Event object.
  * @return Name of the event.
  */
 jstring JNICALL Java_vrml_Event_getName
@@ -9409,8 +9409,8 @@ jstring JNICALL Java_vrml_Event_getName
 /**
  * @brief JNI implementation of Event::getTimeStamp.
  *
- * @param env JNI environment
- * @param obj Event object.
+ * @param[in] env JNI environment
+ * @param[in] obj Event object.
  * @return Timestamp of event.
  */
 jdouble JNICALL Java_vrml_Event_getTimeStamp(JNIEnv * env, jobject obj) {
@@ -9424,8 +9424,8 @@ jdouble JNICALL Java_vrml_Event_getTimeStamp(JNIEnv * env, jobject obj) {
 /**
  * @brief JNI implementation of Event::getValue
  *
- * @param env JNI environment
- * @param obj Event object.
+ * @param[in] env JNI environment
+ * @param[in] obj Event object.
  * @return Changed field.
  */
 jobject JNICALL Java_vrml_Event_getValue(JNIEnv * env, jobject obj)
@@ -9450,8 +9450,8 @@ jobject JNICALL Java_vrml_Event_getValue(JNIEnv * env, jobject obj)
 /**
  * @brief JNI implementation of Event::clone.
  *
- * @param env JNI environment
- * @param obj Event object.
+ * @param[in] env JNI environment
+ * @param[in] obj Event object.
  * @return Clone of event.
  */
 jobject JNICALL Java_vrml_Event_clone
@@ -9473,8 +9473,8 @@ jobject JNICALL Java_vrml_Event_clone
 /**
  * @brief JNI implementation of Event::toString.
  *
- * @param env JNI environment
- * @param obj Event object.
+ * @param[in] env JNI environment
+ * @param[in] obj Event object.
  * @return Name of the event.
  */
 jstring JNICALL Java_vrml_Event_toString
@@ -9490,8 +9490,8 @@ jstring JNICALL Java_vrml_Event_toString
 /**
  * @brief JNI implementation of Browser::toString.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  * @return Browser name and version.
  */
 jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
@@ -9511,8 +9511,8 @@ jstring JNICALL Java_vrml_Browser_toString(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::getName.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  * @return Name of browser.
  */
 jstring JNICALL Java_vrml_Browser_getName(JNIEnv * const env,
@@ -9529,8 +9529,8 @@ jstring JNICALL Java_vrml_Browser_getName(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::getVersion.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  * @return Version of OpenVRML being used
  */
 jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
@@ -9547,8 +9547,8 @@ jstring JNICALL Java_vrml_Browser_getVersion(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::getCurrentSpeed.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  * @return Average navigation speed in m/s.
  *
  * @todo Fix me to properly return the current speed.
@@ -9569,8 +9569,8 @@ jfloat JNICALL Java_vrml_Browser_getCurrentSpeed(JNIEnv * const env,
  *
  * Returns the current frame rate in frames per second.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  *
  * @return Average navigation speed.
  */
@@ -9589,8 +9589,8 @@ jfloat JNICALL Java_vrml_Browser_getCurrentFrameRate(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::getWorldURL.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
  * @return URL of current world displayed in browser.
  */
 jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
@@ -9608,9 +9608,9 @@ jstring JNICALL Java_vrml_Browser_getWorldURL(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::replaceWorld.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param basenodes ...
+ * @param[in] env JNI environment
+ * @param[in,out] obj JNI version of a Java Browser object.
+ * @param[in] basenodes ...
  *
  * @todo Implement me!
  */
@@ -9625,9 +9625,9 @@ void JNICALL Java_vrml_Browser_replaceWorld(JNIEnv * /* env */,
 /**
  * @brief JNI implementation of Browser::createVrmlFromString
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param vrmlSyntax ...
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
+ * @param[in] vrmlSyntax ...
  * @return ...
  *
  * @todo Implement me! This method should throw an
@@ -9649,11 +9649,11 @@ Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::createVrmlFromURL.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param urls ...
- * @param basenode ...
- * @param event ...
+ * @param[in] env JNI environment
+ * @param[in] obj JNI version of a Java Browser object.
+ * @param[in] urls ...
+ * @param[in] basenode ...
+ * @param[in] event ...
  *
  * @todo Implement me!  This method should throw an
  *       InvalidVRMLSyntaxException if the syntax is invalid.
@@ -9668,12 +9668,12 @@ void JNICALL Java_vrml_Browser_createVrmlFromURL(JNIEnv * /* env */,
 /**
  * @brief JNI implementation of Browser::addRoute.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param fromNode ...
- * @param fromEventOut ...
- * @param toNode ...
- * @param toEventIn ...
+ * @param[in] env JNI environment
+ * @param[in,out] obj JNI version of a Java Browser object.
+ * @param[in] fromNode ...
+ * @param[in] fromEventOut ...
+ * @param[in] toNode ...
+ * @param[in] toEventIn ...
  *
  * @todo This method should throw an InvalidRouteException if one of
  *       the arguments is invalid. This method should first check
@@ -9707,12 +9707,12 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::deleteRoute
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param fromNode ...
- * @param fromEventOut ...
- * @param toNode ...
- * @param toEventIn ...
+ * @param[in] env JNI environment
+ * @param[in,out] obj JNI version of a Java Browser object.
+ * @param[in] fromNode ...
+ * @param[in] fromEventOut ...
+ * @param[in] toNode ...
+ * @param[in] toEventIn ...
  *
  * @todo This method should throw an InvalidRouteException if one of
  *       the arguments is invalid. This method should first check
@@ -9746,10 +9746,10 @@ void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::loadURL.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param jUrlArray URL to load with alternates.
- * @param jParameterArray Array of parameters to load URL with
+ * @param[in] env JNI environment
+ * @param[in,out] obj JNI version of a Java Browser object.
+ * @param[in] jUrlArray URL to load with alternates.
+ * @param[in] jParameterArray Array of parameters to load URL with
  *
  * @todo This method should throw an InvalidVRMLSyntaxException
  *       if the syntax is invalid. Also need to check if
@@ -9815,9 +9815,9 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
 /**
  * @brief JNI implementation of Browser::setDescription.
  *
- * @param env JNI environment
- * @param obj JNI version of a Java Browser object.
- * @param jDescription Desired description of Browser.
+ * @param[in] env JNI environment
+ * @param[in,out] obj JNI version of a Java Browser object.
+ * @param[in] jDescription Desired description of Browser.
  */
 void JNICALL Java_vrml_Browser_setDescription
   (JNIEnv *env, jobject obj, jstring jDescription)

@@ -140,19 +140,13 @@ namespace {
     };
 
     /**
-     * @typedef background_class::bound_nodes_t
-     *
-     * @brief A bound Background node stack.
-     */
-
-    /**
      * @var background_node * background_class::first
      *
      * @brief The first Background node in the initial scene graph.
      */
 
     /**
-     * @var background_class::bound_nodes_t background_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<background_node> background_class::bound_nodes
      *
      * @brief The bound Background node stack.
      */
@@ -399,19 +393,13 @@ namespace {
     };
 
     /**
-     * @typedef fog_class::bound_nodes_t
-     *
-     * @brief A bound Fog node stack.
-     */
-
-    /**
      * @var fog_node * fog_class::first
      *
      * @brief The first Fog node in the initial scene graph.
      */
 
     /**
-     * @var fog_class::bound_nodes_t fog_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<fog_node> fog_class::bound_nodes
      *
      * @brief The bound Fog node stack.
      */
@@ -15194,19 +15182,13 @@ namespace {
 
 
     /**
-     * @typedef navigation_info_class::bound_nodes_t
-     *
-     * @brief A bound NavigationInfo node stack.
-     */
-
-    /**
      * @var navigation_info_node * navigation_info_class::first
      *
      * @brief The first NavigationInfo node in the initial scene graph.
      */
 
     /**
-     * @var navigation_info_class::bound_nodes_t navigation_info_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<navigation_info_node> navigation_info_class::bound_nodes
      *
      * @brief The bound NavigationInfo node stack.
      */
@@ -25312,19 +25294,13 @@ namespace {
 
 
     /**
-     * @typedef viewpoint_class::bound_nodes_t
-     *
-     * @brief A stack of bound Viewpoint nodes.
-     */
-
-    /**
      * @var viewpoint_node * viewpoint_class::first
      *
      * @brief The first Viewpoint node in the initial scene graph.
      */
 
     /**
-     * @var viewpoint_class::bound_nodes_t viewpoint_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<viewpoint_node> viewpoint_class::bound_nodes
      *
      * @brief The stack of bound Viewpoint nodes.
      */

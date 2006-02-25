@@ -1022,8 +1022,8 @@ namespace {
  * The OpenGL viewer never puts objects in display lists, so the
  * retain hint is ignored.
  *
- * @param id        not used.
- * @param retain    not used.
+ * @param[in] id        not used.
+ * @param[in] retain    not used.
  *
  * @return 0.
  */
@@ -1142,16 +1142,16 @@ void viewer::reset_user_navigation()
 /**
  * @brief Insert a background into a display list.
  *
- * @param groundAngle   ground angles.
- * @param groundColor   ground colors.
- * @param skyAngle      sky angles.
- * @param skyColor      sky colors.
- * @param front         front texture.
- * @param back          back texture.
- * @param left          left texture.
- * @param right         right texture.
- * @param top           top texture.
- * @param bottom        bottom texture.
+ * @param[in] groundAngle   ground angles.
+ * @param[in] groundColor   ground colors.
+ * @param[in] skyAngle      sky angles.
+ * @param[in] skyColor      sky colors.
+ * @param[in] front         front texture.
+ * @param[in] back          back texture.
+ * @param[in] left          left texture.
+ * @param[in] right         right texture.
+ * @param[in] top           top texture.
+ * @param[in] bottom        bottom texture.
  *
  * @return display object identifier.
  */
@@ -1422,7 +1422,7 @@ viewer::insert_background(const std::vector<float> & groundAngle,
 /**
  * @brief Insert a box into a display list.
  *
- * @param size  box dimensions.
+ * @param[in] size  box dimensions.
  *
  * @return display object identifier.
  */
@@ -1501,9 +1501,9 @@ namespace {
     /**
      * @brief Build a cylinder object.
      *
-     * @param height    the height for the cylinder.
-     * @param radius    the radius for the cylinder.
-     * @param numFacets the number of facets for the sides of the cylinder.
+     * @param[in] height    the height for the cylinder.
+     * @param[in] radius    the radius for the cylinder.
+     * @param[in] numFacets the number of facets for the sides of the cylinder.
      * @retval c        the coordinates.
      * @retval tc       the texture coordinates.
      * @retval faces    the faces.
@@ -1561,10 +1561,10 @@ namespace {
 /**
  * @brief Insert a cone into a display list.
  *
- * @param height    height.
- * @param radius    radius at base.
- * @param bottom    show the bottom.
- * @param side      show the side.
+ * @param[in] height    height.
+ * @param[in] radius    radius at base.
+ * @param[in] bottom    show the bottom.
+ * @param[in] side      show the side.
  *
  * @return display object identifier.
  */
@@ -1645,11 +1645,11 @@ viewer::object_t viewer::insert_cone(const float height,
 /**
  * @brief Insert a cylinder into a display list.
  *
- * @param height    height.
- * @param radius    radius.
- * @param bottom    show the bottom.
- * @param side      show the side.
- * @param top       show the top.
+ * @param[in] height    height.
+ * @param[in] radius    radius.
+ * @param[in] bottom    show the bottom.
+ * @param[in] side      show the side.
+ * @param[in] top       show the top.
  *
  * @return display object identifier.
  */
@@ -1788,15 +1788,15 @@ namespace {
 /**
  * @brief Insert an elevation grid into a display list.
  *
- * @param mask
- * @param height        height field.
- * @param xDimension    vertices in the x direction.
- * @param zDimension    vertices in the z direction.
- * @param xSpacing      distance between vertices in the x direction.
- * @param zSpacing      distance between vertices in the z direction.
- * @param color         colors.
- * @param normal        normals.
- * @param texCoord      texture coordinates.
+ * @param[in] mask
+ * @param[in] height        height field.
+ * @param[in] xDimension    vertices in the x direction.
+ * @param[in] zDimension    vertices in the z direction.
+ * @param[in] xSpacing      distance between vertices in the x direction.
+ * @param[in] zSpacing      distance between vertices in the z direction.
+ * @param[in] color         colors.
+ * @param[in] normal        normals.
+ * @param[in] texCoord      texture coordinates.
  */
 viewer::object_t
 viewer::insert_elevation_grid(const unsigned int mask,
@@ -2125,10 +2125,10 @@ namespace {
     /**
      * @brief Build an extrusion.
      *
-     * @param orientation
-     * @param scale
-     * @param crossSection
-     * @param spine
+     * @param[in] orientation
+     * @param[in] scale
+     * @param[in] crossSection
+     * @param[in] spine
      * @retval c
      * @retval tc
      */
@@ -2310,10 +2310,10 @@ namespace {
     /**
      * @brief Build an extrusion.
      *
-     * @param orientation
-     * @param scale
-     * @param crossSection
-     * @param spine
+     * @param[in] orientation
+     * @param[in] scale
+     * @param[in] crossSection
+     * @param[in] spine
      * @retval c
      * @retval tc
      * @retval faces
@@ -2351,11 +2351,11 @@ namespace {
 /**
  * @brief Insert an extrusion into a display list.
  *
- * @param mask
- * @param spine         spine points.
- * @param crossSection  cross-sections.
- * @param orientation   cross-section orientations.
- * @param scale         cross-section scales.
+ * @param[in] mask
+ * @param[in] spine         spine points.
+ * @param[in] crossSection  cross-sections.
+ * @param[in] orientation   cross-section orientations.
+ * @param[in] scale         cross-section scales.
  *
  * @return display object identifier.
  */
@@ -2425,11 +2425,11 @@ viewer::insert_extrusion(unsigned int mask,
 /**
  * @brief Insert a line set into a display list.
  *
- * @param coord             coordinates.
- * @param coordIndex        coordinate indices.
- * @param colorPerVertex    whether colors are applied per-vertex or per-face.
- * @param color             colors.
- * @param colorIndex        color indices.
+ * @param[in] coord             coordinates.
+ * @param[in] coordIndex        coordinate indices.
+ * @param[in] colorPerVertex    whether colors are applied per-vertex or per-face.
+ * @param[in] color             colors.
+ * @param[in] colorIndex        color indices.
  *
  * @return display object identifier.
  */
@@ -2506,8 +2506,8 @@ viewer::insert_line_set(const std::vector<vec3f> & coord,
 /**
  * @brief Insert a point set into a display list.
  *
- * @param coord     points.
- * @param color     colors.
+ * @param[in] coord     points.
+ * @param[in] color     colors.
  *
  * @return display object identifier.
  */
@@ -2777,15 +2777,15 @@ namespace {
 /**
  * @brief Insert a shell into a display list.
  *
- * @param mask
- * @param coord             coordinates.
- * @param coord_index       coordinate indices.
- * @param color             colors.
- * @param color_index       color indices.
- * @param normal            normals.
- * @param normal_index      normal indices.
- * @param tex_coord         texture coordinates.
- * @param tex_coord_index   texture coordinate indices.
+ * @param[in] mask
+ * @param[in] coord             coordinates.
+ * @param[in] coord_index       coordinate indices.
+ * @param[in] color             colors.
+ * @param[in] color_index       color indices.
+ * @param[in] normal            normals.
+ * @param[in] normal_index      normal indices.
+ * @param[in] tex_coord         texture coordinates.
+ * @param[in] tex_coord_index   texture coordinate indices.
  *
  * @return display object identifier.
  */
@@ -2982,7 +2982,7 @@ namespace {
 /**
  * @brief Insert a sphere into a display list.
  *
- * @param radius    sphere radius.
+ * @param[in] radius    sphere radius.
  *
  * @return display object identifier.
  */
@@ -3041,10 +3041,10 @@ viewer::object_t viewer::insert_sphere(const float radius)
 /**
  * @brief Insert a directional light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
- * @param intensity         intensity.
- * @param color             color.
- * @param direction         direction.
+ * @param[in] ambientIntensity  ambient intensity.
+ * @param[in] intensity         intensity.
+ * @param[in] color             color.
+ * @param[in] direction         direction.
  *
  * @return display object identifier.
  */
@@ -3093,12 +3093,12 @@ viewer::object_t viewer::insert_dir_light(const float ambientIntensity,
 /**
  * @brief Insert a point light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
- * @param attenuation       attenuation.
- * @param color             color.
- * @param intensity         intensity.
- * @param location          location.
- * @param radius            radius.
+ * @param[in] ambientIntensity  ambient intensity.
+ * @param[in] attenuation       attenuation.
+ * @param[in] color             color.
+ * @param[in] intensity         intensity.
+ * @param[in] location          location.
+ * @param[in] radius            radius.
  *
  * @return display object identifier.
  *
@@ -3157,15 +3157,15 @@ viewer::object_t viewer::insert_point_light(const float ambientIntensity,
 /**
  * @brief Insert a point light into a display list.
  *
- * @param ambientIntensity  ambient intensity.
- * @param attenuation       attenuation.
- * @param beamWidth         beam width.
- * @param color             color.
- * @param cutOffAngle       cut-off angle.
- * @param direction         direction.
- * @param intensity         intensity.
- * @param location          location.
- * @param radius            radius.
+ * @param[in] ambientIntensity  ambient intensity.
+ * @param[in] attenuation       attenuation.
+ * @param[in] beamWidth         beam width.
+ * @param[in] color             color.
+ * @param[in] cutOffAngle       cut-off angle.
+ * @param[in] direction         direction.
+ * @param[in] intensity         intensity.
+ * @param[in] location          location.
+ * @param[in] radius            radius.
  *
  * @return 0.
  *
@@ -3238,7 +3238,7 @@ viewer::object_t viewer::insert_reference(const object_t existing_object)
 /**
  * @brief Remove an object from the display list.
  *
- * @param ref   object handle.
+ * @param[in] ref   object handle.
  */
 void viewer::remove_object(const object_t ref)
 {
@@ -3248,7 +3248,7 @@ void viewer::remove_object(const object_t ref)
 /**
  * @brief Enable/disable lighting.
  *
- * @param val whether lighting should be enabled.
+ * @param[in] val whether lighting should be enabled.
  */
 void viewer::enable_lighting(const bool val)
 {
@@ -3264,8 +3264,8 @@ void viewer::enable_lighting(const bool val)
 /**
  * @brief Set the color.
  *
- * @param rgb   red, green, and blue components.
- * @param a     alpha (transparency) component.
+ * @param[in] rgb   red, green, and blue components.
+ * @param[in] a     alpha (transparency) component.
  */
 void viewer::set_color(const color & rgb, const float a)
 {
@@ -3277,10 +3277,10 @@ void viewer::set_color(const color & rgb, const float a)
  *
  * @brief Set the fog.
  *
- * @param color             fog color.
- * @param visibilityRange   the distance at which objects are fully obscured by
+ * @param[in] color             fog color.
+ * @param[in] visibilityRange   the distance at which objects are fully obscured by
  *                          fog.
- * @param type              fog type.
+ * @param[in] type              fog type.
  */
 void viewer::set_fog(const color & color,
                      const float visibilityRange,
@@ -3302,12 +3302,12 @@ void viewer::set_fog(const color & color,
 /**
  * @brief Set the material.
  *
- * @param ambientIntensity  ambient intensity.
- * @param diffuseColor      diffuse color.
- * @param emissiveColor     emissive color.
- * @param shininess         shininess.
- * @param specularColor     specular color.
- * @param transparency      transparency.
+ * @param[in] ambientIntensity  ambient intensity.
+ * @param[in] diffuseColor      diffuse color.
+ * @param[in] emissiveColor     emissive color.
+ * @param[in] shininess         shininess.
+ * @param[in] specularColor     specular color.
+ * @param[in] transparency      transparency.
  */
 void viewer::set_material(const float ambientIntensity,
                           const color & diffuseColor,
@@ -3360,8 +3360,8 @@ void viewer::set_material(const float ambientIntensity,
  *       insert_texture or insert_<geometry> causes problems when the texture
  *       or geometry node is USE'd with a different context.
  *
- * @param tex_components    texture components.
- * @param geometry_color    geometry color.
+ * @param[in] tex_components    texture components.
+ * @param[in] geometry_color    geometry color.
  */
 void viewer::set_material_mode(const size_t tex_components,
                                const bool geometry_color)
@@ -3391,7 +3391,7 @@ void viewer::set_material_mode(const size_t tex_components,
 /**
  * @brief Indicate that a node should be sensitive to the pointing device.
  *
- * @param object    a node.
+ * @param[in] object    a node.
  */
 void viewer::set_sensitive(node * object)
 {
@@ -3422,10 +3422,10 @@ namespace {
 /**
  * @brief Create a texture object.
  *
- * @param img           image.
- * @param repeat_s      repeat in the S direction.
- * @param repeat_t      repeat in the T direction.
- * @param retainHint    whether the texture is likely to be reused.
+ * @param[in] img           image.
+ * @param[in] repeat_s      repeat in the S direction.
+ * @param[in] repeat_t      repeat in the T direction.
+ * @param[in] retainHint    whether the texture is likely to be reused.
  *
  * @return a handle to the inserted texture.
  */
@@ -3536,8 +3536,8 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
 /**
  * @brief Insert a texture into the display list from an existing handle.
  *
- * @param ref           texture handle.
- * @param components    number of components.
+ * @param[in] ref           texture handle.
+ * @param[in] components    number of components.
  */
 void viewer::insert_texture_reference(const texture_object_t ref,
                                       const size_t components)
@@ -3555,7 +3555,7 @@ void viewer::insert_texture_reference(const texture_object_t ref,
 /**
  * @brief Remove a texture from the display list.
  *
- * @param ref   texture handle.
+ * @param[in] ref   texture handle.
  */
 void viewer::remove_texture_object(const texture_object_t ref)
 {
@@ -3571,10 +3571,10 @@ void viewer::remove_texture_object(const texture_object_t ref)
  * Texture coordinate transform
  * Tc' = -C x S x R x C x T x Tc
  *
- * @param center        center.
- * @param rotation      rotation.
- * @param scale         scale.
- * @param translation   translation.
+ * @param[in] center        center.
+ * @param[in] rotation      rotation.
+ * @param[in] scale         scale.
+ * @param[in] translation   translation.
  */
 void viewer::set_texture_transform(const vec2f & center,
                                    float rotation,
@@ -3635,11 +3635,11 @@ namespace {
 /**
  * @brief Set the viewpoint.
  *
- * @param position          position.
- * @param orientation       orientation.
- * @param fieldOfView       field of view.
- * @param avatarSize        avatar size.
- * @param visibilityLimit   visiblity limit.
+ * @param[in] position          position.
+ * @param[in] orientation       orientation.
+ * @param[in] fieldOfView       field of view.
+ * @param[in] avatarSize        avatar size.
+ * @param[in] visibilityLimit   visiblity limit.
  */
 void viewer::set_viewpoint(const vec3f & position,
                            const openvrml::rotation & orientation,
@@ -3679,8 +3679,8 @@ void viewer::set_viewpoint(const vec3f & position,
 /**
  * @brief Transform @p points by the current modelview matrix.
  *
- * @param nPoints   number of points.
- * @param point     pointer to the first point in an array.
+ * @param[in] nPoints   number of points.
+ * @param[in] point     pointer to the first point in an array.
  */
 void viewer::transform_points(const size_t nPoints, vec3f * point) const
 {
@@ -3693,7 +3693,7 @@ void viewer::transform_points(const size_t nPoints, vec3f * point) const
 /**
  * @brief Multiply the current modelview matrix by @p mat.
  *
- * @param mat   a matrix.
+ * @param[in] mat   a matrix.
  */
 void viewer::transform(const mat4f & mat)
 {
@@ -3705,7 +3705,7 @@ void viewer::transform(const mat4f & mat)
  *
  * update is called from a timer callback and from checkSensitive.
  *
- * @param time  current time.
+ * @param[in] time  current time.
  */
 void viewer::update(const double time)
 {
@@ -3770,8 +3770,8 @@ void viewer::redraw()
 /**
  * @brief Resize the viewport.
  *
- * @param width     new width.
- * @param height    new height.
+ * @param[in] width     new width.
+ * @param[in] height    new height.
  */
 void viewer::resize(size_t width, size_t height)
 {
@@ -3785,7 +3785,7 @@ void viewer::resize(size_t width, size_t height)
 /**
  * @brief Handle an event generated from user input.
  *
- * @param e event data.
+ * @param[in] e event data.
  */
 void viewer::input(event_info * e)
 {
@@ -3809,7 +3809,7 @@ void viewer::input(event_info * e)
 /**
  * @brief Rotate the user view.
  *
- * @param rot   rotation.
+ * @param[in] rot   rotation.
  */
 void viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
 {
@@ -3848,9 +3848,9 @@ void viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
 /**
  * @brief Translate the user view.
  *
- * @param x translation vector x component.
- * @param y translation vector y component.
- * @param z translation vector z component.
+ * @param[in] x translation vector x component.
+ * @param[in] y translation vector y component.
+ * @param[in] z translation vector z component.
  */
 void viewer::step(const float x, const float y, const float z)
 {
@@ -3866,7 +3866,7 @@ void viewer::step(const float x, const float y, const float z)
 /**
  * @brief Zoom.
  *
- * @param z amount to zoom.
+ * @param[in] z amount to zoom.
  */
 void viewer::zoom(const float z)
 {
@@ -3922,7 +3922,7 @@ void viewer::zoom(const float z)
 /**
  * @brief Handle keypresses.
  *
- * @param key   key identifier.
+ * @param[in] key   key identifier.
  */
 void viewer::handleKey(int key)
 {
@@ -4084,7 +4084,7 @@ void viewer::handleKey(int key)
 /**
  * @brief Handle mouse button up/down.
  *
- * @param e event data.
+ * @param[in] e event data.
  */
 void viewer::handleButton(event_info * e)
 {
@@ -4130,8 +4130,8 @@ void viewer::handleButton(event_info * e)
 /**
  * @brief Handle mouse dragging.
  *
- * @param x pointer x-coordinate.
- * @param y pointer y-coordinate.
+ * @param[in] x pointer x-coordinate.
+ * @param[in] y pointer y-coordinate.
  */
 void viewer::handleMouseDrag(int x, int y)
 {
@@ -4374,8 +4374,8 @@ bool viewer::checkSensitive(const int x,
  * Used for debugging view culling. Probably should be draw_bounding_volume and
  * handle axis_aligned_bounding_boxes as well.
  *
- * @param bs            a bounding sphere; if max, will not be drawn
- * @param intersection  one of the bvolume intersection test constants, or 4
+ * @param[in] bs            a bounding sphere; if max, will not be drawn
+ * @param[in] intersection  one of the bvolume intersection test constants, or 4
  *                      to draw in unique way. (useful for debugging)
  */
 void
@@ -4455,7 +4455,7 @@ viewer::draw_bounding_sphere(const bounding_sphere & bs,
  *
  * @brief Called to set the cursor style.
  *
- * @param c cursor style identifier.
+ * @param[in] c cursor style identifier.
  */
 
 /**
@@ -4470,7 +4470,7 @@ viewer::draw_bounding_sphere(const bounding_sphere & bs,
  *
  * @brief Set a delay.
  *
- * @param interval  milliseconds to delay.
+ * @param[in] interval  milliseconds to delay.
  */
 
 } // namespace gl

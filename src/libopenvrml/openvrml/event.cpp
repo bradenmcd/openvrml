@@ -72,7 +72,7 @@ openvrml::event_listener::~event_listener() OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param n the <code>node</code> to which the <code>node_event_listener</code>
+ * @param[in] n the <code>node</code> to which the <code>node_event_listener</code>
  *          belongs.
  */
 openvrml::node_event_listener::node_event_listener(openvrml::node & n)
@@ -105,7 +105,8 @@ openvrml::node & openvrml::node_event_listener::node() const OPENVRML_NOTHROW
  *
  * @return the associated eventIn identifier.
  */
-const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOTHROW
+const std::string openvrml::node_event_listener::eventin_id() const
+    OPENVRML_NOTHROW
 {
     return this->do_eventin_id();
 }
@@ -132,7 +133,7 @@ const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOT
  *
  * @brief Construct.
  *
- * @param node  the node to which the event_listener belongs.
+ * @param[in] node  the node to which the event_listener belongs.
  */
 
 /**
@@ -154,8 +155,8 @@ const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOT
  *
  * @brief Process an event.
  *
- * @param value     the event value.
- * @param timestamp the current time.
+ * @param[in] value     the event value.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -168,8 +169,8 @@ const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOT
  *
  * Subclasses must implement this function.
  *
- * @param value     the event value.
- * @param timestamp the current time.
+ * @param[in] value     the event value.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -368,7 +369,7 @@ const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOT
  *
  * @brief Construct.
  *
- * @param n the node that the listener is a member of.
+ * @param[in] n the node that the listener is a member of.
  */
 
 /**
@@ -435,9 +436,10 @@ const std::string openvrml::node_event_listener::eventin_id() const OPENVRML_NOT
 /**
  * @brief Construct.
  *
- * @param value <code>field_value</code> associated with this emitter.
+ * @param[in] value <code>field_value</code> associated with this emitter.
  */
-openvrml::event_emitter::event_emitter(const field_value & value) OPENVRML_NOTHROW:
+openvrml::event_emitter::event_emitter(const field_value & value)
+    OPENVRML_NOTHROW:
     value_(value)
 {}
 
@@ -452,7 +454,8 @@ openvrml::event_emitter::~event_emitter() OPENVRML_NOTHROW
  *
  * @return a reference to the <code>event_emitter</code>'s mutex.
  */
-boost::recursive_mutex & openvrml::event_emitter::mutex() const OPENVRML_NOTHROW
+boost::recursive_mutex & openvrml::event_emitter::mutex() const
+    OPENVRML_NOTHROW
 {
     return this->mutex_;
 }
@@ -464,7 +467,8 @@ boost::recursive_mutex & openvrml::event_emitter::mutex() const OPENVRML_NOTHROW
  * @return a reference to the <code>field_value</code> for the
  *         <code>event_emitter</code>.
  */
-const openvrml::field_value & openvrml::event_emitter::value() const OPENVRML_NOTHROW
+const openvrml::field_value & openvrml::event_emitter::value() const
+    OPENVRML_NOTHROW
 {
     return this->value_;
 }
@@ -476,7 +480,8 @@ const openvrml::field_value & openvrml::event_emitter::value() const OPENVRML_NO
  *
  * @return the associated eventOut identifier.
  */
-const std::string openvrml::event_emitter::eventout_id() const OPENVRML_NOTHROW
+const std::string openvrml::event_emitter::eventout_id() const
+    OPENVRML_NOTHROW
 {
     return this->do_eventout_id();
 }
@@ -527,7 +532,7 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
 /**
  * @brief Set the timestamp of the last event emitted.
  *
- * @param t the timestamp of the last event emitted.
+ * @param[in] t the timestamp of the last event emitted.
  */
 void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
 {
@@ -540,7 +545,7 @@ void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
  *
  * @brief Emit an event.
  *
- * @param timestamp the current time.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -571,7 +576,7 @@ void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
  *
  * @brief Emit an event.
  *
- * @param timestamp the current time.
+ * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -581,7 +586,7 @@ void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
  *
  * @brief Add an event listener.
  *
- * @param listener  the listener to add.
+ * @param[in] listener  the listener to add.
  *
  * @return @c true if @p listener was added; @c false if @p listener was not
  *         added (if it was already registered for the emitter).
@@ -594,7 +599,7 @@ void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
  *
  * @brief Remove an event listener.
  *
- * @param listener  the listener to remove.
+ * @param[in] listener  the listener to remove.
  *
  * @return @c true if @p listener was removed; @c false if @p listener was not
  *         removed (if it was not registered for the emitter).

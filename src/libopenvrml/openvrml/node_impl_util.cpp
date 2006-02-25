@@ -95,7 +95,7 @@
  *
  * @brief Construct.
  *
- * @param ptr_to_mem    pointer-to-member.
+ * @param[in] ptr_to_mem    pointer-to-member.
  */
 
 /**
@@ -135,8 +135,8 @@
 /**
  * @brief Construct.
  *
- * @param node_class    the <code>node_class</code>.
- * @param id            the <code>node_type</code> identifier.
+ * @param[in] node_class    the <code>node_class</code>.
+ * @param[in] id            the <code>node_type</code> identifier.
  */
 openvrml::node_impl_util::abstract_node_type::
 abstract_node_type(const openvrml::node_class & node_class,
@@ -156,9 +156,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief @p node's field_value corresponding to @p id.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::field_value</code>.
- * @param id    field identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::field_value</code>.
+ * @param[in] id    field identifier.
  * 
  * @return @p node's <code>openvrml::field_value</code> corresponding to
  *         the field identifier @p id.
@@ -173,9 +173,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief @p node's <code>openvrml::event_listener</code> corresponding to
  *        the eventIn identifier @p id.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_listener</code>.
- * @param id    eventIn identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_listener</code>.
+ * @param[in] id    eventIn identifier.
  * 
  * @return @p node's <code>openvrml::event_listener</code> corresponding to
  *         the eventIn identifier @p id.
@@ -190,9 +190,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief @p node's <code>openvrml::event_emitter</code> corresponding to
  *        the eventOut identifier @p id.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_emitter</code>.
- * @param id    eventOut identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_emitter</code>.
+ * @param[in] id    eventOut identifier.
  * 
  * @return @p node's <code>openvrml::event_emitter</code> corresponding to
  *         the eventOut identifier @p id.
@@ -337,7 +337,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param listener  the <code>event_listener</code>.
+ * @param[in] listener  the <code>event_listener</code>.
  */
 
 /**
@@ -353,8 +353,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param n the <code>node</code> associated with the
- *          <code>event_listener</code>.
+ * @param[in] n the <code>node</code> associated with the
+ *              <code>event_listener</code>.
  */
 
 /**
@@ -422,7 +422,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param emitter   the <code>event_emitter</code>.
+ * @param[in] emitter   the <code>event_emitter</code>.
  */
 
 /**
@@ -438,10 +438,10 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param n     the <code>node</code> associated with the
- *              <code>event_emitter</code>.
- * @param value the field value associated with the
- *              <code>event_emitter</code>.
+ * @param[in] n     the <code>node</code> associated with the
+ *                  <code>event_emitter</code>.
+ * @param[in] value the field value associated with the
+ *                  <code>event_emitter</code>.
  */
 
 /**
@@ -641,8 +641,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param node  node from which events will be emitted.
- * @param value associated field value.
+ * @param[in] node  node from which events will be emitted.
+ * @param[in] value associated field value.
  */
 
 /**
@@ -812,8 +812,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param node  the node.
- * @param value the initial value.
+ * @param[in] node  the node.
+ * @param[in] value the initial value.
  */
 
 /**
@@ -821,7 +821,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct a copy.
  *
- * @param obj   the instance to copy.
+ * @param[in] obj   the instance to copy.
  */
 
 /**
@@ -847,8 +847,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param type  the node_type associated with this node.
- * @param scope the scope to which the node belongs.
+ * @param[in] type  the node_type associated with this node.
+ * @param[in] scope the scope to which the node belongs.
  */
 
 /**
@@ -862,7 +862,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Get a field value for a node.
  *
- * @param id    a field name.
+ * @param[in] id    a field name.
  *
  * @exception unsupported_interface  if the node has no field @p id.
  */
@@ -874,7 +874,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * This method is called by node::event_listener.
  *
- * @param id    eventIn identifier.
+ * @param[in] id    eventIn identifier.
  *
  * @return the event listener.
  *
@@ -888,7 +888,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * This method is called by node::event_emitter.
  *
- * @param id    eventOut identifier.
+ * @param[in] id    eventOut identifier.
  *
  * @return the event emitter.
  *
@@ -906,8 +906,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param ptr_to_mem    a pointer to an <code>openvrml::field_value</code>
- *                      member.
+ * @param[in] ptr_to_mem    a pointer to an <code>openvrml::field_value</code>
+ *                          member.
  */
 
 /**
@@ -921,8 +921,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct
  *
- * @param ptr_to_mem    a pointer to an
- *                      <code>openvrml::event_listener</code> member.
+ * @param[in] ptr_to_mem    a pointer to an
+ *                          <code>openvrml::event_listener</code> member.
  */
 
 /**
@@ -936,8 +936,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct
  *
- * @param ptr_to_mem    a pointer to an
- *                      <code>openvrml::event_emitter</code> member.
+ * @param[in] ptr_to_mem    a pointer to an
+ *                          <code>openvrml::event_emitter</code> member.
  */
 
 /**
@@ -945,8 +945,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param node_class    the <code>node_class</code>.
- * @param id            the <code>node_type</code> identifier.
+ * @param[in] node_class    the <code>node_class</code>.
+ * @param[in] id            the <code>node_type</code> identifier.
  */
 
 /**
@@ -960,10 +960,10 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Add an eventIn.
  *
- * @param type              the field value type.
- * @param id                the eventIn identifier.
- * @param event_listener    the <code>openvrml::event_listener</code>
- *                          associated with the eventIn.
+ * @param[in] type              the field value type.
+ * @param[in] id                the eventIn identifier.
+ * @param[in] event_listener    the <code>openvrml::event_listener</code>
+ *                              associated with the eventIn.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -976,10 +976,10 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Add an eventOut.
  *
- * @param type          the field value type.
- * @param id            the eventOut identifier.
- * @param event_emitter the <code>openvrml::event_emitter</code>
- *                      associated with the eventOut.
+ * @param[in] type          the field value type.
+ * @param[in] id            the eventOut identifier.
+ * @param[in] event_emitter the <code>openvrml::event_emitter</code>
+ *                          associated with the eventOut.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -992,14 +992,14 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Add an exposedField.
  *
- * @param type              the field value type.
- * @param id                the exposedField identifier.
- * @param event_listener    the <code>openvrml::event_listener</code>
- *                          associated with the exposedField.
- * @param field             the <code>openvrml::field_value</code>
- *                          associated with the exposedField.
- * @param event_emitter     the <code>openvrml::event_emitter</code>
- *                          associated with the exposedField.
+ * @param[in] type              the field value type.
+ * @param[in] id                the exposedField identifier.
+ * @param[in] event_listener    the <code>openvrml::event_listener</code>
+ *                              associated with the exposedField.
+ * @param[in] field             the <code>openvrml::field_value</code>
+ *                              associated with the exposedField.
+ * @param[in] event_emitter     the <code>openvrml::event_emitter</code>
+ *                              associated with the exposedField.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -1008,14 +1008,14 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & nodeFieldPtrPtr)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & field)
  *
  * @brief Add a field.
  *
- * @param type              the field value type.
- * @param id                the field identifier.
- * @param field             the <code>openvrml::field_value</code>
- *                          associated with the field.
+ * @param[in] type  the field value type.
+ * @param[in] id    the field identifier.
+ * @param[in] field the <code>openvrml::field_value</code> associated with the
+ *                  field.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -1031,9 +1031,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * Delegates to <code>node_type_impl<Node>::do_field_value</code>.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::field_value</code>.
- * @param id    field identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::field_value</code>.
+ * @param[in] id    field identifier.
  * 
  * @return @p node's <code>openvrml::field_value</code> corresponding to
  *         the field identifier @p id.
@@ -1048,9 +1048,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief @p node's <code>openvrml::field_value</code> corresponding to the
  *        field identifier @p id.
  *
- * @param node  the node for which to return the
- *              <code>openvrml::field_value</code>.
- * @param id    field identifier.
+ * @param[in] node  the node for which to return the
+ *                  <code>openvrml::field_value</code>.
+ * @param[in] id    field identifier.
  * 
  * @return @p node's <code>openvrml::field_value</code> corresponding to
  *         the field identifier @p id.
@@ -1068,9 +1068,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * Delegates to
  * <code>node_type_impl<Node>::do_event_listener</code>.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_listener</code>.
- * @param id    eventIn identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_listener</code>.
+ * @param[in] id    eventIn identifier.
  * 
  * @return @p node's <code>openvrml::event_listener</code> corresponding to
  *         the eventIn identifier @p id.
@@ -1085,9 +1085,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief @p node's <code>openvrml::event_listener</code> corresponding to
  *        the eventIn identifier @p id.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_listener</code>.
- * @param id    eventIn identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_listener</code>.
+ * @param[in] id    eventIn identifier.
  * 
  * @return @p node's <code>openvrml::event_listener</code> corresponding to
  *         the eventIn identifier @p id.
@@ -1104,9 +1104,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * Delegates to <code>node_type_impl<Node>::do_event_emitter</code>.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_emitter</code>.
- * @param id    eventOut identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_emitter</code>.
+ * @param[in] id    eventOut identifier.
  * 
  * @return @p node's <code>openvrml::event_emitter</code> corresponding to
  *         the eventOut identifier @p id.
@@ -1123,9 +1123,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * Delegates to <code>node_type_impl<Node>::do_event_emitter</code>.
  *
- * @param node  the <code>openvrml::node</code> for which to return the
- *              <code>openvrml::event_emitter</code>.
- * @param id    eventOut identifier.
+ * @param[in] node  the <code>openvrml::node</code> for which to return the
+ *                  <code>openvrml::event_emitter</code>.
+ * @param[in] id    eventOut identifier.
  * 
  * @return @p node's <code>openvrml::event_emitter</code> corresponding to
  *         the eventOut identifier @p id.
@@ -1149,8 +1149,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Create a node instance.
  *
- * @param scope             the <code>scope</code> the new node will belong to.
- * @param initial_values    initial values for the new node's fields.
+ * @param[in] scope             the <code>scope</code> the new node will belong
+ *                              to.
+ * @param[in] initial_values    initial values for the new node's fields.
  *
  * @return a new node instance.
  *

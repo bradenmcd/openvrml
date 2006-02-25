@@ -187,7 +187,7 @@ namespace openvrml {
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
             void add_field(openvrml::field_value::type_id type,
                            const std::string & id,
-                           const field_ptr_ptr & fieldPtrPtr)
+                           const field_ptr_ptr & field)
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
             virtual const openvrml::field_value &

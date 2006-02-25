@@ -1,5 +1,27 @@
 2006-02-25 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements; added direction (in, out) to param
+	directives.
+
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/exposedfield.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2006-02-25 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Updated to reflect changes to Doxygen style
 	sheet.
 

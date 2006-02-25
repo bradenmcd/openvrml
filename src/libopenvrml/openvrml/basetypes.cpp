@@ -128,7 +128,7 @@ openvrml::color::color() OPENVRML_NOTHROW
 /**
  * @brief Construct from a 3-element float array.
  *
- * @param rgb   an array comprising red, green, and blue components.
+ * @param[in] rgb   an array comprising red, green, and blue components.
  */
 openvrml::color::color(const float (&rgb)[3]) OPENVRML_NOTHROW
 {
@@ -143,9 +143,9 @@ openvrml::color::color(const float (&rgb)[3]) OPENVRML_NOTHROW
 /**
  * @brief Construct from red, green, and blue components.
  *
- * @param r red component.
- * @param g green component.
- * @param b blue component.
+ * @param[in] r red component.
+ * @param[in] g green component.
+ * @param[in] b blue component.
  */
 openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
 {
@@ -162,8 +162,8 @@ openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
  *
  * @brief Index-based component access.
  *
- * @param index 0 is the red component, 1 is the green component, and 2 is the
- *              blue component.
+ * @param[in] index 0 is the red component, 1 is the green component, and 2 is
+ *                  the blue component.
  *
  * @return the component corresponding to @p index.
  */
@@ -197,7 +197,7 @@ openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
  *
  * @brief Set the red component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
@@ -205,7 +205,7 @@ openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
  *
  * @brief Set the green component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
@@ -213,7 +213,7 @@ openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
  *
  * @brief Set the blue component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 // Conversion functions between RGB each in [0,1] and HSV with
@@ -222,7 +222,7 @@ openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
 /**
  * @brief Get the color as hue, saturation, and value.
  *
- * @retval result   the hue, saturation, and value.
+ * @param[out] result   the hue, saturation, and value.
  */
 void openvrml::color::hsv(float (&result)[3]) const OPENVRML_NOTHROW
 {
@@ -232,11 +232,12 @@ void openvrml::color::hsv(float (&result)[3]) const OPENVRML_NOTHROW
 /**
  * @brief Set the color from hue, saturation, and value.
  *
- * @param h hue.
- * @param s saturation.
- * @param v value.
+ * @param[in] h hue.
+ * @param[in] s saturation.
+ * @param[in] v value.
  */
-void openvrml::color::hsv(float h, const float s, const float v) OPENVRML_NOTHROW
+void openvrml::color::hsv(float h, const float s, const float v)
+    OPENVRML_NOTHROW
 {
     hsv_to_rgb(h, s, v, &rgb[0]);
 }
@@ -246,13 +247,14 @@ void openvrml::color::hsv(float h, const float s, const float v) OPENVRML_NOTHRO
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator==(const color & lhs, const color & rhs) OPENVRML_NOTHROW
+bool openvrml::operator==(const color & lhs, const color & rhs)
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
@@ -263,13 +265,14 @@ bool openvrml::operator==(const color & lhs, const color & rhs) OPENVRML_NOTHROW
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
- * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
+ * @return @c true if @p lhs and @p rhs do not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const color & lhs, const color & rhs) OPENVRML_NOTHROW
+bool openvrml::operator!=(const color & lhs, const color & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -279,8 +282,8 @@ bool openvrml::operator!=(const color & lhs, const color & rhs) OPENVRML_NOTHROW
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param c     a color.
+ * @param[in,out] out   output stream.
+ * @param[in] c         a color.
  *
  * @return @p out.
  */
@@ -318,7 +321,7 @@ openvrml::color_rgba::color_rgba() OPENVRML_NOTHROW
 /**
  * @brief Construct from a 4-element float array.
  *
- * @param rgba   an array comprising red, green, and blue components.
+ * @param[in] rgba   an array comprising red, green, and blue components.
  */
 openvrml::color_rgba::color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW
 {
@@ -335,12 +338,13 @@ openvrml::color_rgba::color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW
 /**
  * @brief Construct from red, green, and blue components.
  *
- * @param r red component.
- * @param g green component.
- * @param b blue component.
- * @param a alpha component.
+ * @param[in] r red component.
+ * @param[in] g green component.
+ * @param[in] b blue component.
+ * @param[in] a alpha component.
  */
-openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NOTHROW
+openvrml::color_rgba::color_rgba(float r, float g, float b, float a)
+    OPENVRML_NOTHROW
 {
     assert(r >= 0.0 && r <= 1.0);
     this->rgba[0] = r;
@@ -357,8 +361,8 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NO
  *
  * @brief Index-based component access.
  *
- * @param index 0 is the red component, 1 is the green component, 2 is the
- *              blue component, and 3 is the alpha component.
+ * @param[in] index 0 is the red component, 1 is the green component, 2 is the
+ *                  blue component, and 3 is the alpha component.
  *
  * @return the component corresponding to @p index.
  */
@@ -400,7 +404,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NO
  *
  * @brief Set the red component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
@@ -408,7 +412,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NO
  *
  * @brief Set the green component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
@@ -416,7 +420,7 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NO
  *
  * @brief Set the blue component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
@@ -424,13 +428,13 @@ openvrml::color_rgba::color_rgba(float r, float g, float b, float a) OPENVRML_NO
  *
  * @brief Set the alpha component.
  *
- * @param value the new component value.
+ * @param[in] value the new component value.
  */
 
 /**
  * @brief Get the color_rgba as hue, saturation, and value.
  *
- * @retval result   the hue, saturation, and value.
+ * @param[out] result   the hue, saturation, and value.
  */
 void openvrml::color_rgba::hsv(float (&result)[4]) const OPENVRML_NOTHROW
 {
@@ -441,10 +445,10 @@ void openvrml::color_rgba::hsv(float (&result)[4]) const OPENVRML_NOTHROW
 /**
  * @brief Set the color_rgba from hue, saturation, and value.
  *
- * @param h hue.
- * @param s saturation.
- * @param v value.
- * @param a alpha.
+ * @param[in] h hue.
+ * @param[in] s saturation.
+ * @param[in] v value.
+ * @param[in] a alpha.
  */
 void openvrml::color_rgba::hsv(const float h,
                                const float s,
@@ -462,8 +466,8 @@ void openvrml::color_rgba::hsv(const float h,
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -480,13 +484,14 @@ bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
  */
-bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs) OPENVRML_NOTHROW
+bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -496,8 +501,8 @@ bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs) OPENVR
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param c     a color_rgba.
+ * @param[in,out] out   output stream.
+ * @param[in] c     a color_rgba.
  *
  * @return @p out.
  */
@@ -537,7 +542,7 @@ openvrml::vec2f::vec2f() OPENVRML_NOTHROW
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
- * @param vec   an array comprising the vector components.
+ * @param[in] vec   an array comprising the vector components.
  */
 openvrml::vec2f::vec2f(const float (&vec)[2]) OPENVRML_NOTHROW
 {
@@ -556,8 +561,8 @@ openvrml::vec2f::vec2f(const float (&vec)[2]) OPENVRML_NOTHROW
  *
  * @pre @p x and @p y are valid numeric values (i.e., not NaN).
  *
- * @param x x component.
- * @param y y component.
+ * @param[in] x x component.
+ * @param[in] y y component.
  */
 openvrml::vec2f::vec2f(const float x, const float y) OPENVRML_NOTHROW
 {
@@ -574,7 +579,7 @@ openvrml::vec2f::vec2f(const float x, const float y) OPENVRML_NOTHROW
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @param[in] scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -591,8 +596,8 @@ openvrml::vec2f & openvrml::vec2f::operator*=(const float scalar)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -608,8 +613,8 @@ const openvrml::vec2f openvrml::operator*(const vec2f & lhs, const float rhs)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the scalar).
- * @param rhs   right-hand operand (the vector).
+ * @param[in] lhs   left-hand operand (the scalar).
+ * @param[in] rhs   right-hand operand (the vector).
  *
  * @return the result vector.
  */
@@ -625,7 +630,7 @@ const openvrml::vec2f openvrml::operator*(const float lhs, const vec2f & rhs)
  *
  * @pre @p scalar is nonzero.
  *
- * @param scalar    divisor.
+ * @param[in] scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -645,8 +650,8 @@ openvrml::vec2f & openvrml::vec2f::operator/=(const float scalar)
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -660,7 +665,7 @@ const openvrml::vec2f openvrml::operator/(const vec2f & lhs, const float rhs)
 /**
  * @brief Add a vector.
  *
- * @param vec   the vector to add.
+ * @param[in] vec   the vector to add.
  *
  * @return a reference to the object.
  */
@@ -677,8 +682,8 @@ openvrml::vec2f & openvrml::vec2f::operator+=(const vec2f & vec)
  *
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -692,7 +697,7 @@ const openvrml::vec2f openvrml::operator+(const vec2f & lhs, const vec2f & rhs)
 /**
  * @brief Subtract a vector.
  *
- * @param vec   the vector to subtract.
+ * @param[in] vec   the vector to subtract.
  *
  * @return a reference to the object.
  */
@@ -709,8 +714,8 @@ openvrml::vec2f & openvrml::vec2f::operator-=(const vec2f & vec)
  *
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -736,8 +741,8 @@ const openvrml::vec2f openvrml::vec2f::operator-() const OPENVRML_NOTHROW
  *
  * @brief Index-based component access.
  *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
- *              component.
+ * @param[in] index 0 corresponds to the x component; 1 corresponds to the y
+ *                  component.
  *
  * @return a const reference to the component corresponding to @p index.
  *
@@ -767,7 +772,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new x component value.
+ * @param[in] value new x component value.
  */
 
 /**
@@ -777,13 +782,13 @@ const openvrml::vec2f openvrml::vec2f::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new y component value.
+ * @param[in] value new y component value.
  */
 
 /**
  * @brief Dot product.
  *
- * @param vec
+ * @param[in] vec
  *
  * @return the dot product of the vector and @p vec.
  */
@@ -822,8 +827,8 @@ const openvrml::vec2f openvrml::vec2f::normalize() const OPENVRML_NOTHROW
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -840,8 +845,8 @@ bool openvrml::operator==(const vec2f & lhs, const vec2f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
@@ -857,8 +862,8 @@ bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs)
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param v     a 2-component vector.
+ * @param[in,out] out   output stream.
+ * @param[in]     v     a 2-component vector.
  *
  * @return @p out.
  */
@@ -898,7 +903,7 @@ openvrml::vec2d::vec2d() OPENVRML_NOTHROW
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
- * @param vec   an array comprising the vector components.
+ * @param[in] vec   an array comprising the vector components.
  */
 openvrml::vec2d::vec2d(const double (&vec)[2]) OPENVRML_NOTHROW
 {
@@ -917,8 +922,8 @@ openvrml::vec2d::vec2d(const double (&vec)[2]) OPENVRML_NOTHROW
  *
  * @pre @p x and @p y are valid numeric values (i.e., not NaN).
  *
- * @param x x component.
- * @param y y component.
+ * @param[in] x x component.
+ * @param[in] y y component.
  */
 openvrml::vec2d::vec2d(const double x, const double y) OPENVRML_NOTHROW
 {
@@ -935,7 +940,7 @@ openvrml::vec2d::vec2d(const double x, const double y) OPENVRML_NOTHROW
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @param[in] scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -952,8 +957,8 @@ openvrml::vec2d & openvrml::vec2d::operator*=(const double scalar)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -969,8 +974,8 @@ const openvrml::vec2d openvrml::operator*(const vec2d & lhs, const double rhs)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the scalar).
- * @param rhs   right-hand operand (the vector).
+ * @param[in] lhs   left-hand operand (the scalar).
+ * @param[in] rhs   right-hand operand (the vector).
  *
  * @return the result vector.
  */
@@ -986,7 +991,7 @@ const openvrml::vec2d openvrml::operator*(const double lhs, const vec2d & rhs)
  *
  * @pre @p scalar is nonzero.
  *
- * @param scalar    divisor.
+ * @param[in] scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -1006,8 +1011,8 @@ openvrml::vec2d & openvrml::vec2d::operator/=(const double scalar)
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -1021,7 +1026,7 @@ const openvrml::vec2d openvrml::operator/(const vec2d & lhs, const double rhs)
 /**
  * @brief Add a vector.
  *
- * @param vec   the vector to add.
+ * @param[in] vec   the vector to add.
  *
  * @return a reference to the object.
  */
@@ -1038,8 +1043,8 @@ openvrml::vec2d & openvrml::vec2d::operator+=(const vec2d & vec)
  *
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1053,7 +1058,7 @@ const openvrml::vec2d openvrml::operator+(const vec2d & lhs, const vec2d & rhs)
 /**
  * @brief Subtract a vector.
  *
- * @param vec   the vector to subtract.
+ * @param[in] vec   the vector to subtract.
  *
  * @return a reference to the object.
  */
@@ -1070,8 +1075,8 @@ openvrml::vec2d & openvrml::vec2d::operator-=(const vec2d & vec)
  *
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1097,8 +1102,8 @@ const openvrml::vec2d openvrml::vec2d::operator-() const OPENVRML_NOTHROW
  *
  * @brief Index-based component access.
  *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
- *              component.
+ * @param[in] index 0 corresponds to the x component; 1 corresponds to the y
+ *                  component.
  *
  * @return a const reference to the component corresponding to @p index.
  *
@@ -1128,7 +1133,7 @@ const openvrml::vec2d openvrml::vec2d::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new x component value.
+ * @param[in] value new x component value.
  */
 
 /**
@@ -1138,13 +1143,13 @@ const openvrml::vec2d openvrml::vec2d::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new y component value.
+ * @param[in] value new y component value.
  */
 
 /**
  * @brief Dot product.
  *
- * @param vec
+ * @param[in] vec
  *
  * @return the dot product of the vector and @p vec.
  */
@@ -1183,8 +1188,8 @@ const openvrml::vec2d openvrml::vec2d::normalize() const OPENVRML_NOTHROW
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1201,8 +1206,8 @@ bool openvrml::operator==(const vec2d & lhs, const vec2d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *         otherwise.
@@ -1218,8 +1223,8 @@ bool openvrml::operator!=(const vec2d & lhs, const vec2d & rhs)
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param v     a 2-component vector.
+ * @param[in,out] out   output stream.
+ * @param[in] v     a 2-component vector.
  *
  * @return @p out.
  */
@@ -1260,7 +1265,7 @@ openvrml::vec3f::vec3f() OPENVRML_NOTHROW
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
- * @param vec   an array comprising the vector components.
+ * @param[in] vec   an array comprising the vector components.
  */
 openvrml::vec3f::vec3f(const float (&vec)[3]) OPENVRML_NOTHROW
 {
@@ -1281,9 +1286,9 @@ openvrml::vec3f::vec3f(const float (&vec)[3]) OPENVRML_NOTHROW
  *
  * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
  *
- * @param x x component.
- * @param y y component.
- * @param z z component.
+ * @param[in] x x component.
+ * @param[in] y y component.
+ * @param[in] z z component.
  */
 openvrml::vec3f::vec3f(const float x, const float y, const float z)
     OPENVRML_NOTHROW
@@ -1303,7 +1308,7 @@ openvrml::vec3f::vec3f(const float x, const float y, const float z)
 /**
  * @brief Cross multiply.
  *
- * @param vec   vector by which to multiply.
+ * @param[in] vec   vector by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1323,8 +1328,8 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const vec3f & vec)
  *
  * @brief Cross multiply two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1338,7 +1343,7 @@ const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const vec3f & rhs)
 /**
  * @brief Multiply by a matrix.
  *
- * @param mat   matrix by which to multiply.
+ * @param[in] mat   matrix by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1364,8 +1369,8 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const mat4f & mat)
  *
  * @brief Multiply a vector by a matrix.
  *
- * @param vec   a vector.
- * @param mat   a matrix.
+ * @param[in] vec   a vector.
+ * @param[in] mat   a matrix.
  *
  * @return the result vector.
  */
@@ -1381,8 +1386,8 @@ const openvrml::vec3f openvrml::operator*(const vec3f & vec, const mat4f & mat)
  *
  * @brief Multiply a matrix by a vector.
  *
- * @param mat   a matrix.
- * @param vec   a 3-component vector.
+ * @param[in] mat   a matrix.
+ * @param[in] vec   a 3-component vector.
  *
  * @return the result vector.
  */
@@ -1403,7 +1408,7 @@ const openvrml::vec3f openvrml::operator*(const mat4f & mat, const vec3f & vec)
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @param[in] scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1421,8 +1426,8 @@ openvrml::vec3f & openvrml::vec3f::operator*=(const float scalar)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -1438,8 +1443,8 @@ const openvrml::vec3f openvrml::operator*(const vec3f & lhs, const float rhs)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the scalar).
- * @param rhs   right-hand operand (the vector).
+ * @param[in] lhs   left-hand operand (the scalar).
+ * @param[in] rhs   right-hand operand (the vector).
  *
  * @return the result vector.
  */
@@ -1455,7 +1460,7 @@ const openvrml::vec3f openvrml::operator*(const float lhs, const vec3f & rhs)
  *
  * @pre @p scalar is nonzero.
  *
- * @param scalar    divisor.
+ * @param[in] scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -1476,8 +1481,8 @@ openvrml::vec3f & openvrml::vec3f::operator/=(const float scalar)
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -1491,7 +1496,7 @@ const openvrml::vec3f openvrml::operator/(const vec3f & lhs, const float rhs)
 /**
  * @brief Add a vector.
  *
- * @param vec   the vector to add.
+ * @param[in] vec   the vector to add.
  *
  * @return a reference to the object.
  */
@@ -1509,8 +1514,8 @@ openvrml::vec3f & openvrml::vec3f::operator+=(const vec3f & vec)
  *
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1524,7 +1529,7 @@ const openvrml::vec3f openvrml::operator+(const vec3f & lhs, const vec3f & rhs)
 /**
  * @brief Subtract a vector.
  *
- * @param vec   the vector to subtract.
+ * @param[in] vec   the vector to subtract.
  *
  * @return a reference to the object.
  */
@@ -1542,8 +1547,8 @@ openvrml::vec3f & openvrml::vec3f::operator-=(const vec3f & vec)
  *
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1569,7 +1574,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
  *
  * @brief Index-based component access.
  *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
+ * @param[in] index 0 corresponds to the x component; 1 corresponds to the y
  *              component; 2 corresponds to the z component.
  *
  * @return a const reference to the component corresponding to @p index.
@@ -1608,7 +1613,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new x component value.
+ * @param[in] value new x component value.
  */
 
 /**
@@ -1618,7 +1623,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new y component value.
+ * @param[in] value new y component value.
  */
 
 /**
@@ -1628,13 +1633,13 @@ const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new z component value.
+ * @param[in] value new z component value.
  */
 
 /**
  * @brief Dot product.
  *
- * @param vec
+ * @param[in] vec
  *
  * @return the dot product of the vector and @p vec.
  */
@@ -1674,8 +1679,8 @@ const openvrml::vec3f openvrml::vec3f::normalize() const OPENVRML_NOTHROW
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -1692,8 +1697,8 @@ bool openvrml::operator==(const vec3f & lhs, const vec3f & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *      otherwise.
@@ -1709,8 +1714,8 @@ bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs)
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param v     a 3-component vector.
+ * @param[in,out] out   output stream.
+ * @param[in] v     a 3-component vector.
  *
  * @return @p out.
  */
@@ -1751,7 +1756,7 @@ openvrml::vec3d::vec3d() OPENVRML_NOTHROW
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
- * @param vec   an array comprising the vector components.
+ * @param[in] vec   an array comprising the vector components.
  */
 openvrml::vec3d::vec3d(const double (&vec)[3]) OPENVRML_NOTHROW
 {
@@ -1772,9 +1777,9 @@ openvrml::vec3d::vec3d(const double (&vec)[3]) OPENVRML_NOTHROW
  *
  * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
  *
- * @param x x component.
- * @param y y component.
- * @param z z component.
+ * @param[in] x x component.
+ * @param[in] y y component.
+ * @param[in] z z component.
  */
 openvrml::vec3d::vec3d(const double x, const double y, const double z)
     OPENVRML_NOTHROW
@@ -1794,7 +1799,7 @@ openvrml::vec3d::vec3d(const double x, const double y, const double z)
 /**
  * @brief Cross multiply.
  *
- * @param vec   vector by which to multiply.
+ * @param[in] vec   vector by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1814,8 +1819,8 @@ openvrml::vec3d & openvrml::vec3d::operator*=(const vec3d & vec)
  *
  * @brief Cross multiply two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -1829,7 +1834,7 @@ const openvrml::vec3d openvrml::operator*(const vec3d & lhs, const vec3d & rhs)
 /**
  * @brief Multiply by a matrix.
  *
- * @param mat   matrix by which to multiply.
+ * @param[in] mat   matrix by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1855,8 +1860,8 @@ openvrml::vec3d & openvrml::vec3d::operator*=(const mat4f & mat)
  *
  * @brief Multiply a vector by a matrix.
  *
- * @param vec   a vector.
- * @param mat   a matrix.
+ * @param[in] vec   a vector.
+ * @param[in] mat   a matrix.
  *
  * @return the result vector.
  */
@@ -1872,8 +1877,8 @@ const openvrml::vec3d openvrml::operator*(const vec3d & vec, const mat4f & mat)
  *
  * @brief Multiply a matrix by a vector.
  *
- * @param mat   a matrix.
- * @param vec   a 3-component vector.
+ * @param[in] mat   a matrix.
+ * @param[in] vec   a 3-component vector.
  *
  * @return the result vector.
  */
@@ -1894,7 +1899,7 @@ const openvrml::vec3d openvrml::operator*(const mat4f & mat, const vec3d & vec)
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    factor by which to multiply.
+ * @param[in] scalar    factor by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -1912,8 +1917,8 @@ openvrml::vec3d & openvrml::vec3d::operator*=(const double scalar)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -1929,8 +1934,8 @@ const openvrml::vec3d openvrml::operator*(const vec3d & lhs, const double rhs)
  *
  * @brief Multiply a vector by a scalar.
  *
- * @param lhs   left-hand operand (the scalar).
- * @param rhs   right-hand operand (the vector).
+ * @param[in] lhs   left-hand operand (the scalar).
+ * @param[in] rhs   right-hand operand (the vector).
  *
  * @return the result vector.
  */
@@ -1946,7 +1951,7 @@ const openvrml::vec3d openvrml::operator*(const double lhs, const vec3d & rhs)
  *
  * @pre @p scalar is nonzero.
  *
- * @param scalar    divisor.
+ * @param[in] scalar    divisor.
  *
  * @return a reference to the object.
  */
@@ -1967,8 +1972,8 @@ openvrml::vec3d & openvrml::vec3d::operator/=(const double scalar)
  *
  * @pre @p rhs is nonzero.
  *
- * @param lhs   left-hand operand (the vector).
- * @param rhs   right-hand operand (the scalar).
+ * @param[in] lhs   left-hand operand (the vector).
+ * @param[in] rhs   right-hand operand (the scalar).
  *
  * @return the result vector.
  */
@@ -1982,7 +1987,7 @@ const openvrml::vec3d openvrml::operator/(const vec3d & lhs, const double rhs)
 /**
  * @brief Add a vector.
  *
- * @param vec   the vector to add.
+ * @param[in] vec   the vector to add.
  *
  * @return a reference to the object.
  */
@@ -2000,8 +2005,8 @@ openvrml::vec3d & openvrml::vec3d::operator+=(const vec3d & vec)
  *
  * @brief Add two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -2015,7 +2020,7 @@ const openvrml::vec3d openvrml::operator+(const vec3d & lhs, const vec3d & rhs)
 /**
  * @brief Subtract a vector.
  *
- * @param vec   the vector to subtract.
+ * @param[in] vec   the vector to subtract.
  *
  * @return a reference to the object.
  */
@@ -2033,8 +2038,8 @@ openvrml::vec3d & openvrml::vec3d::operator-=(const vec3d & vec)
  *
  * @brief Subtract two vectors.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result vector.
  */
@@ -2060,7 +2065,7 @@ const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
  *
  * @brief Index-based component access.
  *
- * @param index 0 corresponds to the x component; 1 corresponds to the y
+ * @param[in] index 0 corresponds to the x component; 1 corresponds to the y
  *              component; 2 corresponds to the z component.
  *
  * @return a const reference to the component corresponding to @p index.
@@ -2099,7 +2104,7 @@ const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new x component value.
+ * @param[in] value new x component value.
  */
 
 /**
@@ -2109,7 +2114,7 @@ const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new y component value.
+ * @param[in] value new y component value.
  */
 
 /**
@@ -2119,13 +2124,13 @@ const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
  *
  * @pre @p value is a valid numeric value (i.e., not NaN).
  *
- * @param value new z component value.
+ * @param[in] value new z component value.
  */
 
 /**
  * @brief Dot product.
  *
- * @param vec
+ * @param[in] vec
  *
  * @return the dot product of the vector and @p vec.
  */
@@ -2165,8 +2170,8 @@ const openvrml::vec3d openvrml::vec3d::normalize() const OPENVRML_NOTHROW
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs have the same value; @c false
  *         otherwise.
@@ -2183,8 +2188,8 @@ bool openvrml::operator==(const vec3d & lhs, const vec3d & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs dot not have the same value; @c false
  *      otherwise.
@@ -2200,8 +2205,8 @@ bool openvrml::operator!=(const vec3d & lhs, const vec3d & rhs)
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param v     a 3-component vector.
+ * @param[in,out] out   output stream.
+ * @param[in] v     a 3-component vector.
  *
  * @return @p out.
  */
@@ -2248,7 +2253,7 @@ openvrml::rotation::rotation() OPENVRML_NOTHROW
 /**
  * @brief Construct from an array.
  *
- * @param rot   an array comprising the rotation components.
+ * @param[in] rot   an array comprising the rotation components.
  *
  * @pre The vector represented by the first three components of @p rot is
  *      normalized.
@@ -2266,10 +2271,10 @@ openvrml::rotation::rotation(const float (&rot)[4]) OPENVRML_NOTHROW
 /**
  * @brief Construct from @p x, @p y, @p z, and @p angle components.
  *
- * @param x     x-component of the rotation axis.
- * @param y     y-component of the rotation axis.
- * @param z     z-component of the rotation axis.
- * @param angle rotation angle.
+ * @param[in] x     x-component of the rotation axis.
+ * @param[in] y     y-component of the rotation axis.
+ * @param[in] z     z-component of the rotation axis.
+ * @param[in] angle rotation angle.
  *
  * @pre The vector represented by @p x, @p y, and @p z is normalized.
  */
@@ -2293,12 +2298,13 @@ openvrml::rotation::rotation(const float x,
 /**
  * @brief Construct from an axis vector and an angle.
  *
- * @param axis  rotation axis.
- * @param angle rotation angle.
+ * @param[in] axis  rotation axis.
+ * @param[in] angle rotation angle.
  *
  * @pre @p axis is a normalized vector.
  */
-openvrml::rotation::rotation(const vec3f & axis, const float angle) OPENVRML_NOTHROW
+openvrml::rotation::rotation(const vec3f & axis, const float angle)
+    OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     using openvrml_::fequal;
@@ -2314,8 +2320,8 @@ openvrml::rotation::rotation(const vec3f & axis, const float angle) OPENVRML_NOT
  *
  * Construct a rotation equal to the rotation between two different vectors.
  *
- * @param from_vec  the starting vector.
- * @param to_vec    the ending vector.
+ * @param[in] from_vec  the starting vector.
+ * @param[in] to_vec    the ending vector.
  */
 openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
     OPENVRML_NOTHROW
@@ -2328,7 +2334,7 @@ openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
 /**
  * @brief Construct from a quaternion.
  *
- * @param quat  a quaternion.
+ * @param[in] quat  a quaternion.
  */
 openvrml::rotation::rotation(const quatf & quat) OPENVRML_NOTHROW
 {
@@ -2353,7 +2359,7 @@ openvrml::rotation::rotation(const quatf & quat) OPENVRML_NOTHROW
 /**
  * @brief Multiply rotations.
  *
- * @param rot   the rotation by which to multiply.
+ * @param[in] rot   the rotation by which to multiply.
  *
  * @return a reference to the object.
  */
@@ -2368,13 +2374,14 @@ openvrml::rotation & openvrml::rotation::operator*=(const rotation & rot)
  *
  * @brief Multiply rotations.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the product of @p lhs and @p rhs.
  */
 const openvrml::rotation openvrml::operator*(const rotation & lhs,
-                                             const rotation & rhs) OPENVRML_NOTHROW
+                                             const rotation & rhs)
+    OPENVRML_NOTHROW
 {
     rotation result(lhs);
     return result *= rhs;
@@ -2386,7 +2393,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
  *
  * @brief Index-based element access.
  *
- * @param index 0 is the x axis component, 1 is the y axis component, 2 is the
+ * @param[in] index 0 is the x axis component, 1 is the y axis component, 2 is the
  *              z axis component, and 3 is the angle.
  */
 
@@ -2463,7 +2470,7 @@ namespace {
 /**
  * @brief Set the x axis component.
  *
- * @param value new x axis component value.
+ * @param[in] value new x axis component value.
  */
 void openvrml::rotation::x(const float value) OPENVRML_NOTHROW
 {
@@ -2474,7 +2481,7 @@ void openvrml::rotation::x(const float value) OPENVRML_NOTHROW
 /**
  * @brief Set the y axis component.
  *
- * @param value new y axis component value.
+ * @param[in] value new y axis component value.
  */
 void openvrml::rotation::y(const float value) OPENVRML_NOTHROW
 {
@@ -2485,7 +2492,7 @@ void openvrml::rotation::y(const float value) OPENVRML_NOTHROW
 /**
  * @brief Set the z axis component.
  *
- * @param value new z axis component value.
+ * @param[in] value new z axis component value.
  */
 void openvrml::rotation::z(const float value) OPENVRML_NOTHROW
 {
@@ -2496,7 +2503,7 @@ void openvrml::rotation::z(const float value) OPENVRML_NOTHROW
 /**
  * @brief Set the axis of rotation.
  *
- * @param axis  new axis of rotation.
+ * @param[in] axis  new axis of rotation.
  */
 void openvrml::rotation::axis(const vec3f & axis) OPENVRML_NOTHROW
 {
@@ -2515,7 +2522,7 @@ void openvrml::rotation::axis(const vec3f & axis) OPENVRML_NOTHROW
  *
  * @brief Set the rotation angle.
  *
- * @param value new rotation angle value.
+ * @param[in] value new rotation angle value.
  */
 
 /**
@@ -2533,8 +2540,8 @@ const openvrml::rotation openvrml::rotation::inverse() const OPENVRML_NOTHROW
 /**
  * @brief Spherical Linear intERPolation.
  *
- * @param dest_rot  destination rotation.
- * @param t         fraction representing the desired position between the
+ * @param[in] dest_rot  destination rotation.
+ * @param[in] t         fraction representing the desired position between the
  *                  rotation and @p dest_rot.
  *
  * @return the rotation corresponding to @p t between the rotation and
@@ -2596,12 +2603,13 @@ const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs is equal to @p rhs; @c false otherwise.
  */
-bool openvrml::operator==(const rotation & lhs, const rotation & rhs) OPENVRML_NOTHROW
+bool openvrml::operator==(const rotation & lhs, const rotation & rhs)
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
@@ -2612,12 +2620,13 @@ bool openvrml::operator==(const rotation & lhs, const rotation & rhs) OPENVRML_N
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs is not equal to @p rhs; @c false otherwise.
  */
-bool openvrml::operator!=(const rotation & lhs, const rotation & rhs) OPENVRML_NOTHROW
+bool openvrml::operator!=(const rotation & lhs, const rotation & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -2627,8 +2636,8 @@ bool openvrml::operator!=(const rotation & lhs, const rotation & rhs) OPENVRML_N
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param r     a rotation.
+ * @param[in,out] out   output stream.
+ * @param[in] r     a rotation.
  *
  * @return @p out.
  */
@@ -2659,7 +2668,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
 /**
  * @brief Create a rotation matrix.
  *
- * @param rot   a rotation.
+ * @param[in] rot   a rotation.
  *
  * @return a matrix representation of @p rot.
  */
@@ -2694,11 +2703,12 @@ const openvrml::mat4f openvrml::mat4f::rotation(const openvrml::rotation & rot)
 /**
  * @brief Create a rotation matrix.
  *
- * @param quat  a quaternion.
+ * @param[in] quat  a quaternion.
  *
  * @return a matrix representation of @p quat.
  */
-const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat) OPENVRML_NOTHROW
+const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat)
+    OPENVRML_NOTHROW
 {
     const float x = quat.x();
     const float y = quat.y();
@@ -2726,7 +2736,7 @@ const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat) OPENVRML_NOT
 /**
  * @brief Create a uniform scale matrix.
  *
- * @param s scale factor.
+ * @param[in] s scale factor.
  *
  * @return a uniform scale matrix.
  */
@@ -2741,7 +2751,7 @@ const openvrml::mat4f openvrml::mat4f::scale(const float s) OPENVRML_NOTHROW
 /**
  * @brief Create a scale matrix.
  *
- * @param s a vector.
+ * @param[in] s a vector.
  *
  * @return a scale matrix.
  */
@@ -2756,11 +2766,12 @@ const openvrml::mat4f openvrml::mat4f::scale(const vec3f & s) OPENVRML_NOTHROW
 /**
  * @brief Create a translation matrix.
  *
- * @param t translation vector.
+ * @param[in] t translation vector.
  *
  * @return a translation matrix.
  */
-const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t) OPENVRML_NOTHROW
+const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t)
+    OPENVRML_NOTHROW
 {
     return mat4f(1.0,   0.0,   0.0,   0.0,
                  0.0,   1.0,   0.0,   0.0,
@@ -2772,11 +2783,11 @@ const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t) OPENVRML_NOT
  * @brief Create a transformation matrix from a translation, a rotation,
  *      a scale, a scaleOrientation, and a center.
  *
- * @param t     the translation.
- * @param r     the rotation.
- * @param s     the scale.
- * @param sr    the scale orientation.
- * @param c     the center.
+ * @param[in] t     the translation.
+ * @param[in] r     the rotation.
+ * @param[in] s     the scale.
+ * @param[in] sr    the scale orientation.
+ * @param[in] c     the center.
  *
  * @return a transformation matrix.
  */
@@ -2848,22 +2859,22 @@ openvrml::mat4f::mat4f() OPENVRML_NOTHROW
 /**
  * @brief Construct mat4f with given 16 elements in row-major order.
  *
- * @param f11
- * @param f12
- * @param f13
- * @param f14
- * @param f21
- * @param f22
- * @param f23
- * @param f24
- * @param f31
- * @param f32
- * @param f33
- * @param f34
- * @param f41
- * @param f42
- * @param f43
- * @param f44
+ * @param[in] f11
+ * @param[in] f12
+ * @param[in] f13
+ * @param[in] f14
+ * @param[in] f21
+ * @param[in] f22
+ * @param[in] f23
+ * @param[in] f24
+ * @param[in] f31
+ * @param[in] f32
+ * @param[in] f33
+ * @param[in] f34
+ * @param[in] f41
+ * @param[in] f42
+ * @param[in] f43
+ * @param[in] f44
  */
 openvrml::mat4f::mat4f(float f11, float f12, float f13, float f14,
                        float f21, float f22, float f23, float f24,
@@ -2895,7 +2906,7 @@ openvrml::mat4f::mat4f(float f11, float f12, float f13, float f14,
 /**
  * @brief Construct from an array of 16 values.
  *
- * @param mat   an array of values in row-major order.
+ * @param[in] mat   an array of values in row-major order.
  */
 openvrml::mat4f::mat4f(const float mat[16]) OPENVRML_NOTHROW
 {
@@ -2905,7 +2916,7 @@ openvrml::mat4f::mat4f(const float mat[16]) OPENVRML_NOTHROW
 /**
  * @brief Construct from a 4x4 array.
  *
- * @param mat   a 4x4 array of elements in row-major order.
+ * @param[in] mat   a 4x4 array of elements in row-major order.
  */
 openvrml::mat4f::mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW
 {
@@ -2915,11 +2926,12 @@ openvrml::mat4f::mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    value by which to multiply.
+ * @param[in] scalar    value by which to multiply.
  *
  * @return a reference to the object.
  */
-openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar) OPENVRML_NOTHROW
+openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar)
+    OPENVRML_NOTHROW
 {
     this->mat[0][0] *= scalar;
     this->mat[0][1] *= scalar;
@@ -2945,13 +2957,14 @@ openvrml::mat4f & openvrml::mat4f::operator*=(const float scalar) OPENVRML_NOTHR
  *
  * @brief Multiply a matrix by a scalar value.
  *
- * @param mat       matrix.
- * @param scalar    scalar.
+ * @param[in] mat       matrix.
+ * @param[in] scalar    scalar.
  *
  * @return the result matrix.
  */
 const openvrml::mat4f openvrml::operator*(const mat4f & mat,
-                                          const float scalar) OPENVRML_NOTHROW
+                                          const float scalar)
+    OPENVRML_NOTHROW
 {
     mat4f result(mat);
     return result *= scalar;
@@ -2962,13 +2975,14 @@ const openvrml::mat4f openvrml::operator*(const mat4f & mat,
  *
  * @brief Multiply a scalar value by matrix.
  *
- * @param scalar    scalar.
- * @param mat       matrix.
+ * @param[in] scalar    scalar.
+ * @param[in] mat       matrix.
  *
  * @return the result matrix.
  */
 const openvrml::mat4f openvrml::operator*(const float scalar,
-                                          const mat4f & mat) OPENVRML_NOTHROW
+                                          const mat4f & mat)
+    OPENVRML_NOTHROW
 {
     mat4f result(mat);
     return result *= scalar;
@@ -2979,11 +2993,12 @@ const openvrml::mat4f openvrml::operator*(const float scalar,
  *
  * Sets the matrix equal to the matrix multiplied by @p mat.
  *
- * @param mat   the matrix by which to multiply.
+ * @param[in] mat   the matrix by which to multiply.
  *
  * @return a reference to the object.
  */
-openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat) OPENVRML_NOTHROW
+openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat)
+    OPENVRML_NOTHROW
 {
     mat4f temp;
 
@@ -3020,8 +3035,8 @@ openvrml::mat4f & openvrml::mat4f::operator*=(const mat4f & mat) OPENVRML_NOTHRO
  *
  * @brief Multiply two matrices.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the result matrix.
  */
@@ -3055,9 +3070,9 @@ namespace {
  * caller is responsible for assuring that the transformation is in fact
  * orthogonal, otherwise the results are undefined.
  *
- * @retval t    translation.
- * @retval r    rotation.
- * @retval s    scale.
+ * @param[out] t    translation.
+ * @param[out] r    rotation.
+ * @param[out] s    scale.
  */
 void openvrml::mat4f::transformation(vec3f & t,
                                      openvrml::rotation & r,
@@ -3149,10 +3164,10 @@ void openvrml::mat4f::transformation(vec3f & t,
  * responsible for assuring that the transformation is in fact affine,
  * otherwise the results are undefined.
  *
- * @retval t        translation.
- * @retval r        rotation.
- * @retval s        scale.
- * @retval shear    shear.
+ * @param[out] t        translation.
+ * @param[out] r        rotation.
+ * @param[out] s        scale.
+ * @param[out] shear    shear.
  */
 void openvrml::mat4f::transformation(vec3f & t,
                                      openvrml::rotation & r,
@@ -3283,9 +3298,9 @@ namespace {
      * It returns without doing any calculations if the input matrix is
      * singular.
      *
-     * @param in   3D affine matrix.
+     * @param[in] in   3D affine matrix.
      *
-     * @retval out  inverse of 3D affine matrix.
+     * @param[out] out  inverse of 3D affine matrix.
      */
     void get_affine_inverse(const openvrml::mat4f & in, openvrml::mat4f & out)
     {
@@ -3411,7 +3426,7 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
  *
  * @brief Row access.
  *
- * @param index row index.
+ * @param[in] index row index.
  *
  * @return row @p index.
  */
@@ -3421,7 +3436,7 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
  *
  * @brief Row access.
  *
- * @param index row index.
+ * @param[in] index row index.
  *
  * @return row @p index.
  */
@@ -3431,8 +3446,8 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
  *
  * @brief Stream output.
  *
- * @param out   an output stream.
- * @param mat   a matrix.
+ * @param[in,out] out   an output stream.
+ * @param[in] mat   a matrix.
  *
  * @return @p out.
  */
@@ -3460,12 +3475,13 @@ std::ostream & openvrml::operator<<(std::ostream & out, const mat4f & mat)
  *
  * All componenents must match exactly.
  *
- * @param lhs   a matrix.
- * @param rhs   a matrix.
+ * @param[in] lhs   a matrix.
+ * @param[in] rhs   a matrix.
  *
  * @return @c true if @p lhs and @p rhs are equivalent; @c false otherwise.
  */
-bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs) OPENVRML_NOTHROW
+bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs)
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0],
@@ -3477,12 +3493,13 @@ bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs) OPENVRML_NOTHROW
  *
  * @brief Inequality comparison operator.
  *
- * @param lhs   a matrix.
- * @param rhs   a matrix.
+ * @param[in] lhs   a matrix.
+ * @param[in] rhs   a matrix.
  *
  * @return @c true if @p lhs and @p rhs are not equivalent; @c false otherwise.
  */
-bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs) OPENVRML_NOTHROW
+bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -3518,10 +3535,10 @@ openvrml::quatf::quatf() OPENVRML_NOTHROW
 /**
  * @brief Construct from four values.
  *
- * @param x the x vector component.
- * @param y the y vector component.
- * @param z the z vector component.
- * @param w the scalar value w.
+ * @param[in] x the x vector component.
+ * @param[in] y the y vector component.
+ * @param[in] z the z vector component.
+ * @param[in] w the scalar value w.
  */
 openvrml::quatf::quatf(const float x,
                        const float y,
@@ -3538,9 +3555,9 @@ openvrml::quatf::quatf(const float x,
 /**
  * @brief Construct from an array of four values.
  *
- * @param quat  the first three values in the array are used for the x, y, and
- *              z vector components, respectively. The fourth value in the
- *              array is used for the scalar part of the quaternion.
+ * @param[in] quat  the first three values in the array are used for the x, y,
+ *                  and z vector components, respectively. The fourth value in
+ *                  the array is used for the scalar part of the quaternion.
  */
 openvrml::quatf::quatf(const float (&quat)[4]) OPENVRML_NOTHROW
 {
@@ -3553,7 +3570,7 @@ openvrml::quatf::quatf(const float (&quat)[4]) OPENVRML_NOTHROW
 /**
  * @brief Construct from a rotation matrix.
  *
- * @param mat   a rotation matrix.
+ * @param[in] mat   a rotation matrix.
  */
 openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
 {
@@ -3590,7 +3607,7 @@ openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
 /**
  * @brief Construct from an rotation.
  *
- * @param rot   a rotation.
+ * @param[in] rot   a rotation.
  */
 openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
 {
@@ -3617,11 +3634,12 @@ openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
  *                   - <b>q</b><sub><i>v</i></sub>
  *                   . <b>r</b><sub><i>v</i></sub>)
  *
- * @param quat  the quaternion by which to multiply.
+ * @param[in] quat  the quaternion by which to multiply.
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat) OPENVRML_NOTHROW
+openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat)
+    OPENVRML_NOTHROW
 {
     *this = quatf(this->quat[1] * quat[2] - this->quat[2] * quat[1]
                     + quat[3] * this->quat[0] + this->quat[3] * quat[0],
@@ -3640,8 +3658,8 @@ openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat) OPENVRML_NOTHR
  *
  * @brief Multiply two quaternions.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the product of @p lhs and @p rhs.
  */
@@ -3655,11 +3673,12 @@ const openvrml::quatf openvrml::operator*(const quatf & lhs, const quatf & rhs)
 /**
  * @brief Multiply by a scalar.
  *
- * @param scalar    value by which to multiply.
+ * @param[in] scalar    value by which to multiply.
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator*=(const float scalar) OPENVRML_NOTHROW
+openvrml::quatf & openvrml::quatf::operator*=(const float scalar)
+    OPENVRML_NOTHROW
 {
     this->quat[0] *= scalar;
     this->quat[1] *= scalar;
@@ -3673,13 +3692,14 @@ openvrml::quatf & openvrml::quatf::operator*=(const float scalar) OPENVRML_NOTHR
  *
  * @brief Multiply a quaternion by a scalar.
  *
- * @param quat      quaternion.
- * @param scalar    scalar.
+ * @param[in] quat      quaternion.
+ * @param[in] scalar    scalar.
  *
  * @return the product of @p quat and @p scalar.
  */
 const openvrml::quatf openvrml::operator*(const quatf & quat,
-                                          const float scalar) OPENVRML_NOTHROW
+                                          const float scalar)
+    OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result *= scalar;
@@ -3690,13 +3710,14 @@ const openvrml::quatf openvrml::operator*(const quatf & quat,
  *
  * @brief Multiply a scalar by a quaternion.
  *
- * @param scalar    scalar.
- * @param quat      quaternion.
+ * @param[in] scalar    scalar.
+ * @param[in] quat      quaternion.
  *
  * @return the product of @p scalar and @p quat.
  */
 const openvrml::quatf openvrml::operator*(const float scalar,
-                                          const quatf & quat) OPENVRML_NOTHROW
+                                          const quatf & quat)
+    OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result *= scalar;
@@ -3705,11 +3726,12 @@ const openvrml::quatf openvrml::operator*(const float scalar,
 /**
  * @brief Divide by a scalar.
  *
- * @param scalar    value by which to divide.
+ * @param[in] scalar    value by which to divide.
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator/=(const float scalar) OPENVRML_NOTHROW
+openvrml::quatf & openvrml::quatf::operator/=(const float scalar)
+    OPENVRML_NOTHROW
 {
     assert(scalar != 0.0);
     this->quat[0] /= scalar;
@@ -3724,13 +3746,14 @@ openvrml::quatf & openvrml::quatf::operator/=(const float scalar) OPENVRML_NOTHR
  *
  * @brief Divide a quaternion by a scalar.
  *
- * @param quat      quaternion.
- * @param scalar    scalar.
+ * @param[in] quat      quaternion.
+ * @param[in] scalar    scalar.
  *
  * @return the result of dividing @p quat by @p scalar.
  */
 const openvrml::quatf openvrml::operator/(const quatf & quat,
-                                          const float scalar) OPENVRML_NOTHROW
+                                          const float scalar)
+    OPENVRML_NOTHROW
 {
     quatf result(quat);
     return result /= scalar;
@@ -3739,11 +3762,12 @@ const openvrml::quatf openvrml::operator/(const quatf & quat,
 /**
  * @brief Add a quaternion.
  *
- * @param quat  the quaternion to add.
+ * @param[in] quat  the quaternion to add.
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat) OPENVRML_NOTHROW
+openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat)
+    OPENVRML_NOTHROW
 {
     this->quat[0] += quat[0];
     this->quat[1] += quat[1];
@@ -3757,8 +3781,8 @@ openvrml::quatf & openvrml::quatf::operator+=(const quatf & quat) OPENVRML_NOTHR
  *
  * @brief Add two quaternions.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the sum of @p lhs and @p rhs.
  */
@@ -3772,11 +3796,12 @@ const openvrml::quatf openvrml::operator+(const quatf & lhs, const quatf & rhs)
 /**
  * @brief Subtract a quaternion.
  *
- * @param quat  the quaternion to subtract.
+ * @param[in] quat  the quaternion to subtract.
  *
  * @return a reference to the object.
  */
-openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat) OPENVRML_NOTHROW
+openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat)
+    OPENVRML_NOTHROW
 {
     this->quat[0] -= quat[0];
     this->quat[1] -= quat[1];
@@ -3790,8 +3815,8 @@ openvrml::quatf & openvrml::quatf::operator-=(const quatf & quat) OPENVRML_NOTHR
  *
  * @brief Take the difference between two quaternions.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return the difference between @p lhs and @p rhs.
  */
@@ -3807,7 +3832,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Array element dereference operator (const version).
  *
- * @param index an index from 0 - 3.
+ * @param[in] index an index from 0 - 3.
  *
  * @pre @p index is not larger than 3.
  */
@@ -3817,7 +3842,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Array element dereference operator (non-const version).
  *
- * @param index an index from 0 - 3.
+ * @param[in] index an index from 0 - 3.
  *
  * @pre @p index is not larger than 3.
  */
@@ -3835,7 +3860,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Set the x component.
  *
- * @param value x component value.
+ * @param[in] value x component value.
  */
 
 /**
@@ -3851,7 +3876,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Set the y component.
  *
- * @param value y component value.
+ * @param[in] value y component value.
  */
 
 /**
@@ -3867,7 +3892,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Set the z component.
  *
- * @param value z component value.
+ * @param[in] value z component value.
  */
 
 /**
@@ -3883,7 +3908,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Set the w component.
  *
- * @param value w component value.
+ * @param[in] value w component value.
  */
 
 /**
@@ -3953,8 +3978,8 @@ const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
  *
  * @brief Stream output.
  *
- * @param out   an output stream.
- * @param quat  a quaternion.
+ * @param[in,out] out   an output stream.
+ * @param[in] quat  a quaternion.
  *
  * @return @p out.
  */
@@ -3969,12 +3994,13 @@ std::ostream & openvrml::operator<<(std::ostream & out, const quatf & quat)
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
  */
-bool openvrml::operator==(const quatf & lhs, const quatf & rhs) OPENVRML_NOTHROW
+bool openvrml::operator==(const quatf & lhs, const quatf & rhs)
+    OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
     return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
@@ -3985,12 +4011,13 @@ bool openvrml::operator==(const quatf & lhs, const quatf & rhs) OPENVRML_NOTHROW
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
-bool openvrml::operator!=(const quatf & lhs, const quatf & rhs) OPENVRML_NOTHROW
+bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
+    OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
 }
@@ -4061,9 +4088,9 @@ openvrml::image::image() OPENVRML_NOTHROW:
 /**
  * @brief Construct.
  *
- * @param x     pixels in the <var>x</var>-direction.
- * @param y     pixels in the <var>y</var>-direction.
- * @param comp  number of components.
+ * @param[in] x     pixels in the <var>x</var>-direction.
+ * @param[in] y     pixels in the <var>y</var>-direction.
+ * @param[in] comp  number of components.
  */
 openvrml::image::image(const size_t x,
                        const size_t y,
@@ -4080,10 +4107,10 @@ openvrml::image::image(const size_t x,
  *
  * @pre @p array.size() <= @p x * @p y * @p comp.
  *
- * @param x     pixels in the <var>x</var>-direction.
- * @param y     pixels in the <var>y</var>-direction.
- * @param comp  number of components.
- * @param array pixel data.
+ * @param[in] x     pixels in the <var>x</var>-direction.
+ * @param[in] y     pixels in the <var>y</var>-direction.
+ * @param[in] comp  number of components.
+ * @param[in] array pixel data.
  */
 openvrml::image::image(const size_t x,
                        const size_t y,
@@ -4105,11 +4132,11 @@ openvrml::image::image(const size_t x,
  *
  * @pre std::distance(@p array_begin, @p array_end) <= @p x * @p y * @p comp.
  *
- * @param x             pixels in the <var>x</var>-direction.
- * @param y             pixels in the <var>y</var>-direction.
- * @param comp          number of components.
- * @param array_begin   pixel data begin iterator.
- * @param array_end     pixel data end iterator.
+ * @param[in] x             pixels in the <var>x</var>-direction.
+ * @param[in] y             pixels in the <var>y</var>-direction.
+ * @param[in] comp          number of components.
+ * @param[in] array_begin   pixel data begin iterator.
+ * @param[in] array_end     pixel data end iterator.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4117,7 +4144,7 @@ openvrml::image::image(const size_t x,
 /**
  * @brief Swap.
  *
- * @param img   an image.
+ * @param[in,out] img   an image.
  */
 void openvrml::image::swap(image & img) OPENVRML_NOTHROW
 {
@@ -4139,7 +4166,7 @@ void openvrml::image::swap(image & img) OPENVRML_NOTHROW
 /**
  * @brief Set the pixels in the <var>x</var>-dimension.
  *
- * @param value new value for the <var>x</var>-dimension.
+ * @param[in] value new value for the <var>x</var>-dimension.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4163,7 +4190,7 @@ void openvrml::image::x(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 /**
  * @brief Set the pixels in the <var>y</var>-dimension.
  *
- * @param value new value for the <var>x</var>-dimension.
+ * @param[in] value new value for the <var>x</var>-dimension.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4179,8 +4206,8 @@ void openvrml::image::y(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 /**
  * @brief Resize the <var>x</var>- and <var>y</var>-dimensions.
  *
- * @param x <var>x</var>-dimension.
- * @param y <var>y</var>-dimension.
+ * @param[in] x <var>x</var>-dimension.
+ * @param[in] y <var>y</var>-dimension.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4205,7 +4232,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
  *
  * @pre @p value <= 4
  *
- * @param value number of components.
+ * @param[in] value number of components.
  */
 void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
@@ -4230,7 +4257,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre @p value.size() <= (x() * y() * comp())
  *
- * @param value pixel value array.
+ * @param[in] value pixel value array.
  */
 
 /**
@@ -4240,8 +4267,8 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre std::distance(@p begin, @p end) <= (x() * y() * comp())
  *
- * @param begin input iterator to the beginning of a sequence.
- * @param end   input iterator to the end of the sequence (one past the last
+ * @param[in] begin input iterator to the beginning of a sequence.
+ * @param[in] end   input iterator to the end of the sequence (one past the last
  *              element).
  */
 
@@ -4252,7 +4279,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre @p index < x() * y()
  *
- * @param index pixel value index.
+ * @param[in] index pixel value index.
  *
  * @return the pixel value at @p index.
  */
@@ -4264,8 +4291,8 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre @p index < x() * y()
  *
- * @param index pixel value index.
- * @param value pixel value.
+ * @param[in] index pixel value index.
+ * @param[in] value pixel value.
  */
 
 /**
@@ -4275,8 +4302,8 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre @p x < x(), @p y < y()
  *
- * @param x pixel value <var>x</var>- (column) index.
- * @param y pixel value <var>y</var>- (row) index.
+ * @param[in] x pixel value <var>x</var>- (column) index.
+ * @param[in] y pixel value <var>y</var>- (row) index.
  *
  * @return the pixel value at (@p x, @p y).
  */
@@ -4288,9 +4315,9 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @pre @p x < x(), @p y < y()
  *
- * @param x     pixel value <var>x</var>- (column) index.
- * @param y     pixel value <var>y</var>- (row) index.
- * @param value pixel value.
+ * @param[in] x     pixel value <var>x</var>- (column) index.
+ * @param[in] y     pixel value <var>y</var>- (row) index.
+ * @param[in] value pixel value.
  */
 
 /**
@@ -4298,8 +4325,8 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @brief Compare for equality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
  */
@@ -4317,8 +4344,8 @@ bool openvrml::operator==(const image & lhs, const image & rhs)
  *
  * @brief Compare for inequality.
  *
- * @param lhs   left-hand operand.
- * @param rhs   right-hand operand.
+ * @param[in] lhs   left-hand operand.
+ * @param[in] rhs   right-hand operand.
  *
  * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
  */
@@ -4333,8 +4360,8 @@ bool openvrml::operator!=(const image & lhs, const image & rhs)
  *
  * @brief Stream output.
  *
- * @param out   output stream.
- * @param img   image.
+ * @param[in,out] out   output stream.
+ * @param[in] img   image.
  */
 std::ostream & openvrml::operator<<(std::ostream & out, const image & img)
 {
@@ -4363,6 +4390,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const image & img)
  *
  * Does not throw.
  *
- * @param a
- * @param b
+ * @param[in,out] a
+ * @param[in,out] b
  */

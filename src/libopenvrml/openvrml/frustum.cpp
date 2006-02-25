@@ -114,11 +114,11 @@ openvrml::frustum::frustum():
  * positive (think distance, not position). anear must be less than afar.
  * This is supposed to look like gluPerspective.
  *
- * @param fovy      vertical field of view in degrees.
- * @param aspect    ratio of view width to height (not the ratio of
+ * @param[in] fovy      vertical field of view in degrees.
+ * @param[in] aspect    ratio of view width to height (not the ratio of
  *                  the horizontal to vertial field-of-views).
- * @param z_near    distance to near clip plane.
- * @param z_far     distance to far clip plane.
+ * @param[in] z_near    distance to near clip plane.
+ * @param[in] z_far     distance to far clip plane.
  *
  */
 openvrml::frustum::frustum(float fovy,

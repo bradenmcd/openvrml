@@ -131,7 +131,7 @@ bool openvrml::bounding_volume::maximized() const OPENVRML_NOTHROW
  * them into the projection space. Lots of tradeoffs involved, but transforming
  * the bvolume is probably the simplest approach overall.)
  *
- * @param frustum   the frustum.
+ * @param[in] frustum   the frustum.
  *
  * @return inside, outside, or partial.
  *
@@ -150,7 +150,7 @@ intersect_frustum(const openvrml::frustum & frustum) const
  *
  * @brief Called by <code>bounding_volume::intersect_frustum</code>
  *
- * @param frustum   the frustum.
+ * @param[in] frustum   the frustum.
  *
  * @return inside, outside, or partial.
  *
@@ -165,7 +165,7 @@ intersect_frustum(const openvrml::frustum & frustum) const
  * <code>bounding_volume::do_extend(const bounding_sphere &)</code> and
  * <code>bounding_volume::do_extend(const axis_alligned_bounding_box &)</code>.
  *
- * @param bv    a bounding volume.
+ * @param[in] bv    a bounding volume.
  */
 void openvrml::bounding_volume::extend(const bounding_volume & bv)
 {
@@ -186,7 +186,7 @@ void openvrml::bounding_volume::extend(const bounding_volume & bv)
  *
  * Delegates to <code>bounding_volume::do_extend</code>.
  *
- * @param p a point
+ * @param[in] p a point
  */
 void openvrml::bounding_volume::extend(const vec3f & p)
 {
@@ -198,7 +198,7 @@ void openvrml::bounding_volume::extend(const vec3f & p)
  *
  * @brief Extend the bounding volume to enclose @p p.
  *
- * @param p a point
+ * @param[in] p a point
  */
 
 /**
@@ -207,7 +207,7 @@ void openvrml::bounding_volume::extend(const vec3f & p)
  * @brief Called by
  *        <code>bounding_volume::extend(const bounding_volume &)</code>.
  *
- * @param bbox  an axis-aligned bounding box.
+ * @param[in] bbox  an axis-aligned bounding box.
  */
 
 /**
@@ -216,7 +216,7 @@ void openvrml::bounding_volume::extend(const vec3f & p)
  * @brief Called by
  *        <code>bounding_volume::extend(const bounding_volume &)</code>.
  *
- * @param b a bounding sphere
+ * @param[in] b a bounding sphere
  */
 
 /**
@@ -226,7 +226,7 @@ void openvrml::bounding_volume::extend(const vec3f & p)
  *
  * Delegates to <code>bounding_volume::do_enclose</code>.
  *
- * @param points    points.
+ * @param[in] points    points.
  */
 void openvrml::bounding_volume::enclose(const std::vector<vec3f> & points)
 {
@@ -238,7 +238,7 @@ void openvrml::bounding_volume::enclose(const std::vector<vec3f> & points)
  *
  * @brief Called by <code>bounding_volume::enclose</code>.
  *
- * @param points    points.
+ * @param[in] points    points.
  */
 
 /**
@@ -254,7 +254,7 @@ void openvrml::bounding_volume::enclose(const std::vector<vec3f> & points)
  *
  * Delegates to <code>bounding_volume::do_ortho_transform</code>.
  *
- * @param M orthonormal transformation matrix.
+ * @param[in] M orthonormal transformation matrix.
  */
 void openvrml::bounding_volume::ortho_transform(const mat4f & M)
 {
@@ -266,7 +266,7 @@ void openvrml::bounding_volume::ortho_transform(const mat4f & M)
  *
  * @brief Called by <code>bounding_volume::ortho_transform</code>.
  *
- * @param M orthonormal transformation matrix in mat4f format
+ * @param[in] M orthonormal transformation matrix in mat4f format
  */
 
 /**
@@ -284,7 +284,7 @@ void openvrml::bounding_volume::ortho_transform(const mat4f & M)
  *
  * Delegates to <code>bounding_volume::do_transform</code>.
  *
- * @param M affine transformation matrix.
+ * @param[in] M affine transformation matrix.
  */
 void openvrml::bounding_volume::transform(const mat4f & M)
 {
@@ -296,7 +296,7 @@ void openvrml::bounding_volume::transform(const mat4f & M)
  *
  * @brief Called by <code>bounding_volume::transform</code>.
  *
- * @param M affine transformation matrix.
+ * @param[in] M affine transformation matrix.
  */
 
 
@@ -360,7 +360,7 @@ namespace {
  * both of them into the projection space. Lots of tradeoffs involved, but
  * transforming the bounding volume is probably the simplest approach overall.)
  *
- * @param frustum   the frustum.
+ * @param[in] frustum   the frustum.
  *
  * @return inside, outside, or partial.
  *
@@ -431,7 +431,7 @@ do_intersect_frustum(const openvrml::frustum & frustum) const
 /**
  * @brief Extend to enclose @p p.
  *
- * @param p a point.
+ * @param[in] p a point.
  */
 void openvrml::bounding_sphere::do_extend(const vec3f & p)
 {
@@ -490,7 +490,7 @@ void openvrml::bounding_sphere::do_extend(const vec3f & p)
  *
  * @todo Implement me!
  *
- * @param bbox  an axis-aligned bounding box
+ * @param[in] bbox  an axis-aligned bounding box
  */
 void
 openvrml::bounding_sphere::do_extend(const axis_aligned_bounding_box &)
@@ -499,7 +499,7 @@ openvrml::bounding_sphere::do_extend(const axis_aligned_bounding_box &)
 /**
  * @brief Extend this bvolume to enclose the given sphere.
  *
- * @param b a bounding sphere
+ * @param[in] b a bounding sphere
  */
 void openvrml::bounding_sphere::do_extend(const bounding_sphere & b)
 {
@@ -567,7 +567,7 @@ void openvrml::bounding_sphere::do_extend(const bounding_sphere & b)
  *
  * This resets the volume from any previous values.
  *
- * @param points    points.
+ * @param[in] points    points.
  */
 void openvrml::bounding_sphere::do_enclose(const std::vector<vec3f> & points)
 {
@@ -647,7 +647,7 @@ const openvrml::vec3f & openvrml::bounding_sphere::center() const
 /**
  * @brief Set the center coordinates.
  *
- * @param c new center coordinates.
+ * @param[in] c new center coordinates.
  */
 void openvrml::bounding_sphere::center(const vec3f & c)
 {
@@ -667,7 +667,7 @@ float openvrml::bounding_sphere::radius() const
 /**
  * @brief Set the radius.
  *
- * @param r new radius value.
+ * @param[in] r new radius value.
  */
 void openvrml::bounding_sphere::radius(const float r)
 {
@@ -698,7 +698,7 @@ bool openvrml::bounding_sphere::do_maximized() const
 /**
  * @brief Orthographically transform the bounding_sphere by @p t.
  *
- * @param t transformation matrix.
+ * @param[in] t transformation matrix.
  */
 void openvrml::bounding_sphere::do_ortho_transform(const mat4f & t)
 {
@@ -716,7 +716,7 @@ void openvrml::bounding_sphere::do_ortho_transform(const mat4f & t)
 /**
  * @brief Transform the bounding_sphere by @p t.
  *
- * @param t transformation matrix.
+ * @param[in] t transformation matrix.
  */
 void openvrml::bounding_sphere::do_transform(const mat4f & t)
 {
@@ -790,7 +790,7 @@ void openvrml::axis_aligned_bounding_box::do_extend(const bounding_sphere &)
  *
  * This resets the volume from any previous values.
  *
- * @param points    points.
+ * @param[in] points    points.
  *
  * @todo Implement me!
  */

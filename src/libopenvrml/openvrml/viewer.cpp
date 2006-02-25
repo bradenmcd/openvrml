@@ -168,8 +168,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Begin a display list.
  *
- * @param id        object identifier.
- * @param retain    whether the object should be retained for reuse.
+ * @param[in] id        object identifier.
+ * @param[in] retain    whether the object should be retained for reuse.
  *
  * @return the display object identifier.
  */
@@ -185,16 +185,16 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a background into a display list.
  *
- * @param ground_angle  ground angles.
- * @param ground_color  ground colors.
- * @param sky_angle     sky angles.
- * @param sky_color     sky colors.
- * @param front         front texture.
- * @param back          back texture.
- * @param left          left texture.
- * @param right         right texture.
- * @param top           top texture.
- * @param bottom        bottom texture.
+ * @param[in] ground_angle  ground angles.
+ * @param[in] ground_color  ground colors.
+ * @param[in] sky_angle     sky angles.
+ * @param[in] sky_color     sky colors.
+ * @param[in] front         front texture.
+ * @param[in] back          back texture.
+ * @param[in] left          left texture.
+ * @param[in] right         right texture.
+ * @param[in] top           top texture.
+ * @param[in] bottom        bottom texture.
  *
  * @return display object identifier.
  */
@@ -204,7 +204,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a box into a display list.
  *
- * @param size  box dimensions.
+ * @param[in] size  box dimensions.
  *
  * @return display object identifier.
  */
@@ -214,10 +214,10 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a cone into a display list.
  *
- * @param height    height.
- * @param radius    radius at base.
- * @param bottom    show the bottom.
- * @param side      show the side.
+ * @param[in] height    height.
+ * @param[in] radius    radius at base.
+ * @param[in] bottom    show the bottom.
+ * @param[in] side      show the side.
  *
  * @return display object identifier.
  */
@@ -227,11 +227,11 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a cylinder into a display list.
  *
- * @param height    height.
- * @param radius    radius.
- * @param bottom    show the bottom.
- * @param side      show the side.
- * @param top       show the top.
+ * @param[in] height    height.
+ * @param[in] radius    radius.
+ * @param[in] bottom    show the bottom.
+ * @param[in] side      show the side.
+ * @param[in] top       show the top.
  *
  * @return display object identifier.
  */
@@ -241,15 +241,15 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert an elevation grid into a display list.
  *
- * @param mask
- * @param height        height field.
- * @param x_dimension   vertices in the x direction.
- * @param z_dimension   vertices in the z direction.
- * @param x_spacing     distance between vertices in the x direction.
- * @param z_spacing     distance between vertices in the z direction.
- * @param color         colors.
- * @param normal        normals.
- * @param tex_coord     texture coordinates.
+ * @param[in] mask
+ * @param[in] height        height field.
+ * @param[in] x_dimension   vertices in the x direction.
+ * @param[in] z_dimension   vertices in the z direction.
+ * @param[in] x_spacing     distance between vertices in the x direction.
+ * @param[in] z_spacing     distance between vertices in the z direction.
+ * @param[in] color         colors.
+ * @param[in] normal        normals.
+ * @param[in] tex_coord     texture coordinates.
  *
  * @return display object identifier.
  */
@@ -259,11 +259,11 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert an extrusion into a display list.
  *
- * @param mask
- * @param spine         spine points.
- * @param cross_section cross-sections.
- * @param orientation   cross-section orientations.
- * @param scale         cross-section scales.
+ * @param[in] mask
+ * @param[in] spine         spine points.
+ * @param[in] cross_section cross-sections.
+ * @param[in] orientation   cross-section orientations.
+ * @param[in] scale         cross-section scales.
  *
  * @return display object identifier.
  */
@@ -273,11 +273,11 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a line set into a display list.
  *
- * @param coord             coordinates.
- * @param coord_index       coordinate indices.
- * @param color_per_vertex  whether colors are applied per-vertex or per-face.
- * @param color             colors.
- * @param color_index       color indices.
+ * @param[in] coord             coordinates.
+ * @param[in] coord_index       coordinate indices.
+ * @param[in] color_per_vertex  whether colors are applied per-vertex or per-face.
+ * @param[in] color             colors.
+ * @param[in] color_index       color indices.
  *
  * @return display object identifier.
  */
@@ -287,8 +287,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a point set into a display list.
  *
- * @param coord     points.
- * @param color     colors.
+ * @param[in] coord     points.
+ * @param[in] color     colors.
  *
  * @return display object identifier.
  */
@@ -298,15 +298,15 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a shell into a display list.
  *
- * @param mask
- * @param coord           coordinates.
- * @param coord_index     coordinate indices.
- * @param color           colors.
- * @param color_index     color indices.
- * @param normal          normals.
- * @param normal_index    normal indices.
- * @param tex_coord       texture coordinates.
- * @param tex_coord_index texture coordinate indices.
+ * @param[in] mask
+ * @param[in] coord           coordinates.
+ * @param[in] coord_index     coordinate indices.
+ * @param[in] color           colors.
+ * @param[in] color_index     color indices.
+ * @param[in] normal          normals.
+ * @param[in] normal_index    normal indices.
+ * @param[in] tex_coord       texture coordinates.
+ * @param[in] tex_coord_index texture coordinate indices.
  *
  * @return display object identifier.
  */
@@ -316,7 +316,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a sphere into a display list.
  *
- * @param radius    sphere radius.
+ * @param[in] radius    sphere radius.
  *
  * @return display object identifier.
  */
@@ -326,10 +326,10 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a directional light into a display list.
  *
- * @param ambient_intensity ambient intensity.
- * @param intensity         intensity.
- * @param color             color.
- * @param direction         direction.
+ * @param[in] ambient_intensity ambient intensity.
+ * @param[in] intensity         intensity.
+ * @param[in] color             color.
+ * @param[in] direction         direction.
  *
  * @return display object identifier.
  */
@@ -339,12 +339,12 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a point light into a display list.
  *
- * @param ambient_intensity ambient intensity.
- * @param attenuation       attenuation.
- * @param color             color.
- * @param intensity         intensity.
- * @param location          location.
- * @param radius            radius.
+ * @param[in] ambient_intensity ambient intensity.
+ * @param[in] attenuation       attenuation.
+ * @param[in] color             color.
+ * @param[in] intensity         intensity.
+ * @param[in] location          location.
+ * @param[in] radius            radius.
  *
  * @return display object identifier.
  */
@@ -354,15 +354,15 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a point light into a display list.
  *
- * @param ambient_intensity ambient intensity.
- * @param attenuation       attenuation.
- * @param beam_width        beam width.
- * @param color             color.
- * @param cut_off_angle     cut-off angle.
- * @param direction         direction.
- * @param intensity         intensity.
- * @param location          location.
- * @param radius            radius.
+ * @param[in] ambient_intensity ambient intensity.
+ * @param[in] attenuation       attenuation.
+ * @param[in] beam_width        beam width.
+ * @param[in] color             color.
+ * @param[in] cut_off_angle     cut-off angle.
+ * @param[in] direction         direction.
+ * @param[in] intensity         intensity.
+ * @param[in] location          location.
+ * @param[in] radius            radius.
  *
  * @return display object identifier.
  */
@@ -380,7 +380,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Remove an object from the display list.
  *
- * @param ref   object handle.
+ * @param[in] ref   object handle.
  */
 
 /**
@@ -388,7 +388,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Enable/disable lighting.
  *
- * @param val whether lighting should be enabled.
+ * @param[in] val whether lighting should be enabled.
  */
 
 /**
@@ -396,10 +396,10 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the fog.
  *
- * @param color             fog color.
- * @param visibility_range  the distance at which objects are fully obscured by
+ * @param[in] color             fog color.
+ * @param[in] visibility_range  the distance at which objects are fully obscured by
  *                          fog.
- * @param type              fog type.
+ * @param[in] type              fog type.
  */
 
 /**
@@ -407,8 +407,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the color.
  *
- * @param rgb   red, green, and blue components.
- * @param a     alpha (transparency) component.
+ * @param[in] rgb   red, green, and blue components.
+ * @param[in] a     alpha (transparency) component.
  */
 
 /**
@@ -416,12 +416,12 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the material.
  *
- * @param ambient_intensity ambient intensity.
- * @param diffuse_color     diffuse color.
- * @param emissive_color    emissive color.
- * @param shininess         shininess.
- * @param specular_color    specular color.
- * @param transparency      transparency.
+ * @param[in] ambient_intensity ambient intensity.
+ * @param[in] diffuse_color     diffuse color.
+ * @param[in] emissive_color    emissive color.
+ * @param[in] shininess         shininess.
+ * @param[in] specular_color    specular color.
+ * @param[in] transparency      transparency.
  */
 
 /**
@@ -429,8 +429,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the material mode.
  *
- * @param tex_components    texture components.
- * @param geometry_color    geometry color.
+ * @param[in] tex_components    texture components.
+ * @param[in] geometry_color    geometry color.
  */
 
 /**
@@ -438,7 +438,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Indicate that a node should be sensitive to the pointing device.
  *
- * @param object    a node.
+ * @param[in] object    a node.
  */
 
 /**
@@ -446,10 +446,10 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Create a texture object.
  *
- * @param img           image.
- * @param repeat_s      repeat in the S direction.
- * @param repeat_t      repeat in the T direction.
- * @param retainHint    whether the texture is likely to be reused.
+ * @param[in] img           image.
+ * @param[in] repeat_s      repeat in the S direction.
+ * @param[in] repeat_t      repeat in the T direction.
+ * @param[in] retainHint    whether the texture is likely to be reused.
  *
  * @return a handle to the inserted texture.
  */
@@ -459,8 +459,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Insert a texture into the display list from an existing handle.
  *
- * @param ref           texture handle.
- * @param components    number of components.
+ * @param[in] ref           texture handle.
+ * @param[in] components    number of components.
  */
 
 /**
@@ -468,7 +468,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Remove a texture from the display list.
  *
- * @param ref   texture handle.
+ * @param[in] ref   texture handle.
  */
 
 /**
@@ -476,10 +476,10 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the texture transform.
  *
- * @param center        center.
- * @param rotation      rotation.
- * @param scale         scale.
- * @param translation   translation.
+ * @param[in] center        center.
+ * @param[in] rotation      rotation.
+ * @param[in] scale         scale.
+ * @param[in] translation   translation.
  */
 
 /**
@@ -487,11 +487,11 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Set the viewpoint.
  *
- * @param position          position.
- * @param orientation       orientation.
- * @param field_of_view     field of view.
- * @param avatar_size       avatar size.
- * @param visibility_limit  visiblity limit.
+ * @param[in] position          position.
+ * @param[in] orientation       orientation.
+ * @param[in] field_of_view     field of view.
+ * @param[in] avatar_size       avatar size.
+ * @param[in] visibility_limit  visiblity limit.
  */
 
 /**
@@ -502,7 +502,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  * Make the modelview matrix the result of multiplying @p mat by the current
  * modelview matrix.
  *
- * @param mat   transformation matrix.
+ * @param[in] mat   transformation matrix.
  */
 
 /**
@@ -510,8 +510,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  *
  * @brief Transform @p points by the current modelview matrix.
  *
- * @param nPoints   number of points.
- * @param point     pointer to the first point in an array.
+ * @param[in] nPoints   number of points.
+ * @param[in] point     pointer to the first point in an array.
  */
 
 /**
@@ -522,7 +522,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  * so strange that there's no way to cull to is, then reimplement to
  * always return bounding_volume::inside.
  *
- * @param bvolume   the bounding volume to intersect with the view volume.
+ * @param[in] bvolume   the bounding volume to intersect with the view volume.
  *
  * @return bounding_volume::inside, bounding_volume::outside, or
  *         bounding_volume::partial.
@@ -550,8 +550,8 @@ openvrml::viewer::intersect_view_volume(const bounding_volume & bvolume) const
  * Used for debugging view culling. Probably should be draw_bounding_volume and
  * handle axis_aligned_bounding_boxes as well.
  *
- * @param bs            a bounding sphere; if max, will not be drawn
- * @param intersection  one of the bvolume intersection test constants, or 4
+ * @param[in] bs            a bounding sphere; if max, will not be drawn
+ * @param[in] intersection  one of the bvolume intersection test constants, or 4
  *                      to draw in unique way. (useful for debugging)
  */
 
@@ -571,7 +571,7 @@ const openvrml::frustum & openvrml::viewer::frustum() const
 /**
  * @brief Set the frustum.
  *
- * @param f new frustum value.
+ * @param[in] f new frustum value.
  */
 void openvrml::viewer::frustum(const openvrml::frustum & f)
 {
