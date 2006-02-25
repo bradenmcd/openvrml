@@ -8126,13 +8126,14 @@ namespace {
  * exception that may result from reading the input stream.
  *
  * @param[in,out] in    an input stream.
+ * @param[in]     type  MIME content type of @p in.
  *
  * @return the root nodes generated from @p in.
  *
- * @exception invalid_profile   if the root scene does not have a valid
- *                              profile.
- * @exception invalid_vrml      if @p in has invalid VRML syntax.
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception invalid_vrml          if @p in has invalid VRML syntax.
+ * @exception std::invalid_argument if @p type refers to an unsupported content
+ *                                  type.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::browser::create_vrml_from_stream(std::istream & in,

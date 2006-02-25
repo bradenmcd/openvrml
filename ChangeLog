@@ -1,5 +1,10 @@
 2006-02-25 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Updated doc-comment for
+	openvrml::browser::create_vrml_from_stream.
+
+2006-02-25 Braden McDaniel  <braden@endoframe.com>
+
 	Removed openvrml::profile_id enumeration.  (Identification of X3D
 	profiles will be done another way.)
 
