@@ -121,16 +121,16 @@ inline bool X3DVrmlScanner::identifyKeyword(antlr::Token & token)
             token.setType(KEYWORD_PROFILE);
         } else if (token_text == "inputOnly") {
             this->expectFieldType();
-            token.setType(KEYWORD_INPUTONLY);
+            token.setType(KEYWORD_EVENTIN);
         } else if (token_text == "outputOnly") {
             this->expectFieldType();
-            token.setType(KEYWORD_OUTPUTONLY);
+            token.setType(KEYWORD_EVENTOUT);
         } else if (token_text == "inputOutput") {
             this->expectFieldType();
-            token.setType(KEYWORD_INPUTOUTPUT);
+            token.setType(KEYWORD_EXPOSEDFIELD);
         } else if (token_text == "initializeOnly") {
             this->expectFieldType();
-            token.setType(KEYWORD_INITIALIZEONLY);
+            token.setType(KEYWORD_FIELD);
         } else {
             return false;
         }

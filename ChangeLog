@@ -1,5 +1,14 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlScanner::identifyKeyword(antlr::Token &)): Treat
+	"inputOnly" the same as "eventIn", "outputOnly" the same as
+	"eventOut", "inputOutput" the same as "exposedField", and
+	"initializeOnly" the same as "field".
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Use atof, atol, strtol to convert numeric values in the parser.
 	These are sufficient (given the validation done implicitly in the
 	scanner) and faster than using stringstreams.
