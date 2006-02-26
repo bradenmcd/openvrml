@@ -1,5 +1,16 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Override identifyTerminalSymbol in X3DVrmlScanner to identify ':'.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner): Made identifyTerminalSymbol virtual and
+	protected.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlParser): Override identifyTerminalSymbol to identify ':'.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/X3DVrmlParser.g
 	(X3DVrmlScanner::identifyKeyword(antlr::Token &)): Treat
 	"inputOnly" the same as "eventIn", "outputOnly" the same as

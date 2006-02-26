@@ -56,6 +56,7 @@ namespace {
     protected:
         virtual bool identifyKeyword(antlr::Token &);
         virtual bool identifyFieldType(antlr::Token &);
+        virtual bool identifyTerminalSymbol(antlr::Token & token);
     };
 }
 
@@ -163,6 +164,20 @@ inline bool X3DVrmlScanner::identifyFieldType(antlr::Token & token)
             token.setType(FIELDTYPE_MFVEC2D);
         } else if (token_text == "MFVec3d") {
             token.setType(FIELDTYPE_MFVEC3D);
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
+
+inline bool X3DVrmlScanner::identifyTerminalSymbol(antlr::Token & token)
+{
+    if (!this->Vrml97Scanner::identifyTerminalSymbol(token)) {
+        assert(token.getType() == antlr::Token::INVALID_TYPE);
+        const std::string token_text(token.getText());
+        if (token_text == ":") {
+            token.setType(COLON);
         } else {
             return false;
         }

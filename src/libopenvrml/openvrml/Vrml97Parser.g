@@ -93,10 +93,10 @@ namespace {
         void expectFieldType();
         virtual bool identifyKeyword(antlr::Token &);
         virtual bool identifyFieldType(antlr::Token &);
+        virtual bool identifyTerminalSymbol(antlr::Token &);
 
     private:
         void getNextChar();
-        bool identifyTerminalSymbol(antlr::Token &);
 
         std::istream & in_;
         size_t      line_;
@@ -1914,7 +1914,7 @@ options { defaultErrorHandler=false; }
 
 intValue returns [int32 val]
 options { defaultErrorHandler=false; }
-    :   i0:INTEGER     {
+    :   i0:INTEGER {
             val = atol(i0->getText().c_str());
         }
     |   i1:HEX_INTEGER {
