@@ -1,3 +1,22 @@
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
+	Modified token identification functions to return a bool value
+	indicating success or failure.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner::identifyKeyword(antlr::Token &)): Return a bool
+	value indicating success or failure.
+	(Vrml97Scanner::identifyFieldType(antlr::Token &)): Return a bool
+	value indicating success or failure.
+	(Vrml97Scanner::identifyTerminalSymbol(antlr::Token &)): Return a
+	bool value indicating success or failure.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlScanner::identifyKeyword(antlr::Token &)): Return a bool
+	value indicating success or failure.
+	(X3DVrmlScanner::identifyFieldType(antlr::Token &)): Return a bool
+	value indicating success or failure.
+
 2006-02-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.h: Removed erroneously

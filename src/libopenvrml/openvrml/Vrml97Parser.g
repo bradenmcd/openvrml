@@ -91,12 +91,12 @@ namespace {
 
     protected:
         void expectFieldType();
-        virtual void identifyKeyword(antlr::Token &);
-        virtual void identifyFieldType(antlr::Token &);
+        virtual bool identifyKeyword(antlr::Token &);
+        virtual bool identifyFieldType(antlr::Token &);
 
     private:
         void getNextChar();
-        void identifyTerminalSymbol(antlr::Token &);
+        bool identifyTerminalSymbol(antlr::Token &);
 
         std::istream & in_;
         size_t      line_;
@@ -459,7 +459,7 @@ inline void Vrml97Scanner::expectFieldType()
     this->expecting_field_type_ = true;
 }
 
-inline void Vrml97Scanner::identifyKeyword(antlr::Token & token)
+inline bool Vrml97Scanner::identifyKeyword(antlr::Token & token)
 {
     std::string const token_text(token.getText());
     if      (token_text == "DEF")          { token.setType(KEYWORD_DEF); }
@@ -480,9 +480,11 @@ inline void Vrml97Scanner::identifyKeyword(antlr::Token & token)
     else if (token_text == "TO")           { token.setType(KEYWORD_TO); }
     else if (token_text == "TRUE")         { token.setType(KEYWORD_TRUE); }
     else if (token_text == "USE")          { token.setType(KEYWORD_USE); }
+    else                                   { return false; }
+    return true;
 }
 
-inline void Vrml97Scanner::identifyFieldType(antlr::Token & token)
+inline bool Vrml97Scanner::identifyFieldType(antlr::Token & token)
 {
     assert(this->expecting_field_type_);
     std::string const token_text(token.getText());
@@ -506,15 +508,19 @@ inline void Vrml97Scanner::identifyFieldType(antlr::Token & token)
     else if (token_text == "MFTime")     { token.setType(FIELDTYPE_MFTIME); }
     else if (token_text == "MFVec2f")    { token.setType(FIELDTYPE_MFVEC2F); }
     else if (token_text == "MFVec3f")    { token.setType(FIELDTYPE_MFVEC3F); }
+    else                                 { return false; }
+    return true;
 }
 
-inline void Vrml97Scanner::identifyTerminalSymbol(antlr::Token & token)
+inline bool Vrml97Scanner::identifyTerminalSymbol(antlr::Token & token)
 {
     std::string const token_text(token.getText());
     if      (token_text == "[") { token.setType(LBRACKET); }
     else if (token_text == "]") { token.setType(RBRACKET); }
     else if (token_text == "{") { token.setType(LBRACE); }
     else if (token_text == "}") { token.setType(RBRACE); }
+    else                        { return false; }
+    return true;
 }
 
 inline bool isValidIdFirstChar(const char c)

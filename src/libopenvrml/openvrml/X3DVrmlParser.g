@@ -54,10 +54,8 @@ namespace {
         X3DVrmlScanner(std::istream &);
 
     protected:
-        virtual void identifyFieldType(antlr::Token &);
-
-    private:
-        virtual void identifyKeyword(antlr::Token &);
+        virtual bool identifyKeyword(antlr::Token &);
+        virtual bool identifyFieldType(antlr::Token &);
     };
 }
 
@@ -104,10 +102,10 @@ X3DVrmlScanner::X3DVrmlScanner(std::istream & in):
     Vrml97Scanner(in)
 {}
 
-inline void X3DVrmlScanner::identifyKeyword(antlr::Token & token)
+inline bool X3DVrmlScanner::identifyKeyword(antlr::Token & token)
 {
-    this->Vrml97Scanner::identifyKeyword(token);
-    if (token.getType() == antlr::Token::INVALID_TYPE) {
+    if (!this->Vrml97Scanner::identifyKeyword(token)) {
+        assert(token.getType() == antlr::Token::INVALID_TYPE);
         const std::string token_text(token.getText());
         if (token_text == "AS") {
             token.setType(KEYWORD_AS);
@@ -133,15 +131,17 @@ inline void X3DVrmlScanner::identifyKeyword(antlr::Token & token)
         } else if (token_text == "initializeOnly") {
             this->expectFieldType();
             token.setType(KEYWORD_INITIALIZEONLY);
+        } else {
+            return false;
         }
     }
+    return true;
 }
 
-inline void X3DVrmlScanner::identifyFieldType(antlr::Token & token)
+inline bool X3DVrmlScanner::identifyFieldType(antlr::Token & token)
 {
-    this->Vrml97Scanner::identifyFieldType(token);
-
-    if (token.getType() == antlr::Token::INVALID_TYPE) {
+    if (!this->Vrml97Scanner::identifyFieldType(token)) {
+        assert(token.getType() == antlr::Token::INVALID_TYPE);
         const std::string token_text(token.getText());
         if (token_text == "SFColorRGBA") {
             token.setType(FIELDTYPE_SFCOLORRGBA);
@@ -163,8 +163,11 @@ inline void X3DVrmlScanner::identifyFieldType(antlr::Token & token)
             token.setType(FIELDTYPE_MFVEC2D);
         } else if (token_text == "MFVec3d") {
             token.setType(FIELDTYPE_MFVEC3D);
+        } else {
+            return false;
         }
     }
+    return true;
 }
 
 } // namespace
