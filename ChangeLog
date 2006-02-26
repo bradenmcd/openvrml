@@ -1,5 +1,17 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Use atof, atol, strtol to convert numeric values in the parser.
+	These are sufficient (given the validation done implicitly in the
+	scanner) and faster than using stringstreams.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(floatValue): Use atof and atol instead of std::istringstream.
+	(intValue): Use atol and strtoul instead of std::istringstream.
+	(doubleValue): Use atof and atol instead of std::istringstream.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Modified token identification functions to return a bool value
 	indicating success or failure.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>

@@ -1850,8 +1850,8 @@ options { defaultErrorHandler=false; }
 
 floatValue returns [float val]
 options { defaultErrorHandler=false; }
-    :   f0:REAL     { std::istringstream(f0->getText()) >> val; }
-    |   f1:INTEGER  { std::istringstream(f1->getText()) >> val; }
+    :   f0:REAL     { val = float(atof(f0->getText().c_str())); }
+    |   f1:INTEGER  { val = float(atol(f1->getText().c_str())); }
     ;
 
 sfImageValue returns [boost::shared_ptr<field_value> siv]
@@ -1914,13 +1914,11 @@ options { defaultErrorHandler=false; }
 
 intValue returns [int32 val]
 options { defaultErrorHandler=false; }
-    :   i0:INTEGER {
-            std::istringstream(i0->getText()) >> val;
+    :   i0:INTEGER     {
+            val = atol(i0->getText().c_str());
         }
     |   i1:HEX_INTEGER {
-            unsigned long unsigned_val;
-            std::istringstream(i1->getText()) >> std::hex >> unsigned_val;
-            val = int32(unsigned_val);
+            val = int32(strtoul(i1->getText().c_str() + 2, 0, 16));
         }
     ;
 
@@ -2156,8 +2154,8 @@ options { defaultErrorHandler=false; }
 
 doubleValue returns [double val = 0.0]
 options { defaultErrorHandler=false; }
-    :   d0:REAL    { std::istringstream(d0->getText()) >> val; }
-    |   d1:INTEGER { std::istringstream(d1->getText()) >> val; }
+    :   d0:REAL    { val = atof(d0->getText().c_str()); }
+    |   d1:INTEGER { val = double(atol(d1->getText().c_str())); }
     ;
 
 sfVec2fValue returns [boost::shared_ptr<field_value> svv]
