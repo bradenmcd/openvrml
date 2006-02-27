@@ -1,5 +1,16 @@
 2006-02-27 Braden McDaniel  <braden@endoframe.com>
 
+	Updated test programs to account for removal of
+	openvrml::profile_id.
+
+	* tests/browser.cpp
+	* tests/parse.cpp
+	* tests/parse_anchor.cpp
+	* tests/test_browser.cpp
+	* tests/test_browser.h
+
+2006-02-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/Vrml97Parser.g
 	(Vrml97Scanner::nextToken()): Defer setting the token type to ID
 	until there are no other possibilities.

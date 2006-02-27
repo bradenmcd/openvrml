@@ -26,7 +26,7 @@ using namespace openvrml;
 int main()
 {
     try {
-        test_browser b(vrml97_profile_id);
+        test_browser b;
         b.create_vrml_from_stream(cin);
     } catch (invalid_vrml & ex) {
         cerr << ex.url << ':' << ex.line << ':' << ex.column << ": error: "

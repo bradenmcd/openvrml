@@ -21,8 +21,8 @@
 # include <fstream>
 # include "test_browser.h"
 
-test_browser::test_browser(const openvrml::profile_id profile):
-    openvrml::browser(profile, std::cout, std::cerr)
+test_browser::test_browser():
+    openvrml::browser(std::cout, std::cerr)
 {}
 
 std::auto_ptr<openvrml::resource_istream>

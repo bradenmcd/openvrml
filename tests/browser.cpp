@@ -28,7 +28,7 @@ using namespace openvrml;
 
 void create_vrml_from_stream()
 {
-    test_browser b(vrml97_profile_id);
+    test_browser b;
 
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
@@ -75,7 +75,7 @@ void create_vrml_from_url()
         file << "#VRML V2.0 utf8" << endl
 	     << "Shape {}" << endl;
     }
-    test_browser b(vrml97_profile_id);
+    test_browser b;
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
     vector<boost::intrusive_ptr<node> > nodes =
