@@ -91,6 +91,12 @@ namespace {
 
     protected:
         void expectFieldType();
+
+        virtual bool isValidIdFirstChar(char);
+        virtual bool isValidIdRestChars(char);
+        virtual bool isWhitespaceChar(char);
+        virtual bool isNewlineChar(char);
+
         virtual bool identifyKeyword(antlr::Token &);
         virtual bool identifyFieldType(antlr::Token &);
         virtual bool identifyTerminalSymbol(antlr::Token &);
@@ -132,11 +138,6 @@ header "post_include_cpp" {
 # include "script.h"
 
 namespace {
-
-bool isValidIdFirstChar(char);
-bool isValidIdRestChars(char);
-bool isWhitespaceChar(char);
-bool isNewlineChar(char);
 
 const int Vrml97Scanner::EOF_                   (antlr::Token::EOF_TYPE);
 
@@ -215,9 +216,9 @@ antlr::RefToken Vrml97Scanner::nextToken()
         this->getNextChar();
     }
 
-    while (isWhitespaceChar(this->c_) || this->c_ == '#') {
+    while (this->isWhitespaceChar(this->c_) || this->c_ == '#') {
         if (this->c_ == '#') {
-            while (!(isNewlineChar(this->c_) || this->c_ == EOF)) {
+            while (!(this->isNewlineChar(this->c_) || this->c_ == EOF)) {
                 this->getNextChar();
             }
         } else {
@@ -227,13 +228,13 @@ antlr::RefToken Vrml97Scanner::nextToken()
 
     if (this->c_ == EOF) {
         token->setType(EOF_);
-    } else if (isValidIdFirstChar(this->c_)) {
+    } else if (this->isValidIdFirstChar(this->c_)) {
         //
         // in an identifier or a keyword
         //
         token->setType(ID);
 
-        while (isValidIdRestChars(this->c_)) {
+        while (this->isValidIdRestChars(this->c_)) {
             token_string += this->c_;
             getNextChar();
         }
@@ -445,7 +446,7 @@ inline void Vrml97Scanner::getNextChar()
     // current character is a newline character EXCEPT if the current character
     // is a linefeed AND the previous character is a carriage return.
     //
-    if (isNewlineChar(this->c_)) {
+    if (this->isNewlineChar(this->c_)) {
         if (!((this->c_ == 0x0a) && (this->prev_char_ == 0x0d))) {
             ++this->line_;
             this->col_ = 0;
@@ -456,6 +457,53 @@ inline void Vrml97Scanner::getNextChar()
 inline void Vrml97Scanner::expectFieldType()
 {
     this->expecting_field_type_ = true;
+}
+
+inline bool Vrml97Scanner::isValidIdFirstChar(const char c)
+{
+    if (((c >= 0x30) && (c <= 0x39))
+            || (c == 0x2b)
+            || (c == 0x2d)
+            || !this->isValidIdRestChars(c)) {
+        return false;
+    }
+    return true;
+}
+
+inline bool Vrml97Scanner::isValidIdRestChars(const char c)
+{
+    if (       c <= 0x20
+            || c == 0x22
+            || c == 0x23
+            || c == 0x27
+            || c == 0x2c
+            || c == 0x2e
+            || c == 0x5b
+            || c == 0x5c
+            || c == 0x5d
+            || c == 0x7b
+            || c == 0x7d
+            || c == 0x7f) {
+        return false;
+    }
+    return true;
+}
+
+inline bool Vrml97Scanner::isWhitespaceChar(const char c)
+{
+    if (       c == 0x0d      // carriage return
+            || c == 0x0a      // linefeed
+            || c == 0x20      // space
+            || c == 0x09      // tab
+            || c == 0x2c) {   // comma
+        return true;
+    }
+    return false;
+}
+
+inline bool Vrml97Scanner::isNewlineChar(const char c)
+{
+    return ((c == 0x0a) || (c == 0x0d));
 }
 
 inline bool Vrml97Scanner::identifyKeyword(antlr::Token & token)
@@ -520,53 +568,6 @@ inline bool Vrml97Scanner::identifyTerminalSymbol(antlr::Token & token)
     else if (token_text == "}") { token.setType(RBRACE); }
     else                        { return false; }
     return true;
-}
-
-inline bool isValidIdFirstChar(const char c)
-{
-    if (((c >= 0x30) && (c <= 0x39))
-            || (c == 0x2b)
-            || (c == 0x2d)
-            || !isValidIdRestChars(c)) {
-        return false;
-    }
-    return true;
-}
-
-inline bool isValidIdRestChars(const char c)
-{
-    if (       c <= 0x20
-            || c == 0x22
-            || c == 0x23
-            || c == 0x27
-            || c == 0x2c
-            || c == 0x2e
-            || c == 0x5b
-            || c == 0x5c
-            || c == 0x5d
-            || c == 0x7b
-            || c == 0x7d
-            || c == 0x7f) {
-        return false;
-    }
-    return true;
-}
-
-inline bool isWhitespaceChar(const char c)
-{
-    if (       c == 0x0d      // carriage return
-            || c == 0x0a      // linefeed
-            || c == 0x20      // space
-            || c == 0x09      // tab
-            || c == 0x2c) {   // comma
-        return true;
-    }
-    return false;
-}
-
-inline bool isNewlineChar(const char c)
-{
-    return ((c == 0x0a) || (c == 0x0d));
 }
 
 const openvrml::node_interface script_node_interfaces[] = {

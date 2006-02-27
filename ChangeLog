@@ -1,5 +1,27 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Made character identification functions used by the scanner
+	protected virtual member functions of Vrml97Scanner so that they
+	can be overridden by subclasses (specifically X3DVrmlScanner).
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner): Added protected virtual member functions
+	isValidIdFirstChar, isValidIdRestChars, isWhitespaceChar, and
+	isNewlineChar.
+	(Vrml97Scanner::nextToken()): Decorate calls to
+	isValidIdFirstChar, isValidIdRestChars, isWhitespaceChar, and
+	isNewlineChar with "this->" now that they are member functions.
+	(isValidIdFirstChar(char)): Removed function.  (Moved to
+	Vrml97Scanner::isValidIdFirstChar.)
+	(isValidIdRestChars(char)): Removed function.  (Moved to
+	Vrml97Scanner::isValidIdRestChars.)
+	(isWhitespaceChar(char)): Removed function.  (Moved to
+	Vrml97Scanner::isWhitespaceChar.)
+	(isNewlineChar(char)): Removed function.  (Moved to
+	Vrml97Scanner::isNewlineChar.)
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Removed isHexDigit function; isxdigit works fine.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g:
