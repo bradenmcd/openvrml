@@ -54,6 +54,8 @@ namespace {
         X3DVrmlScanner(std::istream &);
 
     protected:
+        virtual bool isValidIdRestChars(char);
+
         virtual bool identifyKeyword(antlr::Token &);
         virtual bool identifyFieldType(antlr::Token &);
         virtual bool identifyTerminalSymbol(antlr::Token & token);
@@ -102,6 +104,17 @@ const int X3DVrmlScanner::FIELDTYPE_MFVEC3D      (68);
 X3DVrmlScanner::X3DVrmlScanner(std::istream & in):
     Vrml97Scanner(in)
 {}
+
+//
+// The X3D Classic VRML encoding specification doesn't list colon (':') as
+// an invalid character in an identifier; however, in light of the fact that
+// colon is used as a terminal symbol following an identifier in this format,
+// this must be an error.
+//
+inline bool X3DVrmlScanner::isValidIdRestChars(const char c)
+{
+    return this->Vrml97Scanner::isValidIdRestChars(c) && (c != 0x3a);
+}
 
 inline bool X3DVrmlScanner::identifyKeyword(antlr::Token & token)
 {

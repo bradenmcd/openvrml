@@ -1,5 +1,18 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Treat colon (':') as an invalid identifier character in the X3D
+	VRML format.  The X3D Classic VRML encoding specification doesn't
+	list colon as an invalid character in an identifier; however, in
+	light of the fact that colon is used as a terminal symbol
+	following an identifier in this format, this must be an error in
+	the specification.
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlScanner): Override isValidIdRestChars to identify colon
+	(':') as an invalid character in an identifier.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Made character identification functions used by the scanner
 	protected virtual member functions of Vrml97Scanner so that they
 	can be overridden by subclasses (specifically X3DVrmlScanner).
