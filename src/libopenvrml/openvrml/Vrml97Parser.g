@@ -726,10 +726,11 @@ options { defaultErrorHandler=false; }
             // First, construct the id for the node implementation.
             //
             string impl_id;
+            shared_ptr<const openvrml::scope> s = proto_scope;
             do {
-                impl_id = '#' + proto_scope->id() + impl_id;
-            } while ((proto_scope = proto_scope->parent())->parent());
-            impl_id = proto_scope->id() + impl_id;
+                impl_id = '#' + s->id() + impl_id;
+            } while ((s = s->parent())->parent());
+            impl_id = s->id() + impl_id;
             scene.browser().add_node_class(impl_id, node_class);
 
             if (!dynamic_pointer_cast<proto_node_class>(
@@ -758,7 +759,7 @@ options { defaultErrorHandler=false; }
 
 protoInterfaceDeclaration[
     openvrml::scene & scene,
-    const boost::shared_ptr<openvrml::scope> & outer_scope,
+    const boost::shared_ptr<const openvrml::scope> & outer_scope,
     const std::string & proto_id,
     node_interface_set & interfaces,
     proto_node_class::default_value_map_t & default_value_map]

@@ -70,7 +70,7 @@
 /**
  * @internal
  *
- * @var const boost::shared_ptr<openvrml::scope> openvrml::scope::parent_
+ * @var const boost::shared_ptr<const openvrml::scope> openvrml::scope::parent_
  *
  * @brief The parent scope; null if the scope is a root scope.
  */
@@ -85,7 +85,7 @@
  * @p id should be the name of the PROTO to which the scope corresponds.
  */
 openvrml::scope::scope(const std::string & id,
-                       const boost::shared_ptr<scope> & parent):
+                       const boost::shared_ptr<const scope> & parent):
     id_(id),
     parent_(parent)
 {}
@@ -106,8 +106,8 @@ const std::string & openvrml::scope::id() const OPENVRML_NOTHROW
  * @return the parent <code>scope</code>; or null if the <code>scope</code> is
  *         a root <code>scope</code>.
  */
-const boost::shared_ptr<openvrml::scope> & openvrml::scope::parent() const
-    OPENVRML_NOTHROW
+const boost::shared_ptr<const openvrml::scope> &
+openvrml::scope::parent() const OPENVRML_NOTHROW
 {
     return this->parent_;
 }

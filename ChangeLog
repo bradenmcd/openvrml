@@ -1,5 +1,25 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Changed openvrml::scope's parent pointer to point to a const
+	scope.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(proto): Changed impl_id creation code to use a
+	boost::shared_ptr<const openvrml::scope>.
+	(protoInterfaceDeclaration): Changed to take a
+	boost::shared_ptr<const openvrml::scope>.
+	* src/libopenvrml/openvrml/scope.cpp
+	(openvrml::scope::scope(const std::string &, const
+	boost::shared_ptr<const scope> &)): Changed to take a
+	boost::shared_ptr<const openvrml::scope> as the parent pointer.
+	(openvrml::scope::parent() const): Changed to return a
+	boost::shared_ptr<const openvrml::scope> &.
+	* src/libopenvrml/openvrml/scope.h
+	(openvrml::scope): Changed parent_ member to be a
+	boost::shared_ptr<const openvrml::scope>.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Parse X3D IMPORT and EXPORT statements.  We don't actually do
 	anything with them yet.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
