@@ -1,5 +1,14 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Removed isHexDigit function; isxdigit works fine.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g:
+	(isHexDigit(char)): Removed.
+	(Vrml97Scanner::nextToken()): Replaced use of isHexDigit with
+	isxdigit.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Override identifyTerminalSymbol in X3DVrmlScanner to identify ':'.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
 

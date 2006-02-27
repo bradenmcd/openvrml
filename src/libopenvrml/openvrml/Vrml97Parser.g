@@ -137,7 +137,6 @@ bool isValidIdFirstChar(char);
 bool isValidIdRestChars(char);
 bool isWhitespaceChar(char);
 bool isNewlineChar(char);
-bool isHexDigit(char);
 
 const int Vrml97Scanner::EOF_                   (antlr::Token::EOF_TYPE);
 
@@ -282,7 +281,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
 
                 token_string += this->c_;
                 getNextChar();
-                while (isHexDigit(this->c_)) {
+                while (isxdigit(this->c_)) {
                     token_string += this->c_;
                     getNextChar();
                 }
@@ -568,20 +567,6 @@ inline bool isWhitespaceChar(const char c)
 inline bool isNewlineChar(const char c)
 {
     return ((c == 0x0a) || (c == 0x0d));
-}
-
-inline bool isHexDigit(const char c)
-{
-    if (          isdigit(c)
-            || c == 'A' || c == 'a'
-            || c == 'B' || c == 'b'
-            || c == 'C' || c == 'c'
-            || c == 'D' || c == 'd'
-            || c == 'E' || c == 'e'
-            || c == 'F' || c == 'f') {
-        return true;
-    }
-    return false;
 }
 
 const openvrml::node_interface script_node_interfaces[] = {
