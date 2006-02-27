@@ -256,6 +256,35 @@ metaStatement
     :   KEYWORD_META key=stringValue value=stringValue
     ;
 
+statement[openvrml::scene & scene,
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+          const boost::shared_ptr<openvrml::scope> & scope]
+options { defaultErrorHandler=false; }
+{
+    boost::intrusive_ptr<openvrml::node> node;
+}
+    :   node=nodeStatement[scene, scope, std::string()] {
+            //
+            // If we are unable to parse a node, node will be null.
+            //
+            if (node) { nodes.push_back(node); }
+        }
+    |   protoStatement[scene, scope]
+    |   routeStatement[*scope]
+    |   importStatement
+    |   exportStatement
+    ;
+
+importStatement
+options { defaultErrorHandler=false; }
+    :   KEYWORD_IMPORT ID PERIOD ID KEYWORD_AS ID
+    ;
+
+exportStatement
+options { defaultErrorHandler=false; }
+    :   KEYWORD_EXPORT ID KEYWORD_AS ID 
+    ;
+
 fieldType
 returns [openvrml::field_value::type_id ft =
          openvrml::field_value::invalid_type_id]

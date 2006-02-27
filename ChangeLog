@@ -1,5 +1,17 @@
 2006-02-26 Braden McDaniel  <braden@endoframe.com>
 
+	Parse X3D IMPORT and EXPORT statements.  We don't actually do
+	anything with them yet.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(statement): Override statement production from Vrml97Parser to
+	parse importStatement and exportStatement alternatives.
+	(importStatement): Added production to parse IMPORT statements.
+	(exportStatement): Added production to parse EXPORT statements.
+
+2006-02-26 Braden McDaniel  <braden@endoframe.com>
+
 	Treat colon (':') as an invalid identifier character in the X3D
 	VRML format.  The X3D Classic VRML encoding specification doesn't
 	list colon as an invalid character in an identifier; however, in
