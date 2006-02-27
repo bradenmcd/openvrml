@@ -203,12 +203,13 @@ Vrml97Scanner::Vrml97Scanner(std::istream & in):
 
 antlr::RefToken Vrml97Scanner::nextToken()
 {
-    using std::string;
+    using std::ostringstream;
     using antlr::RefToken;
     using antlr::CommonToken;
 
     RefToken token(new CommonToken);
-    string token_string;
+    ostringstream token_string;
+    token_string.unsetf(ostringstream::skipws);
 
     if (this->read_too_much_) {
         this->read_too_much_ = false;
@@ -232,22 +233,22 @@ antlr::RefToken Vrml97Scanner::nextToken()
         //
         // in an identifier or a keyword
         //
-        token->setType(ID);
 
         while (this->isValidIdRestChars(this->c_)) {
-            token_string += this->c_;
+            token_string << this->c_;
             getNextChar();
         }
 
         read_too_much_ = true;
 
-        token->setText(token_string);
+        token->setText(token_string.str());
 
         if (expecting_field_type_) {
             this->identifyFieldType(*token);
             expecting_field_type_ = false;
         }
-        this->identifyKeyword(*token);
+
+        if (!this->identifyKeyword(*token)) { token->setType(ID); }
 
     } else if (this->c_ == '.'
             || this->c_ == '+'
@@ -258,7 +259,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
         //
 
         if (this->c_ == '+' || this->c_ == '-') {
-            token_string += this->c_;
+            token_string << this->c_;
             this->getNextChar();
             read_too_much_ = true;
         }
@@ -269,7 +270,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
             //
             token->setType(INTEGER);
 
-            token_string += this->c_;
+            token_string << this->c_;
 
             getNextChar();
 
@@ -280,15 +281,15 @@ antlr::RefToken Vrml97Scanner::nextToken()
                 //
                 token->setType(HEX_INTEGER);
 
-                token_string += this->c_;
+                token_string << this->c_;
                 getNextChar();
                 while (isxdigit(this->c_)) {
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
                 }
             } else {
                 while (isdigit(this->c_)) {
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
                 }
             }
@@ -299,11 +300,11 @@ antlr::RefToken Vrml97Scanner::nextToken()
                 //
                 token->setType(REAL);
 
-                token_string += this->c_;
+                token_string << this->c_;
                 getNextChar();
 
                 while (isdigit(this->c_)) {
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
                 }
 
@@ -311,18 +312,18 @@ antlr::RefToken Vrml97Scanner::nextToken()
                     //
                     // in an exponent
                     //
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
 
                     if ((c_ == '+') || (c_ == '-') || isdigit(this->c_)) {
                         //
                         // exponent may be signed
                         //
-                        token_string += this->c_;
+                        token_string << this->c_;
                         getNextChar();
 
                         while (isdigit(this->c_)) {
-                            token_string += this->c_;
+                            token_string << this->c_;
                             getNextChar();
                         }
                     }
@@ -333,18 +334,18 @@ antlr::RefToken Vrml97Scanner::nextToken()
                 //
                 token->setType(REAL);
 
-                token_string += this->c_;
+                token_string << this->c_;
                 getNextChar();
 
                 if (this->c_ == '+' || this->c_ == '-' || isdigit(this->c_)) {
                     //
                     // exponent may be signed
                     //
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
 
                     while (isdigit(this->c_)) {
-                        token_string += this->c_;
+                        token_string << this->c_;
                         getNextChar();
                     }
                 }
@@ -357,7 +358,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
             // in a floating-point number or a lone full-stop (as in a ROUTE)
             //
 
-            token_string += this->c_;
+            token_string << this->c_;
             getNextChar();
 
             if (isdigit(this->c_)) {
@@ -365,7 +366,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
                 token->setType(REAL);
 
                 while (isdigit(this->c_)) {
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
                 }
 
@@ -373,18 +374,18 @@ antlr::RefToken Vrml97Scanner::nextToken()
                     //
                     // in an exponent
                     //
-                    token_string += this->c_;
+                    token_string << this->c_;
                     getNextChar();
 
                     if ((c_ == '+') || (c_ == '-') || isdigit(this->c_)) {
                         //
                         // exponent may be signed
                         //
-                        token_string += this->c_;
+                        token_string << this->c_;
                         getNextChar();
 
                         while (isdigit(this->c_)) {
-                            token_string += this->c_;
+                            token_string << this->c_;
                             getNextChar();
                         }
                     }
@@ -396,7 +397,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
             this->read_too_much_ = true;
         }
 
-        token->setText(token_string);
+        token->setText(token_string.str());
 
     } else if (this->c_ == '"') {
         //
@@ -404,26 +405,26 @@ antlr::RefToken Vrml97Scanner::nextToken()
         //
         token->setType(STRING);
 
-        token_string += this->c_;
+        token_string << this->c_;
         this->getNextChar();
 
         char prev_char('\0');
         while (this->c_ != '"' || prev_char == '\\') {
-            token_string += this->c_;
+            token_string << this->c_;
             prev_char = this->c_;
             this->getNextChar();
         }
-        token_string += this->c_; // add the closing quote
+        token_string << this->c_; // add the closing quote
 
-        token->setText(token_string);
+        token->setText(token_string.str());
 
     } else {
         //
         // terminal symbol or unidentified character
         //
-        token_string += this->c_;
+        token_string << this->c_;
 
-        token->setText(token_string);
+        token->setText(token_string.str());
 
         this->identifyTerminalSymbol(*token);
     }
