@@ -232,6 +232,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
         //
         // in an identifier or a keyword
         //
+        token->setType(ID);
 
         while (this->isValidIdRestChars(this->c_)) {
             token_string += this->c_;
@@ -246,8 +247,7 @@ antlr::RefToken Vrml97Scanner::nextToken()
             this->identifyFieldType(*token);
             expecting_field_type_ = false;
         }
-
-        if (!this->identifyKeyword(*token)) { token->setType(ID); }
+        this->identifyKeyword(*token);
 
     } else if (this->c_ == '.'
             || this->c_ == '+'
