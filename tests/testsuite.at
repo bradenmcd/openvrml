@@ -1,6 +1,6 @@
 AT_INIT
 
-AT_BANNER([Parse tests: code that should be accepted])
+AT_BANNER([VRML97 parse tests: code that should be accepted])
 
 AT_SETUP([Trivial PROTO containment])
 AT_DATA([proto-containment-trivial.wrl],
@@ -8,7 +8,7 @@ AT_DATA([proto-containment-trivial.wrl],
 PROTO Outer0 [] { PROTO Inner [] { Group {} } Inner {} }
 Outer0 {}
 ]])
-AT_CHECK([parse < proto-containment-trivial.wrl])
+AT_CHECK([parse-vrml97 < proto-containment-trivial.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO containment 2 levels deep])
@@ -25,7 +25,7 @@ PROTO Outer [] {
 }
 Outer {}
 ]])
-AT_CHECK([parse < proto-containment-2-deep.wrl])
+AT_CHECK([parse-vrml97 < proto-containment-2-deep.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO instance as default PROTO field value])
@@ -41,7 +41,7 @@ PROTO Node1 [
 }
 Node1 {}
 ]])
-AT_CHECK([parse < proto-field-is-proto.wrl])
+AT_CHECK([parse-vrml97 < proto-field-is-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Map PROTO eventIn, eventOut to an exposedField])
@@ -58,7 +58,7 @@ PROTO Node [
 }
 Node {}
 ]])
-AT_CHECK([parse < proto-impl-exposedfield-event-is.wrl])
+AT_CHECK([parse-vrml97 < proto-impl-exposedfield-event-is.wrl])
 AT_CLEANUP
 
 AT_SETUP([ROUTE referring to the current node])
@@ -70,7 +70,7 @@ DEF G2 Group {
   ROUTE G1.children TO G2.children
 }
 ]])
-AT_CHECK([parse < route-referencing-current-node.wrl])
+AT_CHECK([parse-vrml97 < route-referencing-current-node.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node])
@@ -81,7 +81,7 @@ DEF S Script {
   field MFNode val1 [ Group {}, USE S, Group {} ]
 }
 ]])
-AT_CHECK([parse < self-referential-script.wrl])
+AT_CHECK([parse-vrml97 < self-referential-script.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node in a PROTO])
@@ -95,7 +95,7 @@ PROTO Node [] {
 }
 Node {}
 ]])
-AT_CHECK([parse < self-referential-script-in-proto.wrl])
+AT_CHECK([parse-vrml97 < self-referential-script-in-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Unrecognized EXTERNPROTO])
@@ -105,7 +105,7 @@ EXTERNPROTO UnrecognizedNode [ exposedField SFBool sfboolField ]
 [ "urn:unrecognized" ]
 UnrecognizedNode { sfboolField TRUE }
 ]])
-AT_CHECK([parse < unrecognized-externproto.wrl],
+AT_CHECK([parse-vrml97 < unrecognized-externproto.wrl],
          [0],
          [ignore],
          [ignore])
@@ -117,20 +117,20 @@ AT_DATA([unimplemented-externproto.wrl],
 EXTERNPROTO UnimplementedNode [ exposedField SFBool sfboolField ] []
 UnimplementedNode { sfboolField TRUE }
 ]])
-AT_CHECK([parse < unimplemented-externproto.wrl],
+AT_CHECK([parse-vrml97 < unimplemented-externproto.wrl],
          [0],
          [ignore],
          [ignore])
 AT_CLEANUP
 
-AT_BANNER([Parse tests: code that should be rejected])
+AT_BANNER([VRML97 parse tests: code that should be rejected])
 
 AT_SETUP([Unrecognized node type])
 AT_DATA([unrecognized-node.wrl],
 [[#VRML V2.0 utf8
 UnrecognizedNode {}
 ]])
-AT_CHECK([parse < unrecognized-node.wrl], [1], [],
+AT_CHECK([parse-vrml97 < unrecognized-node.wrl], [1], [],
 [urn:X-openvrml:stream:1:2:17: error: unknown node type "UnrecognizedNode"
 ])
 AT_CLEANUP
@@ -146,7 +146,7 @@ PROTO Node [
 }
 Node {}
 ]])
-AT_CHECK([parse < proto-eventin-conflict.wrl], [1], [],
+AT_CHECK([parse-vrml97 < proto-eventin-conflict.wrl], [1], [],
 [urn:X-openvrml:stream:1:4:26: error: Interface "exposedField MFNode foo" conflicts with previous declaration
 ])
 AT_CLEANUP
@@ -162,7 +162,17 @@ PROTO Node [
 }
 Node {}
 ]])
-AT_CHECK([parse < proto-eventout-conflict.wrl], [1], [],
+AT_CHECK([parse-vrml97 < proto-eventout-conflict.wrl], [1], [],
 [urn:X-openvrml:stream:1:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
 ])
+AT_CLEANUP
+
+AT_BANNER([X3D VRML parse tests: code that should be accepted])
+
+AT_SETUP([Minimal world])
+AT_DATA([minimal.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Core
+]])
+AT_CHECK([parse-x3dvrml < minimal.x3dv])
 AT_CLEANUP

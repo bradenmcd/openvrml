@@ -13,7 +13,7 @@ TESTS = \
         node_interface_set
 
 check_LTLIBRARIES = libtest-openvrml.la
-check_PROGRAMS = $(TESTS) parse
+check_PROGRAMS = $(TESTS) parse-vrml97 parse-x3dvrml
 noinst_HEADERS = test_browser.h
 
 libtest_openvrml_la_SOURCES = test_browser.cpp
@@ -32,8 +32,11 @@ node_interface_set_LDFLAGS = -lboost_unit_test_framework
 node_class_id_SOURCES = node_class_id.cpp
 node_class_id_LDFLAGS = -lboost_unit_test_framework
 
-parse_SOURCES = parse.cpp
-parse_LDADD = libtest-openvrml.la
+parse_vrml97_SOURCES = parse_vrml97.cpp
+parse_vrml97_LDADD = libtest-openvrml.la
+
+parse_x3dvrml_SOURCES = parse_x3dvrml.cpp
+parse_x3dvrml_LDADD = libtest-openvrml.la
 
 EXTRA_DIST = \
         package.m4 \

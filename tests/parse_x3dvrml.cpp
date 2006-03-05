@@ -27,7 +27,7 @@ int main()
 {
     try {
         test_browser b;
-        b.create_vrml_from_stream(cin);
+        b.create_vrml_from_stream(cin, "model/x3d+vrml");
     } catch (invalid_vrml & ex) {
         cerr << ex.url << ':' << ex.line << ':' << ex.column << ": error: "
              << ex.what() << endl;

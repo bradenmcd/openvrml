@@ -1,3 +1,27 @@
+2006-03-05 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed to avoid scanner assertion when parsing X3D VRML.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner::nextToken()): Only set the token type to ID after
+	other alternatives have been exhausted.
+	* tests/Makefile.am
+	(check_PROGRAMS): Removed "parse"; added "parse-vrml97" and
+	"parse-x3dvrml".
+	(parse_SOURCES): Removed.
+	(parse_LDADD): Removed.
+	(parse_vrml97_SOURCES): Added.
+	(parse_vrml97_LDADD): Added.
+	(parse_x3dvrml_SOURCES): Added.
+	(parse_x3dvrml_LDADD): Added.
+	* tests/parse.cpp: Removed file.  Replaced by parse_vrml97.cpp.
+	* tests/parse_vrml97.cpp: Added file.  VRML97 parser driver for
+	the test suite.
+	* tests/parse_x3dvrml.cpp: Added file.  X3D VRML parser driver for
+	the test suite.
+	* tests/testsuite.at: Changed references to "parse" executable to
+	"parse-vrml97".  Added minimal X3D VRML world test.
+
 2006-03-04 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed deadlock when

@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2000, 2001, 2003, 2004  Braden N. McDaniel
+// Copyright 2000, 2001, 2003, 2004, 2005, 2006  Braden N. McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -232,7 +232,6 @@ antlr::RefToken Vrml97Scanner::nextToken()
         //
         // in an identifier or a keyword
         //
-        token->setType(ID);
 
         while (this->isValidIdRestChars(this->c_)) {
             token_string += this->c_;
@@ -243,12 +242,11 @@ antlr::RefToken Vrml97Scanner::nextToken()
 
         token->setText(token_string);
 
-        if (expecting_field_type_) {
-            this->identifyFieldType(*token);
-            expecting_field_type_ = false;
+        if (expecting_field_type_ && this->identifyFieldType(*token)) {
+            this->expecting_field_type_ = false;
+        } else if (!this->identifyKeyword(*token)) {
+            token->setType(ID);
         }
-        this->identifyKeyword(*token);
-
     } else if (this->c_ == '.'
             || this->c_ == '+'
             || this->c_ == '-'
