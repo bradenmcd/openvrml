@@ -1,3 +1,44 @@
+2006-03-04 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed deadlock when
+	externproto_node_class::clear_externproto_node_types is called
+	during a call to externproto_node_type::do_create_node.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_class): Granted friendship to
+	externproto_node_type; removed externproto_node_types_cleared
+	accessor; override node_class::do_shutdown.
+	(externproto_node_class::~externproto_node_class()): Moved join to
+	load_proto_thread to externproto_node_class::do_shutdown.
+	(externproto_node_class::externproto_node_types_cleared() const):
+	Lock externproto_node_types_cleared_mutex_.
+	(externproto_node_class::do_shutdown(double)): Join
+	load_proto_thread_.
+	(externproto_node_type::do_create_node(const
+	boost::shared_ptr<openvrml::scope> &, const
+	openvrml::initial_value_map &) const): Lock
+	externproto_node_class::mutex_ to avoid a race condition when
+	externproto_node_class::clear_externproto_node_types is called.
+	(shutdown_node_class): Added function object; used by
+	openvrml::browser::node_class_map::shutdown.
+	(openvrml::browser::node_class_map::shutdown(double)): Added
+	function; shut down the node classes.
+	(openvrml::browser::~browser()): Call node_class_map::shutdown.
+	(openvrml::browser::set_world(resource_istream &)): Call
+	node_class_map::shutdown.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser::node_class_map): Added shutdown member
+	function to call node_class::shutdown on the contained
+	node_classes.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_class::shutdown(double)): Added function; call
+	node_class::do_shutdown.
+	(openvrml::node_class::do_shutdown(double)): Added function;
+	default implementation does nothing.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node_class): Added member function shutdown and virtual
+	member function do_shutdown.
+
 2006-02-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g

@@ -741,6 +741,30 @@ openvrml::node_class::create_type(const std::string & id,
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
+/**
+ * @brief Shut down.
+ *
+ * This function is called during destruction of the @c browser, after
+ * the root scene has been shut down. This function delegates to
+ * @c node_class::do_shutdown.
+ *
+ * @param[in] time  the current time.
+ */
+void openvrml::node_class::shutdown(const double time) OPENVRML_NOTHROW
+{
+    this->do_shutdown(time);
+}
+
+/**
+ * @brief Shut down.
+ *
+ * This function is called by @c node_class::shutdown.
+ *
+ * @param[in] time  the current time.
+ */
+void openvrml::node_class::do_shutdown(double) OPENVRML_NOTHROW
+{}
+
 
 /**
  * @typedef openvrml::initial_value_map

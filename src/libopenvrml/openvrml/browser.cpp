@@ -2262,6 +2262,8 @@ namespace {
         public boost::enable_shared_from_this<externproto_node_class>,
         public openvrml::node_class {
 
+        friend class externproto_node_type;
+
         struct load_proto;
 
         mutable boost::mutex mutex_;
@@ -2281,13 +2283,13 @@ namespace {
             OPENVRML_THROW1(boost::thread_resource_error);
         virtual ~externproto_node_class() OPENVRML_NOTHROW;
 
-        bool externproto_node_types_cleared() const OPENVRML_NOTHROW;
-
     private:
         virtual const boost::shared_ptr<openvrml::node_type>
         do_create_type(const std::string & id,
                        const openvrml::node_interface_set & interfaces) const
             OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
+
+        virtual void do_shutdown(double time) OPENVRML_NOTHROW;
 
         void set_proto_node_class(
             const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class = boost::weak_ptr<openvrml::proto_node_class>())
@@ -2300,15 +2302,15 @@ namespace {
     class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
         const boost::shared_ptr<const externproto_node_class> node_class_;
 
-        mutable boost::mutex mutex_;
         openvrml::node_interface_set interfaces_;
+
+        mutable boost::mutex mutex_;
+        boost::shared_ptr<openvrml::proto_node_type> proto_node_type_;
 
         typedef std::vector<boost::intrusive_ptr<openvrml::externproto_node> >
             externproto_nodes;
 
         mutable externproto_nodes externproto_nodes_;
-
-        boost::shared_ptr<openvrml::proto_node_type> proto_node_type_;
 
     public:
         externproto_node_type(
@@ -2333,7 +2335,7 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope,
             const openvrml::initial_value_map & initial_values) const
             OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
-                   std::bad_alloc);
+                            std::bad_alloc);
     };
 }
 
@@ -5683,16 +5685,7 @@ namespace {
      * @brief Destroy.
      */
     externproto_node_class::~externproto_node_class() OPENVRML_NOTHROW
-    {
-        this->load_proto_thread_->join();
-    }
-
-    bool externproto_node_class::externproto_node_types_cleared() const
-        OPENVRML_NOTHROW
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
-        return this->externproto_node_types_cleared_;
-    }
+    {}
 
     const boost::shared_ptr<openvrml::node_type>
     externproto_node_class::
@@ -5719,14 +5712,19 @@ namespace {
         return node_type;
     }
 
+    void externproto_node_class::do_shutdown(double) OPENVRML_NOTHROW
+    {
+        this->load_proto_thread_->join();
+    }
+
     void externproto_node_class::set_proto_node_class(
         const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class)
         OPENVRML_THROW1(std::bad_alloc)
     {
+        boost::mutex::scoped_lock lock(this->mutex_);
+
         using boost::shared_ptr;
         using boost::static_pointer_cast;
-
-        boost::mutex::scoped_lock lock(this->mutex_);
 
         this->proto_node_class_ = proto_node_class;
 
@@ -5761,6 +5759,7 @@ namespace {
             assert(!node_type->expired());
             node_type->lock()->clear_externproto_nodes();
         }
+
         this->externproto_node_types_.clear();
         this->externproto_node_types_cleared_ = true;
     }
@@ -5821,7 +5820,20 @@ namespace {
         OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
                         std::bad_alloc)
     {
-        boost::mutex::scoped_lock lock(this->mutex_);
+        //
+        // externproto_node_class::mutex_ must be locked first.
+        // externproto_node_class::clear_externproto_node_types must not be
+        // initiated while we're doing this.
+        // externproto_node_class::externproto_node_types_cleared_ is checked
+        // later in this function and attempting to lock
+        // externproto_node_class::mutex_ at that point creates a race
+        // condition.
+        //
+        boost::mutex::scoped_lock
+            lock_externproto_node_class(
+                static_cast<const externproto_node_class &>(this->node_class())
+                .mutex_),
+            lock(this->mutex_);
 
         if (this->proto_node_type_) {
             return this->proto_node_type_->create_node(scope, initial_values);
@@ -5833,11 +5845,12 @@ namespace {
 
         const externproto_node_class & node_class =
             static_cast<const externproto_node_class &>(this->node_class());
-        if (!node_class.externproto_node_types_cleared()) {
+        if (!node_class.externproto_node_types_cleared_) {
             this->externproto_nodes_.push_back(result);
         } else {
             assert(this->externproto_nodes_.empty());
         }
+
         return result;
     }
 } // namespace
@@ -7210,6 +7223,38 @@ void openvrml::browser::node_class_map::render(openvrml::viewer & v)
     for_each(this->map_.begin(), this->map_.end(), render_node_class(v));
 }
 
+namespace {
+
+    struct OPENVRML_LOCAL shutdown_node_class :
+            std::unary_function<void, node_class_map_t::value_type> {
+        explicit shutdown_node_class(const double timestamp):
+            timestamp_(timestamp)
+        {}
+
+        void operator()(const node_class_map_t::value_type & value) const
+        {
+            value.second->shutdown(this->timestamp_);
+        }
+
+    private:
+        double timestamp_;
+    };
+}
+
+/**
+ * @brief Shut down the <code>node_class</code>es.
+ *
+ * @param[in] timestamp         the current time.
+ */
+void
+openvrml::browser::node_class_map::shutdown(const double timestamp)
+    OPENVRML_NOTHROW
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    for_each(this->map_.begin(), this->map_.end(),
+             shutdown_node_class(timestamp));
+}
+
 /**
  * @internal
  *
@@ -7458,6 +7503,8 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
     const double now = browser::current_time();
 
     if (this->scene_) { this->scene_->shutdown(now); }
+
+    this->node_class_map_.shutdown(now);
     assert(this->viewpoint_list.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
@@ -7949,6 +7996,7 @@ void openvrml::browser::set_world(resource_istream & in)
     //
     double now = browser::current_time();
     if (this->scene_) { this->scene_->shutdown(now); }
+    this->node_class_map_.shutdown(now);
     for_each(this->listeners_.begin(), this->listeners_.end(),
              boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
                             browser_event(*this, browser_event::shutdown)));

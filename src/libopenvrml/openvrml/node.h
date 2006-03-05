@@ -200,6 +200,7 @@ namespace openvrml {
         create_type(const std::string & id,
                     const node_interface_set & interfaces)
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+        void shutdown(double time) OPENVRML_NOTHROW;
 
     protected:
         explicit node_class(openvrml::browser & b) OPENVRML_NOTHROW;
@@ -213,6 +214,7 @@ namespace openvrml {
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc) = 0;
+        virtual void do_shutdown(double time) OPENVRML_NOTHROW;
     };
 
 

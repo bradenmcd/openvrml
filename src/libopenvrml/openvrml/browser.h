@@ -208,6 +208,8 @@ namespace openvrml {
 
             void render(viewer & v);
 
+            void shutdown(double timestamp) OPENVRML_NOTHROW;
+
         private:
             //
             // No convenient way to make copy-construction thread-safe, and we
