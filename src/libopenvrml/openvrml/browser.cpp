@@ -6441,30 +6441,6 @@ openvrml::viewpoint_node * openvrml::externproto_node::to_viewpoint()
  */
 
 /**
- * @var const double openvrml::pi
- *
- * @brief pi
- */
-
-/**
- * @var const double openvrml::pi_2
- *
- * @brief pi/2
- */
-
-/**
- * @var const double openvrml::pi_4
- *
- * @brief pi/4
- */
-
-/**
- * @var const double openvrml::inv_pi
- *
- * @brief 1/pi
- */
-
-/**
  * @brief VRML MIME media type.
  */
 const char openvrml::vrml_media_type[11] = "model/vrml";

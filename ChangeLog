@@ -1,5 +1,10 @@
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Removed obsolete
+	doc-comments.
+
+2006-03-06 Braden McDaniel  <braden@endoframe.com>
+
 	Consolidate logic for picking a parser.
 
 	* src/libopenvrml/openvrml/browser.cpp
