@@ -307,7 +307,7 @@ namespace openvrml {
     public:
         typedef bool value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfbool_id;
 
         explicit sfbool(value_type value = false) OPENVRML_NOTHROW;
         sfbool(const sfbool & sfb);
@@ -338,7 +338,7 @@ namespace openvrml {
     public:
         typedef color value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfcolor_id;
 
         explicit sfcolor(const value_type & value = color()) OPENVRML_NOTHROW;
         sfcolor(const sfcolor & sfc);
@@ -370,7 +370,7 @@ namespace openvrml {
     public:
         typedef color_rgba value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfcolorrgba_id;
 
         explicit sfcolorrgba(const value_type & value = color_rgba())
             OPENVRML_NOTHROW;
@@ -405,7 +405,7 @@ namespace openvrml {
     public:
         typedef float value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sffloat_id;
 
         explicit sffloat(float value = 0.0) OPENVRML_NOTHROW;
         sffloat(const sffloat & sff);
@@ -436,7 +436,7 @@ namespace openvrml {
     public:
         typedef double value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfdouble_id;
 
         explicit sfdouble(double value = 0.0) OPENVRML_NOTHROW;
         sfdouble(const sfdouble & sfd);
@@ -467,7 +467,7 @@ namespace openvrml {
     public:
         typedef image value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfimage_id;
 
         explicit sfimage(const image & value = image())
             OPENVRML_THROW1(std::bad_alloc);
@@ -500,7 +500,7 @@ namespace openvrml {
     public:
         typedef int32 value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfint32_id;
 
         explicit sfint32(int32 value = 0) OPENVRML_NOTHROW;
         sfint32(const sfint32 & sfi);
@@ -536,7 +536,7 @@ namespace openvrml {
     public:
         typedef boost::intrusive_ptr<node> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfnode_id;
 
         explicit sfnode(const value_type & node = value_type(0))
             OPENVRML_NOTHROW;
@@ -568,7 +568,7 @@ namespace openvrml {
     public:
         typedef rotation value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfrotation_id;
 
         explicit sfrotation(const rotation & rot = rotation())
             OPENVRML_NOTHROW;
@@ -603,7 +603,7 @@ namespace openvrml {
     public:
         typedef std::string value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfstring_id;
 
         explicit sfstring(const std::string & value = std::string())
             OPENVRML_THROW1(std::bad_alloc);
@@ -636,7 +636,7 @@ namespace openvrml {
     public:
         typedef double value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sftime_id;
 
         explicit sftime(double value = 0.0) OPENVRML_NOTHROW;
         sftime(const sftime & sft);
@@ -667,7 +667,7 @@ namespace openvrml {
     public:
         typedef vec2f value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfvec2f_id;
 
         explicit sfvec2f(const vec2f & vec = vec2f()) OPENVRML_NOTHROW;
         sfvec2f(const sfvec2f & sfv);
@@ -698,7 +698,7 @@ namespace openvrml {
     public:
         typedef vec2d value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfvec2d_id;
 
         explicit sfvec2d(const vec2d & vec = vec2d()) OPENVRML_NOTHROW;
         sfvec2d(const sfvec2d & sfv);
@@ -730,7 +730,7 @@ namespace openvrml {
     public:
         typedef vec3f value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfvec3f_id;
 
         explicit sfvec3f(const vec3f & vec = vec3f()) OPENVRML_NOTHROW;
         sfvec3f(const sfvec3f & sfv);
@@ -757,11 +757,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API sfvec3d : public field_value {
     public:
         typedef vec3d value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = sfvec3d_id;
 
         explicit sfvec3d(const vec3d & vec = vec3d()) OPENVRML_NOTHROW;
         sfvec3d(const sfvec3d & sfv);
@@ -788,11 +789,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfbool : public field_value {
     public:
         typedef std::vector<bool> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfbool_id;
 
         explicit mfbool(value_type::size_type n = 0, bool value = false)
             OPENVRML_THROW1(std::bad_alloc);
@@ -821,11 +823,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfbool & lhs, const mfbool & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfcolor : public field_value {
     public:
         typedef std::vector<color> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfcolor_id;
 
         explicit mfcolor(std::vector<color>::size_type n = 0,
                          const color & value = color())
@@ -856,11 +859,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfcolor & lhs, const mfcolor & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfcolorrgba : public field_value {
     public:
         typedef std::vector<color_rgba> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfcolorrgba_id;
 
         explicit mfcolorrgba(value_type::size_type n = 0,
                              const color_rgba & value = color_rgba())
@@ -893,11 +897,12 @@ namespace openvrml {
                                  const mfcolorrgba & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mffloat : public field_value {
     public:
         typedef std::vector<float> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mffloat_id;
 
         explicit mffloat(std::vector<float>::size_type n = 0,
                          float value = 0.0f)
@@ -928,11 +933,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mffloat & lhs, const mffloat & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfdouble : public field_value {
     public:
         typedef std::vector<double> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfdouble_id;
 
         explicit mfdouble(std::vector<double>::size_type n = 0,
                           double value = 0.0f)
@@ -963,11 +969,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfdouble & lhs, const mfdouble & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfimage : public field_value {
     public:
         typedef std::vector<image> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfimage_id;
 
         explicit mfimage(value_type::size_type n = 0,
                          const image & value = image())
@@ -998,11 +1005,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfimage & lhs, const mfimage & rhs)
         OPENVRML_NOTHROW;
 
+
     class OPENVRML_API mfint32 : public field_value {
     public:
         typedef std::vector<int32> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfint32_id;
 
         explicit mfint32(std::vector<int32>::size_type n = 0, int32 value = 0)
             OPENVRML_THROW1(std::bad_alloc);
@@ -1036,7 +1044,7 @@ namespace openvrml {
     public:
         typedef std::vector<boost::intrusive_ptr<node> > value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfnode_id;
 
         explicit mfnode(value_type::size_type n = 0,
                         const value_type::value_type & value =
@@ -1072,7 +1080,7 @@ namespace openvrml {
     public:
         typedef std::vector<rotation> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfrotation_id;
 
         explicit mfrotation(std::vector<rotation>::size_type n = 0,
                             const rotation & value = rotation())
@@ -1110,7 +1118,7 @@ namespace openvrml {
     public:
         typedef std::vector<std::string> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfstring_id;
 
         explicit mfstring(std::vector<std::string>::size_type n = 0,
                           const std::string & value = std::string())
@@ -1146,7 +1154,7 @@ namespace openvrml {
     public:
         typedef std::vector<double> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mftime_id;
 
         explicit mftime(std::vector<double>::size_type n = 0,
                         double value = 0.0)
@@ -1181,7 +1189,7 @@ namespace openvrml {
     public:
         typedef std::vector<vec2f> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfvec2f_id;
 
         explicit mfvec2f(std::vector<vec2f>::size_type n = 0,
                          const vec2f & value = vec2f())
@@ -1217,7 +1225,7 @@ namespace openvrml {
     public:
         typedef std::vector<vec2d> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfvec2d_id;
 
         explicit mfvec2d(std::vector<vec2d>::size_type n = 0,
                          const vec2d & value = vec2d())
@@ -1253,7 +1261,7 @@ namespace openvrml {
     public:
         typedef std::vector<vec3f> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfvec3f_id;
 
         explicit mfvec3f(std::vector<vec3f>::size_type n = 0,
                          const vec3f & value = vec3f())
@@ -1288,7 +1296,7 @@ namespace openvrml {
     public:
         typedef std::vector<vec3d> value_type;
 
-        static const type_id field_value_type_id;
+        static const type_id field_value_type_id = mfvec3d_id;
 
         explicit mfvec3d(std::vector<vec3d>::size_type n = 0,
                          const vec3d & value = vec3d())

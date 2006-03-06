@@ -763,10 +763,10 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfbool::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfbool::field_value_type_id(sfbool_id);
 
 /**
  * @brief Construct.
@@ -943,10 +943,10 @@ bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfcolor::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfcolor::field_value_type_id(sfcolor_id);
 
 /**
  * @brief Construct.
@@ -1123,10 +1123,10 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfcolorrgba::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfcolorrgba::field_value_type_id(sfcolorrgba_id);
 
 /**
  * @brief Construct.
@@ -1305,10 +1305,10 @@ bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sffloat::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sffloat::field_value_type_id(sffloat_id);
 
 /**
  * @brief Construct.
@@ -1484,10 +1484,10 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfdouble::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfdouble::field_value_type_id(sfdouble_id);
 
 /**
  * @brief Construct.
@@ -1664,10 +1664,10 @@ bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfimage::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfimage::field_value_type_id(sfimage_id);
 
 /**
  * Construct.
@@ -1848,10 +1848,10 @@ bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfint32::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfint32::field_value_type_id(sfint32_id);
 
 /**
  * @brief Construct.
@@ -2028,10 +2028,10 @@ bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfnode::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfnode::field_value_type_id(sfnode_id);
 
 /**
  * @brief Construct.
@@ -2226,10 +2226,10 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfrotation::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfrotation::field_value_type_id(sfrotation_id);
 
 /**
  * @brief Construct.
@@ -2407,10 +2407,10 @@ bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfstring::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfstring::field_value_type_id(sfstring_id);
 
 /**
  * @brief Construct.
@@ -2585,10 +2585,10 @@ bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sftime::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sftime::field_value_type_id(sftime_id);
 
 /**
  * @typedef openvrml::sftime::value_type
@@ -2772,10 +2772,10 @@ bool openvrml::operator!=(const sftime & lhs, const sftime & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfvec2f::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfvec2f::field_value_type_id(sfvec2f_id);
 
 /**
  * @brief Construct.
@@ -2951,10 +2951,10 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfvec2d::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfvec2d::field_value_type_id(sfvec2d_id);
 
 /**
  * @brief Construct.
@@ -3133,10 +3133,10 @@ bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfvec3f::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfvec3f::field_value_type_id(sfvec3f_id);
 
 /**
  * @typedef openvrml::sfvec3f::value_type
@@ -3312,10 +3312,10 @@ bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::sfvec3d::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::sfvec3d::field_value_type_id(sfvec3d_id);
 
 /**
  * @typedef openvrml::sfvec3d::value_type
@@ -3498,10 +3498,10 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfbool::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfbool::field_value_type_id(mfbool_id);
 
 /**
  * @brief Construct.
@@ -3711,10 +3711,10 @@ bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfcolor::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfcolor::field_value_type_id(mfcolor_id);
 
 /**
  * @brief Construct.
@@ -3923,10 +3923,10 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfcolorrgba::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfcolorrgba::field_value_type_id(mfcolorrgba_id);
 
 /**
  * @brief Construct.
@@ -4139,10 +4139,10 @@ bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mffloat::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mffloat::field_value_type_id(mffloat_id);
 
 /**
  * @brief Construct.
@@ -4351,10 +4351,10 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfdouble::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfdouble::field_value_type_id(mfdouble_id);
 
 /**
  * @brief Construct.
@@ -4563,10 +4563,10 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfimage::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfimage::field_value_type_id(mfimage_id);
 
 /**
  * @brief Construct.
@@ -4775,10 +4775,10 @@ bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfint32::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfint32::field_value_type_id(mfint32_id);
 
 /**
  * @brief Construct.
@@ -4988,10 +4988,10 @@ bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfnode::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfnode::field_value_type_id(mfnode_id);
 
 /**
  * @brief Construct.
@@ -5204,10 +5204,10 @@ bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfrotation::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfrotation::field_value_type_id(mfrotation_id);
 
 /**
  * @brief Construct.
@@ -5418,10 +5418,10 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfstring::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfstring::field_value_type_id(mfstring_id);
 
 /**
  * @brief Construct.
@@ -5633,10 +5633,10 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mftime::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mftime::field_value_type_id(mftime_id);
 
 /**
  * @brief Construct.
@@ -5848,10 +5848,10 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfvec2f::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfvec2f::field_value_type_id(mfvec2f_id);
 
 /**
  * @brief Construct.
@@ -6061,10 +6061,10 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfvec2d::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfvec2d::field_value_type_id(mfvec2d_id);
 
 /**
  * @brief Construct.
@@ -6275,10 +6275,10 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfvec3f::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfvec3f::field_value_type_id(mfvec3f_id);
 
 /**
  * @brief Construct.
@@ -6489,10 +6489,10 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
  */
 
 /**
+ * @var const openvrml::field_value::type_id openvrml::mfvec3d::field_value_type_id
+ *
  * @brief <code>field_value::type_id</code> for this class.
  */
-const openvrml::field_value::type_id
-openvrml::mfvec3d::field_value_type_id(mfvec3d_id);
 
 /**
  * @brief Construct.

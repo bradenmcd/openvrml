@@ -1,5 +1,13 @@
 2006-03-05 Braden McDaniel  <braden@endoframe.com>
 
+	Moved definitions of FieldValue::field_value_type_id to
+	field_value.h.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
+2006-03-05 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed to avoid scanner assertion when parsing X3D VRML.
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g
