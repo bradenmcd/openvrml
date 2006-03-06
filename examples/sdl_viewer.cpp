@@ -172,6 +172,8 @@ namespace {
                 const string ext(dot_pos.base(), hash_pos);
                 if (iequals(ext, "wrl")) {
                     media_type = "model/vrml";
+                } else if (iequals(ext, "x3dv")) {
+                    media_type = "model/x3d+vrml";
                 } else if (iequals(ext, "png")) {
                     media_type = "image/png";
                 } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {

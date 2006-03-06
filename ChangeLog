@@ -1,5 +1,12 @@
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp
+	(browser::do_get_resource(const
+	std::string&)::file_resource_istream::do_type() const): Apply
+	"model/x3d+vrml" to files with the "x3dv" extension.
+
+2006-03-06 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::vrml_from_url_creator::operator()() const):
 	Pass the stream type to browser::create_from_from_stream.
