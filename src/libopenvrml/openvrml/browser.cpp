@@ -8243,13 +8243,14 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
                       node->event_listener(event)))
     {}
 
-    void operator()() const OPENVRML_NOTHROW try {
+    void operator()() const OPENVRML_NOTHROW
+    try {
         try {
             std::auto_ptr<resource_istream> in =
                 this->browser_->scene_->get_resource(*this->url_);
             if (!(*in)) { throw unreachable_url(); }
             mfnode nodes;
-            nodes.value(this->browser_->create_vrml_from_stream(*in));
+            nodes.value(this->browser_->create_vrml_from_stream(*in, in->type()));
             this->listener_->process_event(nodes, browser::current_time());
         } catch (std::exception & ex) {
             this->browser_->err << ex.what() << std::endl;
