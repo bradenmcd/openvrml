@@ -1,5 +1,22 @@
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
+	Consolidate logic for picking a parser.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(parse_vrml(std::istream &, const std::string &, const
+	std::string&, openvrml::scene,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &)): Added
+	function; this consolidates the logic for picking the VRML97 or
+	X3D-VRML parser.
+	(externproto_node_class::load_proto::operator()() const): Delegate
+	to parse_vrml.
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Delegate to parse_vrml.
+	(openvrml::scene::load(resource_istream &)): Delegate to
+	parse_vrml.
+	
+2006-03-06 Braden McDaniel  <braden@endoframe.com>
+
 	Expose constants for the VRML and X3D VRML MIME media types.
 
 	* src/libopenvrml/openvrml/browser.cpp

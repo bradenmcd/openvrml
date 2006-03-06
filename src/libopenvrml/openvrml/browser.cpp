@@ -5558,6 +5558,49 @@ namespace {
 
 namespace {
 
+    /**
+     * @brief Parse a VRML stream.
+     *
+     * @param[in,out] in    input stream.
+     * @param[in]     uri   URI associated with @p in.
+     * @param[in]     type  MIME media type of the data to be read from @p in.
+     * @param[in,out] scene a scene.
+     * @param[out]    nodes the root nodes.
+     *
+     * @exception openvrml::bad_media_type 
+     * @exception openvrml::invalid_vrml
+     */
+    OPENVRML_LOCAL void
+    parse_vrml(std::istream & in,
+               const std::string & uri,
+               const std::string & type,
+               openvrml::scene & scene,
+               std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
+    try {
+        using namespace openvrml;
+        using boost::algorithm::iequals;
+
+        if (iequals(type, vrml_media_type)
+            || iequals(type, x_vrml_media_type)) {
+            Vrml97Scanner scanner(in);
+            Vrml97Parser parser(scanner, uri);
+            parser.vrmlScene(scene, nodes);
+        } else if (iequals(type, x3d_vrml_media_type)) {
+            X3DVrmlScanner scanner(in);
+            X3DVrmlParser parser(scanner, uri);
+            parser.vrmlScene(scene, nodes);
+        } else {
+            throw bad_media_type(type);
+        }
+    } catch (antlr::RecognitionException & ex) {
+        throw openvrml::invalid_vrml(ex.getFilename(),
+                                     ex.getLine(),
+                                     ex.getColumn(),
+                                     ex.getMessage());
+    } catch (antlr::ANTLRException & ex) {
+        throw std::runtime_error(ex.getMessage());
+    }
+
     struct OPENVRML_LOCAL externproto_node_class::load_proto {
         load_proto(externproto_node_class & externproto_class,
                    openvrml::scene & scene,
@@ -5575,7 +5618,6 @@ namespace {
                 using std::auto_ptr;
                 using std::string;
                 using std::vector;
-                using boost::algorithm::iequals;
                 using boost::dynamic_pointer_cast;
                 using boost::shared_ptr;
                 using openvrml_::scope_guard;
@@ -5597,18 +5639,7 @@ namespace {
                 //
                 std::vector<boost::intrusive_ptr<node> > nodes;
 
-                if (iequals(in->type(), vrml_media_type)
-                    || iequals(in->type(), x_vrml_media_type)) {
-                    Vrml97Scanner scanner(*in);
-                    Vrml97Parser parser(scanner, in->url());
-                    parser.vrmlScene(*this->scene_, nodes);
-                } else if (iequals(in->type(), x3d_vrml_media_type)) {
-                    X3DVrmlScanner scanner(*in);
-                    X3DVrmlParser parser(scanner, in->url());
-                    parser.vrmlScene(*this->scene_, nodes);
-                } else {
-                    throw bad_media_type(in->type());
-                }
+                parse_vrml(*in, in->url(), in->type(), *this->scene_, nodes);
 
                 shared_ptr<openvrml::proto_node_class> proto_node_class;
                 for (vector<string>::const_iterator alt_uri =
@@ -8215,30 +8246,10 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
 
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
-        using boost::algorithm::iequals;
-
         assert(this->scene_);
-
-        if (iequals(type, vrml_media_type)
-            || iequals(type, x_vrml_media_type)) {
-            Vrml97Scanner scanner(in);
-            Vrml97Parser parser(scanner, stream_id);
-            parser.vrmlScene(*this->scene_, nodes);
-        } else if (iequals(type, x3d_vrml_media_type)) {
-            X3DVrmlScanner scanner(in);
-            X3DVrmlParser parser(scanner, stream_id);
-            parser.vrmlScene(*this->scene_, nodes);
-        } else {
-            throw std::invalid_argument("unrecognized content type \""
-                                        + type + "\"");
-        }
-    } catch (antlr::RecognitionException & ex) {
-        throw invalid_vrml(ex.getFilename(),
-                           ex.getLine(),
-                           ex.getColumn(),
-                           ex.getMessage());
-    } catch (antlr::ANTLRException & ex) {
-        throw std::runtime_error(ex.getMessage());
+        parse_vrml(in, stream_id, type, *this->scene_, nodes);
+    } catch (openvrml::bad_media_type & ex) {
+        throw std::invalid_argument(ex.what());
     }
     return nodes;
 }
@@ -9055,29 +9066,8 @@ void openvrml::scene::load(resource_istream & in)
     boost::recursive_mutex::scoped_lock nodes_lock(this->nodes_mutex_);
     boost::mutex::scoped_lock url_lock(this->url_mutex_);
 
-    try {
-        using boost::algorithm::iequals;
-
-        this->url_ = in.url();
-
-        if (iequals(in.type(), vrml_media_type)
-            || iequals(in.type(), x_vrml_media_type)) {
-            Vrml97Scanner scanner(in);
-            Vrml97Parser parser(scanner, this->url_);
-            parser.vrmlScene(*this, this->nodes_);
-        } else if (iequals(in.type(), x3d_vrml_media_type)) {
-            X3DVrmlScanner scanner(in);
-            X3DVrmlParser parser(scanner, this->url_);
-            parser.vrmlScene(*this, this->nodes_);
-        } else {
-            throw bad_media_type(in.type());
-        }
-    } catch (antlr::RecognitionException & ex) {
-        throw invalid_vrml(ex.getFilename(),
-                           ex.getLine(),
-                           ex.getColumn(),
-                           ex.getMessage());
-    }
+    this->url_ = in.url();
+    parse_vrml(in, in.url(), in.type(), *this, this->nodes_);
 }
 
 /**
