@@ -1,5 +1,10 @@
 2006-03-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/field_value.cpp: Doc-comment
+	improvements.
+
+2006-03-05 Braden McDaniel  <braden@endoframe.com>
+
 	Moved definitions of FieldValue::field_value_type_id to
 	field_value.h.
 

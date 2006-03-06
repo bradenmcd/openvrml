@@ -57,6 +57,9 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @ingroup fieldvalues
  *
  * @brief Abstract base class for the VRML field types.
+ *
+ * Subclasses of @c field_value are models of @link FieldValueConcept
+ * Field Value@endlink. These subclasses have copy-on-write semantics.
  */
 
 /**
@@ -228,6 +231,12 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  */
 
 /**
+ * @var openvrml::field_value::sfdouble_id
+ *
+ * @brief Designates an @c sfdouble.
+ */
+
+/**
  * @var openvrml::field_value::sfimage_id
  *
  * @brief Designates an <code>sfimage</code>.
@@ -270,9 +279,21 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  */
 
 /**
+ * @var openvrml::field_value::sfvec2d_id
+ *
+ * @brief Designates an @c sfvec2d.
+ */
+
+/**
  * @var openvrml::field_value::sfvec3f_id
  *
  * @brief Designates an <code>sfvec3f</code>.
+ */
+
+/**
+ * @var openvrml::field_value::sfvec3d_id
+ *
+ * @brief Designates an @c sfvec3d.
  */
 
 /**
@@ -297,6 +318,12 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  * @var openvrml::field_value::mffloat_id
  *
  * @brief Designates an <code>mffloat</code>.
+ */
+
+/**
+ * @var openvrml::field_value::mfdouble_id
+ *
+ * @brief Designates an @c mfdouble.
  */
 
 /**
@@ -342,9 +369,21 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  */
 
 /**
+ * @var openvrml::field_value::mfvec2d_id
+ *
+ * @brief Designates an @c mfvec2d.
+ */
+
+/**
  * @var openvrml::field_value::mfvec3f_id
  *
  * @brief Designates an <code>mfvec3f</code>.
+ */
+
+/**
+ * @var openvrml::field_value::mfvec3d_id
+ *
+ * @brief Designates an @c mfvec3d.
  */
 
 namespace {
