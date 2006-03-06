@@ -27,6 +27,10 @@
 
 namespace openvrml {
 
+    OPENVRML_API extern const char vrml_media_type[11];
+    OPENVRML_API extern const char x_vrml_media_type[15];
+    OPENVRML_API extern const char x3d_vrml_media_type[15];
+
     class OPENVRML_API resource_istream : public std::istream {
     public:
         virtual ~resource_istream() = 0;
@@ -294,7 +298,7 @@ namespace openvrml {
         virtual void description(const std::string & description);
         const std::vector<boost::intrusive_ptr<node> >
         create_vrml_from_stream(std::istream & in,
-                                const std::string & type = "model/vrml");
+                                const std::string & type = vrml_media_type);
         void create_vrml_from_url(const std::vector<std::string> & url,
                                   const boost::intrusive_ptr<node> & node,
                                   const std::string & event)

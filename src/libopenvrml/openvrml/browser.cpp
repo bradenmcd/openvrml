@@ -5571,14 +5571,13 @@ namespace {
         try {
             using openvrml::unreachable_url;
             try {
+                using namespace openvrml;
                 using std::auto_ptr;
                 using std::string;
                 using std::vector;
                 using boost::algorithm::iequals;
                 using boost::dynamic_pointer_cast;
                 using boost::shared_ptr;
-                using openvrml::resource_istream;
-                using openvrml::node_class_id;
                 using openvrml_::scope_guard;
                 using openvrml_::make_obj_guard;
 
@@ -5596,19 +5595,19 @@ namespace {
                 // We don't actually do anything with this; but the parser
                 // wants it.
                 //
-                std::vector<boost::intrusive_ptr<openvrml::node> > nodes;
+                std::vector<boost::intrusive_ptr<node> > nodes;
 
-                if (iequals(in->type(), "model/vrml")
-                    || iequals(in->type(), "x-world/x-vrml")) {
+                if (iequals(in->type(), vrml_media_type)
+                    || iequals(in->type(), x_vrml_media_type)) {
                     Vrml97Scanner scanner(*in);
-                    openvrml::Vrml97Parser parser(scanner, in->url());
+                    Vrml97Parser parser(scanner, in->url());
                     parser.vrmlScene(*this->scene_, nodes);
-                } else if (iequals(in->type(), "model/x3d+vrml")) {
+                } else if (iequals(in->type(), x3d_vrml_media_type)) {
                     X3DVrmlScanner scanner(*in);
-                    openvrml::X3DVrmlParser parser(scanner, in->url());
+                    X3DVrmlParser parser(scanner, in->url());
                     parser.vrmlScene(*this->scene_, nodes);
                 } else {
-                    throw openvrml::bad_media_type(in->type());
+                    throw bad_media_type(in->type());
                 }
 
                 shared_ptr<openvrml::proto_node_class> proto_node_class;
@@ -6433,6 +6432,21 @@ openvrml::viewpoint_node * openvrml::externproto_node::to_viewpoint()
  *
  * @brief 1/pi
  */
+
+/**
+ * @brief VRML MIME media type.
+ */
+const char openvrml::vrml_media_type[11] = "model/vrml";
+
+/**
+ * @brief Experimental VRML MIME media type.
+ */
+const char openvrml::x_vrml_media_type[15] = "x-world/x-vrml";
+
+/**
+ * @brief X3D VRML MIME media type.
+ */
+const char openvrml::x3d_vrml_media_type[15] = "model/x3d+vrml";
 
 /**
  * @class openvrml::resource_istream
@@ -8205,12 +8219,12 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
 
         assert(this->scene_);
 
-        if (iequals(type, "model/vrml")
-            || iequals(type, "x-world/x-vrml")) {
+        if (iequals(type, vrml_media_type)
+            || iequals(type, x_vrml_media_type)) {
             Vrml97Scanner scanner(in);
             Vrml97Parser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
-        } else if (iequals(type, "model/x3d+vrml")) {
+        } else if (iequals(type, x3d_vrml_media_type)) {
             X3DVrmlScanner scanner(in);
             X3DVrmlParser parser(scanner, stream_id);
             parser.vrmlScene(*this->scene_, nodes);
@@ -9046,12 +9060,12 @@ void openvrml::scene::load(resource_istream & in)
 
         this->url_ = in.url();
 
-        if (iequals(in.type(), "model/vrml")
-            || iequals(in.type(), "x-world/x-vrml")) {
+        if (iequals(in.type(), vrml_media_type)
+            || iequals(in.type(), x_vrml_media_type)) {
             Vrml97Scanner scanner(in);
             Vrml97Parser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);
-        } else if (iequals(in.type(), "model/x3d+vrml")) {
+        } else if (iequals(in.type(), x3d_vrml_media_type)) {
             X3DVrmlScanner scanner(in);
             X3DVrmlParser parser(scanner, this->url_);
             parser.vrmlScene(*this, this->nodes_);

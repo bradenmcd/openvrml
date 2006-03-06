@@ -1,3 +1,27 @@
+2006-03-06 Braden McDaniel  <braden@endoframe.com>
+
+	Expose constants for the VRML and X3D VRML MIME media types.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::vrml_media_type): Added definition.
+	(openvrml::x_vrml_media_type): Added definition.
+	(openvrml::x3d_vrml_media_type): Added definition.
+	(externproto_node_class::load_proto::operator()() const): Use
+	vrml_media_type, x_vrml_media_type, and x3d_vrml_media_type
+	instead of string literals.
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Use vrml_media_type, x_vrml_media_type, and
+	x3d_vrml_media_type instead of string literals.
+	(openvrml::scene::load(resource_istream &)): Use vrml_media_type,
+	x_vrml_media_type, and x3d_vrml_media_type instead of string
+	literals.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::vrml_media_type): Added declaration.
+	(openvrml::x_vrml_media_type): Added declaration.
+	(openvrml::x3d_vrml_media_type): Added declaration.
+	* tests/parse_vrml97.cpp: Use openvrml::vrml_media_type.
+	* tests/parse_x3dvrml.cpp: Use openvrml::x3d_vrml_media_type.
+
 2006-03-05 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Doxyfile: Set EXAMPLE_PATH.
