@@ -1,5 +1,9 @@
 2006-03-05 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/doxygen-header: Improved appearance of tables.
+
+2006-03-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/field_value.cpp: Doc-comment
 	improvements.
 

@@ -189,6 +189,11 @@ div.tabs a {
 div.tabs a:link, div.tabs a:visited, div.tabs a:active, div.tabs a:hover {
   color: black;
 }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 </style>
 </head>
 <body>
