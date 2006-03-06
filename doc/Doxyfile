@@ -86,7 +86,7 @@ EXCLUDE_PATTERNS       = ScriptJDK.h \
                          Vrml97ParserTokenTypes.hpp \
                          X3DVrmlParser.* \
                          X3DVrmlParserTokenTypes.hpp
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = ../examples
 EXAMPLE_PATTERNS       = 
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = 
