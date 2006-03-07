@@ -1,5 +1,21 @@
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
+	Identify model/vrml, model/x3d+vrml, image/png, and image/jpeg
+	based on the file name extension in test_browser.
+
+	* tests/browser.cpp (create_vrml_from_url()): Use a
+	boost::condition::timed_wait so that the test times out on failure
+	rather than hanging.
+	* tests/test_browser.cpp (test_browser::do_get_resource(const
+	std::string &)::file_resource_istream::file_resource_istream(const
+	std::string &)): Set the failbit if opening the file fails.
+	(test_browser::do_get_resource(const
+	std::string&)::file_resource_istream::do_type() const): Identify
+	model/vrml, model/x3d+vrml, image/png, and image/jpeg based on the
+	file name extension.
+
+2006-03-06 Braden McDaniel  <braden@endoframe.com>
+
 	* examples/sdl_viewer.cpp
 	(browser::do_get_resource(const
 	std::string&)::file_resource_istream::do_type() const): Apply

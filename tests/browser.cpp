@@ -94,7 +94,12 @@ void create_vrml_from_url()
     {
         boost::mutex::scoped_lock lock(mutex);
         while (!listener.received_event()) {
-            listener_received_event.wait(lock);
+            boost::xtime xt;
+            boost::xtime_get(&xt, boost::TIME_UTC);
+            xt.sec += 1;
+            const bool succeeded =
+                listener_received_event.timed_wait(lock, xt);
+            BOOST_REQUIRE(succeeded);
         }
     }
 

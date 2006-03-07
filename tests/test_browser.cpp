@@ -19,6 +19,7 @@
 
 # include <iostream>
 # include <fstream>
+# include <boost/algorithm/string/predicate.hpp>
 # include "test_browser.h"
 
 test_browser::test_browser():
@@ -41,7 +42,9 @@ test_browser::do_get_resource(const std::string & uri)
         explicit file_resource_istream(const std::string & path):
             resource_istream(&this->buf_)
         {
-            this->buf_.open(path.c_str(), ios_base::in);
+            if (!this->buf_.open(path.c_str(), ios_base::in)) {
+                this->setstate(ios_base::failbit);
+            }
         }
 
         void url(const std::string & str) throw (std::bad_alloc)
@@ -57,7 +60,30 @@ test_browser::do_get_resource(const std::string & uri)
 
         virtual const std::string do_type() const throw ()
         {
-            return "application/octet-stream";
+            using std::find;
+            using std::string;
+            using boost::algorithm::iequals;
+            using boost::next;
+            string media_type = "application/octet-stream";
+            const string::const_reverse_iterator dot_pos =
+                find(this->url_.rbegin(), this->url_.rend(), '.');
+            if (dot_pos == this->url_.rend()
+                || next(dot_pos.base()) == this->url_.end()) {
+                return media_type;
+            }
+            const string::const_iterator hash_pos =
+                find(next(dot_pos.base()), this->url_.end(), '#');
+            const string ext(dot_pos.base(), hash_pos);
+            if (iequals(ext, "wrl")) {
+                media_type = "model/vrml";
+            } else if (iequals(ext, "x3dv")) {
+                media_type = "model/x3d+vrml";
+            } else if (iequals(ext, "png")) {
+                media_type = "image/png";
+            } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
+                media_type = "image/jpeg";
+            }
+            return media_type;
         }
 
         virtual bool do_data_available() const throw ()
