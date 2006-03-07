@@ -1002,6 +1002,12 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
+ * @fn openvrml::color_rgba_node * openvrml::node::node_cast<color_rgba_node *>(node * n)
+ *
+ * @brief Cast to a <code>color_rgba_node</code>.
+ */
+
+/**
  * @fn openvrml::coordinate_node * openvrml::node::node_cast<coordinate_node *>(node * n)
  *
  * @brief Cast to a <code>coordinate_node</code>.
@@ -2048,6 +2054,20 @@ openvrml::color_node * openvrml::node::to_color() OPENVRML_NOTHROW
 /**
  * @internal
  *
+ * @brief Cast to a @c color_rgba_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::color_rgba_node * openvrml::node::to_color_rgba() OPENVRML_NOTHROW
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a coordinate_node.
  *
  * Default implementation returns 0.
@@ -2697,6 +2717,17 @@ bool openvrml::delete_route(node & from,
  */
 
 /**
+ * @fn template <> openvrml::color_rgba_node * openvrml::node_cast<openvrml::color_rgba_node *>(node * n)
+ *
+ * @brief Cast to a @c color_rgba_node.
+ *
+ * @param[in] n node.
+ *
+ * @return a @c color_rgba_node pointer to the node pointed to by @p n, or 0 if the
+ *         node is not a @c color_rgba_node.
+ */
+
+/**
  * @fn template <> openvrml::coordinate_node * openvrml::node_cast<openvrml::coordinate_node *>(node * n)
  *
  * @brief Cast to a coordinate_node.
@@ -3213,6 +3244,53 @@ openvrml::color_node * openvrml::color_node::to_color() OPENVRML_NOTHROW
  * @brief Get the color array encapsulated by this node.
  *
  * @return the color array for this node.
+ */
+
+
+/**
+ * @class openvrml::color_rgba_node
+ *
+ * @ingroup nodes
+ *
+ * @brief Abstract base class for RGBA color nodes.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] type  the node_type associated with the node.
+ * @param[in] scope the scope the node belongs to.
+ */
+openvrml::color_rgba_node::
+color_rgba_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope)
+    OPENVRML_NOTHROW:
+    node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::color_rgba_node::~color_rgba_node() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief Cast to a @c color_rgba_node.
+ *
+ * @return a pointer to this @c color_rgba_node.
+ */
+openvrml::color_rgba_node *
+openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
+{
+    return this;
+}
+
+/**
+ * @fn const std::vector<openvrml::color_rgba> & openvrml::color_rgba_node::color() const
+ *
+ * @brief Get the @c color_rgba array encapsulated by this node.
+ *
+ * @return the @c color_rgba array for this node.
  */
 
 

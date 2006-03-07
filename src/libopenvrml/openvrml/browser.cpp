@@ -528,6 +528,7 @@ namespace openvrml {
         virtual bounded_volume_node * to_bounded_volume() OPENVRML_NOTHROW;
         virtual child_node * to_child() OPENVRML_NOTHROW;
         virtual color_node * to_color() OPENVRML_NOTHROW;
+        virtual color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
         virtual coordinate_node * to_coordinate() OPENVRML_NOTHROW;
         virtual font_style_node * to_font_style() OPENVRML_NOTHROW ;
         virtual geometry_node * to_geometry() OPENVRML_NOTHROW;
@@ -1987,6 +1988,19 @@ namespace openvrml {
     }
 
     /**
+     * @brief Cast to a @c color_rgba_node.
+     *
+     * @return a pointer to the first node in the implementation if that node
+     *         is a @c color_rgba_node, or 0 otherwise.
+     */
+    color_rgba_node * proto_node::to_color_rgba() OPENVRML_NOTHROW
+    {
+        assert(!this->impl_nodes.empty());
+        assert(this->impl_nodes[0]);
+        return node_cast<color_rgba_node *>(this->impl_nodes[0].get());
+    }
+
+    /**
      * @brief Cast to a coordinate_node.
      *
      * @return a pointer to the first node in the implementation if that node
@@ -2456,6 +2470,7 @@ namespace openvrml {
             OPENVRML_NOTHROW;
         virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
         virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
+        virtual openvrml::color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
         virtual openvrml::coordinate_node * to_coordinate() OPENVRML_NOTHROW;
         virtual openvrml::font_style_node * to_font_style() OPENVRML_NOTHROW ;
         virtual openvrml::geometry_node * to_geometry() OPENVRML_NOTHROW;
@@ -6218,6 +6233,18 @@ openvrml::child_node * openvrml::externproto_node::to_child() OPENVRML_NOTHROW
 openvrml::color_node * openvrml::externproto_node::to_color() OPENVRML_NOTHROW
 {
     return node_cast<color_node *>(this->proto_node_.get());
+}
+
+/**
+ * @brief Cast to a @c color_rgba_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a @c color_rgba_node, or 0 otherwise.
+ */
+openvrml::color_rgba_node * openvrml::externproto_node::to_color_rgba()
+    OPENVRML_NOTHROW
+{
+    return node_cast<color_rgba_node *>(this->proto_node_.get());
 }
 
 /**

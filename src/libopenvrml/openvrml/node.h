@@ -270,6 +270,7 @@ namespace openvrml {
     class bounded_volume_node;
     class child_node;
     class color_node;
+    class color_rgba_node;
     class coordinate_node;
     class font_style_node;
     class geometry_node;
@@ -315,6 +316,8 @@ namespace openvrml {
         node_cast<bounded_volume_node *>(node * n) OPENVRML_NOTHROW;
         friend child_node * node_cast<child_node *>(node * n) OPENVRML_NOTHROW;
         friend color_node * node_cast<color_node *>(node * n) OPENVRML_NOTHROW;
+        friend color_rgba_node * node_cast<color_rgba_node *>(node * n)
+            OPENVRML_NOTHROW;
         friend coordinate_node * node_cast<coordinate_node *>(node * n)
             OPENVRML_NOTHROW;
         friend font_style_node * node_cast<font_style_node *>(node * n)
@@ -500,6 +503,7 @@ namespace openvrml {
         virtual bounded_volume_node * to_bounded_volume() OPENVRML_NOTHROW;
         virtual child_node * to_child() OPENVRML_NOTHROW;
         virtual color_node * to_color() OPENVRML_NOTHROW;
+        virtual color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
         virtual coordinate_node * to_coordinate() OPENVRML_NOTHROW;
         virtual font_style_node * to_font_style() OPENVRML_NOTHROW ;
         virtual geometry_node * to_geometry() OPENVRML_NOTHROW;
@@ -661,6 +665,15 @@ namespace openvrml {
     {
         return n
             ? n->to_color()
+            : 0;
+    }
+
+    template <>
+    OPENVRML_API inline color_rgba_node * node_cast<color_rgba_node *>(node * n)
+        OPENVRML_NOTHROW
+    {
+        return n
+            ? n->to_color_rgba()
             : 0;
     }
 
@@ -904,6 +917,23 @@ namespace openvrml {
 
     private:
         virtual color_node * to_color() OPENVRML_NOTHROW;
+    };
+
+
+    class OPENVRML_API color_rgba_node : public virtual node {
+    public:
+        virtual ~color_rgba_node() OPENVRML_NOTHROW = 0;
+
+        virtual const std::vector<openvrml::color_rgba> & color_rgba() const
+            OPENVRML_NOTHROW = 0;
+
+    protected:
+        color_rgba_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope)
+            OPENVRML_NOTHROW;
+
+    private:
+        virtual color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
     };
 
 

@@ -1,3 +1,25 @@
+2006-03-07 Braden McDaniel  <braden@endoframe.com>
+
+	Added openvrml::color_rgba_node abstract node type.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::proto_node): Added member function to_color_rgba.
+	(openvrml::externproto_node): Added member function to_color_rgba.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::to_color_rgba()): Added member function.
+	(openvrml::color_rgba_node::color_rgba_node(const node_type &,
+	const boost::shared_ptr<scope> &)): Added constructor.
+	(openvrml::color_rgba_node::~color_rgba_node()): Added destructor.
+	(openvrml::color_rgba_node::to_color_rgba()): Added member
+	function.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Granted friendship to
+	node_cast<color_rgba_node*> specialization; added to_color_rgba
+	virtual member function.
+	(openvrml::node_cast<color_rgba_node *>(node *)): Added
+	specialization.
+	(openvrml::color_rgba_node): Added abstract node class.
+
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
 	Identify model/vrml, model/x3d+vrml, image/png, and image/jpeg
