@@ -5591,29 +5591,31 @@ namespace {
                const std::string & type,
                openvrml::scene & scene,
                std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
-    try {
-        using namespace openvrml;
-        using boost::algorithm::iequals;
+    {
+        try {
+            using namespace openvrml;
+            using boost::algorithm::iequals;
 
-        if (iequals(type, vrml_media_type)
-            || iequals(type, x_vrml_media_type)) {
-            Vrml97Scanner scanner(in);
-            Vrml97Parser parser(scanner, uri);
-            parser.vrmlScene(scene, nodes);
-        } else if (iequals(type, x3d_vrml_media_type)) {
-            X3DVrmlScanner scanner(in);
-            X3DVrmlParser parser(scanner, uri);
-            parser.vrmlScene(scene, nodes);
-        } else {
-            throw bad_media_type(type);
+            if (iequals(type, vrml_media_type)
+                || iequals(type, x_vrml_media_type)) {
+                Vrml97Scanner scanner(in);
+                Vrml97Parser parser(scanner, uri);
+                parser.vrmlScene(scene, nodes);
+            } else if (iequals(type, x3d_vrml_media_type)) {
+                X3DVrmlScanner scanner(in);
+                X3DVrmlParser parser(scanner, uri);
+                parser.vrmlScene(scene, nodes);
+            } else {
+                throw bad_media_type(type);
+            }
+        } catch (antlr::RecognitionException & ex) {
+            throw openvrml::invalid_vrml(ex.getFilename(),
+                                         ex.getLine(),
+                                         ex.getColumn(),
+                                         ex.getMessage());
+        } catch (antlr::ANTLRException & ex) {
+            throw std::runtime_error(ex.getMessage());
         }
-    } catch (antlr::RecognitionException & ex) {
-        throw openvrml::invalid_vrml(ex.getFilename(),
-                                     ex.getLine(),
-                                     ex.getColumn(),
-                                     ex.getMessage());
-    } catch (antlr::ANTLRException & ex) {
-        throw std::runtime_error(ex.getMessage());
     }
 
     struct OPENVRML_LOCAL externproto_node_class::load_proto {
@@ -7470,21 +7472,22 @@ openvrml::browser::node_class_map::shutdown(const double timestamp)
  */
 double openvrml::browser::current_time() OPENVRML_NOTHROW
 {
-    double currentTime;
 # ifdef _WIN32
     _timeb timebuffer;
+#   if defined(_MSC_VER) && (_MSC_VER < 1400)
+    _ftime(&timebuffer);
+#   else
     const errno_t err = _ftime_s(&timebuffer);
     assert(err == 0);
-    currentTime =
-        double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
+#   endif
+    return double(timebuffer.time) + 1.0e-3 * double(timebuffer.millitm);
 # else
     timeval tv;
     const int result = gettimeofday(&tv, 0);
     assert(result == 0);
 
-    currentTime = double(tv.tv_sec) + 1.0e-6 * double(tv.tv_usec);
+    return double(tv.tv_sec) + 1.0e-6 * double(tv.tv_usec);
 # endif
-    return currentTime;
 }
 
 /**

@@ -1,5 +1,18 @@
 2006-03-07 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed to compile with Microsoft cl 13.10.3077.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::current_time()): Only use _ftime_s with cl
+	14.0 and later.
+	(parse_vrml(std::istream &, const std::string &, const
+	std::string&, openvrml::scene,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &)): Removed
+	unnecessary use of function try block; cl 13.10.3077 doesn't like
+	it.
+
+2006-03-07 Braden McDaniel  <braden@endoframe.com>
+
 	Added openvrml::color_rgba_node abstract node type.
 
 	* src/libopenvrml/openvrml/browser.cpp
@@ -70,7 +83,7 @@
 	std::string &)): Delegate to parse_vrml.
 	(openvrml::scene::load(resource_istream &)): Delegate to
 	parse_vrml.
-	
+
 2006-03-06 Braden McDaniel  <braden@endoframe.com>
 
 	Expose constants for the VRML and X3D VRML MIME media types.
