@@ -293,7 +293,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out, const node & n);
 
     template <typename To>
-    OPENVRML_API To node_cast(node * n) OPENVRML_NOTHROW;
+    To node_cast(node * n) OPENVRML_NOTHROW;
 
     class event_listener;
     class event_emitter;
@@ -306,7 +306,8 @@ namespace openvrml {
         friend class proto_node;
         friend class externproto_node;
 
-        friend std::ostream & operator<<(std::ostream & out, const node & n);
+        friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
+                                                      const node & n);
 
         friend script_node * node_cast<script_node *>(node * n)
             OPENVRML_NOTHROW;
@@ -624,8 +625,7 @@ namespace openvrml {
         OPENVRML_THROW1(unsupported_interface);
 
     template <>
-    OPENVRML_API inline script_node * node_cast<script_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline script_node * node_cast<script_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_script()
@@ -633,8 +633,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline appearance_node *
-    node_cast<appearance_node *>(node * n) OPENVRML_NOTHROW
+    inline appearance_node * node_cast<appearance_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_appearance()
@@ -642,8 +642,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline bounded_volume_node *
-    node_cast<bounded_volume_node *>(node * n) OPENVRML_NOTHROW
+    inline bounded_volume_node * node_cast<bounded_volume_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_bounded_volume()
@@ -651,8 +651,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline child_node * node_cast<child_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline child_node * node_cast<child_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_child()
@@ -660,8 +659,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline color_node * node_cast<color_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline color_node * node_cast<color_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_color()
@@ -669,7 +667,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline color_rgba_node * node_cast<color_rgba_node *>(node * n)
+    inline color_rgba_node * node_cast<color_rgba_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -678,8 +676,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline coordinate_node *
-    node_cast<coordinate_node *>(node * n) OPENVRML_NOTHROW
+    inline coordinate_node * node_cast<coordinate_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_coordinate()
@@ -687,8 +685,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline font_style_node *
-    node_cast<font_style_node *>(node * n) OPENVRML_NOTHROW
+    inline font_style_node * node_cast<font_style_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_font_style()
@@ -696,7 +694,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline geometry_node * node_cast<geometry_node *>(node * n)
+    inline geometry_node * node_cast<geometry_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -705,7 +703,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline grouping_node * node_cast<grouping_node *>(node * n)
+    inline grouping_node * node_cast<grouping_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -714,8 +712,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline light_node * node_cast<light_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline light_node * node_cast<light_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_light()
@@ -723,7 +720,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline material_node * node_cast<material_node *>(node * n)
+    inline material_node * node_cast<material_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -732,8 +729,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline navigation_info_node *
-    node_cast<navigation_info_node *>(node * n)
+    inline navigation_info_node * node_cast<navigation_info_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -742,8 +738,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline normal_node * node_cast<normal_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline normal_node * node_cast<normal_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_normal()
@@ -751,7 +746,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline pointing_device_sensor_node *
+    inline pointing_device_sensor_node *
     node_cast<pointing_device_sensor_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
@@ -760,8 +755,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline scoped_light_node *
-    node_cast<scoped_light_node *>(node * n) OPENVRML_NOTHROW
+    inline scoped_light_node * node_cast<scoped_light_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_scoped_light()
@@ -769,8 +764,8 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline sound_source_node *
-    node_cast<sound_source_node *>(node * n) OPENVRML_NOTHROW
+    inline sound_source_node * node_cast<sound_source_node *>(node * n)
+        OPENVRML_NOTHROW
     {
         return n
             ? n->to_sound_source()
@@ -778,8 +773,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline texture_node * node_cast<texture_node *>(node * n)
-        OPENVRML_NOTHROW
+    inline texture_node * node_cast<texture_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
             ? n->to_texture()
@@ -787,7 +781,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline texture_coordinate_node *
+    inline texture_coordinate_node *
     node_cast<texture_coordinate_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
@@ -796,7 +790,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline texture_transform_node *
+    inline texture_transform_node *
     node_cast<texture_transform_node *>(node * n) OPENVRML_NOTHROW
     {
         return n
@@ -805,8 +799,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline time_dependent_node *
-    node_cast<time_dependent_node *>(node * n)
+    inline time_dependent_node * node_cast<time_dependent_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -815,7 +808,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline transform_node * node_cast<transform_node *>(node * n)
+    inline transform_node * node_cast<transform_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
@@ -824,7 +817,7 @@ namespace openvrml {
     }
 
     template <>
-    OPENVRML_API inline viewpoint_node * node_cast<viewpoint_node *>(node * n)
+    inline viewpoint_node * node_cast<viewpoint_node *>(node * n)
         OPENVRML_NOTHROW
     {
         return n
