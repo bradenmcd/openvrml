@@ -1,3 +1,9 @@
+2006-03-09 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner::nextToken()): Use std::ostringstream to compose
+	the token_string rather than appending to a std::string.
+
 2006-03-08 Braden McDaniel  <braden@endoframe.com>
 
 	Protect output and error streams associated with openvrml::browser
