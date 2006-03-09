@@ -244,14 +244,18 @@ namespace openvrml {
         bool modified_;
         mutable boost::mutex modified_mutex_;
 
+        mutable boost::mutex out_mutex_;
+        std::ostream & out_;
+
+        mutable boost::mutex err_mutex_;
+        std::ostream & err_;
+
     protected:
         double frame_rate_;
 
     public:
         static double current_time() OPENVRML_NOTHROW;
 
-        std::ostream & out;
-        std::ostream & err;
         bool flags_need_updating;
 
         browser(std::ostream & out, std::ostream & err)
@@ -334,6 +338,9 @@ namespace openvrml {
         void remove_script(script_node &);
 
         void update_flags();
+
+        void out(const std::string & str);
+        void err(const std::string & str);
 
     protected:
         bool headlight_on();

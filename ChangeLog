@@ -1,4 +1,39 @@
-2006-03-07 Braden McDaniel  <braden@endoframe.com>
+2006-03-08 Braden McDaniel  <braden@endoframe.com>
+
+	Protect output and error streams associated with openvrml::browser
+	with mutexes.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_class::load_proto::operator()() const): Changed
+	to use browser::err function.
+	(openvrml::browser::browser(std::ostream &, std::ostream &)):
+	Initialize private out_ and err_ references.
+	(openvrml::browser::root_scene_loader::operator()() const):
+	Changed to use browser::err function.
+	(openvrml::browser::description(const std::string &)): Changed to
+	use browser::err function.
+	(openvrml::browser::vrml_from_url_creator::operator()() const):
+	Changed to use browser::err function.
+	(openvrml::browser::out(const std::string &)): Added function.
+	(openvrml::browser::err(const std::string &)): Added function.
+	(openvrml::scene::load_scene::operator()() const): Changed to use
+	browser::err function.
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Changed to use browser::err function.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Made output and error members private; added
+	mutexes to protect them; added member functions to send output to
+	the streams.
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::errorReporter(JSContext *, const char *, JSErrorReport *)):
+	Changed to use openvrml::browser::err function.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(text_class::text_class(openvrml::browser &)): Changed to use
+	openvrml::browser::err function.
+	(text_class::~text_class()): Changed to use openvrml::browser::err
+	function.
+
+2006-03-08 Braden McDaniel  <braden@endoframe.com>
 
 	Added DLL build configurations to the Visual C++ 7.1 project
 	files.
@@ -10,7 +45,7 @@
 	* ide-projects/Windows/VisualC7_1/OpenVRML/sdl-viewer/sdl-viewer.vcproj
 	* ide-projects/Windows/VisualC7_1/OpenVRML/test-openvrml/test-openvrml.vcproj
 
-2006-03-07 Braden McDaniel  <braden@endoframe.com>
+2006-03-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.h
 	(openvrml::node_cast<To>(node *)): Removed OPENVRML_API macro.

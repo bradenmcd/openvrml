@@ -3932,6 +3932,7 @@ void errorReporter(JSContext * const cx,
                    JSErrorReport * const errorReport)
 {
     using std::endl;
+    using std::ostringstream;
     using std::string;
 
     js_::script * const script =
@@ -3940,20 +3941,23 @@ void errorReporter(JSContext * const cx,
 
     openvrml::browser & browser = script->script_node().scene()->browser();
 
-    string nodeId = script->script_node().id();
-    if (!nodeId.empty()) {
-        browser.err << nodeId << ": ";
+    ostringstream err_msg;
+
+    const string node_id = script->script_node().id();
+    if (!node_id.empty()) {
+        err_msg << node_id << ": ";
     }
 
     if (errorReport) {
         if (errorReport->filename) {
-            browser.err << errorReport->filename << ": ";
+            err_msg << errorReport->filename << ": ";
         }
-
-        browser.err << errorReport->lineno << ": ";
+        err_msg << errorReport->lineno << ": ";
     }
 
-    browser.err << message << endl;
+    err_msg << message;
+
+    browser.err(err_msg.str());
 }
 
 JSBool floatsToJSArray(const size_t numFloats,

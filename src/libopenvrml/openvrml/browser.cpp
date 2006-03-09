@@ -5633,6 +5633,7 @@ namespace {
             try {
                 using namespace openvrml;
                 using std::auto_ptr;
+                using std::ostringstream;
                 using std::string;
                 using std::vector;
                 using boost::dynamic_pointer_cast;
@@ -5678,9 +5679,9 @@ namespace {
                 }
 
                 if (!proto_node_class) {
-                    this->scene_->browser().err
-                        << "no PROTO definition at <" << in->url() << ">"
-                        << std::endl;
+                    ostringstream err_msg;
+                    err_msg << "no PROTO definition at <" << in->url() << ">";
+                    this->scene_->browser().err(err_msg.str());
                     return;
                 }
 
@@ -5688,7 +5689,7 @@ namespace {
                     ->set_proto_node_class(proto_node_class);
 
             } catch (std::exception & ex) {
-                this->scene_->browser().err << ex.what() << std::endl;
+                this->scene_->browser().err(ex.what());
                 throw unreachable_url();
             } catch (...) {
                 //
@@ -5699,7 +5700,7 @@ namespace {
                 throw unreachable_url();
             }
         } catch (std::exception & ex) {
-            this->scene_->browser().err << ex.what() << std::endl;
+            this->scene_->browser().err(ex.what());
         }
 
     private:
@@ -7491,13 +7492,25 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 }
 
 /**
- * @var std::ostream & openvrml::browser::out
+ * @var boost::mutex openvrml::browser::out_mutex_
+ *
+ * @brief Mutex guarding @a out_.
+ */
+
+/**
+ * @var std::ostream & openvrml::browser::out_
  *
  * @brief Output stream, generally for console output.
  */
 
 /**
- * @var std::ostream & openvrml::browser::err
+ * @var boost::mutex openvrml::browser::err_mutex_
+ *
+ * @brief Mutex guarding @a err_.
+ */
+
+/**
+ * @var std::ostream & openvrml::browser::err_
  *
  * @brief Error output stream.
  */
@@ -7536,9 +7549,9 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     delta_time(DEFAULT_DELTA),
     viewer_(0),
     modified_(false),
+    out_(out),
+    err_(err),
     frame_rate_(0.0),
-    out(out),
-    err(err),
     flags_need_updating(false)
 {
     assert(this->active_viewpoint_);
@@ -8158,16 +8171,16 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
             if (!(*in)) { throw unreachable_url(); }
             browser.set_world(*in);
         } catch (antlr::ANTLRException & ex) {
-            browser.err << ex.getMessage() << endl;
+            browser.err(ex.getMessage());
         } catch (unreachable_url &) {
             throw;
         } catch (std::exception & ex) {
-            browser.err << ex.what() << endl;
+            browser.err(ex.what());
         } catch (...) {
             throw unreachable_url();
         }
     } catch (unreachable_url & ex) {
-        this->browser_->err << ex.what() << std::endl;
+        this->browser_->err(ex.what());
     }
 
 private:
@@ -8202,7 +8215,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
  */
 void openvrml::browser::description(const std::string & description)
 {
-    this->out << description << std::endl;
+    this->out(description);
 }
 
 
@@ -8283,7 +8296,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
             nodes.value(this->browser_->create_vrml_from_stream(*in, in->type()));
             this->listener_->process_event(nodes, browser::current_time());
         } catch (std::exception & ex) {
-            this->browser_->err << ex.what() << std::endl;
+            this->browser_->err(ex.what());
             throw unreachable_url();
         } catch (...) {
             //
@@ -8293,7 +8306,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
             throw unreachable_url();
         }
     } catch (std::exception & ex) {
-        this->browser_->err << ex.what() << std::endl;
+        this->browser_->err(ex.what());
     }
 
 private:
@@ -8701,6 +8714,28 @@ void openvrml::browser::update_flags()
 //  root->updateModified(0x002);
 }
 
+/**
+ * @brief Print a message to the output stream.
+ *
+ * @param[in] str   a string.
+ */
+void openvrml::browser::out(const std::string & str)
+{
+    boost::mutex::scoped_lock(this->out_mutex_);
+    this->out_ << str << std::endl;
+}
+
+/**
+ * @brief Print a message to the error stream.
+ *
+ * @param[in] str   a string.
+ */
+void openvrml::browser::err(const std::string & str)
+{
+    boost::mutex::scoped_lock(this->err_mutex_);
+    this->err_ << str << std::endl;
+}
+
 
 /**
  * @class openvrml::bad_url
@@ -9014,9 +9049,9 @@ struct OPENVRML_LOCAL openvrml::scene::load_scene {
             if (!(*in)) { throw unreachable_url(); }
             scene.load(*in);
         } catch (antlr::ANTLRException & ex) {
-            scene.browser().err << ex.getMessage() << endl;
+            scene.browser().err(ex.getMessage());
         } catch (std::exception & ex) {
-            scene.browser().err << ex.what() << endl;
+            scene.browser().err(ex.what());
             throw unreachable_url();
         } catch (...) {
             throw unreachable_url();
@@ -9024,7 +9059,7 @@ struct OPENVRML_LOCAL openvrml::scene::load_scene {
         scene.nodes(nodes);
         scene.scene_loaded();
     } catch (std::exception & ex) {
-        this->scene_->browser().err << ex.what() << std::endl;
+        this->scene_->browser().err(ex.what());
     }
 
 private:
@@ -9292,7 +9327,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
             if (!(*in)) { throw unreachable_url(); }
             break;
         } catch (bad_url & ex) {
-            this->browser().err << ex.what() << std::endl;
+            this->browser().err(ex.what());
             continue;
         }
     }
