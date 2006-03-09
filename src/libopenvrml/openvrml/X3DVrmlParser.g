@@ -225,7 +225,7 @@ private:
     const std::string uri;
 }
 
-vrmlScene[openvrml::scene & scene,
+vrmlScene[const openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
 options { defaultErrorHandler=false; }
 {
@@ -256,7 +256,7 @@ metaStatement
     :   KEYWORD_META key=stringValue value=stringValue
     ;
 
-statement[openvrml::scene & scene,
+statement[const openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }

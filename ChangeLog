@@ -1,5 +1,69 @@
 2006-03-09 Braden McDaniel  <braden@endoframe.com>
 
+	Changed signature of parsing functions to take a const
+	openvrml::scene.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(vrmlScene): Changed to take a const openvrml::scene reference.
+	(statement): Changed to take a const openvrml::scene reference.
+	(nodeStatement): Changed to take a const openvrml::scene
+	reference.
+	(protoStatement): Changed to take a const openvrml::scene
+	reference.
+	(proto): Changed to take a const openvrml::scene reference.
+	(protoInterfaceDeclaration): Changed to take a const
+	openvrml::scene reference.
+	(protoBody): Changed to take a const openvrml::scene reference.
+	(protoBodyStatement): Changed to take a const openvrml::scene
+	reference.
+	(protoNodeStatement): Changed to take a const openvrml::scene
+	reference.
+	(externproto): Changed to take a const openvrml::scene reference.
+	(node): Changed to take a const openvrml::scene reference.
+	(nodeBodyElement): Changed to take a const openvrml::scene
+	reference.
+	(scriptInterfaceDeclaration): Changed to take a const
+	openvrml::scene reference.
+	(scriptFieldInterfaceDeclaration): Changed to take a const
+	openvrml::scene reference.
+	(protoNode): Changed to take a const openvrml::scene reference.
+	(protoNodeBodyElement): Changed to take a const openvrml::scene
+	reference.
+	(protoScriptInterfaceDeclaration): Changed to take a const
+	openvrml::scene reference.
+	(protoScriptFieldInterfaceDeclaration): Changed to take a const
+	openvrml::scene reference.
+	(fieldValue): Changed to take a const openvrml::scene reference.
+	(protoFieldValue): Changed to take a const openvrml::scene
+	reference.
+	(nodeFieldValue): Changed to take a const openvrml::scene
+	reference.
+	(protoNodeFieldValue): Changed to take a const openvrml::scene
+	reference.
+	(sfNodeValue): Changed to take a const openvrml::scene reference.
+	(protoSfNodeValue): Changed to take a const openvrml::scene
+	reference.
+	(mfNodeValue): Changed to take a const openvrml::scene reference.
+	(protoMfNodeValue): Changed to take a const openvrml::scene
+	reference.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Changed to take a const openvrml::scene reference.
+	(statement): Changed to take a const openvrml::scene reference.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(parse_vrml(std::istream &, const std::string &, const
+	std::string&, const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &)): Changed to
+	take a const openvrml::scene reference.
+	(externproto_node_class::load_proto::load_proto(externproto_node_class&,
+	const openvrml::scene &, const std::vector<std::string> &)):
+	Changed to take a const openvrml::scene reference.
+	(externproto_node_class(const openvrml::scene &, const
+	std::vector<std::string> &)): Changed to take a const
+	openvrml::scene reference.
+
+2006-03-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/Vrml97Parser.g
 	(Vrml97Scanner::nextToken()): Use std::ostringstream to compose
 	the token_string rather than appending to a std::string.

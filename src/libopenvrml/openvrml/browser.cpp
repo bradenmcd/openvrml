@@ -2292,7 +2292,7 @@ namespace {
         boost::scoped_ptr<boost::thread> load_proto_thread_;
 
     public:
-        externproto_node_class(openvrml::scene & scene,
+        externproto_node_class(const openvrml::scene & scene,
                                const std::vector<std::string> & uris)
             OPENVRML_THROW1(boost::thread_resource_error);
         virtual ~externproto_node_class() OPENVRML_NOTHROW;
@@ -5579,7 +5579,7 @@ namespace {
      * @param[in,out] in    input stream.
      * @param[in]     uri   URI associated with @p in.
      * @param[in]     type  MIME media type of the data to be read from @p in.
-     * @param[in,out] scene a scene.
+     * @param[in]     scene a scene.
      * @param[out]    nodes the root nodes.
      *
      * @exception openvrml::bad_media_type 
@@ -5589,7 +5589,7 @@ namespace {
     parse_vrml(std::istream & in,
                const std::string & uri,
                const std::string & type,
-               openvrml::scene & scene,
+               const openvrml::scene & scene,
                std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
     {
         try {
@@ -5620,7 +5620,7 @@ namespace {
 
     struct OPENVRML_LOCAL externproto_node_class::load_proto {
         load_proto(externproto_node_class & externproto_class,
-                   openvrml::scene & scene,
+                   const openvrml::scene & scene,
                    const std::vector<std::string> & alt_uris):
             externproto_node_class_(&externproto_class),
             scene_(&scene),
@@ -5705,7 +5705,7 @@ namespace {
 
     private:
         externproto_node_class * externproto_node_class_;
-        openvrml::scene * scene_;
+        const openvrml::scene * scene_;
         std::vector<std::string> alt_uris_;
     };
 
@@ -5719,7 +5719,7 @@ namespace {
      *                                          cannot be started.
      */
     externproto_node_class::
-    externproto_node_class(openvrml::scene & scene,
+    externproto_node_class(const openvrml::scene & scene,
                            const std::vector<std::string> & uris)
         OPENVRML_THROW1(boost::thread_resource_error):
         node_class(scene.browser()),

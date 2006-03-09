@@ -612,7 +612,7 @@ private:
     const std::string uri;
 }
 
-vrmlScene[openvrml::scene & scene,
+vrmlScene[const openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
 options { defaultErrorHandler=false; }
 {
@@ -623,7 +623,7 @@ options { defaultErrorHandler=false; }
     :   (statement[scene, nodes, root_scope])*
     ;
 
-statement[openvrml::scene & scene,
+statement[const openvrml::scene & scene,
           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
           const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
@@ -640,7 +640,7 @@ options { defaultErrorHandler=false; }
     |   routeStatement[*scope]
     ;
 
-nodeStatement[openvrml::scene & scene,
+nodeStatement[const openvrml::scene & scene,
               const boost::shared_ptr<openvrml::scope> & scope,
               const std::string & script_node_id]
 returns [boost::intrusive_ptr<openvrml::node> n]
@@ -670,7 +670,7 @@ options { defaultErrorHandler=false; }
     |   n=node[scene, scope, std::string()]
     ;
 
-protoStatement[openvrml::scene & scene,
+protoStatement[const openvrml::scene & scene,
                const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
     //
@@ -681,7 +681,7 @@ options { defaultErrorHandler=false; }
     |   proto[scene, scope]
     ;
 
-proto[openvrml::scene & scene,
+proto[const openvrml::scene & scene,
       const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
@@ -757,7 +757,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoInterfaceDeclaration[
-    openvrml::scene & scene,
+    const openvrml::scene & scene,
     const boost::shared_ptr<const openvrml::scope> & outer_scope,
     const std::string & proto_id,
     node_interface_set & interfaces,
@@ -828,7 +828,7 @@ options { defaultErrorHandler=false; }
     |   KEYWORD_EXPOSEDFIELD { it = node_interface::exposedfield_id; }
     ;
 
-protoBody[openvrml::scene & scene,
+protoBody[const openvrml::scene & scene,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
           std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
@@ -862,7 +862,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoBodyStatement[
-    openvrml::scene & scene,
+    const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & interfaces,
     std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
@@ -888,7 +888,7 @@ options { defaultErrorHandler=false; }
     |   protoRouteStatement[*scope, routes]
     ;
 
-protoNodeStatement[openvrml::scene & scene,
+protoNodeStatement[const openvrml::scene & scene,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & proto_interfaces,
                    proto_node_class::is_map_t & is_map,
@@ -932,7 +932,7 @@ options { defaultErrorHandler=false; }
                     std::string()]
     ;
 
-externproto[openvrml::scene & scene,
+externproto[const openvrml::scene & scene,
             const boost::shared_ptr<openvrml::scope> & scope]
 options { defaultErrorHandler=false; }
 {
@@ -1190,7 +1190,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-node[openvrml::scene & scene,
+node[const openvrml::scene & scene,
      const boost::shared_ptr<openvrml::scope> & scope,
      const std::string & node_id]
 returns [boost::intrusive_ptr<openvrml::node> n]
@@ -1262,7 +1262,7 @@ options { defaultErrorHandler = false; }
                                 LT(1)->getColumn());
     }
 
-nodeBodyElement[openvrml::scene & scene,
+nodeBodyElement[const openvrml::scene & scene,
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & interfaces,
                 initial_value_map & initial_values]
@@ -1309,7 +1309,7 @@ options { defaultErrorHandler=false; }
     |   protoStatement[scene, scope]
     ;
 
-scriptInterfaceDeclaration[openvrml::scene & scene,
+scriptInterfaceDeclaration[const openvrml::scene & scene,
                            const boost::shared_ptr<openvrml::scope> & scope,
                            node_interface_set & interfaces,
                            initial_value_map & initial_values,
@@ -1343,7 +1343,7 @@ options { defaultErrorHandler=false; }
     ;
 
 scriptFieldInterfaceDeclaration[
-    openvrml::scene & scene,
+    const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     node_interface_set & interfaces,
     initial_value_map & initial_values,
@@ -1380,7 +1380,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-protoNode[openvrml::scene & scene,
+protoNode[const openvrml::scene & scene,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & proto_interfaces,
           proto_node_class::is_map_t & is_map,
@@ -1455,7 +1455,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-protoNodeBodyElement[openvrml::scene & scene,
+protoNodeBodyElement[const openvrml::scene & scene,
                      const boost::shared_ptr<openvrml::scope> & scope,
                      const node_interface_set & proto_interfaces,
                      proto_node_class::is_map_t & is_map,
@@ -1513,7 +1513,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoScriptInterfaceDeclaration[
-    openvrml::scene & scene,
+    const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & proto_interfaces,
     proto_node_class::is_map_t & is_map,
@@ -1555,7 +1555,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoScriptFieldInterfaceDeclaration[
-    openvrml::scene & scene,
+    const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & proto_interfaces,
     proto_node_class::is_map_t & is_map,
@@ -1646,7 +1646,7 @@ options { defaultErrorHandler=false; }
     |   FIELDTYPE_SFVEC3F    { ft = field_value::sfvec3f_id; }
     ;
 
-fieldValue[openvrml::scene & scene,
+fieldValue[const openvrml::scene & scene,
            const boost::shared_ptr<openvrml::scope> & scope,
            const openvrml::field_value::type_id ft,
            const std::string & node_id]
@@ -1657,7 +1657,7 @@ options { defaultErrorHandler=false; }
     |   fv=nonNodeFieldValue[ft]
     ;
 
-protoFieldValue[openvrml::scene & scene,
+protoFieldValue[const openvrml::scene & scene,
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & proto_interfaces,
                 proto_node_class::is_map_t & is_map,
@@ -1702,7 +1702,7 @@ options { defaultErrorHandler=false; }
     |   fv=mfVec3fValue
     ;
 
-nodeFieldValue[openvrml::scene & scene,
+nodeFieldValue[const openvrml::scene & scene,
                const boost::shared_ptr<openvrml::scope> & scope,
                openvrml::field_value::type_id ft,
                const std::string & script_node_id]
@@ -1717,7 +1717,7 @@ options { defaultErrorHandler=false; }
     |   fv=mfNodeValue[scene, scope, script_node_id]
     ;
 
-protoNodeFieldValue[openvrml::scene & scene,
+protoNodeFieldValue[const openvrml::scene & scene,
                     const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & proto_interfaces,
                     proto_node_class::is_map_t & is_map,
@@ -1908,7 +1908,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-sfNodeValue[openvrml::scene & scene,
+sfNodeValue[const openvrml::scene & scene,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> snv]
@@ -1922,7 +1922,7 @@ options { defaultErrorHandler=false; }
     |   KEYWORD_NULL { snv.reset(new sfnode); }
     ;
 
-protoSfNodeValue[openvrml::scene & scene,
+protoSfNodeValue[const openvrml::scene & scene,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
@@ -1946,7 +1946,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-mfNodeValue[openvrml::scene & scene,
+mfNodeValue[const openvrml::scene & scene,
             const boost::shared_ptr<openvrml::scope> & scope,
             const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> mnv =
@@ -1972,7 +1972,7 @@ options { defaultErrorHandler=false; }
         }
     ;
 
-protoMfNodeValue[openvrml::scene & scene,
+protoMfNodeValue[const openvrml::scene & scene,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
                  proto_node_class::is_map_t & is_map,
