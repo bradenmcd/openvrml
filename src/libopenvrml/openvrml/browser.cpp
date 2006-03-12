@@ -8128,7 +8128,6 @@ openvrml::browser::replace_world(
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     const double now = browser::current_time();
-    this->scene_->shutdown(now);
     this->scene_->nodes(nodes);
     this->scene_->initialize(now);
     //
@@ -9223,17 +9222,31 @@ openvrml::scene::nodes() const throw()
 /**
  * @brief Set the root nodes for the scene.
  *
- * @todo This function should validate that the nodes in @p n are all part of
- *       the same profile as <code>scene::profile</code>.
+ * This function calls @c scene::shutdown to shut down the scene's existing nodes.
  *
  * @param[in] n the new root nodes for the scene.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::invalid_argument if any of the nodes in @p n has already been
+ *                                  initialized.
+ * @exception std::bad_alloc        if memory allocation fails.
  */
 void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
-    OPENVRML_THROW1(std::bad_alloc)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
+    class check_uninitialized_traverser : public node_traverser {
+    private:
+        virtual void on_entering(node & n)
+        {
+            if (n.scene()) {
+                throw std::invalid_argument("node already initialized");
+            }
+        }
+    } check_uninitialized;
+    check_uninitialized.traverse(n);
+
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    const double now = browser::current_time();
+    this->shutdown(now);
     this->nodes_ = n;
 }
 

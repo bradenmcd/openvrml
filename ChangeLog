@@ -1,5 +1,21 @@
 2006-03-12 Braden McDaniel  <braden@endoframe.com>
 
+	Shut down the existing nodes before replacing them in the
+	openvrml::scene::nodes mutator.
+
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::scene): Changed node mutator to throw
+	std::invalid_argument if the argument nodes are already
+	initialized.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::nodes(const
+	std::vector<boost::intrusive_ptr<node> > &)): Throw
+	std::invalid_argument if any of the nodes in the argument vector
+	is already initialized; call shutdown for the existing nodes
+	before replacing them.
+
+2006-03-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::initialize(double)): "Fail" silently if a scene
 	root node is not a child node.  This is consistent with the
