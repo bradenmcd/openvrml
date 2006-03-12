@@ -9137,9 +9137,9 @@ void openvrml::scene::initialize(const double timestamp)
          ++node) {
         assert(*node);
         (*node)->initialize(*this, timestamp);
-        child_node * const child = node_cast<child_node *>(node->get());
-        assert(child);
-        child->relocate();
+        if (child_node * const child = node_cast<child_node *>(node->get())) {
+            child->relocate();
+        }
     }
 }
 

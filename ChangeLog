@@ -1,5 +1,13 @@
 2006-03-12 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::initialize(double)): "Fail" silently if a scene
+	root node is not a child node.  This is consistent with the
+	existing policy in OpenVRML: nodes that aren't the proper type
+	simply don't get rendered.
+
+2006-03-12 Braden McDaniel  <braden@endoframe.com>
+
 	Allow access to the root scene.
 
 	* src/libopenvrml/openvrml/browser.cpp
