@@ -268,9 +268,8 @@ namespace openvrml {
         const boost::shared_ptr<openvrml::node_class>
         node_class(const node_class_id & id) const OPENVRML_NOTHROW;
 
-        const std::vector<boost::intrusive_ptr<node> > & root_nodes() const
-            OPENVRML_NOTHROW;
-        const scope * root_scope() const OPENVRML_NOTHROW;
+        scene * root_scene() const OPENVRML_NOTHROW;
+
         const node_path find_node(const node & n) const
             OPENVRML_THROW1(std::bad_alloc);
         viewpoint_node & active_viewpoint() const OPENVRML_NOTHROW;

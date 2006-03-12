@@ -1,5 +1,18 @@
 2006-03-12 Braden McDaniel  <braden@endoframe.com>
 
+	Allow access to the root scene.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::root_scene() const): Added function: access
+	the root scene.
+	(openvrml::browser::root_nodes() const): Removed function.
+	(openvrml::browser::root_scope() const): Removed function.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Removed root_nodes and root_scope accessors;
+	added root_scene accessor.
+
+2006-03-12 Braden McDaniel  <braden@endoframe.com>
+
 	Store scene metadata (in X3D scenes).
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g

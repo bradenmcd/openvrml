@@ -7625,29 +7625,14 @@ openvrml::browser::node_class(const node_class_id & id) const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the root nodes for the browser.
+ * @brief Get the root scene.
  *
- * @return the root nodes for the browser.
+ * @return the root scene, or 0 if no scene is loaded.
  */
-const std::vector<boost::intrusive_ptr<openvrml::node> > &
-openvrml::browser::root_nodes() const
-    OPENVRML_NOTHROW
+openvrml::scene * openvrml::browser::root_scene() const OPENVRML_NOTHROW
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->nodes();
-}
-
-/**
- * @brief Get the root scope.
- *
- * @return the root scope.
- */
-const openvrml::scope * openvrml::browser::root_scope() const OPENVRML_NOTHROW
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    assert(this->scene_);
-    return this->scene_->root_scope();
+    return this->scene_.get();
 }
 
 /**
