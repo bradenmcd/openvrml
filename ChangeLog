@@ -1,3 +1,37 @@
+2006-03-12 Braden McDaniel  <braden@endoframe.com>
+
+	Store scene metadata (in X3D scenes).
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(vrmlScene): Added meta_data out-parameter; unused here, but
+	needed for X3DVrmlParser.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Added meta_data out-parameter, passed to metaStatement.
+	(metaStatement): Put meta data into the meta_data map.
+	* src/libopenvrml/openvrml/browser.cpp
+	(parse_vrml(std::istream &, const std::string &, const
+	std::string&, const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &,
+	std::map<std::string, std::string &)): Added meta out-parameter
+	for scene metadata.
+	(externproto_node_class::load_proto::operator()() const): Pass a
+	dummy metadata map to parse_vrml.
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Pass a dummy metadata map to parse_vrml.
+	(openvrml::scene::load(resource_istream &)): Pass the scene
+	metadata map to parse_vrml.
+	(openvrml::scene::meta(const std::string &) const): Added
+	function: metadata accessor.
+	(openvrml::scene::meta(const std::string &, const std::string &)):
+	Added function: metadata mutator.
+	(openvrml::scene::meta_keys() const): Added function: get a vector
+	of the metadata keys.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::scene): Added meta_ member to store scene metadata and
+	meta_mutex_ to protect it; added meta accessor and mutator
+	functions to add entries to the map and retrieve them; added
+	meta_keys member function to get a vector of the keys in the map.
+
 2006-03-09 Braden McDaniel  <braden@endoframe.com>
 
 	Changed signature of parsing functions to take a const
@@ -49,7 +83,6 @@
 	* src/libopenvrml/openvrml/X3DVrmlParser.g
 	(vrmlScene): Changed to take a const openvrml::scene reference.
 	(statement): Changed to take a const openvrml::scene reference.
-
 	* src/libopenvrml/openvrml/browser.cpp
 	(parse_vrml(std::istream &, const std::string &, const
 	std::string&, const openvrml::scene &,

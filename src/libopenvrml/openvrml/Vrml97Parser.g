@@ -613,9 +613,12 @@ private:
 }
 
 vrmlScene[const openvrml::scene & scene,
-          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+          std::map<std::string, std::string> & meta_data]
 options { defaultErrorHandler=false; }
 {
+    boost::ignore_unused_variable_warning(meta_data);
+
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
         create_root_scope(scene.browser(), this->uri);
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);

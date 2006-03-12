@@ -5581,6 +5581,7 @@ namespace {
      * @param[in]     type  MIME media type of the data to be read from @p in.
      * @param[in]     scene a scene.
      * @param[out]    nodes the root nodes.
+     * @param[out]    meta  the scene metadata.
      *
      * @exception openvrml::bad_media_type 
      * @exception openvrml::invalid_vrml
@@ -5590,7 +5591,8 @@ namespace {
                const std::string & uri,
                const std::string & type,
                const openvrml::scene & scene,
-               std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
+               std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+               std::map<std::string, std::string> & meta)
     {
         try {
             using namespace openvrml;
@@ -5600,11 +5602,11 @@ namespace {
                 || iequals(type, x_vrml_media_type)) {
                 Vrml97Scanner scanner(in);
                 Vrml97Parser parser(scanner, uri);
-                parser.vrmlScene(scene, nodes);
+                parser.vrmlScene(scene, nodes, meta);
             } else if (iequals(type, x3d_vrml_media_type)) {
                 X3DVrmlScanner scanner(in);
                 X3DVrmlParser parser(scanner, uri);
-                parser.vrmlScene(scene, nodes);
+                parser.vrmlScene(scene, nodes, meta);
             } else {
                 throw bad_media_type(type);
             }
@@ -5652,12 +5654,14 @@ namespace {
                 if (!(*in)) { throw unreachable_url(); }
 
                 //
-                // We don't actually do anything with this; but the parser
-                // wants it.
+                // We don't actually do anything with these; but the parser
+                // wants them.
                 //
-                std::vector<boost::intrusive_ptr<node> > nodes;
+                vector<boost::intrusive_ptr<node> > nodes;
+                std::map<string, string> meta;
 
-                parse_vrml(*in, in->url(), in->type(), *this->scene_, nodes);
+                parse_vrml(*in, in->url(), in->type(),
+                           *this->scene_, nodes, meta);
 
                 shared_ptr<openvrml::proto_node_class> proto_node_class;
                 for (vector<string>::const_iterator alt_uri =
@@ -8266,7 +8270,8 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
         assert(this->scene_);
-        parse_vrml(in, stream_id, type, *this->scene_, nodes);
+        std::map<string, string> meta;
+        parse_vrml(in, stream_id, type, *this->scene_, nodes, meta);
     } catch (openvrml::bad_media_type & ex) {
         throw std::invalid_argument(ex.what());
     }
@@ -8901,6 +8906,22 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  * @a uri may be a relative or an absolute reference.
  */
 
+/**
+ * @internal
+ *
+ * @var boost::mutex openvrml::scene::meta_mutex_
+ *
+ * @brief Mutex protecting @a meta_.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::map<std::string, std::string> openvrml::scene::meta_
+ *
+ * @brief Scene metadata map.
+ */
+
 namespace {
 
     class OPENVRML_LOCAL bad_path : public openvrml::bad_url {
@@ -9106,10 +9127,12 @@ void openvrml::scene::load(const std::vector<std::string> & url)
 void openvrml::scene::load(resource_istream & in)
 {
     boost::recursive_mutex::scoped_lock nodes_lock(this->nodes_mutex_);
-    boost::mutex::scoped_lock url_lock(this->url_mutex_);
+    boost::mutex::scoped_lock
+        url_lock(this->url_mutex_),
+        meta_lock(this->meta_mutex_);
 
     this->url_ = in.url();
-    parse_vrml(in, in.url(), in.type(), *this, this->nodes_);
+    parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
 }
 
 /**
@@ -9133,6 +9156,71 @@ void openvrml::scene::initialize(const double timestamp)
         assert(child);
         child->relocate();
     }
+}
+
+/**
+ * @brief Get metadata.
+ *
+ * @param[in] key   metadata key.
+ *
+ * @return the metadata value associated with @p key.
+ *
+ * @exception std::invalid_argument if there is no value associated with
+ *                                  @p key.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+const std::string openvrml::scene::meta(const std::string & key) const
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->meta_mutex_);
+
+    using std::map;
+    using std::string;
+
+    const map<string, string>::const_iterator pos = this->meta_.find(key);
+    if (pos == this->meta_.end()) {
+        throw std::invalid_argument("no metadata value associated with \""
+                                    + key + "\"");
+    }
+    return pos->second;
+}
+
+/**
+ * @brief Set metadata.
+ *
+ * @param[in] key   metadata key.
+ * @param[in] value metadata value.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
+void openvrml::scene::meta(const std::string & key, const std::string & value)
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->meta_mutex_);
+    this->meta_[key] = value;
+}
+
+/**
+ * @brief Get the metadata keys.
+ *
+ * @return the metadata keys.
+ */
+const std::vector<std::string> openvrml::scene::meta_keys() const
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->meta_mutex_);
+
+    using std::map;
+    using std::string;
+    using std::vector;
+
+    vector<string> result;
+    for (map<string, string>::const_iterator entry = this->meta_.begin();
+         entry != this->meta_.end();
+         ++entry) {
+        result.push_back(entry->first);
+    }
+    return result;
 }
 
 /**

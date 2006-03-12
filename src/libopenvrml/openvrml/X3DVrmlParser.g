@@ -226,7 +226,8 @@ private:
 }
 
 vrmlScene[const openvrml::scene & scene,
-          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes]
+          std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+          std::map<std::string, std::string> & meta_data]
 options { defaultErrorHandler=false; }
 {
     std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
@@ -234,7 +235,7 @@ options { defaultErrorHandler=false; }
     const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
 }
     :   profileStatement
-        (componentStatement)* (metaStatement)*
+        (componentStatement)* (metaStatement[meta_data])*
         (statement[scene, nodes, root_scope])*
     ;
 
@@ -249,11 +250,13 @@ componentStatement
     :   KEYWORD_COMPONENT ID COLON level=intValue
     ;
 
-metaStatement
+metaStatement[std::map<std::string, std::string> & meta_data]
 {
     std::string key, value;
 }
-    :   KEYWORD_META key=stringValue value=stringValue
+    :   KEYWORD_META key=stringValue value=stringValue {
+            meta_data[key] = value;
+        }
     ;
 
 statement[const openvrml::scene & scene,

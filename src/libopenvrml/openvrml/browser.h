@@ -363,6 +363,9 @@ namespace openvrml {
         mutable boost::mutex url_mutex_;
         std::string url_;
 
+        mutable boost::mutex meta_mutex_;
+        std::map<std::string, std::string> meta_;
+
     public:
         explicit scene(openvrml::browser & browser, scene * parent = 0)
             OPENVRML_NOTHROW;
@@ -374,6 +377,12 @@ namespace openvrml {
             OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         void load(resource_istream & in);
         void initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        const std::string meta(const std::string & key) const
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+        void meta(const std::string & key, const std::string & value)
+            OPENVRML_THROW1(std::bad_alloc);
+        const std::vector<std::string> meta_keys() const
+            OPENVRML_THROW1(std::bad_alloc);
         const std::vector<boost::intrusive_ptr<node> > & nodes() const
             OPENVRML_NOTHROW;
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
