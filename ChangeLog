@@ -1,3 +1,10 @@
+2006-03-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner::nextToken()): Use ostream::put and
+	char_traits<T>::to_char_type to prevent chars from being treated
+	as ints.
+
 2006-03-12 Braden McDaniel  <braden@endoframe.com>
 
 	Shut down the existing nodes before replacing them in the
