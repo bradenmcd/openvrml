@@ -1,3 +1,53 @@
+2006-03-17 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for X3D Core profile.  Substantially modified patch
+	from Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added x3d_core.h.
+	(libopenvrml_la_SOURCES): Added x3d_core.cpp.
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(vrmlScene): Changed to use profile_registry.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Construct the root scope based on the profile.
+	(profileStatement): Return the profile id.
+	* src/libopenvrml/openvrml/browser.cpp
+	(create_root_scope(const openvrml::browser &, const
+	std::string&)): Removed function; moved logic to
+	profile::create_root_scope and vrml97_component::add_to_scope..
+	(profile): Added class to represent an X3D profile.
+	(vrml97_profile): Added class; a profile that corresponds to the
+	set of nodes available in VRML97.
+	(x3d_core_profile): Added class; corresponds to the X3D Core
+	profile.
+	(component): Added class to represent an X3D component.
+	(profile_registry_): A registry of profiles supported by OpenVRML.
+	(profile_registry::profile_registry()): Add the recognized
+	profiles to the map.
+	(component::~component()): Added destructor.
+	(component::add_scope_entry(const openvrml::browser &, const
+	char*, const openvrml::node_interface_set &, const char *,
+	openvrml::scope &) const): Added function; add a node_type to a
+	scope.
+	(openvrml::browser::browser(std::ostream &, std::ostream &)):
+	Register the X3D Core component node implementations.
+	(vrml97_component): Added class; a component that corresponds to
+	the set of nodes available in VRML97.
+	(vrml97_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types in the
+	component to a scope.
+	(x3d_core_component): Added class; corresponds to the X3D Core
+	component.
+	(x3d_core_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types in the
+	component to a scope.
+	(component_registry_): A registry of components supported by
+	OpenVRML.
+	* src/libopenvrml/openvrml/x3d_core.cpp: Added file; X3D Core
+	component node implementations.
+	* src/libopenvrml/openvrml/x3d_core.h: Added file; register the
+	X3D Core component node implementations.
+
 2006-03-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g

@@ -230,17 +230,25 @@ vrmlScene[const openvrml::scene & scene,
           std::map<std::string, std::string> & meta_data]
 options { defaultErrorHandler=false; }
 {
-    std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
-        create_root_scope(scene.browser(), this->uri);
-    const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
+    std::string profile_id;
 }
-    :   profileStatement
+    :   profile_id=profileStatement {
+            const profile & p = ::profile_registry_.at(profile_id);
+            std::auto_ptr<scope> root_scope_auto_ptr =
+                p.create_root_scope(scene.browser(), this->uri);
+            const boost::shared_ptr<scope> root_scope(root_scope_auto_ptr);
+        }
         (componentStatement)* (metaStatement[meta_data])*
         (statement[scene, nodes, root_scope])*
     ;
+    exception
+    catch [boost::bad_ptr_container_operation &] {
+        throw antlr::SemanticException("unrecognized profile \""
+                                       + profile_id + "\"");
+    }
 
-profileStatement
-    :   KEYWORD_PROFILE id:ID
+profileStatement returns [std::string profile_id]
+    :   KEYWORD_PROFILE id:ID { profile_id = id->getText(); }
     ;
 
 componentStatement

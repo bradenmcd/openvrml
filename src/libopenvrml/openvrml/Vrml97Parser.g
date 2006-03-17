@@ -625,9 +625,10 @@ options { defaultErrorHandler=false; }
 {
     boost::ignore_unused_variable_warning(meta_data);
 
-    std::auto_ptr<openvrml::scope> root_scope_auto_ptr =
-        create_root_scope(scene.browser(), this->uri);
-    const boost::shared_ptr<openvrml::scope> root_scope(root_scope_auto_ptr);
+    const profile & p = ::profile_registry_.at(vrml97_profile::id);
+    std::auto_ptr<scope> root_scope_auto_ptr =
+        p.create_root_scope(scene.browser(), this->uri);
+    const boost::shared_ptr<scope> root_scope(root_scope_auto_ptr);
 }
     :   (statement[scene, nodes, root_scope])*
     ;
