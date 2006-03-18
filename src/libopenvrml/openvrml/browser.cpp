@@ -7732,7 +7732,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
             } catch (...) {
                 throw unreachable_url();
             }
-            if (!(*in)) { throw unreachable_url(); }
+            if (!in.get() || !(*in)) { throw unreachable_url(); }
             break;
         } catch (bad_url & ex) {
             this->browser().err(ex.what());
