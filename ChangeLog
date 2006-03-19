@@ -1,5 +1,21 @@
 2006-03-18 Braden McDaniel  <braden@endoframe.com>
 
+	Added component support to the parser.  Modified patch from Andrew
+	Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Pass the browser and scope to componentStatement.
+	(profileStatement): Disable the defaultErrorHandler.
+	(componentStatement): Disable the defaultErrorHandler; added
+	semantic action to add the node types in the component to the root
+	scope.
+	* src/libopenvrml/openvrml/browser.cpp: Moved definition of
+	component_registry_ to be before the parsers are included.
+	* tests/testsuite.at: Added basic test for parsing X3D COMPONENT
+	statements.
+
+2006-03-18 Braden McDaniel  <braden@endoframe.com>
+
 	Centralize node_class registration.
 
 	* src/libopenvrml/openvrml/browser.cpp

@@ -3881,6 +3881,14 @@ namespace {
         succeeded = this->base_type::insert(key, new x3d_core_profile).second;
         assert(succeeded);
     }
+
+    const class OPENVRML_LOCAL component_registry : boost::ptr_map<std::string,
+                                                                   component> {
+    public:
+        component_registry();
+
+        using base_type::at;
+    } component_registry_;
 } // namespace
 
 //
@@ -9720,14 +9728,6 @@ namespace {
         }
     }
 
-
-    const class OPENVRML_LOCAL component_registry : boost::ptr_map<std::string,
-                                                                   component> {
-    public:
-        component_registry();
-
-        using base_type::at;
-    } component_registry_;
 
     component_registry::component_registry()
     {

@@ -238,7 +238,8 @@ options { defaultErrorHandler=false; }
                 p.create_root_scope(scene.browser(), this->uri);
             const boost::shared_ptr<scope> root_scope(root_scope_auto_ptr);
         }
-        (componentStatement)* (metaStatement[meta_data])*
+        (componentStatement[scene.browser(), *root_scope])* 
+        (metaStatement[meta_data])*
         (statement[scene, nodes, root_scope])*
     ;
     exception
@@ -248,15 +249,25 @@ options { defaultErrorHandler=false; }
     }
 
 profileStatement returns [std::string profile_id]
+options { defaultErrorHandler=false; }
     :   KEYWORD_PROFILE id:ID { profile_id = id->getText(); }
     ;
 
-componentStatement
+componentStatement[openvrml::browser & browser, openvrml::scope & scope]
+options { defaultErrorHandler=false; }
 {
-    size_t level;
-}
-    :   KEYWORD_COMPONENT ID COLON level=intValue
+    int level;
+} 
+    :   KEYWORD_COMPONENT id:ID COLON level=intValue {
+            const component & c = component_registry_.at(id->getText());
+            c.add_to_scope(browser, scope, level);
+        }
     ;
+    exception
+    catch [boost::bad_ptr_container_operation &] {
+        throw antlr::SemanticException("unrecognized component \""
+                                       + id->getText() + "\"");
+    }
 
 metaStatement[std::map<std::string, std::string> & meta_data]
 {
