@@ -245,7 +245,10 @@ options { defaultErrorHandler=false; }
     exception
     catch [boost::bad_ptr_container_operation &] {
         throw antlr::SemanticException("unrecognized profile \""
-                                       + profile_id + "\"");
+                                       + profile_id + "\"",
+                                       this->uri,
+                                       LT(1)->getLine(),
+                                       LT(1)->getColumn());
     }
 
 profileStatement returns [std::string profile_id]
@@ -266,7 +269,10 @@ options { defaultErrorHandler=false; }
     exception
     catch [boost::bad_ptr_container_operation &] {
         throw antlr::SemanticException("unrecognized component \""
-                                       + id->getText() + "\"");
+                                       + id->getText() + "\"",
+                                       this->uri,
+                                       id->getLine(),
+                                       id->getColumn());
     }
 
 metaStatement[std::map<std::string, std::string> & meta_data]

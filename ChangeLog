@@ -1,3 +1,11 @@
+2006-03-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(vrmlScene): Construct antlr::SemanticException to include file
+	name, line, and column information.
+	(componentStatement): Construct antlr::SemanticException to
+	include file name, line, and column information.
+
 2006-03-18 Braden McDaniel  <braden@endoframe.com>
 
 	Added component support to the parser.  Modified patch from Andrew
