@@ -1,5 +1,19 @@
 2006-03-18 Braden McDaniel  <braden@endoframe.com>
 
+	Centralize node_class registration.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(register_node_classes(openvrml::browser &)): Added function;
+	register node_classes.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(register_vrml97_node_classes(openvrml::browser &)): Renamed
+	function from register_node_classes.
+	* src/libopenvrml/openvrml/vrml97node.h
+	(register_vrml97_node_classes(openvrml::browser &)): Renamed
+	function from register_node_classes.
+
+2006-03-18 Braden McDaniel  <braden@endoframe.com>
+
 	Handle the case where openvrml::browser::get_resource returns a null
 	pointer.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>

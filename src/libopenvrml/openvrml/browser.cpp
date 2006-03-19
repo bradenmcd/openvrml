@@ -5851,6 +5851,14 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
  * ancestors.
  */
 
+namespace {
+    void OPENVRML_LOCAL register_node_classes(openvrml::browser & b)
+    {
+        register_core_node_classes(b);
+        register_vrml97_node_classes(b);
+    }
+}
+
 /**
  * @brief Constructor.
  *
@@ -5881,7 +5889,6 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
 {
     assert(this->active_viewpoint_);
     assert(this->active_navigation_info_);
-    register_core_node_classes(*this);
     register_node_classes(*this);
 }
 

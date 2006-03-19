@@ -1005,7 +1005,7 @@ namespace {
     };
 }
 
-void register_node_classes(openvrml::browser & b)
+void register_vrml97_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
