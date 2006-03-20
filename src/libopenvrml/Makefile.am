@@ -19,7 +19,9 @@ openvrml_include_HEADERS = \
         openvrml/frustum.h \
         openvrml/node_impl_util.h \
         openvrml/vrml97node.h \
-        openvrml/x3d_core.h
+        openvrml/x3d_core.h \
+        openvrml/x3d_rendering.h \
+        openvrml/x3d_texturing.h
 
 VRML97PARSER_BUILT_SOURCEFILES = \
         openvrml/Vrml97Parser.cpp \
@@ -91,7 +93,9 @@ libopenvrml_la_SOURCES = \
         openvrml/frustum.cpp \
         openvrml/node_impl_util.cpp \
         openvrml/vrml97node.cpp \
-        openvrml/x3d_core.cpp
+        openvrml/x3d_core.cpp \
+        openvrml/x3d_rendering.cpp \
+        openvrml/x3d_texturing.cpp
 
 libopenvrml_la_LDFLAGS = \
         -version-info $(LIBRARY_VERSION) \

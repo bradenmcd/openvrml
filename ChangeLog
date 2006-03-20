@@ -1,5 +1,104 @@
 2006-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	Added support for constructing X3D Interchange profile scenes.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/x3d_rendering.h and
+	openvrml/x3d_texturing.h.
+	(libopenvrml_la_SOURCES): Added openvrml/x3d_rendering.cpp and
+	openvrml/x3d_texturing.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_interchange_profile): Added class to correspond to the X3D
+	Interchange profile.
+	(profile_registry::profile_registry()): Add
+	x3d_interchange_profile to the registry.
+	(register_node_classes(openvrml::browser &)): Register
+	X3D-specific rendering and texturing node_classes.
+	(x3d_time_component): Added class to correspond to the X3D Time
+	component.
+	(x3d_time_component::id): Component identifier.
+	(x3d_time_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Time component to the scope.
+	(x3d_grouping_component): Added class to correspond to the X3D
+	Grouping component.
+	(x3d_grouping_component::id): Component identifier.
+	(x3d_grouping_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Grouping component to the scope.
+	(x3d_rendering_component): Added class to correspond to the X3D
+	Rendering component.
+	(x3d_rendering_component::id): Component identifier.
+	(x3d_rendering_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Rendering component to the scope.
+	(x3d_shape_component): Added class to correspond to the X3D Shape
+	component.
+	(x3d_shape_component::id): Component identifier.
+	(x3d_shape_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Shape component to the scope.
+	(x3d_geometry3d_component): Added class to correspond to the X3D
+	Geometry3D component.
+	(x3d_geometry3d_component::id): Component identifier.
+	(x3d_geometry3d_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Geometry3D component to the scope.
+	(x3d_lighting_component): Added class to correspond to the X3D
+	Lighting component.
+	(x3d_lighting_component::id): Component identifier.
+	(x3d_lighting_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Lighting component to the scope.
+	(x3d_texturing_component): Added class to correspond to the X3D
+	Texturing component.
+	(x3d_texturing_component::id): Component identifier.
+	(x3d_texturing_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Texturing component to the scope.
+	(x3d_interpolation_component): Added class to correspond to the
+	X3D Interpolation component.
+	(x3d_interpolation_component::id): Component identifier.
+	(x3d_interpolation_component::add_to_scope(const openvrml::browser
+	&, openvrml::scope &, int) const): Add the node_types defined for
+	the Interpolation component to the scope.
+	(x3d_navigation_component): Added class to correspond to the X3D
+	Navigation component.
+	(x3d_navigation_component::id): Component identifier.
+	(x3d_navigation_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	Navigation component to the scope.
+	(x3d_environmental_effects_component): Added class to correspond
+	to the X3D EnvironmentalEffects component.
+	(x3d_environmental_effects_component::id): Component identifier.
+	(x3d_environmental_effects_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Add the
+	node_types defined for the EnvironmentalEffects component to the
+	scope.
+	(component_registry::component_registry()): Add to the registry:
+	x3d_time_component, x3d_grouping_component,
+	x3d_rendering_component, x3d_shape_component,
+	x3d_geometry3d_component, x3d_lighting_component,
+	x3d_texturing_component, x3d_interpolation_component,
+	x3d_navigation_component, x3d_environmental_effects_component.
+	(x3d_interchange_profile::id): Profile identifier.
+	(x3d_interchange_profile::x3d_interchange_profile()): Add
+	components to profile definition.
+	* src/libopenvrml/openvrml/x3d_rendering.cpp: Added file;
+	implementations of Rendering component level 1, 2, and 3 nodes
+	that are not also VRML97 nodes.
+	* src/libopenvrml/openvrml/x3d_rendering.h: Added file; expose
+	node class registration function.
+	* src/libopenvrml/openvrml/x3d_texturing.cpp: Added file;
+	implementations of Texturing component level 1 and 2 nodes that
+	are not also VRML97 nodes.
+	* src/libopenvrml/openvrml/x3d_texturing.h: Added file; expose
+	node class registration function.
+	* tests/testsuite.at: Added test of minimal X3D Interchange world.
+
+2006-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/X3DVrmlParser.g
 	(vrmlScene): Construct antlr::SemanticException to include file
 	name, line, and column information.

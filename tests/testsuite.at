@@ -185,3 +185,11 @@ COMPONENT VRML97:1
 ]])
 AT_CHECK([parse-x3dvrml < x3d+vrml97-component.x3dv])
 AT_CLEANUP
+
+AT_SETUP([Minimal Interchange world])
+AT_DATA([minimal-interchange.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Interchange
+]])
+AT_CHECK([parse-x3dvrml < minimal-interchange.x3dv])
+AT_CLEANUP
