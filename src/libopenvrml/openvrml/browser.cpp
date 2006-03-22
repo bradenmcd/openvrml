@@ -3875,7 +3875,7 @@ namespace {
     public:
         profile_registry();
 
-        using base_type::at;
+        using boost::ptr_map<std::string, profile>::at;
     } profile_registry_;
 
     profile_registry::profile_registry()
@@ -3902,7 +3902,7 @@ namespace {
     public:
         component_registry();
 
-        using base_type::at;
+        using boost::ptr_map<std::string, component>::at;
     } component_registry_;
 } // namespace
 

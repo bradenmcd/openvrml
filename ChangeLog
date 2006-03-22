@@ -1,3 +1,11 @@
+2006-03-22 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for gcc 4.1.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(profile_registry): Eliminated use of private type "base_type".
+	(component_registry): Eliminated use of private type "base_type".
+
 2006-03-19 Braden McDaniel  <braden@endoframe.com>
 
 	Added support for constructing X3D Interchange profile scenes.
