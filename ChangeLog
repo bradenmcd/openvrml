@@ -1,5 +1,15 @@
 2006-03-22 Braden McDaniel  <braden@endoframe.com>
 
+	Added ColorRGBA node to level 1 of the X3D Rendering component.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_rendering_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the ColorRGBA node to level 1.
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	(color_rgba_class): Added ColorRGBA node_class.
+
+2006-03-22 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for gcc 4.1.
 
 	* src/libopenvrml/openvrml/browser.cpp

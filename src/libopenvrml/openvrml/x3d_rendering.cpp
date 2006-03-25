@@ -37,6 +37,22 @@ using namespace std;
 namespace {
 
     /**
+     * @brief Class object for ColorRGBA nodes.
+     */
+    class OPENVRML_LOCAL color_rgba_class : public node_class {
+    public:
+        explicit color_rgba_class(openvrml::browser & browser);
+        virtual ~color_rgba_class() throw ();
+
+    private:
+        virtual const boost::shared_ptr<node_type>
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
+            throw (unsupported_interface, std::bad_alloc);
+    };
+
+
+    /**
      * @brief Class object for IndexedTriangleFanSet nodes.
      */
     class OPENVRML_LOCAL indexed_triangle_fan_set_class : public node_class {
@@ -136,6 +152,8 @@ void register_rendering_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
+    b.add_node_class("urn:X-openvrml:node:ColorRGBA",
+                     shared_ptr<node_class>(new color_rgba_class(b)));
     b.add_node_class("urn:X-openvrml:node:IndexedTriangleFanSet",
                      shared_ptr<node_class>(new indexed_triangle_fan_set_class(b)));
     b.add_node_class("urn:X-openvrml:node:IndexedTriangleSet",
@@ -408,6 +426,98 @@ namespace {
 
         void recalc_bsphere();
     };
+
+
+    /**
+     * @brief Construct.
+     *
+     * @param browser the browser associated with this color_rgba_class.
+     */
+    color_rgba_class::color_rgba_class(openvrml::browser & browser):
+        node_class(browser)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    color_rgba_class::~color_rgba_class() throw ()
+    {}
+
+    /**
+     * @brief Create a node_type.
+     *
+     * @param id            the name for the new node_type.
+     * @param interfaces    the interfaces for the new node_type.
+     *
+     * @return a node_type_ptr to a node_type capable of creating ColorRGBA nodes.
+     *
+     * @exception unsupported_interface if @p interfaces includes an interface
+     *                                  not supported by color_rgba_class.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
+    const boost::shared_ptr<openvrml::node_type>
+    color_rgba_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
+        throw (unsupported_interface, std::bad_alloc)
+    {
+        typedef boost::array<node_interface, 2> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfcolorrgba_id,
+                           "color")
+        };    
+        typedef node_type_impl<color_rgba_node> node_type_t;
+
+        const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+        node_type_t & the_node_type = static_cast<node_type_t &>(*type);
+        
+        for (node_interface_set::const_iterator interface(interfaces.begin());
+             interface != interfaces.end();
+             ++interface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
+                            &color_rgba_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
+                            &color_rgba_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
+                            &color_rgba_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
+                            &color_rgba_node::color_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
+                            &color_rgba_node::color_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
+                            &color_rgba_node::color_)));
+            } else {
+                throw unsupported_interface(*interface);
+            }
+        }        
+        return type;
+    }
+
 
     /**
      * @brief Construct.

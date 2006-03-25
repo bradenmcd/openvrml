@@ -9993,6 +9993,28 @@ namespace {
             }
 
             //
+            // ColorRGBA node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfcolorrgba_id,
+                                   "color")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 2);
+                add_scope_entry(b,
+                                "ColorRGBA",
+                                interface_set,
+                                "urn:X-openvrml:node:ColorRGBA",
+                                scope);
+            }
+
+            //
             // Coordinate node
             //
             {
