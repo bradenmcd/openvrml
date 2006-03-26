@@ -193,3 +193,11 @@ PROFILE Interchange
 ]])
 AT_CHECK([parse-x3dvrml < minimal-interchange.x3dv])
 AT_CLEANUP
+
+AT_SETUP([Minimal Interactive world])
+AT_DATA([minimal-interactive.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Interactive
+]])
+AT_CHECK([parse-x3dvrml < minimal-interactive.x3dv])
+AT_CLEANUP

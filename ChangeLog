@@ -1,4 +1,65 @@
-2006-03-22 Braden McDaniel  <braden@endoframe.com>
+2006-03-26 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for constructing X3D Interactive profile scenes.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/x3d_key_device_sensor.h
+	and openvrml/x3d_event_utilities.h.
+	(libopenvrml_la_SOURCES): Added openvrml/x3d_key_device_sensor.cpp
+	and openvrml/x3d_event_utilities.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_interactive_profile): Added class corresponding to the X3D
+	Interactive profile.
+	(profile_registry::profile_registry()): Add the
+	x3d_interactive_profile to the registry.
+	(register_node_classes(openvrml::browser &)): Register the
+	KeyDeviceSensor and EventUtilities component node implementations.
+	(x3d_pointing_device_sensor_component): Added class corresponding
+	to the X3D PointingDeviceSensor component.
+	(x3d_pointing_device_sensor_component::id): Component id.
+	(x3d_pointing_device_sensor_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Add the
+	node_types defined for the PointingDeviceSensor component to the
+	scope.
+	(x3d_key_device_sensor_component): Added class corresponding to
+	the X3D KeyDeviceSensor component.
+	(x3d_key_device_sensor_component::id): Component id.
+	(x3d_key_device_sensor_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Add the
+	node_types defined for the KeyDeviceSensor component to the scope.
+	(x3d_environmental_sensor_component): Added class corresponding to
+	the X3D EnvironmentalSensor component.
+	(x3d_environmental_sensor_component::id): Component id.
+	(x3d_environmental_sensor_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Add the
+	node_types defined for the EnvironmentalSensor component to the
+	scope.
+	(x3d_event_utilities_component): Added class corresponding to the
+	X3D EventUtilities component.
+	(x3d_event_utilities_component::id): Component id.
+	(x3d_event_utilities_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Add the
+	node_types defined for the EventUtilities component to the scope.
+	(component_registry::component_registry()): Register
+	x3d_pointing_device_sensor_component,
+	x3d_key_device_sensor_component,
+	x3d_environmental_sensor_component, and
+	x3d_event_utilities_component.
+	(x3d_interactive_profile::id): Profile id.
+	(x3d_interactive_profile::x3d_interactive_profile()): Add
+	components for the Interactive profile.
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp: Added file;
+	implementations of X3D EventUtilities component level 1 nodes.
+	* src/libopenvrml/openvrml/x3d_event_utilities.h: Added file;
+	expose node_class registration function.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp: Added file;
+	implementations of X3D KeyDeviceSensor component level 1 nodes.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.h: Added file;
+	expose node_class registration function.
+	* tests/testsuite.at: Added test of minimal X3D Interactive world.
+
+2006-03-24 Braden McDaniel  <braden@endoframe.com>
 
 	Added ColorRGBA node to level 1 of the X3D Rendering component.
 

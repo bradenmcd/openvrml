@@ -49,6 +49,8 @@
 # include "x3d_core.h"
 # include "x3d_rendering.h"
 # include "x3d_texturing.h"
+# include "x3d_key_device_sensor.h"
+# include "x3d_event_utilities.h"
 
 namespace openvrml {
 
@@ -3850,6 +3852,14 @@ namespace {
     };
 
 
+    class OPENVRML_LOCAL x3d_interactive_profile : public profile {
+    public:
+        static const char * const id;
+
+        x3d_interactive_profile();
+    };
+
+
     class OPENVRML_LOCAL component {
     public:
         virtual ~component() OPENVRML_NOTHROW = 0;
@@ -3894,6 +3904,10 @@ namespace {
         key = x3d_interchange_profile::id;
         succeeded = this->insert(key, new x3d_interchange_profile).second;
         assert(succeeded);
+
+        key = x3d_interactive_profile::id;
+        succeeded = this->insert(key, new x3d_interactive_profile).second;
+        assert(succeeded);
     }
 
 
@@ -3927,7 +3941,7 @@ namespace {
      * @param[out]    nodes the root nodes.
      * @param[out]    meta  the scene metadata.
      *
-     * @exception openvrml::bad_media_type 
+     * @exception openvrml::bad_media_type
      * @exception openvrml::invalid_vrml
      */
     OPENVRML_LOCAL void
@@ -5881,6 +5895,8 @@ namespace {
         register_vrml97_node_classes(b);
         register_rendering_node_classes(b);
         register_texturing_node_classes(b);
+        register_key_device_sensor_node_classes(b);
+        register_event_utilities_node_classes(b);
     }
 }
 
@@ -11286,6 +11302,358 @@ namespace {
     }
 
 
+    class OPENVRML_LOCAL x3d_pointing_device_sensor_component :
+        public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_pointing_device_sensor_component::id =
+        "PointingDeviceSensor";
+
+    void
+    x3d_pointing_device_sensor_component::
+    add_to_scope(const openvrml::browser & b,
+                 openvrml::scope & scope,
+                 const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // CylinderSensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "autoOffset"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "diskAngle"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "maxAngle"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "minAngle"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "offset"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isOver"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfrotation_id,
+                                   "rotation_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "trackPoint_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 12);
+                add_scope_entry(b,
+                                "CylinderSensor",
+                                interface_set,
+                                "urn:X-openvrml:node:CylinderSensor",
+                                scope);
+            }
+
+            //
+            // PlaneSensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "autoOffset"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec2f_id,
+                                   "maxPosition"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec2f_id,
+                                   "minPosition"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "offset"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isOver"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "trackPoint_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "translation_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 11);
+                add_scope_entry(b,
+                                "PlaneSensor",
+                                interface_set,
+                                "urn:X-openvrml:node:PlaneSensor",
+                                scope);
+            }
+
+            //
+            // SphereSensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "autoOffset"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "offset"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isOver"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfrotation_id,
+                                   "rotation_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "trackPoint_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 9);
+                add_scope_entry(b,
+                                "SphereSensor",
+                                interface_set,
+                                "urn:X-openvrml:node:SphereSensor",
+                                scope);
+            }
+
+            //
+            // TouchSensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "hitNormal_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "hitPoint_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec2f_id,
+                                   "hitTexCoord_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isOver"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "touchTime")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 9);
+                add_scope_entry(b,
+                                "TouchSensor",
+                                interface_set,
+                                "urn:X-openvrml:node:TouchSensor",
+                                scope);
+            }
+        }
+    }
+
+
+    class OPENVRML_LOCAL x3d_key_device_sensor_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_key_device_sensor_component::id = "KeyDeviceSensor";
+
+    void
+    x3d_key_device_sensor_component::
+    add_to_scope(const openvrml::browser & b,
+                 openvrml::scope & scope,
+                 const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // KeySensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfint32_id,
+                                   "actionKeyPress"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfint32_id,
+                                   "actionKeyRelease"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "altKey"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "controlKey"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfstring_id,
+                                   "keyPress"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfstring_id,
+                                   "keyRelease"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "shiftKey")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 10);
+                add_scope_entry(b,
+                                "KeySensor",
+                                interface_set,
+                                "urn:X-openvrml:node:KeySensor",
+                                scope);
+            }
+        }
+    }
+
+
+    class OPENVRML_LOCAL x3d_environmental_sensor_component :
+        public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_environmental_sensor_component::id =
+        "EnvironmentalSensor";
+
+    void
+    x3d_environmental_sensor_component::
+    add_to_scope(const openvrml::browser & b,
+                 openvrml::scope & scope,
+                 const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // ProximitySensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "center"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "size"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "enterTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "exitTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "centerOfRotation_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfrotation_id,
+                                   "orientation_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "position_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 10);
+                add_scope_entry(b,
+                                "ProximitySensor",
+                                interface_set,
+                                "urn:X-openvrml:node:ProximitySensor",
+                                scope);
+            }
+        }
+    }
+
+
     class OPENVRML_LOCAL x3d_navigation_component : public component {
     public:
         static const char * const id;
@@ -11482,6 +11850,236 @@ namespace {
     }
 
 
+    class OPENVRML_LOCAL x3d_event_utilities_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_event_utilities_component::id = "EventUtilities";
+
+    void
+    x3d_event_utilities_component::add_to_scope(const openvrml::browser & b,
+                                                openvrml::scope & scope,
+                                                const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // BooleanFilter node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_boolean"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "inputFalse"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "inputNegate"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "inputTrue")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "BooleanFilter",
+                                interface_set,
+                                "urn:X-openvrml:node:BooleanFilter",
+                                scope);
+            }
+
+            //
+            // BooleanSequencer node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "next"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "previous"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "key"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfbool_id,
+                                   "keyValue"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "BooleanSequencer",
+                                interface_set,
+                                "urn:X-openvrml:node:BooleanSequencer",
+                                scope);
+            }
+
+            //
+            // BooleanToggle node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_boolean"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "toggle")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 3);
+                add_scope_entry(b,
+                                "BooleanToggle",
+                                interface_set,
+                                "urn:X-openvrml:node:BooleanToggle",
+                                scope);
+            }
+
+            //
+            // BooleanTrigger node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sftime_id,
+                                   "set_triggerTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "triggerTrue")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 3);
+                add_scope_entry(b,
+                                "BooleanTrigger",
+                                interface_set,
+                                "urn:X-openvrml:node:BooleanTrigger",
+                                scope);
+            }
+
+            //
+            // IntegerSequencer node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "next"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "previous"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "key"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "keyValue"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfint32_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "IntegerSequencer",
+                                interface_set,
+                                "urn:X-openvrml:node:IntegerSequencer",
+                                scope);
+            }
+
+            //
+            // IntegerTrigger node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_boolean"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "integerKey"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfint32_id,
+                                   "triggerValue")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "IntegerTrigger",
+                                interface_set,
+                                "urn:X-openvrml:node:IntegerTrigger",
+                                scope);
+            }
+
+            //
+            // TimeTrigger node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_boolean"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "triggerTime")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 3);
+                add_scope_entry(b,
+                                "TimeTrigger",
+                                interface_set,
+                                "urn:X-openvrml:node:TimeTrigger",
+                                scope);
+            }
+        }
+    }
+
+
     component_registry::component_registry()
     {
         std::string key;
@@ -11527,6 +12125,21 @@ namespace {
         succeeded = this->insert(key, new x3d_interpolation_component).second;
         assert(succeeded);
 
+        key = x3d_pointing_device_sensor_component::id;
+        succeeded =
+            this->insert(key, new x3d_pointing_device_sensor_component).second;
+        assert(succeeded);
+
+        key = x3d_key_device_sensor_component::id;
+        succeeded =
+            this->insert(key, new x3d_key_device_sensor_component).second;
+        assert(succeeded);
+
+        key = x3d_environmental_sensor_component::id;
+        succeeded =
+            this->insert(key, new x3d_environmental_sensor_component).second;
+        assert(succeeded);
+
         key = x3d_navigation_component::id;
         succeeded = this->insert(key, new x3d_navigation_component).second;
         assert(succeeded);
@@ -11534,6 +12147,11 @@ namespace {
         key = x3d_environmental_effects_component::id;
         succeeded =
             this->insert(key, new x3d_environmental_effects_component).second;
+        assert(succeeded);
+
+        key = x3d_event_utilities_component::id;
+        succeeded =
+            this->insert(key, new x3d_event_utilities_component).second;
         assert(succeeded);
     }
 
@@ -11603,5 +12221,27 @@ namespace {
         this->add_component(x3d_interpolation_component::id, 2);
         this->add_component(x3d_navigation_component::id, 1);
         this->add_component(x3d_environmental_effects_component::id, 1);
+    }
+
+
+    const char * const x3d_interactive_profile::id = "Interactive";
+
+    x3d_interactive_profile::x3d_interactive_profile()
+    {
+        this->add_component(x3d_core_component::id, 1);
+        this->add_component(x3d_time_component::id, 1);
+        this->add_component(x3d_grouping_component::id, 2);
+        this->add_component(x3d_rendering_component::id, 2);
+        this->add_component(x3d_shape_component::id, 1);
+        this->add_component(x3d_geometry3d_component::id, 3);
+        this->add_component(x3d_lighting_component::id, 2);
+        this->add_component(x3d_texturing_component::id, 2);
+        this->add_component(x3d_interpolation_component::id, 2);
+        this->add_component(x3d_pointing_device_sensor_component::id, 1);
+        this->add_component(x3d_key_device_sensor_component::id, 1);
+        this->add_component(x3d_environmental_sensor_component::id, 1);
+        this->add_component(x3d_navigation_component::id, 1);
+        this->add_component(x3d_environmental_effects_component::id, 1);
+        this->add_component(x3d_event_utilities_component::id, 1);
     }
 } // namespace
