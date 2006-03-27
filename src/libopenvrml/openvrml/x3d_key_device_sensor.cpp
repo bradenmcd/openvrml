@@ -41,13 +41,13 @@ namespace {
     class OPENVRML_LOCAL key_sensor_class : public node_class {
     public:
         explicit key_sensor_class(openvrml::browser & browser);
-        virtual ~key_sensor_class() throw ();
+        virtual ~key_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -88,7 +88,7 @@ namespace {
     public:
         key_sensor_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~key_sensor_node() throw ();
+        virtual ~key_sensor_node() OPENVRML_NOTHROW;
     };
 
     /**
@@ -103,7 +103,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    key_sensor_class::~key_sensor_class() throw ()
+    key_sensor_class::~key_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -121,7 +121,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     key_sensor_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -363,6 +363,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    key_sensor_node::~key_sensor_node() throw ()
+    key_sensor_node::~key_sensor_node() OPENVRML_NOTHROW
     {}
 }

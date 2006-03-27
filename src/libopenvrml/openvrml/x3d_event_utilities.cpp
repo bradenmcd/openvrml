@@ -41,13 +41,13 @@ namespace {
     class OPENVRML_LOCAL boolean_filter_class : public node_class {
     public:
         explicit boolean_filter_class(openvrml::browser & browser);
-        virtual ~boolean_filter_class() throw ();
+        virtual ~boolean_filter_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -57,13 +57,13 @@ namespace {
     class OPENVRML_LOCAL boolean_sequencer_class : public node_class {
     public:
         explicit boolean_sequencer_class(openvrml::browser & browser);
-        virtual ~boolean_sequencer_class() throw ();
+        virtual ~boolean_sequencer_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -73,13 +73,13 @@ namespace {
     class OPENVRML_LOCAL boolean_toggle_class : public node_class {
     public:
         explicit boolean_toggle_class(openvrml::browser & browser);
-        virtual ~boolean_toggle_class() throw ();
+        virtual ~boolean_toggle_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -89,13 +89,13 @@ namespace {
     class OPENVRML_LOCAL boolean_trigger_class : public node_class {
     public:
         explicit boolean_trigger_class(openvrml::browser & browser);
-        virtual ~boolean_trigger_class() throw ();
+        virtual ~boolean_trigger_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -105,13 +105,13 @@ namespace {
     class OPENVRML_LOCAL integer_sequencer_class : public node_class {
     public:
         explicit integer_sequencer_class(openvrml::browser & browser);
-        virtual ~integer_sequencer_class() throw ();
+        virtual ~integer_sequencer_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -121,13 +121,13 @@ namespace {
     class OPENVRML_LOCAL integer_trigger_class : public node_class {
     public:
         explicit integer_trigger_class(openvrml::browser & browser);
-        virtual ~integer_trigger_class() throw ();
+        virtual ~integer_trigger_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -137,13 +137,13 @@ namespace {
     class OPENVRML_LOCAL time_trigger_class : public node_class {
     public:
         explicit time_trigger_class(openvrml::browser & browser);
-        virtual ~time_trigger_class() throw ();
+        virtual ~time_trigger_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -180,12 +180,12 @@ namespace {
                 public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
-            virtual ~set_boolean_listener() throw ();
+            virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
@@ -199,7 +199,7 @@ namespace {
     public:
         boolean_filter_node(const node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~boolean_filter_node() throw ();
+        virtual ~boolean_filter_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL boolean_sequencer_node :
@@ -212,36 +212,36 @@ namespace {
                               public sfbool_listener {
         public:
             explicit next_listener(self_t & node);
-            virtual ~next_listener() throw ();
+            virtual ~next_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class previous_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
         public:
             explicit previous_listener(self_t & node);
-            virtual ~previous_listener() throw ();
+            virtual ~previous_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         next_listener next_listener_;
@@ -255,7 +255,7 @@ namespace {
     public:
         boolean_sequencer_node(const node_type & type,
                                const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~boolean_sequencer_node() throw ();
+        virtual ~boolean_sequencer_node() OPENVRML_NOTHROW;
     };
 
 
@@ -269,12 +269,12 @@ namespace {
                                      public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
-            virtual ~set_boolean_listener() throw ();
+            virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
@@ -283,7 +283,7 @@ namespace {
     public:
         boolean_toggle_node(const node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~boolean_toggle_node() throw ();
+        virtual ~boolean_toggle_node() OPENVRML_NOTHROW;
     };
 
 
@@ -297,12 +297,12 @@ namespace {
                                           public sftime_listener {
         public:
             explicit set_trigger_time_listener(self_t & node);
-            virtual ~set_trigger_time_listener() throw ();
+            virtual ~set_trigger_time_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sftime & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_trigger_time_listener set_trigger_time_listener_;
@@ -312,7 +312,7 @@ namespace {
     public:
         boolean_trigger_node(const node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~boolean_trigger_node() throw ();
+        virtual ~boolean_trigger_node() OPENVRML_NOTHROW;
     };
 
 
@@ -326,36 +326,36 @@ namespace {
                               public sfbool_listener {
         public:
             explicit next_listener(self_t & node);
-            virtual ~next_listener() throw ();
+            virtual ~next_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class previous_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
         public:
             explicit previous_listener(self_t & node);
-            virtual ~previous_listener() throw ();
+            virtual ~previous_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         next_listener next_listener_;
@@ -370,7 +370,7 @@ namespace {
         integer_sequencer_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~integer_sequencer_node() throw ();
+        virtual ~integer_sequencer_node() OPENVRML_NOTHROW;
     };
 
 
@@ -384,12 +384,12 @@ namespace {
                                      public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
-            virtual ~set_boolean_listener() throw ();
+            virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
@@ -400,7 +400,7 @@ namespace {
     public:
         integer_trigger_node(const node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~integer_trigger_node() throw ();
+        virtual ~integer_trigger_node() OPENVRML_NOTHROW;
     };
 
 
@@ -414,12 +414,12 @@ namespace {
                                      public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
-            virtual ~set_boolean_listener() throw ();
+            virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
@@ -429,7 +429,7 @@ namespace {
     public:
         time_trigger_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~time_trigger_node() throw ();
+        virtual ~time_trigger_node() OPENVRML_NOTHROW;
     };
 
     /**
@@ -444,7 +444,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_filter_class::~boolean_filter_class() throw ()
+    boolean_filter_class::~boolean_filter_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -462,7 +462,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_filter_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -559,7 +559,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_sequencer_class::~boolean_sequencer_class() throw ()
+    boolean_sequencer_class::~boolean_sequencer_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -577,7 +577,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_sequencer_class::do_create_type(const std::string & id,
                                             const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -712,7 +712,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_toggle_class::~boolean_toggle_class() throw ()
+    boolean_toggle_class::~boolean_toggle_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -730,7 +730,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_toggle_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -813,7 +813,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_trigger_class::~boolean_trigger_class() throw ()
+    boolean_trigger_class::~boolean_trigger_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -831,7 +831,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_trigger_class::do_create_type(const std::string & id,
                                           const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -906,7 +906,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    integer_sequencer_class::~integer_sequencer_class() throw ()
+    integer_sequencer_class::~integer_sequencer_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -924,7 +924,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     integer_sequencer_class::do_create_type(const std::string & id,
                                             const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1059,7 +1059,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    integer_trigger_class::~integer_trigger_class() throw ()
+    integer_trigger_class::~integer_trigger_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1077,7 +1077,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     integer_trigger_class::do_create_type(const std::string & id,
                                           const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1171,7 +1171,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    time_trigger_class::~time_trigger_class() throw ()
+    time_trigger_class::~time_trigger_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1189,7 +1189,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     time_trigger_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1297,12 +1297,12 @@ namespace {
     {}
 
     boolean_filter_node::set_boolean_listener::
-    ~set_boolean_listener() throw ()
+    ~set_boolean_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_filter_node::set_boolean_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1330,7 +1330,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_filter_node::~boolean_filter_node() throw ()
+    boolean_filter_node::~boolean_filter_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1390,12 +1390,12 @@ namespace {
     {}
 
     boolean_sequencer_node::next_listener::
-    ~next_listener() throw ()
+    ~next_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_sequencer_node::next_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1408,12 +1408,12 @@ namespace {
     {}
 
     boolean_sequencer_node::previous_listener::
-    ~previous_listener() throw ()
+    ~previous_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_sequencer_node::previous_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1426,12 +1426,12 @@ namespace {
     {}
 
     boolean_sequencer_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_sequencer_node::set_fraction_listener::
     do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1461,7 +1461,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_sequencer_node::~boolean_sequencer_node() throw ()
+    boolean_sequencer_node::~boolean_sequencer_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1497,12 +1497,12 @@ namespace {
     {}
 
     boolean_toggle_node::set_boolean_listener::
-    ~set_boolean_listener() throw ()
+    ~set_boolean_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_toggle_node::set_boolean_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1528,7 +1528,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_toggle_node::~boolean_toggle_node() throw ()
+    boolean_toggle_node::~boolean_toggle_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1564,12 +1564,12 @@ namespace {
     {}
 
     boolean_trigger_node::set_trigger_time_listener::
-    ~set_trigger_time_listener() throw ()
+    ~set_trigger_time_listener() OPENVRML_NOTHROW
     {}
 
     void boolean_trigger_node::set_trigger_time_listener::
     do_process_event(const sftime & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1595,7 +1595,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    boolean_trigger_node::~boolean_trigger_node() throw ()
+    boolean_trigger_node::~boolean_trigger_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1655,12 +1655,12 @@ namespace {
     {}
 
     integer_sequencer_node::next_listener::
-    ~next_listener() throw ()
+    ~next_listener() OPENVRML_NOTHROW
     {}
 
     void integer_sequencer_node::next_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1673,12 +1673,12 @@ namespace {
     {}
 
     integer_sequencer_node::previous_listener::
-    ~previous_listener() throw ()
+    ~previous_listener() OPENVRML_NOTHROW
     {}
 
     void integer_sequencer_node::previous_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1691,12 +1691,12 @@ namespace {
     {}
 
     integer_sequencer_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void integer_sequencer_node::set_fraction_listener::
     do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1726,7 +1726,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    integer_sequencer_node::~integer_sequencer_node() throw ()
+    integer_sequencer_node::~integer_sequencer_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1768,12 +1768,12 @@ namespace {
     {}
 
     integer_trigger_node::set_boolean_listener::
-    ~set_boolean_listener() throw ()
+    ~set_boolean_listener() OPENVRML_NOTHROW
     {}
 
     void integer_trigger_node::set_boolean_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1800,7 +1800,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    integer_trigger_node::~integer_trigger_node() throw ()
+    integer_trigger_node::~integer_trigger_node() OPENVRML_NOTHROW
     {}
 
 
@@ -1836,12 +1836,12 @@ namespace {
     {}
 
     time_trigger_node::set_boolean_listener::
-    ~set_boolean_listener() throw ()
+    ~set_boolean_listener() OPENVRML_NOTHROW
     {}
 
     void time_trigger_node::set_boolean_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -1867,6 +1867,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    time_trigger_node::~time_trigger_node() throw ()
+    time_trigger_node::~time_trigger_node() OPENVRML_NOTHROW
     {}
 }

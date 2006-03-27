@@ -1,5 +1,12 @@
 2006-03-26 Braden McDaniel  <braden@endoframe.com>
 
+	Applied exception specification macros.
+
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+
+2006-03-26 Braden McDaniel  <braden@endoframe.com>
+
 	Added support for constructing X3D Interactive profile scenes.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
 
