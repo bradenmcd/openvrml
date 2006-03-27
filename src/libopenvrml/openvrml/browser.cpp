@@ -3860,6 +3860,14 @@ namespace {
     };
 
 
+    class OPENVRML_LOCAL x3d_mpeg4_profile : public profile {
+    public:
+        static const char * const id;
+
+        x3d_mpeg4_profile();
+    };
+
+
     class OPENVRML_LOCAL component {
     public:
         virtual ~component() OPENVRML_NOTHROW = 0;
@@ -3907,6 +3915,10 @@ namespace {
 
         key = x3d_interactive_profile::id;
         succeeded = this->insert(key, new x3d_interactive_profile).second;
+        assert(succeeded);
+
+        key = x3d_mpeg4_profile::id;
+        succeeded = this->insert(key, new x3d_mpeg4_profile).second;
         assert(succeeded);
     }
 
@@ -9839,6 +9851,101 @@ namespace {
     }
 
 
+    class OPENVRML_LOCAL x3d_networking_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_networking_component::id = "Networking";
+
+    void x3d_networking_component::add_to_scope(const openvrml::browser & b,
+                                                openvrml::scope & scope,
+                                                const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 2) {
+            //
+            // Anchor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "parameter"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 9);
+                add_scope_entry(b,
+                                "Anchor",
+                                interface_set,
+                                "urn:X-openvrml:node:Anchor",
+                                scope);
+            }
+
+            //
+            // Inline node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "load"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "Inline",
+                                interface_set,
+                                "urn:X-openvrml:node:Inline",
+                                scope);
+            }
+        }
+    }
+
+
     class OPENVRML_LOCAL x3d_grouping_component : public component {
     public:
         static const char * const id;
@@ -12097,6 +12204,10 @@ namespace {
         succeeded = this->insert(key, new x3d_time_component).second;
         assert(succeeded);
 
+        key = x3d_networking_component::id;
+        succeeded = this->insert(key, new x3d_networking_component).second;
+        assert(succeeded);
+
         key = x3d_grouping_component::id;
         succeeded = this->insert(key, new x3d_grouping_component).second;
         assert(succeeded);
@@ -12243,5 +12354,26 @@ namespace {
         this->add_component(x3d_navigation_component::id, 1);
         this->add_component(x3d_environmental_effects_component::id, 1);
         this->add_component(x3d_event_utilities_component::id, 1);
+    }
+
+
+    const char * const x3d_mpeg4_profile::id = "MPEG-4";
+
+    x3d_mpeg4_profile::x3d_mpeg4_profile()
+    {
+        this->add_component(x3d_core_component::id, 1);
+        this->add_component(x3d_time_component::id, 1);
+        this->add_component(x3d_networking_component::id, 2);
+        this->add_component(x3d_grouping_component::id, 2);
+        this->add_component(x3d_rendering_component::id, 1);
+        this->add_component(x3d_shape_component::id, 1);
+        this->add_component(x3d_geometry3d_component::id, 2);
+        this->add_component(x3d_lighting_component::id, 2);
+        this->add_component(x3d_texturing_component::id, 2);
+        this->add_component(x3d_interpolation_component::id, 2);
+        this->add_component(x3d_pointing_device_sensor_component::id, 1);
+        this->add_component(x3d_environmental_sensor_component::id, 1);
+        this->add_component(x3d_navigation_component::id, 1);
+        this->add_component(x3d_environmental_effects_component::id, 1);
     }
 } // namespace

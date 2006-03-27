@@ -1,3 +1,27 @@
+2006-03-27 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for constructing X3D MPEG-4 Interactive profile
+	scenes.  From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_mpeg4_profile): Added class corresponding to the X3D MPEG-4
+	Interactive profile.
+	(profile_registry::profile_registry()): Add the x3d_mpeg4_profile
+	to the registry.
+	(x3d_networking_component): Added class corresponding to the X3D
+	Networking component.
+	(x3d_networking_component::id): Component id.
+	(x3d_networking_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Add the node_types defined for the
+	level 2 of the Networking component to the scope.
+	(component_registry::component_registry()): Add the
+	x3d_networking_component to the registry.
+	(x3d_mpeg4_profile::id): Profile id.
+	(x3d_mpeg4_profile::x3d_mpeg4_profile()): Add components for the
+	MPEG-4 Interactive profile.
+	* tests/testsuite.at: Added test of minimal X3D MPEG-4 Interactive
+	world.
+
 2006-03-26 Braden McDaniel  <braden@endoframe.com>
 
 	Applied exception specification macros.

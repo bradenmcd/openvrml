@@ -201,3 +201,11 @@ PROFILE Interactive
 ]])
 AT_CHECK([parse-x3dvrml < minimal-interactive.x3dv])
 AT_CLEANUP
+
+AT_SETUP([Minimal MPEG-4 Interactive world])
+AT_DATA([minimal-mpeg4.x3dv],
+[[#X3D V3.0 utf8
+PROFILE MPEG-4
+]])
+AT_CHECK([parse-x3dvrml < minimal-mpeg4.x3dv])
+AT_CLEANUP
