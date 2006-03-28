@@ -209,3 +209,11 @@ PROFILE MPEG-4
 ]])
 AT_CHECK([parse-x3dvrml < minimal-mpeg4.x3dv])
 AT_CLEANUP
+
+AT_SETUP([Minimal Immersive world])
+AT_DATA([minimal-immersive.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Immersive
+]])
+AT_CHECK([parse-x3dvrml < minimal-immersive.x3dv])
+AT_CLEANUP

@@ -1,3 +1,88 @@
+2006-03-28 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for constructing X3D Immersive profile scenes.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/x3d_networking.h,
+	openvrml/x3d_shape.h, and openvrml/x3d_geometry2d.h.
+	(libopenvrml_la_SOURCES): Added openvrml/x3d_networking.cpp,
+	openvrml/x3d_shape.cpp, and openvrml/x3d_geometry2d.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_immersive_profile): Added class corresponding to the X3D
+	Immersive profile.
+	(profile_registry::profile_registry()): Add the
+	x3d_immersive_profile to the registry.
+	(register_node_classes(openvrml::browser &)): Register the
+	Networking, Shape, and Geometry2D component node implementations.
+	(x3d_networking_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 3
+	nodes: LoadSensor.
+	(x3d_grouping_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 2
+	nodes (Switch).
+	(x3d_shape_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 2
+	nodes: LineProperties.
+	(x3d_geometry3d_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 3 and
+	level 4 nodes: ElevationGrid, Extrusion.
+	(x3d_geometry2d_component): Added class corresponding to the X3D
+	Geometry2D component.
+	(x3d_geometry2d_component::id): Component id.
+	(x3d_geometry2d_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 1
+	Geometry2D nodes: Polyline2D, Polypoint2D, Rectangle2D,
+	TriangleSet2D.
+	(x3d_text_component): Added class corresponding to the X3D Text
+	component.
+	(x3d_text_component::id): Component id.
+	(x3d_text_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 1 Text
+	nodes: FontStyle, Text.
+	(x3d_sound_component): Added class corresponding to the X3D Sound
+	component.
+	(x3d_sound_component::id): Component id.
+	(x3d_sound_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 1 Sound
+	nodes: AudioClip, Sound.
+	(x3d_texturing_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 3
+	Texturing nodes: MovieTexture.
+	(x3d_key_device_sensor_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Added
+	definitions of level 2 KeyDeviceSensor nodes: StringSensor.
+	(x3d_environmental_sensor_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Added
+	definitions of level 2 EnvironmentalSensor nodes: VisbilitySensor.
+	(x3d_navigation_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of level 2
+	Navigation nodes: Billboard, Collision, LOD.
+	(x3d_environmental_effects_component::add_to_scope(const
+	openvrml::browser &, openvrml::scope &, int) const): Added
+	definitions of level 2 EnvironmentalEffects nodes: Fog.
+	(component_registry::component_registry()): Add
+	x3d_geometry2d_component, x3d_text_component, and
+	x3d_sound_component to the registry.
+	(x3d_immersive_profile::id): Profile id.
+	(x3d_immersive_profile::x3d_immersive_profile()): Add components
+	for the X3D Immersive profile.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Added file;
+	Geometry2D component level 1 node implementations.
+	* src/libopenvrml/openvrml/x3d_geometry2d.h: Added file; expose
+	node_class registration function.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp: Added
+	StringSensor node implementation.
+	* src/libopenvrml/openvrml/x3d_networking.cpp: Added file;
+	Networking component level 2 node implementations.
+	* src/libopenvrml/openvrml/x3d_networking.h: Added file; expose
+	node_class registration function.
+	* src/libopenvrml/openvrml/x3d_shape.cpp: Added file; Shape
+	component level 2 node implementations.
+	* src/libopenvrml/openvrml/x3d_shape.h: Added file; expose
+	node_class registration function.
+	* tests/testsuite.at: Added test of minimal X3D Immersive world.
+
 2006-03-27 Braden McDaniel  <braden@endoframe.com>
 
 	Added support for constructing X3D MPEG-4 Interactive profile
