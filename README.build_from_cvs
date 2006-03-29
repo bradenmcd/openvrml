@@ -1,11 +1,11 @@
 1. Execute the script bootstrap.sh:
 
-  $ ./bootstrap.sh
+  $ ./bootstrap
 
 Note: You may need to make the script executable before you can do
 this:
 
-  $ chmod a+x bootstrap.sh
+  $ chmod +x bootstrap
 
 2. Make a directory to store the build files, and change to that
 directory (recommended, but not required):
@@ -17,6 +17,13 @@ directory (recommended, but not required):
 bootstrap script:
 
   $ ../configure
+
+Note: The convenience scripts "configure-gcc-dbg" and
+"configure-gcc-opt" simply invoke "configure" (as above) with some
+frequently used options for debugging and optimized builds,
+respectively, using the GNU compiler.  Read INSTALL for more
+information on using "configure".
+
 
 4. Build it:
 
