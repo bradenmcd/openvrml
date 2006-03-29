@@ -1,3 +1,9 @@
+2006-03-29 Braden McDaniel  <braden@endoframe.com>
+
+	Applied exception specification macros.
+
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+
 2006-03-28 Braden McDaniel  <braden@endoframe.com>
 
 	Added support for constructing X3D Immersive profile scenes.

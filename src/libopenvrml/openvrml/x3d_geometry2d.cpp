@@ -28,7 +28,7 @@
 # include "browser.h"
 # include "node_impl_util.h"
 # include "x3d_geometry2d.h"
-    
+
 using namespace openvrml;
 using namespace openvrml::node_impl_util;
 using namespace std;
@@ -41,13 +41,13 @@ namespace {
     class OPENVRML_LOCAL polyline2d_class : public node_class {
     public:
         explicit polyline2d_class(openvrml::browser & browser);
-        virtual ~polyline2d_class() throw ();
+        virtual ~polyline2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -57,13 +57,13 @@ namespace {
     class OPENVRML_LOCAL polypoint2d_class : public node_class {
     public:
         explicit polypoint2d_class(openvrml::browser & browser);
-        virtual ~polypoint2d_class() throw ();
+        virtual ~polypoint2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -73,13 +73,13 @@ namespace {
     class OPENVRML_LOCAL rectangle2d_class : public node_class {
     public:
         explicit rectangle2d_class(openvrml::browser & browser);
-        virtual ~rectangle2d_class() throw ();
+        virtual ~rectangle2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -89,15 +89,15 @@ namespace {
     class OPENVRML_LOCAL triangle_set2d_class : public node_class {
     public:
         explicit triangle_set2d_class(openvrml::browser & browser);
-        virtual ~triangle_set2d_class() throw ();
+        virtual ~triangle_set2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
-} 
+}
 
 void register_geometry2d_node_classes(openvrml::browser & b)
 {
@@ -127,9 +127,9 @@ namespace {
         mfvec2f line_segments_;
 
     public:
-        polyline2d_node(const node_type & type, 
+        polyline2d_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~polyline2d_node() throw ();
+        virtual ~polyline2d_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -147,9 +147,9 @@ namespace {
         mfvec2f point_;
 
     public:
-        polypoint2d_node(const node_type & type, 
+        polypoint2d_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~polypoint2d_node() throw ();
+        virtual ~polypoint2d_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -168,9 +168,9 @@ namespace {
         sfbool solid_;
 
     public:
-        rectangle2d_node(const node_type & type, 
+        rectangle2d_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~rectangle2d_node() throw ();
+        virtual ~rectangle2d_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -189,9 +189,9 @@ namespace {
         sfbool solid_;
 
     public:
-        triangle_set2d_node(const node_type & type, 
+        triangle_set2d_node(const node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~triangle_set2d_node() throw ();
+        virtual ~triangle_set2d_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -212,7 +212,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    polyline2d_class::~polyline2d_class() throw ()
+    polyline2d_class::~polyline2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -230,7 +230,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     polyline2d_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -240,12 +240,12 @@ namespace {
             node_interface(node_interface::field_id,
                            field_value::mfvec2f_id,
                            "lineSegments")
-        };    
+        };
         typedef node_type_impl<polyline2d_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-        
+
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
@@ -277,7 +277,7 @@ namespace {
             } else {
                 throw unsupported_interface(*interface);
             }
-        }        
+        }
         return type;
     }
 
@@ -293,7 +293,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    polypoint2d_class::~polypoint2d_class() throw ()
+    polypoint2d_class::~polypoint2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -311,7 +311,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     polypoint2d_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -321,12 +321,12 @@ namespace {
             node_interface(node_interface::field_id,
                            field_value::mfvec2f_id,
                            "point")
-        };    
+        };
         typedef node_type_impl<polypoint2d_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-        
+
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
@@ -358,7 +358,7 @@ namespace {
             } else {
                 throw unsupported_interface(*interface);
             }
-        }        
+        }
         return type;
     }
 
@@ -374,7 +374,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    rectangle2d_class::~rectangle2d_class() throw ()
+    rectangle2d_class::~rectangle2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -392,7 +392,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     rectangle2d_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -405,12 +405,12 @@ namespace {
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
                            "solid")
-        };    
+        };
         typedef node_type_impl<rectangle2d_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-        
+
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
@@ -449,7 +449,7 @@ namespace {
             } else {
                 throw unsupported_interface(*interface);
             }
-        }        
+        }
         return type;
     }
 
@@ -465,7 +465,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    triangle_set2d_class::~triangle_set2d_class() throw ()
+    triangle_set2d_class::~triangle_set2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -483,7 +483,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     triangle_set2d_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -496,12 +496,12 @@ namespace {
             node_interface(node_interface::field_id,
                            field_value::sfbool_id,
                            "solid")
-        };    
+        };
         typedef node_type_impl<triangle_set2d_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-        
+
         for (node_interface_set::const_iterator interface(interfaces.begin());
              interface != interfaces.end();
              ++interface) {
@@ -549,7 +549,7 @@ namespace {
             } else {
                 throw unsupported_interface(*interface);
             }
-        }        
+        }
         return type;
     }
 
@@ -572,7 +572,7 @@ namespace {
      * @brief line_segments field
      */
 
-        
+
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
@@ -589,7 +589,7 @@ namespace {
         //TODO: Implement this!
         return 0;
     }
-    
+
 
     /**
      * @brief Determine whether the node has been modified.
@@ -601,7 +601,7 @@ namespace {
     {
         return this->node::modified();
     }
-    
+
     /**
      * @brief Construct.
      *
@@ -621,7 +621,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    polyline2d_node::~polyline2d_node() throw ()
+    polyline2d_node::~polyline2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -643,7 +643,7 @@ namespace {
      * @brief point field
      */
 
-        
+
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
@@ -660,7 +660,7 @@ namespace {
         //TODO: Implement this!
         return 0;
     }
-    
+
 
     /**
      * @brief Determine whether the node has been modified.
@@ -672,7 +672,7 @@ namespace {
     {
         return this->node::modified();
     }
-    
+
     /**
      * @brief Construct.
      *
@@ -692,7 +692,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    polypoint2d_node::~polypoint2d_node() throw ()
+    polypoint2d_node::~polypoint2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -720,7 +720,7 @@ namespace {
      * @brief solid field
      */
 
-        
+
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
@@ -737,7 +737,7 @@ namespace {
         //TODO: Implement this!
         return 0;
     }
-    
+
 
     /**
      * @brief Determine whether the node has been modified.
@@ -749,7 +749,7 @@ namespace {
     {
         return this->node::modified();
     }
-    
+
     /**
      * @brief Construct.
      *
@@ -770,7 +770,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    rectangle2d_node::~rectangle2d_node() throw ()
+    rectangle2d_node::~rectangle2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -798,7 +798,7 @@ namespace {
      * @brief solid field
      */
 
-        
+
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
@@ -815,7 +815,7 @@ namespace {
         //TODO: Implement this!
         return 0;
     }
-    
+
 
     /**
      * @brief Determine whether the node has been modified.
@@ -827,7 +827,7 @@ namespace {
     {
         return this->node::modified();
     }
-    
+
     /**
      * @brief Construct.
      *
@@ -848,6 +848,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    triangle_set2d_node::~triangle_set2d_node() throw ()
+    triangle_set2d_node::~triangle_set2d_node() OPENVRML_NOTHROW
     {}
 }
