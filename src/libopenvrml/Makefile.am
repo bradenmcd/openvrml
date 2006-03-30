@@ -115,10 +115,9 @@ libopenvrml_la_LDFLAGS = \
         @FREETYPE_LIBS@ \
         @JS_LIBS@ \
         @JNI_LIBS@ \
-        -lboost_thread \
         @PTHREAD_LIBS@
 
-libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la
+libopenvrml_la_LIBADD = $(top_builddir)/lib/antlr/libantlr.la -lboost_thread
 
 EXTRA_DIST = \
         openvrml-config.h.in \

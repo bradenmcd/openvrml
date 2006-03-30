@@ -20,17 +20,16 @@ libtest_openvrml_la_SOURCES = test_browser.cpp
 libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 browser_SOURCES = browser.cpp
-browser_LDADD = libtest-openvrml.la
-browser_LDFLAGS = -lboost_unit_test_framework
+browser_LDADD = libtest-openvrml.la -lboost_unit_test_framework
 
 parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
-node_interface_set_LDFLAGS = -lboost_unit_test_framework
+node_interface_set_LDADD = -lboost_unit_test_framework
 
 node_class_id_SOURCES = node_class_id.cpp
-node_class_id_LDFLAGS = -lboost_unit_test_framework
+node_class_id_LDADD = -lboost_unit_test_framework
 
 parse_vrml97_SOURCES = parse_vrml97.cpp
 parse_vrml97_LDADD = libtest-openvrml.la

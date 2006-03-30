@@ -1,5 +1,12 @@
 2006-03-29 Braden McDaniel  <braden@endoframe.com>
 
+	Improved placement of some -l flags.
+
+	* src/libopenvrml/Makefile.am
+	* tests/Makefile.am
+
+2006-03-29 Braden McDaniel  <braden@endoframe.com>
+
 	Applied exception specification macros.
 
 	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
