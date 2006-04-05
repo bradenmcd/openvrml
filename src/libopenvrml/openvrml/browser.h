@@ -351,8 +351,6 @@ namespace openvrml {
 
 
     class OPENVRML_API scene : boost::noncopyable {
-        struct load_scene;
-
         openvrml::browser * const browser_;
         scene * const parent_;
 
@@ -372,8 +370,6 @@ namespace openvrml {
 
         openvrml::browser & browser() const OPENVRML_NOTHROW;
         scene * parent() const OPENVRML_NOTHROW;
-        void load(const std::vector<std::string> & url)
-            OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         void load(resource_istream & in);
         void initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
         const std::string meta(const std::string & key) const

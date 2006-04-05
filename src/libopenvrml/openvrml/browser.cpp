@@ -7429,76 +7429,6 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
     return this->parent_;
 }
 
-struct OPENVRML_LOCAL openvrml::scene::load_scene {
-
-    load_scene(openvrml::scene & scene,
-               const std::vector<std::string> & url):
-        scene_(&scene),
-        url_(&url)
-    {}
-
-    void operator()() const OPENVRML_NOTHROW
-    try {
-        using std::endl;
-        using std::string;
-        using std::vector;
-
-        openvrml::scene & scene = *this->scene_;
-        const vector<string> & url = *this->url_;
-
-        assert(scene.url_.empty());
-
-        vector<boost::intrusive_ptr<node> > nodes;
-        try {
-            std::auto_ptr<resource_istream> in = scene.get_resource(url);
-            if (!(*in)) { throw unreachable_url(); }
-            scene.load(*in);
-        } catch (antlr::ANTLRException & ex) {
-            scene.browser().err(ex.getMessage());
-        } catch (std::exception & ex) {
-            scene.browser().err(ex.what());
-            throw unreachable_url();
-        } catch (...) {
-            throw unreachable_url();
-        }
-        scene.nodes(nodes);
-        scene.scene_loaded();
-    } catch (std::exception & ex) {
-        this->scene_->browser().err(ex.what());
-    }
-
-private:
-    openvrml::scene * const scene_;
-    const std::vector<std::string> * const url_;
-};
-
-/**
- * @brief Load a world.
- *
- * The world specified by @p url is loaded asynchronously.
- * <code>scene::scene_loaded</code> is called when loading the world has
- * completed (i.e., when <code>scene::nodes</code> will return the world's
- * root <code>node</code>s).
- *
- * As this function executes asynchronously, note that it will not throw upon
- * encountering a malformed or unreachable URI, or syntactically incorrect
- * VRML.
- *
- * @param[in] url   the URI for the world.  Per VRML97 convention, this is a list
- *              of alternative URIs.  The first one in the list to load
- *              successfully is used.
- *
- * @exception boost::thread_resource_error  if a new thread of execution cannot
- *                                          be started.
- * @exception std::bad_alloc                if memory allocation fails.
- */
-void openvrml::scene::load(const std::vector<std::string> & url)
-    OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc)
-{
-    boost::function0<void> f = load_scene(*this, url);
-    boost::thread t(f);
-}
-
 /**
  * @brief Load the scene from a stream.
  *
@@ -7517,6 +7447,7 @@ void openvrml::scene::load(resource_istream & in)
 
     this->url_ = in.url();
     parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
+    this->scene_loaded();
 }
 
 /**
@@ -7675,7 +7606,7 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 {
     boost::mutex::scoped_lock lock(this->url_mutex_);
     using std::string;
-    const string result = this->parent_
+    const string result = (this->parent_ && !this->url_.empty())
                         ? string(uri(this->url_)
                                  .resolve_against(uri(this->parent_->url())))
                         : this->url_;

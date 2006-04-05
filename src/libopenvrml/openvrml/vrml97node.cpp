@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -37,6 +37,7 @@
 # include <limits>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
+# include <boost/thread.hpp>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -3047,13 +3048,16 @@ namespace {
                                        public grouping_node {
         friend class inline_class;
 
+        struct load_inline_scene;
+
         exposedfield<mfstring> url_;
         exposedfield<sfbool> load_;
         sfvec3f bbox_center_;
         sfvec3f bbox_size_;
 
-        openvrml::scene * inlineScene;
-        bool hasLoaded;
+        openvrml::scene * inline_scene_;
+        bool loaded_;
+        boost::scoped_ptr<boost::thread> load_inline_scene_thread_;
 
     public:
         inline_node(const node_type & type,
@@ -13759,8 +13763,8 @@ namespace {
         grouping_node(type, scope),
         url_(*this),
         load_(*this, true),
-        inlineScene(0),
-        hasLoaded(false)
+        inline_scene_(0),
+        loaded_(false)
     {
         this->bounding_volume_dirty(true);
     }
@@ -13769,7 +13773,11 @@ namespace {
      * @brief Destroy.
      */
     inline_node::~inline_node() OPENVRML_NOTHROW
-    {}
+    {
+        if (this->load_inline_scene_thread_) {
+            this->load_inline_scene_thread_->join();
+        }
+    }
 
     /**
      * @brief Render the node.
@@ -13785,7 +13793,7 @@ namespace {
                     const rendering_context context)
     {
         this->load();
-        if (this->inlineScene) { this->inlineScene->render(viewer, context); }
+        if (this->inline_scene_) { this->inline_scene_->render(viewer, context); }
     }
 
     /**
@@ -13797,10 +13805,55 @@ namespace {
     inline_node::do_children() const OPENVRML_NOTHROW
     {
         static const std::vector<boost::intrusive_ptr<openvrml::node> > empty;
-        return this->inlineScene
-            ? this->inlineScene->nodes()
+        return this->inline_scene_
+            ? this->inline_scene_->nodes()
             : empty;
     }
+
+    struct OPENVRML_LOCAL inline_node::load_inline_scene {
+
+        load_inline_scene(openvrml::scene & scene,
+                          const std::vector<std::string> & url):
+            inline_scene_(&scene),
+            url_(&url)
+        {}
+
+        void operator()() const OPENVRML_NOTHROW
+        try {
+            using std::endl;
+            using std::string;
+            using std::vector;
+
+            openvrml::scene & inline_scene = *this->inline_scene_;
+            const vector<string> & url = *this->url_;
+
+            assert(inline_scene.url().empty());
+
+            vector<boost::intrusive_ptr<node> > nodes;
+            try {
+                //
+                // Any relative URLs passed here will be relative to the
+                // *parent* scene; so we call get_resource on the parent.
+                //
+                assert(inline_scene.parent());
+                std::auto_ptr<resource_istream> in =
+                    inline_scene.parent()->get_resource(url);
+                if (!(*in)) { throw unreachable_url(); }
+                inline_scene.load(*in);
+            } catch (std::exception & ex) {
+                inline_scene.browser().err(ex.what());
+                throw unreachable_url();
+            } catch (...) {
+                throw unreachable_url();
+            }
+        } catch (std::exception & ex) {
+            this->inline_scene_->browser().err(ex.what());
+        }
+
+    private:
+        openvrml::scene * const inline_scene_;
+        const std::vector<std::string> * const url_;
+    };
 
     /**
      * @brief Load the children from the URL.
@@ -13811,27 +13864,30 @@ namespace {
         public:
             inline_scene(openvrml::browser & b, openvrml::scene * parent):
                 openvrml::scene(b, parent)
-                {}
+            {}
 
         private:
             virtual void scene_loaded()
-                {
-                    this->initialize(openvrml::browser::current_time());
-                }
+            {
+                this->initialize(openvrml::browser::current_time());
+            }
         };
 
         //
         // XXX Need to check whether Url has been modified.
         //
-        if (this->hasLoaded) { return; }
+        if (this->loaded_) { return; }
 
-        this->hasLoaded = true; // although perhaps not successfully
+        this->loaded_ = true; // although perhaps not successfully
         this->bounding_volume_dirty(true);
 
         assert(this->scene());
-        this->inlineScene = new inline_scene(this->scene()->browser(),
-                                             this->scene());
-        this->inlineScene->load(this->url_.mfstring::value());
+        this->inline_scene_ = new inline_scene(this->scene()->browser(),
+                                               this->scene());
+        boost::function0<void> f =
+            load_inline_scene(*this->inline_scene_,
+                              this->url_.mfstring::value());
+        this->load_inline_scene_thread_.reset(new boost::thread(f));
     }
 
 

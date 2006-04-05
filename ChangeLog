@@ -1,5 +1,28 @@
 2006-04-05 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed resolution of relative URIs in Inline nodes to be resolved
+	against the URI of the containing scene.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::load_scene): Removed struct.
+	(openvrml::scene::load(const std::vector<std::string> &)): Removed
+	function.
+	(openvrml::scene::load(resource_istream &)): Call scene_loaded.
+	(openvrml::scene::url() const): Return an empty string if
+	this->url_ is empty.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::scene): Removed load_scene struct declaration; removed
+	load(const std::vector<std::string> &) function.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(inline_node): Added declaration of load_inline_scene struct;
+	added a boost::scoped_ptr to the node's scene loading thread.
+	(inline_node::~inline_node()): Join the scene loading thread.
+	(inline_node::load_inline_scene): Thread function object to load
+	the inline scene.
+	(inline_node::load()): Load the scene in a new thread.
+
+2006-04-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(component::add_scope_entry(const openvrml::browser &, const
 	char*, const openvrml::node_interface_set &, const char *,
@@ -17,7 +40,7 @@
 	Improved placement of some -l flags.
 
 	* src/libopenvrml/Makefile.am
-	* tests/Makefile.am
+	* tests/Maxkefile.am
 
 2006-03-29 Braden McDaniel  <braden@endoframe.com>
 
