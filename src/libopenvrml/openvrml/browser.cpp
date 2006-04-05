@@ -3733,17 +3733,17 @@ namespace {
             result << "//" << absolute_uri.authority();
         }
 
-        ostringstream path;
-        path.unsetf(ostringstream::skipws);
-        path << absolute_uri.path();
+        const string abs_uri_path = absolute_uri.path();
         const string::size_type last_slash_index =
-            path.str().find_last_of('/');
+            abs_uri_path.find_last_of('/');
 
         //
         // Chop off the leading slash and the last path segment (typically a
         // file name).
         //
-        path.str(path.str().substr(1, last_slash_index));
+        ostringstream path;
+        path.unsetf(ostringstream::skipws);
+        path << abs_uri_path.substr(1, last_slash_index);
 
         //
         // Append the relative path.

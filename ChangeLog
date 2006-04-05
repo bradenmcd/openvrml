@@ -1,3 +1,9 @@
+2006-04-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::resolve_against(const uri &) const): Fixed use of
+	std::ostringstream.
+
 2006-03-29 Braden McDaniel  <braden@endoframe.com>
 
 	Improved placement of some -l flags.
