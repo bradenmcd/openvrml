@@ -7910,7 +7910,6 @@ namespace {
                         std::bad_alloc)
     {
         boost::shared_ptr<openvrml::node_class> node_class = b.node_class(urn);
-        if (!node_class) { std::cout << node_name << std::endl; }
         assert(node_class);
         const bool succeeded =
             scope.add_type(node_class->create_type(node_name, interface_set));

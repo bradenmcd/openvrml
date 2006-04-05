@@ -1,6 +1,14 @@
 2006-04-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
+	(component::add_scope_entry(const openvrml::browser &, const
+	char*, const openvrml::node_interface_set &, const char *,
+	openvrml::scope &) const): Removed erroneously committed debugging
+	output.
+
+2006-04-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
 	(uri::resolve_against(const uri &) const): Fixed use of
 	std::ostringstream.
 
