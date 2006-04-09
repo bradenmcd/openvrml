@@ -3,7 +3,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml
 AM_CXXFLAGS = @PTHREAD_CFLAGS@
 AM_LDFLAGS = @OPENVRML_RPATH@
-LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
 TESTS = \
@@ -26,10 +25,14 @@ parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
-node_interface_set_LDADD = -lboost_unit_test_framework
+node_interface_set_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
 
 node_class_id_SOURCES = node_class_id.cpp
-node_class_id_LDADD = -lboost_unit_test_framework
+node_class_id_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
 
 parse_vrml97_SOURCES = parse_vrml97.cpp
 parse_vrml97_LDADD = libtest-openvrml.la

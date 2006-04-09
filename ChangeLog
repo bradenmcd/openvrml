@@ -1,3 +1,12 @@
+2006-04-09 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed linking for test programs.
+
+	* tests/Makefile.am
+	(LDADD): Removed.
+	(node_interface_set_LDADD): Added libopenvrml.la.
+	(node_class_id_LDADD): Added libopenvrml.la.
+
 2006-04-05 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed resolution of relative URIs in Inline nodes to be resolved
