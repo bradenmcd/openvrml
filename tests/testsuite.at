@@ -217,3 +217,11 @@ PROFILE Immersive
 ]])
 AT_CHECK([parse-x3dvrml < minimal-immersive.x3dv])
 AT_CLEANUP
+
+AT_SETUP([Minimal Full world])
+AT_DATA([minimal-full.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Full
+]])
+AT_CHECK([parse-x3dvrml < minimal-full.x3dv])
+AT_CLEANUP

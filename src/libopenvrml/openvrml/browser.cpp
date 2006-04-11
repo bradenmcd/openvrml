@@ -54,6 +54,10 @@
 # include "x3d_texturing.h"
 # include "x3d_key_device_sensor.h"
 # include "x3d_event_utilities.h"
+# include "x3d_dis.h"
+# include "x3d_geospatial.h"
+# include "x3d_hanim.h"
+# include "x3d_nurbs.h"
 
 namespace openvrml {
 
@@ -3879,6 +3883,14 @@ namespace {
     };
 
 
+    class OPENVRML_LOCAL x3d_full_profile : public profile {
+    public:
+        static const char * const id;
+
+        x3d_full_profile();
+    };
+
+
     class OPENVRML_LOCAL component {
     public:
         virtual ~component() OPENVRML_NOTHROW = 0;
@@ -3934,6 +3946,10 @@ namespace {
 
         key = x3d_immersive_profile::id;
         succeeded = this->insert(key, new x3d_immersive_profile).second;
+        assert(succeeded);
+
+        key = x3d_full_profile::id;
+        succeeded = this->insert(key, new x3d_full_profile).second;
         assert(succeeded);
     }
 
@@ -5927,6 +5943,10 @@ namespace {
         register_texturing_node_classes(b);
         register_key_device_sensor_node_classes(b);
         register_event_utilities_node_classes(b);
+        register_dis_node_classes(b);
+        register_geospatial_node_classes(b);
+        register_hanim_node_classes(b);
+        register_nurbs_node_classes(b);
     }
 }
 
@@ -12873,6 +12893,1971 @@ namespace {
     }
 
 
+    class OPENVRML_LOCAL x3d_geospatial_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_geospatial_component::id = "Geospatial";
+
+    void x3d_geospatial_component::add_to_scope(const openvrml::browser & b,
+                                                openvrml::scope & scope,
+                                                const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // GeoCoordinate node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec3d_id,
+                                   "point"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "GeoCoordinate",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoCoordinate",
+                                scope);
+            }
+
+            //
+            // GeoElevationGrid node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfdouble_id,
+                                   "set_height"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "color"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "normal"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "texCoord"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "yScale"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "ccw"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "colorPerVertex"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfdouble_id,
+                                   "creaseAngle"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3d_id,
+                                   "geoGridOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "height"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "normalPerVertex"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "xDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfdouble_id,
+                                   "xSpacing"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "zDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfdouble_id,
+                                   "zSpacing")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 19);
+                add_scope_entry(b,
+                                "GeoElevationGrid",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoElevationGrid",
+                                scope);
+            }
+
+            //
+            // GeoLocation node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3d_id,
+                                   "geoCoords"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 9);
+                add_scope_entry(b,
+                                "GeoLocation",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoLocation",
+                                scope);
+            }
+
+            //
+            // GeoLOD node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3d_id,
+                                   "center"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "child1Url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "child2Url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "child3Url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "child4Url"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "range"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "rootUrl"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfnode_id,
+                                   "rootNode"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 16);
+                add_scope_entry(b,
+                                "GeoLOD",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoLOD",
+                                scope);
+            }
+
+            //
+            // GeoMetadata node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "data"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "summary"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "url")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "GeoMetadata",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoMetadata",
+                                scope);
+            }
+
+            //
+            // GeoOrigin node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3d_id,
+                                   "geoCoords"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "rotateYUp")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "GeoOrigin",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoOrigin",
+                                scope);
+            }
+
+            //
+            // GeoPositionInterpolator node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "key"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec3d_id,
+                                   "keyValue"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3d_id,
+                                   "geovalue_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "value_changed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 8);
+                add_scope_entry(b,
+                                "GeoPositionInterpolator",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoPositionInterpolator",
+                                scope);
+            }
+
+            //
+            // GeoTouchSensor node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "enabled"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "hitNormal_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "hitPoint_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec2f_id,
+                                   "hitTexCoord_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3d_id,
+                                   "hitGeoCoord_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isOver"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "touchTime"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 11);
+                add_scope_entry(b,
+                                "GeoTouchSensor",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoTouchSensor",
+                                scope);
+            }
+
+            //
+            // GeoViewpoint node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_bind"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfrotation_id,
+                                   "set_orientation"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfvec3d_id,
+                                   "set_position"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "description"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "fieldOfView"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "headlight"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "jump"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "navType"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "bindTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isBound"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfnode_id,
+                                   "geoOrigin"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfstring_id,
+                                   "geoSystem"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfrotation_id,
+                                   "orientation"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3d_id,
+                                   "position"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "speedFactor")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 16);
+                add_scope_entry(b,
+                                "GeoViewpoint",
+                                interface_set,
+                                "urn:X-openvrml:node:GeoViewpoint",
+                                scope);
+            }
+        }
+    }
+
+
+    class OPENVRML_LOCAL x3d_hanim_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_hanim_component::id = "H-Anim";
+
+    void x3d_hanim_component::add_to_scope(const openvrml::browser & b,
+                                           openvrml::scope & scope,
+                                           const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // HAnimDisplacer node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "coordIndex"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec3f_id,
+                                   "displacements"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "name"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "weight")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "HAnimDisplacer",
+                                interface_set,
+                                "urn:X-openvrml:node:HAnimDisplacer",
+                                scope);
+            }
+
+            //
+            // HAnimHumanoid node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "center"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfstring_id,
+                                   "info"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "joints"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "name"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "rotation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "scale"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "scaleOrientation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "segments"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "sites"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "skeleton"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "skin"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "skinCoord"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "skinNormal"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "translation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "version"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "viewpoints"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 19);
+                add_scope_entry(b,
+                                "HAnimHumanoid",
+                                interface_set,
+                                "urn:X-openvrml:node:HAnimHumanoid",
+                                scope);
+            }
+
+            //
+            // HAnimJoint node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "center"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "displacers"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "limitOrientation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "llimit"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "name"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "rotation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "scale"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "scaleOrientation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "skinCoordIndex"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "skinCoordWeight"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "stiffness"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "translation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "ulimit"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 19);
+            add_scope_entry(b,
+                            "HAnimJoint",
+                            interface_set,
+                            "urn:X-openvrml:node:HAnimJoint",
+                            scope);
+            }
+
+            //
+            // HAnimSegment node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "centerOfMass"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "coord"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "displacers"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "mass"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "momentsOfInertia"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "name"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 12);
+                add_scope_entry(b,
+                                "HAnimSegment",
+                                interface_set,
+                                "urn:X-openvrml:node:HAnimSegment",
+                                scope);
+            }
+
+            //
+            // HAnimSite node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "center"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "name"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "rotation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "scale"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "scaleOrientation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "translation"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 12);
+                add_scope_entry(b,
+                                "HAnimSite",
+                                interface_set,
+                                "urn:X-openvrml:node:HAnimSite",
+                                scope);
+            }
+        }
+    }
+
+
+    class OPENVRML_LOCAL x3d_nurbs_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_nurbs_component::id = "NURBS";
+
+    void x3d_nurbs_component::add_to_scope(const openvrml::browser & b,
+                                           openvrml::scope & scope,
+                                           const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // CoordinateDouble node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec3d_id,
+                                   "point")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 2);
+                add_scope_entry(b,
+                                "CoordinateDouble",
+                                interface_set,
+                                "urn:X-openvrml:node:CoordinateDouble",
+                                scope);
+            }
+
+            //
+            // NurbsCurve node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "tessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "closed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "knot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "order")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "NurbsCurve",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsCurve",
+                                scope);
+            }
+
+            //
+            // NurbsOrientationInterpolator node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoints"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "knot"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "order"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfrotation_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "NurbsOrientationInterpolator",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsOrientationInterpolator",
+                                scope);
+            }
+
+            //
+            // NurbsPatchSurface node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "texCoord"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "uTessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "vTessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "uClosed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "uKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uOrder"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "vClosed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "vKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vOrder")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 15);
+                add_scope_entry(b,
+                                "NurbsPatchSurface",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsPatchSurface",
+                                scope);
+            }
+
+            //
+            // NurbsPositionInterpolator node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoints"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "knot"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "order"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "NurbsPositionInterpolator",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsPositionInterpolator",
+                                scope);
+            }
+
+            //
+            // NurbsSurfaceInterpolator node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfvec2f_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoints"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "position_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec3f_id,
+                                   "normal_changed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "uKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uOrder"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "vKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vOrder")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 12);
+                add_scope_entry(b,
+                                "NurbsSurfaceInterpolator",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsSurfaceInterpolator",
+                                scope);
+            }
+
+            //
+            // NurbsTextureCoordinate node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "controlPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "weight"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "uKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uOrder"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "vKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vOrder")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 9);
+                add_scope_entry(b,
+                                "NurbsTextureCoordinate",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsTextureCoordinate",
+                                scope);
+            }
+        }
+
+        if (support_level >= 2) {
+            //
+            // NurbsSet node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addGeometry"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeGeometry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "geometry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "tessellationScale"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "NurbsSet",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsSet",
+                                scope);
+            }
+        }
+
+        if (support_level >= 3) {
+            //
+            // NurbsCurve2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2d_id,
+                                   "controlPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "tessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "closed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "knot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "order")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 7);
+                add_scope_entry(b,
+                                "NurbsCurve2D",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsCurve2D",
+                                scope);
+            }
+
+            //
+            // ContourPolyline2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "point"),
+                    //this is wrong in the spec, so we must support both aliases
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "controlPoint")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 2);
+                add_scope_entry(b,
+                                "ContourPolyline2D",
+                                interface_set,
+                                "urn:X-openvrml:node:ContourPolyline2D",
+                                scope);
+            }
+
+            //
+            // NurbsSweptSurface node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "crossSectionCurve"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "trajectoryCurve"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "ccw"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "NurbsSweptSurface",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsSweptSurface",
+                                scope);
+            }
+
+            //
+            // NurbsSwungSurface node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "profileCurve"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "trajectoryCurve"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "ccw"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "NurbsSwungSurface",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsSwungSurface",
+                                scope);
+            }
+        }
+
+        if (support_level >= 4) {
+            //
+            // Contour2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "Contour2D",
+                                interface_set,
+                                "urn:X-openvrml:node:Contour2D",
+                                scope);
+            }
+
+            //
+            // NurbsTrimmedSurface node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addTrimmingContour"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeTrimmingContour"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "controlPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "texCoord"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "trimmingContour"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "uTessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "vTessellation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfdouble_id,
+                                   "weight"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "uClosed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "uKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "uOrder"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "vClosed"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vDimension"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfdouble_id,
+                                   "vKnot"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfint32_id,
+                                   "vOrder")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 18);
+                add_scope_entry(b,
+                                "NurbsTrimmedSurface",
+                                interface_set,
+                                "urn:X-openvrml:node:NurbsTrimmedSurface",
+                                scope);
+            }
+        }
+    }
+
+
+    class OPENVRML_LOCAL x3d_dis_component : public component {
+    public:
+        static const char * const id;
+
+        virtual void add_to_scope(const openvrml::browser & b,
+                                  openvrml::scope & scope,
+                                  int support_level) const;
+    };
+
+    const char * const x3d_dis_component::id = "DIS";
+
+    void x3d_dis_component::add_to_scope(const openvrml::browser & b,
+                                         openvrml::scope & scope,
+                                         const int support_level) const
+    {
+        using namespace openvrml;
+
+        if (support_level >= 1) {
+            //
+            // EspduTransform node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "addChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::mfnode_id,
+                                   "removeChildren"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue0"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue1"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue2"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue3"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue4"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue5"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue6"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_articulationParameterValue7"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "address"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "applicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "articulationParameterCount"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "articulationParameterDesignatorArray"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "articulationParameterChangeIndicatorArray"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "articulationParameterIdPartAttachedToArray"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "articulationParameterTypeArray"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "articulationParameterArray"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "center"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "collisionType"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "deadReckoning"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "detonationLocation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "detonationRelativeLocation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "detonationResult"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityCategory"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityCountry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityDomain"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityExtra"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityKind"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entitySpecific"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entitySubCategory"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "eventApplicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "eventEntityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "eventNumber"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "eventSiteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "fired1"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "fired2"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "fireMissionIndex"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "firingRange"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "firingRate"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "forceID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "fuse"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "linearVelocity"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "linearAcceleration"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "marking"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "multicastRelayHost"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "multicastRelayPort"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "munitionApplicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "munitionEndPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "munitionEntityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "munitionQuantity"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "munitionSiteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "munitionStartPoint"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "networkMode"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "port"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sftime_id,
+                                   "readInterval"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "rotation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "scale"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfrotation_id,
+                                   "scaleOrientation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "siteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "translation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "warhead"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sftime_id,
+                                   "writeInterval"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue0_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue1_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue2_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue3_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue4_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue5_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue6_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sffloat_id,
+                                   "articulationParameterValue7_changed"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "collideTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "detonateTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "firedTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isCollided"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isDetonated"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkReader"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkWriter"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isRtpHeaderHeard"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isStandAlone"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "timestamp"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "rtpHeaderExpected")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 88);
+                add_scope_entry(b,
+                                "EspduTransform",
+                                interface_set,
+                                "urn:X-openvrml:node:EspduTransform",
+                                scope);
+            }
+
+            //
+            // ReceiverPdu node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "address"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "applicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "multicastRelayHost"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "multicastRelayPort"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "networkMode"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "port"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "readInterval"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "receivedPower"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "receiverState"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "rtpHeaderExpected"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "siteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "transmitterApplicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "transmitterEntityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "transmitterRadioID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "transmitterSiteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "whichGeometry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "writeInterval"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkReader"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkWriter"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isRtpHeaderHeard"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isStandAlone"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "timestamp"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 28);
+                add_scope_entry(b,
+                                "ReceiverPdu",
+                                interface_set,
+                                "urn:X-openvrml:node:ReceiverPdu",
+                                scope);
+            }
+
+            //
+            // SignalPdu node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "address"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "applicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "data"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "dataLength"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "encodingScheme"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "multicastRelayHost"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "multicastRelayPort"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "networkMode"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "port"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "readInterval"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "rtpHeaderExpected"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "sampleRate"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "samples"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "siteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "tdlType"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "whichGeometry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "writeInterval"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkReader"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkWriter"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isRtpHeaderHeard"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isStandAlone"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "timestamp"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 28);
+                add_scope_entry(b,
+                                "SignalPdu",
+                                interface_set,
+                                "urn:X-openvrml:node:SignalPdu",
+                                scope);
+            }
+
+            //
+            // TransmitterPdu node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "address"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "antennaLocation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "antennaPatternLength"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "antennaPatternType"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "applicationID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "cryptoKeyID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "cryptoSystem"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "entityID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "frequency"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "inputSource"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "lengthOfModulationParameters"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "modulationTypeDetail"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "modulationTypeMajor"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "modulationTypeSpreadSpectrum"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfint32_id,
+                                   "modulationTypeSystem"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "multicastRelayHost"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "multicastRelayPort"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfstring_id,
+                                   "networkMode"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "port"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "power"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeCategory"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeCountry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeDomain"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeKind"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeNomenclature"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioEntityTypeNomenclatureVersion"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "radioID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "readInterval"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfvec3f_id,
+                                   "relativeAntennaLocation"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "rtpHeaderExpected"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "siteID"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "transmitFrequencyBandwidth"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "transmitState"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "whichGeometry"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sffloat_id,
+                                   "writeInterval"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isActive"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkReader"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isNetworkWriter"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isRtpHeaderHeard"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isStandAlone"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "timestamp"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 44);
+                add_scope_entry(b,
+                                "TransmitterPdu",
+                                interface_set,
+                                "urn:X-openvrml:node:TransmitterPdu",
+                                scope);
+            }
+        }
+    }
+
+
     class OPENVRML_LOCAL x3d_event_utilities_component : public component {
     public:
         static const char * const id;
@@ -13188,6 +15173,22 @@ namespace {
             this->insert(key, new x3d_environmental_effects_component).second;
         assert(succeeded);
 
+        key = x3d_geospatial_component::id;
+        succeeded = this->insert(key, new x3d_geospatial_component).second;
+        assert(succeeded);
+
+        key = x3d_hanim_component::id;
+        succeeded = this->insert(key, new x3d_hanim_component).second;
+        assert(succeeded);
+
+        key = x3d_nurbs_component::id;
+        succeeded = this->insert(key, new x3d_nurbs_component).second;
+        assert(succeeded);
+
+        key = x3d_dis_component::id;
+        succeeded = this->insert(key, new x3d_dis_component).second;
+        assert(succeeded);
+
         key = x3d_event_utilities_component::id;
         succeeded =
             this->insert(key, new x3d_event_utilities_component).second;
@@ -13328,6 +15329,36 @@ namespace {
         this->add_component(x3d_environmental_sensor_component::id, 2);
         this->add_component(x3d_navigation_component::id, 2);
         this->add_component(x3d_environmental_effects_component::id, 2);
+        this->add_component(x3d_event_utilities_component::id, 1);
+    }
+
+
+    const char * const x3d_full_profile::id = "Full";
+
+    x3d_full_profile::x3d_full_profile()
+    {
+        this->add_component(x3d_core_component::id, 2);
+        this->add_component(x3d_time_component::id, 2);
+        this->add_component(x3d_networking_component::id, 3);
+        this->add_component(x3d_grouping_component::id, 3);
+        this->add_component(x3d_rendering_component::id, 4);
+        this->add_component(x3d_shape_component::id, 3);
+        this->add_component(x3d_geometry3d_component::id, 4);
+        this->add_component(x3d_geometry2d_component::id, 2);
+        this->add_component(x3d_text_component::id, 1);
+        this->add_component(x3d_sound_component::id, 1);
+        this->add_component(x3d_lighting_component::id, 3);
+        this->add_component(x3d_texturing_component::id, 3);
+        this->add_component(x3d_interpolation_component::id, 3);
+        this->add_component(x3d_pointing_device_sensor_component::id, 1);
+        this->add_component(x3d_key_device_sensor_component::id, 2);
+        this->add_component(x3d_environmental_sensor_component::id, 2);
+        this->add_component(x3d_navigation_component::id, 2);
+        this->add_component(x3d_environmental_effects_component::id, 3);
+        this->add_component(x3d_geospatial_component::id, 1);
+        this->add_component(x3d_hanim_component::id, 1);
+        this->add_component(x3d_nurbs_component::id, 4);
+        this->add_component(x3d_dis_component::id, 1);
         this->add_component(x3d_event_utilities_component::id, 1);
     }
 } // namespace

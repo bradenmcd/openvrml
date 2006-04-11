@@ -1,3 +1,68 @@
+2006-04-11 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for constructing X3D Full profile scenes.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added x3d_dis.h, x3d_geospatial.h,
+	x3d_hanim.h, and x3d_nurbs.h.
+	(libopenvrml_la_SOURCES): Added x3d_dis.cpp, x3d_geospatial.cpp,
+	x3d_hanim.cpp, and x3d_nurbs.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_full_profile): Added class corresponding to the X3D Full
+	profile.
+	(profile_registry::profile_registry()): Add x3d_full_profile to
+	the registry.
+	(register_node_classes): Register DIS, Geospatial, H-Anim, and
+	NURBS node_classes.
+	(x3d_geospatial_component): Added class corresponding to the X3D
+	Geospatial component.
+	(x3d_geospatial_component::id): Component id.
+	(x3d_geospatial_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of X3D
+	Geospatial nodes.
+	(x3d_hanim_component): Added class corresponding to the X3D H-Anim
+	component.
+	(x3d_hanim_component::id): Component id.
+	(x3d_hanim_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of X3D H-Anim
+	nodes.
+	(x3d_nurbs_component): Added class corresponding to the X3D NURBS
+	component.
+	(x3d_nurbs_component::id): Component id.
+	(x3d_nurbs_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of X3D NURBS
+	nodes.
+	(x3d_dis_component): Added class corresponding to the X3D DIS
+	component.
+	(x3d_dis_component::id): Component id.
+	(x3d_dis_component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, int) const): Added definitions of X3D DIS
+	nodes.
+	(component_registry::component_registry()): Add
+	x3d_geospatial_component, x3d_hanim_component,
+	x3d_nurbs_component, and x3d_dis_component to the registry.
+	(x3d_full_profile::id): Profile id.
+	(x3d_full_profile::x3d_full_profile()): Construct the Full
+	profile.
+	* src/libopenvrml/openvrml/x3d_dis.cpp: Added file;
+	DIS component node implementations.
+	* src/libopenvrml/openvrml/x3d_dis.h: Added file; expose
+	node_class registration function.
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp: Added file;
+	Geospatial component node implementations.
+	* src/libopenvrml/openvrml/x3d_geospatial.h: Added file; expose
+	node_class registration function.
+	* src/libopenvrml/openvrml/x3d_hanim.cpp: Added file; H-Anim
+	component node implementations.
+	* src/libopenvrml/openvrml/x3d_hanim.h: Added file; expose
+	node_class registration function.
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp: Added file; NURBS
+	component node implementations.
+	* src/libopenvrml/openvrml/x3d_nurbs.h: Added file; expose
+	node_class registration function.
+	* tests/testsuite.at: Added test of minimal X3D Full world.
+
 2006-04-09 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed linking for test programs.

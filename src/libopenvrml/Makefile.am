@@ -26,7 +26,11 @@ openvrml_include_HEADERS = \
         openvrml/x3d_geometry2d.h \
         openvrml/x3d_texturing.h \
         openvrml/x3d_key_device_sensor.h \
-        openvrml/x3d_event_utilities.h
+        openvrml/x3d_event_utilities.h \
+        openvrml/x3d_dis.h \
+        openvrml/x3d_geospatial.h \
+        openvrml/x3d_hanim.h \
+        openvrml/x3d_nurbs.h
 
 VRML97PARSER_BUILT_SOURCEFILES = \
         openvrml/Vrml97Parser.cpp \
@@ -105,7 +109,11 @@ libopenvrml_la_SOURCES = \
         openvrml/x3d_geometry2d.cpp \
         openvrml/x3d_texturing.cpp \
         openvrml/x3d_key_device_sensor.cpp \
-        openvrml/x3d_event_utilities.cpp
+        openvrml/x3d_event_utilities.cpp \
+        openvrml/x3d_dis.cpp \
+        openvrml/x3d_geospatial.cpp \
+        openvrml/x3d_hanim.cpp \
+        openvrml/x3d_nurbs.cpp
 
 libopenvrml_la_LDFLAGS = \
         -version-info $(LIBRARY_VERSION) \
