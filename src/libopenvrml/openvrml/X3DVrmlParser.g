@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2000, 2001, 2003, 2004  Braden N. McDaniel
+// Copyright 2000, 2001, 2003, 2004, 2005, 2005  Braden N. McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -270,6 +270,12 @@ options { defaultErrorHandler=false; }
     catch [boost::bad_ptr_container_operation &] {
         throw antlr::SemanticException("unrecognized component \""
                                        + id->getText() + "\"",
+                                       this->uri,
+                                       id->getLine(),
+                                       id->getColumn());
+    }
+    catch [std::invalid_argument & ex] {
+        throw antlr::SemanticException(ex.what(),
                                        this->uri,
                                        id->getLine(),
                                        id->getColumn());

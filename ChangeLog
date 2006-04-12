@@ -1,3 +1,130 @@
+2006-04-12 Braden McDaniel  <braden@endoframe.com>
+
+	Emit an error when a requested component level is not supported.
+
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(componentStatement): Catch std::invalid_argument thrown from
+	component::add_to_scope.
+	* src/libopenvrml/openvrml/browser.cpp
+	(component): Added pure virtual function support_level.  Made
+	add_to_scope nonvirtual; delegate to pure virtual do_add_to_scope.
+	(component::add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Check that the requested level
+	is supported before delegating to do_add_to_scope.
+	(vrml97_component): Override support_level and do_add_to_scope.
+	(vrml97_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	vrml97_component::add_to_scope to here.
+	(x3d_core_component): Override support_level and do_add_to_scope.
+	(x3d_core_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_core_component::add_to_scope to here.
+	(x3d_time_component): Override support_level and do_add_to_scope.
+	(x3d_time_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_time_component::add_to_scope to here.
+	(x3d_networking_component): Override support_level and
+	do_add_to_scope.
+	(x3d_networking_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_networking_component::add_to_scope to here.
+	(x3d_grouping_component): Override support_level and
+	do_add_to_scope.
+	(x3d_grouping_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t) const): Moved
+	x3d_grouping_component::add_to_scope to here.
+	(x3d_rendering_component): Override support_level and
+	do_add_to_scope.
+	(x3d_rendering_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_rendering_component::add_to_scope to here.
+	(x3d_shape_component): Override support_level and do_add_to_scope.
+	(x3d_shape_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_shape_component::add_to_scope to here.
+	(x3d_geometry3d_component): Override support_level and
+	do_add_to_scope.
+	(x3d_geometry3d_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_geometry3d_component::add_to_scope to here.
+	(x3d_geometry2d_component): Override support_level and
+	do_add_to_scope.
+	(x3d_geometry2d_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_geometry2d_component::add_to_scope to here.
+	(x3d_text_component): Override support_level and do_add_to_scope.
+	(x3d_text_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_text_component::add_to_scope to here.
+	(x3d_sound_component): Override support_level and do_add_to_scope.
+	(x3d_sound_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_sound_component::add_to_scope to here.
+	(x3d_lighting_component): Override support_level and
+	do_add_to_scope.
+	(x3d_lighting_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t) const): Moved
+	x3d_lighting_component::add_to_scope to here.
+	(x3d_texturing_component): Override support_level and
+	do_add_to_scope.
+	(x3d_texturing_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_texturing_component::add_to_scope to here.
+	(x3d_interpolation_component): Override support_level and
+	do_add_to_scope.
+	(x3d_interpolation_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_interpolation_component::add_to_scope to here.
+	(x3d_pointing_device_sensor_component): Override support_level and
+	do_add_to_scope.
+	(x3d_pointing_device_sensor_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_pointing_device_sensor_component::add_to_scope to here.
+	(x3d_key_device_sensor_component): Override support_level and
+	do_add_to_scope.
+	(x3d_key_device_sensor_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_key_device_sensor_component::add_to_scope to here.
+	(x3d_environmental_sensor_component): Override support_level and
+	do_add_to_scope.
+	(x3d_environmental_sensor_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_environmental_sensor_component::add_to_scope to here.
+	(x3d_navigation_component): Override support_level and
+	do_add_to_scope.
+	(x3d_navigation_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_navigation_component::add_to_scope to here.
+	(x3d_environmental_effects_component): Override support_level and
+	do_add_to_scope.
+	(x3d_environmental_effects_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_environmental_effects_component::add_to_scope to here.
+	(x3d_geospatial_component): Override support_level and
+	do_add_to_scope.
+	(x3d_geospatial_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Moved
+	x3d_geospatial_component::add_to_scope to here.
+	(x3d_hanim_component): Override support_level and do_add_to_scope.
+	(x3d_hanim_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_hanim_component::add_to_scope to here.
+	(x3d_nurbs_component): Override support_level and do_add_to_scope.
+	(x3d_nurbs_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_nurbs_component::add_to_scope to here.
+	(x3d_dis_component): Override support_level and do_add_to_scope.
+	(x3d_dis_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t) const): Moved
+	x3d_dis_component::add_to_scope to here.
+	(x3d_event_utilities_component): Override support_level and
+	do_add_to_scope.
+	(x3d_event_utilities_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Moved
+	x3d_utilities_component::add_to_scope to here.
+	* tests/testsuite.at: Added test to confirm that an error is emitted
+	when an unsupported component level is encountered.
+
 2006-04-11 Braden McDaniel  <braden@endoframe.com>
 
 	Added support for constructing X3D Full profile scenes.

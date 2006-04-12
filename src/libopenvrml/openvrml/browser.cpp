@@ -3895,9 +3895,11 @@ namespace {
     public:
         virtual ~component() OPENVRML_NOTHROW = 0;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const = 0;
+        virtual size_t support_level() const OPENVRML_NOTHROW = 0;
+        void add_to_scope(const openvrml::browser & b,
+                          openvrml::scope & scope,
+                          size_t level) const
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
     protected:
         void add_scope_entry(
@@ -3908,8 +3910,13 @@ namespace {
             openvrml::scope & scope) const
             OPENVRML_THROW3(openvrml::unsupported_interface,
                             std::invalid_argument, std::bad_alloc);
-    };
 
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc) = 0;
+    };
 
     const class OPENVRML_LOCAL profile_registry : boost::ptr_map<std::string,
                                                                  profile> {
@@ -7867,21 +7874,42 @@ namespace {
         assert(succeeded);
     }
 
+    void component::add_to_scope(const openvrml::browser & b,
+                                 openvrml::scope & scope,
+                                 const size_t level) const
+        OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+    {
+        if (level > this->support_level()) {
+            throw std::invalid_argument("unsupported component level");
+        }
+        this->do_add_to_scope(b, scope, level);
+    }
+
 
     class OPENVRML_LOCAL vrml97_component : public component {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & root_scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & root_scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const vrml97_component::id = "VRML97";
 
-    void vrml97_component::add_to_scope(const openvrml::browser & b,
-                                        openvrml::scope & scope,
-                                        int) const
+    size_t vrml97_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void vrml97_component::do_add_to_scope(const openvrml::browser & b,
+                                           openvrml::scope & scope,
+                                           size_t) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
@@ -8336,9 +8364,13 @@ namespace {
                                 field_value::sfbool_id,
                                 "on")
             };
-            static const node_interface_set
-                interface_set(interfaces, interfaces + 5);
-            add_scope_entry(b, "DirectionalLight", interface_set, "urn:X-openvrml:node:DirectionalLight", scope);
+            static const node_interface_set interface_set(interfaces,
+                                                          interfaces + 5);
+            add_scope_entry(b,
+                            "DirectionalLight",
+                            interface_set,
+                            "urn:X-openvrml:node:DirectionalLight",
+                            scope);
         }
 
         //
@@ -9604,20 +9636,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_core_component::id = "Core";
 
-    void x3d_core_component::add_to_scope(const openvrml::browser & b,
-                                          openvrml::scope & scope,
-                                          const int support_level) const
+    size_t x3d_core_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void x3d_core_component::do_add_to_scope(const openvrml::browser & b,
+                                             openvrml::scope & scope,
+                                             const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             {
                 static const node_interface interfaces[] = {
                     node_interface(node_interface::exposedfield_id,
@@ -9747,23 +9789,33 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_time_component::id = "Time";
 
-    void x3d_time_component::add_to_scope(const openvrml::browser & b,
-                                          openvrml::scope & scope,
-                                          const int support_level) const
+    size_t x3d_time_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void x3d_time_component::do_add_to_scope(const openvrml::browser & b,
+                                             openvrml::scope & scope,
+                                             const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
         //
         // TimeSensor node
         //
-        if (support_level >= 1) {
+        if (level >= 1) {
             static const node_interface interfaces[] = {
                 node_interface(node_interface::exposedfield_id,
                                field_value::sfnode_id,
@@ -9824,20 +9876,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_networking_component::id = "Networking";
 
-    void x3d_networking_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    size_t x3d_networking_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 3;
+    }
+
+    void
+    x3d_networking_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // Anchor node
             //
@@ -9913,7 +9976,7 @@ namespace {
             }
         }
 
-        if (support_level >= 3) {
+        if (level >= 3) {
             //
             // LoadSensor node
             //
@@ -9960,20 +10023,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_grouping_component::id = "Grouping";
 
-    void x3d_grouping_component::add_to_scope(const openvrml::browser & b,
-                                              openvrml::scope & scope,
-                                              const int support_level) const
+    size_t x3d_grouping_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void
+    x3d_grouping_component::do_add_to_scope(const openvrml::browser & b,
+                                            openvrml::scope & scope,
+                                            const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Group node
             //
@@ -10083,7 +10157,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // Switch node
             //
@@ -10128,20 +10202,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_rendering_component::id = "Rendering";
 
-    void x3d_rendering_component::add_to_scope(const openvrml::browser & b,
-                                               openvrml::scope & scope,
-                                               const int support_level) const
+    size_t x3d_rendering_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 3;
+    }
+
+    void
+    x3d_rendering_component::do_add_to_scope(const openvrml::browser & b,
+                                             openvrml::scope & scope,
+                                             const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Color node
             //
@@ -10302,7 +10387,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // Normal node
             //
@@ -10326,7 +10411,7 @@ namespace {
             }
         }
 
-        if (support_level >= 3) {
+        if (level >= 3) {
             //
             // IndexedTriangleFanSet node
             //
@@ -10619,20 +10704,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_shape_component::id = "Shape";
 
-    void x3d_shape_component::add_to_scope(const openvrml::browser & b,
-                                           openvrml::scope & scope,
-                                           const int support_level) const
+    size_t x3d_shape_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void x3d_shape_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Appearance node
             //
@@ -10736,7 +10831,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // LineProperties node
             //
@@ -10772,20 +10867,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_geometry3d_component::id = "Geometry3D";
 
-    void x3d_geometry3d_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    size_t x3d_geometry3d_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 4;
+    }
+
+    void
+    x3d_geometry3d_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Box node
             //
@@ -10908,7 +11014,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // IndexedFaceSet node
             //
@@ -10983,7 +11089,7 @@ namespace {
             }
         }
 
-        if (support_level >= 3) {
+        if (level >= 3) {
             //
             // ElevationGrid node
             //
@@ -11046,7 +11152,7 @@ namespace {
             }
         }
 
-        if (support_level >= 4) {
+        if (level >= 4) {
             //
             // Extrusion node
             //
@@ -11115,20 +11221,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_geometry2d_component::id = "Geometry2D";
 
-    void x3d_geometry2d_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    size_t x3d_geometry2d_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void
+    x3d_geometry2d_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Polyline2D node
             //
@@ -11230,20 +11347,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_text_component::id = "Text";
 
-    void x3d_text_component::add_to_scope(const openvrml::browser & b,
-                                          openvrml::scope & scope,
-                                          const int support_level) const
+    size_t x3d_text_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void x3d_text_component::do_add_to_scope(const openvrml::browser & b,
+                                             openvrml::scope & scope,
+                                             const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // FontStyle node
             //
@@ -11331,20 +11458,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_sound_component::id = "Sound";
 
-    void x3d_sound_component::add_to_scope(const openvrml::browser & b,
-                                           openvrml::scope & scope,
-                                           const int support_level) const
+    size_t x3d_sound_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void x3d_sound_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // AudioClip node
             //
@@ -11456,20 +11593,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_lighting_component::id = "Lighting";
 
-    void x3d_lighting_component::add_to_scope(const openvrml::browser & b,
-                                              openvrml::scope & scope,
-                                              const int support_level) const
+    size_t x3d_lighting_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void
+    x3d_lighting_component::do_add_to_scope(const openvrml::browser & b,
+                                            openvrml::scope & scope,
+                                            const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // DirectionalLight node
             //
@@ -11505,7 +11653,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // PointLight node
             //
@@ -11602,20 +11750,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_texturing_component::id = "Texturing";
 
-    void x3d_texturing_component::add_to_scope(const openvrml::browser & b,
-                                               openvrml::scope & scope,
-                                               const int support_level) const
+    size_t x3d_texturing_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 3;
+    }
+
+    void
+    x3d_texturing_component::do_add_to_scope(const openvrml::browser & b,
+                                             openvrml::scope & scope,
+                                             const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >=  1) {
+        if (level >=  1) {
             //
             // ImageTexture node
             //
@@ -11726,7 +11885,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // MultiTexture node
             //
@@ -11834,7 +11993,7 @@ namespace {
             }
         }
 
-        if (support_level >= 3) {
+        if (level >= 3) {
             //
             // MovieTexture node
             //
@@ -11900,21 +12059,32 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_interpolation_component::id = "Interpolation";
 
+    size_t x3d_interpolation_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
     void
-    x3d_interpolation_component::add_to_scope(const openvrml::browser & b,
-                                              openvrml::scope & scope,
-                                              const int support_level) const
+    x3d_interpolation_component::
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // CoordinateInterpolator node
             //
@@ -12040,7 +12210,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // ColorInterpolator node
             //
@@ -12111,23 +12281,34 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_pointing_device_sensor_component::id =
         "PointingDeviceSensor";
 
+    size_t x3d_pointing_device_sensor_component::support_level() const
+        OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
     void
     x3d_pointing_device_sensor_component::
-    add_to_scope(const openvrml::browser & b,
-                 openvrml::scope & scope,
-                 const int support_level) const
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // CylinderSensor node
             //
@@ -12322,22 +12503,33 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_key_device_sensor_component::id = "KeyDeviceSensor";
 
+    size_t x3d_key_device_sensor_component::support_level() const
+        OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
     void
     x3d_key_device_sensor_component::
-    add_to_scope(const openvrml::browser & b,
-                 openvrml::scope & scope,
-                 const int support_level) const
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // KeySensor node
             //
@@ -12385,7 +12577,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // StringSensor node
             //
@@ -12428,23 +12620,34 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_environmental_sensor_component::id =
         "EnvironmentalSensor";
 
+    size_t x3d_environmental_sensor_component::support_level() const
+        OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
     void
     x3d_environmental_sensor_component::
-    add_to_scope(const openvrml::browser & b,
-                 openvrml::scope & scope,
-                 const int support_level) const
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // ProximitySensor node
             //
@@ -12492,7 +12695,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // VisibilitySensor node
             //
@@ -12537,20 +12740,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_navigation_component::id = "Navigation";
 
-    void x3d_navigation_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    size_t x3d_navigation_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void
+    x3d_navigation_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // NavigationInfo node
             //
@@ -12644,7 +12858,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // Billboard node
             //
@@ -12776,23 +12990,34 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_environmental_effects_component::id =
         "EnvironmentalEffects";
 
+    size_t x3d_environmental_effects_component::support_level() const
+        OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
     void
     x3d_environmental_effects_component::
-    add_to_scope(const openvrml::browser & b,
-                 openvrml::scope & scope,
-                 const int support_level) const
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // Background node
             //
@@ -12852,7 +13077,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // Fog node
             //
@@ -12897,20 +13122,31 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_geospatial_component::id = "Geospatial";
 
-    void x3d_geospatial_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    size_t x3d_geospatial_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void
+    x3d_geospatial_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // GeoCoordinate node
             //
@@ -13335,20 +13571,29 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_hanim_component::id = "H-Anim";
 
-    void x3d_hanim_component::add_to_scope(const openvrml::browser & b,
-                                           openvrml::scope & scope,
-                                           const int support_level) const
+    size_t x3d_hanim_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void x3d_hanim_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // HAnimDisplacer node
             //
@@ -13637,20 +13882,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_nurbs_component::id = "NURBS";
 
-    void x3d_nurbs_component::add_to_scope(const openvrml::browser & b,
-                                           openvrml::scope & scope,
-                                           const int support_level) const
+    size_t x3d_nurbs_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 4;
+    }
+
+    void x3d_nurbs_component::do_add_to_scope(const openvrml::browser & b,
+                                              openvrml::scope & scope,
+                                              const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // CoordinateDouble node
             //
@@ -13941,7 +14196,7 @@ namespace {
             }
         }
 
-        if (support_level >= 2) {
+        if (level >= 2) {
             //
             // NurbsSet node
             //
@@ -13980,7 +14235,7 @@ namespace {
             }
         }
 
-        if (support_level >= 3) {
+        if (level >= 3) {
             //
             // NurbsCurve2D node
             //
@@ -14107,7 +14362,7 @@ namespace {
             }
         }
 
-        if (support_level >= 4) {
+        if (level >= 4) {
             //
             // Contour2D node
             //
@@ -14213,20 +14468,30 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_dis_component::id = "DIS";
 
-    void x3d_dis_component::add_to_scope(const openvrml::browser & b,
-                                         openvrml::scope & scope,
-                                         const int support_level) const
+    size_t x3d_dis_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
+    void x3d_dis_component::do_add_to_scope(const openvrml::browser & b,
+                                            openvrml::scope & scope,
+                                            const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // EspduTransform node
             //
@@ -14862,21 +15127,33 @@ namespace {
     public:
         static const char * const id;
 
-        virtual void add_to_scope(const openvrml::browser & b,
-                                  openvrml::scope & scope,
-                                  int support_level) const;
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
     const char * const x3d_event_utilities_component::id = "EventUtilities";
 
+    size_t x3d_event_utilities_component::support_level() const
+        OPENVRML_NOTHROW
+    {
+        return 1;
+    }
+
     void
-    x3d_event_utilities_component::add_to_scope(const openvrml::browser & b,
-                                                openvrml::scope & scope,
-                                                const int support_level) const
+    x3d_event_utilities_component::
+    do_add_to_scope(const openvrml::browser & b,
+                    openvrml::scope & scope,
+                    const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
 
-        if (support_level >= 1) {
+        if (level >= 1) {
             //
             // BooleanFilter node
             //
