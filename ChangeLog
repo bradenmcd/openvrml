@@ -1,3 +1,16 @@
+2006-04-13 Braden McDaniel  <braden@endoframe.com>
+
+	Made openvrml::browser::out() and openvrml::browser::err() const.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::out(const std::string & str) const): Made
+	function const.
+	(openvrml::browser::err(const std::string & str) const): Made
+	function const.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Changed out_ and err_ from references to
+	pointers; made out() and err() const.
+
 2006-04-12 Braden McDaniel  <braden@endoframe.com>
 
 	Emit an error when a requested component level is not supported.

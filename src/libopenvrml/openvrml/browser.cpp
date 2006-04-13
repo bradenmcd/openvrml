@@ -5980,8 +5980,8 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     delta_time(DEFAULT_DELTA),
     viewer_(0),
     modified_(false),
-    out_(out),
-    err_(err),
+    out_(&out),
+    err_(&err),
     frame_rate_(0.0),
     flags_need_updating(false)
 {
@@ -7135,10 +7135,10 @@ void openvrml::browser::update_flags()
  *
  * @param[in] str   a string.
  */
-void openvrml::browser::out(const std::string & str)
+void openvrml::browser::out(const std::string & str) const
 {
     boost::mutex::scoped_lock(this->out_mutex_);
-    this->out_ << str << std::endl;
+    *this->out_ << str << std::endl;
 }
 
 /**
@@ -7146,10 +7146,10 @@ void openvrml::browser::out(const std::string & str)
  *
  * @param[in] str   a string.
  */
-void openvrml::browser::err(const std::string & str)
+void openvrml::browser::err(const std::string & str) const
 {
     boost::mutex::scoped_lock(this->err_mutex_);
-    this->err_ << str << std::endl;
+    *this->err_ << str << std::endl;
 }
 
 

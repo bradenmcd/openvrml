@@ -245,10 +245,10 @@ namespace openvrml {
         mutable boost::mutex modified_mutex_;
 
         mutable boost::mutex out_mutex_;
-        std::ostream & out_;
+        std::ostream * const out_;
 
         mutable boost::mutex err_mutex_;
-        std::ostream & err_;
+        std::ostream * const err_;
 
     protected:
         double frame_rate_;
@@ -338,8 +338,8 @@ namespace openvrml {
 
         void update_flags();
 
-        void out(const std::string & str);
-        void err(const std::string & str);
+        void out(const std::string & str) const;
+        void err(const std::string & str) const;
 
     protected:
         bool headlight_on();
