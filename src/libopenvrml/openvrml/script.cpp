@@ -303,10 +303,11 @@ void openvrml::script::process_direct_output(double timestamp)
 /**
  * @brief Construct.
  *
- * @param[in] browser   the browser to be associated with the script_node_class.
+ * @param[in] browser   the @c browser to be associated with the
+ *                      @c script_node_class.
  */
 openvrml::script_node_class::script_node_class(openvrml::browser & browser):
-    node_class(browser)
+    node_class("urn:X-openvrml:node:Script", browser)
 {}
 
 /**

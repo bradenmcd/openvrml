@@ -65,6 +65,8 @@ namespace {
      */
     class OPENVRML_LOCAL anchor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit anchor_class(openvrml::browser & browser);
         virtual ~anchor_class() OPENVRML_NOTHROW;
 
@@ -80,6 +82,8 @@ namespace {
      */
     class OPENVRML_LOCAL appearance_class : public node_class {
     public:
+        static const char * const id;
+
         explicit appearance_class(openvrml::browser & browser);
         virtual ~appearance_class() OPENVRML_NOTHROW;
 
@@ -96,6 +100,8 @@ namespace {
      */
     class OPENVRML_LOCAL audio_clip_class : public node_class {
     public:
+        static const char * const id;
+
         explicit audio_clip_class(openvrml::browser & browser);
         virtual ~audio_clip_class() OPENVRML_NOTHROW;
 
@@ -117,6 +123,8 @@ namespace {
         bound_node_stack<background_node> bound_nodes;
 
     public:
+        static const char * const id;
+
         explicit background_class(openvrml::browser & browser);
         virtual ~background_class() OPENVRML_NOTHROW;
 
@@ -157,6 +165,8 @@ namespace {
      */
     class OPENVRML_LOCAL billboard_class : public node_class {
     public:
+        static const char * const id;
+
         explicit billboard_class(openvrml::browser & browser);
         virtual ~billboard_class() OPENVRML_NOTHROW;
 
@@ -173,6 +183,8 @@ namespace {
      */
     class OPENVRML_LOCAL box_class : public node_class {
     public:
+        static const char * const id;
+
         explicit box_class(openvrml::browser & browser);
         virtual ~box_class() OPENVRML_NOTHROW;
 
@@ -189,6 +201,8 @@ namespace {
      */
     class OPENVRML_LOCAL collision_class : public node_class {
     public:
+        static const char * const id;
+
         explicit collision_class(openvrml::browser & browser);
         virtual ~collision_class() OPENVRML_NOTHROW;
 
@@ -205,6 +219,8 @@ namespace {
      */
     class OPENVRML_LOCAL color_class : public node_class {
     public:
+        static const char * const id;
+
         explicit color_class(openvrml::browser & browser);
         virtual ~color_class() OPENVRML_NOTHROW;
 
@@ -221,6 +237,8 @@ namespace {
      */
     class OPENVRML_LOCAL color_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit color_interpolator_class(openvrml::browser & browser);
         virtual ~color_interpolator_class() OPENVRML_NOTHROW;
 
@@ -237,6 +255,8 @@ namespace {
      */
     class OPENVRML_LOCAL cone_class : public node_class {
     public:
+        static const char * const id;
+
         explicit cone_class(openvrml::browser & browser);
         virtual ~cone_class() OPENVRML_NOTHROW;
 
@@ -253,6 +273,8 @@ namespace {
      */
     class OPENVRML_LOCAL coordinate_class : public node_class {
     public:
+        static const char * const id;
+
         explicit coordinate_class(openvrml::browser & browser);
         virtual ~coordinate_class() OPENVRML_NOTHROW;
 
@@ -269,6 +291,8 @@ namespace {
      */
     class OPENVRML_LOCAL coordinate_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit coordinate_interpolator_class(openvrml::browser & browser);
         virtual ~coordinate_interpolator_class() OPENVRML_NOTHROW;
 
@@ -285,6 +309,8 @@ namespace {
      */
     class OPENVRML_LOCAL cylinder_class : public node_class {
     public:
+        static const char * const id;
+
         explicit cylinder_class(openvrml::browser & browser);
         virtual ~cylinder_class() OPENVRML_NOTHROW;
 
@@ -301,6 +327,8 @@ namespace {
      */
     class OPENVRML_LOCAL cylinder_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit cylinder_sensor_class(openvrml::browser & browser);
         virtual ~cylinder_sensor_class() OPENVRML_NOTHROW;
 
@@ -317,6 +345,8 @@ namespace {
      */
     class OPENVRML_LOCAL directional_light_class : public node_class {
     public:
+        static const char * const id;
+
         explicit directional_light_class(openvrml::browser & browser);
         virtual ~directional_light_class() OPENVRML_NOTHROW;
 
@@ -333,6 +363,8 @@ namespace {
      */
     class OPENVRML_LOCAL elevation_grid_class : public node_class {
     public:
+        static const char * const id;
+
         explicit elevation_grid_class(openvrml::browser & browser);
         virtual ~elevation_grid_class() OPENVRML_NOTHROW;
 
@@ -349,6 +381,8 @@ namespace {
      */
     class OPENVRML_LOCAL extrusion_class : public node_class {
     public:
+        static const char * const id;
+
         explicit extrusion_class(openvrml::browser & browser);
         virtual ~extrusion_class() OPENVRML_NOTHROW;
 
@@ -370,6 +404,8 @@ namespace {
         bound_node_stack<fog_node> bound_nodes;
 
     public:
+        static const char * const id;
+
         explicit fog_class(openvrml::browser & browser);
         virtual ~fog_class() OPENVRML_NOTHROW;
 
@@ -411,6 +447,8 @@ namespace {
      */
     class OPENVRML_LOCAL font_style_class : public node_class {
     public:
+        static const char * const id;
+
         explicit font_style_class(openvrml::browser & browser);
         virtual ~font_style_class() OPENVRML_NOTHROW;
 
@@ -427,6 +465,8 @@ namespace {
      */
     class OPENVRML_LOCAL group_class : public node_class {
     public:
+        static const char * const id;
+
         explicit group_class(openvrml::browser & browser);
         virtual ~group_class() OPENVRML_NOTHROW;
 
@@ -443,6 +483,8 @@ namespace {
      */
     class OPENVRML_LOCAL image_texture_class : public node_class {
     public:
+        static const char * const id;
+
         explicit image_texture_class(openvrml::browser & browser);
         virtual ~image_texture_class() OPENVRML_NOTHROW;
 
@@ -459,6 +501,8 @@ namespace {
      */
     class OPENVRML_LOCAL indexed_face_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit indexed_face_set_class(openvrml::browser & browser);
         virtual ~indexed_face_set_class() OPENVRML_NOTHROW;
 
@@ -475,6 +519,8 @@ namespace {
      */
     class OPENVRML_LOCAL indexed_line_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit indexed_line_set_class(openvrml::browser & browser);
         virtual ~indexed_line_set_class() OPENVRML_NOTHROW;
 
@@ -491,6 +537,8 @@ namespace {
      */
     class OPENVRML_LOCAL inline_class : public node_class {
     public:
+        static const char * const id;
+
         explicit inline_class(openvrml::browser & browser);
         virtual ~inline_class() OPENVRML_NOTHROW;
 
@@ -507,6 +555,8 @@ namespace {
      */
     class OPENVRML_LOCAL lod_class : public node_class {
     public:
+        static const char * const id;
+
         explicit lod_class(openvrml::browser & browser);
         virtual ~lod_class() OPENVRML_NOTHROW;
 
@@ -523,6 +573,8 @@ namespace {
      */
     class OPENVRML_LOCAL material_class : public node_class {
     public:
+        static const char * const id;
+
         explicit material_class(openvrml::browser & browser);
         virtual ~material_class() OPENVRML_NOTHROW;
 
@@ -539,6 +591,8 @@ namespace {
      */
     class OPENVRML_LOCAL movie_texture_class : public node_class {
     public:
+        static const char * const id;
+
         explicit movie_texture_class(openvrml::browser & browser);
         virtual ~movie_texture_class() OPENVRML_NOTHROW;
 
@@ -560,6 +614,8 @@ namespace {
         bound_node_stack<navigation_info_node> bound_nodes;
 
     public:
+        static const char * const id;
+
         explicit navigation_info_class(openvrml::browser & browser);
         virtual ~navigation_info_class() OPENVRML_NOTHROW;
 
@@ -588,6 +644,8 @@ namespace {
      */
     class OPENVRML_LOCAL normal_class : public node_class {
     public:
+        static const char * const id;
+
         explicit normal_class(openvrml::browser & browser);
         virtual ~normal_class() OPENVRML_NOTHROW;
 
@@ -604,6 +662,8 @@ namespace {
      */
     class OPENVRML_LOCAL normal_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit normal_interpolator_class(openvrml::browser & browser);
         virtual ~normal_interpolator_class() OPENVRML_NOTHROW;
 
@@ -620,6 +680,8 @@ namespace {
      */
     class OPENVRML_LOCAL orientation_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit orientation_interpolator_class(
             openvrml::browser & browser);
         virtual ~orientation_interpolator_class() OPENVRML_NOTHROW;
@@ -637,6 +699,8 @@ namespace {
      */
     class OPENVRML_LOCAL pixel_texture_class : public node_class {
     public:
+        static const char * const id;
+
         explicit pixel_texture_class(openvrml::browser & browser);
         virtual ~pixel_texture_class() OPENVRML_NOTHROW;
 
@@ -653,6 +717,8 @@ namespace {
      */
     class OPENVRML_LOCAL plane_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit plane_sensor_class(openvrml::browser & browser);
         virtual ~plane_sensor_class() OPENVRML_NOTHROW;
 
@@ -669,6 +735,8 @@ namespace {
      */
     class OPENVRML_LOCAL point_light_class : public node_class {
     public:
+        static const char * const id;
+
         explicit point_light_class(openvrml::browser & browser);
         virtual ~point_light_class() OPENVRML_NOTHROW;
 
@@ -685,6 +753,8 @@ namespace {
      */
     class OPENVRML_LOCAL point_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit point_set_class(openvrml::browser & browser);
         virtual ~point_set_class() OPENVRML_NOTHROW;
 
@@ -701,6 +771,8 @@ namespace {
      */
     class OPENVRML_LOCAL position_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit position_interpolator_class(openvrml::browser & browser);
         virtual ~position_interpolator_class() OPENVRML_NOTHROW;
 
@@ -717,6 +789,8 @@ namespace {
      */
     class OPENVRML_LOCAL proximity_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit proximity_sensor_class(openvrml::browser & browser);
         virtual ~proximity_sensor_class() OPENVRML_NOTHROW;
 
@@ -733,6 +807,8 @@ namespace {
      */
     class OPENVRML_LOCAL scalar_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit scalar_interpolator_class(openvrml::browser & browser);
         virtual ~scalar_interpolator_class() OPENVRML_NOTHROW;
 
@@ -749,6 +825,8 @@ namespace {
      */
     class OPENVRML_LOCAL shape_class : public node_class {
     public:
+        static const char * const id;
+
         explicit shape_class(openvrml::browser & browser);
         virtual ~shape_class() OPENVRML_NOTHROW;
 
@@ -765,6 +843,8 @@ namespace {
      */
     class OPENVRML_LOCAL sound_class : public node_class {
     public:
+        static const char * const id;
+
         explicit sound_class(openvrml::browser & browser);
         virtual ~sound_class() OPENVRML_NOTHROW;
 
@@ -781,6 +861,8 @@ namespace {
      */
     class OPENVRML_LOCAL sphere_class : public node_class {
     public:
+        static const char * const id;
+
         explicit sphere_class(openvrml::browser & browser);
         virtual ~sphere_class() OPENVRML_NOTHROW;
 
@@ -797,6 +879,8 @@ namespace {
      */
     class OPENVRML_LOCAL sphere_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit sphere_sensor_class(openvrml::browser & browser);
         virtual ~sphere_sensor_class() OPENVRML_NOTHROW;
 
@@ -813,6 +897,8 @@ namespace {
      */
     class OPENVRML_LOCAL spot_light_class : public node_class {
     public:
+        static const char * const id;
+
         explicit spot_light_class(openvrml::browser & browser);
         virtual ~spot_light_class() OPENVRML_NOTHROW;
 
@@ -829,6 +915,8 @@ namespace {
      */
     class OPENVRML_LOCAL switch_class : public node_class {
     public:
+        static const char * const id;
+
         explicit switch_class(openvrml::browser & browser);
         virtual ~switch_class() OPENVRML_NOTHROW;
 
@@ -845,6 +933,8 @@ namespace {
      */
     class OPENVRML_LOCAL text_class : public node_class {
     public:
+        static const char * const id;
+
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Library freeTypeLibrary;
 # endif
@@ -865,6 +955,8 @@ namespace {
      */
     class OPENVRML_LOCAL texture_coordinate_class : public node_class {
     public:
+        static const char * const id;
+
         explicit texture_coordinate_class(openvrml::browser & browser);
         virtual ~texture_coordinate_class() OPENVRML_NOTHROW;
 
@@ -881,6 +973,8 @@ namespace {
      */
     class OPENVRML_LOCAL texture_transform_class : public node_class {
     public:
+        static const char * const id;
+
         explicit texture_transform_class(openvrml::browser & browser);
         virtual ~texture_transform_class() OPENVRML_NOTHROW;
 
@@ -897,6 +991,8 @@ namespace {
      */
     class OPENVRML_LOCAL time_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit time_sensor_class(openvrml::browser & browser);
         virtual ~time_sensor_class() OPENVRML_NOTHROW;
 
@@ -913,6 +1009,8 @@ namespace {
      */
     class OPENVRML_LOCAL touch_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit touch_sensor_class(openvrml::browser & browser);
         virtual ~touch_sensor_class() OPENVRML_NOTHROW;
 
@@ -929,6 +1027,8 @@ namespace {
      */
     class OPENVRML_LOCAL transform_class : public node_class {
     public:
+        static const char * const id;
+
         explicit transform_class(openvrml::browser & browser);
         virtual ~transform_class() OPENVRML_NOTHROW;
 
@@ -950,6 +1050,8 @@ namespace {
         bound_node_stack<viewpoint_node> bound_nodes;
 
     public:
+        static const char * const id;
+
         explicit viewpoint_class(openvrml::browser & browser);
         virtual ~viewpoint_class() OPENVRML_NOTHROW;
 
@@ -979,6 +1081,8 @@ namespace {
      */
     class OPENVRML_LOCAL visibility_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit visibility_sensor_class(openvrml::browser & browser);
         virtual ~visibility_sensor_class() OPENVRML_NOTHROW;
 
@@ -995,6 +1099,8 @@ namespace {
      */
     class OPENVRML_LOCAL world_info_class : public node_class {
     public:
+        static const char * const id;
+
         explicit world_info_class(openvrml::browser & browser);
         virtual ~world_info_class() OPENVRML_NOTHROW;
 
@@ -1010,114 +1116,111 @@ void register_vrml97_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:Anchor",
+    b.add_node_class(anchor_class::id,
                      shared_ptr<node_class>(new anchor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Appearance",
+    b.add_node_class(appearance_class::id,
                      shared_ptr<node_class>(new appearance_class(b)));
-    b.add_node_class("urn:X-openvrml:node:AudioClip",
+    b.add_node_class(audio_clip_class::id,
                      shared_ptr<node_class>(new audio_clip_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Background",
+    b.add_node_class(background_class::id,
                      shared_ptr<node_class>(new background_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Billboard",
+    b.add_node_class(billboard_class::id,
                      shared_ptr<node_class>(new billboard_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Box",
-                     shared_ptr<node_class>(new box_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Collision",
+    b.add_node_class(box_class::id, shared_ptr<node_class>(new box_class(b)));
+    b.add_node_class(collision_class::id,
                      shared_ptr<node_class>(new collision_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Color",
+    b.add_node_class(color_class::id,
                      shared_ptr<node_class>(new color_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ColorInterpolator",
+    b.add_node_class(color_interpolator_class::id,
                      shared_ptr<node_class>(new color_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Cone",
+    b.add_node_class(cone_class::id,
                      shared_ptr<node_class>(new cone_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Coordinate",
+    b.add_node_class(coordinate_class::id,
                      shared_ptr<node_class>(new coordinate_class(b)));
-    b.add_node_class("urn:X-openvrml:node:CoordinateInterpolator",
+    b.add_node_class(coordinate_interpolator_class::id,
                      shared_ptr<node_class>(
                          new coordinate_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Cylinder",
+    b.add_node_class(cylinder_class::id,
                      shared_ptr<node_class>(new cylinder_class(b)));
-    b.add_node_class("urn:X-openvrml:node:CylinderSensor",
+    b.add_node_class(cylinder_sensor_class::id,
                      shared_ptr<node_class>(new cylinder_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:DirectionalLight",
+    b.add_node_class(directional_light_class::id,
                      shared_ptr<node_class>(new directional_light_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ElevationGrid",
+    b.add_node_class(elevation_grid_class::id,
                      shared_ptr<node_class>(new elevation_grid_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Extrusion",
+    b.add_node_class(extrusion_class::id,
                      shared_ptr<node_class>(new extrusion_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Fog",
-                     shared_ptr<node_class>(new fog_class(b)));
-    b.add_node_class("urn:X-openvrml:node:FontStyle",
+    b.add_node_class(fog_class::id, shared_ptr<node_class>(new fog_class(b)));
+    b.add_node_class(font_style_class::id,
                      shared_ptr<node_class>(new font_style_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Group",
+    b.add_node_class(group_class::id,
                      shared_ptr<node_class>(new group_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ImageTexture",
+    b.add_node_class(image_texture_class::id,
                      shared_ptr<node_class>(new image_texture_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IndexedFaceSet",
+    b.add_node_class(indexed_face_set_class::id,
                      shared_ptr<node_class>(new indexed_face_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IndexedLineSet",
+    b.add_node_class(indexed_line_set_class::id,
                      shared_ptr<node_class>(new indexed_line_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Inline",
+    b.add_node_class(inline_class::id,
                      shared_ptr<node_class>(new inline_class(b)));
-    b.add_node_class("urn:X-openvrml:node:LOD",
-                     shared_ptr<node_class>(new lod_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Material",
+    b.add_node_class(lod_class::id, shared_ptr<node_class>(new lod_class(b)));
+    b.add_node_class(material_class::id,
                      shared_ptr<node_class>(new material_class(b)));
-    b.add_node_class("urn:X-openvrml:node:MovieTexture",
+    b.add_node_class(movie_texture_class::id,
                      shared_ptr<node_class>(new movie_texture_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NavigationInfo",
+    b.add_node_class(navigation_info_class::id,
                      shared_ptr<node_class>(new navigation_info_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Normal",
+    b.add_node_class(normal_class::id,
                      shared_ptr<node_class>(new normal_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NormalInterpolator",
+    b.add_node_class(normal_interpolator_class::id,
                      shared_ptr<node_class>(new normal_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:OrientationInterpolator",
+    b.add_node_class(orientation_interpolator_class::id,
                      shared_ptr<node_class>(
                          new orientation_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:PixelTexture",
+    b.add_node_class(pixel_texture_class::id,
                      shared_ptr<node_class>(new pixel_texture_class(b)));
-    b.add_node_class("urn:X-openvrml:node:PlaneSensor",
+    b.add_node_class(plane_sensor_class::id,
                      shared_ptr<node_class>(new plane_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:PointLight",
+    b.add_node_class(point_light_class::id,
                      shared_ptr<node_class>(new point_light_class(b)));
-    b.add_node_class("urn:X-openvrml:node:PointSet",
+    b.add_node_class(point_set_class::id,
                      shared_ptr<node_class>(new point_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:PositionInterpolator",
+    b.add_node_class(position_interpolator_class::id,
                      shared_ptr<node_class>(
                          new position_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ProximitySensor",
+    b.add_node_class(proximity_sensor_class::id,
                      shared_ptr<node_class>(new proximity_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ScalarInterpolator",
+    b.add_node_class(scalar_interpolator_class::id,
                      shared_ptr<node_class>(new scalar_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Shape",
+    b.add_node_class(shape_class::id,
                      shared_ptr<node_class>(new shape_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Sound",
+    b.add_node_class(sound_class::id,
                      shared_ptr<node_class>(new sound_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Sphere",
+    b.add_node_class(sphere_class::id,
                      shared_ptr<node_class>(new sphere_class(b)));
-    b.add_node_class("urn:X-openvrml:node:SphereSensor",
+    b.add_node_class(sphere_sensor_class::id,
                      shared_ptr<node_class>(new sphere_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:SpotLight",
+    b.add_node_class(spot_light_class::id,
                      shared_ptr<node_class>(new spot_light_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Switch",
+    b.add_node_class(switch_class::id,
                      shared_ptr<node_class>(new switch_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Text",
+    b.add_node_class(text_class::id,
                      shared_ptr<node_class>(new text_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TextureCoordinate",
+    b.add_node_class(texture_coordinate_class::id,
                      shared_ptr<node_class>(new texture_coordinate_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TextureTransform",
+    b.add_node_class(texture_transform_class::id,
                      shared_ptr<node_class>(new texture_transform_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TimeSensor",
+    b.add_node_class(time_sensor_class::id,
                      shared_ptr<node_class>(new time_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TouchSensor",
+    b.add_node_class(touch_sensor_class::id,
                      shared_ptr<node_class>(new touch_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Transform",
+    b.add_node_class(transform_class::id,
                      shared_ptr<node_class>(new transform_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Viewpoint",
+    b.add_node_class(viewpoint_class::id,
                      shared_ptr<node_class>(new viewpoint_class(b)));
-    b.add_node_class("urn:X-openvrml:node:VisibilitySensor",
+    b.add_node_class(visibility_sensor_class::id,
                      shared_ptr<node_class>(new visibility_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:WorldInfo",
+    b.add_node_class(world_info_class::id,
                      shared_ptr<node_class>(new world_info_class(b)));
 }
 
@@ -4215,12 +4318,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const anchor_class::id = "urn:X-openvrml:node:Anchor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this anchor_class.
+     * @param browser the @c browser associated with this @c anchor_class.
      */
     anchor_class::anchor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(anchor_class::id, browser)
     {}
 
     /**
@@ -4501,13 +4609,18 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const appearance_class::id = "urn:X-openvrml:node:Appearance";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     appearance_class::
     appearance_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(appearance_class::id, browser)
     {}
 
     /**
@@ -4850,13 +4963,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const audio_clip_class::id = "urn:X-openvrml:node:AudioClip";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     audio_clip_class::
     audio_clip_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(audio_clip_class::id, browser)
     {}
 
     /**
@@ -5264,13 +5382,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const background_class::id = "urn:X-openvrml:node:Background";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     background_class::
     background_class(openvrml::browser & browser):
-        node_class(browser),
+        node_class(background_class::id, browser),
         first(0)
     {}
 
@@ -7324,13 +7447,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const billboard_class::id = "urn:X-openvrml:node:Billboard";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     billboard_class::
     billboard_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(billboard_class::id, browser)
     {}
 
     /**
@@ -7644,12 +7772,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const box_class::id = "urn:X-openvrml:node:Box";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     box_class::box_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(box_class::id, browser)
     {}
 
     /**
@@ -7820,13 +7953,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const collision_class::id = "urn:X-openvrml:node:Collision";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     collision_class::
     collision_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(collision_class::id, browser)
     {}
 
     /**
@@ -8099,12 +8237,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const color_class::id = "urn:X-openvrml:node:Color";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     color_class::color_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(color_class::id, browser)
     {}
 
     /**
@@ -8241,13 +8384,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const color_interpolator_class::id =
+        "urn:X-openvrml:node:ColorInterpolator";
+
+    /**
      * @brief Construct.
      *
      * @param browser the browser associated with this class object.
      */
     color_interpolator_class::
     color_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(color_interpolator_class::id, browser)
     {}
 
     /**
@@ -8552,14 +8701,18 @@ namespace {
     {}
 
 
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const cone_class::id = "urn:X-openvrml:node:Cone";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     cone_class::cone_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(cone_class::id, browser)
     {}
 
     /**
@@ -8757,6 +8910,10 @@ namespace {
     }
 
 
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const coordinate_class::id = "urn:X-openvrml:node:Coordinate";
 
     /**
      * @brief Construct.
@@ -8765,7 +8922,7 @@ namespace {
      */
     coordinate_class::
     coordinate_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(coordinate_class::id, browser)
     {}
 
     /**
@@ -8903,13 +9060,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const coordinate_interpolator_class::id =
+        "urn:X-openvrml:node:CoordinateInterpolator";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     coordinate_interpolator_class::
     coordinate_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(coordinate_interpolator_class::id, browser)
     {}
 
     /**
@@ -9211,13 +9374,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const cylinder_class::id = "urn:X-openvrml:node:Cylinder";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     cylinder_class::
     cylinder_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(cylinder_class::id, browser)
     {}
 
     /**
@@ -9435,15 +9603,20 @@ namespace {
     }
 
 
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const cylinder_sensor_class::id =
+        "urn:X-openvrml:node:CylinderSensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     cylinder_sensor_class::
     cylinder_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(cylinder_sensor_class::id, browser)
     {}
 
     /**
@@ -9972,13 +10145,19 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const directional_light_class::id =
+        "urn:X-openvrml:node:DirectionalLight";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     directional_light_class::
     directional_light_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(directional_light_class::id, browser)
     {}
 
     /**
@@ -10220,13 +10399,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const elevation_grid_class::id =
+        "urn:X-openvrml:node:ElevationGrid";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     elevation_grid_class::
     elevation_grid_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(elevation_grid_class::id, browser)
     {}
 
     /**
@@ -10735,13 +10920,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const extrusion_class::id = "urn:X-openvrml:node:Extrusion";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     extrusion_class::
     extrusion_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(extrusion_class::id, browser)
     {}
 
     /**
@@ -11341,12 +11531,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const fog_class::id = "urn:X-openvrml:node:Fog";
+
+    /**
      * @brief Construct.
      *
      * @param browser the browser associated with this class object.
      */
     fog_class::fog_class(openvrml::browser & browser):
-        node_class(browser),
+        node_class(fog_class::id, browser),
         first(0)
     {}
 
@@ -11806,13 +12001,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const font_style_class::id = "urn:X-openvrml:node:FontStyle";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     font_style_class::
     font_style_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(font_style_class::id, browser)
     {}
 
     /**
@@ -12172,12 +12372,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const group_class::id = "urn:X-openvrml:node:Group";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     group_class::group_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(group_class::id, browser)
     {}
 
     /**
@@ -12336,13 +12541,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const image_texture_class::id =
+        "urn:X-openvrml:node:ImageTexture";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     image_texture_class::
     image_texture_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(image_texture_class::id, browser)
     {}
 
     /**
@@ -12634,13 +12845,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const indexed_face_set_class::id =
+        "urn:X-openvrml:node:IndexedFaceSet";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     indexed_face_set_class::
     indexed_face_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(indexed_face_set_class::id, browser)
     {}
 
     /**
@@ -13300,13 +13517,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const indexed_line_set_class::id =
+        "urn:X-openvrml:node:IndexedLineSet";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     indexed_line_set_class::
     indexed_line_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(indexed_line_set_class::id, browser)
     {}
 
     /**
@@ -13575,12 +13798,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const inline_class::id = "urn:X-openvrml:node:Inline";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     inline_class::inline_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(inline_class::id, browser)
     {}
 
     /**
@@ -13892,12 +14120,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const lod_class::id = "urn:X-openvrml:node:LOD";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     lod_class::lod_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(lod_class::id, browser)
     {}
 
     /**
@@ -14249,13 +14482,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const material_class::id = "urn:X-openvrml:node:Material";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     material_class::
     material_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(material_class::id, browser)
     {}
 
     /**
@@ -14575,13 +14813,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const movie_texture_class::id =
+        "urn:X-openvrml:node:MovieTexture";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     movie_texture_class::
     movie_texture_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(movie_texture_class::id, browser)
     {}
 
     /**
@@ -14873,7 +15117,7 @@ namespace {
      */
 
     /**
-     * @brief Constructor.
+     * @brief Construct.
      *
      * @param node  movie_texture_node.
      */
@@ -15250,13 +15494,19 @@ namespace {
      */
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const navigation_info_class::id =
+        "urn:X-openvrml:node:NavigationInfo";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     navigation_info_class::
     navigation_info_class(openvrml::browser & browser):
-        node_class(browser),
+        node_class(navigation_info_class::id, browser),
         first(0)
     {}
 
@@ -15868,12 +16118,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const normal_class::id = "urn:X-openvrml:node:Normal";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node class object.
+     * @param browser the @c browser associated with this @c node_class object.
      */
     normal_class::normal_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(normal_class::id, browser)
     {}
 
     /**
@@ -16011,13 +16266,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const normal_interpolator_class::id =
+        "urn:X-openvrml:node:NormalInterpolator";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     normal_interpolator_class::
     normal_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(normal_interpolator_class::id, browser)
     {}
 
     /**
@@ -16337,13 +16598,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const orientation_interpolator_class::id =
+        "urn:X-openvrml:node:OrientationInterpolator";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     orientation_interpolator_class::
     orientation_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(orientation_interpolator_class::id, browser)
     {}
 
     /**
@@ -16666,13 +16933,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const pixel_texture_class::id =
+        "urn:X-openvrml:node:PixelTexture";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     pixel_texture_class::
     pixel_texture_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(pixel_texture_class::id, browser)
     {}
 
     /**
@@ -16846,13 +17119,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const plane_sensor_class::id =
+        "urn:X-openvrml:node:PlaneSensor";
+
+    /**
      * @brief Construct.
      *
      * @param browser the browser associated with this node class object.
      */
     plane_sensor_class::
     plane_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(plane_sensor_class::id, browser)
     {}
 
     /**
@@ -17321,13 +17600,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const point_light_class::id =
+        "urn:X-openvrml:node:PointLight";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this class object.
+     * @param browser the @c browser associated with this class object.
      */
     point_light_class::
     point_light_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(point_light_class::id, browser)
     {}
 
     /**
@@ -17640,13 +17925,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const point_set_class::id = "urn:X-openvrml:node:PointSet";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     point_set_class::
     point_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(point_set_class::id, browser)
     {}
 
     /**
@@ -17909,13 +18199,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const position_interpolator_class::id =
+        "urn:X-openvrml:node:PositionInterpolator";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     position_interpolator_class::
     position_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(position_interpolator_class::id, browser)
     {}
 
     /**
@@ -18200,13 +18496,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const proximity_sensor_class::id =
+        "urn:X-openvrml:node:ProximitySensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     proximity_sensor_class::
     proximity_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(proximity_sensor_class::id, browser)
     {}
 
     /**
@@ -18629,13 +18931,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const scalar_interpolator_class::id =
+        "urn:X-openvrml:node:ScalarInterpolator";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     scalar_interpolator_class::
     scalar_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(scalar_interpolator_class::id, browser)
     {}
 
     /**
@@ -18915,12 +19223,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const shape_class::id = "urn:X-openvrml:node:Shape";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     shape_class::shape_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(shape_class::id, browser)
     {}
 
     /**
@@ -19233,12 +19546,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const sound_class::id = "urn:X-openvrml:node:Sound";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     sound_class::sound_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(sound_class::id, browser)
     {}
 
     /**
@@ -19609,12 +19927,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const sphere_class::id = "urn:X-openvrml:node:Sphere";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     sphere_class::sphere_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(sphere_class::id, browser)
     {}
 
     /**
@@ -19784,13 +20107,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const sphere_sensor_class::id =
+        "urn:X-openvrml:node:SphereSensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     sphere_sensor_class::
     sphere_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(sphere_sensor_class::id, browser)
     {}
 
     /**
@@ -20215,13 +20544,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const spot_light_class::id = "urn:X-openvrml:node:SpotLight";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     spot_light_class::
     spot_light_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(spot_light_class::id, browser)
     {}
 
     /**
@@ -20615,12 +20949,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const switch_class::id = "urn:X-openvrml:node:Switch";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     switch_class::switch_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(switch_class::id, browser)
     {}
 
     /**
@@ -21018,6 +21357,11 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const text_class::id = "urn:X-openvrml:node:Text";
+
+    /**
      * @var FT_Library text_class::freeTypeLibrary
      *
      * @brief FreeType library handle.
@@ -21028,10 +21372,10 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     text_class::text_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(text_class::id, browser)
     {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
@@ -21874,18 +22218,18 @@ namespace {
     }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
-/**
- * @brief Construct from a set of contours.
- *
- * @param contours          a vector of closed contours that make up the
- *                          glyph's outline.
- * @param advance_width     the distance the pen should advance horizontally
- *                          after drawing the glyph.
- * @param advance_height    the distance the pen should advance vertically
- *                          after drawing the glyph.
- *
- * @exception std::bad_alloc    if memory allocation fails.
- */
+    /**
+     * @brief Construct from a set of contours.
+     *
+     * @param contours          a vector of closed contours that make up the
+     *                          glyph's outline.
+     * @param advance_width     the distance the pen should advance
+     *                          horizontally after drawing the glyph.
+     * @param advance_height    the distance the pen should advance vertically
+     *                          after drawing the glyph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
     text_node::glyph_geometry::
     glyph_geometry(const std::vector<std::vector<vec2f> > & contours,
                    const float advance_width,
@@ -23008,13 +23352,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const texture_coordinate_class::id =
+        "urn:X-openvrml:node:TextureCoordinate";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     texture_coordinate_class::
     texture_coordinate_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(texture_coordinate_class::id, browser)
     {}
 
     /**
@@ -23159,13 +23509,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const texture_transform_class::id =
+        "urn:X-openvrml:node:TextureTransform";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     texture_transform_class::
     texture_transform_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(texture_transform_class::id, browser)
     {}
 
     /**
@@ -23401,13 +23757,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const time_sensor_class::id =
+        "urn:X-openvrml:node:TimeSensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser   the browser associated with this node_class.
+     * @param browser   the @c browser associated with this @c node_class.
      */
     time_sensor_class::
     time_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(time_sensor_class::id, browser)
     {}
 
     /**
@@ -23985,42 +24347,42 @@ namespace {
      * @brief fraction_changed eventOut emitter.
      */
 
-/**
- * @var openvrml::sfbool time_sensor_node::is_active_
- *
- * @brief isActive eventOut value.
- */
+    /**
+     * @var openvrml::sfbool time_sensor_node::is_active_
+     *
+     * @brief isActive eventOut value.
+     */
 
-/**
- * @var openvrml::sfbool_emitter time_sensor_node::is_active_emitter_
- *
- * @brief isActive eventOut emitter.
- */
+    /**
+     * @var openvrml::sfbool_emitter time_sensor_node::is_active_emitter_
+     *
+     * @brief isActive eventOut emitter.
+     */
 
-/**
- * @var openvrml::sftime time_sensor_node::time_
- *
- * @brief time eventOut value.
- */
+    /**
+     * @var openvrml::sftime time_sensor_node::time_
+     *
+     * @brief time eventOut value.
+     */
 
-/**
- * @var openvrml::sftime_emitter time_sensor_node::time_emitter_
- *
- * @brief time eventOut emitter.
- */
+    /**
+     * @var openvrml::sftime_emitter time_sensor_node::time_emitter_
+     *
+     * @brief time eventOut emitter.
+     */
 
-/**
- * @var double time_sensor_node::lastTime
- *
- * @brief The timestamp previously received.
- */
+    /**
+     * @var double time_sensor_node::lastTime
+     *
+     * @brief The timestamp previously received.
+     */
 
-/**
- * @brief Construct.
- *
- * @param type      the node_type associated with the instance.
- * @param scope         the scope that the new node will belong to.
- */
+    /**
+     * @brief Construct.
+     *
+     * @param type      the @c node_type associated with the instance.
+     * @param scope     the @c scope that the new node will belong to.
+     */
     time_sensor_node::
     time_sensor_node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope):
@@ -24195,13 +24557,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const touch_sensor_class::id =
+        "urn:X-openvrml:node:TouchSensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     touch_sensor_class::
     touch_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(touch_sensor_class::id, browser)
     {}
 
     /**
@@ -24527,13 +24895,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const transform_class::id = "urn:X-openvrml:node:Transform";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     transform_class::
     transform_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(transform_class::id, browser)
     {}
 
     /**
@@ -25361,13 +25734,18 @@ namespace {
      */
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const viewpoint_class::id = "urn:X-openvrml:node:Viewpoint";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     viewpoint_class::
     viewpoint_class(openvrml::browser & browser):
-        node_class(browser),
+        node_class(viewpoint_class::id, browser),
         first(0)
     {}
 
@@ -26257,13 +26635,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const visibility_sensor_class::id =
+        "urn:X-openvrml:node:VisibilitySensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     visibility_sensor_class::
     visibility_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(visibility_sensor_class::id, browser)
     {}
 
     /**
@@ -26498,7 +26882,7 @@ namespace {
      */
 
     /**
-     * @brief Construct.
+     * @brief Construct
      *
      * @param type  the node_type associated with the instance.
      * @param scope the scope that the new node will belong to.
@@ -26604,12 +26988,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const world_info_class::id = "urn:X-openvrml:node:WorldInfo";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this node_class.
+     * @param browser the @c browser associated with this @c node_class.
      */
     world_info_class::world_info_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(world_info_class::id, browser)
     {}
 
     /**

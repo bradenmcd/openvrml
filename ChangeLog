@@ -1,3 +1,745 @@
+2006-04-16 Braden McDaniel  <braden@endoframe.com>
+
+	Added node_class::id accessor; node_class must now be constructed
+	with an id.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(proto): Construct proto_node_class with a node_class id; moved
+	code to construct the id to path(const scope &).
+	(externproto): Construct externproto_node_class with a node_class
+	id; add the externproto_node_class to the browser's node_class map
+	using this id regardless (instead of only if the alternative URI
+	list is empty).
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::proto_node_class::proto_node_class(const node_class_id
+	&, openvrml::browser &, const node_interface_set &, const
+	default_value_map_t & const is_map_t &, const routes_t &)):
+	Construct node_class with an id.
+	(externproto_node_class::externproto_node_class(const
+	openvrml::node_class_id &, const openvrml::scene &, const
+	std::vector<std::string> &)): Construct node_class with an id.
+	(openvrml::null_node_class::null_node_class(openvrml::browser &)):
+	Construct node_class with an id.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::node_class_id): Removed; moved to node.h.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_class::node_class(const node_class_id &,
+	browser&): Initialize node_class::id_.
+	(openvrml::node_class::id() const): Added id accessor.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node_class_id): Moved from browser.h.
+	(openvrml::node_class): Added member id_ and id accessor.
+	* src/libopenvrml/openvrml/scope.cpp
+	(openvrml::path(const scope &)): Added function; construct the
+	path to a scope.
+	* src/libopenvrml/openvrml/scope.h
+	(openvrml::path(const scope &)): Added function declaration.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_node_class::script_node_class(openvrml::browser&)):
+	Pass identifier to node_class constructor.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(anchor_class): Added id member.
+	(appearance_class): Added id member.
+	(audio_clip_class): Added id member.
+	(background_class): Added id member.
+	(billboard_class): Added id member.
+	(box_class): Added id member.
+	(collision_class): Added id member.
+	(color_class): Added id member.
+	(color_interpolator_class): Added id member.
+	(cone_class): Added id member.
+	(coordinate_class): Added id member.
+	(coordinate_interpolator_class): Added id member.
+	(cylinder_class): Added id member.
+	(cylinder_sensor_class): Added id member.
+	(directional_light_class): Added id member.
+	(elevation_grid_class): Added id member.
+	(extrusion_class): Added id member.
+	(fog_class): Added id member.
+	(font_style_class): Added id member.
+	(group_class): Added id member.
+	(image_texture_class): Added id member.
+	(indexed_face_set_class): Added id member.
+	(indexed_line_set_class): Added id member.
+	(inline_class): Added id member.
+	(lod_class): Added id member.
+	(material_class): Added id member.
+	(movie_texture_class): Added id member.
+	(navigation_info_class): Added id member.
+	(normal_class): Added id member.
+	(normal_interpolator_class): Added id member.
+	(orientation_interpolator_class): Added id member.
+	(pixed_texture_class): Added id member.
+	(plane_sensor_class): Added id member.
+	(point_light_class): Added id member.
+	(point_set_class): Added id member.
+	(position_interpolator_class): Added id member.
+	(proximity_sensor_class): Added id member.
+	(scalar_interpolator_class): Added id member.
+	(shape_class): Added id member.
+	(sound_class): Added id member.
+	(sphere_class): Added id member.
+	(sphere_sensor_class): Added id member.
+	(spot_light_class): Added id member.
+	(switch_class): Added id member.
+	(text_class): Added id member.
+	(texture_coordinate_class): Added id member.
+	(texture_transform_class): Added id member.
+	(time_sensor_class): Added id member.
+	(touch_sensor_class): Added id member.
+	(transform_class): Added id member.
+	(visibility_sensor_class): Added id member.
+	(world_info_class): Added id member.
+	(register_vrml97_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(anchor_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(anchor_class::anchor_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(appearance_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(appearance_class::appearance_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(audio_clip_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(audio_clip_class::audio_clip_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(background_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(background_class::background_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(billboard_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(billboard_class::billboard_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(collision_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(collision_class::collision_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(color_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(color_class::color_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(color_interpolator_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(color_interpolator_class::color_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(cone_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(cone_class::cone_class(openvrml::browser &)): Pass the id to the
+	base node_class.
+	(coordinate_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(coordinate_class::coordinate_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(coordinate_interpolator_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(coordinate_interpolator_class::coordinate_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(cylinder_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(cylinder_class::cylinder_class(openvrml::browser &)): Pass the id
+	to the base node_class.
+	(cylinder_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(cylinder_sensor_class::cylinder_sensor_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(directional_light_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(directional_light_class::directional_light_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(elevation_grid_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(elevation_grid_class::elevation_grid_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(extrusion_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(extrusion_class::extrusion_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(fog_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(fog_class::fog_class(openvrml::browser &)): Pass the id to the
+	base node_class.
+	(font_style_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(font_style_class::font_style_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(group_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(group_class::group_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(image_texture_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(image_texture_class::image_texture_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(indexed_face_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(indexed_face_set_class::indexed_face_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(indexed_line_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(indexed_line_set_class::indexed_line_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(inline_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(inline_class::inline_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(lod_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(lod_class::lod_class(openvrml::browser &)): Pass the id to the
+	base node_class.
+	(material_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(material_class::material_class(openvrml::browser &)): Pass the id
+	to the base node_class.
+	(movie_texture_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(movie_texture_class::movie_texture_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(navigation_info_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(navigation_info_class::navigation_info_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(normal_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(normal_class::normal_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(normal_interpolator_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(normal_interpolator_class::normal_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(orientation_interpolator_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(orientation_interpolator_class::orientation_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(pixel_texture_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(pixel_texture_class::pixel_texture_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(plane_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(plane_sensor_class::plane_sensor_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(point_light_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(point_light_class::point_light_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(position_interpolator_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(position_interpolator_class::position_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(proximity_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(proximity_sensor_class::proximity_sensor_class(openvrml::browser
+	&)): Pass the id to the base node_class.
+	(scalar_interpolator_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(scalar_interpolator_class::scalar_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(shape_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(shape_class::shape_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(sound_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(sound_class::sound_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(sphere_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(sphere_class::sphere_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(sphere_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(sphere_sensor_class::sphere_sensor_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(spot_light_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(spot_light_class::spot_light_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(switch_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(switch_class::switch_class(openvrml::browser &)): Pass the id to
+	the base node_class.
+	(text_class::id): node_class identifier used when registering an
+	instance with the browser and constructing the base node_class.
+	(text_class::text_class(openvrml::browser &)): Pass the id to the
+	base node_class.
+	(texture_coordinate_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(texture_coordinate_class::texture_coordinate_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(texture_transform_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(texture_transform_class::texture_coordinate_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(time_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(time_sensor_class::time_sensor_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(touch_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(touch_sensor_class::touch_sensor_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(transform_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(transform_class::transform_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(viewpoint_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(viewpoint_class::viewpoint_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(visibility_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(visibility_sensor_class::visibility_sensor_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(world_info_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(world_info_class::world_info_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_core.cpp
+	(metadata_double_class): Added id member.
+	(metadata_float_class): Added id member.
+	(metadata_integer_class): Added id member.
+	(metadata_set_class): Added id member.
+	(metadata_string_class): Added id member.
+	(register_core_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(metadata_double_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(metadata_double_class::metadata_double_class(openvrml::browser
+	&)): Pass the id to the base node_class.
+	(metadata_float_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(metadata_float_class::metadata_float_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(metadata_integer_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(metadata_integer_class::metadata_integer_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(metadata_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(metadata_set_class::metadata_set_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(metadata_string_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(metadata_string_class::metadata_string_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	(espdu_transform_class): Added id member.
+	(receiver_pdu_class): Added id member.
+	(signal_pdu_class): Added id member.
+	(transmitter_pdu_class): Added id member.
+	(register_dis_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(espdu_transform_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(espdu_transform_class::espdu_transform_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(receiver_pdu_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(receiver_pdu_class::receiver_pdu_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(signal_pdu_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(signal_pdu_class::signal_pdu_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(transmitter_pdu_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(transmitter_pdu_class::transmitter_pdu_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	(boolean_filter_class): Added id member.
+	(boolean_sequencer_class): Added id member.
+	(boolean_toggle_class): Added id member.
+	(boolean_trigger_class): Added id member.
+	(integer_sequencer_class): Added id member.
+	(integer_trigger_class): Added id member.
+	(time_trigger_class): Added id member.
+	(register_event_utilities_node_classes(openvrml::browser &)): Add
+	the node_classes using the id member of the concrete node_classes.
+	(boolean_filter_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(boolean_filter_class::boolean_filter_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(boolean_sequencer_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(boolean_sequencer_class::boolean_sequencer_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(boolean_toggle_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(boolean_toggle_class::boolean_toggle_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(boolean_trigger_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(boolean_trigger_class::boolean_trigger_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(integer_sequencer_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(integer_sequencer_class::integer_sequencer_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(integer_trigger_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(integer_trigger_class::integer_trigger_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(time_trigger_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(time_trigger_class::time_trigger_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	(polyline2d_class): Added id member.
+	(polypoint2d_class): Added id member.
+	(rectangle2d_class): Added id member.
+	(triangle_set2d_class): Added id member.
+	(register_geometry2d_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(polyline2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(polyline2d_class::polyline2d_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(polypoint2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(polypoint2d_class::polypoint2d_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(rectangle2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(rectangle2d_class::rectangle2d_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(triangle_set2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(triangle_set2d_class::triangle_set2d_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	(geo_coordinate_class): Added id member.
+	(geo_elevation_grid_class): Added id member.
+	(geo_location_class): Added id member.
+	(geo_lod_class): Added id member.
+	(geo_metadata_class): Added id member.
+	(geo_origin_class): Added id member.
+	(geo_position_interpolator_class): Added id member.
+	(geo_touch_sensor_class): Added id member.
+	(geo_viewpoint_class): Added id member.
+	(register_geospatial_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(geo_coordinate_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_coordinate_class::geo_coordinate_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(geo_elevation_grid_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_elevation_grid_class::geo_elevation_grid_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(geo_location_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_location_class::geo_location_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(geo_lod_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(geo_lod_class::geo_lod_class(openvrml::browser &)): Pass the id
+	to the base node_class.
+	(geo_metadata_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_metadata_class::geo_metadata_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(geo_origin_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_origin_class::geo_origin_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(geo_position_interpolator_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(geo_position_interpolator_class::geo_position_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(geo_touch_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_touch_sensor_class::geo_touch_sensor_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(geo_viewpoint_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(geo_viewpoint_class::geo_viewpoint_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	(hanim_displacer_class): Added id member.
+	(hanim_humanoid_class): Added id member.
+	(hanim_joint_class): Added id member.
+	(hanim_segment_class): Added id member.
+	(hanim_site_class): Added id member.
+	(register_hanim_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(hanim_displacer_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(hanim_displacer_class::hanim_displacer_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(hanim_humanoid_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(hanim_humanoid_class::hanim_humanoid_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(hanim_joint_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(hanim_joint_class::hanim_joint_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(hanim_segment_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(hanim_segment_class::hanim_segment_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(hanim_site_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(hanim_site_class::hanim_site_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	(key_sensor_class): Added id member.
+	(string_sensor_class): Added id member.
+	(register_key_device_sensor_node_classes(openvrml::browser &)):
+	Add the node_classes using the id member of the concrete
+	node_classes.
+	(key_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(key_sensor_class::key_sensor_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(string_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(string_sensor_class::string_sensor_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_networking.cpp
+	(load_sensor_class): Added id member.
+	(register_networking_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(load_sensor_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(load_sensor_class::load_sensor_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	(contour2d_class): Added id member.
+	(contour_polyline2d_class): Added id member.
+	(coordinate_double_class): Added id member.
+	(nurbs_curve_class): Added id member.
+	(nurbs_curve2d_class): Added id member.
+	(nurbs_orientation_interpolator_class): Added id member.
+	(nurbs_patch_surface_class): Added id member.
+	(nurbs_position_interpolator_class): Added id member.
+	(nurbs_set_class): Added id member.
+	(nurbs_surface_interpolator_class): Added id member.
+	(nurbs_swept_surface_class): Added id member.
+	(nurbs_swung_surface_class): Added id member.
+	(nurbs_texture_coordinate_class): Added id member.
+	(nurbs_trimmed_surface_class): Added id member.
+	(register_nurbs_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(contour2d_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(contour2d_class::contour2d_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(contour_polyline2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(contour_polyline2d_class::contour_polyline2d_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(coordinate_double_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(coordinate_double_class::coordinate_double_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_curve_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_curve_class::nurbs_curve_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(nurbs_curve2d_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_curve2d_class::nurbs_curve2d_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(nurbs_orientation_interpolator_class::id): node_class identifier
+	used when registering an instance with the browser and
+	constructing the base node_class.
+	(nurbs_orientation_interpolator_class::nurbs_orientation_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_patch_surface_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_patch_surface_class::nurbs_patch_surface_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_position_interpolator_class::id): node_class identifier
+	used when registering an instance with the browser and
+	constructing the base node_class.
+	(nurbs_position_interpolator_class::nurbs_position_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_set_class::id): node_class identifier used when registering
+	an instance with the browser and constructing the base node_class.
+	(nurbs_set_class::nurbs_set_class(openvrml::browser &)): Pass the
+	id to the base node_class.
+	(nurbs_surface_interpolator_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(nurbs_surface_interpolator_class::nurbs_surface_interpolator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_swept_surface_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_swept_surface_class::nurbs_swept_surface_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_swung_surface_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_swung_surface_class::nurbs_swung_surface_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_texture_coordinate_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(nurbs_texture_coordinate_class::nurbs_texture_coordinate_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(nurbs_trimmed_surface_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(nurbs_trimmed_surface_class::nurbs_trimmed_surface_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	(color_rgba_class): Added id member.
+	(indexed_triangle_fan_set_class): Added id member.
+	(indexed_triangle_set_class): Added id member.
+	(indexed_triangle_strip_set_class): Added id member.
+	(triangle_fan_set_class): Added id member.
+	(triangle_set_class): Added id member.
+	(triangle_strip_set_class): Added id member.
+	(register_rendering_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(color_rgba_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(color_rgba_class::color_rgba_class(openvrml::browser &)): Pass
+	the id to the base node_class.
+	(indexed_triangle_fan_set_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(indexed_triangle_fan_set_class::indexed_triangle_fan_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(indexed_triangle_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(indexed_triangle_set_class::indexed_triangle_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(indexed_triangle_strip_set_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(indexed_triangle_strip_set_class::indexed_triangle_strip_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(triangle_fan_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(triangle_fan_set_class::triangle_fan_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(triangle_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(triangle_set_class::triangle_set_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(triangle_strip_set_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(triangle_strip_set_class::triangle_strip_set_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	(line_properties_class): Added id member.
+	(register_shape_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(line_properties_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(line_properties_class::line_properties_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	(multi_texture_class): Added id member.
+	(multi_texture_coordinate_class): Added id member.
+	(multi_texture_transform_class): Added id member.
+	(texture_coordinate_generator_class): Added id member.
+	(register_texturing_node_classes(openvrml::browser &)): Add the
+	node_classes using the id member of the concrete node_classes.
+	(multi_texture_class::id): node_class identifier used when
+	registering an instance with the browser and constructing the base
+	node_class.
+	(multi_texture_class::multi_texture_class(openvrml::browser &)):
+	Pass the id to the base node_class.
+	(multi_texture_coordinate_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(multi_texture_coordinate_class::multi_texture_coordinate_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(multi_texture_transform_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(multi_texture_transform_class::multi_texture_transform_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+	(texture_coordinate_generator_class::id): node_class identifier used
+	when registering an instance with the browser and constructing the
+	base node_class.
+	(texture_coordinate_generator_class::texture_coordinate_generator_class(openvrml::browser&)):
+	Pass the id to the base node_class.
+
 2006-04-13 Braden McDaniel  <braden@endoframe.com>
 
 	Made openvrml::browser::out() and openvrml::browser::err() const.

@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL load_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit load_sensor_class(openvrml::browser & browser);
         virtual ~load_sensor_class() OPENVRML_NOTHROW;
 
@@ -55,7 +57,7 @@ void register_networking_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:LoadSensor",
+    b.add_node_class(load_sensor_class::id,
                      shared_ptr<node_class>(new load_sensor_class(b)));
 }
 
@@ -85,13 +87,20 @@ namespace {
         virtual ~load_sensor_node() OPENVRML_NOTHROW;
     };
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const load_sensor_class::id =
+        "urn:X-openvrml:node:LoadSensor";
+
     /**
      * @brief Construct.
      *
      * @param browser the browser associated with this load_sensor_class.
      */
     load_sensor_class::load_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(load_sensor_class::id, browser)
     {}
 
     /**

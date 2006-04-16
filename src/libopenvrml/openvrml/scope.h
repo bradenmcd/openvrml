@@ -62,6 +62,8 @@ namespace openvrml {
 
         node * find_node(const std::string & id) const;
     };
+
+    const std::string path(const scope & s) OPENVRML_THROW1(std::bad_alloc);
 }
 
 #endif

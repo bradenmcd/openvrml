@@ -708,7 +708,7 @@ options { defaultErrorHandler=false; }
 }
     :   KEYWORD_PROTO id:ID {
             assert(scope);
-            boost::shared_ptr<openvrml::scope>
+            const boost::shared_ptr<openvrml::scope>
                 proto_scope(new openvrml::scope(id->getText(), scope));
         } LBRACKET (protoInterfaceDeclaration[scene,
                                               scope,
@@ -721,26 +721,20 @@ options { defaultErrorHandler=false; }
                          impl_nodes,
                          is_map,
                          routes] RBRACE {
-            shared_ptr<openvrml::node_class>
-                node_class(new proto_node_class(scene.browser(),
-                                                interfaces,
-                                                default_value_map,
-                                                impl_nodes,
-                                                is_map,
-                                                routes));
+            const shared_ptr<openvrml::node_class>
+                node_class(
+                    new proto_node_class(path(*proto_scope),
+                                         scene.browser(),
+                                         interfaces,
+                                         default_value_map,
+                                         impl_nodes,
+                                         is_map,
+                                         routes));
             //
             // Add the new node_class (prototype definition) to the browser's
             // node_class_map.
             //
-            // First, construct the id for the node implementation.
-            //
-            string impl_id;
-            shared_ptr<const openvrml::scope> s = proto_scope;
-            do {
-                impl_id = '#' + s->id() + impl_id;
-            } while ((s = s->parent())->parent());
-            impl_id = s->id() + impl_id;
-            scene.browser().add_node_class(impl_id, node_class);
+            scene.browser().add_node_class(node_class->id(), node_class);
 
             if (!dynamic_pointer_cast<proto_node_class>(
                     scene.browser().node_class(node_class_id(this->uri)))) {
@@ -976,32 +970,24 @@ options { defaultErrorHandler=false; }
 
             if (!node_type) {
                 const shared_ptr<node_class> externproto_class(
-                    new externproto_node_class(scene, alt_uris));
+                    new externproto_node_class(
+                        path(*scope) + '#' + id->getText(),
+                        scene,
+                        alt_uris));
 
-                if (alt_uris.empty()) {
-                    //
-                    // If the list of alternative URIs (i.e., implementation
-                    // identifiers) is empty, we need to generate one to put in
-                    // the browser's node_class map. (The node_class map is
-                    // where the owning pointer to the node_class is kept.
-                    //
-                    node_class_id class_id = this->uri + '#' + id->getText();
-                    scene.browser().add_node_class(class_id,
+                scene.browser().add_node_class(externproto_class->id(),
+                                               externproto_class);
+                for (vector<string>::const_iterator resource_id =
+                         alt_uris.begin();
+                     resource_id != alt_uris.end();
+                     ++resource_id) {
+                    const ::uri absolute_uri =
+                        !relative(::uri(*resource_id))
+                            ? ::uri(*resource_id)
+                            : ::uri(*resource_id).resolve_against(
+                                ::uri(this->uri));
+                    scene.browser().add_node_class(node_class_id(absolute_uri),
                                                    externproto_class);
-                } else {
-                    for (vector<string>::const_iterator resource_id =
-                             alt_uris.begin();
-                         resource_id != alt_uris.end();
-                         ++resource_id) {
-                        const ::uri absolute_uri =
-                            !relative(::uri(*resource_id))
-                                ? ::uri(*resource_id)
-                                : ::uri(*resource_id).resolve_against(
-                                    ::uri(this->uri));
-                        scene.browser().add_node_class(
-                            node_class_id(absolute_uri),
-                            externproto_class);
-                    }
                 }
 
                 node_type = externproto_class->create_type(id->getText(),

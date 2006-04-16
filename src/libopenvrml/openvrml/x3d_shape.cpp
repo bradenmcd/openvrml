@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL line_properties_class : public node_class {
     public:
+        static const char * const id;
+
         explicit line_properties_class(openvrml::browser & browser);
         virtual ~line_properties_class() OPENVRML_NOTHROW;
 
@@ -55,7 +57,7 @@ void register_shape_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:LineProperties",
+    b.add_node_class(line_properties_class::id,
                      shared_ptr<node_class>(new line_properties_class(b)));
 }
 
@@ -80,12 +82,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const line_properties_class::id =
+        "urn:X-openvrml:node:LineProperties";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this line_properties_class.
+     * @param browser the @c browser associated with this
+     *                @c line_properties_class.
      */
     line_properties_class::line_properties_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(line_properties_class::id, browser)
     {}
 
     /**

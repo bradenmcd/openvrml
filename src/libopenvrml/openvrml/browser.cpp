@@ -146,6 +146,7 @@ namespace openvrml {
 
     public:
         proto_node_class(
+            const node_class_id & id,
             openvrml::browser & browser,
             const node_interface_set & interfaces,
             const default_value_map_t & default_value_map,
@@ -2250,13 +2251,14 @@ namespace openvrml {
      */
     proto_node_class::
     proto_node_class(
+        const node_class_id & id,
         openvrml::browser & browser,
         const node_interface_set & interfaces,
         const default_value_map_t & default_value_map,
         const std::vector<boost::intrusive_ptr<node> > & impl_nodes,
         const is_map_t & is_map,
         const routes_t & routes):
-        node_class(browser),
+        node_class(id, browser),
         interfaces(interfaces),
         default_value_map(default_value_map),
         impl_nodes(impl_nodes),
@@ -2283,7 +2285,7 @@ namespace {
     class externproto_node_type;
 
     /**
-     * @brief <code>node_class</code> for <code>EXTERNPROTO</code>s.
+     * @brief @c node_class for @c EXTERNPROTO%s.
      */
     class OPENVRML_LOCAL externproto_node_class :
         public boost::enable_shared_from_this<externproto_node_class>,
@@ -2305,9 +2307,10 @@ namespace {
         boost::scoped_ptr<boost::thread> load_proto_thread_;
 
     public:
-        externproto_node_class(const openvrml::scene & scene,
+        externproto_node_class(const openvrml::node_class_id & id,
+                               const openvrml::scene & scene,
                                const std::vector<std::string> & uris)
-            OPENVRML_THROW1(boost::thread_resource_error);
+            OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         virtual ~externproto_node_class() OPENVRML_NOTHROW;
 
     private:
@@ -4124,17 +4127,19 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param[in] scene the <code>scene</code> in which the EXTERNPROTO occurs.
+     * @param[in] scene the @c scene in which the @c EXTERNPROTO occurs.
      * @param[in] uris  the list of alternative implementation identifiers.
      *
      * @exception boost::thread_resource_error  if a new thread of execution
      *                                          cannot be started.
+     * @exception std::bad_alloc                if memory allocation fails.
      */
     externproto_node_class::
-    externproto_node_class(const openvrml::scene & scene,
+    externproto_node_class(const openvrml::node_class_id & id,
+                           const openvrml::scene & scene,
                            const std::vector<std::string> & uris)
-        OPENVRML_THROW1(boost::thread_resource_error):
-        node_class(scene.browser()),
+        OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
+        node_class(id, scene.browser()),
         externproto_node_types_cleared_(false),
         load_proto_thread_(
             new boost::thread(
@@ -7809,7 +7814,7 @@ void openvrml::scene::scene_loaded()
 
 openvrml::null_node_class::null_node_class(openvrml::browser & browser)
     OPENVRML_NOTHROW:
-    node_class(browser)
+    node_class("urn:X-openvrml:node:null", browser)
 {}
 
 openvrml::null_node_class::~null_node_class() OPENVRML_NOTHROW

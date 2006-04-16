@@ -211,3 +211,22 @@ openvrml::node * openvrml::scope::find_node(const std::string & id) const
             ? pos->second
             : 0;
 }
+
+/**
+ * @relates openvrml::scope
+ *
+ * @param[in] s a @c scope.
+ *
+ * @return the full &ldquo;path&rdquo; to the @c scope.
+ */
+const std::string openvrml::path(const scope & s)
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    std::string path_str;
+    const scope * s_ptr = &s;
+    while (s_ptr->parent()) {
+        path_str = '#' + s_ptr->id() + path_str;
+        s_ptr = s_ptr->parent().get();
+    }
+    return s_ptr->id() + path_str;
+}

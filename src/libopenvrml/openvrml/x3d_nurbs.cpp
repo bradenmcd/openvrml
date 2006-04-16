@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL contour2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit contour2d_class(openvrml::browser & browser);
         virtual ~contour2d_class() throw ();
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL contour_polyline2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit contour_polyline2d_class(openvrml::browser & browser);
         virtual ~contour_polyline2d_class() throw ();
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL coordinate_double_class : public node_class {
     public:
+        static const char * const id;
+
         explicit coordinate_double_class(openvrml::browser & browser);
         virtual ~coordinate_double_class() throw ();
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_curve_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_curve_class(openvrml::browser & browser);
         virtual ~nurbs_curve_class() throw ();
 
@@ -104,6 +112,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_curve2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_curve2d_class(openvrml::browser & browser);
         virtual ~nurbs_curve2d_class() throw ();
 
@@ -121,7 +131,10 @@ namespace {
     class OPENVRML_LOCAL nurbs_orientation_interpolator_class :
         public node_class {
     public:
-        explicit nurbs_orientation_interpolator_class(openvrml::browser & browser);
+        static const char * const id;
+
+        explicit nurbs_orientation_interpolator_class(
+            openvrml::browser & browser);
         virtual ~nurbs_orientation_interpolator_class() throw ();
 
     private:
@@ -137,6 +150,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_patch_surface_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_patch_surface_class(openvrml::browser & browser);
         virtual ~nurbs_patch_surface_class() throw ();
 
@@ -151,9 +166,13 @@ namespace {
     /**
      * @brief Class object for NurbsPositionInterpolator nodes.
      */
-    class OPENVRML_LOCAL nurbs_position_interpolator_class : public node_class {
+    class OPENVRML_LOCAL nurbs_position_interpolator_class :
+        public node_class {
     public:
-        explicit nurbs_position_interpolator_class(openvrml::browser & browser);
+        static const char * const id;
+
+        explicit nurbs_position_interpolator_class(
+            openvrml::browser & browser);
         virtual ~nurbs_position_interpolator_class() throw ();
 
     private:
@@ -169,6 +188,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_set_class(openvrml::browser & browser);
         virtual ~nurbs_set_class() throw ();
 
@@ -185,6 +206,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_surface_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_surface_interpolator_class(openvrml::browser & browser);
         virtual ~nurbs_surface_interpolator_class() throw ();
 
@@ -201,6 +224,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_swept_surface_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_swept_surface_class(openvrml::browser & browser);
         virtual ~nurbs_swept_surface_class() throw ();
 
@@ -217,6 +242,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_swung_surface_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_swung_surface_class(openvrml::browser & browser);
         virtual ~nurbs_swung_surface_class() throw ();
 
@@ -233,6 +260,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_texture_coordinate_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_texture_coordinate_class(openvrml::browser & browser);
         virtual ~nurbs_texture_coordinate_class() throw ();
 
@@ -249,6 +278,8 @@ namespace {
      */
     class OPENVRML_LOCAL nurbs_trimmed_surface_class : public node_class {
     public:
+        static const char * const id;
+
         explicit nurbs_trimmed_surface_class(openvrml::browser & browser);
         virtual ~nurbs_trimmed_surface_class() throw ();
 
@@ -264,34 +295,39 @@ void register_nurbs_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:Contour2D",
+    b.add_node_class(contour2d_class::id,
                      shared_ptr<node_class>(new contour2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ContourPolyline2D",
+    b.add_node_class(contour_polyline2d_class::id,
                      shared_ptr<node_class>(new contour_polyline2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:CoordinateDouble",
+    b.add_node_class(coordinate_double_class::id,
                      shared_ptr<node_class>(new coordinate_double_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsCurve",
+    b.add_node_class(nurbs_curve_class::id,
                      shared_ptr<node_class>(new nurbs_curve_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsCurve2D",
+    b.add_node_class(nurbs_curve2d_class::id,
                      shared_ptr<node_class>(new nurbs_curve2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsOrientationInterpolator",
-                     shared_ptr<node_class>(new nurbs_orientation_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsPatchSurface",
+    b.add_node_class(nurbs_orientation_interpolator_class::id,
+                     shared_ptr<node_class>(
+                         new nurbs_orientation_interpolator_class(b)));
+    b.add_node_class(nurbs_patch_surface_class::id,
                      shared_ptr<node_class>(new nurbs_patch_surface_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsPositionInterpolator",
-                     shared_ptr<node_class>(new nurbs_position_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsSet",
+    b.add_node_class(nurbs_position_interpolator_class::id,
+                     shared_ptr<node_class>(
+                         new nurbs_position_interpolator_class(b)));
+    b.add_node_class(nurbs_set_class::id,
                      shared_ptr<node_class>(new nurbs_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsSurfaceInterpolator",
-                     shared_ptr<node_class>(new nurbs_surface_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsSweptSurface",
+    b.add_node_class(nurbs_surface_interpolator_class::id,
+                     shared_ptr<node_class>(
+                         new nurbs_surface_interpolator_class(b)));
+    b.add_node_class(nurbs_swept_surface_class::id,
                      shared_ptr<node_class>(new nurbs_swept_surface_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsSwungSurface",
+    b.add_node_class(nurbs_swung_surface_class::id,
                      shared_ptr<node_class>(new nurbs_swung_surface_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsTextureCoordinate",
-                     shared_ptr<node_class>(new nurbs_texture_coordinate_class(b)));
-    b.add_node_class("urn:X-openvrml:node:NurbsTrimmedSurface",
-                     shared_ptr<node_class>(new nurbs_trimmed_surface_class(b)));
+    b.add_node_class(nurbs_texture_coordinate_class::id,
+                     shared_ptr<node_class>(
+                         new nurbs_texture_coordinate_class(b)));
+    b.add_node_class(nurbs_trimmed_surface_class::id,
+                     shared_ptr<node_class>(
+                         new nurbs_trimmed_surface_class(b)));
 }
 
 namespace {
@@ -302,10 +338,8 @@ namespace {
 
         friend class contour2d_class;
 
-        class add_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class add_children_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
         public:
             explicit add_children_listener(self_t & node);
             virtual ~add_children_listener() throw ();
@@ -316,10 +350,8 @@ namespace {
                 throw (std::bad_alloc);
         };
 
-        class remove_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
             virtual ~remove_children_listener() throw ();
@@ -348,8 +380,9 @@ namespace {
         exposedfield<mfvec2f> point_;
 
     public:
-        contour_polyline2d_node(const node_type & type,
-                                const boost::shared_ptr<openvrml::scope> & scope);
+        contour_polyline2d_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~contour_polyline2d_node() throw ();
     };
 
@@ -361,8 +394,9 @@ namespace {
         exposedfield<mfvec3d> point_;
 
     public:
-        coordinate_double_node(const node_type & type,
-                               const boost::shared_ptr<openvrml::scope> & scope);
+        coordinate_double_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~coordinate_double_node() throw ();
     };
 
@@ -415,10 +449,8 @@ namespace {
 
         friend class nurbs_orientation_interpolator_class;
 
-        class set_fraction_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+        class set_fraction_listener : public event_listener_base<self_t>,
+                                      public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() throw ();
@@ -468,8 +500,9 @@ namespace {
         sfint32 v_order_;
 
     public:
-        nurbs_patch_surface_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope);
+        nurbs_patch_surface_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_patch_surface_node() throw ();
 
         virtual bool modified() const;
@@ -484,10 +517,8 @@ namespace {
 
         friend class nurbs_position_interpolator_class;
 
-        class set_fraction_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+        class set_fraction_listener : public event_listener_base<self_t>,
+                                      public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() throw ();
@@ -520,10 +551,8 @@ namespace {
 
         friend class nurbs_set_class;
 
-        class add_geometry_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class add_geometry_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
         public:
             explicit add_geometry_listener(self_t & node);
             virtual ~add_geometry_listener() throw ();
@@ -567,10 +596,8 @@ namespace {
 
         friend class nurbs_surface_interpolator_class;
 
-        class set_fraction_listener :
-                public event_listener_base<self_t>,
-                public sfvec2f_listener
-        {
+        class set_fraction_listener : public event_listener_base<self_t>,
+                                      public sfvec2f_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() throw ();
@@ -615,8 +642,9 @@ namespace {
         sfbool solid_;
 
     public:
-        nurbs_swept_surface_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope);
+        nurbs_swept_surface_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_swept_surface_node() throw ();
 
         virtual bool modified() const;
@@ -638,8 +666,9 @@ namespace {
         sfbool solid_;
 
     public:
-        nurbs_swung_surface_node(const node_type & type,
-                                 const boost::shared_ptr<openvrml::scope> & scope);
+        nurbs_swung_surface_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_swung_surface_node() throw ();
 
         virtual bool modified() const;
@@ -677,9 +706,8 @@ namespace {
         friend class nurbs_trimmed_surface_class;
 
         class add_trimming_contour_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+            public event_listener_base<self_t>,
+            public mfnode_listener {
         public:
             explicit add_trimming_contour_listener(self_t & node);
             virtual ~add_trimming_contour_listener() throw ();
@@ -691,9 +719,8 @@ namespace {
         };
 
         class remove_trimming_contour_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+            public event_listener_base<self_t>,
+            public mfnode_listener {
         public:
             explicit remove_trimming_contour_listener(self_t & node);
             virtual ~remove_trimming_contour_listener() throw ();
@@ -735,12 +762,17 @@ namespace {
     };
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const contour2d_class::id = "urn:X-openvrml:node:Contour2D";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this contour2d_class.
+     * @param browser the @c browser associated with this @c contour2d_class.
      */
     contour2d_class::contour2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(contour2d_class::id, browser)
     {}
 
     /**
@@ -846,13 +878,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const contour_polyline2d_class::id =
+        "urn:X-openvrml:node:ContourPolyline2D";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this contour_polyline2d_class.
+     * @param browser the @c browser associated with this
+     *                @c contour_polyline2d_class.
      */
-    contour_polyline2d_class::contour_polyline2d_class(openvrml::browser & browser):
-        node_class(browser)
+    contour_polyline2d_class::
+    contour_polyline2d_class(openvrml::browser & browser):
+        node_class(contour_polyline2d_class::id, browser)
     {}
 
     /**
@@ -941,13 +982,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const coordinate_double_class::id =
+        "urn:X-openvrml:node:CoordinateDouble";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this coordinate_double_class.
+     * @param browser the @c browser associated with this
+     *                @c coordinate_double_class.
      */
-    coordinate_double_class::coordinate_double_class(openvrml::browser & browser):
-        node_class(browser)
+    coordinate_double_class::
+    coordinate_double_class(openvrml::browser & browser):
+        node_class(coordinate_double_class::id, browser)
     {}
 
     /**
@@ -1031,13 +1081,20 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_curve_class::id =
+        "urn:X-openvrml:node:NurbsCurve";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_curve_class.
+     * @param browser the @c browser associated with this @c nurbs_curve_class.
      */
     nurbs_curve_class::nurbs_curve_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(nurbs_curve_class::id, browser)
     {}
 
     /**
@@ -1189,13 +1246,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_curve2d_class::id =
+        "urn:X-openvrml:node:NurbsCurve2D";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_curve2d_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_curve2d_class.
      */
     nurbs_curve2d_class::nurbs_curve2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(nurbs_curve2d_class::id, browser)
     {}
 
     /**
@@ -1347,13 +1412,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_orientation_interpolator_class::id =
+        "urn:X-openvrml:node:NurbsOrientationInterpolator";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_orientation_interpolator_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_orientation_interpolator_class.
      */
-    nurbs_orientation_interpolator_class::nurbs_orientation_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_orientation_interpolator_class::
+    nurbs_orientation_interpolator_class(openvrml::browser & browser):
+        node_class(nurbs_orientation_interpolator_class::id, browser)
     {}
 
     /**
@@ -1516,13 +1590,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_patch_surface_class::id =
+        "urn:X-openvrml:node:NurbsPatchSurface";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_patch_surface_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_patch_surface_class.
      */
-    nurbs_patch_surface_class::nurbs_patch_surface_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_patch_surface_class::
+    nurbs_patch_surface_class(openvrml::browser & browser):
+        node_class(nurbs_patch_surface_class::id, browser)
     {}
 
     /**
@@ -1772,13 +1855,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_position_interpolator_class::id =
+        "urn:X-openvrml:node:NurbsPositionInterpolator";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_position_interpolator_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_position_interpolator_class.
      */
-    nurbs_position_interpolator_class::nurbs_position_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_position_interpolator_class::
+    nurbs_position_interpolator_class(openvrml::browser & browser):
+        node_class(nurbs_position_interpolator_class::id, browser)
     {}
 
     /**
@@ -1941,13 +2033,19 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_set_class::id = "urn:X-openvrml:node:NurbsSet";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_set_class.
+     * @param browser the @c browser associated with this @c nurbs_set_class.
      */
     nurbs_set_class::nurbs_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(nurbs_set_class::id, browser)
     {}
 
     /**
@@ -2092,13 +2190,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_surface_interpolator_class::id =
+        "urn:X-openvrml:node:NurbsSurfaceInterpolator";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_surface_interpolator_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_surface_interpolator_class.
      */
-    nurbs_surface_interpolator_class::nurbs_surface_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_surface_interpolator_class::
+    nurbs_surface_interpolator_class(openvrml::browser & browser):
+        node_class(nurbs_surface_interpolator_class::id, browser)
     {}
 
     /**
@@ -2294,13 +2401,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_swept_surface_class::id =
+        "urn:X-openvrml:node:NurbsSweptSurface";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_swept_surface_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_swept_surface_class.
      */
-    nurbs_swept_surface_class::nurbs_swept_surface_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_swept_surface_class::
+    nurbs_swept_surface_class(openvrml::browser & browser):
+        node_class(nurbs_swept_surface_class::id, browser)
     {}
 
     /**
@@ -2423,13 +2539,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_swung_surface_class::id =
+        "urn:X-openvrml:node:NurbsSwungSurface";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_swung_surface_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_swung_surface_class.
      */
-    nurbs_swung_surface_class::nurbs_swung_surface_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_swung_surface_class::
+    nurbs_swung_surface_class(openvrml::browser & browser):
+        node_class(nurbs_swung_surface_class::id, browser)
     {}
 
     /**
@@ -2552,13 +2677,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_texture_coordinate_class::id =
+        "urn:X-openvrml:node:NurbsTextureCoordinate";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_texture_coordinate_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_texture_coordinate_class.
      */
-    nurbs_texture_coordinate_class::nurbs_texture_coordinate_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_texture_coordinate_class::
+    nurbs_texture_coordinate_class(openvrml::browser & browser):
+        node_class(nurbs_texture_coordinate_class::id, browser)
     {}
 
     /**
@@ -2721,13 +2855,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const nurbs_trimmed_surface_class::id =
+        "urn:X-openvrml:node:NurbsTrimmedSurface";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this nurbs_trimmed_surface_class.
+     * @param browser the @c browser associated with this
+     *                @c nurbs_trimmed_surface_class.
      */
-    nurbs_trimmed_surface_class::nurbs_trimmed_surface_class(openvrml::browser & browser):
-        node_class(browser)
+    nurbs_trimmed_surface_class::
+    nurbs_trimmed_surface_class(openvrml::browser & browser):
+        node_class(nurbs_trimmed_surface_class::id, browser)
     {}
 
     /**

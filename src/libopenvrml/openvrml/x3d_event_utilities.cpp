@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL boolean_filter_class : public node_class {
     public:
+        static const char * const id;
+
         explicit boolean_filter_class(openvrml::browser & browser);
         virtual ~boolean_filter_class() OPENVRML_NOTHROW;
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL boolean_sequencer_class : public node_class {
     public:
+        static const char * const id;
+
         explicit boolean_sequencer_class(openvrml::browser & browser);
         virtual ~boolean_sequencer_class() OPENVRML_NOTHROW;
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL boolean_toggle_class : public node_class {
     public:
+        static const char * const id;
+
         explicit boolean_toggle_class(openvrml::browser & browser);
         virtual ~boolean_toggle_class() OPENVRML_NOTHROW;
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL boolean_trigger_class : public node_class {
     public:
+        static const char * const id;
+
         explicit boolean_trigger_class(openvrml::browser & browser);
         virtual ~boolean_trigger_class() OPENVRML_NOTHROW;
 
@@ -104,6 +112,8 @@ namespace {
      */
     class OPENVRML_LOCAL integer_sequencer_class : public node_class {
     public:
+        static const char * const id;
+
         explicit integer_sequencer_class(openvrml::browser & browser);
         virtual ~integer_sequencer_class() OPENVRML_NOTHROW;
 
@@ -120,6 +130,8 @@ namespace {
      */
     class OPENVRML_LOCAL integer_trigger_class : public node_class {
     public:
+        static const char * const id;
+
         explicit integer_trigger_class(openvrml::browser & browser);
         virtual ~integer_trigger_class() OPENVRML_NOTHROW;
 
@@ -136,6 +148,8 @@ namespace {
      */
     class OPENVRML_LOCAL time_trigger_class : public node_class {
     public:
+        static const char * const id;
+
         explicit time_trigger_class(openvrml::browser & browser);
         virtual ~time_trigger_class() OPENVRML_NOTHROW;
 
@@ -151,19 +165,19 @@ void register_event_utilities_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:BooleanFilter",
+    b.add_node_class(boolean_filter_class::id,
                      shared_ptr<node_class>(new boolean_filter_class(b)));
-    b.add_node_class("urn:X-openvrml:node:BooleanSequencer",
+    b.add_node_class(boolean_sequencer_class::id,
                      shared_ptr<node_class>(new boolean_sequencer_class(b)));
-    b.add_node_class("urn:X-openvrml:node:BooleanToggle",
+    b.add_node_class(boolean_toggle_class::id,
                      shared_ptr<node_class>(new boolean_toggle_class(b)));
-    b.add_node_class("urn:X-openvrml:node:BooleanTrigger",
+    b.add_node_class(boolean_trigger_class::id,
                      shared_ptr<node_class>(new boolean_trigger_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IntegerSequencer",
+    b.add_node_class(integer_sequencer_class::id,
                      shared_ptr<node_class>(new integer_sequencer_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IntegerTrigger",
+    b.add_node_class(integer_trigger_class::id,
                      shared_ptr<node_class>(new integer_trigger_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TimeTrigger",
+    b.add_node_class(time_trigger_class::id,
                      shared_ptr<node_class>(new time_trigger_class(b)));
 }
 
@@ -432,13 +446,21 @@ namespace {
         virtual ~time_trigger_node() OPENVRML_NOTHROW;
     };
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const boolean_filter_class::id =
+        "urn:X-openvrml:node:BooleanFilter";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this boolean_filter_class.
+     * @param browser the @c browser associated with this
+     *                @c boolean_filter_class.
      */
     boolean_filter_class::boolean_filter_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(boolean_filter_class::id, browser)
     {}
 
     /**
@@ -547,13 +569,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const boolean_sequencer_class::id =
+        "urn:X-openvrml:node:BooleanSequencer";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this boolean_sequencer_class.
+     * @param browser the @c browser associated with this
+     *                @c boolean_sequencer_class.
      */
     boolean_sequencer_class::boolean_sequencer_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(boolean_sequencer_class::id, browser)
     {}
 
     /**
@@ -700,13 +730,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const boolean_toggle_class::id =
+        "urn:X-openvrml:node:BooleanToggle";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this boolean_toggle_class.
+     * @param browser the @c browser associated with
+     *                @c this boolean_toggle_class.
      */
     boolean_toggle_class::boolean_toggle_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(boolean_toggle_class::id, browser)
     {}
 
     /**
@@ -801,13 +839,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const boolean_trigger_class::id =
+        "urn:X-openvrml:node:BooleanTrigger";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this boolean_trigger_class.
+     * @param browser the @c browser associated with this
+     *                @c boolean_trigger_class.
      */
     boolean_trigger_class::boolean_trigger_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(boolean_trigger_class::id, browser)
     {}
 
     /**
@@ -894,13 +940,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const integer_sequencer_class::id =
+        "urn:X-openvrml:node:IntegerSequencer";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this integer_sequencer_class.
+     * @param browser the @c browser associated with this
+     *                @c integer_sequencer_class.
      */
-    integer_sequencer_class::integer_sequencer_class(openvrml::browser & browser):
-        node_class(browser)
+    integer_sequencer_class::
+    integer_sequencer_class(openvrml::browser & browser):
+        node_class(integer_sequencer_class::id, browser)
     {}
 
     /**
@@ -1047,13 +1102,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const integer_trigger_class::id =
+        "urn:X-openvrml:node:IntegerTrigger";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this integer_trigger_class.
+     * @param browser the @c browser associated with this
+     *                @c integer_trigger_class.
      */
     integer_trigger_class::integer_trigger_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(integer_trigger_class::id, browser)
     {}
 
     /**
@@ -1160,12 +1223,19 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const time_trigger_class::id =
+        "urn:X-openvrml:node:TimeTrigger";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this time_trigger_class.
+     * @param browser the @c browser associated with this
+     *                @c time_trigger_class.
      */
     time_trigger_class::time_trigger_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(time_trigger_class::id, browser)
     {}
 
     /**

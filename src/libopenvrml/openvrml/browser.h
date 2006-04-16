@@ -163,18 +163,6 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_API node_class_id {
-        std::string id_;
-
-    public:
-        node_class_id(const char * id)
-            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-        node_class_id(const std::string & id)
-            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-        operator std::string() const;
-    };
-
-
     class viewer;
     class scene;
     class null_node_class;

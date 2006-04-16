@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_coordinate_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_coordinate_class(openvrml::browser & browser);
         virtual ~geo_coordinate_class() throw ();
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_elevation_grid_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_elevation_grid_class(openvrml::browser & browser);
         virtual ~geo_elevation_grid_class() throw ();
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_location_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_location_class(openvrml::browser & browser);
         virtual ~geo_location_class() throw ();
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_lod_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_lod_class(openvrml::browser & browser);
         virtual ~geo_lod_class() throw ();
 
@@ -104,6 +112,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_metadata_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_metadata_class(openvrml::browser & browser);
         virtual ~geo_metadata_class() throw ();
 
@@ -120,6 +130,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_origin_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_origin_class(openvrml::browser & browser);
         virtual ~geo_origin_class() throw ();
 
@@ -136,6 +148,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_position_interpolator_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_position_interpolator_class(openvrml::browser & browser);
         virtual ~geo_position_interpolator_class() throw ();
 
@@ -152,6 +166,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_touch_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_touch_sensor_class(openvrml::browser & browser);
         virtual ~geo_touch_sensor_class() throw ();
 
@@ -168,6 +184,8 @@ namespace {
      */
     class OPENVRML_LOCAL geo_viewpoint_class : public node_class {
     public:
+        static const char * const id;
+
         explicit geo_viewpoint_class(openvrml::browser & browser);
         virtual ~geo_viewpoint_class() throw ();
 
@@ -183,30 +201,33 @@ void register_geospatial_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:GeoCoordinate",
+    b.add_node_class(geo_coordinate_class::id,
                      shared_ptr<node_class>(new geo_coordinate_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoElevationGrid",
+    b.add_node_class(geo_elevation_grid_class::id,
                      shared_ptr<node_class>(new geo_elevation_grid_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoLocation",
+    b.add_node_class(geo_location_class::id,
                      shared_ptr<node_class>(new geo_location_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoLOD",
+    b.add_node_class(geo_lod_class::id,
                      shared_ptr<node_class>(new geo_lod_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoMetadata",
+    b.add_node_class(geo_metadata_class::id,
                      shared_ptr<node_class>(new geo_metadata_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoOrigin",
+    b.add_node_class(geo_origin_class::id,
                      shared_ptr<node_class>(new geo_origin_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoPositionInterpolator",
-                     shared_ptr<node_class>(new geo_position_interpolator_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoTouchSensor",
+    b.add_node_class(geo_position_interpolator_class::id,
+                     shared_ptr<node_class>(
+                         new geo_position_interpolator_class(b)));
+    b.add_node_class(geo_touch_sensor_class::id,
                      shared_ptr<node_class>(new geo_touch_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:GeoViewpoint",
+    b.add_node_class(geo_viewpoint_class::id,
                      shared_ptr<node_class>(new geo_viewpoint_class(b)));
 }
 
-namespace { //node_types
+namespace {
     using namespace openvrml_;
 
-    class OPENVRML_LOCAL geo_coordinate_node : public abstract_node<geo_coordinate_node> {
+    class OPENVRML_LOCAL geo_coordinate_node :
+        public abstract_node<geo_coordinate_node> {
+
         friend class geo_coordinate_class;
 
         exposedfield<mfvec3d> point_;
@@ -219,9 +240,11 @@ namespace { //node_types
         virtual ~geo_coordinate_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_elevation_grid_node : public abstract_node<geo_elevation_grid_node>,
-                                                   public geometry_node,
-                                                   public child_node {
+    class OPENVRML_LOCAL geo_elevation_grid_node :
+        public abstract_node<geo_elevation_grid_node>,
+        public geometry_node,
+        public child_node {
+
         friend class geo_elevation_grid_class;
 
         class set_height_listener :
@@ -258,8 +281,9 @@ namespace { //node_types
         sfdouble z_spacing_;
 
     public:
-        geo_elevation_grid_node(const node_type & type,
-                                const boost::shared_ptr<openvrml::scope> & scope);
+        geo_elevation_grid_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~geo_elevation_grid_node() throw ();
 
         virtual bool modified() const;
@@ -269,14 +293,14 @@ namespace { //node_types
                                                     rendering_context context);
     };
 
-    class OPENVRML_LOCAL geo_location_node : public abstract_node<geo_location_node>,
-                                             public child_node {
+    class OPENVRML_LOCAL geo_location_node :
+        public abstract_node<geo_location_node>,
+        public child_node {
+
         friend class geo_location_class;
 
-        class add_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class add_children_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
         public:
             explicit add_children_listener(self_t & node);
             virtual ~add_children_listener() throw ();
@@ -287,10 +311,8 @@ namespace { //node_types
                 throw (std::bad_alloc);
         };
 
-        class remove_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
             virtual ~remove_children_listener() throw ();
@@ -334,10 +356,8 @@ namespace { //node_types
                 throw (std::bad_alloc);
         };
 
-        class remove_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
             virtual ~remove_children_listener() throw ();
@@ -371,8 +391,10 @@ namespace { //node_types
         virtual ~geo_lod_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_metadata_node : public abstract_node<geo_metadata_node>,
-                                             public child_node {
+    class OPENVRML_LOCAL geo_metadata_node :
+        public abstract_node<geo_metadata_node>,
+        public child_node {
+
         friend class geo_metadata_class;
 
         exposedfield<mfnode> data_;
@@ -385,7 +407,9 @@ namespace { //node_types
         virtual ~geo_metadata_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_origin_node : public abstract_node<geo_origin_node> {
+    class OPENVRML_LOCAL geo_origin_node :
+        public abstract_node<geo_origin_node> {
+
         friend class geo_origin_class;
 
         exposedfield<sfvec3d> geo_coords_;
@@ -398,8 +422,10 @@ namespace { //node_types
         virtual ~geo_origin_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_position_interpolator_node : public abstract_node<geo_position_interpolator_node>,
-                                                          public child_node {
+    class OPENVRML_LOCAL geo_position_interpolator_node :
+        public abstract_node<geo_position_interpolator_node>,
+        public child_node {
+
         friend class geo_position_interpolator_class;
 
         class set_fraction_listener :
@@ -427,13 +453,16 @@ namespace { //node_types
         mfstring geo_system_;
 
     public:
-        geo_position_interpolator_node(const node_type & type,
-                                       const boost::shared_ptr<openvrml::scope> & scope);
+        geo_position_interpolator_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~geo_position_interpolator_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_touch_sensor_node : public abstract_node<geo_touch_sensor_node>,
-                                                 public child_node {
+    class OPENVRML_LOCAL geo_touch_sensor_node :
+        public abstract_node<geo_touch_sensor_node>,
+        public child_node {
+
         friend class geo_touch_sensor_class;
 
         exposedfield<sfbool> enabled_;
@@ -455,19 +484,20 @@ namespace { //node_types
         mfstring geo_system_;
 
     public:
-        geo_touch_sensor_node(const node_type & type,
-                              const boost::shared_ptr<openvrml::scope> & scope);
+        geo_touch_sensor_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~geo_touch_sensor_node() throw ();
     };
 
-    class OPENVRML_LOCAL geo_viewpoint_node : public abstract_node<geo_viewpoint_node>,
-                                              public child_node {
+    class OPENVRML_LOCAL geo_viewpoint_node :
+        public abstract_node<geo_viewpoint_node>,
+        public child_node {
+
         friend class geo_viewpoint_class;
 
-        class set_bind_listener :
-                public event_listener_base<self_t>,
-                public sfbool_listener
-        {
+        class set_bind_listener : public event_listener_base<self_t>,
+                                  public sfbool_listener {
         public:
             explicit set_bind_listener(self_t & node);
             virtual ~set_bind_listener() throw ();
@@ -478,10 +508,8 @@ namespace { //node_types
                 throw (std::bad_alloc);
         };
 
-        class set_orientation_listener :
-                public event_listener_base<self_t>,
-                public sfrotation_listener
-        {
+        class set_orientation_listener : public event_listener_base<self_t>,
+                                         public sfrotation_listener {
         public:
             explicit set_orientation_listener(self_t & node);
             virtual ~set_orientation_listener() throw ();
@@ -492,10 +520,8 @@ namespace { //node_types
                 throw (std::bad_alloc);
         };
 
-        class set_position_listener :
-                public event_listener_base<self_t>,
-                public sfvec3d_listener
-        {
+        class set_position_listener : public event_listener_base<self_t>,
+                                      public sfvec3d_listener {
         public:
             explicit set_position_listener(self_t & node);
             virtual ~set_position_listener() throw ();
@@ -530,13 +556,21 @@ namespace { //node_types
         virtual ~geo_viewpoint_node() throw ();
     };
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_coordinate_class::id =
+        "urn:X-openvrml:node:GeoCoordinate";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_coordinate_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_coordinate_class.
      */
     geo_coordinate_class::geo_coordinate_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_coordinate_class::id, browser)
     {}
 
     /**
@@ -640,13 +674,22 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_elevation_grid_class::id =
+        "urn:X-openvrml:node:GeoElevationGrid";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_elevation_grid_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_elevation_grid_class.
      */
-    geo_elevation_grid_class::geo_elevation_grid_class(openvrml::browser & browser):
-        node_class(browser)
+    geo_elevation_grid_class::
+    geo_elevation_grid_class(openvrml::browser & browser):
+        node_class(geo_elevation_grid_class::id, browser)
     {}
 
     /**
@@ -928,13 +971,21 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_location_class::id =
+        "urn:X-openvrml:node:GeoLocation";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_location_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_location_class.
      */
     geo_location_class::geo_location_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_location_class::id, browser)
     {}
 
     /**
@@ -1099,13 +1150,20 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_lod_class::id =
+        "urn:X-openvrml:node:GeoLOD";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_lod_class.
+     * @param browser the @c browser associated with this @c geo_lod_class.
      */
     geo_lod_class::geo_lod_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_lod_class::id, browser)
     {}
 
     /**
@@ -1323,13 +1381,21 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_metadata_class::id =
+        "urn:X-openvrml:node:GeoMetadata";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_metadata_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_metadata_class.
      */
     geo_metadata_class::geo_metadata_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_metadata_class::id, browser)
     {}
 
     /**
@@ -1451,13 +1517,20 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_origin_class::id =
+        "urn:X-openvrml:node:GeoOrigin";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_origin_class.
+     * @param browser the @c browser associated with this @c geo_origin_class.
      */
     geo_origin_class::geo_origin_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_origin_class::id, browser)
     {}
 
     /**
@@ -1570,13 +1643,22 @@ namespace { //node_types
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_position_interpolator_class::id =
+        "urn:X-openvrml:node:GeoPositionInterpolator";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_position_interpolator_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_position_interpolator_class.
      */
-    geo_position_interpolator_class::geo_position_interpolator_class(openvrml::browser & browser):
-        node_class(browser)
+    geo_position_interpolator_class::
+    geo_position_interpolator_class(openvrml::browser & browser):
+        node_class(geo_position_interpolator_class::id, browser)
     {}
 
     /**
@@ -1733,12 +1815,20 @@ namespace { //node_types
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_touch_sensor_class::id =
+        "urn:X-openvrml:node:GeoTouchSensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_touch_sensor_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_touch_sensor_class.
      */
-    geo_touch_sensor_class::geo_touch_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+    geo_touch_sensor_class::
+    geo_touch_sensor_class(openvrml::browser & browser):
+        node_class(geo_touch_sensor_class::id, browser)
     {}
 
     /**
@@ -1920,12 +2010,19 @@ namespace { //node_types
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const geo_viewpoint_class::id =
+        "urn:X-openvrml:node:GeoViewpoint";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this geo_viewpoint_class.
+     * @param browser the @c browser associated with this
+     *                @c geo_viewpoint_class.
      */
     geo_viewpoint_class::geo_viewpoint_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(geo_viewpoint_class::id, browser)
     {}
 
     /**

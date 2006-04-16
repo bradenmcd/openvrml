@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL polyline2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit polyline2d_class(openvrml::browser & browser);
         virtual ~polyline2d_class() OPENVRML_NOTHROW;
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL polypoint2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit polypoint2d_class(openvrml::browser & browser);
         virtual ~polypoint2d_class() OPENVRML_NOTHROW;
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL rectangle2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit rectangle2d_class(openvrml::browser & browser);
         virtual ~rectangle2d_class() OPENVRML_NOTHROW;
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL triangle_set2d_class : public node_class {
     public:
+        static const char * const id;
+
         explicit triangle_set2d_class(openvrml::browser & browser);
         virtual ~triangle_set2d_class() OPENVRML_NOTHROW;
 
@@ -103,13 +111,13 @@ void register_geometry2d_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:Polyline2D",
+    b.add_node_class(polyline2d_class::id,
                      shared_ptr<node_class>(new polyline2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Polypoint2D",
+    b.add_node_class(polypoint2d_class::id,
                      shared_ptr<node_class>(new polypoint2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:Rectangle2D",
+    b.add_node_class(rectangle2d_class::id,
                      shared_ptr<node_class>(new rectangle2d_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TriangleSet2D",
+    b.add_node_class(triangle_set2d_class::id,
                      shared_ptr<node_class>(new triangle_set2d_class(b)));
 }
 
@@ -201,12 +209,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const polyline2d_class::id =
+        "urn:X-openvrml:node:Polyline2D";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this polyline2d_class.
+     * @param browser the @c browser associated with this @c polyline2d_class.
      */
     polyline2d_class::polyline2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(polyline2d_class::id, browser)
     {}
 
     /**
@@ -281,13 +295,20 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const polypoint2d_class::id =
+        "urn:X-openvrml:node:Polypoint2D";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this polypoint2d_class.
+     * @param browser the @c browser associated with this @c polypoint2d_class.
      */
     polypoint2d_class::polypoint2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(polypoint2d_class::id, browser)
     {}
 
     /**
@@ -362,13 +383,20 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const rectangle2d_class::id =
+        "urn:X-openvrml:node:Rectangle2D";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this rectangle2d_class.
+     * @param browser the @c browser associated with this @c rectangle2d_class.
      */
     rectangle2d_class::rectangle2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(rectangle2d_class::id, browser)
     {}
 
     /**
@@ -453,13 +481,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const triangle_set2d_class::id =
+        "urn:X-openvrml:node:TriangleSet2D";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this triangle_set2d_class.
+     * @param browser the @c browser associated with this
+     *                @c triangle_set2d_class.
      */
     triangle_set2d_class::triangle_set2d_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(triangle_set2d_class::id, browser)
     {}
 
     /**

@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL multi_texture_class : public node_class {
     public:
+        static const char * const id;
+
         explicit multi_texture_class(openvrml::browser & browser);
         virtual ~multi_texture_class() throw ();
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL multi_texture_coordinate_class : public node_class {
     public:
+        static const char * const id;
+
         explicit multi_texture_coordinate_class(openvrml::browser & browser);
         virtual ~multi_texture_coordinate_class() throw ();
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL multi_texture_transform_class : public node_class {
     public:
+        static const char * const id;
+
         explicit multi_texture_transform_class(openvrml::browser & browser);
         virtual ~multi_texture_transform_class() throw ();
 
@@ -89,6 +95,8 @@ namespace {
     class OPENVRML_LOCAL texture_coordinate_generator_class :
         public node_class {
     public:
+        static const char * const id;
+
         explicit texture_coordinate_generator_class(
             openvrml::browser & browser);
         virtual ~texture_coordinate_generator_class() throw ();
@@ -105,16 +113,16 @@ void register_texturing_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:MultiTexture",
+    b.add_node_class(multi_texture_class::id,
                      shared_ptr<node_class>(new multi_texture_class(b)));
     b.add_node_class(
-        "urn:X-openvrml:node:MultiTextureCoordinate",
+        multi_texture_coordinate_class::id,
         shared_ptr<node_class>(new multi_texture_coordinate_class(b)));
     b.add_node_class(
-        "urn:X-openvrml:node:MultiTextureTransform",
+        multi_texture_transform_class::id,
         shared_ptr<node_class>(new multi_texture_transform_class(b)));
     b.add_node_class(
-        "urn:X-openvrml:node:TextureCoordinateGenerator",
+        texture_coordinate_generator_class::id,
         shared_ptr<node_class>(new texture_coordinate_generator_class(b)));
 }
 
@@ -183,12 +191,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const multi_texture_class::id =
+        "urn:X-openvrml:node:MultiTexture";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this multi_texture_class.
+     * @param browser the @c browser associated with this
+     *                @c multi_texture_class.
      */
     multi_texture_class::multi_texture_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(multi_texture_class::id, browser)
     {}
 
     /**
@@ -368,13 +383,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const multi_texture_coordinate_class::id =
+        "urn:X-openvrml:node:MultiTextureCoordinate";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this multi_texture_coordinate_class.
+     * @param browser the @c browser associated with this
+     *                @c multi_texture_coordinate_class.
      */
-    multi_texture_coordinate_class::multi_texture_coordinate_class(openvrml::browser & browser):
-        node_class(browser)
+    multi_texture_coordinate_class::
+    multi_texture_coordinate_class(openvrml::browser & browser):
+        node_class(multi_texture_coordinate_class::id, browser)
     {}
 
     /**
@@ -458,13 +482,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const multi_texture_transform_class::id =
+        "urn:X-openvrml:node:MultiTextureTransform";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this multi_texture_transform_class.
+     * @param browser the @c browser associated with this
+     *                @c multi_texture_transform_class.
      */
-    multi_texture_transform_class::multi_texture_transform_class(openvrml::browser & browser):
-        node_class(browser)
+    multi_texture_transform_class::
+    multi_texture_transform_class(openvrml::browser & browser):
+        node_class(multi_texture_transform_class::id, browser)
     {}
 
     /**
@@ -548,13 +581,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const texture_coordinate_generator_class::id =
+        "urn:X-openvrml:node:TextureCoordinateGenerator";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this texture_coordinate_generator_class.
+     * @param browser the @c browser associated with this
+     *                @c texture_coordinate_generator_class.
      */
-    texture_coordinate_generator_class::texture_coordinate_generator_class(openvrml::browser & browser):
-        node_class(browser)
+    texture_coordinate_generator_class::
+    texture_coordinate_generator_class(openvrml::browser & browser):
+        node_class(texture_coordinate_generator_class::id, browser)
     {}
 
     /**
@@ -715,7 +757,7 @@ namespace {
      */
     multi_texture_node::
     multi_texture_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
+                       const boost::shared_ptr<openvrml::scope> & scope):
       node(type, scope),
       abstract_node<self_t>(type, scope),
       alpha_(*this, 1),
@@ -756,14 +798,15 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     multi_texture_coordinate_node::
-    multi_texture_coordinate_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      abstract_node<self_t>(type, scope),
-      tex_coord_(*this)
+    multi_texture_coordinate_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        abstract_node<self_t>(type, scope),
+        tex_coord_(*this)
     {}
 
     /**
@@ -799,11 +842,12 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     multi_texture_transform_node::
-    multi_texture_transform_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      abstract_node<self_t>(type, scope),
-      texture_transform_(*this)
+    multi_texture_transform_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        abstract_node<self_t>(type, scope),
+        texture_transform_(*this)
     {}
 
     /**
@@ -845,12 +889,13 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     texture_coordinate_generator_node::
-    texture_coordinate_generator_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      abstract_node<self_t>(type, scope),
-      mode_(*this, "SPHERE"),
-      parameter_(*this)
+    texture_coordinate_generator_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        abstract_node<self_t>(type, scope),
+        mode_(*this, "SPHERE"),
+        parameter_(*this)
     {}
 
     /**

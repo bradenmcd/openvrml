@@ -41,6 +41,8 @@ namespace {
      */
     class OPENVRML_LOCAL color_rgba_class : public node_class {
     public:
+        static const char * const id;
+
         explicit color_rgba_class(openvrml::browser & browser);
         virtual ~color_rgba_class() throw ();
 
@@ -57,6 +59,8 @@ namespace {
      */
     class OPENVRML_LOCAL indexed_triangle_fan_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit indexed_triangle_fan_set_class(openvrml::browser & browser);
         virtual ~indexed_triangle_fan_set_class() OPENVRML_NOTHROW;
 
@@ -73,6 +77,8 @@ namespace {
      */
     class OPENVRML_LOCAL indexed_triangle_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit indexed_triangle_set_class(openvrml::browser & browser);
         virtual ~indexed_triangle_set_class() OPENVRML_NOTHROW;
 
@@ -89,6 +95,8 @@ namespace {
      */
     class OPENVRML_LOCAL indexed_triangle_strip_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit indexed_triangle_strip_set_class(openvrml::browser & browser);
         virtual ~indexed_triangle_strip_set_class() OPENVRML_NOTHROW;
 
@@ -105,6 +113,8 @@ namespace {
      */
     class OPENVRML_LOCAL triangle_fan_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit triangle_fan_set_class(openvrml::browser & browser);
         virtual ~triangle_fan_set_class() OPENVRML_NOTHROW;
 
@@ -121,6 +131,8 @@ namespace {
      */
     class OPENVRML_LOCAL triangle_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit triangle_set_class(openvrml::browser & browser);
         virtual ~triangle_set_class() OPENVRML_NOTHROW;
 
@@ -137,6 +149,8 @@ namespace {
      */
     class OPENVRML_LOCAL triangle_strip_set_class : public node_class {
     public:
+        static const char * const id;
+
         explicit triangle_strip_set_class(openvrml::browser & browser);
         virtual ~triangle_strip_set_class() OPENVRML_NOTHROW;
 
@@ -152,19 +166,22 @@ void register_rendering_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:ColorRGBA",
+    b.add_node_class(color_rgba_class::id,
                      shared_ptr<node_class>(new color_rgba_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IndexedTriangleFanSet",
-                     shared_ptr<node_class>(new indexed_triangle_fan_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IndexedTriangleSet",
-                     shared_ptr<node_class>(new indexed_triangle_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:IndexedTriangleStripSet",
-                     shared_ptr<node_class>(new indexed_triangle_strip_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TriangleFanSet",
+    b.add_node_class(indexed_triangle_fan_set_class::id,
+                     shared_ptr<node_class>(
+                         new indexed_triangle_fan_set_class(b)));
+    b.add_node_class(indexed_triangle_set_class::id,
+                     shared_ptr<node_class>(
+                         new indexed_triangle_set_class(b)));
+    b.add_node_class(indexed_triangle_strip_set_class::id,
+                     shared_ptr<node_class>(
+                         new indexed_triangle_strip_set_class(b)));
+    b.add_node_class(triangle_fan_set_class::id,
                      shared_ptr<node_class>(new triangle_fan_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TriangleSet",
+    b.add_node_class(triangle_set_class::id,
                      shared_ptr<node_class>(new triangle_set_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TriangleStripSet",
+    b.add_node_class(triangle_strip_set_class::id,
                      shared_ptr<node_class>(new triangle_strip_set_class(b)));
 }
 
@@ -172,8 +189,10 @@ namespace {
 
     using namespace openvrml_;
 
-    class OPENVRML_LOCAL color_rgba_node : public abstract_node<color_rgba_node>,
-                                           public openvrml::color_rgba_node {
+    class OPENVRML_LOCAL color_rgba_node :
+        public abstract_node<color_rgba_node>,
+        public openvrml::color_rgba_node {
+
         friend class color_rgba_class;
 
         exposedfield<mfcolorrgba> color_;
@@ -190,15 +209,15 @@ namespace {
             OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL indexed_triangle_fan_set_node : public abstract_node<indexed_triangle_fan_set_node>,
-                                                         public geometry_node,
-                                                         public child_node {
+    class OPENVRML_LOCAL indexed_triangle_fan_set_node :
+        public abstract_node<indexed_triangle_fan_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class indexed_triangle_fan_set_class;
 
-        class set_index_listener :
-                public event_listener_base<self_t>,
-                public mfint32_listener
-        {
+        class set_index_listener : public event_listener_base<self_t>,
+                                   public mfint32_listener {
         public:
             explicit set_index_listener(self_t & node);
             virtual ~set_index_listener() OPENVRML_NOTHROW;
@@ -222,8 +241,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        indexed_triangle_fan_set_node(const node_type & type,
-                                      const boost::shared_ptr<openvrml::scope> & scope);
+        indexed_triangle_fan_set_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~indexed_triangle_fan_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
@@ -237,9 +257,11 @@ namespace {
         void recalc_bsphere();
     };
 
-    class OPENVRML_LOCAL indexed_triangle_set_node : public abstract_node<indexed_triangle_set_node>,
-                                                     public geometry_node,
-                                                     public child_node {
+    class OPENVRML_LOCAL indexed_triangle_set_node :
+        public abstract_node<indexed_triangle_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class indexed_triangle_set_class;
 
         class set_index_listener :
@@ -269,8 +291,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        indexed_triangle_set_node(const node_type & type,
-                                  const boost::shared_ptr<openvrml::scope> & scope);
+        indexed_triangle_set_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~indexed_triangle_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
@@ -284,15 +307,15 @@ namespace {
         void recalc_bsphere();
     };
 
-    class OPENVRML_LOCAL indexed_triangle_strip_set_node : public abstract_node<indexed_triangle_strip_set_node>,
-                                                           public geometry_node,
-                                                           public child_node {
+    class OPENVRML_LOCAL indexed_triangle_strip_set_node :
+        public abstract_node<indexed_triangle_strip_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class indexed_triangle_strip_set_class;
 
-        class set_index_listener :
-                public event_listener_base<self_t>,
-                public mfint32_listener
-        {
+        class set_index_listener : public event_listener_base<self_t>,
+                                   public mfint32_listener {
         public:
             explicit set_index_listener(self_t & node);
             virtual ~set_index_listener() OPENVRML_NOTHROW;
@@ -317,8 +340,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        indexed_triangle_strip_set_node(const node_type & type,
-                                        const boost::shared_ptr<openvrml::scope> & scope);
+        indexed_triangle_strip_set_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~indexed_triangle_strip_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
@@ -332,9 +356,11 @@ namespace {
         void recalc_bsphere();
     };
 
-    class OPENVRML_LOCAL triangle_fan_set_node : public abstract_node<triangle_fan_set_node>,
-                                                 public geometry_node,
-                                                 public child_node {
+    class OPENVRML_LOCAL triangle_fan_set_node :
+        public abstract_node<triangle_fan_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class triangle_fan_set_class;
 
         exposedfield<sfnode> color_;
@@ -349,8 +375,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        triangle_fan_set_node(const node_type & type,
-                              const boost::shared_ptr<openvrml::scope> & scope);
+        triangle_fan_set_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~triangle_fan_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
@@ -364,9 +391,11 @@ namespace {
         void recalc_bsphere();
     };
 
-    class OPENVRML_LOCAL triangle_set_node : public abstract_node<triangle_set_node>,
-                                             public geometry_node,
-                                             public child_node {
+    class OPENVRML_LOCAL triangle_set_node :
+        public abstract_node<triangle_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class triangle_set_class;
 
         exposedfield<sfnode> color_;
@@ -395,9 +424,11 @@ namespace {
         void recalc_bsphere();
     };
 
-    class OPENVRML_LOCAL triangle_strip_set_node : public abstract_node<triangle_strip_set_node>,
-                                                   public geometry_node,
-                                                   public child_node {
+    class OPENVRML_LOCAL triangle_strip_set_node :
+        public abstract_node<triangle_strip_set_node>,
+        public geometry_node,
+        public child_node {
+
         friend class triangle_strip_set_class;
 
         exposedfield<sfnode> color_;
@@ -412,8 +443,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        triangle_strip_set_node(const node_type & type,
-                                const boost::shared_ptr<openvrml::scope> & scope);
+        triangle_strip_set_node(
+            const node_type & type,
+            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~triangle_strip_set_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
@@ -429,12 +461,17 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const color_rgba_class::id = "urn:X-openvrml:node:ColorRGBA";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this color_rgba_class.
+     * @param browser the @c browser associated with this @c color_rgba_class.
      */
     color_rgba_class::color_rgba_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(color_rgba_class::id, browser)
     {}
 
     /**
@@ -520,18 +557,27 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const indexed_triangle_fan_set_class::id =
+        "urn:X-openvrml:node:IndexedTriangleFanSet";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this indexed_triangle_fan_set_class.
+     * @param browser the @c browser associated with this
+     *                @c indexed_triangle_fan_set_class.
      */
-    indexed_triangle_fan_set_class::indexed_triangle_fan_set_class(openvrml::browser & browser):
-        node_class(browser)
+    indexed_triangle_fan_set_class::
+    indexed_triangle_fan_set_class(openvrml::browser & browser):
+        node_class(indexed_triangle_fan_set_class::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_triangle_fan_set_class::~indexed_triangle_fan_set_class() OPENVRML_NOTHROW
+    indexed_triangle_fan_set_class::~indexed_triangle_fan_set_class()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -727,13 +773,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const indexed_triangle_set_class::id =
+        "urn:X-openvrml:node:IndexedTriangleSet";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this indexed_triangle_set_class.
+     * @param browser the @c browser associated with this
+     *                @c indexed_triangle_set_class.
      */
-    indexed_triangle_set_class::indexed_triangle_set_class(openvrml::browser & browser):
-        node_class(browser)
+    indexed_triangle_set_class::
+    indexed_triangle_set_class(openvrml::browser & browser):
+        node_class(indexed_triangle_set_class::id, browser)
     {}
 
     /**
@@ -935,13 +990,22 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const indexed_triangle_strip_set_class::id =
+        "urn:X-openvrml:node:IndexedTriangleStripSet";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this indexed_triangle_strip_set_class.
+     * @param browser the @c browser associated with this
+     *                @c indexed_triangle_strip_set_class.
      */
-    indexed_triangle_strip_set_class::indexed_triangle_strip_set_class(openvrml::browser & browser):
-        node_class(browser)
+    indexed_triangle_strip_set_class::
+    indexed_triangle_strip_set_class(openvrml::browser & browser):
+        node_class(indexed_triangle_strip_set_class::id, browser)
     {}
 
     /**
@@ -1162,13 +1226,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const triangle_fan_set_class::id =
+        "urn:X-openvrml:node:TriangleFanSet";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this triangle_fan_set_class.
+     * @param browser the @c browser associated with this
+     *                @c triangle_fan_set_class.
      */
     triangle_fan_set_class::triangle_fan_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(triangle_fan_set_class::id, browser)
     {}
 
     /**
@@ -1368,13 +1440,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const triangle_set_class::id =
+        "urn:X-openvrml:node:TriangleSet";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this triangle_set_class.
+     * @param browser the @c browser associated with this
+     *                @c triangle_set_class.
      */
     triangle_set_class::triangle_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(triangle_set_class::id, browser)
     {}
 
     /**
@@ -1556,12 +1636,19 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const triangle_strip_set_class::id =
+        "urn:X-openvrml:node:TriangleStripSet";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this triangle_strip_set_class.
+     * @param browser the @c browser associated with this
+     *                @c triangle_strip_set_class.
      */
     triangle_strip_set_class::triangle_strip_set_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(triangle_strip_set_class::id, browser)
     {}
 
     /**

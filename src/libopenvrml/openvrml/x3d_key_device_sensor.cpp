@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL key_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit key_sensor_class(openvrml::browser & browser);
         virtual ~key_sensor_class() OPENVRML_NOTHROW;
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL string_sensor_class : public node_class {
     public:
+        static const char * const id;
+
         explicit string_sensor_class(openvrml::browser & browser);
         virtual ~string_sensor_class() OPENVRML_NOTHROW;
 
@@ -71,9 +75,9 @@ void register_key_device_sensor_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:KeySensor",
+    b.add_node_class(key_sensor_class::id,
                      shared_ptr<node_class>(new key_sensor_class(b)));
-    b.add_node_class("urn:X-openvrml:node:StringSensor",
+    b.add_node_class(string_sensor_class::id,
                      shared_ptr<node_class>(new string_sensor_class(b)));
 }
 
@@ -133,12 +137,18 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const key_sensor_class::id =
+        "urn:X-openvrml:node:KeySensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this key_sensor_class.
+     * @param browser the @c browser associated with this @c key_sensor_class.
      */
     key_sensor_class::key_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(key_sensor_class::id, browser)
     {}
 
     /**
@@ -380,8 +390,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this @c node.
+     * @param scope the @c scope to which the @c node belongs.
      */
     key_sensor_node::
     key_sensor_node(const node_type & type,
@@ -409,12 +419,19 @@ namespace {
 
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const string_sensor_class::id =
+        "urn:X-openvrml:node:StringSensor";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this string_sensor_class.
+     * @param browser the @c browser associated with this
+     *                @c string_sensor_class.
      */
     string_sensor_class::string_sensor_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(string_sensor_class::id, browser)
     {}
 
     /**
@@ -597,8 +614,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this @c node.
+     * @param scope the @c scope to which the @c node belongs.
      */
     string_sensor_node::
     string_sensor_node(const node_type & type,

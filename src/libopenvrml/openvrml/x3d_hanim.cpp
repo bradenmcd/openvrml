@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL hanim_displacer_class : public node_class {
     public:
+        static const char * const id;
+
         explicit hanim_displacer_class(openvrml::browser & browser);
         virtual ~hanim_displacer_class() OPENVRML_NOTHROW;
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL hanim_humanoid_class : public node_class {
     public:
+        static const char * const id;
+
         explicit hanim_humanoid_class(openvrml::browser & browser);
         virtual ~hanim_humanoid_class() OPENVRML_NOTHROW;
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL hanim_joint_class : public node_class {
     public:
+        static const char * const id;
+
         explicit hanim_joint_class(openvrml::browser & browser);
         virtual ~hanim_joint_class() OPENVRML_NOTHROW;
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL hanim_segment_class : public node_class {
     public:
+        static const char * const id;
+
         explicit hanim_segment_class(openvrml::browser & browser);
         virtual ~hanim_segment_class() OPENVRML_NOTHROW;
 
@@ -104,6 +112,8 @@ namespace {
      */
     class OPENVRML_LOCAL hanim_site_class : public node_class {
     public:
+        static const char * const id;
+
         explicit hanim_site_class(openvrml::browser & browser);
         virtual ~hanim_site_class() OPENVRML_NOTHROW;
 
@@ -119,22 +129,24 @@ void register_hanim_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:HAnimDisplacer",
+    b.add_node_class(hanim_displacer_class::id,
                      shared_ptr<node_class>(new hanim_displacer_class(b)));
-    b.add_node_class("urn:X-openvrml:node:HAnimHumanoid",
+    b.add_node_class(hanim_humanoid_class::id,
                      shared_ptr<node_class>(new hanim_humanoid_class(b)));
-    b.add_node_class("urn:X-openvrml:node:HAnimJoint",
+    b.add_node_class(hanim_joint_class::id,
                      shared_ptr<node_class>(new hanim_joint_class(b)));
-    b.add_node_class("urn:X-openvrml:node:HAnimSegment",
+    b.add_node_class(hanim_segment_class::id,
                      shared_ptr<node_class>(new hanim_segment_class(b)));
-    b.add_node_class("urn:X-openvrml:node:HAnimSite",
+    b.add_node_class(hanim_site_class::id,
                      shared_ptr<node_class>(new hanim_site_class(b)));
 }
 
 namespace {
     using namespace openvrml_;
 
-    class OPENVRML_LOCAL hanim_displacer_node : public abstract_node<hanim_displacer_node> {
+    class OPENVRML_LOCAL hanim_displacer_node :
+        public abstract_node<hanim_displacer_node> {
+
         friend class hanim_displacer_class;
 
         exposedfield<mfint32> coord_index_;
@@ -148,8 +160,10 @@ namespace {
         virtual ~hanim_displacer_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL hanim_humanoid_node : public abstract_node<hanim_humanoid_node>,
-                                               public child_node {
+    class OPENVRML_LOCAL hanim_humanoid_node :
+        public abstract_node<hanim_humanoid_node>,
+        public child_node {
+
         friend class hanim_humanoid_class;
 
         exposedfield<sfvec3f> center_;
@@ -173,18 +187,18 @@ namespace {
 
     public:
         hanim_humanoid_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+                            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~hanim_humanoid_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL hanim_joint_node : public abstract_node<hanim_joint_node>,
-                                            public child_node {
+    class OPENVRML_LOCAL hanim_joint_node :
+        public abstract_node<hanim_joint_node>,
+        public child_node {
+
         friend class hanim_joint_class;
 
-        class add_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class add_children_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
             public:
                 explicit add_children_listener(self_t & node);
                 virtual ~add_children_listener() OPENVRML_NOTHROW;
@@ -195,10 +209,8 @@ namespace {
                     OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class remove_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
             public:
                 explicit remove_children_listener(self_t & node);
                 virtual ~remove_children_listener() OPENVRML_NOTHROW;
@@ -230,18 +242,18 @@ namespace {
 
     public:
         hanim_joint_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+                         const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~hanim_joint_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL hanim_segment_node : public abstract_node<hanim_segment_node>,
-                                              public child_node {
+    class OPENVRML_LOCAL hanim_segment_node :
+        public abstract_node<hanim_segment_node>,
+        public child_node {
+
         friend class hanim_segment_class;
 
-        class add_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class add_children_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
             public:
                 explicit add_children_listener(self_t & node);
                 virtual ~add_children_listener() OPENVRML_NOTHROW;
@@ -252,10 +264,8 @@ namespace {
                     OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class remove_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
             public:
                 explicit remove_children_listener(self_t & node);
                 virtual ~remove_children_listener() OPENVRML_NOTHROW;
@@ -284,8 +294,10 @@ namespace {
         virtual ~hanim_segment_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL hanim_site_node : public abstract_node<hanim_site_node>,
-                                           public child_node {
+    class OPENVRML_LOCAL hanim_site_node :
+        public abstract_node<hanim_site_node>,
+        public child_node {
+
         friend class hanim_site_class;
 
         class add_children_listener :
@@ -302,10 +314,8 @@ namespace {
                     OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class remove_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
             public:
                 explicit remove_children_listener(self_t & node);
                 virtual ~remove_children_listener() OPENVRML_NOTHROW;
@@ -334,13 +344,21 @@ namespace {
         virtual ~hanim_site_node() OPENVRML_NOTHROW;
     };
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const hanim_displacer_class::id =
+        "urn:X-openvrml:node:HAnimDisplacer";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this hanim_displacer_class.
+     * @param browser the @c browser associated with this
+     *                @c hanim_displacer_class.
      */
     hanim_displacer_class::hanim_displacer_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(hanim_displacer_class::id, browser)
     {}
 
     /**
@@ -481,13 +499,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const hanim_humanoid_class::id =
+        "urn:X-openvrml:node:HAnimHumanoid";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this hanim_humanoid_class.
+     * @param browser the @c browser associated with this
+     *                @c hanim_humanoid_class.
      */
     hanim_humanoid_class::hanim_humanoid_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(hanim_humanoid_class::id, browser)
     {}
 
     /**
@@ -876,13 +902,20 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const hanim_joint_class::id =
+        "urn:X-openvrml:node:HAnimJoint";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this hanim_joint_class.
+     * @param browser the @c browser associated with this @c hanim_joint_class.
      */
     hanim_joint_class::hanim_joint_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(hanim_joint_class::id, browser)
     {}
 
     /**
@@ -1255,13 +1288,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const hanim_segment_class::id =
+        "urn:X-openvrml:node:HAnimSegment";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this hanim_segment_class.
+     * @param browser the @c browser associated with this
+     *                @c hanim_segment_class.
      */
     hanim_segment_class::hanim_segment_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(hanim_segment_class::id, browser)
     {}
 
     /**
@@ -1502,12 +1543,18 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const hanim_site_class::id =
+        "urn:X-openvrml:node:HAnimSite";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this hanim_site_class.
+     * @param browser the @c browser associated with this @c hanim_site_class.
      */
     hanim_site_class::hanim_site_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(hanim_site_class::id, browser)
     {}
 
     /**

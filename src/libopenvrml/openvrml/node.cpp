@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -585,23 +585,32 @@ openvrml::find_interface(const node_interface_set & interfaces,
 /**
  * @internal
  *
- * @var openvrml::browser * openvrml::node_class::browser_
+ * @var const std::string openvrml::node_class::id_
  *
- * @brief The browser associated with this <code>node_class</code>.
+ * @brief @c node_class identifier.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::browser * const openvrml::node_class::browser_
+ *
+ * @brief The @c browser associated with this @c node_class.
  */
 
 /**
  * @brief Constructor.
  *
- * A <code>node_class</code> is constructed using a <code>browser</code>. All
- * <code>node</code> instances that share a particular <code>node_class</code>
- * "belong to" the <code>browser</code> associated with the
- * <code>node_class</code>.
+ * A @c node_class is constructed using a @c browser.  All @c node instances
+ * that share a particular @c node_class &ldquo;belong to&rdquo; the
+ * @c browser associated with the @c node_class.
  *
- * @param[in] b the <code>browser</code> to be associated with the
- *              <code>node_class</code>.
+ * @param[in] id    an identifier unique to @p b.
+ * @param[in] b     the @c browser to be associated with the @c node_class.
  */
-openvrml::node_class::node_class(openvrml::browser & b) OPENVRML_NOTHROW:
+openvrml::node_class::node_class(const node_class_id & id, browser & b)
+    OPENVRML_NOTHROW:
+    id_(id),
     browser_(&b)
 {}
 
@@ -610,6 +619,17 @@ openvrml::node_class::node_class(openvrml::browser & b) OPENVRML_NOTHROW:
  */
 openvrml::node_class::~node_class() OPENVRML_NOTHROW
 {}
+
+/**
+ * @brief Identifier.
+ *
+ * @return the @c node_class identifier.
+ */
+const openvrml::node_class_id & openvrml::node_class::id() const
+    OPENVRML_NOTHROW
+{
+    return this->id_;
+}
 
 /**
  * @brief The <code>browser</code> associated with this

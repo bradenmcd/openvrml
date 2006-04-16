@@ -40,6 +40,8 @@ namespace {
      */
     class OPENVRML_LOCAL espdu_transform_class : public node_class {
     public:
+        static const char * const id;
+
         explicit espdu_transform_class(openvrml::browser & browser);
         virtual ~espdu_transform_class() OPENVRML_NOTHROW;
 
@@ -56,6 +58,8 @@ namespace {
      */
     class OPENVRML_LOCAL receiver_pdu_class : public node_class {
     public:
+        static const char * const id;
+
         explicit receiver_pdu_class(openvrml::browser & browser);
         virtual ~receiver_pdu_class() OPENVRML_NOTHROW;
 
@@ -72,6 +76,8 @@ namespace {
      */
     class OPENVRML_LOCAL signal_pdu_class : public node_class {
     public:
+        static const char * const id;
+
         explicit signal_pdu_class(openvrml::browser & browser);
         virtual ~signal_pdu_class() OPENVRML_NOTHROW;
 
@@ -88,6 +94,8 @@ namespace {
      */
     class OPENVRML_LOCAL transmitter_pdu_class : public node_class {
     public:
+        static const char * const id;
+
         explicit transmitter_pdu_class(openvrml::browser & browser);
         virtual ~transmitter_pdu_class() OPENVRML_NOTHROW;
 
@@ -103,13 +111,13 @@ void register_dis_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
-    b.add_node_class("urn:X-openvrml:node:EspduTransform",
+    b.add_node_class(espdu_transform_class::id,
                      shared_ptr<node_class>(new espdu_transform_class(b)));
-    b.add_node_class("urn:X-openvrml:node:ReceiverPdu",
+    b.add_node_class(receiver_pdu_class::id,
                      shared_ptr<node_class>(new receiver_pdu_class(b)));
-    b.add_node_class("urn:X-openvrml:node:SignalPdu",
+    b.add_node_class(signal_pdu_class::id,
                      shared_ptr<node_class>(new signal_pdu_class(b)));
-    b.add_node_class("urn:X-openvrml:node:TransmitterPdu",
+    b.add_node_class(transmitter_pdu_class::id,
                      shared_ptr<node_class>(new transmitter_pdu_class(b)));
 }
 
@@ -532,13 +540,21 @@ namespace {
         virtual ~transmitter_pdu_node() OPENVRML_NOTHROW;
     };
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const espdu_transform_class::id =
+        "urn:X-openvrml:node:EspduTransform";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this espdu_transform_class.
+     * @param browser the @c browser associated with this
+     *                @c espdu_transform_class.
      */
     espdu_transform_class::espdu_transform_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(espdu_transform_class::id, browser)
     {}
 
     /**
@@ -1997,13 +2013,21 @@ namespace {
         return type;
     }
 
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const receiver_pdu_class::id =
+        "urn:X-openvrml:node:ReceiverPdu";
+
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this receiver_pdu_class.
+     * @param browser the @c browser associated with this
+     *                @c receiver_pdu_class.
      */
     receiver_pdu_class::receiver_pdu_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(receiver_pdu_class::id, browser)
     {}
 
     /**
@@ -2516,12 +2540,18 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const signal_pdu_class::id =
+        "urn:X-openvrml:node:SignalPdu";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this signal_pdu_class.
+     * @param browser the @c browser associated with this @c signal_pdu_class.
      */
     signal_pdu_class::signal_pdu_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(signal_pdu_class::id, browser)
     {}
 
     /**
@@ -3034,12 +3064,19 @@ namespace {
     }
 
     /**
+     * @brief @c node_class identifier.
+     */
+    const char * const transmitter_pdu_class::id =
+        "urn:X-openvrml:node:TransmitterPdu";
+
+    /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this transmitter_pdu_class.
+     * @param browser the @c browser associated with this
+     *                @c transmitter_pdu_class.
      */
     transmitter_pdu_class::transmitter_pdu_class(openvrml::browser & browser):
-        node_class(browser)
+        node_class(transmitter_pdu_class::id, browser)
     {}
 
     /**
