@@ -1,5 +1,12 @@
 2006-04-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_class::node_class(const node_class_id &,
+	openvrml::browser &)): Must explicitly qualify openvrml::browser
+	here.
+
+2006-04-16 Braden McDaniel  <braden@endoframe.com>
+
 	Added node_class::id accessor; node_class must now be constructed
 	with an id.
 

@@ -608,7 +608,8 @@ openvrml::find_interface(const node_interface_set & interfaces,
  * @param[in] id    an identifier unique to @p b.
  * @param[in] b     the @c browser to be associated with the @c node_class.
  */
-openvrml::node_class::node_class(const node_class_id & id, browser & b)
+openvrml::node_class::node_class(const node_class_id & id,
+                                 openvrml::browser & b)
     OPENVRML_NOTHROW:
     id_(id),
     browser_(&b)
