@@ -171,6 +171,8 @@ namespace openvrml {
     class OPENVRML_API browser : boost::noncopyable {
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
+        friend bool operator==(const node_type &, const node_type &)
+            OPENVRML_NOTHROW;
 
         struct root_scene_loader;
         struct vrml_from_url_creator;
@@ -190,13 +192,17 @@ namespace openvrml {
             void init(viewpoint_node * initial_viewpoint, double timestamp);
 
             const boost::shared_ptr<openvrml::node_class>
-            insert(const std::string & id,
-                   const boost::shared_ptr<openvrml::node_class> & node_class);
+                insert(const std::string & id,
+                       const boost::shared_ptr<openvrml::node_class> & node_class);
 
             bool remove(const std::string & id);
 
             const boost::shared_ptr<node_class>
-            find(const std::string & id) const;
+                find(const std::string & id) const;
+
+            const std::vector<node_class_id>
+                node_class_ids(const openvrml::node_class & node_class) const
+                OPENVRML_THROW1(std::bad_alloc);
 
             void render(viewer & v);
 

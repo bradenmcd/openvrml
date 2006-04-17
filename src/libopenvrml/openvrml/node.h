@@ -182,6 +182,10 @@ namespace openvrml {
 
 
     class OPENVRML_API node_class_id {
+        friend bool operator==(const node_class_id & lhs,
+                               const node_class_id & rhs)
+            OPENVRML_NOTHROW;
+
         std::string id_;
 
     public:
@@ -191,6 +195,13 @@ namespace openvrml {
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         operator std::string() const;
     };
+
+    OPENVRML_API bool operator==(const node_class_id & lhs,
+                                 const node_class_id & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const node_class_id & lhs,
+                                 const node_class_id & rhs)
+        OPENVRML_NOTHROW;
 
 
     class browser;
@@ -267,6 +278,11 @@ namespace openvrml {
             OPENVRML_THROW3(unsupported_interface, std::bad_cast,
                             std::bad_alloc) = 0;
     };
+
+    OPENVRML_API bool operator==(const node_type & lhs, const node_type & rhs)
+        OPENVRML_NOTHROW;
+    OPENVRML_API bool operator!=(const node_type & lhs, const node_type & rhs)
+        OPENVRML_NOTHROW;
 
 
     class OPENVRML_API field_value_type_mismatch : public std::logic_error {

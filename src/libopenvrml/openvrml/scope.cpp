@@ -119,21 +119,39 @@ openvrml::scope::parent() const OPENVRML_NOTHROW
  *
  * @param[in] type  a node_type.
  *
- * @return @c true if @p type is successfully added to the scope; @c false
- *         otherwise (if a node_type with the same id is already defined for
- *         the scope).
+ * @return a pair whose first element is a pointer to a @c node_type whose
+ *         @c node_type::id is the same as that of @p type.  The second element
+ *         is a boolean value.  If the second element is @c true, @p type was
+ *         successfully added to the @c scope and the first element is the same
+ *         as @p type.  If the second element is @c false, @p type was not
+ *         added to the scope and the first element is a @c node_type that
+ *         already exists in the @c scope.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @pre @p type is not null.
  */
-bool openvrml::scope::add_type(const boost::shared_ptr<node_type> & type)
+const std::pair<boost::shared_ptr<openvrml::node_type>, bool>
+openvrml::scope::add_type(const boost::shared_ptr<node_type> & type)
     OPENVRML_THROW1(std::bad_alloc)
 {
     assert(type);
-    if (this->find_type(type->id())) { return false; }
-    this->node_type_list.push_front(type); // Throws std::bad_alloc.
-    return true;
+
+    using boost::shared_ptr;
+
+    std::pair<shared_ptr<node_type>, bool> result;
+    if ((result.first = this->find_type(type->id()))) {
+        result.second = false;
+    } else {
+        //
+        // Throws std::bad_alloc.
+        //
+        const std::list<shared_ptr<node_type> >::iterator pos =
+            this->node_type_list.insert(this->node_type_list.begin(), type);
+        result.first = type;
+        result.second = pos != this->node_type_list.end();
+    }
+    return result;
 }
 
 namespace {
@@ -170,7 +188,7 @@ openvrml::scope::find_type(const std::string & id) const
     //
     const node_type_list_t::const_iterator end = this->node_type_list.end();
     const node_type_list_t::const_iterator pos =
-            std::find_if(this->node_type_list.begin(), end, has_id_(id));
+        std::find_if(this->node_type_list.begin(), end, has_id_(id));
     if (pos != end) { return *pos; }
 
     //

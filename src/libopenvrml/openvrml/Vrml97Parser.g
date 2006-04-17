@@ -1,4 +1,4 @@
-// -*- Mode: Antlr; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: Antlr; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -748,7 +748,7 @@ options { defaultErrorHandler=false; }
             const shared_ptr<node_type> node_type =
                 node_class->create_type(id->getText(), interfaces);
             assert(node_type);
-            if (!scope->add_type(node_type)) {
+            if (!scope->add_type(node_type).second) {
                 using antlr::SemanticException;
                 throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "
@@ -996,7 +996,7 @@ options { defaultErrorHandler=false; }
 
             assert(node_type);
 
-            if (!scope->add_type(node_type)) {
+            if (!scope->add_type(node_type).second) {
                 using antlr::SemanticException;
                 throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "

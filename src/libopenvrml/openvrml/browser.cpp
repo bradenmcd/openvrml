@@ -5445,6 +5445,34 @@ openvrml::node_class_id::operator std::string() const
     return this->id_;
 }
 
+/**
+ * @relates openvrml::node_class_id
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are equal, @c false otherwise.
+ */
+bool openvrml::operator==(const node_class_id & lhs, const node_class_id & rhs)
+    OPENVRML_NOTHROW
+{
+    return lhs.id_ == rhs.id_;
+}
+
+/**
+ * @relates openvrml::node_class_id
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are not equal, @c false otherwise.
+ */
+bool openvrml::operator!=(const node_class_id & lhs, const node_class_id & rhs)
+    OPENVRML_NOTHROW
+{
+    return !(lhs == rhs);
+}
+
 
 /**
  * @class openvrml::browser
@@ -5660,6 +5688,29 @@ openvrml::browser::node_class_map::find(const std::string & id) const
     return (pos != this->map_.end())
         ? pos->second
         : boost::shared_ptr<openvrml::node_class>();
+}
+
+/**
+ * @brief The @c node_class identifiers associated with @p node_class.
+ *
+ * @param[in] node_class    a @c node_class.
+ *
+ * @return the @c node_class identifiers associated with @p node_class.
+ */
+const std::vector<openvrml::node_class_id>
+openvrml::browser::node_class_map::
+node_class_ids(const openvrml::node_class & node_class) const
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    std::vector<node_class_id> ids;
+    for (map_t::const_iterator entry = this->map_.begin();
+         entry != this->map_.end();
+         ++entry) {
+        if (entry->second.get() == &node_class) {
+            ids.push_back(entry->first);
+        }
+    }
+    return ids;
 }
 
 namespace {
@@ -7872,11 +7923,43 @@ namespace {
         OPENVRML_THROW3(openvrml::unsupported_interface, std::invalid_argument,
                         std::bad_alloc)
     {
-        boost::shared_ptr<openvrml::node_class> node_class = b.node_class(urn);
-        assert(node_class);
-        const bool succeeded =
-            scope.add_type(node_class->create_type(node_name, interface_set));
-        assert(succeeded);
+        using boost::shared_ptr;
+        using openvrml::node_class;
+        using openvrml::node_type;
+
+        const shared_ptr<node_class> class_ = b.node_class(urn);
+        assert(class_);
+        const shared_ptr<node_type> type = class_->create_type(node_name,
+                                                               interface_set);
+        const std::pair<shared_ptr<node_type>, bool> add_type_result =
+            scope.add_type(type);
+
+        //
+        // If scope::add_type failed, there are two possible reasons:
+        //  1. We're trying to add exactly the same node_type as already exists
+        //     in the scope.  The mostly likely way this would happen is if a
+        //     component is added redundantly.  There are entirely reasonable
+        //     ways that could happen; e.g., if the profile incorporates
+        //     component A level 1, and the X3D file also has a component
+        //     statement to import component A level 2.
+        //  2. node_types in two different components have the same
+        //     node_type::id.
+        //
+        if (!add_type_result.second && *add_type_result.first != *type) {
+            //
+            // The way things are currently implemented, we don't want to throw
+            // here.  Even if a component has a problematic node, we might as
+            // well add the rest of the nodes in it.  After all, we don't know
+            // how many nodes in the component we've already added.
+            //
+            // At some point it may be desirable to make component import
+            // transactional--i.e., all nodes are added successfully, or
+            // component import fails totally.  But that doesn't seem necessary
+            // at this point.
+            //
+            b.err(std::string("interfaces for \"") + node_name + "\" are not "
+                  "consistent with the existing node type by that name");
+        }
     }
 
     void component::add_to_scope(const openvrml::browser & b,

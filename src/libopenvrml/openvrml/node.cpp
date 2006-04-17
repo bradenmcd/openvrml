@@ -936,6 +936,57 @@ create_node(const boost::shared_ptr<scope> & scope,
  * @sa http://boost.org/libs/smart_ptr/intrustive_ptr.html
  */
 
+/**
+ * @relates openvrml::node_type
+ *
+ * @brief Compare for equality.
+ *
+ * Two @c node_type%s @c t and @c u are considered equal if all of the
+ * following are true:
+ *
+ *   - <code>t.id() == u.id()</code>
+ *   - <code>t.interfaces() == u.interfaces()</code>
+ *   - <code>t.node_class().id()</code> is in the set of identifiers
+ *      associated with @c u in the <code>browser</code>'s @c node_class map.
+ *
+ * Note that the latter requirement makes this comparison a rather expensive
+ * operation.
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are equal; @c false otherwise.
+ */
+bool openvrml::operator==(const node_type & lhs, const node_type & rhs)
+    OPENVRML_NOTHROW
+{
+    if (lhs.id() != rhs.id()) { return false; }
+    if (lhs.interfaces() != rhs.interfaces()) { return false; }
+
+    const std::vector<node_class_id> ids =
+        rhs.node_class().browser()
+        .node_class_map_.node_class_ids(rhs.node_class());
+    const std::vector<node_class_id>::const_iterator pos =
+        std::find(ids.begin(), ids.end(), lhs.node_class().id());
+    return pos != ids.end();
+}
+
+/**
+ * @relates openvrml::node_type
+ *
+ * @brief Compare for inequality.
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are not equal; @c false otherwise.
+ */
+bool openvrml::operator!=(const node_type & lhs, const node_type & rhs)
+    OPENVRML_NOTHROW
+{
+    return !(lhs == rhs);
+}
+
 
 /**
  * @class openvrml::field_value_type_mismatch

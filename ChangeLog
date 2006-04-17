@@ -1,3 +1,58 @@
+2006-04-17 Braden McDaniel  <braden@endoframe.com>
+
+	Allow components to be added redundantly.  This is necessary in
+	the current design, where importing component X level 2 imports
+	level 1 as well; and level 1 may already have been imported as
+	part of the profile.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(proto): Changes for parity with change to
+	openvrml::scope::add_type.
+	(externproto): Changes for parity with change to
+	openvrml::scope::add_type.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::operator==(const node_class_id &, const
+	node_class_id&)): Added function.
+	(openvrml::operator!=(const node_class_id &, const
+	node_class_id&)): Added function.
+	(openvrml::browser::node_class_map::node_class_ids(const
+	openvrml::node_class &) const): Added function; get the node_class
+	identifiers associated with a node_class in the map (i.e., the
+	keys).
+	(component::add_scope_entry(const openvrml::browser &, const
+	char*, const openvrml::node_interface_set &, const char *,
+	openvrml::scope &) const): Accommodate failure to add a node_type
+	to the scope.
+	* src/libopenvrml/openvrml/browser.h:
+	(openvrml::browser): Grant friendship to node_type's operator==.
+	(openvrml::browser::node_class_map): Added member function:
+	node_class_ids(const openvrml::node_class &) const
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::operator==(const node_type &, const node_type &)):
+	Equality for node_type.
+	(openvrml::operator!=(const node_type &, const node_type &)):
+	Inequality for node_type.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node_class_id): Grant friendship to operator==.
+	(openvrml::operator==(const node_class_id &, const node_class_id
+	&)): Equality for node_class_id.
+	(openvrml::operator!=(const node_class_id &, const node_class_id
+	&)): Inequality for node_class_id.
+	(openvrml::operator==(const node_type &, const node_type &)):
+	Equality for node_type.
+	(openvrml::operator!=(const node_type &, const node_type &)):
+	Inequality for node_type.
+	* src/libopenvrml/openvrml/scope.cpp
+	(openvrml::scope::add_type(const boost::shared_ptr<node_type> &)):
+	Changed to return
+	std::pair<boost::shared_ptr<openvrml::node_type>, bool> instead of
+	bool.
+	* src/libopenvrml/openvrml/scope.h
+	(openvrml::scope::add_type(const boost::shared_ptr<node_type> &)):
+	Changed to return
+	std::pair<boost::shared_ptr<openvrml::node_type>, bool> instead of
+	bool.
+
 2006-04-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.cpp
