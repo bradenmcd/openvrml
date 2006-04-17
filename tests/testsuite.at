@@ -177,6 +177,15 @@ PROFILE Core
 AT_CHECK([parse-x3dvrml < minimal.x3dv])
 AT_CLEANUP
 
+AT_SETUP([Core profile world plus Core component level 2])
+AT_DATA([core+core2.x3dv],
+[[#X3D V3.0 utf8
+PROFILE Core
+COMPONENT Core:2
+]])
+AT_CHECK([parse-x3dvrml < core+core2.x3dv])
+AT_CLEANUP
+
 AT_SETUP([X3D Core plus VRML97 component])
 AT_DATA([x3d+vrml97-component.x3dv],
 [[#X3D V3.0 utf8

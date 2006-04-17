@@ -1,5 +1,11 @@
 2006-04-17 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/testsuite.at: Added test to check that we can safely
+	import a component level that's already been imported via the
+	profile.
+
+2006-04-17 Braden McDaniel  <braden@endoframe.com>
+
 	Allow components to be added redundantly.  This is necessary in
 	the current design, where importing component X level 2 imports
 	level 1 as well; and level 1 may already have been imported as
