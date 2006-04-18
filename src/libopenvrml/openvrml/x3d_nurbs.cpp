@@ -43,13 +43,13 @@ namespace {
         static const char * const id;
 
         explicit contour2d_class(openvrml::browser & browser);
-        virtual ~contour2d_class() throw ();
+        virtual ~contour2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -61,13 +61,13 @@ namespace {
         static const char * const id;
 
         explicit contour_polyline2d_class(openvrml::browser & browser);
-        virtual ~contour_polyline2d_class() throw ();
+        virtual ~contour_polyline2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -79,13 +79,13 @@ namespace {
         static const char * const id;
 
         explicit coordinate_double_class(openvrml::browser & browser);
-        virtual ~coordinate_double_class() throw ();
+        virtual ~coordinate_double_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -97,13 +97,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_curve_class(openvrml::browser & browser);
-        virtual ~nurbs_curve_class() throw ();
+        virtual ~nurbs_curve_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -115,13 +115,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_curve2d_class(openvrml::browser & browser);
-        virtual ~nurbs_curve2d_class() throw ();
+        virtual ~nurbs_curve2d_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -135,13 +135,13 @@ namespace {
 
         explicit nurbs_orientation_interpolator_class(
             openvrml::browser & browser);
-        virtual ~nurbs_orientation_interpolator_class() throw ();
+        virtual ~nurbs_orientation_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -153,13 +153,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_patch_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_patch_surface_class() throw ();
+        virtual ~nurbs_patch_surface_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -173,13 +173,13 @@ namespace {
 
         explicit nurbs_position_interpolator_class(
             openvrml::browser & browser);
-        virtual ~nurbs_position_interpolator_class() throw ();
+        virtual ~nurbs_position_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -191,13 +191,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_set_class(openvrml::browser & browser);
-        virtual ~nurbs_set_class() throw ();
+        virtual ~nurbs_set_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -209,13 +209,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_surface_interpolator_class(openvrml::browser & browser);
-        virtual ~nurbs_surface_interpolator_class() throw ();
+        virtual ~nurbs_surface_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -227,13 +227,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_swept_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_swept_surface_class() throw ();
+        virtual ~nurbs_swept_surface_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -245,13 +245,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_swung_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_swung_surface_class() throw ();
+        virtual ~nurbs_swung_surface_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -263,13 +263,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_texture_coordinate_class(openvrml::browser & browser);
-        virtual ~nurbs_texture_coordinate_class() throw ();
+        virtual ~nurbs_texture_coordinate_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -281,13 +281,13 @@ namespace {
         static const char * const id;
 
         explicit nurbs_trimmed_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_trimmed_surface_class() throw ();
+        virtual ~nurbs_trimmed_surface_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
             do_create_type(const std::string & id,
                            const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -342,24 +342,24 @@ namespace {
                                       public mfnode_listener {
         public:
             explicit add_children_listener(self_t & node);
-            virtual ~add_children_listener() throw ();
+            virtual ~add_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_children_listener : public event_listener_base<self_t>,
                                          public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
-            virtual ~remove_children_listener() throw ();
+            virtual ~remove_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         add_children_listener add_children_listener_;
@@ -369,7 +369,7 @@ namespace {
     public:
         contour2d_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~contour2d_node() throw ();
+        virtual ~contour2d_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL contour_polyline2d_node :
@@ -383,7 +383,7 @@ namespace {
         contour_polyline2d_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~contour_polyline2d_node() throw ();
+        virtual ~contour_polyline2d_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL coordinate_double_node :
@@ -397,7 +397,7 @@ namespace {
         coordinate_double_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~coordinate_double_node() throw ();
+        virtual ~coordinate_double_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_curve_node :
@@ -417,7 +417,7 @@ namespace {
     public:
         nurbs_curve_node(const node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_curve_node() throw ();
+        virtual ~nurbs_curve_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -440,7 +440,7 @@ namespace {
     public:
         nurbs_curve2d_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_curve2d_node() throw ();
+        virtual ~nurbs_curve2d_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_orientation_interpolator_node :
@@ -453,12 +453,12 @@ namespace {
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -474,7 +474,7 @@ namespace {
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
 
-        virtual ~nurbs_orientation_interpolator_node() throw ();
+        virtual ~nurbs_orientation_interpolator_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_patch_surface_node :
@@ -503,7 +503,7 @@ namespace {
         nurbs_patch_surface_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_patch_surface_node() throw ();
+        virtual ~nurbs_patch_surface_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -521,12 +521,12 @@ namespace {
                                       public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -542,7 +542,7 @@ namespace {
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
 
-        virtual ~nurbs_position_interpolator_node() throw ();
+        virtual ~nurbs_position_interpolator_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_set_node :
@@ -555,12 +555,12 @@ namespace {
                                       public mfnode_listener {
         public:
             explicit add_geometry_listener(self_t & node);
-            virtual ~add_geometry_listener() throw ();
+            virtual ~add_geometry_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_geometry_listener :
@@ -569,12 +569,12 @@ namespace {
         {
         public:
             explicit remove_geometry_listener(self_t & node);
-            virtual ~remove_geometry_listener() throw ();
+            virtual ~remove_geometry_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         add_geometry_listener add_geometry_listener_;
@@ -587,7 +587,7 @@ namespace {
     public:
         nurbs_set_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_set_node() throw ();
+        virtual ~nurbs_set_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_surface_interpolator_node :
@@ -600,12 +600,12 @@ namespace {
                                       public sfvec2f_listener {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfvec2f & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -626,7 +626,7 @@ namespace {
         nurbs_surface_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_surface_interpolator_node() throw ();
+        virtual ~nurbs_surface_interpolator_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_swept_surface_node :
@@ -645,7 +645,7 @@ namespace {
         nurbs_swept_surface_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_swept_surface_node() throw ();
+        virtual ~nurbs_swept_surface_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -669,7 +669,7 @@ namespace {
         nurbs_swung_surface_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_swung_surface_node() throw ();
+        virtual ~nurbs_swung_surface_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -695,7 +695,7 @@ namespace {
         nurbs_texture_coordinate_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_texture_coordinate_node() throw ();
+        virtual ~nurbs_texture_coordinate_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL nurbs_trimmed_surface_node :
@@ -710,12 +710,12 @@ namespace {
             public mfnode_listener {
         public:
             explicit add_trimming_contour_listener(self_t & node);
-            virtual ~add_trimming_contour_listener() throw ();
+            virtual ~add_trimming_contour_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_trimming_contour_listener :
@@ -723,12 +723,12 @@ namespace {
             public mfnode_listener {
         public:
             explicit remove_trimming_contour_listener(self_t & node);
-            virtual ~remove_trimming_contour_listener() throw ();
+            virtual ~remove_trimming_contour_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         add_trimming_contour_listener add_trimming_contour_listener_;
@@ -753,7 +753,7 @@ namespace {
         nurbs_trimmed_surface_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~nurbs_trimmed_surface_node() throw ();
+        virtual ~nurbs_trimmed_surface_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
     private:
@@ -778,7 +778,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    contour2d_class::~contour2d_class() throw ()
+    contour2d_class::~contour2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -796,7 +796,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     contour2d_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -899,7 +899,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    contour_polyline2d_class::~contour_polyline2d_class() throw ()
+    contour_polyline2d_class::~contour_polyline2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -917,7 +917,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     contour_polyline2d_class::do_create_type(const std::string & id,
                                              const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1003,7 +1003,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    coordinate_double_class::~coordinate_double_class() throw ()
+    coordinate_double_class::~coordinate_double_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1021,7 +1021,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     coordinate_double_class::do_create_type(const std::string & id,
                                             const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1100,7 +1100,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_curve_class::~nurbs_curve_class() throw ()
+    nurbs_curve_class::~nurbs_curve_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1118,7 +1118,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_curve_class::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1266,7 +1266,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_curve2d_class::~nurbs_curve2d_class() throw ()
+    nurbs_curve2d_class::~nurbs_curve2d_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1284,7 +1284,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_curve2d_class::do_create_type(const std::string & id,
                                         const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1433,7 +1433,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_orientation_interpolator_class::~nurbs_orientation_interpolator_class() throw ()
+    nurbs_orientation_interpolator_class::~nurbs_orientation_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1451,7 +1451,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_orientation_interpolator_class::do_create_type(const std::string & id,
                                                          const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1611,7 +1611,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_patch_surface_class::~nurbs_patch_surface_class() throw ()
+    nurbs_patch_surface_class::~nurbs_patch_surface_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1629,7 +1629,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_patch_surface_class::do_create_type(const std::string & id,
                                               const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 15> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1876,7 +1876,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_position_interpolator_class::~nurbs_position_interpolator_class() throw ()
+    nurbs_position_interpolator_class::~nurbs_position_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1894,7 +1894,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_position_interpolator_class::do_create_type(const std::string & id,
                                                       const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2051,7 +2051,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_set_class::~nurbs_set_class() throw ()
+    nurbs_set_class::~nurbs_set_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2069,7 +2069,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_set_class::do_create_type(const std::string & id,
                                     const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2211,7 +2211,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_surface_interpolator_class::~nurbs_surface_interpolator_class() throw ()
+    nurbs_surface_interpolator_class::~nurbs_surface_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2229,7 +2229,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_surface_interpolator_class::do_create_type(const std::string & id,
                                                      const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2422,7 +2422,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_swept_surface_class::~nurbs_swept_surface_class() throw ()
+    nurbs_swept_surface_class::~nurbs_swept_surface_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2440,7 +2440,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_swept_surface_class::do_create_type(const std::string & id,
                                               const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2560,7 +2560,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_swung_surface_class::~nurbs_swung_surface_class() throw ()
+    nurbs_swung_surface_class::~nurbs_swung_surface_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2578,7 +2578,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_swung_surface_class::do_create_type(const std::string & id,
                                               const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2698,7 +2698,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_texture_coordinate_class::~nurbs_texture_coordinate_class() throw ()
+    nurbs_texture_coordinate_class::~nurbs_texture_coordinate_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2716,7 +2716,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_texture_coordinate_class::do_create_type(const std::string & id,
                                                    const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2876,7 +2876,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_trimmed_surface_class::~nurbs_trimmed_surface_class() throw ()
+    nurbs_trimmed_surface_class::~nurbs_trimmed_surface_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2894,7 +2894,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     nurbs_trimmed_surface_class::do_create_type(const std::string & id,
                                                 const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 18> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -3200,12 +3200,12 @@ namespace {
     {}
 
     contour2d_node::add_children_listener::
-    ~add_children_listener() throw ()
+    ~add_children_listener() OPENVRML_NOTHROW
     {}
 
     void contour2d_node::add_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3218,12 +3218,12 @@ namespace {
     {}
 
     contour2d_node::remove_children_listener::
-    ~remove_children_listener() throw ()
+    ~remove_children_listener() OPENVRML_NOTHROW
     {}
 
     void contour2d_node::remove_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3248,7 +3248,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    contour2d_node::~contour2d_node() throw ()
+    contour2d_node::~contour2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3288,7 +3288,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    contour_polyline2d_node::~contour_polyline2d_node() throw ()
+    contour_polyline2d_node::~contour_polyline2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3328,7 +3328,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    coordinate_double_node::~coordinate_double_node() throw ()
+    coordinate_double_node::~coordinate_double_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3433,7 +3433,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_curve_node::~nurbs_curve_node() throw ()
+    nurbs_curve_node::~nurbs_curve_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3506,7 +3506,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_curve2d_node::~nurbs_curve2d_node() throw ()
+    nurbs_curve2d_node::~nurbs_curve2d_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3566,12 +3566,12 @@ namespace {
     {}
 
     nurbs_orientation_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_orientation_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3601,7 +3601,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_orientation_interpolator_node::~nurbs_orientation_interpolator_node() throw ()
+    nurbs_orientation_interpolator_node::~nurbs_orientation_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3758,7 +3758,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_patch_surface_node::~nurbs_patch_surface_node() throw ()
+    nurbs_patch_surface_node::~nurbs_patch_surface_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3818,12 +3818,12 @@ namespace {
     {}
 
     nurbs_position_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_position_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3853,7 +3853,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_position_interpolator_node::~nurbs_position_interpolator_node() throw ()
+    nurbs_position_interpolator_node::~nurbs_position_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3913,12 +3913,12 @@ namespace {
     {}
 
     nurbs_set_node::add_geometry_listener::
-    ~add_geometry_listener() throw ()
+    ~add_geometry_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_set_node::add_geometry_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3931,12 +3931,12 @@ namespace {
     {}
 
     nurbs_set_node::remove_geometry_listener::
-    ~remove_geometry_listener() throw ()
+    ~remove_geometry_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_set_node::remove_geometry_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3965,7 +3965,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_set_node::~nurbs_set_node() throw ()
+    nurbs_set_node::~nurbs_set_node() OPENVRML_NOTHROW
     {}
 
 
@@ -4055,12 +4055,12 @@ namespace {
     {}
 
     nurbs_surface_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_surface_interpolator_node::set_fraction_listener::
     do_process_event(const sfvec2f & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -4091,7 +4091,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_surface_interpolator_node::~nurbs_surface_interpolator_node() throw ()
+    nurbs_surface_interpolator_node::~nurbs_surface_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -4184,7 +4184,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_swept_surface_node::~nurbs_swept_surface_node() throw ()
+    nurbs_swept_surface_node::~nurbs_swept_surface_node() OPENVRML_NOTHROW
     {}
 
 
@@ -4277,7 +4277,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_swung_surface_node::~nurbs_swung_surface_node() throw ()
+    nurbs_swung_surface_node::~nurbs_swung_surface_node() OPENVRML_NOTHROW
     {}
 
 
@@ -4362,7 +4362,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_texture_coordinate_node::~nurbs_texture_coordinate_node() throw ()
+    nurbs_texture_coordinate_node::~nurbs_texture_coordinate_node() OPENVRML_NOTHROW
     {}
 
 
@@ -4488,12 +4488,12 @@ namespace {
     {}
 
     nurbs_trimmed_surface_node::add_trimming_contour_listener::
-    ~add_trimming_contour_listener() throw ()
+    ~add_trimming_contour_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_trimmed_surface_node::add_trimming_contour_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -4506,12 +4506,12 @@ namespace {
     {}
 
     nurbs_trimmed_surface_node::remove_trimming_contour_listener::
-    ~remove_trimming_contour_listener() throw ()
+    ~remove_trimming_contour_listener() OPENVRML_NOTHROW
     {}
 
     void nurbs_trimmed_surface_node::remove_trimming_contour_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -4576,6 +4576,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_trimmed_surface_node::~nurbs_trimmed_surface_node() throw ()
+    nurbs_trimmed_surface_node::~nurbs_trimmed_surface_node() OPENVRML_NOTHROW
     {}
 }

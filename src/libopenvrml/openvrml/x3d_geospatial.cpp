@@ -43,13 +43,13 @@ namespace {
         static const char * const id;
 
         explicit geo_coordinate_class(openvrml::browser & browser);
-        virtual ~geo_coordinate_class() throw ();
+        virtual ~geo_coordinate_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -61,13 +61,13 @@ namespace {
         static const char * const id;
 
         explicit geo_elevation_grid_class(openvrml::browser & browser);
-        virtual ~geo_elevation_grid_class() throw ();
+        virtual ~geo_elevation_grid_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -79,13 +79,13 @@ namespace {
         static const char * const id;
 
         explicit geo_location_class(openvrml::browser & browser);
-        virtual ~geo_location_class() throw ();
+        virtual ~geo_location_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -97,13 +97,13 @@ namespace {
         static const char * const id;
 
         explicit geo_lod_class(openvrml::browser & browser);
-        virtual ~geo_lod_class() throw ();
+        virtual ~geo_lod_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -115,13 +115,13 @@ namespace {
         static const char * const id;
 
         explicit geo_metadata_class(openvrml::browser & browser);
-        virtual ~geo_metadata_class() throw ();
+        virtual ~geo_metadata_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -133,13 +133,13 @@ namespace {
         static const char * const id;
 
         explicit geo_origin_class(openvrml::browser & browser);
-        virtual ~geo_origin_class() throw ();
+        virtual ~geo_origin_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -151,13 +151,13 @@ namespace {
         static const char * const id;
 
         explicit geo_position_interpolator_class(openvrml::browser & browser);
-        virtual ~geo_position_interpolator_class() throw ();
+        virtual ~geo_position_interpolator_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -169,13 +169,13 @@ namespace {
         static const char * const id;
 
         explicit geo_touch_sensor_class(openvrml::browser & browser);
-        virtual ~geo_touch_sensor_class() throw ();
+        virtual ~geo_touch_sensor_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
 
@@ -187,13 +187,13 @@ namespace {
         static const char * const id;
 
         explicit geo_viewpoint_class(openvrml::browser & browser);
-        virtual ~geo_viewpoint_class() throw ();
+        virtual ~geo_viewpoint_class() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
                        const node_interface_set & interfaces) const
-            throw (unsupported_interface, std::bad_alloc);
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -237,7 +237,7 @@ namespace {
     public:
         geo_coordinate_node(const node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_coordinate_node() throw ();
+        virtual ~geo_coordinate_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_elevation_grid_node :
@@ -253,12 +253,12 @@ namespace {
         {
         public:
             explicit set_height_listener(self_t & node);
-            virtual ~set_height_listener() throw ();
+            virtual ~set_height_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfdouble & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_height_listener set_height_listener_;
@@ -284,10 +284,10 @@ namespace {
         geo_elevation_grid_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_elevation_grid_node() throw ();
+        virtual ~geo_elevation_grid_node() OPENVRML_NOTHROW;
 
         virtual bool modified() const;
-        virtual const color_node * color() const throw ();
+        virtual const color_node * color() const OPENVRML_NOTHROW;
     private:
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
                                                     rendering_context context);
@@ -303,24 +303,24 @@ namespace {
                                       public mfnode_listener {
         public:
             explicit add_children_listener(self_t & node);
-            virtual ~add_children_listener() throw ();
+            virtual ~add_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_children_listener : public event_listener_base<self_t>,
                                          public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
-            virtual ~remove_children_listener() throw ();
+            virtual ~remove_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         add_children_listener add_children_listener_;
@@ -335,7 +335,7 @@ namespace {
     public:
         geo_location_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_location_node() throw ();
+        virtual ~geo_location_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_lod_node : public abstract_node<geo_lod_node>,
@@ -348,24 +348,24 @@ namespace {
         {
         public:
             explicit add_children_listener(self_t & node);
-            virtual ~add_children_listener() throw ();
+            virtual ~add_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class remove_children_listener : public event_listener_base<self_t>,
                                          public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
-            virtual ~remove_children_listener() throw ();
+            virtual ~remove_children_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const mfnode & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         add_children_listener add_children_listener_;
@@ -388,7 +388,7 @@ namespace {
     public:
         geo_lod_node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_lod_node() throw ();
+        virtual ~geo_lod_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_metadata_node :
@@ -404,7 +404,7 @@ namespace {
     public:
         geo_metadata_node(const node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_metadata_node() throw ();
+        virtual ~geo_metadata_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_origin_node :
@@ -419,7 +419,7 @@ namespace {
     public:
         geo_origin_node(const node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_origin_node() throw ();
+        virtual ~geo_origin_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_position_interpolator_node :
@@ -434,12 +434,12 @@ namespace {
         {
         public:
             explicit set_fraction_listener(self_t & node);
-            virtual ~set_fraction_listener() throw ();
+            virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sffloat & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_fraction_listener set_fraction_listener_;
@@ -456,7 +456,7 @@ namespace {
         geo_position_interpolator_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_position_interpolator_node() throw ();
+        virtual ~geo_position_interpolator_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_touch_sensor_node :
@@ -487,7 +487,7 @@ namespace {
         geo_touch_sensor_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_touch_sensor_node() throw ();
+        virtual ~geo_touch_sensor_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL geo_viewpoint_node :
@@ -500,36 +500,36 @@ namespace {
                                   public sfbool_listener {
         public:
             explicit set_bind_listener(self_t & node);
-            virtual ~set_bind_listener() throw ();
+            virtual ~set_bind_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfbool & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_orientation_listener : public event_listener_base<self_t>,
                                          public sfrotation_listener {
         public:
             explicit set_orientation_listener(self_t & node);
-            virtual ~set_orientation_listener() throw ();
+            virtual ~set_orientation_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfrotation & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         class set_position_listener : public event_listener_base<self_t>,
                                       public sfvec3d_listener {
         public:
             explicit set_position_listener(self_t & node);
-            virtual ~set_position_listener() throw ();
+            virtual ~set_position_listener() OPENVRML_NOTHROW;
 
         private:
             virtual void do_process_event(const sfvec3d & fraction,
                                           double timestamp)
-                throw (std::bad_alloc);
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_bind_listener set_bind_listener_;
@@ -553,7 +553,7 @@ namespace {
     public:
         geo_viewpoint_node(const node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~geo_viewpoint_node() throw ();
+        virtual ~geo_viewpoint_node() OPENVRML_NOTHROW;
     };
 
 
@@ -576,7 +576,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_coordinate_class::~geo_coordinate_class() throw ()
+    geo_coordinate_class::~geo_coordinate_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -594,7 +594,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_coordinate_class::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -695,7 +695,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_elevation_grid_class::~geo_elevation_grid_class() throw ()
+    geo_elevation_grid_class::~geo_elevation_grid_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -713,7 +713,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_elevation_grid_class::do_create_type(const std::string & id,
                                              const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 19> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -991,7 +991,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_location_class::~geo_location_class() throw ()
+    geo_location_class::~geo_location_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1009,7 +1009,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_location_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1169,7 +1169,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_lod_class::~geo_lod_class() throw ()
+    geo_lod_class::~geo_lod_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1187,7 +1187,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_lod_class::do_create_type(const std::string & id,
                                   const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 16> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1401,7 +1401,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_metadata_class::~geo_metadata_class() throw ()
+    geo_metadata_class::~geo_metadata_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1419,7 +1419,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_metadata_class::do_create_type(const std::string & id,
                                        const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1536,7 +1536,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_origin_class::~geo_origin_class() throw ()
+    geo_origin_class::~geo_origin_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1554,7 +1554,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_origin_class::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1664,7 +1664,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_position_interpolator_class::~geo_position_interpolator_class() throw ()
+    geo_position_interpolator_class::~geo_position_interpolator_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1682,7 +1682,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_position_interpolator_class::do_create_type(const std::string & id,
                                                     const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 8> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -1834,7 +1834,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_touch_sensor_class::~geo_touch_sensor_class() throw ()
+    geo_touch_sensor_class::~geo_touch_sensor_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1852,7 +1852,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_touch_sensor_class::do_create_type(const std::string & id,
                                            const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2028,7 +2028,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_viewpoint_class::~geo_viewpoint_class() throw ()
+    geo_viewpoint_class::~geo_viewpoint_class() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2046,7 +2046,7 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     geo_viewpoint_class::do_create_type(const std::string & id,
                                         const node_interface_set & interfaces) const
-        throw (unsupported_interface, std::bad_alloc)
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 16> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
@@ -2341,7 +2341,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_coordinate_node::~geo_coordinate_node() throw ()
+    geo_coordinate_node::~geo_coordinate_node() OPENVRML_NOTHROW
     {}
 
 
@@ -2473,18 +2473,18 @@ namespace {
     {}
 
     geo_elevation_grid_node::set_height_listener::
-    ~set_height_listener() throw ()
+    ~set_height_listener() OPENVRML_NOTHROW
     {}
 
     void geo_elevation_grid_node::set_height_listener::
     do_process_event(const mfdouble & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
 
 
-    const color_node * geo_elevation_grid_node::color() const throw ()
+    const color_node * geo_elevation_grid_node::color() const OPENVRML_NOTHROW
     {
         return node_cast<color_node *>(color_.sfnode::value().get());
     }
@@ -2549,7 +2549,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_elevation_grid_node::~geo_elevation_grid_node() throw ()
+    geo_elevation_grid_node::~geo_elevation_grid_node() OPENVRML_NOTHROW
     {}
 
 
@@ -2621,12 +2621,12 @@ namespace {
     {}
 
     geo_location_node::add_children_listener::
-    ~add_children_listener() throw ()
+    ~add_children_listener() OPENVRML_NOTHROW
     {}
 
     void geo_location_node::add_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -2639,12 +2639,12 @@ namespace {
     {}
 
     geo_location_node::remove_children_listener::
-    ~remove_children_listener() throw ()
+    ~remove_children_listener() OPENVRML_NOTHROW
     {}
 
     void geo_location_node::remove_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -2674,7 +2674,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_location_node::~geo_location_node() throw ()
+    geo_location_node::~geo_location_node() OPENVRML_NOTHROW
     {}
 
 
@@ -2788,12 +2788,12 @@ namespace {
     {}
 
     geo_lod_node::add_children_listener::
-    ~add_children_listener() throw ()
+    ~add_children_listener() OPENVRML_NOTHROW
     {}
 
     void geo_lod_node::add_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -2806,12 +2806,12 @@ namespace {
     {}
 
     geo_lod_node::remove_children_listener::
-    ~remove_children_listener() throw ()
+    ~remove_children_listener() OPENVRML_NOTHROW
     {}
 
     void geo_lod_node::remove_children_listener::
     do_process_event(const mfnode & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -2841,7 +2841,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_lod_node::~geo_lod_node() throw ()
+    geo_lod_node::~geo_lod_node() OPENVRML_NOTHROW
     {}
 
 
@@ -2897,7 +2897,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_metadata_node::~geo_metadata_node() throw ()
+    geo_metadata_node::~geo_metadata_node() OPENVRML_NOTHROW
     {}
 
 
@@ -2950,7 +2950,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_origin_node::~geo_origin_node() throw ()
+    geo_origin_node::~geo_origin_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3016,12 +3016,12 @@ namespace {
     {}
 
     geo_position_interpolator_node::set_fraction_listener::
-    ~set_fraction_listener() throw ()
+    ~set_fraction_listener() OPENVRML_NOTHROW
     {}
 
     void geo_position_interpolator_node::set_fraction_listener::
     do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3051,7 +3051,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_position_interpolator_node::~geo_position_interpolator_node() throw ()
+    geo_position_interpolator_node::~geo_position_interpolator_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3155,7 +3155,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_touch_sensor_node::~geo_touch_sensor_node() throw ()
+    geo_touch_sensor_node::~geo_touch_sensor_node() OPENVRML_NOTHROW
     {}
 
 
@@ -3269,12 +3269,12 @@ namespace {
     {}
 
     geo_viewpoint_node::set_bind_listener::
-    ~set_bind_listener() throw ()
+    ~set_bind_listener() OPENVRML_NOTHROW
     {}
 
     void geo_viewpoint_node::set_bind_listener::
     do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3287,12 +3287,12 @@ namespace {
     {}
 
     geo_viewpoint_node::set_orientation_listener::
-    ~set_orientation_listener() throw ()
+    ~set_orientation_listener() OPENVRML_NOTHROW
     {}
 
     void geo_viewpoint_node::set_orientation_listener::
     do_process_event(const sfrotation & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3305,12 +3305,12 @@ namespace {
     {}
 
     geo_viewpoint_node::set_position_listener::
-    ~set_position_listener() throw ()
+    ~set_position_listener() OPENVRML_NOTHROW
     {}
 
     void geo_viewpoint_node::set_position_listener::
     do_process_event(const sfvec3d & /* fraction */, const double /* timestamp */)
-        throw (std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
     }
@@ -3351,6 +3351,6 @@ namespace {
     /**
      * @brief Destroy.
      */
-    geo_viewpoint_node::~geo_viewpoint_node() throw ()
+    geo_viewpoint_node::~geo_viewpoint_node() OPENVRML_NOTHROW
     {}
 }
