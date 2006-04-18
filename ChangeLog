@@ -1,5 +1,18 @@
 2006-04-18 Braden McDaniel  <braden@endoframe.com>
 
+	Added support for creating scene graphs with the level 2 nodes of
+	the Geometry2D component.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_geometry2d_component::support_level() const): Return 2.
+	(x3d_geometry2d_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Add the
+	level 2 node types to the scope.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Added level 2 node
+	implementations.
+
+2006-04-18 Braden McDaniel  <braden@endoframe.com>
+
 	Applied exception specification macros.
 
 	* src/libopenvrml/openvrml/x3d_geospatial.cpp

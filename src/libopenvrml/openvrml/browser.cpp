@@ -11322,7 +11322,7 @@ namespace {
 
     size_t x3d_geometry2d_component::support_level() const OPENVRML_NOTHROW
     {
-        return 1;
+        return 2;
     }
 
     void
@@ -11425,6 +11425,120 @@ namespace {
                                 "TriangleSet2D",
                                 interface_set,
                                 "urn:X-openvrml:node:TriangleSet2D",
+                                scope);
+            }
+        }
+
+        if (level >= 2) {
+            //
+            // Arc2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "endAngle"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "radius"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "startAngle")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "Arc2D",
+                                interface_set,
+                                "urn:X-openvrml:node:Arc2D",
+                                scope);
+            }
+
+            //
+            // ArcClose2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfstring_id,
+                                   "closureType"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "endAngle"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "radius"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "startAngle")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 6);
+                add_scope_entry(b,
+                                "ArcClose2D",
+                                interface_set,
+                                "urn:X-openvrml:node:ArcClose2D",
+                                scope);
+            }
+
+            //
+            // Circle2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "radius")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 2);
+                add_scope_entry(b,
+                                "Circle2D",
+                                interface_set,
+                                "urn:X-openvrml:node:Circle2D",
+                                scope);
+            }
+
+            //
+            // Disk2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "innerRadius"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sffloat_id,
+                                   "outerRadius"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfbool_id,
+                                   "solid")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "Disk2D",
+                                interface_set,
+                                "urn:X-openvrml:node:Disk2D",
                                 scope);
             }
         }
