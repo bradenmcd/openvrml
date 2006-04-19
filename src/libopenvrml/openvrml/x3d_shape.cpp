@@ -36,6 +36,24 @@ using namespace std;
 namespace {
 
     /**
+     * @brief Class object for FillProperties nodes.
+     */
+    class OPENVRML_LOCAL fill_properties_class : public node_class {
+    public:
+        static const char * const id;
+
+        explicit fill_properties_class(openvrml::browser & browser);
+        virtual ~fill_properties_class() OPENVRML_NOTHROW;
+
+    private:
+        virtual const boost::shared_ptr<node_type>
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
+            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+    };
+
+
+    /**
      * @brief Class object for LineProperties nodes.
      */
     class OPENVRML_LOCAL line_properties_class : public node_class {
@@ -57,6 +75,8 @@ void register_shape_node_classes(openvrml::browser & b)
 {
     using boost::shared_ptr;
     using openvrml::node_class;
+    b.add_node_class(fill_properties_class::id,
+                     shared_ptr<node_class>(new fill_properties_class(b)));
     b.add_node_class(line_properties_class::id,
                      shared_ptr<node_class>(new line_properties_class(b)));
 }
@@ -64,6 +84,23 @@ void register_shape_node_classes(openvrml::browser & b)
 namespace {
 
     using namespace openvrml_;
+
+    class OPENVRML_LOCAL fill_properties_node :
+        public abstract_node<fill_properties_node> {
+
+        friend class fill_properties_class;
+
+        exposedfield<sfbool> filled_;
+        exposedfield<sfcolor> hatch_color_;
+        exposedfield<sfbool> hatched_;
+        exposedfield<sfint32> hatch_style_;
+
+    public:
+        fill_properties_node(const node_type & type, 
+                             const boost::shared_ptr<openvrml::scope> & scope);
+        virtual ~fill_properties_node() OPENVRML_NOTHROW;
+    };
+
 
     class OPENVRML_LOCAL line_properties_node :
         public abstract_node<line_properties_node> {
@@ -79,6 +116,221 @@ namespace {
                              const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~line_properties_node() OPENVRML_NOTHROW;
     };
+
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const fill_properties_class::id =
+        "urn:X-openvrml:node:FillProperties";
+
+    /**
+     * @brief Construct.
+     *
+     * @param browser the browser associated with this fill_properties_class.
+     */
+    fill_properties_class::fill_properties_class(openvrml::browser & browser):
+        node_class(fill_properties_class::id, browser)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    fill_properties_class::~fill_properties_class() OPENVRML_NOTHROW
+    {}
+
+    /**
+     * @brief Create a node_type.
+     *
+     * @param id            the name for the new node_type.
+     * @param interfaces    the interfaces for the new node_type.
+     *
+     * @return a node_type_ptr to a node_type capable of creating FillProperties nodes.
+     *
+     * @exception unsupported_interface if @p interfaces includes an interface
+     *                                  not supported by fill_properties_class.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
+    const boost::shared_ptr<openvrml::node_type>
+    fill_properties_class::do_create_type(const std::string & id,
+                                          const node_interface_set & interfaces) const
+        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+    {
+        typedef boost::array<node_interface, 5> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "filled"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfcolor_id,
+                           "hatchColor"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfbool_id,
+                           "hatched"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfint32_id,
+                           "hatchStyle")
+        };    
+        typedef node_type_impl<fill_properties_node> node_type_t;
+
+        const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+        node_type_t & the_node_type = static_cast<node_type_t &>(*type);
+        
+        for (node_interface_set::const_iterator interface(interfaces.begin());
+             interface != interfaces.end();
+             ++interface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfnode> >(
+                            &fill_properties_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfnode> >(
+                            &fill_properties_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfnode> >(
+                            &fill_properties_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::filled_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::filled_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::filled_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfcolor> >(
+                            &fill_properties_node::hatch_color_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfcolor> >(
+                            &fill_properties_node::hatch_color_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfcolor> >(
+                            &fill_properties_node::hatch_color_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::hatched_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::hatched_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfbool> >(
+                            &fill_properties_node::hatched_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfint32> >(
+                            &fill_properties_node::hatch_style_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfint32> >(
+                            &fill_properties_node::hatch_style_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<fill_properties_node>::exposedfield<sfint32> >(
+                            &fill_properties_node::hatch_style_)));
+            } else {
+                throw unsupported_interface(*interface);
+            }
+        }        
+        return type;
+    }
+
+
+    /**
+     * @class fill_properties_node
+     *
+     * @brief Represents FillProperties node instances.
+     */
+
+    /**
+     * @var fill_properties_node::FillProperties_class
+     *
+     * @brief Class object for FillProperties nodes.
+     */
+
+    /**
+     * @var fill_properties_node::filled_
+     *
+     * @brief filled exposedField
+     */
+
+    /**
+     * @var fill_properties_node::hatch_color_
+     *
+     * @brief hatch_color exposedField
+     */
+
+    /**
+     * @var fill_properties_node::hatched_
+     *
+     * @brief hatched exposedField
+     */
+
+    /**
+     * @var fill_properties_node::hatch_style_
+     *
+     * @brief hatch_style exposedField
+     */
+
+    
+    /**
+     * @brief Construct.
+     *
+     * @param type  the node_type associated with this node.
+     * @param scope     the scope to which the node belongs.
+     */
+    fill_properties_node::
+    fill_properties_node(const node_type & type,
+                         const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        abstract_node<self_t>(type, scope),
+        filled_(*this, true),
+        hatch_color_(*this, color(1,1,1)),
+        hatched_(*this, true),
+        hatch_style_(*this, 1)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    fill_properties_node::~fill_properties_node() OPENVRML_NOTHROW
+    {}
 
 
     /**

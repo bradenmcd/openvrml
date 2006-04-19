@@ -10805,7 +10805,7 @@ namespace {
 
     size_t x3d_shape_component::support_level() const OPENVRML_NOTHROW
     {
-        return 2;
+        return 3;
     }
 
     void x3d_shape_component::do_add_to_scope(const openvrml::browser & b,
@@ -10945,6 +10945,39 @@ namespace {
                                 "LineProperties",
                                 interface_set,
                                 "urn:X-openvrml:node:LineProperties",
+                                scope);
+            }
+        }
+
+        if (level >= 3) {
+            //
+            // FillProperties node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "filled"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfcolor_id,
+                                   "hatchColor"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfbool_id,
+                                   "hatched"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfint32_id,
+                                   "hatchStyle")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "FillProperties",
+                                interface_set,
+                                "urn:X-openvrml:node:FillProperties",
                                 scope);
             }
         }
