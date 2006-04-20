@@ -10124,7 +10124,7 @@ namespace {
 
     size_t x3d_grouping_component::support_level() const OPENVRML_NOTHROW
     {
-        return 2;
+        return 3;
     }
 
     void
@@ -10280,6 +10280,36 @@ namespace {
                                 "Switch",
                                 interface_set,
                                 "urn:X-openvrml:node:Switch",
+                                scope);
+            }
+        }
+
+        if (level >= 3) {
+            //
+            // StaticGroup node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::field_id,
+                                   field_value::mfnode_id,
+                                   "children"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxCenter"),
+                    node_interface(node_interface::field_id,
+                                   field_value::sfvec3f_id,
+                                   "bboxSize")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 4);
+                add_scope_entry(b,
+                                "StaticGroup",
+                                interface_set,
+                                "urn:X-openvrml:node:StaticGroup",
                                 scope);
             }
         }

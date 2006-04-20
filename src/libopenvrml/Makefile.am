@@ -21,6 +21,7 @@ openvrml_include_HEADERS = \
         openvrml/vrml97node.h \
         openvrml/x3d_core.h \
         openvrml/x3d_networking.h \
+        openvrml/x3d_grouping.h \
         openvrml/x3d_rendering.h \
         openvrml/x3d_shape.h \
         openvrml/x3d_geometry2d.h \
@@ -104,6 +105,7 @@ libopenvrml_la_SOURCES = \
         openvrml/vrml97node.cpp \
         openvrml/x3d_core.cpp \
         openvrml/x3d_networking.cpp \
+        openvrml/x3d_grouping.cpp \
         openvrml/x3d_rendering.cpp \
         openvrml/x3d_shape.cpp \
         openvrml/x3d_geometry2d.cpp \
