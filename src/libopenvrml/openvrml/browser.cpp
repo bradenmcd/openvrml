@@ -48,6 +48,7 @@
 # include "vrml97node.h"
 # include "x3d_core.h"
 # include "x3d_networking.h"
+# include "x3d_grouping.h"
 # include "x3d_rendering.h"
 # include "x3d_shape.h"
 # include "x3d_geometry2d.h"
@@ -6000,6 +6001,7 @@ namespace {
         register_core_node_classes(b);
         register_vrml97_node_classes(b);
         register_networking_node_classes(b);
+        register_grouping_node_classes(b);
         register_rendering_node_classes(b);
         register_shape_node_classes(b);
         register_geometry2d_node_classes(b);

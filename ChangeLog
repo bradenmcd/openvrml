@@ -1,5 +1,11 @@
 2006-04-20 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(register_node_classes(openvrml::browser &)): Register Grouping
+	node_classes.
+
+2006-04-20 Braden McDaniel  <braden@endoframe.com>
+
 	Added support for creating scene graphs with the level 3 nodes of
 	the Grouping component.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
