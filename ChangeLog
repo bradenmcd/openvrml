@@ -1,3 +1,25 @@
+2006-04-21 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for creating scene graphs with the level 3 nodes of
+	the Interpolation component.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/x3d_interpolation.h.
+	(libopenvrml_la_SOURCES): Added openvrml/x3d_interpolation.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(register_node_classes(openvrml::browser &)): Register
+	Interpolation node_classes.
+	(x3d_interpolation_component::support_level() const): Return 3.
+	(x3d_interpolation_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Add the
+	level 3 node types to the scope.
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp: Added file;
+	Interpolation component node implementations that aren't VRML97
+	nodes.
+	* src/libopenvrml/openvrml/x3d_interpolation.h: Added file; expose
+	node_class registration function.
+
 2006-04-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp

@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 79 -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -53,6 +53,7 @@
 # include "x3d_shape.h"
 # include "x3d_geometry2d.h"
 # include "x3d_texturing.h"
+# include "x3d_interpolation.h"
 # include "x3d_key_device_sensor.h"
 # include "x3d_event_utilities.h"
 # include "x3d_dis.h"
@@ -6006,6 +6007,7 @@ namespace {
         register_shape_node_classes(b);
         register_geometry2d_node_classes(b);
         register_texturing_node_classes(b);
+        register_interpolation_node_classes(b);
         register_key_device_sensor_node_classes(b);
         register_event_utilities_node_classes(b);
         register_dis_node_classes(b);
@@ -12339,7 +12341,7 @@ namespace {
 
     size_t x3d_interpolation_component::support_level() const OPENVRML_NOTHROW
     {
-        return 2;
+        return 3;
     }
 
     void
@@ -12537,6 +12539,70 @@ namespace {
                                 "NormalInterpolator",
                                 interface_set,
                                 "urn:X-openvrml:node:NormalInterpolator",
+                                scope);
+            }
+        }
+
+        if (level >= 3) {
+            //
+            // CoordinateInterpolator2D
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "key"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "keyValue"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::mfvec2f_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "CoordinateInterpolator2D",
+                                interface_set,
+                                "urn:X-openvrml:node:CoordinateInterpolator2D",
+                                scope);
+            }
+
+            //
+            // PositionInterpolator2D node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sffloat_id,
+                                   "set_fraction"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "key"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "keyValue"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfvec2f_id,
+                                   "value_changed")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 5);
+                add_scope_entry(b,
+                                "PositionInterpolator2D",
+                                interface_set,
+                                "urn:X-openvrml:node:PositionInterpolator2D",
                                 scope);
             }
         }

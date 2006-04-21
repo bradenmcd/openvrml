@@ -26,6 +26,7 @@ openvrml_include_HEADERS = \
         openvrml/x3d_shape.h \
         openvrml/x3d_geometry2d.h \
         openvrml/x3d_texturing.h \
+        openvrml/x3d_interpolation.h \
         openvrml/x3d_key_device_sensor.h \
         openvrml/x3d_event_utilities.h \
         openvrml/x3d_dis.h \
@@ -110,6 +111,7 @@ libopenvrml_la_SOURCES = \
         openvrml/x3d_shape.cpp \
         openvrml/x3d_geometry2d.cpp \
         openvrml/x3d_texturing.cpp \
+        openvrml/x3d_interpolation.cpp \
         openvrml/x3d_key_device_sensor.cpp \
         openvrml/x3d_event_utilities.cpp \
         openvrml/x3d_dis.cpp \
