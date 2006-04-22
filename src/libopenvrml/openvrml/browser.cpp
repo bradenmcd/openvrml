@@ -10339,7 +10339,7 @@ namespace {
 
     size_t x3d_rendering_component::support_level() const OPENVRML_NOTHROW
     {
-        return 3;
+        return 4;
     }
 
     void
@@ -11877,7 +11877,7 @@ namespace {
 
     size_t x3d_lighting_component::support_level() const OPENVRML_NOTHROW
     {
-        return 2;
+        return 3;
     }
 
     void

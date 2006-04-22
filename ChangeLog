@@ -1,5 +1,15 @@
 2006-04-21 Braden McDaniel  <braden@endoframe.com>
 
+	Incremented Rendering and Lighting component support levels to 4
+	and 3, respectively.  These levels to not indicate any additional
+	node support.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_rendering_component::support_level() const): Return 4.
+	(x3d_lighting_component::support_level() const): Return 3.
+
+2006-04-21 Braden McDaniel  <braden@endoframe.com>
+
 	Added support for creating scene graphs with the level 3 nodes of
 	the EnvironmentalEffects component.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
