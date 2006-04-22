@@ -1,6 +1,31 @@
 2006-04-21 Braden McDaniel  <braden@endoframe.com>
 
 	Added support for creating scene graphs with the level 3 nodes of
+	the EnvironmentalEffects component.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added
+	openvrml/x3d_environmental_effects.h.
+	(libopenvrml_la_SOURCES): Added
+	openvrml/x3d_environmental_effects.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(register_node_classes(openvrml::browser &)): Register
+	EnvironmentalEffects node_classes.
+	(x3d_environmental_effects_component::support_level() const):
+	Return 3.
+	(x3d_environmental_effects_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t) const): Add the
+	level 3 node types to the scope.
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp: Added
+	file; EnvironmentalEffects component node implementations that
+	aren't VRML97 nodes.
+	* src/libopenvrml/openvrml/x3d_environmental_effects.h: Added
+	file; expose node_class registration function.
+
+2006-04-21 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for creating scene graphs with the level 3 nodes of
 	the Interpolation component.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>
 

@@ -30,6 +30,7 @@ openvrml_include_HEADERS = \
         openvrml/x3d_key_device_sensor.h \
         openvrml/x3d_event_utilities.h \
         openvrml/x3d_dis.h \
+        openvrml/x3d_environmental_effects.h \
         openvrml/x3d_geospatial.h \
         openvrml/x3d_hanim.h \
         openvrml/x3d_nurbs.h
@@ -115,6 +116,7 @@ libopenvrml_la_SOURCES = \
         openvrml/x3d_key_device_sensor.cpp \
         openvrml/x3d_event_utilities.cpp \
         openvrml/x3d_dis.cpp \
+        openvrml/x3d_environmental_effects.cpp \
         openvrml/x3d_geospatial.cpp \
         openvrml/x3d_hanim.cpp \
         openvrml/x3d_nurbs.cpp

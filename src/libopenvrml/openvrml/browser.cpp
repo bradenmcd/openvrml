@@ -57,6 +57,7 @@
 # include "x3d_key_device_sensor.h"
 # include "x3d_event_utilities.h"
 # include "x3d_dis.h"
+# include "x3d_environmental_effects.h"
 # include "x3d_geospatial.h"
 # include "x3d_hanim.h"
 # include "x3d_nurbs.h"
@@ -6011,6 +6012,7 @@ namespace {
         register_key_device_sensor_node_classes(b);
         register_event_utilities_node_classes(b);
         register_dis_node_classes(b);
+        register_environmental_effects_node_classes(b);
         register_geospatial_node_classes(b);
         register_hanim_node_classes(b);
         register_nurbs_node_classes(b);
@@ -13338,7 +13340,7 @@ namespace {
     size_t x3d_environmental_effects_component::support_level() const
         OPENVRML_NOTHROW
     {
-        return 2;
+        return 3;
     }
 
     void
@@ -13445,6 +13447,69 @@ namespace {
                                 "Fog",
                                 interface_set,
                                 "urn:X-openvrml:node:Fog",
+                                scope);
+            }
+        }
+
+        if (level >= 3) {
+            //
+            // TextureBackground node
+            //
+            {
+                static const node_interface interfaces[] = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::eventin_id,
+                                   field_value::sfbool_id,
+                                   "set_bind"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "groundAngle"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfcolor_id,
+                                   "groundColor"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "backTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "bottomTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "frontTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "leftTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "rightTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "topTexture"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "skyAngle"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfcolor_id,
+                                   "skyColor"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mffloat_id,
+                                   "transparency"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sftime_id,
+                                   "bindTime"),
+                    node_interface(node_interface::eventout_id,
+                                   field_value::sfbool_id,
+                                   "isBound")
+                };
+
+                static const node_interface_set interface_set(interfaces,
+                                                              interfaces + 15);
+                add_scope_entry(b,
+                                "TextureBackground",
+                                interface_set,
+                                "urn:X-openvrml:node:TextureBackground",
                                 scope);
             }
         }
