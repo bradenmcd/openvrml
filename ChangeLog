@@ -1,5 +1,14 @@
 2006-04-27 Braden McDaniel  <braden@endoframe.com>
 
+	Ensure the version of antlr that gets used to generate code is the
+	same as the version of libantlr that is included with OpenVRML.
+
+	* configure.ac: Check for antlr 2.7.4.
+	* m4/antlr.m4 (OV_PROG_ANTLR): Allow specification of a particular
+	version of antlr.
+
+2006-04-27 Braden McDaniel  <braden@endoframe.com>
+
 	* m4/jdk.m4 (OV_PROG_JAVA): Added AC_ARG_VAR JAVAFLAGS.
 
 2006-04-21 Braden McDaniel  <braden@endoframe.com>
