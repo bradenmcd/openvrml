@@ -49,6 +49,7 @@ AC_SUBST([JNI_LIBS])
 
 AC_DEFUN([OV_PROG_JAVA],
 [AC_ARG_VAR([JAVA], [Java interpreter command])dnl
+AC_ARG_VAR([JAVAFLAGS], [Java interpreter flags])dnl
 if test -z "$JAVA"; then
   AC_CHECK_PROG([JAVA], [gij], [gij])
 fi

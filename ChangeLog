@@ -1,3 +1,7 @@
+2006-04-27 Braden McDaniel  <braden@endoframe.com>
+
+	* m4/jdk.m4 (OV_PROG_JAVA): Added AC_ARG_VAR JAVAFLAGS.
+
 2006-04-21 Braden McDaniel  <braden@endoframe.com>
 
 	Incremented Rendering and Lighting component support levels to 4
