@@ -9,7 +9,7 @@ if test -z "$ANTLR"; then
 class TestParser extends Parser;
 rule:;
 EOF
-  AS_IF([$JAVA $JAVAFLAGS antlr.Tool conftest.g],
+  AS_IF([test -n "$JAVA" && $JAVA $JAVAFLAGS antlr.Tool conftest.g > /dev/null 2> /dev/null],
         [ANTLR="$JAVA $JAVAFLAGS antlr.Tool"
          AC_MSG_RESULT([yes])],
         [AC_MSG_RESULT([no])])
@@ -25,4 +25,5 @@ if test -n "$1" -a -n "$ANTLR"; then
     AC_MSG_RESULT([no])
   fi
 fi
+AC_SUBST([ANTLR])
 ])
