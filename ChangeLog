@@ -1,5 +1,15 @@
 2006-05-06 Braden McDaniel  <braden@endoframe.com>
 
+	Accommodate building against Boost libraries that have a
+	configuration-specific suffix.
+
+	* README
+	* configure.ac: Added AC_ARG_VAR BOOST_LIB_SUFFIX.
+	* src/libopenvrml/Makefile.am: Append BOOST_LIB_SUFFIX to
+	boost_thread.
+
+2006-05-06 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Added missing comma.
 	* m4/antlr.m4: Check to ensure JAVA is set; direct stdout and
 	stderr output from antlr to /dev/null.

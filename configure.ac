@@ -105,6 +105,11 @@ AC_SUBST([SDL_LIBS])
 OV_CHECK_JNI
 
 #
+# Allow users to specify any Boost library name suffix
+#
+AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix])
+
+#
 # Use exception specifications?
 #
 AC_ARG_ENABLE([exception-specs],
