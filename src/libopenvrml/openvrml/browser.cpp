@@ -6629,7 +6629,8 @@ openvrml::browser::replace_world(
 }
 
 struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
-    root_scene_loader(browser & b, const std::vector<std::string> & url):
+    root_scene_loader(browser & b, const std::vector<std::string> & url)
+        OPENVRML_NOTHROW:
         browser_(&b),
         url_(&url)
     {}
@@ -6671,11 +6672,12 @@ private:
  * @param[in] url       a URI.
  * @param[in] parameter parameters for @p url.
  *
- * @exception std::bad_alloc    if memory allocation fails.
+ * @exception std::bad_alloc                if memory allocation fails.
+ * @exception boost::thread_resource_error  if thread creation fails.
  */
 void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
-    OPENVRML_THROW1(std::bad_alloc)
+    OPENVRML_THROW1(boost::thread_resource_error)
 {
     boost::function0<void> f = root_scene_loader(*this, url);
     boost::thread t(f);

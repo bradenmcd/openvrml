@@ -1,3 +1,13 @@
+2006-05-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Changed exception
+	specification to throw boost::thread_resource_error.
+	* src/libopenvrml/openvrml/browser.h (openvrml::browser): Changed
+	exception specification of load_url member function to throw
+	boost::thread_resource_error.
+
 2006-05-06 Braden McDaniel  <braden@endoframe.com>
 
 	Accommodate building against Boost libraries that have a
