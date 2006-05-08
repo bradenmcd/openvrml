@@ -4279,7 +4279,7 @@ JSBool getWorldURL(JSContext * const cx,
 
 JSBool loadURL(JSContext * const cx,
                JSObject *,
-               uintN,
+               const uintN argc,
                jsval * const argv,
                jsval *)
     OPENVRML_NOTHROW
@@ -4290,34 +4290,52 @@ JSBool loadURL(JSContext * const cx,
     js_::script & script =
         *static_cast<js_::script *>(JS_GetContextPrivate(cx));
 
-    //
-    // Make sure our first argument (the URL) is an MFString.
-    //
-    JSObject * arg0_obj;
-    if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg0_obj, &MFString::jsclass, argv)) {
+    try {
+        openvrml::mfstring url, parameter;
+
+        if (argc > 0) {
+            //
+            // Make sure our first argument (the URL) is an MFString.
+            //
+            JSObject * arg0_obj;
+            if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
+            if (!JS_InstanceOf(cx, arg0_obj, &MFString::jsclass, argv)) {
+                return JS_FALSE;
+            }
+
+            auto_ptr<openvrml::mfstring> url_ptr =
+                MFString::createFromJSObject(cx, arg0_obj);
+            assert(url_ptr.get());
+            url = *url_ptr;
+        }
+
+        if (argc > 1) {
+            //
+            // Make sure our second argument is an MFString
+            //
+            JSObject * arg1_obj;
+            if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
+            if (!JS_InstanceOf(cx, arg1_obj, &MFString::jsclass, argv)) {
+                return JS_FALSE;
+            }
+
+            auto_ptr<openvrml::mfstring> parameter_ptr =
+                MFString::createFromJSObject(cx, arg1_obj);
+            assert(parameter_ptr.get());
+            parameter = *parameter_ptr;
+        }
+
+        script.script_node().scene()->browser().load_url(url.value(),
+                                                         parameter.value());
+    } catch (std::bad_alloc &) {
+        JS_ReportOutOfMemory(cx);
         return JS_FALSE;
+    } catch (std::exception & ex) {
+        JS_ReportError(cx, ex.what());
+    } catch (...) {
+        JS_ReportError(cx, "unexpected exception");
     }
 
-    auto_ptr<openvrml::mfstring> url =
-        MFString::createFromJSObject(cx, arg0_obj);
-    assert(url.get());
-
-    //
-    // Make sure our second argument is an MFString
-    //
-    JSObject * arg1_obj;
-    if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg1_obj, &MFString::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    auto_ptr<openvrml::mfstring> parameters =
-        MFString::createFromJSObject(cx, arg1_obj);
-    assert(parameters.get());
-
-    script.script_node().scene()->browser().load_url(url->value(),
-                                                     parameters->value());
     return JS_TRUE;
 }
 

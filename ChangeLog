@@ -1,5 +1,12 @@
 2006-05-08 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::Browser::loadURL(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Accommodate calls using 0 or 1 argument; handle any
+	exceptions.
+
+2006-05-08 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::load_url(const std::vector<std::string> &,
 	const std::vector<std::string> &)): Changed exception
