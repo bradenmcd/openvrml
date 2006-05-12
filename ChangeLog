@@ -1,5 +1,22 @@
 2006-05-12 Braden McDaniel  <braden@endoframe.com>
 
+	If a thread other than the rendering thread destroys the scene, we
+	will run into problems if we try to call OpenGL functions without
+	first changing the GL context to the current thread.  Rather than
+	do that, we probably want just to refactor display list and
+	texture object cleanup such that it is encapsulated in the
+	renderer and always handled by the rendering thread.  For now,
+	though, we will just punt and leak the display list and texture
+	objects.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::geometry_node::~geometry_node()): Removed code to clean
+	up the renderer object.
+	(openvrml::texture_node::~texture_node()): Removed code to clean
+	up the renderer object.
+
+2006-05-12 Braden McDaniel  <braden@endoframe.com>
+
 	Make a copy of the URI passed to the root_scene_loader, since it
 	very well may go away.
 
