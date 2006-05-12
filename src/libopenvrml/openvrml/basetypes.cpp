@@ -30,43 +30,43 @@ namespace {
     // Conversion functions between RGB each in [0,1] and HSV with
     // h in [0,360), s,v in [0,1]. From Foley, van Dam p615-616.
 
-    OPENVRML_LOCAL inline void rgb_to_hsv(const float * const inrgb,
-                                          float * const outhsv)
+    OPENVRML_LOCAL void rgb_to_hsv(const float * const rgb,
+                                   float * const hsv)
         OPENVRML_NOTHROW
     {
-        assert(inrgb[0] >= 0.0 && inrgb[0] <= 1.0);
-        assert(inrgb[1] >= 0.0 && inrgb[1] <= 1.0);
-        assert(inrgb[2] >= 0.0 && inrgb[2] <= 1.0);
+        assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
+        assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
+        assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
 
-        const float maxrgb = *std::max_element(inrgb, inrgb + 3);
-        const float minrgb = *std::min_element(inrgb, inrgb + 3);
+        const float maxrgb = *std::max_element(rgb, rgb + 3);
+        const float minrgb = *std::min_element(rgb, rgb + 3);
 
-        outhsv[0] = 0.0;
-        outhsv[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0f;
-        outhsv[2] = maxrgb;
+        hsv[0] = 0.0;
+        hsv[1] = (maxrgb > 0.0) ? ((maxrgb - minrgb) / maxrgb) : 0.0f;
+        hsv[2] = maxrgb;
 
-        if (outhsv[1] != 0.0) {
-            const float rc = (maxrgb - inrgb[0]) / (maxrgb - minrgb);
-            const float gc = (maxrgb - inrgb[1]) / (maxrgb - minrgb);
-            const float bc = (maxrgb - inrgb[2]) / (maxrgb - minrgb);
+        if (hsv[1] != 0.0) {
+            const float rc = (maxrgb - rgb[0]) / (maxrgb - minrgb);
+            const float gc = (maxrgb - rgb[1]) / (maxrgb - minrgb);
+            const float bc = (maxrgb - rgb[2]) / (maxrgb - minrgb);
 
-            if (inrgb[0] == maxrgb) {
-                outhsv[0] = bc - gc;
-            } else if (inrgb[1] == maxrgb) {
-                outhsv[0] = 2 + rc - bc;
+            if (rgb[0] == maxrgb) {
+                hsv[0] = bc - gc;
+            } else if (rgb[1] == maxrgb) {
+                hsv[0] = 2 + rc - bc;
             } else {
-                outhsv[0] = 4 + gc - rc;
+                hsv[0] = 4 + gc - rc;
             }
 
-            outhsv[0] *= 60.0;
-            if (outhsv[0] < 0.0) { outhsv[0] += 360.0; }
+            hsv[0] *= 60.0;
+            if (hsv[0] < 0.0) { hsv[0] += 360.0; }
         }
     }
 
-    OPENVRML_LOCAL inline void hsv_to_rgb(float h,
-                                          const float s,
-                                          const float v,
-                                          float * const outhsv)
+    OPENVRML_LOCAL void hsv_to_rgb(float h,
+                                   const float s,
+                                   const float v,
+                                   float * const rgb)
         OPENVRML_NOTHROW
     {
         assert(h >= 0.0 && h <= 360.0);
@@ -74,7 +74,7 @@ namespace {
         assert(v >= 0.0 && v <= 1.0);
 
         if (s == 0.0) {
-            outhsv[0] = outhsv[1] = outhsv[2] = v;
+            rgb[0] = rgb[1] = rgb[2] = v;
         } else {
             if (h >= 360.0) { h -= 360.0; }
             h /= 60.0;
@@ -85,12 +85,12 @@ namespace {
             const float t = float(v * (1.0 - s * (1.0 - f)));
             switch (int(i)) {
             default:
-            case 0: outhsv[0] = v; outhsv[1] = t; outhsv[2] = p; break;
-            case 1: outhsv[0] = q; outhsv[1] = v; outhsv[2] = p; break;
-            case 2: outhsv[0] = p; outhsv[1] = v; outhsv[2] = t; break;
-            case 3: outhsv[0] = p; outhsv[1] = q; outhsv[2] = v; break;
-            case 4: outhsv[0] = t; outhsv[1] = p; outhsv[2] = v; break;
-            case 5: outhsv[0] = v; outhsv[1] = p; outhsv[2] = q; break;
+            case 0: rgb[0] = v; rgb[1] = t; rgb[2] = p; break;
+            case 1: rgb[0] = q; rgb[1] = v; rgb[2] = p; break;
+            case 2: rgb[0] = p; rgb[1] = v; rgb[2] = t; break;
+            case 3: rgb[0] = p; rgb[1] = q; rgb[2] = v; break;
+            case 4: rgb[0] = t; rgb[1] = p; rgb[2] = v; break;
+            case 5: rgb[0] = v; rgb[1] = p; rgb[2] = q; break;
             }
         }
     }
