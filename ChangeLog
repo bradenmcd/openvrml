@@ -1,3 +1,11 @@
+2006-05-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(rgb_to_hsv(const float *, float *)): Assert validity of input
+	parameter.
+	(hsv_to_rgb(float, float, float, float *)): Assert validity of
+	input parameters.
+
 2006-05-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp

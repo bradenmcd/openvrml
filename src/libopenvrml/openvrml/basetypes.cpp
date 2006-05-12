@@ -34,6 +34,10 @@ namespace {
                                           float * const outhsv)
         OPENVRML_NOTHROW
     {
+        assert(inrgb[0] >= 0.0 && inrgb[0] <= 1.0);
+        assert(inrgb[1] >= 0.0 && inrgb[1] <= 1.0);
+        assert(inrgb[2] >= 0.0 && inrgb[2] <= 1.0);
+
         const float maxrgb = *std::max_element(inrgb, inrgb + 3);
         const float minrgb = *std::min_element(inrgb, inrgb + 3);
 
@@ -65,6 +69,10 @@ namespace {
                                           float * const outhsv)
         OPENVRML_NOTHROW
     {
+        assert(h >= 0.0 && h <= 360.0);
+        assert(s >= 0.0 && s <= 1.0);
+        assert(v >= 0.0 && v <= 1.0);
+
         if (s == 0.0) {
             outhsv[0] = outhsv[1] = outhsv[2] = v;
         } else {
