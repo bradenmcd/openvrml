@@ -1,5 +1,26 @@
 2006-05-12 Braden McDaniel  <braden@endoframe.com>
 
+	Make a copy of the URI passed to the root_scene_loader, since it
+	very well may go away.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::root_scene_loader): Changed url_ member to a
+	const value from a pointer.
+	(openvrml::browser::root_scene_loader::root_scene_loader(browser
+	&, const std::vector<std::string> &)): Make a copy of the URI
+	vector; note that std::bad_alloc may be thrown.
+	(openvrml::browser::root_scene_loader::operator()): url_ member is
+	no longer a pointer.
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Added std::bad_alloc to
+	exception specification.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Added std::bad_alloc to
+	exception specification.
+
+2006-05-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.cpp
 	(rgb_to_hsv(const float *, float *)): Removed "inline"; changed
 	argument names for clarity.

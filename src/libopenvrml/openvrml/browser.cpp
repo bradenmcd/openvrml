@@ -6630,9 +6630,9 @@ openvrml::browser::replace_world(
 
 struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
     root_scene_loader(browser & b, const std::vector<std::string> & url)
-        OPENVRML_NOTHROW:
+        OPENVRML_THROW1(std::bad_alloc):
         browser_(&b),
-        url_(&url)
+        url_(url)
     {}
 
     void operator()() const OPENVRML_NOTHROW
@@ -6645,7 +6645,7 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
 
         try {
             std::auto_ptr<resource_istream> in =
-                browser.scene_->get_resource(*this->url_);
+                browser.scene_->get_resource(this->url_);
             if (!(*in)) { throw unreachable_url(); }
             browser.set_world(*in);
         } catch (antlr::ANTLRException & ex) {
@@ -6663,7 +6663,7 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
 
 private:
     browser * browser_;
-    const std::vector<std::string> * url_;
+    const std::vector<std::string> url_;
 };
 
 /**
@@ -6677,7 +6677,7 @@ private:
  */
 void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
-    OPENVRML_THROW1(boost::thread_resource_error)
+    OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error)
 {
     boost::function0<void> f = root_scene_loader(*this, url);
     boost::thread t(f);

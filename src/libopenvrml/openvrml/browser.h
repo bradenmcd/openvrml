@@ -291,7 +291,7 @@ namespace openvrml {
             const std::vector<boost::intrusive_ptr<node> > & nodes);
         void load_url(const std::vector<std::string> & url,
                       const std::vector<std::string> & parameter)
-            OPENVRML_THROW1(boost::thread_resource_error);
+            OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error);
         virtual void description(const std::string & description);
         const std::vector<boost::intrusive_ptr<node> >
         create_vrml_from_stream(std::istream & in,
