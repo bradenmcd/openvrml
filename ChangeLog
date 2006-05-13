@@ -1,3 +1,7 @@
+2006-05-13 Braden McDaniel  <braden@endoframe.com>
+
+	* models/rotation_toy.wrl: Normalize the rotation axis.
+
 2006-05-12 Braden McDaniel  <braden@endoframe.com>
 
 	If a thread other than the rendering thread destroys the scene, we

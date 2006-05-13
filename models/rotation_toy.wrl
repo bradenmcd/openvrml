@@ -456,13 +456,19 @@ Group {
 	  field    SFRotation r 0 1 0 0
 	  url ["javascript:
 	    function setX(value) {
-	      r.x = value;
+              var axis = r.getAxis();
+              axis.x = value;
+	      r.setAxis(axis.normalize());
 	    }
 	    function setY(value) {
-	      r.y = value;
+              var axis = r.getAxis();
+              axis.y = value;
+	      r.setAxis(axis.normalize());
 	    }
 	    function setZ(value) {
-	      r.z = value;
+              var axis = r.getAxis();
+              axis.z = value;
+	      r.setAxis(axis.normalize());
 	    }
 	    function setR(value) {
 	      r.angle = value;
