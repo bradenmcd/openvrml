@@ -1,3 +1,22 @@
+2006-05-14 Braden McDaniel  <braden@endoframe.com>
+
+	Simplified assertions to guarantee that the rotation axis is a
+	normalized vector.  This also accommodates the notion that a
+	vector of length 0 is considered normalized as far as OpenVRML is
+	concerned; that is, calling vec3f::normalize for such a vector
+	returns an identical vector.  The VRML97 specification does not
+	make clear that attempting to normalize such a vector should be an
+	error (in, e.g., the ECMAScript binding).
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::rotation::rotation(const float (&)[4]): Simplified
+	assertion.
+	(openvrml::rotation::rotation(float, float, float, float):
+	Simplified assertion.
+	(openvrml::rotation::rotation(const vec3f &, float): Simplified
+	assertion.
+	(openvrml::rotation::axis(const vec3f &): Simplified assertion.
+
 2006-05-13 Braden McDaniel  <braden@endoframe.com>
 
 	* models/rotation_toy.wrl: Normalize the rotation axis.
