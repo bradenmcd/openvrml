@@ -182,7 +182,7 @@ void gtk_vrml_browser_set_world(GtkVrmlBrowser * vrml_browser,
     viewer.browser_.set_world(in);
 }
 
-void gtk_vrml_browser_class_init(GtkVrmlBrowserClass * klass)
+void gtk_vrml_browser_class_init(GtkVrmlBrowserClass *)
 {}
 
 void gtk_vrml_browser_init(GtkVrmlBrowser * const vrml_browser)
@@ -511,6 +511,14 @@ namespace {
                                          &bytes_written,
                                          0);
                 g_io_channel_flush(this->request_channel_, 0);
+
+                //
+                // This blocks until we know the result of NPN_GetURL.
+                //
+                const int get_url_result = this->streambuf_->get_url_result();
+                if (get_url_result != 0) {
+                    this->setstate(std::ios_base::failbit);
+                }
             }
 
         private:
