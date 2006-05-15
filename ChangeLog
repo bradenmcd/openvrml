@@ -1,4 +1,18 @@
-2006-05-14 Braden McDaniel  <braden@endoframe.com>
+2006-05-15 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes such that failure to launch the subprocess will not crash
+	the Web browser.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::SetWindow(NPWindow &)): Ensure
+	openvrml_player_cmd_argv is null-terminated.  And ensure its
+	contents are allocated in the free store, since this memory will
+	be freed.  Also, only create the IO channels if executing the
+	child process succeeded.
+	(PluginInstance::WriteCommand(const std::string &)): Bail if we do
+	not have a valid command_channel.
+
+2006-05-15 Braden McDaniel  <braden@endoframe.com>
 
 	Remove the request channel (input) watch when destroying the
 	plug-in instance; otherwise we get a stray call to the watch

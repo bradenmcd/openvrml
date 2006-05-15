@@ -1076,10 +1076,12 @@ namespace {
             if (!openvrml_player_cmd) {
                 openvrml_player_cmd_argc = 1;
                 openvrml_player_cmd_argv =
-                    static_cast<gchar **>(g_malloc(sizeof (gchar *)));
+                    static_cast<gchar **>(g_malloc(sizeof (gchar *) * 2));
                 if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
                 openvrml_player_cmd_argv[0] =
-                    OPENVRML_LIBEXECDIR_ "/openvrml-player";
+                    g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-player");
+                openvrml_player_cmd_argv[1] = 0;
+                if (!openvrml_player_cmd_argv[0]) { throw std::bad_alloc(); }
             } else {
                 GError * error = 0;
                 gboolean succeeded =
@@ -1138,21 +1140,26 @@ namespace {
                 }
             }
 
+            // XXX
+            // XXX Not the least bit exception-safe.  This needs some
+            // XXX ScopeGuard love.
+            // XXX
             g_free(working_directory);
             g_free(argv);
             g_strfreev(openvrml_player_cmd_argv);
 
-            this->command_channel = g_io_channel_unix_new(standard_input);
-            if (!this->command_channel) { throw std::bad_alloc(); }
+            if (succeeded) {
+                this->command_channel = g_io_channel_unix_new(standard_input);
+                if (!this->command_channel) { throw std::bad_alloc(); }
 
-            this->request_channel = g_io_channel_unix_new(standard_output);
-            if (!this->command_channel) { throw std::bad_alloc(); }
-            this->request_channel_watch_id =
-                g_io_add_watch(this->request_channel,
-                               G_IO_IN,
-                               request_data_available,
-                               this);
-
+                this->request_channel = g_io_channel_unix_new(standard_output);
+                if (!this->command_channel) { throw std::bad_alloc(); }
+                this->request_channel_watch_id =
+                    g_io_add_watch(this->request_channel,
+                                   G_IO_IN,
+                                   request_data_available,
+                                   this);
+            }
         }
     }
 
@@ -1161,6 +1168,8 @@ namespace {
 
     ssize_t PluginInstance::WriteCommand(const std::string & command)
     {
+        if (!this->command_channel) { return 0; }
+
         gsize bytes_written;
         GError * error = 0;
         GIOStatus status = g_io_channel_write_chars(this->command_channel,
