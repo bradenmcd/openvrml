@@ -1,5 +1,20 @@
 2006-05-14 Braden McDaniel  <braden@endoframe.com>
 
+	Remove the request channel (input) watch when destroying the
+	plug-in instance; otherwise we get a stray call to the watch
+	callback and an (apparently spurious) assertion in glib.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance): Added request_channel_watch_id member.
+	(PluginInstance::PluginInstance()): Initialize
+	request_channel_watch_id to 0.
+	(PluginInstance::~PluginInstance()): Remove the request channel
+	watch callback.
+	(PluginInstance::SetWindow(NPWindow &)): Store the watch id in the
+	instance.
+
+2006-05-14 Braden McDaniel  <braden@endoframe.com>
+
 	Simplified assertions to guarantee that the rotation axis is a
 	normalized vector.  This also accommodates the notion that a
 	vector of length 0 is considered normalized as far as OpenVRML is

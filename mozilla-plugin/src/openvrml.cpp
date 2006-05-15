@@ -65,6 +65,7 @@ namespace {
         int width, height;
         GIOChannel * command_channel;
         GIOChannel * request_channel;
+        guint request_channel_watch_id;
         std::stringstream request_line;
         nsCOMPtr<VrmlBrowser> scriptablePeer;
 
@@ -995,11 +996,18 @@ namespace {
         height(0),
         command_channel(0),
         request_channel(0),
+        request_channel_watch_id(0),
         scriptablePeer(new ScriptablePeer(*this))
     {}
 
     PluginInstance::~PluginInstance() throw ()
     {
+        if (this->request_channel_watch_id) {
+            const gboolean succeeded =
+                g_source_remove(this->request_channel_watch_id);
+            g_assert(succeeded);
+        }
+
         if (this->request_channel) {
             GError * error = 0;
             const gboolean flush = false;
@@ -1139,10 +1147,11 @@ namespace {
 
             this->request_channel = g_io_channel_unix_new(standard_output);
             if (!this->command_channel) { throw std::bad_alloc(); }
-            g_io_add_watch(this->request_channel,
-                           G_IO_IN,
-                           request_data_available,
-                           this);
+            this->request_channel_watch_id =
+                g_io_add_watch(this->request_channel,
+                               G_IO_IN,
+                               request_data_available,
+                               this);
 
         }
     }
