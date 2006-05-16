@@ -1,3 +1,143 @@
+2006-05-16 Braden McDaniel  <braden@endoframe.com>
+
+	Use JS_ConvertArguments to convert/check argument values.
+
+	* src/libopenvrml/openvrml/script.cpp
+	(SFColor::initClass(JSContext *, JSObject *)): Call initObject
+	with the default color values.
+	(SFColor::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert the arguments with JS_ConvertArguments; pass the
+	jsdouble array to initObject.
+	(SFColor::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[3])): Just check that the jsdouble values are within
+	the acceptable range.
+	(SFColor::setProperty(JSContext *, JSObject *, jsval, jsval *)):
+	Report errors and bail if the index or value is out of range.
+	(SFColor::setHSV(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert the arguments with JS_ConvertArguments; report
+	an error and bail if the arguments are not within the acceptable
+	ranges.
+	(SFImage::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFImage::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert the arguments with JS_ConvertArguments; confirm
+	that the fourth argument is an MFInt32; changed call to
+	initObject.
+	(SFImage::initObject(JSContext *, JSObject *, uint32, uint32,
+	uint32, JSObject *)): Removed argument conversion; changed call to
+	initObject.
+	(SFNode::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments; changed call
+	to initObject.
+	(SFNode::initObject(JSContext *, JSObject *, JSString *)): Removed
+	argc assertion.
+	(SFRotation::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFRotation::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Moved argument checking/conversion logic here from
+	initObject; changed call to initObject.
+	(SFRotation::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[4])): Print an error message and bail if the axis
+	component is not normalized.
+	(SFRotation::setProperty(JSContext *, JSObject *, jsval, jsval*)):
+	Print an error message and bail if the resulting axis is not
+	normalized.
+	(SFRotation::multiply(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFRotation::multVec(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFRotation::setAxis(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFRotation::slerp(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Use JS_ConvertArguments to convert arguments.
+	(SFVec2f::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFVec2f::constructor(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFVec2f::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[2])): Moved argument conversion to constructor.
+	(SFVec2f::add(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec2f::divide(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec2f::dot(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec2f::multiply(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec2f::subtract(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec2d::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFVec2d::constructor(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFVec2d::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[2])): Moved argument conversion to constructor.
+	(SFVec2d::add(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec2d::divide(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec2d::dot(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec2d::multiply(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec2d::subtract(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3f::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFVec3f::constructor(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFVec3f::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[3])): Moved argument conversion to constructor.
+	(SFVec3f::add(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3f::cross(JSContext *, JSObject *, uintN, jsval *, jsval*)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3f::divide(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3f::dot(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3f::multiply(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3f::subtract(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3d::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(SFVec3d::constructor(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use JS_ConvertArguments to convert arguments.
+	(SFVec3d::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[3])): Moved argument conversion to constructor.
+	(SFVec3d::add(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3d::cross(JSContext *, JSObject *, uintN, jsval *, jsval*)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3d::divide(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3d::dot(JSContext *, JSObject *, uintN, jsval *, jsval *)):
+	Convert arguments with JS_ConvertArguments.
+	(SFVec3d::multiply(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(SFVec3d::subtract(JSContext *, JSObject *, uintN, jsval *,
+	jsval*)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::initClass(JSContext *, JSObject *)): Changed call to
+	initObject.
+	(VrmlMatrix::construct(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Convert arguments with JS_ConvertArguments; changed
+	call to initObject.
+	(VrmlMatrix::initObject(JSContext *, JSObject *, const
+	jsdouble(&)[16])): Moved argument conversion to constructor.
+	(VrmlMatrix::setTransform(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::getTransform(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::multLeft(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::multRight(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::multVecMatrix(JSContext *, JSObject *, uintN, jsval*,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+	(VrmlMatrix::multMatrixVec(JSContext *, JSObject *, uintN, jsval*,
+	jsval *)): Convert arguments with JS_ConvertArguments.
+
 2006-05-15 Braden McDaniel  <braden@endoframe.com>
 
 	Set the plugin_resource_istream initial state to invalid if the
