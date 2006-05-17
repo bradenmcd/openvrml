@@ -2482,20 +2482,13 @@ private:
         OPENVRML_NOTHROW;
 };
 
-class OPENVRML_LOCAL SFVec2f : public sfield {
+template <typename SFVec2>
+class sfvec2_jsobject : public sfield {
 public:
-    static JSClass jsclass;
-
     static JSObject * initClass(JSContext * cx, JSObject * obj)
         OPENVRML_NOTHROW;
-    static JSBool toJsval(const openvrml::vec2f & vec2f,
-                          JSContext * cx, JSObject * obj, jsval * rval)
-        OPENVRML_NOTHROW;
-    static std::auto_ptr<openvrml::sfvec2f>
-    createFromJSObject(JSContext * cx, JSObject * obj)
-        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
-private:
+protected:
     static JSBool constructor(JSContext * cx, JSObject * obj,
                               uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
@@ -2503,16 +2496,20 @@ private:
                              const jsdouble (&vec)[2])
         OPENVRML_NOTHROW;
     static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                             jsval * rval) OPENVRML_NOTHROW;
+                             jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) OPENVRML_NOTHROW;
+                              jsval * vp)
+        OPENVRML_NOTHROW;
     static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
+                      uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool divide(JSContext * cx, JSObject * obj,
                          uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
     static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
+                      uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
     static JSBool length(JSContext * cx, JSObject * obj,
                          uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
@@ -2530,67 +2527,43 @@ private:
         OPENVRML_NOTHROW;
 };
 
-class SFVec2d : public sfield {
+class OPENVRML_LOCAL SFVec2f : public sfvec2_jsobject<SFVec2f> {
 public:
+    typedef ::openvrml::sfvec2f field_type;
+    typedef field_type::value_type value_type;
+
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
-    static JSBool toJsval(const openvrml::vec2d & vec2d,
+    static JSBool toJsval(const value_type & vec2f,
                           JSContext * cx, JSObject * obj, jsval * rval)
         OPENVRML_NOTHROW;
-    static std::auto_ptr<openvrml::sfvec2d>
+    static std::auto_ptr<field_type>
     createFromJSObject(JSContext * cx, JSObject * obj)
         OPENVRML_THROW2(bad_conversion, std::bad_alloc);
-
-private:
-    static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool initObject(JSContext * cx, JSObject * obj,
-                             const jsdouble (&vec)[2])
-        OPENVRML_NOTHROW;
-    static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                             jsval * rval) OPENVRML_NOTHROW;
-    static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) OPENVRML_NOTHROW;
-    static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-    static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-    static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
 };
 
-class SFVec3f : public sfield {
+class OPENVRML_LOCAL SFVec2d : public sfvec2_jsobject<SFVec2f> {
 public:
+    typedef ::openvrml::sfvec2d field_type;
+    typedef field_type::value_type value_type;
+
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj)
-        OPENVRML_NOTHROW;
-    static JSBool toJsval(const openvrml::vec3f & vec3f,
+    static JSBool toJsval(const value_type & vec2d,
                           JSContext * cx, JSObject * obj, jsval * rval)
         OPENVRML_NOTHROW;
-    static std::auto_ptr<openvrml::sfvec3f>
+    static std::auto_ptr<field_type>
     createFromJSObject(JSContext * cx, JSObject * obj)
         OPENVRML_THROW2(bad_conversion, std::bad_alloc);
+};
 
-private:
+template <typename SFVec3>
+class sfvec3_jsobject : public sfield {
+public:
+    static JSObject * initClass(JSContext * cx, JSObject * obj)
+        OPENVRML_NOTHROW;
+
+protected:
     static JSBool constructor(JSContext * cx, JSObject * obj,
                               uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
@@ -2628,55 +2601,34 @@ private:
         OPENVRML_NOTHROW;
 };
 
-class SFVec3d : public sfield {
+class OPENVRML_LOCAL SFVec3f : public sfvec3_jsobject<SFVec3f> {
 public:
+    typedef ::openvrml::sfvec3f field_type;
+    typedef field_type::value_type value_type;
+
     static JSClass jsclass;
 
-    static JSObject * initClass(JSContext * cx, JSObject * obj)
-        OPENVRML_NOTHROW;
-    static JSBool toJsval(const openvrml::vec3d & vec3d,
+    static JSBool toJsval(const value_type & vec3f,
                           JSContext * cx, JSObject * obj, jsval * rval)
         OPENVRML_NOTHROW;
-    static std::auto_ptr<openvrml::sfvec3d>
+    static std::auto_ptr<field_type>
     createFromJSObject(JSContext * cx, JSObject * obj)
         OPENVRML_THROW2(bad_conversion, std::bad_alloc);
+};
 
-private:
-    static JSBool constructor(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
+class OPENVRML_LOCAL SFVec3d : public sfvec3_jsobject<SFVec3d> {
+public:
+    typedef ::openvrml::sfvec3d field_type;
+    typedef field_type::value_type value_type;
+
+    static JSClass jsclass;
+
+    static JSBool toJsval(const value_type & vec3d,
+                          JSContext * cx, JSObject * obj, jsval * rval)
         OPENVRML_NOTHROW;
-    static JSBool initObject(JSContext * cx, JSObject * obj,
-                             const jsdouble (&vec)[3])
-        OPENVRML_NOTHROW;
-    static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) OPENVRML_NOTHROW;
-    static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                              jsval * vp) OPENVRML_NOTHROW;
-    static JSBool add(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-    static JSBool cross(JSContext * cx, JSObject * obj,
-                        uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool divide(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool dot(JSContext * cx, JSObject * obj,
-                      uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-    static JSBool length(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool multiply(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool negate(JSContext * cx, JSObject * obj,
-                         uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool normalize(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
-    static JSBool subtract(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv, jsval * rval)
-        OPENVRML_NOTHROW;
+    static std::auto_ptr<field_type>
+    createFromJSObject(JSContext * cx, JSObject * obj)
+        OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 };
 
 class OPENVRML_LOCAL MField {
@@ -6060,7 +6012,9 @@ JSClass SFVec2f::jsclass = {
     0                    // spare
 };
 
-JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
+template <typename SFVec2>
+JSObject * sfvec2_jsobject<SFVec2>::initClass(JSContext * const cx,
+                                              JSObject * const obj)
     OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
@@ -6082,7 +6036,7 @@ JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
               { 0, 0, 0, 0, 0 } };
 
     JSObject * const proto =
-        JS_InitClass(cx, obj, 0, &jsclass,
+        JS_InitClass(cx, obj, 0, &SFVec2::jsclass,
                      constructor, 0, // constructor function, min arg count
                      properties, methods,
                      0, 0); // static properties and methods
@@ -6091,53 +6045,53 @@ JSObject * SFVec2f::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFVec2f::toJsval(const openvrml::vec2f & vec2f,
+JSBool SFVec2f::toJsval(const value_type & vec2f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
     OPENVRML_NOTHROW
 {
-    JSObject * const sfvec2fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
-    if (!sfvec2fObj) { return JS_FALSE; }
+    JSObject * const sfvec2Obj = JS_ConstructObject(cx, &jsclass, 0, obj);
+    if (!sfvec2Obj) { return JS_FALSE; }
 
-    assert(JS_GetPrivate(cx, sfvec2fObj));
+    assert(JS_GetPrivate(cx, sfvec2Obj));
     const sfield::sfdata & sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec2fObj));
+        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec2Obj));
 
     try {
-        boost::polymorphic_downcast<openvrml::sfvec2f *>(&sfdata.field_value())
+        boost::polymorphic_downcast<field_type *>(&sfdata.field_value())
             ->value(vec2f);
     } catch (std::bad_alloc & ex) {
         JS_ReportOutOfMemory(cx);
         return JS_FALSE;
     }
 
-    *rval = OBJECT_TO_JSVAL(sfvec2fObj);
+    *rval = OBJECT_TO_JSVAL(sfvec2Obj);
     return JS_TRUE;
 }
 
-std::auto_ptr<openvrml::sfvec2f>
+std::auto_ptr<SFVec2f::field_type>
 SFVec2f::createFromJSObject(JSContext * const cx, JSObject * const obj)
     OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
     using std::auto_ptr;
 
-    if (!JS_InstanceOf(cx, obj, &SFVec2f::jsclass, 0)) {
+    if (!JS_InstanceOf(cx, obj, &jsclass, 0)) {
         throw bad_conversion("SFVec2f object expected.");
     }
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    return auto_ptr<openvrml::sfvec2f>(
-        boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            sfdata.field_value().clone().release()));
+    return auto_ptr<field_type>(boost::polymorphic_downcast<field_type *>(
+                                    sfdata.field_value().clone().release()));
 }
 
-JSBool SFVec2f::constructor(JSContext * const cx,
-                            JSObject * obj,
-                            const uintN argc,
-                            jsval * const argv,
-                            jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::constructor(JSContext * const cx,
+                                            JSObject * obj,
+                                            const uintN argc,
+                                            jsval * const argv,
+                                            jsval * const rval)
     OPENVRML_NOTHROW
 {
     jsdouble vec[2] = {};
@@ -6149,21 +6103,22 @@ JSBool SFVec2f::constructor(JSContext * const cx,
     // If called without new, replace obj with a new object.
     //
     if (!JS_IsConstructing(cx)) {
-        obj = JS_NewObject(cx, &jsclass, 0, 0);
+        obj = JS_NewObject(cx, &SFVec2::jsclass, 0, 0);
         if (!obj) { return JS_FALSE; }
         *rval = OBJECT_TO_JSVAL(obj);
     }
     return initObject(cx, obj, vec);
 }
 
-JSBool SFVec2f::initObject(JSContext * const cx,
-                           JSObject * const obj,
-                           const jsdouble (&vec)[2])
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::initObject(JSContext * const cx,
+                                           JSObject * const obj,
+                                           const jsdouble (&vec)[2])
     OPENVRML_NOTHROW
 {
     for (size_t i = 0; i < 2; ++i) {
         if (vec[i] != vec[i]) {
-            JS_ReportError(cx, "argument %d of SFVec2f constructor is NaN",
+            JS_ReportError(cx, "argument %d of constructor is NaN",
                            i + 1);
             return JS_FALSE;
         }
@@ -6172,10 +6127,12 @@ JSBool SFVec2f::initObject(JSContext * const cx,
     try {
         using std::auto_ptr;
 
-        auto_ptr<openvrml::sfvec2f>
-            sfvec2f(new openvrml::sfvec2f(openvrml::vec2f(vec[0], vec[1])));
-        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2f.get()));
-        sfvec2f.release();
+        typedef typename SFVec2::field_type sfvec2_t;
+        typedef typename SFVec2::value_type vec2_t;
+
+        auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2_t(vec[0], vec[1])));
+        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2.get()));
+        sfvec2.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
         sfdata.release();
     } catch (std::bad_alloc &) {
@@ -6186,19 +6143,21 @@ JSBool SFVec2f::initObject(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::getProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::getProperty(JSContext * const cx,
+                                            JSObject * const obj,
+                                            const jsval id,
+                                            jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        const openvrml::sfvec2f & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-                &sfdata.field_value());
+        const sfvec2_t & thisVec =
+            *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
         if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], rval)) {
             return JS_FALSE;
@@ -6207,19 +6166,22 @@ JSBool SFVec2f::getProperty(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::setProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::setProperty(JSContext * const cx,
+                                            JSObject * const obj,
+                                            const jsval id,
+                                            jsval * const vp)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+    typedef typename SFVec2::value_type vec2_t;
+
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
         assert(JS_GetPrivate(cx, obj));
         sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        openvrml::sfvec2f & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-                &sfdata.field_value());
+        sfvec2_t & thisVec =
+            *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
@@ -6228,7 +6190,7 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
             return JS_FALSE;
         }
 
-        openvrml::vec2f temp = thisVec.value();
+        vec2_t temp = thisVec.value();
         switch (JSVAL_TO_INT(id)) {
         case 0:
             temp.x(d);
@@ -6245,19 +6207,21 @@ JSBool SFVec2f::setProperty(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::add(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::add(JSContext * const cx,
+                                    JSObject * const obj,
+                                    const uintN argc,
+                                    jsval * const argv,
+                                    jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is an SFVec2f.
@@ -6267,16 +6231,15 @@ JSBool SFVec2f::add(JSContext * const cx,
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &arg_sfdata.field_value());
+    const sfvec2_t & argVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -6284,15 +6247,14 @@ JSBool SFVec2f::add(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() + argVec.value());
 
@@ -6300,19 +6262,21 @@ JSBool SFVec2f::add(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::divide(JSContext * const cx,
-                       JSObject * const obj,
-                       const uintN argc,
-                       jsval * const argv,
-                       jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::divide(JSContext * const cx,
+                                       JSObject * const obj,
+                                       const uintN argc,
+                                       jsval * const argv,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is a number.
@@ -6328,15 +6292,14 @@ JSBool SFVec2f::divide(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() / divisor);
 
@@ -6344,57 +6307,60 @@ JSBool SFVec2f::divide(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::dot(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::dot(JSContext * const cx,
+                                    JSObject * const obj,
+                                    const uintN argc,
+                                    jsval * const argv,
+                                    jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
     //
-    // Make sure our argument is an SFVec2f.
+    // Make sure our argument is an SFVec2.
     //
     JSObject * arg_obj = 0;
     if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &arg_sfdata.field_value());
+    const sfvec2_t & argVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
     const jsdouble result = thisVec.value().dot(argVec.value());
     if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
     return JS_TRUE;
 }
 
-JSBool SFVec2f::length(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::length(JSContext * const cx,
+                                       JSObject * const obj,
+                                       uintN,
+                                       jsval *,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
     if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
         return JS_FALSE;
@@ -6402,19 +6368,21 @@ JSBool SFVec2f::length(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::multiply(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::multiply(JSContext * const cx,
+                                         JSObject * const obj,
+                                         const uintN argc,
+                                         jsval * const argv,
+                                         jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is a number.
@@ -6430,15 +6398,14 @@ JSBool SFVec2f::multiply(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() * factor);
 
@@ -6446,19 +6413,21 @@ JSBool SFVec2f::multiply(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::negate(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::negate(JSContext * const cx,
+                                       JSObject * const obj,
+                                       uintN,
+                                       jsval *,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -6466,15 +6435,14 @@ JSBool SFVec2f::negate(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(-thisVec.value());
 
@@ -6482,19 +6450,21 @@ JSBool SFVec2f::negate(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::normalize(JSContext * const cx,
-                          JSObject * const obj,
-                          uintN,
-                          jsval *,
-                          jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::normalize(JSContext * const cx,
+                                          JSObject * const obj,
+                                          uintN,
+                                          jsval *,
+                                          jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -6502,15 +6472,14 @@ JSBool SFVec2f::normalize(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value().normalize());
 
@@ -6518,19 +6487,21 @@ JSBool SFVec2f::normalize(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec2f::subtract(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
+template <typename SFVec2>
+JSBool sfvec2_jsobject<SFVec2>::subtract(JSContext * const cx,
+                                         JSObject * const obj,
+                                         const uintN argc,
+                                         jsval * const argv,
+                                         jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec2::field_type sfvec2_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &obj_sfdata.field_value());
+    const sfvec2_t & thisVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is an SFVec2f.
@@ -6540,16 +6511,15 @@ JSBool SFVec2f::subtract(JSContext * const cx,
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &arg_sfdata.field_value());
+    const sfvec2_t & argVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -6557,15 +6527,14 @@ JSBool SFVec2f::subtract(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2f *>(
-            &robj_sfdata.field_value());
+    sfvec2_t & resultVec =
+        *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() - argVec.value());
 
@@ -6593,37 +6562,6 @@ JSClass SFVec2d::jsclass = {
     0,                   // mark
     0                    // spare
 };
-
-JSObject * SFVec2d::initClass(JSContext * const cx, JSObject * const obj)
-    OPENVRML_NOTHROW
-{
-    static JSPropertySpec properties[] =
-            { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
-              { "y", 1, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
-
-    static JSFunctionSpec methods[] =
-      /*    name          native          nargs    */
-            { { "add", add, 1, 0, 0 },
-              { "divide", divide, 1, 0, 0 },
-              { "dot", dot, 1, 0, 0 },
-              { "length", length, 0, 0, 0 },
-              { "multiply", multiply, 1, 0, 0 },
-              { "negate", negate, 0, 0, 0 },
-              { "normalize", normalize, 0, 0, 0 },
-              { "subtract", subtract, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
-
-    JSObject * const proto =
-        JS_InitClass(cx, obj, 0, &jsclass,
-                     constructor, 0, // constructor function, min arg count
-                     properties, methods,
-                     0, 0); // static properties and methods
-    const jsdouble vec[2] = {};
-    if (!proto || !initObject(cx, proto, vec)) { return 0; }
-    return proto;
-}
 
 JSBool SFVec2d::toJsval(const openvrml::vec2d & vec2d,
                         JSContext * const cx,
@@ -6667,445 +6605,6 @@ SFVec2d::createFromJSObject(JSContext * const cx, JSObject * const obj)
             sfdata.field_value().clone().release()));
 }
 
-JSBool SFVec2d::constructor(JSContext * const cx,
-                            JSObject * obj,
-                            const uintN argc,
-                            jsval * const argv,
-                            jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    jsdouble vec[2] = {};
-    if (!JS_ConvertArguments(cx, argc, argv, "/dd", &vec[0], &vec[1])) {
-        return JS_FALSE;
-    }
-
-    //
-    // If called without new, replace obj with a new object.
-    //
-    if (!JS_IsConstructing(cx)) {
-        obj = JS_NewObject(cx, &jsclass, 0, 0);
-        if (!obj) { return JS_FALSE; }
-        *rval = OBJECT_TO_JSVAL(obj);
-    }
-    return initObject(cx, obj, vec);
-}
-
-JSBool SFVec2d::initObject(JSContext * const cx,
-                           JSObject * const obj,
-                           const jsdouble (&vec)[2])
-    OPENVRML_NOTHROW
-{
-    for (size_t i = 0; i < 2; ++i) {
-        if (vec[i] != vec[i]) {
-            JS_ReportError(cx, "argument %d of SFVec2d constructor is NaN",
-                           i + 1);
-            return JS_FALSE;
-        }
-    }
-
-    try {
-        using std::auto_ptr;
-
-        auto_ptr<openvrml::sfvec2d>
-            sfvec2d(new openvrml::sfvec2d(openvrml::vec2d(vec[0], vec[1])));
-        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2d.get()));
-        sfvec2d.release();
-        if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
-        sfdata.release();
-    } catch (std::bad_alloc &) {
-        JS_ReportOutOfMemory(cx);
-        return JS_FALSE;
-    }
-
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::getProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
-        assert(JS_GetPrivate(cx, obj));
-        const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        const openvrml::sfvec2d & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-                &sfdata.field_value());
-
-        if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], rval)) {
-            return JS_FALSE;
-        }
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::setProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
-    OPENVRML_NOTHROW
-{
-    if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
-        assert(JS_GetPrivate(cx, obj));
-        sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        openvrml::sfvec2d & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-                &sfdata.field_value());
-
-        jsdouble d;
-        if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
-        if (d != d) {
-            JS_ReportError(cx, "cannot set SFVec2d component to NaN");
-            return JS_FALSE;
-        }
-
-        openvrml::vec2d temp = thisVec.value();
-        switch (JSVAL_TO_INT(id)) {
-        case 0:
-            temp.x(d);
-            break;
-        case 1:
-            temp.y(d);
-            break;
-        default:
-            assert(false);
-        }
-        thisVec.value(temp);
-        sfdata.changed = true;
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::add(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec2d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata=
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2d & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &arg_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() + argVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::divide(JSContext * const cx,
-                       JSObject * const obj,
-                       const uintN argc,
-                       jsval * const argv,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is a number.
-    //
-    jsdouble divisor = 0.0;
-    if (!JS_ConvertArguments(cx, argc, argv, "d", &divisor)) {
-        return JS_FALSE;
-    }
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() / divisor);
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::dot(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec2d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2d & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &arg_sfdata.field_value());
-
-    const jsdouble result = thisVec.value().dot(argVec.value());
-    if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::length(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &sfdata.field_value());
-
-    if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
-        return JS_FALSE;
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::multiply(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is a number.
-    //
-    jsdouble factor = 0.0;
-    if (!JS_ConvertArguments(cx, argc, argv, "d", &factor)) {
-        return JS_FALSE;
-    }
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() * factor);
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::negate(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(-thisVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::normalize(JSContext * const cx,
-                          JSObject * const obj,
-                          uintN,
-                          jsval *,
-                          jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value().normalize());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec2d::subtract(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec2d & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec2d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec2d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec2d & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &arg_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec2d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec2d & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec2d *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() - argVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
 
 JSClass SFVec3f::jsclass = {
     "SFVec3f",           // name
@@ -7128,7 +6627,9 @@ JSClass SFVec3f::jsclass = {
     0                    // spare
 };
 
-JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
+template <typename SFVec3>
+JSObject * sfvec3_jsobject<SFVec3>::initClass(JSContext * const cx,
+                                              JSObject * const obj)
     OPENVRML_NOTHROW
 {
     static JSPropertySpec properties[] =
@@ -7152,7 +6653,7 @@ JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
               { 0, 0, 0, 0, 0 } };
 
     JSObject * const proto =
-        JS_InitClass(cx, obj, 0, &jsclass,
+        JS_InitClass(cx, obj, 0, &SFVec3::jsclass,
                      constructor, 0, // constructor function, min arg count
                      properties, methods,
                      0, 0); // static properties and methods
@@ -7161,7 +6662,7 @@ JSObject * SFVec3f::initClass(JSContext * const cx, JSObject * const obj)
     return proto;
 }
 
-JSBool SFVec3f::toJsval(const openvrml::vec3f & vec3f,
+JSBool SFVec3f::toJsval(const value_type & vec3f,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -7186,7 +6687,7 @@ JSBool SFVec3f::toJsval(const openvrml::vec3f & vec3f,
     return JS_TRUE;
 }
 
-std::auto_ptr<openvrml::sfvec3f>
+std::auto_ptr<SFVec3f::field_type>
 SFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
     OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
@@ -7203,11 +6704,12 @@ SFVec3f::createFromJSObject(JSContext * const cx, JSObject * const obj)
             sfdata.field_value().clone().release()));
 }
 
-JSBool SFVec3f::constructor(JSContext * const cx,
-                            JSObject * obj,
-                            const uintN argc,
-                            jsval * const argv,
-                            jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::constructor(JSContext * const cx,
+                                            JSObject * obj,
+                                            const uintN argc,
+                                            jsval * const argv,
+                                            jsval * const rval)
     OPENVRML_NOTHROW
 {
     jsdouble vec[3] = {};
@@ -7220,21 +6722,25 @@ JSBool SFVec3f::constructor(JSContext * const cx,
     // If called without new, replace obj with a new object.
     //
     if (!JS_IsConstructing(cx)) {
-        obj = JS_NewObject(cx, &jsclass, 0, 0);
+        obj = JS_NewObject(cx, &SFVec3::jsclass, 0, 0);
         if (!obj) { return JS_FALSE; }
         *rval = OBJECT_TO_JSVAL(obj);
     }
     return initObject(cx, obj, vec);
 }
 
-JSBool SFVec3f::initObject(JSContext * const cx,
-                           JSObject * obj,
-                           const jsdouble (&vec)[3])
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::initObject(JSContext * const cx,
+                                           JSObject * obj,
+                                           const jsdouble (&vec)[3])
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+    typedef typename SFVec3::value_type vec3_t;
+
     for (uintN i = 0; i < 3; ++i) {
         if (vec[i] != vec[i]) {
-            JS_ReportError(cx, "argument %d of SFVec3f constructor is NaN",
+            JS_ReportError(cx, "argument %d of constructor is NaN",
                            i + 1);
             return JS_FALSE;
         }
@@ -7243,11 +6749,11 @@ JSBool SFVec3f::initObject(JSContext * const cx,
     try {
         using std::auto_ptr;
 
-        auto_ptr<openvrml::sfvec3f>
-            sfvec3f(new openvrml::sfvec3f(
-                        openvrml::vec3f(vec[0], vec[1], vec[2])));
-        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3f.get()));
-        sfvec3f.release();
+        auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3_t(vec[0],
+                                                      vec[1],
+                                                      vec[2])));
+        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3.get()));
+        sfvec3.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
         sfdata.release();
     } catch (std::bad_alloc &) {
@@ -7257,19 +6763,21 @@ JSBool SFVec3f::initObject(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::getProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::getProperty(JSContext * const cx,
+                                            JSObject * const obj,
+                                            const jsval id,
+                                            jsval * const vp)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        const openvrml::sfvec3f & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-                &sfdata.field_value());
+        const sfvec3_t & thisVec =
+            *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
         if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], vp)) {
             return JS_FALSE;
@@ -7278,28 +6786,31 @@ JSBool SFVec3f::getProperty(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::setProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::setProperty(JSContext * const cx,
+                                            JSObject * const obj,
+                                            const jsval id,
+                                            jsval * const vp)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+    typedef typename SFVec3::value_type vec3_t;
+
     if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
         assert(JS_GetPrivate(cx, obj));
         sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        openvrml::sfvec3f & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-                &sfdata.field_value());
+        sfvec3_t & thisVec =
+            *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
         jsdouble d;
         if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
         if (d != d) {
-            JS_ReportError(cx, "cannot set SFVec3f component to NaN");
+            JS_ReportError(cx, "cannot set component to NaN");
             return JS_FALSE;
         }
 
-        openvrml::vec3f temp = thisVec.value();
+        vec3_t temp = thisVec.value();
         switch (JSVAL_TO_INT(id)) {
         case 0:
             temp.x(d);
@@ -7319,19 +6830,21 @@ JSBool SFVec3f::setProperty(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::add(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::add(JSContext * const cx,
+                                    JSObject * const obj,
+                                    const uintN argc,
+                                    jsval * const argv,
+                                    jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is an SFVec3f.
@@ -7341,16 +6854,15 @@ JSBool SFVec3f::add(JSContext * const cx,
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
+    const sfvec3_t & argVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -7358,15 +6870,14 @@ JSBool SFVec3f::add(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() + argVec.value());
 
@@ -7374,19 +6885,21 @@ JSBool SFVec3f::add(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::cross(JSContext * const cx,
-                      JSObject * const obj,
-                      const uintN argc,
-                      jsval * const argv,
-                      jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::cross(JSContext * const cx,
+                                      JSObject * const obj,
+                                      const uintN argc,
+                                      jsval * const argv,
+                                      jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is an SFVec3f.
@@ -7396,16 +6909,15 @@ JSBool SFVec3f::cross(JSContext * const cx,
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
+    const sfvec3_t & argVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -7413,15 +6925,14 @@ JSBool SFVec3f::cross(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) {return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() * argVec.value());
 
@@ -7429,19 +6940,21 @@ JSBool SFVec3f::cross(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::divide(JSContext * const cx,
-                       JSObject * const obj,
-                       const uintN argc,
-                       jsval * const argv,
-                       jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::divide(JSContext * const cx,
+                                       JSObject * const obj,
+                                       const uintN argc,
+                                       jsval * const argv,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is a number.
@@ -7457,15 +6970,14 @@ JSBool SFVec3f::divide(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() / divisor);
 
@@ -7473,57 +6985,60 @@ JSBool SFVec3f::divide(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::dot(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::dot(JSContext * const cx,
+                                    JSObject * const obj,
+                                    const uintN argc,
+                                    jsval * const argv,
+                                    jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
-    // Make sure our argument is an SFVec3f.
+    // Make sure our argument is an SFVec3[df].
     //
     JSObject * arg_obj = 0;
     if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
         return JS_FALSE;
     }
     assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+    if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
         return JS_FALSE;
     }
 
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
+    const sfvec3_t & argVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
     const jsdouble result = thisVec.value().dot(argVec.value());
     if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
     return JS_TRUE;
 }
 
-JSBool SFVec3f::length(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::length(JSContext * const cx,
+                                       JSObject * const obj,
+                                       uintN,
+                                       jsval *,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
     if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
         return JS_FALSE;
@@ -7531,19 +7046,21 @@ JSBool SFVec3f::length(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::multiply(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::multiply(JSContext * const cx,
+                                         JSObject * const obj,
+                                         const uintN argc,
+                                         jsval * const argv,
+                                         jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is a number.
@@ -7559,15 +7076,14 @@ JSBool SFVec3f::multiply(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
     resultVec.value(thisVec.value() * factor);
 
@@ -7575,19 +7091,21 @@ JSBool SFVec3f::multiply(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::negate(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::negate(JSContext * const cx,
+                                       JSObject * const obj,
+                                       uintN,
+                                       jsval *,
+                                       jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -7595,15 +7113,14 @@ JSBool SFVec3f::negate(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     const sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(-thisVec.value());
 
@@ -7611,19 +7128,21 @@ JSBool SFVec3f::negate(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::normalize(JSContext * const cx,
-                          JSObject * const obj,
-                          uintN,
-                          jsval *,
-                          jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::normalize(JSContext * const cx,
+                                          JSObject * const obj,
+                                          uintN,
+                                          jsval *,
+                                          jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -7631,15 +7150,14 @@ JSBool SFVec3f::normalize(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value().normalize());
 
@@ -7647,19 +7165,21 @@ JSBool SFVec3f::normalize(JSContext * const cx,
     return JS_TRUE;
 }
 
-JSBool SFVec3f::subtract(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
+template <typename SFVec3>
+JSBool sfvec3_jsobject<SFVec3>::subtract(JSContext * const cx,
+                                         JSObject * const obj,
+                                         const uintN argc,
+                                         jsval * const argv,
+                                         jsval * const rval)
     OPENVRML_NOTHROW
 {
+    typedef typename SFVec3::field_type sfvec3_t;
+
     assert(JS_GetPrivate(cx, obj));
     const sfield::sfdata & obj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
+    const sfvec3_t & thisVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
     //
     // Make sure our argument is an SFVec3f.
@@ -7676,9 +7196,8 @@ JSBool SFVec3f::subtract(JSContext * const cx,
     assert(JS_GetPrivate(cx, arg_obj));
     const sfield::sfdata & arg_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
+    const sfvec3_t & argVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
     //
     // Construct the result object.
@@ -7686,15 +7205,14 @@ JSBool SFVec3f::subtract(JSContext * const cx,
     static JSObject * const proto = 0;
     JSObject * const parent = JS_GetParent(cx, obj);
     JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+        JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
     if (!robj) { return JS_FALSE; }
 
     assert(JS_GetPrivate(cx, robj));
     sfield::sfdata & robj_sfdata =
         *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
+    sfvec3_t & resultVec =
+        *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
     resultVec.value(thisVec.value() - argVec.value());
 
@@ -7722,41 +7240,7 @@ JSClass SFVec3d::jsclass = {
     0,                   // mark
     0                    // spare
 };
-
-JSObject * SFVec3d::initClass(JSContext * const cx, JSObject * const obj)
-    OPENVRML_NOTHROW
-{
-    static JSPropertySpec properties[] =
-            { { "x", 0, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
-              { "y", 1, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
-              { "z", 2, JSPROP_ENUMERATE | JSPROP_PERMANENT, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
-
-    static JSFunctionSpec methods[] =
-      /*    name          native          nargs    */
-            { { "add", add, 1, 0, 0 },
-              { "cross", cross, 1, 0, 0 },
-              { "divide", divide, 1, 0, 0 },
-              { "dot", dot, 1, 0, 0 },
-              { "length", length, 0, 0, 0 },
-              { "multiply", multiply, 1, 0, 0 },
-              { "negate", negate, 0, 0, 0 },
-              { "normalize", normalize, 0, 0, 0 },
-              { "subtract", subtract, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
-
-    JSObject * const proto =
-        JS_InitClass(cx, obj, 0, &jsclass,
-                     constructor, 0, // constructor function, min arg count
-                     properties, methods,
-                     0, 0); // static properties and methods
-    const jsdouble vec[3] = {};
-    if (!proto || !initObject(cx, proto, vec)) { return 0; }
-    return proto;
-}
-
-JSBool SFVec3d::toJsval(const openvrml::vec3d & vec3d,
+JSBool SFVec3d::toJsval(const value_type & vec3d,
                         JSContext * const cx,
                         JSObject * const obj,
                         jsval * const rval)
@@ -7781,7 +7265,7 @@ JSBool SFVec3d::toJsval(const openvrml::vec3d & vec3d,
     return JS_TRUE;
 }
 
-std::auto_ptr<openvrml::sfvec3d>
+std::auto_ptr<SFVec3d::field_type>
 SFVec3d::createFromJSObject(JSContext * const cx, JSObject * const obj)
     OPENVRML_THROW2(bad_conversion, std::bad_alloc)
 {
@@ -7796,503 +7280,6 @@ SFVec3d::createFromJSObject(JSContext * const cx, JSObject * const obj)
     return auto_ptr<openvrml::sfvec3d>(
         boost::polymorphic_downcast<openvrml::sfvec3d *>(
             sfdata.field_value().clone().release()));
-}
-
-JSBool SFVec3d::constructor(JSContext * const cx,
-                            JSObject * obj,
-                            const uintN argc,
-                            jsval * const argv,
-                            jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    jsdouble vec[3] = {};
-    if (!JS_ConvertArguments(cx, argc, argv, "/ddd",
-                             &vec[0], &vec[1], &vec[2])) {
-        return JS_FALSE;
-    }
-
-    //
-    // If called without new, replace obj with a new object.
-    //
-    if (!JS_IsConstructing(cx)) {
-        obj = JS_NewObject(cx, &jsclass, 0, 0);
-        if (!obj) { return JS_FALSE; }
-        *rval = OBJECT_TO_JSVAL(obj);
-    }
-    return initObject(cx, obj, vec);
-}
-
-JSBool SFVec3d::initObject(JSContext * const cx,
-                           JSObject * obj,
-                           const jsdouble (&vec)[3])
-    OPENVRML_NOTHROW
-{
-    for (uintN i = 0; i < 3; ++i) {
-        if (vec[i] != vec[i]) {
-            JS_ReportError(cx, "argument %d of SFVec3d constructor is NaN",
-                           i + 1);
-            return JS_FALSE;
-        }
-    }
-
-    try {
-        using std::auto_ptr;
-
-        auto_ptr<openvrml::sfvec3f>
-            sfvec3f(new openvrml::sfvec3f(
-                        openvrml::vec3f(vec[0], vec[1], vec[2])));
-        auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3f.get()));
-        sfvec3f.release();
-        if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
-        sfdata.release();
-    } catch (std::bad_alloc &) {
-        JS_ReportOutOfMemory(cx);
-        return JS_FALSE;
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::getProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
-    OPENVRML_NOTHROW
-{
-    if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
-        assert(JS_GetPrivate(cx, obj));
-        const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        const openvrml::sfvec3f & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-                &sfdata.field_value());
-
-        if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], vp)) {
-            return JS_FALSE;
-        }
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::setProperty(JSContext * const cx,
-                            JSObject * const obj,
-                            const jsval id,
-                            jsval * const vp)
-    OPENVRML_NOTHROW
-{
-    if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
-        assert(JS_GetPrivate(cx, obj));
-        sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-        openvrml::sfvec3d & thisVec =
-            *boost::polymorphic_downcast<openvrml::sfvec3d *>(
-                &sfdata.field_value());
-
-        jsdouble d;
-        if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
-        if (d != d) {
-            JS_ReportError(cx, "cannot set SFVec3d component to NaN");
-            return JS_FALSE;
-        }
-
-        openvrml::vec3d temp = thisVec.value();
-        switch (JSVAL_TO_INT(id)) {
-        case 0:
-            temp.x(d);
-            break;
-        case 1:
-            temp.y(d);
-            break;
-        case 2:
-            temp.z(d);
-            break;
-        default:
-            assert(false);
-        }
-        thisVec.value(temp);
-        sfdata.changed = true;
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::add(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec3d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() + argVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::cross(JSContext * const cx,
-                      JSObject * const obj,
-                      const uintN argc,
-                      jsval * const argv,
-                      jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec3d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) {return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() * argVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::divide(JSContext * const cx,
-                       JSObject * const obj,
-                       const uintN argc,
-                       jsval * const argv,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is a number.
-    //
-    jsdouble divisor = 0.0;
-    if (!JS_ConvertArguments(cx, argc, argv, "d", &divisor)) {
-        return JS_FALSE;
-    }
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() / divisor);
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::dot(JSContext * const cx,
-                    JSObject * const obj,
-                    const uintN argc,
-                    jsval * const argv,
-                    jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec3d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
-
-    const jsdouble result = thisVec.value().dot(argVec.value());
-    if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::length(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &sfdata.field_value());
-
-    if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
-        return JS_FALSE;
-    }
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::multiply(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is a number.
-    //
-    jsdouble factor = 0.0;
-    if (!JS_ConvertArguments(cx, argc, argv, "d", &factor)) {
-        return JS_FALSE;
-    }
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
-
-    resultVec.value(thisVec.value() * factor);
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::negate(JSContext * const cx,
-                       JSObject * const obj,
-                       uintN,
-                       jsval *,
-                       jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    const sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(-thisVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::normalize(JSContext * const cx,
-                          JSObject * const obj,
-                          uintN,
-                          jsval *,
-                          jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value().normalize());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
-}
-
-JSBool SFVec3d::subtract(JSContext * const cx,
-                         JSObject * const obj,
-                         const uintN argc,
-                         jsval * const argv,
-                         jsval * const rval)
-    OPENVRML_NOTHROW
-{
-    assert(JS_GetPrivate(cx, obj));
-    const sfield::sfdata & obj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
-    const openvrml::sfvec3f & thisVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &obj_sfdata.field_value());
-
-    //
-    // Make sure our argument is an SFVec3d.
-    //
-    JSObject * arg_obj = 0;
-    if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
-        return JS_FALSE;
-    }
-    assert(arg_obj);
-    if (!JS_InstanceOf(cx, arg_obj, &SFVec3d::jsclass, argv)) {
-        return JS_FALSE;
-    }
-
-    assert(JS_GetPrivate(cx, arg_obj));
-    const sfield::sfdata & arg_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
-    const openvrml::sfvec3f & argVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &arg_sfdata.field_value());
-
-    //
-    // Construct the result object.
-    //
-    static JSObject * const proto = 0;
-    JSObject * const parent = JS_GetParent(cx, obj);
-    JSObject * const robj =
-        JS_ConstructObject(cx, &SFVec3d::jsclass, proto, parent);
-    if (!robj) { return JS_FALSE; }
-
-    assert(JS_GetPrivate(cx, robj));
-    sfield::sfdata & robj_sfdata =
-        *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
-    openvrml::sfvec3f & resultVec =
-        *boost::polymorphic_downcast<openvrml::sfvec3f *>(
-            &robj_sfdata.field_value());
-
-    resultVec.value(thisVec.value() - argVec.value());
-
-    *rval = OBJECT_TO_JSVAL(robj);
-    return JS_TRUE;
 }
 
 MField::MFData::MFData(JsvalArray::size_type size):

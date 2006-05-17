@@ -1,5 +1,20 @@
 2006-05-16 Braden McDaniel  <braden@endoframe.com>
 
+	Consolidated JavaScript SFVec2f/SFVec2d and SFVec3d/SFVec3d method
+	implementations in templates.
+
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::sfvec2_jsobject<SFVec2>): Added class template for
+	implementing SFVec2f/SFVec2d methods.
+	(js_::SFVec2f): Moved bulk of logic to sfvec2_jsobject template.
+	(js_::SFVec2d): Moved bulk of logic to sfvec2_jsobject template.
+	(js_::sfvec3_jsobject<SFVec3>): Added class template for
+	implementing SFVec3f/SFVec3d methods.
+	(js_::SFVec3f): Moved bulk of logic to sfvec3_jsobject template.
+	(js_::SFVec3d): Moved bulk of logic to sfvec3_jsobject template.
+
+2006-05-16 Braden McDaniel  <braden@endoframe.com>
+
 	Use JS_ConvertArguments to convert/check argument values.
 
 	* src/libopenvrml/openvrml/script.cpp
