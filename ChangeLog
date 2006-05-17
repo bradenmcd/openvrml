@@ -1,5 +1,12 @@
 2006-05-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::load(resource_istream &)): Clear the nodes_ and
+	meta_ members before calling parse_vrml.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+2006-05-16 Braden McDaniel  <braden@endoframe.com>
+
 	Consolidated JavaScript SFVec2f/SFVec2d and SFVec3d/SFVec3d method
 	implementations in templates.
 

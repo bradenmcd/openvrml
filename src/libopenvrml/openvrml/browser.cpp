@@ -7536,6 +7536,8 @@ void openvrml::scene::load(resource_istream & in)
         url_lock(this->url_mutex_),
         meta_lock(this->meta_mutex_);
 
+    this->nodes_.clear();
+    this->meta_.clear();
     this->url_ = in.url();
     parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
     this->scene_loaded();
