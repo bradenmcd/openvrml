@@ -33,7 +33,8 @@ openvrml_include_HEADERS = \
         openvrml/x3d_environmental_effects.h \
         openvrml/x3d_geospatial.h \
         openvrml/x3d_hanim.h \
-        openvrml/x3d_nurbs.h
+        openvrml/x3d_nurbs.h \
+        openvrml/x3d_cad_geometry.h
 
 VRML97PARSER_BUILT_SOURCEFILES = \
         openvrml/Vrml97Parser.cpp \
@@ -119,7 +120,8 @@ libopenvrml_la_SOURCES = \
         openvrml/x3d_environmental_effects.cpp \
         openvrml/x3d_geospatial.cpp \
         openvrml/x3d_hanim.cpp \
-        openvrml/x3d_nurbs.cpp
+        openvrml/x3d_nurbs.cpp \
+        openvrml/x3d_cad_geometry.cpp
 
 libopenvrml_la_LDFLAGS = \
         -version-info $(LIBRARY_VERSION) \

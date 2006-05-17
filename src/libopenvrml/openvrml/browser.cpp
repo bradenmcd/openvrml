@@ -61,6 +61,7 @@
 # include "x3d_geospatial.h"
 # include "x3d_hanim.h"
 # include "x3d_nurbs.h"
+# include "x3d_cad_geometry.h"
 
 namespace openvrml {
 
@@ -3825,6 +3826,7 @@ namespace {
         return result_uri;
     }
 
+
     class OPENVRML_LOCAL profile {
         typedef std::map<std::string, int> map_t;
         map_t components_;
@@ -6016,6 +6018,7 @@ namespace {
         register_geospatial_node_classes(b);
         register_hanim_node_classes(b);
         register_nurbs_node_classes(b);
+        register_cad_geometry_node_classes(b);
     }
 }
 
@@ -6804,7 +6807,7 @@ private:
  *
  * @param[in] url       an alternative URI list.
  * @param[in] node      the node to which the nodes loaded from @p url should be
- *                  sent as an event.
+ *                      sent as an event.
  * @param[in] event     the event of @p node to which the new nodes will be sent.
  *
  * @exception unsupported_interface         if @p node has no eventIn @p event.
@@ -13520,6 +13523,249 @@ namespace {
     }
 
 
+    class OPENVRML_LOCAL x3d_cad_geometry_component : public component {
+    public:
+        static const char * const id;
+
+        virtual size_t support_level() const OPENVRML_NOTHROW;
+
+    private:
+        virtual void do_add_to_scope(const openvrml::browser & b,
+                                     openvrml::scope & scope,
+                                     size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const char * const x3d_cad_geometry_component::id = "CADGeometry";
+
+    size_t x3d_cad_geometry_component::support_level() const OPENVRML_NOTHROW
+    {
+        return 2;
+    }
+
+    void x3d_cad_geometry_component::do_add_to_scope(const openvrml::browser & b,
+                                                     openvrml::scope & scope,
+                                                     const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using namespace openvrml;
+
+        // CADAssembly node
+        if (level >= 2)
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "name"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+
+            static const node_interface_set interface_set(interfaces, interfaces + 7);
+            add_scope_entry(b, "CADAssembly", interface_set,
+                "urn:X-openvrml:node:CADAssembly", scope);
+        }
+        // CADFace node
+        if (level >= 2)
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "name"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "shape")
+            };
+
+            static const node_interface_set interface_set(interfaces, interfaces + 3);
+            add_scope_entry(b, "CADFace", interface_set,
+                "urn:X-openvrml:node:CADFace", scope);
+        }
+        // CADLayer node
+        if (level >= 2)
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "name"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfbool_id,
+                               "visible"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+
+            static const node_interface_set interface_set(interfaces, interfaces + 8);
+            add_scope_entry(b, "CADLayer", interface_set,
+                "urn:X-openvrml:node:CADLayer", scope);
+        }
+        // CADPart node
+        if (level >= 2)
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "addChildren"),
+                node_interface(node_interface::eventin_id,
+                               field_value::mfnode_id,
+                               "removeChildren"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::mfnode_id,
+                               "children"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "center"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfstring_id,
+                               "name"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfrotation_id,
+                               "rotation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "scale"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfrotation_id,
+                               "scaleOrientation"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfvec3f_id,
+                               "translation"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxCenter"),
+                node_interface(node_interface::field_id,
+                               field_value::sfvec3f_id,
+                               "bboxSize")
+            };
+
+            static const node_interface_set interface_set(interfaces, interfaces + 12);
+            add_scope_entry(b, "CADPart", interface_set,
+                "urn:X-openvrml:node:CADPart", scope);
+        }
+        // IndexedQuadSet node
+        if (level >= 1)
+        {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::eventin_id,
+                               field_value::mfint32_id,
+                               "set_index"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "coord"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "normal"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "texCoord"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "ccw"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "colorPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "normalPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "solid"),
+                node_interface(node_interface::field_id,
+                               field_value::mfint32_id,
+                               "index")
+            };
+
+            static const node_interface_set interface_set(interfaces, interfaces + 11);
+            add_scope_entry(b, "IndexedQuadSet", interface_set,
+                "urn:X-openvrml:node:IndexedQuadSet", scope);
+        }
+        // QuadSet node
+        if (level >= 1) {
+            static const node_interface interfaces[] = {
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "color"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "coord"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "metadata"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "normal"),
+                node_interface(node_interface::exposedfield_id,
+                               field_value::sfnode_id,
+                               "texCoord"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "ccw"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "colorPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "normalPerVertex"),
+                node_interface(node_interface::field_id,
+                               field_value::sfbool_id,
+                               "solid")
+            };
+
+            static const node_interface_set interface_set(interfaces,
+                                                          interfaces + 9);
+            add_scope_entry(b,
+                            "QuadSet",
+                            interface_set,
+                            "urn:X-openvrml:node:QuadSet",
+                            scope);
+        }
+    }
+
+
     class OPENVRML_LOCAL x3d_geospatial_component : public component {
     public:
         static const char * const id;
@@ -15871,6 +16117,10 @@ namespace {
         key = x3d_event_utilities_component::id;
         succeeded =
             this->insert(key, new x3d_event_utilities_component).second;
+        assert(succeeded);
+
+        key = x3d_cad_geometry_component::id;
+        succeeded = this->insert(key, new x3d_cad_geometry_component).second;
         assert(succeeded);
     }
 

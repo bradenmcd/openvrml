@@ -1,3 +1,37 @@
+2006-05-17 Braden McDaniel  <braden@endoframe.com>
+
+	Added support for creating scene graphs with CADGeomentry
+	component nodes.
+	From Andrew Grieve <sgrieve@users.sourceforge.net>
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/x3d_cad_geometry.h.
+	(openvrml_la_SOURCES): Added openvrml/x3d_cad_geometry.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(register_node_classes(openvrml::browser &)): Register the
+	CADGeometry profile node implementations.
+	(x3d_cad_geometry_component): Added class correponding to the X3D
+	CADGeometry component.
+	(x3d_cad_geometry_component::id): Component id.
+	(x3d_cad_geometry_component::support_level() const): The supported
+	component level.
+	(x3d_cad_geometry_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t) const): Add the
+	node_types defined for the CADGeometry component to the scope.
+	(component_registry::component_registry()): Register
+	x3d_cad_geometry_component.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(cad_layer_class): Added node_class for CADLayer nodes.
+	(cad_assembly_class): Added node_class for CADAssembly nodes.
+	(register_vrml97_node_classes(openvrml::browser &)): Register
+	cad_layer_class and cad_assembly_class.
+	(cad_layer_node): Added CADLayer node instance class.
+	(cad_assembly_node): Added CADAssembly node instance class.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp: Added file;
+	implementations of X3D CADGeometry component nodes.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.h: Added file; expose
+	node_class registration function.
+
 2006-05-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp

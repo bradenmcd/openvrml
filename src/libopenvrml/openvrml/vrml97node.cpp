@@ -1110,6 +1110,40 @@ namespace {
                        const node_interface_set & interfaces) const
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
+
+    /**
+     * @brief Class object for CADLayer nodes.
+     */
+    class OPENVRML_LOCAL cad_layer_class : public node_class {
+    public:
+        static const char * const id;
+
+        explicit cad_layer_class(openvrml::browser & browser);
+        virtual ~cad_layer_class() throw ();
+
+    private:
+        virtual const boost::shared_ptr<node_type>
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
+            throw (unsupported_interface, std::bad_alloc);
+    };
+
+    /**
+     * @brief Class object for CADAssembly nodes.
+     */
+    class OPENVRML_LOCAL cad_assembly_class : public node_class {
+    public:
+        static const char * const id;
+
+        explicit cad_assembly_class(openvrml::browser & browser);
+        virtual ~cad_assembly_class() throw ();
+
+    private:
+        virtual const boost::shared_ptr<node_type>
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
+            throw (unsupported_interface, std::bad_alloc);
+    };
 }
 
 void register_vrml97_node_classes(openvrml::browser & b)
@@ -1222,6 +1256,10 @@ void register_vrml97_node_classes(openvrml::browser & b)
                      shared_ptr<node_class>(new visibility_sensor_class(b)));
     b.add_node_class(world_info_class::id,
                      shared_ptr<node_class>(new world_info_class(b)));
+    b.add_node_class(cad_layer_class::id,
+                     shared_ptr<node_class>(new cad_layer_class(b)));
+    b.add_node_class(cad_assembly_class::id,
+                     shared_ptr<node_class>(new cad_assembly_class(b)));
 }
 
 namespace {
@@ -27129,4 +27167,676 @@ namespace {
      */
     world_info_node::~world_info_node() OPENVRML_NOTHROW
     {}
+
+
+    class OPENVRML_LOCAL cad_layer_node : 
+        public grouping_node_base<cad_layer_node> {
+
+        friend class cad_layer_class;
+
+        class visible_exposedfield : public exposedfield<mfbool> {
+        public:
+            explicit visible_exposedfield(cad_layer_node & node);
+            visible_exposedfield(const visible_exposedfield & obj)
+                throw ();
+            virtual ~visible_exposedfield() throw ();
+
+        private:
+            virtual std::auto_ptr<field_value> do_clone() const
+                throw (std::bad_alloc);
+            virtual void event_side_effect(const mfbool & visible,
+                                           double timestamp)
+                throw (std::bad_alloc);
+        };
+        friend class visible_exposedfield;
+
+        exposedfield<sfstring> name_;
+        visible_exposedfield visible_;
+
+        //holds all currently visible nodes
+        mfnode current_children_;
+
+    public:
+        cad_layer_node(const node_type & type, 
+                       const boost::shared_ptr<openvrml::scope> & scope);
+        virtual ~cad_layer_node() throw ();   
+
+        virtual bool modified() const;
+
+    private:
+        virtual void do_children_event_side_effect(const mfnode & choice,
+                                        double timestamp)
+            throw (std::bad_alloc);
+
+        virtual void do_render_child(openvrml::viewer & viewer,
+                                     rendering_context context);
+        virtual const std::vector<boost::intrusive_ptr<node> > &
+        do_children() const throw ();
+        virtual void recalc_bsphere();
+    };
+
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const cad_layer_class::id = "urn:X-openvrml:node:CADLayer";
+
+    /**
+     * @brief Construct.
+     *
+     * @param browser the @c browser associated with this @c cad_layer_class.
+     */
+    cad_layer_class::cad_layer_class(openvrml::browser & browser):
+        node_class(cad_layer_class::id, browser)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    cad_layer_class::~cad_layer_class() throw ()
+    {}
+
+    /**
+     * @brief Create a node_type.
+     *
+     * @param id            the name for the new node_type.
+     * @param interfaces    the interfaces for the new node_type.
+     *
+     * @return a node_type_ptr to a node_type capable of creating CADLayer nodes.
+     *
+     * @exception unsupported_interface if @p interfaces includes an interface
+     *                                  not supported by cad_layer_class.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
+    const boost::shared_ptr<openvrml::node_type>
+    cad_layer_class::do_create_type(const std::string & id,
+                                 const node_interface_set & interfaces) const
+        throw (unsupported_interface, std::bad_alloc)
+    {
+        typedef boost::array<node_interface, 8> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::eventin_id,
+                            field_value::mfnode_id,
+                            "addChildren"),
+            node_interface(node_interface::eventin_id,
+                            field_value::mfnode_id,
+                            "removeChildren"),
+            node_interface(node_interface::exposedfield_id,
+                            field_value::mfnode_id,
+                            "children"),
+            node_interface(node_interface::exposedfield_id,
+                            field_value::sfnode_id,
+                            "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                            field_value::sfstring_id,
+                            "name"),
+            node_interface(node_interface::exposedfield_id,
+                            field_value::mfbool_id,
+                            "visible"),
+            node_interface(node_interface::field_id,
+                            field_value::sfvec3f_id,
+                            "bboxCenter"),
+            node_interface(node_interface::field_id,
+                            field_value::sfvec3f_id,
+                            "bboxSize")
+        };    
+        typedef node_type_impl<cad_layer_node> node_type_t;
+
+        const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+        node_type_t & the_node_type = static_cast<node_type_t &>(*type);
+
+        for (node_interface_set::const_iterator interface(interfaces.begin());
+             interface != interfaces.end();
+             ++interface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
+                the_node_type.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_layer_node::add_children_listener>(
+                            &cad_layer_node::add_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_layer_node::remove_children_listener>(
+                            &cad_layer_node::remove_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_layer_node::children_exposedfield>(
+                            &cad_layer_node::children_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        cad_layer_node::children_exposedfield>(
+                            &cad_layer_node::children_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        cad_layer_node::children_exposedfield>(
+                            &cad_layer_node::children_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfnode> >(
+                            &cad_layer_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfnode> >(
+                            &cad_layer_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfnode> >(
+                            &cad_layer_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfstring> >(
+                            &cad_layer_node::name_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfstring> >(
+                            &cad_layer_node::name_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cad_layer_node>::exposedfield<sfstring> >(
+                            &cad_layer_node::name_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_layer_node::visible_exposedfield>(
+                            &cad_layer_node::visible_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        cad_layer_node::visible_exposedfield>(
+                            &cad_layer_node::visible_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        cad_layer_node::visible_exposedfield>(
+                            &cad_layer_node::visible_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &cad_layer_node::bbox_center_)));
+            } else if (*interface == *++supported_interface) {
+                the_node_type.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &cad_layer_node::bbox_size_)));
+            }
+        }
+        return type;
+    }
+
+
+    /**
+     * @var cad_layer_node::visible_exposedfield cad_layer_node::visible_
+     *
+     * @brief visible exposedField.
+     */
+
+    /**
+     * @class cad_layer_node
+     *
+     * @brief Represents CADLayer node instances.
+     */
+
+    /**
+     * @var cad_layer_node::CADLayer_class
+     *
+     * @brief Class object for CADLayer nodes.
+     */
+
+    /**
+     * @var cad_layer_node::name_t cad_layer_node::name_
+     *
+     * @brief name exposedField
+     */
+
+    /**
+     * @var cad_layer_node::visible_exposedfield cad_layer_node::visible_
+     *
+     * @brief visible exposedField
+     */
+
+    /**
+     * @brief Process event.
+     *
+     * @param choice    choice nodes.
+     * @param timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void cad_layer_node::
+    do_children_event_side_effect(const mfnode &, double) throw (std::bad_alloc)
+    {
+        try {
+            const std::vector<bool> & visible = this->visible_.mfbool::value();
+            const mfnode::value_type & all_children = 
+                this->children_.mfnode::value();
+
+            mfnode::value_type children(visible.size());
+
+            //add only the visible children
+            for (size_t i = 0; i < visible.size() && i < all_children.size(); ++i)
+            {
+                if (visible[i])
+                    children.push_back(all_children[i]);
+            }
+
+            this->current_children_.value(children);
+        } catch (std::bad_cast & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
+    }
+
+    /**
+     * @internal
+     *
+     * @class cad_layer_node::visible_exposedfield
+     *
+     * @brief choice exposedField implementation.
+     */
+
+    /**
+     * @brief Construct.
+     *
+     * @param node  cad_layer_node.
+     */
+    cad_layer_node::visible_exposedfield::
+    visible_exposedfield(cad_layer_node & node):
+        node_event_listener(node),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        node_field_value_listener<mfbool>(node),
+        exposedfield<mfbool>(node)
+    {}
+
+    /**
+     * @brief Construct a copy.
+     *
+     * @param obj   instance to copy.
+     */
+    cad_layer_node::visible_exposedfield::
+    visible_exposedfield(const visible_exposedfield & obj) throw ():
+        openvrml::event_listener(),
+        node_event_listener(obj.node_event_listener::node()),
+        openvrml::event_emitter(static_cast<const field_value &>(*this)),
+        node_field_value_listener<mfbool>(obj.node_event_listener::node()),
+        exposedfield<openvrml::mfbool>(obj)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    cad_layer_node::visible_exposedfield::
+    ~visible_exposedfield() throw ()
+    {}
+
+    /**
+     * @brief Polymorphically construct a copy.
+     *
+     * @return a copy of the instance.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    std::auto_ptr<openvrml::field_value>
+    cad_layer_node::visible_exposedfield::do_clone() const
+        throw (std::bad_alloc)
+    {
+        return std::auto_ptr<openvrml::field_value>(
+            new visible_exposedfield(*this));
+    }
+
+    /**
+     * @brief Process event.
+     *
+     * @param visible  choice nodes.
+     * @param timestamp     the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void
+    cad_layer_node::visible_exposedfield::
+    event_side_effect(const mfbool &, double time)
+        throw (std::bad_alloc)
+    {
+        try {
+            cad_layer_node & n =
+                dynamic_cast<cad_layer_node &>(
+                    this->node_event_listener::node());
+            n.do_children_event_side_effect(n.children_, time);
+        } catch (std::bad_cast & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+        }
+    }
+
+
+    /**
+     * @brief Determine whether the node has been modified.
+     *
+     * @return @c true if the node or one of its children has been modified,
+     *      @c false otherwise.
+     */
+    bool cad_layer_node::modified() const
+    {
+        if (this->node::modified()) { return true; }
+
+        mfnode::value_type::const_iterator iter = 
+            current_children_.value().begin();
+        for (; iter != current_children_.value().end(); ++iter)
+        {
+            if ((*iter)->modified())
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Render the node.
+     *
+     * The child corresponding to @a whichChoice is rendered. Nothing is
+     * rendered if @a whichChoice is -1.
+     *
+     * @param viewer    a Viewer.
+     * @param context   a rendering context.
+     */
+    void
+    cad_layer_node::
+    do_render_child(openvrml::viewer & viewer, const rendering_context context)
+    {
+        mfnode::value_type::const_iterator iter = 
+            current_children_.value().begin();
+        for (; iter != current_children_.value().end(); ++iter)
+        {
+            child_node * const child = node_cast<child_node *>(iter->get());
+            if (child) { child->render_child(viewer, context); }
+        }
+
+        this->node::modified(false);
+    }
+
+    /**
+     * @brief Get the children in the scene graph.
+     *
+     * @return the child nodes in the scene graph.
+     */
+    const std::vector<boost::intrusive_ptr<openvrml::node> > &
+    cad_layer_node::do_children() const throw ()
+    {
+        return this->current_children_.value();
+    }
+
+    /**
+     * @brief Recalculate the bounding volume.
+     */
+    void cad_layer_node::recalc_bsphere()
+    {
+        this->bsphere = bounding_sphere();
+
+        mfnode::value_type::const_iterator iter = 
+            current_children_.value().begin();
+        for (; iter != current_children_.value().end(); ++iter)
+        {
+            bounded_volume_node * bounded_volume =
+                node_cast<bounded_volume_node *>(iter->get());
+
+            if (bounded_volume) {
+                const openvrml::bounding_volume & ci_bv =
+                    bounded_volume->bounding_volume();
+                this->bsphere.extend(ci_bv);
+            }
+        }
+        this->bounding_volume_dirty(false);
+    }
+
+    /**
+     * @brief Construct.
+     *
+     * @param type  the node_type associated with this node.
+     * @param scope     the scope to which the node belongs.
+     */
+    cad_layer_node::
+    cad_layer_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        bounded_volume_node(type, scope),
+        child_node(type, scope),
+        grouping_node(type, scope),
+        grouping_node_base<self_t>(type, scope),
+        name_(*this),
+        visible_(*this)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    cad_layer_node::~cad_layer_node() throw ()
+    {}
+
+
+   class OPENVRML_LOCAL cad_assembly_node :
+        public grouping_node_base<cad_assembly_node> {
+        friend class cad_assembly_class;
+
+        //for CADAssembly node
+        exposedfield<sfstring> name_;
+
+    public:
+        cad_assembly_node(const node_type & type,
+                   const boost::shared_ptr<openvrml::scope> & scope);
+        virtual ~cad_assembly_node() throw ();
+    };
+
+    /**
+     * @brief @c node_class identifier.
+     */
+    const char * const cad_assembly_class::id =
+        "urn:X-openvrml:node:CADAssembly";
+
+    /**
+     * @brief Construct.
+     *
+     * @param browser the @c browser associated with this @c node_class object.
+     */
+    cad_assembly_class::cad_assembly_class(openvrml::browser & browser):
+        node_class(cad_layer_class::id, browser)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    cad_assembly_class::~cad_assembly_class() throw () {}
+
+    /**
+     * @brief Create a node_type.
+     *
+     * @param id            the name for the new node_type.
+     * @param interfaces    the interfaces for the new node_type.
+     *
+     * @return a boost::shared_ptr<node_type> to a node_type capable of
+     *         creating Group nodes.
+     *
+     * @exception unsupported_interface if @p interfaces includes an interface
+     *                                  not supported by cad_assembly_class.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
+    const boost::shared_ptr<openvrml::node_type>
+    cad_assembly_class::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
+        throw (unsupported_interface, std::bad_alloc)
+    {
+        typedef boost::array<node_interface, 7> supported_interfaces_t;
+        static const supported_interfaces_t supported_interfaces = {
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "addChildren"),
+            node_interface(node_interface::eventin_id,
+                           field_value::mfnode_id,
+                           "removeChildren"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::mfnode_id,
+                           "children"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxCenter"),
+            node_interface(node_interface::field_id,
+                           field_value::sfvec3f_id,
+                           "bboxSize"),
+            node_interface(node_interface::exposedfield_id,
+                           field_value::sfnode_id,
+                           "metadata"),
+            node_interface(node_interface::exposedfield_id,
+                            field_value::sfstring_id,
+                            "name")
+        };
+
+        typedef node_type_impl<cad_assembly_node> node_type_t;
+
+        const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+        node_type_t & theNodeType = static_cast<node_type_t &>(*type);
+        for (node_interface_set::const_iterator interface(interfaces.begin());
+             interface != interfaces.end();
+             ++interface) {
+            supported_interfaces_t::const_iterator supported_interface =
+                supported_interfaces.begin() - 1;
+            if (*interface == *++supported_interface) {
+                theNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_assembly_node::add_children_listener>(
+                            &cad_assembly_node::add_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_eventin(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_assembly_node::remove_children_listener>(
+                            &cad_assembly_node::remove_children_listener_)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        cad_assembly_node::children_exposedfield>(
+                            &cad_assembly_node::children_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        cad_assembly_node::children_exposedfield>(
+                            &cad_assembly_node::children_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        cad_assembly_node::children_exposedfield>(
+                            &cad_assembly_node::children_)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &cad_assembly_node::bbox_center_)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_field(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<sfvec3f>(
+                            &cad_assembly_node::bbox_size_)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
+                            &cad_assembly_node::metadata)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
+                            &cad_assembly_node::metadata)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
+                            &cad_assembly_node::metadata)));
+            } else if (*interface == *++supported_interface) {
+                theNodeType.add_exposedfield(
+                    supported_interface->field_type,
+                    supported_interface->id,
+                    node_type_t::event_listener_ptr_ptr(
+                        new node_type_t::event_listener_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfstring> >
+                        (&cad_assembly_node::name_)),
+                    node_type_t::field_ptr_ptr(
+                        new node_type_t::field_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfstring> >
+                        (&cad_assembly_node::name_)),
+                    node_type_t::event_emitter_ptr_ptr(
+                        new node_type_t::event_emitter_ptr<
+                        abstract_node<cad_assembly_node>::exposedfield<sfstring> >
+                        (&cad_assembly_node::name_)));
+            } else {
+                throw unsupported_interface(*interface);
+            }
+        }
+        return type;
+    }
+
+    /**
+     * @class cad_assembly_node
+     *
+     * @brief Represents Group node instances.
+     */
+
+    /**
+     * @var cad_assembly_node::cad_assembly_class
+     *
+     * @brief Class object for Group nodes.
+     */
+
+    /**
+     * @brief Construct.
+     */
+    cad_assembly_node::
+    cad_assembly_node(const node_type & type,
+               const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        bounded_volume_node(type, scope),
+        child_node(type, scope),
+        grouping_node(type, scope),
+        grouping_node_base<cad_assembly_node>(type, scope),
+        name_(*this)
+    {}
+
+    /**
+     * @brief Destroy.
+     */
+    cad_assembly_node::~cad_assembly_node() throw ()
+    {}
+
+
 }
