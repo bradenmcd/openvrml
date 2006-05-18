@@ -72,10 +72,10 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_API script_node_class : public node_class {
+    class OPENVRML_API script_node_metatype : public node_metatype {
     public:
-        script_node_class(openvrml::browser & browser);
-        virtual ~script_node_class() OPENVRML_NOTHROW;
+        script_node_metatype(openvrml::browser & browser);
+        virtual ~script_node_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -121,7 +121,7 @@ namespace openvrml {
             node_interface_set interfaces_;
 
         public:
-            explicit script_node_type(script_node_class & class_);
+            explicit script_node_type(script_node_metatype & class_);
             virtual ~script_node_type() OPENVRML_NOTHROW;
 
             void add_interface(const node_interface & interface)
@@ -248,7 +248,7 @@ namespace openvrml {
         int events_received;
 
     public:
-        script_node(script_node_class & class_,
+        script_node(script_node_metatype & class_,
                     const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & interfaces,
                     const initial_value_map & initial_values)

@@ -181,26 +181,26 @@ namespace openvrml {
         OPENVRML_NOTHROW;
 
 
-    class OPENVRML_API node_class_id {
-        friend bool operator==(const node_class_id & lhs,
-                               const node_class_id & rhs)
+    class OPENVRML_API node_metatype_id {
+        friend bool operator==(const node_metatype_id & lhs,
+                               const node_metatype_id & rhs)
             OPENVRML_NOTHROW;
 
         std::string id_;
 
     public:
-        node_class_id(const char * id)
+        node_metatype_id(const char * id)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-        node_class_id(const std::string & id)
+        node_metatype_id(const std::string & id)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         operator std::string() const;
     };
 
-    OPENVRML_API bool operator==(const node_class_id & lhs,
-                                 const node_class_id & rhs)
+    OPENVRML_API bool operator==(const node_metatype_id & lhs,
+                                 const node_metatype_id & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API bool operator!=(const node_class_id & lhs,
-                                 const node_class_id & rhs)
+    OPENVRML_API bool operator!=(const node_metatype_id & lhs,
+                                 const node_metatype_id & rhs)
         OPENVRML_NOTHROW;
 
 
@@ -209,14 +209,14 @@ namespace openvrml {
     class node_type;
     class proto_node;
 
-    class OPENVRML_API node_class : boost::noncopyable {
-        const node_class_id id_;
+    class OPENVRML_API node_metatype : boost::noncopyable {
+        const node_metatype_id id_;
         openvrml::browser * const browser_;
 
     public:
-        virtual ~node_class() OPENVRML_NOTHROW = 0;
+        virtual ~node_metatype() OPENVRML_NOTHROW = 0;
 
-        const node_class_id & id() const OPENVRML_NOTHROW;
+        const node_metatype_id & id() const OPENVRML_NOTHROW;
         openvrml::browser & browser() const OPENVRML_NOTHROW;
         void initialize(viewpoint_node * initial_viewpoint, double time)
             OPENVRML_NOTHROW;
@@ -228,7 +228,7 @@ namespace openvrml {
         void shutdown(double time) OPENVRML_NOTHROW;
 
     protected:
-        explicit node_class(const node_class_id & id, openvrml::browser & b)
+        explicit node_metatype(const node_metatype_id & id, openvrml::browser & b)
             OPENVRML_NOTHROW;
 
     private:
@@ -249,13 +249,13 @@ namespace openvrml {
 
 
     class OPENVRML_API node_type : boost::noncopyable {
-        const openvrml::node_class & node_class_;
+        const openvrml::node_metatype & metatype_;
         const std::string id_;
 
     public:
         virtual ~node_type() OPENVRML_NOTHROW = 0;
 
-        const openvrml::node_class & node_class() const OPENVRML_NOTHROW;
+        const openvrml::node_metatype & metatype() const OPENVRML_NOTHROW;
         const std::string & id() const OPENVRML_NOTHROW;
         const node_interface_set & interfaces() const OPENVRML_NOTHROW;
         const boost::intrusive_ptr<node>
@@ -266,7 +266,7 @@ namespace openvrml {
                             std::bad_alloc);
 
     protected:
-        node_type(const openvrml::node_class & c, const std::string & id)
+        node_type(const openvrml::node_metatype & c, const std::string & id)
             OPENVRML_THROW1(std::bad_alloc);
 
     private:

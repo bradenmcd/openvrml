@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for Contour2D nodes.
      */
-    class OPENVRML_LOCAL contour2d_class : public node_class {
+    class OPENVRML_LOCAL contour2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit contour2d_class(openvrml::browser & browser);
-        virtual ~contour2d_class() OPENVRML_NOTHROW;
+        explicit contour2d_metatype(openvrml::browser & browser);
+        virtual ~contour2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for ContourPolyline2D nodes.
      */
-    class OPENVRML_LOCAL contour_polyline2d_class : public node_class {
+    class OPENVRML_LOCAL contour_polyline2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit contour_polyline2d_class(openvrml::browser & browser);
-        virtual ~contour_polyline2d_class() OPENVRML_NOTHROW;
+        explicit contour_polyline2d_metatype(openvrml::browser & browser);
+        virtual ~contour_polyline2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for CoordinateDouble nodes.
      */
-    class OPENVRML_LOCAL coordinate_double_class : public node_class {
+    class OPENVRML_LOCAL coordinate_double_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit coordinate_double_class(openvrml::browser & browser);
-        virtual ~coordinate_double_class() OPENVRML_NOTHROW;
+        explicit coordinate_double_metatype(openvrml::browser & browser);
+        virtual ~coordinate_double_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for NurbsCurve nodes.
      */
-    class OPENVRML_LOCAL nurbs_curve_class : public node_class {
+    class OPENVRML_LOCAL nurbs_curve_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_curve_class(openvrml::browser & browser);
-        virtual ~nurbs_curve_class() OPENVRML_NOTHROW;
+        explicit nurbs_curve_metatype(openvrml::browser & browser);
+        virtual ~nurbs_curve_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for NurbsCurve2D nodes.
      */
-    class OPENVRML_LOCAL nurbs_curve2d_class : public node_class {
+    class OPENVRML_LOCAL nurbs_curve2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_curve2d_class(openvrml::browser & browser);
-        virtual ~nurbs_curve2d_class() OPENVRML_NOTHROW;
+        explicit nurbs_curve2d_metatype(openvrml::browser & browser);
+        virtual ~nurbs_curve2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -128,14 +128,14 @@ namespace {
     /**
      * @brief Class object for NurbsOrientationInterpolator nodes.
      */
-    class OPENVRML_LOCAL nurbs_orientation_interpolator_class :
-        public node_class {
+    class OPENVRML_LOCAL nurbs_orientation_interpolator_metatype :
+        public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_orientation_interpolator_class(
+        explicit nurbs_orientation_interpolator_metatype(
             openvrml::browser & browser);
-        virtual ~nurbs_orientation_interpolator_class() OPENVRML_NOTHROW;
+        virtual ~nurbs_orientation_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -148,12 +148,12 @@ namespace {
     /**
      * @brief Class object for NurbsPatchSurface nodes.
      */
-    class OPENVRML_LOCAL nurbs_patch_surface_class : public node_class {
+    class OPENVRML_LOCAL nurbs_patch_surface_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_patch_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_patch_surface_class() OPENVRML_NOTHROW;
+        explicit nurbs_patch_surface_metatype(openvrml::browser & browser);
+        virtual ~nurbs_patch_surface_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -166,14 +166,14 @@ namespace {
     /**
      * @brief Class object for NurbsPositionInterpolator nodes.
      */
-    class OPENVRML_LOCAL nurbs_position_interpolator_class :
-        public node_class {
+    class OPENVRML_LOCAL nurbs_position_interpolator_metatype :
+        public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_position_interpolator_class(
+        explicit nurbs_position_interpolator_metatype(
             openvrml::browser & browser);
-        virtual ~nurbs_position_interpolator_class() OPENVRML_NOTHROW;
+        virtual ~nurbs_position_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -186,12 +186,12 @@ namespace {
     /**
      * @brief Class object for NurbsSet nodes.
      */
-    class OPENVRML_LOCAL nurbs_set_class : public node_class {
+    class OPENVRML_LOCAL nurbs_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_set_class(openvrml::browser & browser);
-        virtual ~nurbs_set_class() OPENVRML_NOTHROW;
+        explicit nurbs_set_metatype(openvrml::browser & browser);
+        virtual ~nurbs_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -204,12 +204,12 @@ namespace {
     /**
      * @brief Class object for NurbsSurfaceInterpolator nodes.
      */
-    class OPENVRML_LOCAL nurbs_surface_interpolator_class : public node_class {
+    class OPENVRML_LOCAL nurbs_surface_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_surface_interpolator_class(openvrml::browser & browser);
-        virtual ~nurbs_surface_interpolator_class() OPENVRML_NOTHROW;
+        explicit nurbs_surface_interpolator_metatype(openvrml::browser & browser);
+        virtual ~nurbs_surface_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -222,12 +222,12 @@ namespace {
     /**
      * @brief Class object for NurbsSweptSurface nodes.
      */
-    class OPENVRML_LOCAL nurbs_swept_surface_class : public node_class {
+    class OPENVRML_LOCAL nurbs_swept_surface_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_swept_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_swept_surface_class() OPENVRML_NOTHROW;
+        explicit nurbs_swept_surface_metatype(openvrml::browser & browser);
+        virtual ~nurbs_swept_surface_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -240,12 +240,12 @@ namespace {
     /**
      * @brief Class object for NurbsSwungSurface nodes.
      */
-    class OPENVRML_LOCAL nurbs_swung_surface_class : public node_class {
+    class OPENVRML_LOCAL nurbs_swung_surface_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_swung_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_swung_surface_class() OPENVRML_NOTHROW;
+        explicit nurbs_swung_surface_metatype(openvrml::browser & browser);
+        virtual ~nurbs_swung_surface_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -258,12 +258,12 @@ namespace {
     /**
      * @brief Class object for NurbsTextureCoordinate nodes.
      */
-    class OPENVRML_LOCAL nurbs_texture_coordinate_class : public node_class {
+    class OPENVRML_LOCAL nurbs_texture_coordinate_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_texture_coordinate_class(openvrml::browser & browser);
-        virtual ~nurbs_texture_coordinate_class() OPENVRML_NOTHROW;
+        explicit nurbs_texture_coordinate_metatype(openvrml::browser & browser);
+        virtual ~nurbs_texture_coordinate_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -276,12 +276,12 @@ namespace {
     /**
      * @brief Class object for NurbsTrimmedSurface nodes.
      */
-    class OPENVRML_LOCAL nurbs_trimmed_surface_class : public node_class {
+    class OPENVRML_LOCAL nurbs_trimmed_surface_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit nurbs_trimmed_surface_class(openvrml::browser & browser);
-        virtual ~nurbs_trimmed_surface_class() OPENVRML_NOTHROW;
+        explicit nurbs_trimmed_surface_metatype(openvrml::browser & browser);
+        virtual ~nurbs_trimmed_surface_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -291,43 +291,50 @@ namespace {
     };
 }
 
-void register_nurbs_node_classes(openvrml::browser & b)
+void register_nurbs_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(contour2d_class::id,
-                     shared_ptr<node_class>(new contour2d_class(b)));
-    b.add_node_class(contour_polyline2d_class::id,
-                     shared_ptr<node_class>(new contour_polyline2d_class(b)));
-    b.add_node_class(coordinate_double_class::id,
-                     shared_ptr<node_class>(new coordinate_double_class(b)));
-    b.add_node_class(nurbs_curve_class::id,
-                     shared_ptr<node_class>(new nurbs_curve_class(b)));
-    b.add_node_class(nurbs_curve2d_class::id,
-                     shared_ptr<node_class>(new nurbs_curve2d_class(b)));
-    b.add_node_class(nurbs_orientation_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new nurbs_orientation_interpolator_class(b)));
-    b.add_node_class(nurbs_patch_surface_class::id,
-                     shared_ptr<node_class>(new nurbs_patch_surface_class(b)));
-    b.add_node_class(nurbs_position_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new nurbs_position_interpolator_class(b)));
-    b.add_node_class(nurbs_set_class::id,
-                     shared_ptr<node_class>(new nurbs_set_class(b)));
-    b.add_node_class(nurbs_surface_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new nurbs_surface_interpolator_class(b)));
-    b.add_node_class(nurbs_swept_surface_class::id,
-                     shared_ptr<node_class>(new nurbs_swept_surface_class(b)));
-    b.add_node_class(nurbs_swung_surface_class::id,
-                     shared_ptr<node_class>(new nurbs_swung_surface_class(b)));
-    b.add_node_class(nurbs_texture_coordinate_class::id,
-                     shared_ptr<node_class>(
-                         new nurbs_texture_coordinate_class(b)));
-    b.add_node_class(nurbs_trimmed_surface_class::id,
-                     shared_ptr<node_class>(
-                         new nurbs_trimmed_surface_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(contour2d_metatype::id,
+                        shared_ptr<node_metatype>(new contour2d_metatype(b)));
+    b.add_node_metatype(contour_polyline2d_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new contour_polyline2d_metatype(b)));
+    b.add_node_metatype(coordinate_double_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new coordinate_double_metatype(b)));
+    b.add_node_metatype(nurbs_curve_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_curve_metatype(b)));
+    b.add_node_metatype(nurbs_curve2d_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_curve2d_metatype(b)));
+    b.add_node_metatype(nurbs_orientation_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_orientation_interpolator_metatype(b)));
+    b.add_node_metatype(nurbs_patch_surface_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_patch_surface_metatype(b)));
+    b.add_node_metatype(nurbs_position_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_position_interpolator_metatype(b)));
+    b.add_node_metatype(nurbs_set_metatype::id,
+                        shared_ptr<node_metatype>(new nurbs_set_metatype(b)));
+    b.add_node_metatype(nurbs_surface_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_surface_interpolator_metatype(b)));
+    b.add_node_metatype(nurbs_swept_surface_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_swept_surface_metatype(b)));
+    b.add_node_metatype(nurbs_swung_surface_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_swung_surface_metatype(b)));
+    b.add_node_metatype(nurbs_texture_coordinate_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_texture_coordinate_metatype(b)));
+    b.add_node_metatype(nurbs_trimmed_surface_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new nurbs_trimmed_surface_metatype(b)));
 }
 
 namespace {
@@ -336,7 +343,7 @@ namespace {
     class OPENVRML_LOCAL contour2d_node :
         public abstract_node<contour2d_node> {
 
-        friend class contour2d_class;
+        friend class contour2d_metatype;
 
         class add_children_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -375,7 +382,7 @@ namespace {
     class OPENVRML_LOCAL contour_polyline2d_node :
         public abstract_node<contour_polyline2d_node> {
 
-        friend class contour_polyline2d_class;
+        friend class contour_polyline2d_metatype;
 
         exposedfield<mfvec2f> point_;
 
@@ -389,7 +396,7 @@ namespace {
     class OPENVRML_LOCAL coordinate_double_node :
         public abstract_node<coordinate_double_node> {
 
-        friend class coordinate_double_class;
+        friend class coordinate_double_metatype;
 
         exposedfield<mfvec3d> point_;
 
@@ -405,7 +412,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class nurbs_curve_class;
+        friend class nurbs_curve_metatype;
 
         exposedfield<sfnode> control_point_;
         exposedfield<sfint32> tessellation_;
@@ -428,7 +435,7 @@ namespace {
     class OPENVRML_LOCAL nurbs_curve2d_node :
         public abstract_node<nurbs_curve2d_node> {
 
-        friend class nurbs_curve2d_class;
+        friend class nurbs_curve2d_metatype;
 
         exposedfield<mfvec2d> control_point_;
         exposedfield<sfint32> tessellation_;
@@ -447,7 +454,7 @@ namespace {
         public abstract_node<nurbs_orientation_interpolator_node>,
         public child_node {
 
-        friend class nurbs_orientation_interpolator_class;
+        friend class nurbs_orientation_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -482,7 +489,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class nurbs_patch_surface_class;
+        friend class nurbs_patch_surface_metatype;
 
         exposedfield<sfnode> control_point_;
         exposedfield<sfnode> tex_coord_;
@@ -515,7 +522,7 @@ namespace {
         public abstract_node<nurbs_position_interpolator_node>,
         public child_node {
 
-        friend class nurbs_position_interpolator_class;
+        friend class nurbs_position_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -549,7 +556,7 @@ namespace {
         public abstract_node<nurbs_set_node>,
         public child_node {
 
-        friend class nurbs_set_class;
+        friend class nurbs_set_metatype;
 
         class add_geometry_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -594,7 +601,7 @@ namespace {
         public abstract_node<nurbs_surface_interpolator_node>,
         public child_node {
 
-        friend class nurbs_surface_interpolator_class;
+        friend class nurbs_surface_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sfvec2f_listener {
@@ -634,7 +641,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class nurbs_swept_surface_class;
+        friend class nurbs_swept_surface_metatype;
 
         exposedfield<sfnode> cross_section_curve_;
         exposedfield<sfnode> trajectory_curve_;
@@ -658,7 +665,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class nurbs_swung_surface_class;
+        friend class nurbs_swung_surface_metatype;
 
         exposedfield<sfnode> componentcurve_;
         exposedfield<sfnode> trajectory_curve_;
@@ -680,7 +687,7 @@ namespace {
     class OPENVRML_LOCAL nurbs_texture_coordinate_node :
         public abstract_node<nurbs_texture_coordinate_node> {
 
-        friend class nurbs_texture_coordinate_class;
+        friend class nurbs_texture_coordinate_metatype;
 
         exposedfield<mfvec2f> control_point_;
         exposedfield<mffloat> weight_;
@@ -703,7 +710,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class nurbs_trimmed_surface_class;
+        friend class nurbs_trimmed_surface_metatype;
 
         class add_trimming_contour_listener :
             public event_listener_base<self_t>,
@@ -762,23 +769,23 @@ namespace {
     };
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const contour2d_class::id = "urn:X-openvrml:node:Contour2D";
+    const char * const contour2d_metatype::id = "urn:X-openvrml:node:Contour2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c contour2d_class.
+     * @param browser the @c browser associated with this @c contour2d_metatype.
      */
-    contour2d_class::contour2d_class(openvrml::browser & browser):
-        node_class(contour2d_class::id, browser)
+    contour2d_metatype::contour2d_metatype(openvrml::browser & browser):
+        node_metatype(contour2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    contour2d_class::~contour2d_class() OPENVRML_NOTHROW
+    contour2d_metatype::~contour2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -787,15 +794,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating Contour2D nodes.
+     * @return a @c node_type capable of creating Contour2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by contour2d_class.
+     *                                  not supported by contour2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    contour2d_class::do_create_type(const std::string & id,
-                                    const node_interface_set & interfaces) const
+    contour2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -880,26 +888,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const contour_polyline2d_class::id =
+    const char * const contour_polyline2d_metatype::id =
         "urn:X-openvrml:node:ContourPolyline2D";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c contour_polyline2d_class.
+     *                @c contour_polyline2d_metatype.
      */
-    contour_polyline2d_class::
-    contour_polyline2d_class(openvrml::browser & browser):
-        node_class(contour_polyline2d_class::id, browser)
+    contour_polyline2d_metatype::
+    contour_polyline2d_metatype(openvrml::browser & browser):
+        node_metatype(contour_polyline2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    contour_polyline2d_class::~contour_polyline2d_class() OPENVRML_NOTHROW
+    contour_polyline2d_metatype::~contour_polyline2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -908,15 +916,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating ContourPolyline2D nodes.
+     * @return a @c node_type capable of creating ContourPolyline2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by contour_polyline2d_class.
+     *                                  not supported by contour_polyline2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    contour_polyline2d_class::do_create_type(const std::string & id,
-                                             const node_interface_set & interfaces) const
+    contour_polyline2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -984,26 +993,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const coordinate_double_class::id =
+    const char * const coordinate_double_metatype::id =
         "urn:X-openvrml:node:CoordinateDouble";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c coordinate_double_class.
+     *                @c coordinate_double_metatype.
      */
-    coordinate_double_class::
-    coordinate_double_class(openvrml::browser & browser):
-        node_class(coordinate_double_class::id, browser)
+    coordinate_double_metatype::
+    coordinate_double_metatype(openvrml::browser & browser):
+        node_metatype(coordinate_double_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    coordinate_double_class::~coordinate_double_class() OPENVRML_NOTHROW
+    coordinate_double_metatype::~coordinate_double_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1012,15 +1021,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating CoordinateDouble nodes.
+     * @return a @c node_type capable of creating CoordinateDouble nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by coordinate_double_class.
+     *                                  not supported by coordinate_double_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    coordinate_double_class::do_create_type(const std::string & id,
-                                            const node_interface_set & interfaces) const
+    coordinate_double_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -1083,24 +1093,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_curve_class::id =
+    const char * const nurbs_curve_metatype::id =
         "urn:X-openvrml:node:NurbsCurve";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c nurbs_curve_class.
+     * @param browser the @c browser associated with this @c nurbs_curve_metatype.
      */
-    nurbs_curve_class::nurbs_curve_class(openvrml::browser & browser):
-        node_class(nurbs_curve_class::id, browser)
+    nurbs_curve_metatype::nurbs_curve_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_curve_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_curve_class::~nurbs_curve_class() OPENVRML_NOTHROW
+    nurbs_curve_metatype::~nurbs_curve_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1109,15 +1119,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsCurve nodes.
+     * @return a @c node_type capable of creating NurbsCurve nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_curve_class.
+     *                                  not supported by nurbs_curve_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_curve_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+    nurbs_curve_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -1248,25 +1259,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_curve2d_class::id =
+    const char * const nurbs_curve2d_metatype::id =
         "urn:X-openvrml:node:NurbsCurve2D";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_curve2d_class.
+     *                @c nurbs_curve2d_metatype.
      */
-    nurbs_curve2d_class::nurbs_curve2d_class(openvrml::browser & browser):
-        node_class(nurbs_curve2d_class::id, browser)
+    nurbs_curve2d_metatype::nurbs_curve2d_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_curve2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_curve2d_class::~nurbs_curve2d_class() OPENVRML_NOTHROW
+    nurbs_curve2d_metatype::~nurbs_curve2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1275,15 +1286,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsCurve2D nodes.
+     * @return a @c node_type capable of creating NurbsCurve2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_curve2d_class.
+     *                                  not supported by nurbs_curve2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_curve2d_class::do_create_type(const std::string & id,
-                                        const node_interface_set & interfaces) const
+    nurbs_curve2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -1414,26 +1426,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_orientation_interpolator_class::id =
+    const char * const nurbs_orientation_interpolator_metatype::id =
         "urn:X-openvrml:node:NurbsOrientationInterpolator";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_orientation_interpolator_class.
+     *                @c nurbs_orientation_interpolator_metatype.
      */
-    nurbs_orientation_interpolator_class::
-    nurbs_orientation_interpolator_class(openvrml::browser & browser):
-        node_class(nurbs_orientation_interpolator_class::id, browser)
+    nurbs_orientation_interpolator_metatype::
+    nurbs_orientation_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_orientation_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_orientation_interpolator_class::~nurbs_orientation_interpolator_class() OPENVRML_NOTHROW
+    nurbs_orientation_interpolator_metatype::~nurbs_orientation_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1442,15 +1454,17 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsOrientationInterpolator nodes.
+     * @return a @c node_type capable of creating NurbsOrientationInterpolator
+     *         nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_orientation_interpolator_class.
+     *                                  not supported by nurbs_orientation_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_orientation_interpolator_class::do_create_type(const std::string & id,
-                                                         const node_interface_set & interfaces) const
+    nurbs_orientation_interpolator_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -1592,26 +1606,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_patch_surface_class::id =
+    const char * const nurbs_patch_surface_metatype::id =
         "urn:X-openvrml:node:NurbsPatchSurface";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_patch_surface_class.
+     *                @c nurbs_patch_surface_metatype.
      */
-    nurbs_patch_surface_class::
-    nurbs_patch_surface_class(openvrml::browser & browser):
-        node_class(nurbs_patch_surface_class::id, browser)
+    nurbs_patch_surface_metatype::
+    nurbs_patch_surface_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_patch_surface_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_patch_surface_class::~nurbs_patch_surface_class() OPENVRML_NOTHROW
+    nurbs_patch_surface_metatype::~nurbs_patch_surface_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1620,15 +1634,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsPatchSurface nodes.
+     * @return a @c node_type capable of creating NurbsPatchSurface nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_patch_surface_class.
+     *                                  not supported by nurbs_patch_surface_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_patch_surface_class::do_create_type(const std::string & id,
-                                              const node_interface_set & interfaces) const
+    nurbs_patch_surface_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 15> supported_interfaces_t;
@@ -1857,26 +1872,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_position_interpolator_class::id =
+    const char * const nurbs_position_interpolator_metatype::id =
         "urn:X-openvrml:node:NurbsPositionInterpolator";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_position_interpolator_class.
+     *                @c nurbs_position_interpolator_metatype.
      */
-    nurbs_position_interpolator_class::
-    nurbs_position_interpolator_class(openvrml::browser & browser):
-        node_class(nurbs_position_interpolator_class::id, browser)
+    nurbs_position_interpolator_metatype::
+    nurbs_position_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_position_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_position_interpolator_class::~nurbs_position_interpolator_class() OPENVRML_NOTHROW
+    nurbs_position_interpolator_metatype::~nurbs_position_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1885,15 +1900,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsPositionInterpolator nodes.
+     * @return a @c node_type capable of creating NurbsPositionInterpolator nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_position_interpolator_class.
+     *                                  not supported by nurbs_position_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_position_interpolator_class::do_create_type(const std::string & id,
-                                                      const node_interface_set & interfaces) const
+    nurbs_position_interpolator_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -2035,23 +2051,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_set_class::id = "urn:X-openvrml:node:NurbsSet";
+    const char * const nurbs_set_metatype::id = "urn:X-openvrml:node:NurbsSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c nurbs_set_class.
+     * @param browser the @c browser associated with this @c nurbs_set_metatype.
      */
-    nurbs_set_class::nurbs_set_class(openvrml::browser & browser):
-        node_class(nurbs_set_class::id, browser)
+    nurbs_set_metatype::nurbs_set_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_set_class::~nurbs_set_class() OPENVRML_NOTHROW
+    nurbs_set_metatype::~nurbs_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2060,15 +2076,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsSet nodes.
+     * @return a @c node_type capable of creating NurbsSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_set_class.
+     *                                  not supported by nurbs_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_set_class::do_create_type(const std::string & id,
-                                    const node_interface_set & interfaces) const
+    nurbs_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -2192,26 +2209,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_surface_interpolator_class::id =
+    const char * const nurbs_surface_interpolator_metatype::id =
         "urn:X-openvrml:node:NurbsSurfaceInterpolator";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_surface_interpolator_class.
+     *                @c nurbs_surface_interpolator_metatype.
      */
-    nurbs_surface_interpolator_class::
-    nurbs_surface_interpolator_class(openvrml::browser & browser):
-        node_class(nurbs_surface_interpolator_class::id, browser)
+    nurbs_surface_interpolator_metatype::
+    nurbs_surface_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_surface_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_surface_interpolator_class::~nurbs_surface_interpolator_class() OPENVRML_NOTHROW
+    nurbs_surface_interpolator_metatype::~nurbs_surface_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2220,15 +2237,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsSurfaceInterpolator nodes.
+     * @return a @c node_type capable of creating NurbsSurfaceInterpolator nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_surface_interpolator_class.
+     *                                  not supported by nurbs_surface_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_surface_interpolator_class::do_create_type(const std::string & id,
-                                                     const node_interface_set & interfaces) const
+    nurbs_surface_interpolator_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
@@ -2403,26 +2421,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_swept_surface_class::id =
+    const char * const nurbs_swept_surface_metatype::id =
         "urn:X-openvrml:node:NurbsSweptSurface";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_swept_surface_class.
+     *                @c nurbs_swept_surface_metatype.
      */
-    nurbs_swept_surface_class::
-    nurbs_swept_surface_class(openvrml::browser & browser):
-        node_class(nurbs_swept_surface_class::id, browser)
+    nurbs_swept_surface_metatype::
+    nurbs_swept_surface_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_swept_surface_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_swept_surface_class::~nurbs_swept_surface_class() OPENVRML_NOTHROW
+    nurbs_swept_surface_metatype::~nurbs_swept_surface_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2431,15 +2449,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsSweptSurface nodes.
+     * @return a @c node_type capable of creating NurbsSweptSurface nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_swept_surface_class.
+     *                                  not supported by nurbs_swept_surface_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_swept_surface_class::do_create_type(const std::string & id,
-                                              const node_interface_set & interfaces) const
+    nurbs_swept_surface_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -2541,26 +2560,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_swung_surface_class::id =
+    const char * const nurbs_swung_surface_metatype::id =
         "urn:X-openvrml:node:NurbsSwungSurface";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_swung_surface_class.
+     *                @c nurbs_swung_surface_metatype.
      */
-    nurbs_swung_surface_class::
-    nurbs_swung_surface_class(openvrml::browser & browser):
-        node_class(nurbs_swung_surface_class::id, browser)
+    nurbs_swung_surface_metatype::
+    nurbs_swung_surface_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_swung_surface_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_swung_surface_class::~nurbs_swung_surface_class() OPENVRML_NOTHROW
+    nurbs_swung_surface_metatype::~nurbs_swung_surface_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2569,15 +2588,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsSwungSurface nodes.
+     * @return a @c node_type capable of creating NurbsSwungSurface nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_swung_surface_class.
+     *                                  not supported by nurbs_swung_surface_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_swung_surface_class::do_create_type(const std::string & id,
-                                              const node_interface_set & interfaces) const
+    nurbs_swung_surface_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -2679,26 +2699,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_texture_coordinate_class::id =
+    const char * const nurbs_texture_coordinate_metatype::id =
         "urn:X-openvrml:node:NurbsTextureCoordinate";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_texture_coordinate_class.
+     *                @c nurbs_texture_coordinate_metatype.
      */
-    nurbs_texture_coordinate_class::
-    nurbs_texture_coordinate_class(openvrml::browser & browser):
-        node_class(nurbs_texture_coordinate_class::id, browser)
+    nurbs_texture_coordinate_metatype::
+    nurbs_texture_coordinate_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_texture_coordinate_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_texture_coordinate_class::~nurbs_texture_coordinate_class() OPENVRML_NOTHROW
+    nurbs_texture_coordinate_metatype::~nurbs_texture_coordinate_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2707,15 +2727,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsTextureCoordinate nodes.
+     * @return a @c node_type capable of creating NurbsTextureCoordinate nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_texture_coordinate_class.
+     *                                  not supported by nurbs_texture_coordinate_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_texture_coordinate_class::do_create_type(const std::string & id,
-                                                   const node_interface_set & interfaces) const
+    nurbs_texture_coordinate_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
@@ -2857,26 +2878,27 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const nurbs_trimmed_surface_class::id =
+    const char * const nurbs_trimmed_surface_metatype::id =
         "urn:X-openvrml:node:NurbsTrimmedSurface";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c nurbs_trimmed_surface_class.
+     *                @c nurbs_trimmed_surface_metatype.
      */
-    nurbs_trimmed_surface_class::
-    nurbs_trimmed_surface_class(openvrml::browser & browser):
-        node_class(nurbs_trimmed_surface_class::id, browser)
+    nurbs_trimmed_surface_metatype::
+    nurbs_trimmed_surface_metatype(openvrml::browser & browser):
+        node_metatype(nurbs_trimmed_surface_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    nurbs_trimmed_surface_class::~nurbs_trimmed_surface_class() OPENVRML_NOTHROW
+    nurbs_trimmed_surface_metatype::~nurbs_trimmed_surface_metatype()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -2885,15 +2907,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating NurbsTrimmedSurface nodes.
+     * @return a @c node_type capable of creating NurbsTrimmedSurface nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by nurbs_trimmed_surface_class.
+     *                                  not supported by nurbs_trimmed_surface_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    nurbs_trimmed_surface_class::do_create_type(const std::string & id,
-                                                const node_interface_set & interfaces) const
+    nurbs_trimmed_surface_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 18> supported_interfaces_t;
@@ -3169,7 +3192,7 @@ namespace {
      */
 
     /**
-     * @var contour2d_node::Contour2D_class
+     * @var contour2d_node::contour2d_metatype
      *
      * @brief Class object for Contour2D nodes.
      */
@@ -3232,8 +3255,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     contour2d_node::
     contour2d_node(const node_type & type,
@@ -3259,7 +3282,7 @@ namespace {
      */
 
     /**
-     * @var contour_polyline2d_node::ContourPolyline2D_class
+     * @var contour_polyline2d_node::contour_polyline2d_metatype
      *
      * @brief Class object for ContourPolyline2D nodes.
      */
@@ -3274,8 +3297,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     contour_polyline2d_node::
     contour_polyline2d_node(const node_type & type,
@@ -3299,7 +3322,7 @@ namespace {
      */
 
     /**
-     * @var coordinate_double_node::CoordinateDouble_class
+     * @var coordinate_double_node::coordinate_double_metatype
      *
      * @brief Class object for CoordinateDouble nodes.
      */
@@ -3314,8 +3337,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     coordinate_double_node::
     coordinate_double_node(const node_type & type,
@@ -3339,7 +3362,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_curve_node::NurbsCurve_class
+     * @var nurbs_curve_node::NurbsCurve_metatype
      *
      * @brief Class object for NurbsCurve nodes.
      */
@@ -3413,8 +3436,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_curve_node::
     nurbs_curve_node(const node_type & type,
@@ -3444,7 +3467,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_curve2d_node::NurbsCurve2D_class
+     * @var nurbs_curve2d_node::NurbsCurve2D_metatype
      *
      * @brief Class object for NurbsCurve2D nodes.
      */
@@ -3489,8 +3512,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_curve2d_node::
     nurbs_curve2d_node(const node_type & type,
@@ -3517,7 +3540,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::NurbsOrientationInterpolator_class
+     * @var nurbs_orientation_interpolator_node::nurbs_orientation_interpolator_metatype
      *
      * @brief Class object for NurbsOrientationInterpolator nodes.
      */
@@ -3580,12 +3603,13 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_orientation_interpolator_node::
-    nurbs_orientation_interpolator_node(const node_type & type,
-                                        const boost::shared_ptr<openvrml::scope> & scope):
+    nurbs_orientation_interpolator_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
         abstract_node<self_t>(type, scope),
@@ -3601,7 +3625,8 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_orientation_interpolator_node::~nurbs_orientation_interpolator_node() OPENVRML_NOTHROW
+    nurbs_orientation_interpolator_node::~nurbs_orientation_interpolator_node()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -3612,7 +3637,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_patch_surface_node::NurbsPatchSurface_class
+     * @var nurbs_patch_surface_node::nurbs_patch_surface_metatype
      *
      * @brief Class object for NurbsPatchSurface nodes.
      */
@@ -3734,8 +3759,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_patch_surface_node::
     nurbs_patch_surface_node(const node_type & type,
@@ -3769,7 +3794,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_position_interpolator_node::NurbsPositionInterpolator_class
+     * @var nurbs_position_interpolator_node::nurbs_position_interpolator_metatype
      *
      * @brief Class object for NurbsPositionInterpolator nodes.
      */
@@ -3832,12 +3857,13 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_position_interpolator_node::
-    nurbs_position_interpolator_node(const node_type & type,
-                                     const boost::shared_ptr<openvrml::scope> & scope):
+    nurbs_position_interpolator_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
         abstract_node<self_t>(type, scope),
@@ -3853,7 +3879,8 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_position_interpolator_node::~nurbs_position_interpolator_node() OPENVRML_NOTHROW
+    nurbs_position_interpolator_node::~nurbs_position_interpolator_node()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -3864,7 +3891,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_set_node::NurbsSet_class
+     * @var nurbs_set_node::nurbs_set_metatype
      *
      * @brief Class object for NurbsSet nodes.
      */
@@ -3945,8 +3972,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     nurbs_set_node::
     nurbs_set_node(const node_type & type,
@@ -3976,7 +4003,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_surface_interpolator_node::NurbsSurfaceInterpolator_class
+     * @var nurbs_surface_interpolator_node::nurbs_surface_interpolator_metatype
      *
      * @brief Class object for NurbsSurfaceInterpolator nodes.
      */
@@ -4070,11 +4097,12 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     nurbs_surface_interpolator_node::
-    nurbs_surface_interpolator_node(const node_type & type,
-                                    const boost::shared_ptr<openvrml::scope> & scope):
+    nurbs_surface_interpolator_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
         abstract_node<self_t>(type, scope),
@@ -4091,7 +4119,8 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_surface_interpolator_node::~nurbs_surface_interpolator_node() OPENVRML_NOTHROW
+    nurbs_surface_interpolator_node::~nurbs_surface_interpolator_node()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -4102,7 +4131,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_swept_surface_node::NurbsSweptSurface_class
+     * @var nurbs_swept_surface_node::nurbs_swept_surface_metatype
      *
      * @brief Class object for NurbsSweptSurface nodes.
      */
@@ -4195,7 +4224,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_swung_surface_node::NurbsSwungSurface_class
+     * @var nurbs_swung_surface_node::nurbs_swung_surface_metatype
      *
      * @brief Class object for NurbsSwungSurface nodes.
      */
@@ -4288,7 +4317,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_texture_coordinate_node::NurbsTextureCoordinate_class
+     * @var nurbs_texture_coordinate_node::nurbs_texture_coordinate_metatype
      *
      * @brief Class object for NurbsTextureCoordinate nodes.
      */
@@ -4349,8 +4378,9 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     nurbs_texture_coordinate_node::
-    nurbs_texture_coordinate_node(const node_type & type,
-                                  const boost::shared_ptr<openvrml::scope> & scope):
+    nurbs_texture_coordinate_node(
+        const node_type & type,
+        const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         abstract_node<self_t>(type, scope),
         control_point_(*this),
@@ -4362,7 +4392,8 @@ namespace {
     /**
      * @brief Destroy.
      */
-    nurbs_texture_coordinate_node::~nurbs_texture_coordinate_node() OPENVRML_NOTHROW
+    nurbs_texture_coordinate_node::~nurbs_texture_coordinate_node()
+        OPENVRML_NOTHROW
     {}
 
 
@@ -4373,7 +4404,7 @@ namespace {
      */
 
     /**
-     * @var nurbs_trimmed_surface_node::NurbsTrimmedSurface_class
+     * @var nurbs_trimmed_surface_node::nurbs_trimmed_surface_metatype
      *
      * @brief Class object for NurbsTrimmedSurface nodes.
      */

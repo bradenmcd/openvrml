@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for LoadSensor nodes.
      */
-    class OPENVRML_LOCAL load_sensor_class : public node_class {
+    class OPENVRML_LOCAL load_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit load_sensor_class(openvrml::browser & browser);
-        virtual ~load_sensor_class() OPENVRML_NOTHROW;
+        explicit load_sensor_metatype(openvrml::browser & browser);
+        virtual ~load_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -53,21 +53,24 @@ namespace {
     };
 }
 
-void register_networking_node_classes(openvrml::browser & b)
+void register_networking_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(load_sensor_class::id,
-                     shared_ptr<node_class>(new load_sensor_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(load_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new load_sensor_metatype(b)));
 }
 
 namespace {
 
     using namespace openvrml_;
 
-    class OPENVRML_LOCAL load_sensor_node : public abstract_node<load_sensor_node>,
-                                            public child_node {
-        friend class load_sensor_class;
+    class OPENVRML_LOCAL load_sensor_node :
+        public abstract_node<load_sensor_node>,
+        public child_node {
+
+        friend class load_sensor_metatype;
 
         exposedfield<sfbool> enabled_;
         exposedfield<sftime> timeout_;
@@ -89,24 +92,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const load_sensor_class::id =
+    const char * const load_sensor_metatype::id =
         "urn:X-openvrml:node:LoadSensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this load_sensor_class.
+     * @param browser the browser associated with this load_sensor_metatype.
      */
-    load_sensor_class::load_sensor_class(openvrml::browser & browser):
-        node_class(load_sensor_class::id, browser)
+    load_sensor_metatype::load_sensor_metatype(openvrml::browser & browser):
+        node_metatype(load_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    load_sensor_class::~load_sensor_class() OPENVRML_NOTHROW
+    load_sensor_metatype::~load_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -118,11 +121,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating LoadSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by load_sensor_class.
+     *                                  not supported by load_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    load_sensor_class::do_create_type(const std::string & id,
+    load_sensor_metatype::do_create_type(const std::string & id,
                                       const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
@@ -274,7 +277,7 @@ namespace {
      */
 
     /**
-     * @var load_sensor_node::LoadSensor_class
+     * @var load_sensor_node::load_sensor_metatype
      *
      * @brief Class object for LoadSensor nodes.
      */

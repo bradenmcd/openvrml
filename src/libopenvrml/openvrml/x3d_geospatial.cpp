@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for GeoCoordinate nodes.
      */
-    class OPENVRML_LOCAL geo_coordinate_class : public node_class {
+    class OPENVRML_LOCAL geo_coordinate_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_coordinate_class(openvrml::browser & browser);
-        virtual ~geo_coordinate_class() OPENVRML_NOTHROW;
+        explicit geo_coordinate_metatype(openvrml::browser & browser);
+        virtual ~geo_coordinate_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for GeoElevationGrid nodes.
      */
-    class OPENVRML_LOCAL geo_elevation_grid_class : public node_class {
+    class OPENVRML_LOCAL geo_elevation_grid_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_elevation_grid_class(openvrml::browser & browser);
-        virtual ~geo_elevation_grid_class() OPENVRML_NOTHROW;
+        explicit geo_elevation_grid_metatype(openvrml::browser & browser);
+        virtual ~geo_elevation_grid_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for GeoLocation nodes.
      */
-    class OPENVRML_LOCAL geo_location_class : public node_class {
+    class OPENVRML_LOCAL geo_location_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_location_class(openvrml::browser & browser);
-        virtual ~geo_location_class() OPENVRML_NOTHROW;
+        explicit geo_location_metatype(openvrml::browser & browser);
+        virtual ~geo_location_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for GeoLOD nodes.
      */
-    class OPENVRML_LOCAL geo_lod_class : public node_class {
+    class OPENVRML_LOCAL geo_lod_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_lod_class(openvrml::browser & browser);
-        virtual ~geo_lod_class() OPENVRML_NOTHROW;
+        explicit geo_lod_metatype(openvrml::browser & browser);
+        virtual ~geo_lod_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for GeoMetadata nodes.
      */
-    class OPENVRML_LOCAL geo_metadata_class : public node_class {
+    class OPENVRML_LOCAL geo_metadata_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_metadata_class(openvrml::browser & browser);
-        virtual ~geo_metadata_class() OPENVRML_NOTHROW;
+        explicit geo_metadata_metatype(openvrml::browser & browser);
+        virtual ~geo_metadata_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -128,12 +128,12 @@ namespace {
     /**
      * @brief Class object for GeoOrigin nodes.
      */
-    class OPENVRML_LOCAL geo_origin_class : public node_class {
+    class OPENVRML_LOCAL geo_origin_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_origin_class(openvrml::browser & browser);
-        virtual ~geo_origin_class() OPENVRML_NOTHROW;
+        explicit geo_origin_metatype(openvrml::browser & browser);
+        virtual ~geo_origin_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -146,12 +146,12 @@ namespace {
     /**
      * @brief Class object for GeoPositionInterpolator nodes.
      */
-    class OPENVRML_LOCAL geo_position_interpolator_class : public node_class {
+    class OPENVRML_LOCAL geo_position_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_position_interpolator_class(openvrml::browser & browser);
-        virtual ~geo_position_interpolator_class() OPENVRML_NOTHROW;
+        explicit geo_position_interpolator_metatype(openvrml::browser & browser);
+        virtual ~geo_position_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -164,12 +164,12 @@ namespace {
     /**
      * @brief Class object for GeoTouchSensor nodes.
      */
-    class OPENVRML_LOCAL geo_touch_sensor_class : public node_class {
+    class OPENVRML_LOCAL geo_touch_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_touch_sensor_class(openvrml::browser & browser);
-        virtual ~geo_touch_sensor_class() OPENVRML_NOTHROW;
+        explicit geo_touch_sensor_metatype(openvrml::browser & browser);
+        virtual ~geo_touch_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -182,12 +182,12 @@ namespace {
     /**
      * @brief Class object for GeoViewpoint nodes.
      */
-    class OPENVRML_LOCAL geo_viewpoint_class : public node_class {
+    class OPENVRML_LOCAL geo_viewpoint_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit geo_viewpoint_class(openvrml::browser & browser);
-        virtual ~geo_viewpoint_class() OPENVRML_NOTHROW;
+        explicit geo_viewpoint_metatype(openvrml::browser & browser);
+        virtual ~geo_viewpoint_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -197,29 +197,35 @@ namespace {
     };
 }
 
-void register_geospatial_node_classes(openvrml::browser & b)
+void register_geospatial_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(geo_coordinate_class::id,
-                     shared_ptr<node_class>(new geo_coordinate_class(b)));
-    b.add_node_class(geo_elevation_grid_class::id,
-                     shared_ptr<node_class>(new geo_elevation_grid_class(b)));
-    b.add_node_class(geo_location_class::id,
-                     shared_ptr<node_class>(new geo_location_class(b)));
-    b.add_node_class(geo_lod_class::id,
-                     shared_ptr<node_class>(new geo_lod_class(b)));
-    b.add_node_class(geo_metadata_class::id,
-                     shared_ptr<node_class>(new geo_metadata_class(b)));
-    b.add_node_class(geo_origin_class::id,
-                     shared_ptr<node_class>(new geo_origin_class(b)));
-    b.add_node_class(geo_position_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new geo_position_interpolator_class(b)));
-    b.add_node_class(geo_touch_sensor_class::id,
-                     shared_ptr<node_class>(new geo_touch_sensor_class(b)));
-    b.add_node_class(geo_viewpoint_class::id,
-                     shared_ptr<node_class>(new geo_viewpoint_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(geo_coordinate_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_coordinate_metatype(b)));
+    b.add_node_metatype(geo_elevation_grid_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_elevation_grid_metatype(b)));
+    b.add_node_metatype(geo_location_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_location_metatype(b)));
+    b.add_node_metatype(geo_lod_metatype::id,
+                        shared_ptr<node_metatype>(new geo_lod_metatype(b)));
+    b.add_node_metatype(geo_metadata_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_metadata_metatype(b)));
+    b.add_node_metatype(geo_origin_metatype::id,
+                        shared_ptr<node_metatype>(new geo_origin_metatype(b)));
+    b.add_node_metatype(geo_position_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_position_interpolator_metatype(b)));
+    b.add_node_metatype(geo_touch_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_touch_sensor_metatype(b)));
+    b.add_node_metatype(geo_viewpoint_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new geo_viewpoint_metatype(b)));
 }
 
 namespace {
@@ -228,7 +234,7 @@ namespace {
     class OPENVRML_LOCAL geo_coordinate_node :
         public abstract_node<geo_coordinate_node> {
 
-        friend class geo_coordinate_class;
+        friend class geo_coordinate_metatype;
 
         exposedfield<mfvec3d> point_;
         sfnode geo_origin_;
@@ -245,12 +251,10 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class geo_elevation_grid_class;
+        friend class geo_elevation_grid_metatype;
 
-        class set_height_listener :
-                public event_listener_base<self_t>,
-                public mfdouble_listener
-        {
+        class set_height_listener : public event_listener_base<self_t>,
+                                    public mfdouble_listener {
         public:
             explicit set_height_listener(self_t & node);
             virtual ~set_height_listener() OPENVRML_NOTHROW;
@@ -297,7 +301,7 @@ namespace {
         public abstract_node<geo_location_node>,
         public child_node {
 
-        friend class geo_location_class;
+        friend class geo_location_metatype;
 
         class add_children_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -340,7 +344,7 @@ namespace {
 
     class OPENVRML_LOCAL geo_lod_node : public abstract_node<geo_lod_node>,
                                         public child_node {
-        friend class geo_lod_class;
+        friend class geo_lod_metatype;
 
         class add_children_listener :
                 public event_listener_base<self_t>,
@@ -395,7 +399,7 @@ namespace {
         public abstract_node<geo_metadata_node>,
         public child_node {
 
-        friend class geo_metadata_class;
+        friend class geo_metadata_metatype;
 
         exposedfield<mfnode> data_;
         exposedfield<mfstring> summary_;
@@ -410,7 +414,7 @@ namespace {
     class OPENVRML_LOCAL geo_origin_node :
         public abstract_node<geo_origin_node> {
 
-        friend class geo_origin_class;
+        friend class geo_origin_metatype;
 
         exposedfield<sfvec3d> geo_coords_;
         exposedfield<mfstring> geo_system_;
@@ -426,12 +430,10 @@ namespace {
         public abstract_node<geo_position_interpolator_node>,
         public child_node {
 
-        friend class geo_position_interpolator_class;
+        friend class geo_position_interpolator_metatype;
 
-        class set_fraction_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+        class set_fraction_listener : public event_listener_base<self_t>,
+                                      public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() OPENVRML_NOTHROW;
@@ -463,7 +465,7 @@ namespace {
         public abstract_node<geo_touch_sensor_node>,
         public child_node {
 
-        friend class geo_touch_sensor_class;
+        friend class geo_touch_sensor_metatype;
 
         exposedfield<sfbool> enabled_;
         sfvec3f hit_normal_changed_;
@@ -494,7 +496,7 @@ namespace {
         public abstract_node<geo_viewpoint_node>,
         public child_node {
 
-        friend class geo_viewpoint_class;
+        friend class geo_viewpoint_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -558,25 +560,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_coordinate_class::id =
+    const char * const geo_coordinate_metatype::id =
         "urn:X-openvrml:node:GeoCoordinate";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_coordinate_class.
+     *                @c geo_coordinate_metatype.
      */
-    geo_coordinate_class::geo_coordinate_class(openvrml::browser & browser):
-        node_class(geo_coordinate_class::id, browser)
+    geo_coordinate_metatype::geo_coordinate_metatype(openvrml::browser & browser):
+        node_metatype(geo_coordinate_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_coordinate_class::~geo_coordinate_class() OPENVRML_NOTHROW
+    geo_coordinate_metatype::~geo_coordinate_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -585,15 +587,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoCoordinate nodes.
+     * @return a @c node_type capable of creating GeoCoordinate nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_coordinate_class.
+     *                                  not supported by geo_coordinate_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_coordinate_class::do_create_type(const std::string & id,
-                                         const node_interface_set & interfaces) const
+    geo_coordinate_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -676,26 +679,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_elevation_grid_class::id =
+    const char * const geo_elevation_grid_metatype::id =
         "urn:X-openvrml:node:GeoElevationGrid";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_elevation_grid_class.
+     *                @c geo_elevation_grid_metatype.
      */
-    geo_elevation_grid_class::
-    geo_elevation_grid_class(openvrml::browser & browser):
-        node_class(geo_elevation_grid_class::id, browser)
+    geo_elevation_grid_metatype::
+    geo_elevation_grid_metatype(openvrml::browser & browser):
+        node_metatype(geo_elevation_grid_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_elevation_grid_class::~geo_elevation_grid_class() OPENVRML_NOTHROW
+    geo_elevation_grid_metatype::~geo_elevation_grid_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -704,15 +707,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoElevationGrid nodes.
+     * @return a @c node_type capable of creating GeoElevationGrid nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_elevation_grid_class.
+     *                                  not supported by geo_elevation_grid_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_elevation_grid_class::do_create_type(const std::string & id,
-                                             const node_interface_set & interfaces) const
+    geo_elevation_grid_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 19> supported_interfaces_t;
@@ -973,25 +977,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_location_class::id =
+    const char * const geo_location_metatype::id =
         "urn:X-openvrml:node:GeoLocation";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_location_class.
+     *                @c geo_location_metatype.
      */
-    geo_location_class::geo_location_class(openvrml::browser & browser):
-        node_class(geo_location_class::id, browser)
+    geo_location_metatype::geo_location_metatype(openvrml::browser & browser):
+        node_metatype(geo_location_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_location_class::~geo_location_class() OPENVRML_NOTHROW
+    geo_location_metatype::~geo_location_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1000,15 +1004,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoLocation nodes.
+     * @return a @c node_type capable of creating GeoLocation nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_location_class.
+     *                                  not supported by geo_location_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_location_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    geo_location_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
@@ -1152,24 +1157,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_lod_class::id =
+    const char * const geo_lod_metatype::id =
         "urn:X-openvrml:node:GeoLOD";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c geo_lod_class.
+     * @param browser the @c browser associated with this @c geo_lod_metatype.
      */
-    geo_lod_class::geo_lod_class(openvrml::browser & browser):
-        node_class(geo_lod_class::id, browser)
+    geo_lod_metatype::geo_lod_metatype(openvrml::browser & browser):
+        node_metatype(geo_lod_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_lod_class::~geo_lod_class() OPENVRML_NOTHROW
+    geo_lod_metatype::~geo_lod_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1178,15 +1183,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoLOD nodes.
+     * @return a @c node_type capable of creating GeoLOD nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_lod_class.
+     *                                  not supported by geo_lod_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_lod_class::do_create_type(const std::string & id,
-                                  const node_interface_set & interfaces) const
+    geo_lod_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 16> supported_interfaces_t;
@@ -1383,25 +1389,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_metadata_class::id =
+    const char * const geo_metadata_metatype::id =
         "urn:X-openvrml:node:GeoMetadata";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_metadata_class.
+     *                @c geo_metadata_metatype.
      */
-    geo_metadata_class::geo_metadata_class(openvrml::browser & browser):
-        node_class(geo_metadata_class::id, browser)
+    geo_metadata_metatype::geo_metadata_metatype(openvrml::browser & browser):
+        node_metatype(geo_metadata_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_metadata_class::~geo_metadata_class() OPENVRML_NOTHROW
+    geo_metadata_metatype::~geo_metadata_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1410,15 +1416,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoMetadata nodes.
+     * @return a @c node_type capable of creating GeoMetadata nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_metadata_class.
+     *                                  not supported by geo_metadata_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_metadata_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    geo_metadata_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -1519,24 +1526,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_origin_class::id =
+    const char * const geo_origin_metatype::id =
         "urn:X-openvrml:node:GeoOrigin";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c geo_origin_class.
+     * @param browser the @c browser associated with this @c geo_origin_metatype.
      */
-    geo_origin_class::geo_origin_class(openvrml::browser & browser):
-        node_class(geo_origin_class::id, browser)
+    geo_origin_metatype::geo_origin_metatype(openvrml::browser & browser):
+        node_metatype(geo_origin_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_origin_class::~geo_origin_class() OPENVRML_NOTHROW
+    geo_origin_metatype::~geo_origin_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1545,15 +1552,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoOrigin nodes.
+     * @return a @c node_type capable of creating GeoOrigin nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_origin_class.
+     *                                  not supported by geo_origin_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_origin_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+    geo_origin_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -1645,26 +1653,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_position_interpolator_class::id =
+    const char * const geo_position_interpolator_metatype::id =
         "urn:X-openvrml:node:GeoPositionInterpolator";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_position_interpolator_class.
+     *                @c geo_position_interpolator_metatype.
      */
-    geo_position_interpolator_class::
-    geo_position_interpolator_class(openvrml::browser & browser):
-        node_class(geo_position_interpolator_class::id, browser)
+    geo_position_interpolator_metatype::
+    geo_position_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(geo_position_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_position_interpolator_class::~geo_position_interpolator_class() OPENVRML_NOTHROW
+    geo_position_interpolator_metatype::~geo_position_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1673,15 +1681,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoPositionInterpolator nodes.
+     * @return a @c node_type capable of creating GeoPositionInterpolator nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_position_interpolator_class.
+     *                                  not supported by geo_position_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_position_interpolator_class::do_create_type(const std::string & id,
-                                                    const node_interface_set & interfaces) const
+    geo_position_interpolator_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 8> supported_interfaces_t;
@@ -1815,26 +1824,26 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_touch_sensor_class::id =
+    const char * const geo_touch_sensor_metatype::id =
         "urn:X-openvrml:node:GeoTouchSensor";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_touch_sensor_class.
+     *                @c geo_touch_sensor_metatype.
      */
-    geo_touch_sensor_class::
-    geo_touch_sensor_class(openvrml::browser & browser):
-        node_class(geo_touch_sensor_class::id, browser)
+    geo_touch_sensor_metatype::
+    geo_touch_sensor_metatype(openvrml::browser & browser):
+        node_metatype(geo_touch_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_touch_sensor_class::~geo_touch_sensor_class() OPENVRML_NOTHROW
+    geo_touch_sensor_metatype::~geo_touch_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1843,15 +1852,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoTouchSensor nodes.
+     * @return a @c node_type capable of creating GeoTouchSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_touch_sensor_class.
+     *                                  not supported by geo_touch_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_touch_sensor_class::do_create_type(const std::string & id,
-                                           const node_interface_set & interfaces) const
+    geo_touch_sensor_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
@@ -2010,25 +2020,25 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const geo_viewpoint_class::id =
+    const char * const geo_viewpoint_metatype::id =
         "urn:X-openvrml:node:GeoViewpoint";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c geo_viewpoint_class.
+     *                @c geo_viewpoint_metatype.
      */
-    geo_viewpoint_class::geo_viewpoint_class(openvrml::browser & browser):
-        node_class(geo_viewpoint_class::id, browser)
+    geo_viewpoint_metatype::geo_viewpoint_metatype(openvrml::browser & browser):
+        node_metatype(geo_viewpoint_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    geo_viewpoint_class::~geo_viewpoint_class() OPENVRML_NOTHROW
+    geo_viewpoint_metatype::~geo_viewpoint_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2037,15 +2047,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating GeoViewpoint nodes.
+     * @return a @c node_type capable of creating GeoViewpoint nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by geo_viewpoint_class.
+     *                                  not supported by geo_viewpoint_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    geo_viewpoint_class::do_create_type(const std::string & id,
-                                        const node_interface_set & interfaces) const
+    geo_viewpoint_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 16> supported_interfaces_t;
@@ -2295,7 +2306,7 @@ namespace {
      */
 
     /**
-     * @var geo_coordinate_node::GeoCoordinate_class
+     * @var geo_coordinate_node::geo_coordinate_metatype
      *
      * @brief Class object for GeoCoordinate nodes.
      */
@@ -2352,7 +2363,7 @@ namespace {
      */
 
     /**
-     * @var geo_elevation_grid_node::GeoElevationGrid_class
+     * @var geo_elevation_grid_node::geo_elevation_grid_metatype
      *
      * @brief Class object for GeoElevationGrid nodes.
      */
@@ -2492,7 +2503,7 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      *
      * @todo Implement this!
@@ -2522,7 +2533,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     geo_elevation_grid_node::
     geo_elevation_grid_node(const node_type & type,
@@ -2560,7 +2571,7 @@ namespace {
      */
 
     /**
-     * @var geo_location_node::GeoLocation_class
+     * @var geo_location_node::geo_location_metatype
      *
      * @brief Class object for GeoLocation nodes.
      */
@@ -2654,7 +2665,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     geo_location_node::
     geo_location_node(const node_type & type,
@@ -2685,7 +2696,7 @@ namespace {
      */
 
     /**
-     * @var geo_lod_node::GeoLOD_class
+     * @var geo_lod_node::geo_lod_metatype
      *
      * @brief Class object for GeoLOD nodes.
      */
@@ -2852,7 +2863,7 @@ namespace {
      */
 
     /**
-     * @var geo_metadata_node::GeoMetadata_class
+     * @var geo_metadata_node::geo_metadata_metatype
      *
      * @brief Class object for GeoMetadata nodes.
      */
@@ -2908,7 +2919,7 @@ namespace {
      */
 
     /**
-     * @var geo_origin_node::GeoOrigin_class
+     * @var geo_origin_node::geo_origin_metatype
      *
      * @brief Class object for GeoOrigin nodes.
      */
@@ -2961,7 +2972,7 @@ namespace {
      */
 
     /**
-     * @var geo_position_interpolator_node::GeoPositionInterpolator_class
+     * @var geo_position_interpolator_node::geo_position_interpolator_metatype
      *
      * @brief Class object for GeoPositionInterpolator nodes.
      */
@@ -3031,7 +3042,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     geo_position_interpolator_node::
     geo_position_interpolator_node(const node_type & type,
@@ -3062,7 +3073,7 @@ namespace {
      */
 
     /**
-     * @var geo_touch_sensor_node::GeoTouchSensor_class
+     * @var geo_touch_sensor_node::geo_touch_sensor_metatype
      *
      * @brief Class object for GeoTouchSensor nodes.
      */
@@ -3166,7 +3177,7 @@ namespace {
      */
 
     /**
-     * @var geo_viewpoint_node::GeoViewpoint_class
+     * @var geo_viewpoint_node::geo_viewpoint_metatype
      *
      * @brief Class object for GeoViewpoint nodes.
      */

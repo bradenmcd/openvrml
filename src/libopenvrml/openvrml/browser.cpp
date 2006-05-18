@@ -65,10 +65,10 @@
 
 namespace openvrml {
 
-    class OPENVRML_LOCAL null_node_class : public node_class {
+    class OPENVRML_LOCAL null_node_metatype : public node_metatype {
     public:
-        explicit null_node_class(openvrml::browser & browser) OPENVRML_NOTHROW;
-        virtual ~null_node_class() OPENVRML_NOTHROW;
+        explicit null_node_metatype(openvrml::browser & browser) OPENVRML_NOTHROW;
+        virtual ~null_node_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -80,7 +80,7 @@ namespace openvrml {
 
     class OPENVRML_LOCAL null_node_type : public node_type {
     public:
-        explicit null_node_type(null_node_class & nodeClass) OPENVRML_NOTHROW;
+        explicit null_node_type(null_node_metatype & nodeClass) OPENVRML_NOTHROW;
         virtual ~null_node_type() OPENVRML_NOTHROW;
 
     private:
@@ -100,15 +100,15 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @brief <code>node_class</code> for <code>PROTO</code>s.
+     * @brief <code>node_metatype</code> for <code>PROTO</code>s.
      *
-     * The <code>proto_node_class</code> is %OpenVRML's in-memory
+     * The <code>proto_node_metatype</code> is %OpenVRML's in-memory
      * representation of a <code>PROTO</code> (as opposed to a
      * <code>PROTO</code> instance).  Through the <code>proto_node_type</code>
      * intermediary, it facilitates spawning any number of
      * <code>proto_node</code> instances.
      */
-    class OPENVRML_LOCAL proto_node_class : public node_class {
+    class OPENVRML_LOCAL proto_node_metatype : public node_metatype {
         friend class proto_node;
         friend class proto_node_type;
         friend class proto_impl_cloner;
@@ -149,15 +149,15 @@ namespace openvrml {
         is_map_t is_map;
 
     public:
-        proto_node_class(
-            const node_class_id & id,
+        proto_node_metatype(
+            const node_metatype_id & id,
             openvrml::browser & browser,
             const node_interface_set & interfaces,
             const default_value_map_t & default_value_map,
             const std::vector<boost::intrusive_ptr<node> > & impl_nodes,
             const is_map_t & is_map,
             const routes_t & routes);
-        virtual ~proto_node_class() OPENVRML_NOTHROW;
+        virtual ~proto_node_metatype() OPENVRML_NOTHROW;
 
         virtual const boost::shared_ptr<node_type>
         do_create_type(const std::string & id,
@@ -175,7 +175,7 @@ namespace openvrml {
         node_interface_set interfaces_;
 
     public:
-        proto_node_type(const proto_node_class & node_class,
+        proto_node_type(const proto_node_metatype & node_metatype,
                         const std::string & id,
                         const node_interface_set & interfaces)
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
@@ -438,17 +438,17 @@ namespace openvrml {
      * Like a typical node implementation, <code>proto_node</code>s have a
      * many-to-one relationship with the <code>proto_node_type</code> instance
      * that creates them. And <code>proto_node_type</code> has, in turn, a
-     * many-to-one relationship with the <code>proto_node_class</code> instance
+     * many-to-one relationship with the <code>proto_node_metatype</code> instance
      * that creates them. Unlike a typical node implementation, there will very
-     * likely be more than one <code>proto_node_class</code> instance known to
+     * likely be more than one <code>proto_node_metatype</code> instance known to
      * the <code>browser</code> instance; there will be one for each
      * <code>PROTO</code> known to the <code>browser</code>.
      *
-     * As the <code>proto_node_class</code> encodes the data in a
+     * As the <code>proto_node_metatype</code> encodes the data in a
      * <code>PROTO</code>, the <code>proto_node_type</code> can be seen as
      * modeling <code>EXTERNPROTO</code>. Each <code>EXTERNPROTO</code> will
      * spawn a new <code>proto_node_type</code> from the
-     * <code>proto_node_class</code> that corresponds to the <code>PROTO</code>
+     * <code>proto_node_metatype</code> that corresponds to the <code>PROTO</code>
      * to which the <code>EXTERNPROTO</code> refers. Recall that an
      * <code>EXTERNPROTO</code> provides a subset of the interfaces defined for
      * a <code>PROTO</code>; thus, for a <code>PROTO</code> with <var>n</var>
@@ -457,10 +457,10 @@ namespace openvrml {
      * instances).
      *
      * Structurally, the implementation of <code>proto_node</code> is very
-     * similar to that of <code>proto_node_class</code>. The difference is that
+     * similar to that of <code>proto_node_metatype</code>. The difference is that
      * event pathways for <code>ROUTE</code>s and <code>IS</code> mappings are
      * actually created in the <code>proto_node</code>. The
-     * <code>proto_node_class</code>, on the other hand, includes metadata
+     * <code>proto_node_metatype</code>, on the other hand, includes metadata
      * about how these event pathways @e should be created.
      */
     class OPENVRML_LOCAL proto_node : public abstract_proto_node {
@@ -858,16 +858,16 @@ namespace openvrml {
     // Clone the implementation nodes.
     //
     class OPENVRML_LOCAL proto_impl_cloner : public field_value_cloner {
-        const proto_node_class & node_class;
+        const proto_node_metatype & node_metatype;
         const initial_value_map & initial_values_;
 
     public:
         proto_impl_cloner(
-            const proto_node_class & node_class,
+            const proto_node_metatype & node_metatype,
             const initial_value_map & initial_values,
             const boost::shared_ptr<openvrml::scope> & target_scope):
             field_value_cloner(target_scope),
-            node_class(node_class),
+            node_metatype(node_metatype),
             initial_values_(initial_values)
         {}
 
@@ -877,12 +877,12 @@ namespace openvrml {
             using std::vector;
 
             vector<boost::intrusive_ptr<node> > result(
-                this->node_class.impl_nodes.size());
+                this->node_metatype.impl_nodes.size());
 
             for (vector<boost::intrusive_ptr<node> >::size_type i = 0;
-                 i < this->node_class.impl_nodes.size();
+                 i < this->node_metatype.impl_nodes.size();
                  ++i) {
-                result[i] = this->clone_node(this->node_class.impl_nodes[i]);
+                result[i] = this->clone_node(this->node_metatype.impl_nodes[i]);
                 assert(result[i]);
             }
             return result;
@@ -890,10 +890,10 @@ namespace openvrml {
 
     private:
         struct matches_is_target :
-            std::unary_function<proto_node_class::is_map_t::value_type, bool> {
+            std::unary_function<proto_node_metatype::is_map_t::value_type, bool> {
 
             explicit matches_is_target(
-                const proto_node_class::is_target & is_target):
+                const proto_node_metatype::is_target & is_target):
                 is_target(&is_target)
             {}
 
@@ -906,7 +906,7 @@ namespace openvrml {
             }
 
         private:
-            const proto_node_class::is_target * is_target;
+            const proto_node_metatype::is_target * is_target;
         };
 
         virtual const boost::intrusive_ptr<node>
@@ -955,17 +955,17 @@ namespace openvrml {
                         // from the initial_values_, or alternatively the
                         // default_values_.
                         //
-                        typedef proto_node_class::is_target is_target;
-                        typedef proto_node_class::is_map_t is_map;
-                        typedef proto_node_class::default_value_map_t
+                        typedef proto_node_metatype::is_target is_target;
+                        typedef proto_node_metatype::is_map_t is_map;
+                        typedef proto_node_metatype::default_value_map_t
                             default_value_map;
 
                         is_map::const_iterator is_mapping =
-                            find_if(this->node_class.is_map.begin(),
-                                    this->node_class.is_map.end(),
+                            find_if(this->node_metatype.is_map.begin(),
+                                    this->node_metatype.is_map.end(),
                                     matches_is_target(
                                         is_target(*n, interface->id)));
-                        if (is_mapping != this->node_class.is_map.end()) {
+                        if (is_mapping != this->node_metatype.is_map.end()) {
                             using boost::bind;
                             using std::logical_or;
                             //
@@ -978,8 +978,8 @@ namespace openvrml {
                             //
                             node_interface_set::const_iterator
                                 proto_interface =
-                                find_if(this->node_class.interfaces.begin(),
-                                        this->node_class.interfaces.end(),
+                                find_if(this->node_metatype.interfaces.begin(),
+                                        this->node_metatype.interfaces.end(),
                                         bind(logical_or<bool>(),
                                              bind(node_interface_matches_exposedfield(),
                                                   _1,
@@ -989,7 +989,7 @@ namespace openvrml {
                                                   is_mapping->first)));
 
                             if (proto_interface
-                                != this->node_class.interfaces.end()) {
+                                != this->node_metatype.interfaces.end()) {
                                 initial_value_map::const_iterator
                                     initial_value =
                                     this->initial_values_.find(
@@ -1000,10 +1000,10 @@ namespace openvrml {
                                 } else {
                                     default_value_map::const_iterator
                                         default_value =
-                                        this->node_class.default_value_map
+                                        this->node_metatype.default_value_map
                                         .find(is_mapping->first);
                                     assert(default_value
-                                           != this->node_class
+                                           != this->node_metatype
                                            .default_value_map.end());
                                     src_val = default_value->second->clone();
                                 }
@@ -1059,7 +1059,7 @@ namespace openvrml {
      * @param[in] impl_node             a node in the PROTO implementation.
      * @param[in] impl_node_interface   an interface of @p impl_node.
      */
-    proto_node_class::
+    proto_node_metatype::
     is_target::is_target(node & impl_node,
                          const std::string & impl_node_interface):
         impl_node(&impl_node),
@@ -1074,7 +1074,7 @@ namespace openvrml {
      * @param[in] to        event destination node.
      * @param[in] eventin   eventIn of @p to.
      */
-    proto_node_class::route::route(node & from,
+    proto_node_metatype::route::route(node & from,
                                    const std::string & eventout,
                                    node & to,
                                    const std::string & eventin):
@@ -1087,21 +1087,21 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param[in] node_class    the proto_node_class that spawned the
+     * @param[in] node_metatype    the proto_node_metatype that spawned the
      *                      proto_node_type.
      * @param[in] id            node_type identifier.
      * @param[in] interfaces    a subset of the interfaces supported by the
-     *                      @p node_class.
+     *                      @p node_metatype.
      *
      * @exception unsupported_interface if an interface in @p interfaces is not
-     *                                  supported by the @p node_class.
+     *                                  supported by the @p node_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
-    proto_node_type::proto_node_type(const proto_node_class & node_class,
+    proto_node_type::proto_node_type(const proto_node_metatype & node_metatype,
                                      const std::string & id,
                                      const node_interface_set & interfaces)
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc):
-        node_type(node_class, id)
+        node_type(node_metatype, id)
     {
         using std::find;
         using std::invalid_argument;
@@ -1109,10 +1109,10 @@ namespace openvrml {
              interface != interfaces.end();
              ++interface) {
             node_interface_set::const_iterator pos =
-                find(node_class.interfaces.begin(),
-                     node_class.interfaces.end(),
+                find(node_metatype.interfaces.begin(),
+                     node_metatype.interfaces.end(),
                      *interface);
-            if (pos == node_class.interfaces.end()) {
+            if (pos == node_metatype.interfaces.end()) {
                 throw unsupported_interface(*interface);
             }
             const bool succeeded = this->interfaces_.insert(*interface).second;
@@ -1589,19 +1589,19 @@ namespace openvrml {
         abstract_proto_node(type, scope),
         proto_scope(scope)
     {
-        const proto_node_class & node_class =
-            static_cast<const proto_node_class &>(type.node_class());
+        const proto_node_metatype & node_metatype =
+            static_cast<const proto_node_metatype &>(type.metatype());
 
-        this->impl_nodes = proto_impl_cloner(node_class,
+        this->impl_nodes = proto_impl_cloner(node_metatype,
                                              initial_values,
                                              this->proto_scope).clone();
 
         //
         // Establish routes.
         //
-        typedef proto_node_class::routes_t routes_t;
-        for (routes_t::const_iterator route = node_class.routes.begin();
-             route != node_class.routes.end();
+        typedef proto_node_metatype::routes_t routes_t;
+        for (routes_t::const_iterator route = node_metatype.routes.begin();
+             route != node_metatype.routes.end();
              ++route) {
             // XXX
             // XXX It would be better to store the node_paths along with the
@@ -1609,9 +1609,9 @@ namespace openvrml {
             // XXX the PROTO.
             // XXX
             node_path_t path_to_from;
-            assert(!node_class.impl_nodes.empty());
+            assert(!node_metatype.impl_nodes.empty());
             path_getter(*route->from, path_to_from)
-                .get_path_from(node_class.impl_nodes);
+                .get_path_from(node_metatype.impl_nodes);
             assert(!path_to_from.empty());
             node * const from_node = resolve_node_path(path_to_from,
                                                        this->impl_nodes);
@@ -1619,7 +1619,7 @@ namespace openvrml {
 
             node_path_t path_to_to;
             path_getter(*route->to, path_to_to)
-                .get_path_from(node_class.impl_nodes);
+                .get_path_from(node_metatype.impl_nodes);
             node * const to_node = resolve_node_path(path_to_to,
                                                      this->impl_nodes);
             assert(to_node);
@@ -1638,8 +1638,8 @@ namespace openvrml {
         // Add eventIns, eventOuts, exposedFields.
         //
         for (node_interface_set::const_iterator interface =
-                 node_class.interfaces.begin();
-             interface != node_class.interfaces.end();
+                 node_metatype.interfaces.begin();
+             interface != node_metatype.interfaces.end();
              ++interface) {
             using boost::shared_ptr;
             using boost::dynamic_pointer_cast;
@@ -1647,14 +1647,14 @@ namespace openvrml {
             bool succeeded;
             shared_ptr<openvrml::event_listener> interface_eventin;
             shared_ptr<openvrml::event_emitter> interface_eventout;
-            typedef proto_node_class::is_map_t is_map_t;
+            typedef proto_node_metatype::is_map_t is_map_t;
             pair<is_map_t::const_iterator, is_map_t::const_iterator> is_range;
             initial_value_map::const_iterator initial_value;
             switch (interface->type) {
             case node_interface::eventin_id:
                 interface_eventin = create_eventin(interface->field_type,
                                                    *this);
-                is_range = node_class.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1662,7 +1662,7 @@ namespace openvrml {
                     node_path_t path_to_impl_node;
                     path_getter(*is_mapping->second.impl_node,
                                 path_to_impl_node)
-                        .get_path_from(node_class.impl_nodes);
+                        .get_path_from(node_metatype.impl_nodes);
                     node * impl_node = resolve_node_path(path_to_impl_node,
                                                          this->impl_nodes);
                     assert(impl_node);
@@ -1690,7 +1690,7 @@ namespace openvrml {
             case node_interface::eventout_id:
                 interface_eventout = create_eventout(interface->field_type,
                                                      *this);
-                is_range = node_class.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1698,7 +1698,7 @@ namespace openvrml {
                     node_path_t path_to_impl_node;
                     path_getter(*is_mapping->second.impl_node,
                                 path_to_impl_node)
-                        .get_path_from(node_class.impl_nodes);
+                        .get_path_from(node_metatype.impl_nodes);
                     node * impl_node = resolve_node_path(path_to_impl_node,
                                                          this->impl_nodes);
                     assert(impl_node);
@@ -1727,16 +1727,16 @@ namespace openvrml {
                 initial_value = initial_values.find(interface->id);
                 if (initial_value == initial_values.end()) {
                     initial_value =
-                        node_class.default_value_map.find(interface->id);
+                        node_metatype.default_value_map.find(interface->id);
                     assert(initial_value
-                           != node_class.default_value_map.end());
+                           != node_metatype.default_value_map.end());
                 }
                 interface_eventin = create_exposedfield(*initial_value->second,
                                                         *this);
                 interface_eventout =
                     dynamic_pointer_cast<openvrml::event_emitter>(
                         interface_eventin);
-                is_range = node_class.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1744,7 +1744,7 @@ namespace openvrml {
                     node_path_t path_to_impl_node;
                     path_getter(*is_mapping->second.impl_node,
                                 path_to_impl_node)
-                        .get_path_from(node_class.impl_nodes);
+                        .get_path_from(node_metatype.impl_nodes);
                     node * impl_node = resolve_node_path(path_to_impl_node,
                                                          this->impl_nodes);
                     assert(impl_node);
@@ -1844,11 +1844,11 @@ namespace openvrml {
         // First, we need to find the implementation node that the field is
         // IS'd to.  For the accessor, we don't care if there's more than one.
         //
-        const proto_node_class & node_class =
-            static_cast<const proto_node_class &>(this->type().node_class());
-        proto_node_class::is_map_t::const_iterator is_mapping =
-            node_class.is_map.find(id);
-        if (is_mapping != node_class.is_map.end()) {
+        const proto_node_metatype & node_metatype =
+            static_cast<const proto_node_metatype &>(this->type().metatype());
+        proto_node_metatype::is_map_t::const_iterator is_mapping =
+            node_metatype.is_map.find(id);
+        if (is_mapping != node_metatype.is_map.end()) {
             //
             // Get the path to the implementation node.
             //
@@ -1856,7 +1856,7 @@ namespace openvrml {
             assert(!is_mapping->second.impl_node_interface.empty());
             node_path_t path;
             path_getter(*is_mapping->second.impl_node, path)
-                .get_path_from(node_class.impl_nodes);
+                .get_path_from(node_metatype.impl_nodes);
 
             //
             // Resolve the path against this instance's implementation nodes.
@@ -1872,9 +1872,9 @@ namespace openvrml {
             // If there are no IS mappings for the field, then return the
             // default value.
             //
-            proto_node_class::default_value_map_t::const_iterator
-                default_value = node_class.default_value_map.find(id);
-            if (default_value == node_class.default_value_map.end()) {
+            proto_node_metatype::default_value_map_t::const_iterator
+                default_value = node_metatype.default_value_map.find(id);
+            if (default_value == node_metatype.default_value_map.end()) {
                 throw unsupported_interface(this->type(), id);
             }
             return *default_value->second;
@@ -2253,16 +2253,16 @@ namespace openvrml {
      * @param[in] is_map
      * @param[in] routes
      */
-    proto_node_class::
-    proto_node_class(
-        const node_class_id & id,
+    proto_node_metatype::
+    proto_node_metatype(
+        const node_metatype_id & id,
         openvrml::browser & browser,
         const node_interface_set & interfaces,
         const default_value_map_t & default_value_map,
         const std::vector<boost::intrusive_ptr<node> > & impl_nodes,
         const is_map_t & is_map,
         const routes_t & routes):
-        node_class(id, browser),
+        node_metatype(id, browser),
         interfaces(interfaces),
         default_value_map(default_value_map),
         impl_nodes(impl_nodes),
@@ -2270,11 +2270,11 @@ namespace openvrml {
         is_map(is_map)
     {}
 
-    proto_node_class::~proto_node_class() OPENVRML_NOTHROW
+    proto_node_metatype::~proto_node_metatype() OPENVRML_NOTHROW
     {}
 
     const boost::shared_ptr<node_type>
-    proto_node_class::
+    proto_node_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -2289,18 +2289,18 @@ namespace {
     class externproto_node_type;
 
     /**
-     * @brief @c node_class for @c EXTERNPROTO%s.
+     * @brief @c node_metatype for @c EXTERNPROTO%s.
      */
-    class OPENVRML_LOCAL externproto_node_class :
-        public boost::enable_shared_from_this<externproto_node_class>,
-        public openvrml::node_class {
+    class OPENVRML_LOCAL externproto_node_metatype :
+        public boost::enable_shared_from_this<externproto_node_metatype>,
+        public openvrml::node_metatype {
 
         friend class externproto_node_type;
 
         struct load_proto;
 
         mutable boost::mutex mutex_;
-        boost::weak_ptr<openvrml::proto_node_class> proto_node_class_;
+        boost::weak_ptr<openvrml::proto_node_metatype> proto_node_metatype_;
 
         typedef std::vector<boost::weak_ptr<externproto_node_type> >
             externproto_node_types;
@@ -2311,11 +2311,11 @@ namespace {
         boost::scoped_ptr<boost::thread> load_proto_thread_;
 
     public:
-        externproto_node_class(const openvrml::node_class_id & id,
+        externproto_node_metatype(const openvrml::node_metatype_id & id,
                                const openvrml::scene & scene,
                                const std::vector<std::string> & uris)
             OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
-        virtual ~externproto_node_class() OPENVRML_NOTHROW;
+        virtual ~externproto_node_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<openvrml::node_type>
@@ -2325,8 +2325,8 @@ namespace {
 
         virtual void do_shutdown(double time) OPENVRML_NOTHROW;
 
-        void set_proto_node_class(
-            const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class = boost::weak_ptr<openvrml::proto_node_class>())
+        void set_proto_node_metatype(
+            const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype = boost::weak_ptr<openvrml::proto_node_metatype>())
             OPENVRML_THROW1(std::bad_alloc);
 
         void clear_externproto_node_types() OPENVRML_NOTHROW;
@@ -2334,7 +2334,7 @@ namespace {
 
 
     class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
-        const boost::shared_ptr<const externproto_node_class> node_class_;
+        const boost::shared_ptr<const externproto_node_metatype> node_metatype_;
 
         openvrml::node_interface_set interfaces_;
 
@@ -2348,14 +2348,14 @@ namespace {
 
     public:
         externproto_node_type(
-            const boost::shared_ptr<const externproto_node_class> & c,
+            const boost::shared_ptr<const externproto_node_metatype> & c,
             const std::string & id,
             const openvrml::node_interface_set & interfaces)
             OPENVRML_THROW1(std::bad_alloc);
 
         virtual ~externproto_node_type() OPENVRML_NOTHROW;
 
-        void set_proto_node_type(openvrml::proto_node_class & proto_node_class)
+        void set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
             OPENVRML_THROW1(std::bad_alloc);
 
         void clear_externproto_nodes() OPENVRML_NOTHROW;
@@ -4036,11 +4036,11 @@ namespace {
         }
     }
 
-    struct OPENVRML_LOCAL externproto_node_class::load_proto {
-        load_proto(externproto_node_class & externproto_class,
+    struct OPENVRML_LOCAL externproto_node_metatype::load_proto {
+        load_proto(externproto_node_metatype & externproto_class,
                    const openvrml::scene & scene,
                    const std::vector<std::string> & alt_uris):
-            externproto_node_class_(&externproto_class),
+            externproto_node_metatype_(&externproto_class),
             scene_(&scene),
             alt_uris_(alt_uris)
         {}
@@ -4061,8 +4061,8 @@ namespace {
 
                 scope_guard guard =
                     make_obj_guard(
-                        *this->externproto_node_class_,
-                        &externproto_node_class::clear_externproto_node_types);
+                        *this->externproto_node_metatype_,
+                        &externproto_node_metatype::clear_externproto_node_types);
                 boost::ignore_unused_variable_warning(guard);
 
                 auto_ptr<resource_istream> in =
@@ -4079,34 +4079,34 @@ namespace {
                 parse_vrml(*in, in->url(), in->type(),
                            *this->scene_, nodes, meta);
 
-                shared_ptr<openvrml::proto_node_class> proto_node_class;
+                shared_ptr<openvrml::proto_node_metatype> proto_node_metatype;
                 for (vector<string>::const_iterator alt_uri =
                          this->alt_uris_.begin();
-                     alt_uri != this->alt_uris_.end() && !proto_node_class;
+                     alt_uri != this->alt_uris_.end() && !proto_node_metatype;
                      ++alt_uri) {
                     const uri absolute_uri = !relative(uri(*alt_uri))
                         ? uri(*alt_uri)
                         : uri(*alt_uri).resolve_against(
                             uri(this->scene_->url()));
 
-                    const shared_ptr<openvrml::node_class> node_class =
+                    const shared_ptr<openvrml::node_metatype> node_metatype =
                         this->scene_->browser()
-                        .node_class(node_class_id(absolute_uri));
+                        .node_metatype(node_metatype_id(absolute_uri));
 
-                    proto_node_class =
-                        dynamic_pointer_cast<openvrml::proto_node_class>(
-                            node_class);
+                    proto_node_metatype =
+                        dynamic_pointer_cast<openvrml::proto_node_metatype>(
+                            node_metatype);
                 }
 
-                if (!proto_node_class) {
+                if (!proto_node_metatype) {
                     ostringstream err_msg;
                     err_msg << "no PROTO definition at <" << in->url() << ">";
                     this->scene_->browser().err(err_msg.str());
                     return;
                 }
 
-                this->externproto_node_class_
-                    ->set_proto_node_class(proto_node_class);
+                this->externproto_node_metatype_
+                    ->set_proto_node_metatype(proto_node_metatype);
 
             } catch (std::exception & ex) {
                 this->scene_->browser().err(ex.what());
@@ -4124,7 +4124,7 @@ namespace {
         }
 
     private:
-        externproto_node_class * externproto_node_class_;
+        externproto_node_metatype * externproto_node_metatype_;
         const openvrml::scene * scene_;
         std::vector<std::string> alt_uris_;
     };
@@ -4139,12 +4139,12 @@ namespace {
      *                                          cannot be started.
      * @exception std::bad_alloc                if memory allocation fails.
      */
-    externproto_node_class::
-    externproto_node_class(const openvrml::node_class_id & id,
+    externproto_node_metatype::
+    externproto_node_metatype(const openvrml::node_metatype_id & id,
                            const openvrml::scene & scene,
                            const std::vector<std::string> & uris)
         OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
-        node_class(id, scene.browser()),
+        node_metatype(id, scene.browser()),
         externproto_node_types_cleared_(false),
         load_proto_thread_(
             new boost::thread(
@@ -4154,11 +4154,11 @@ namespace {
     /**
      * @brief Destroy.
      */
-    externproto_node_class::~externproto_node_class() OPENVRML_NOTHROW
+    externproto_node_metatype::~externproto_node_metatype() OPENVRML_NOTHROW
     {}
 
     const boost::shared_ptr<openvrml::node_type>
-    externproto_node_class::
+    externproto_node_metatype::
     do_create_type(const std::string & id,
                    const openvrml::node_interface_set & interfaces) const
         OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
@@ -4167,8 +4167,8 @@ namespace {
 
         using boost::shared_ptr;
 
-        shared_ptr<openvrml::proto_node_class> shared;
-        if ((shared = this->proto_node_class_.lock())) {
+        shared_ptr<openvrml::proto_node_metatype> shared;
+        if ((shared = this->proto_node_metatype_.lock())) {
             return shared->create_type(id, interfaces);
         }
 
@@ -4182,13 +4182,13 @@ namespace {
         return node_type;
     }
 
-    void externproto_node_class::do_shutdown(double) OPENVRML_NOTHROW
+    void externproto_node_metatype::do_shutdown(double) OPENVRML_NOTHROW
     {
         this->load_proto_thread_->join();
     }
 
-    void externproto_node_class::set_proto_node_class(
-        const boost::weak_ptr<openvrml::proto_node_class> & proto_node_class)
+    void externproto_node_metatype::set_proto_node_metatype(
+        const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype)
         OPENVRML_THROW1(std::bad_alloc)
     {
         boost::mutex::scoped_lock lock(this->mutex_);
@@ -4196,26 +4196,26 @@ namespace {
         using boost::shared_ptr;
         using boost::static_pointer_cast;
 
-        this->proto_node_class_ = proto_node_class;
+        this->proto_node_metatype_ = proto_node_metatype;
 
         //
-        // Now that we have a proto_node_class, we need to tell all the
+        // Now that we have a proto_node_metatype, we need to tell all the
         // externproto_node_types we've created so that they can in turn
         // tell the externproto_nodes they've created.
         //
-        const shared_ptr<openvrml::proto_node_class> shared_proto_node_class =
-            proto_node_class.lock();
-        assert(shared_proto_node_class);
+        const shared_ptr<openvrml::proto_node_metatype> shared_proto_node_metatype =
+            proto_node_metatype.lock();
+        assert(shared_proto_node_metatype);
         for (externproto_node_types::const_iterator node_type =
                  this->externproto_node_types_.begin();
              node_type != this->externproto_node_types_.end();
              ++node_type) {
             assert(!node_type->expired());
-            node_type->lock()->set_proto_node_type(*shared_proto_node_class);
+            node_type->lock()->set_proto_node_type(*shared_proto_node_metatype);
         }
     }
 
-    void externproto_node_class::clear_externproto_node_types()
+    void externproto_node_metatype::clear_externproto_node_types()
         OPENVRML_NOTHROW
     {
         boost::mutex::scoped_lock lock(this->mutex_);
@@ -4236,12 +4236,12 @@ namespace {
 
 
     externproto_node_type::externproto_node_type(
-        const boost::shared_ptr<const externproto_node_class> & c,
+        const boost::shared_ptr<const externproto_node_metatype> & c,
         const std::string & id,
         const openvrml::node_interface_set & interfaces)
         OPENVRML_THROW1(std::bad_alloc):
         node_type(*c, id),
-        node_class_(c),
+        node_metatype_(c),
         interfaces_(interfaces)
     {}
 
@@ -4250,7 +4250,7 @@ namespace {
 
     void
     externproto_node_type::
-    set_proto_node_type(openvrml::proto_node_class & proto_node_class)
+    set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
         OPENVRML_THROW1(std::bad_alloc)
     {
         boost::mutex::scoped_lock lock(this->mutex_);
@@ -4261,7 +4261,7 @@ namespace {
 
         this->proto_node_type_ =
             static_pointer_cast<openvrml::proto_node_type>(
-                proto_node_class.create_type(this->id(), this->interfaces_));
+                proto_node_metatype.create_type(this->id(), this->interfaces_));
 
         for (externproto_nodes::const_iterator node =
                  this->externproto_nodes_.begin();
@@ -4291,17 +4291,17 @@ namespace {
                         std::bad_alloc)
     {
         //
-        // externproto_node_class::mutex_ must be locked first.
-        // externproto_node_class::clear_externproto_node_types must not be
+        // externproto_node_metatype::mutex_ must be locked first.
+        // externproto_node_metatype::clear_externproto_node_types must not be
         // initiated while we're doing this.
-        // externproto_node_class::externproto_node_types_cleared_ is checked
+        // externproto_node_metatype::externproto_node_types_cleared_ is checked
         // later in this function and attempting to lock
-        // externproto_node_class::mutex_ at that point creates a race
+        // externproto_node_metatype::mutex_ at that point creates a race
         // condition.
         //
         boost::mutex::scoped_lock
-            lock_externproto_node_class(
-                static_cast<const externproto_node_class &>(this->node_class())
+            lock_externproto_node_metatype(
+                static_cast<const externproto_node_metatype &>(this->metatype())
                 .mutex_),
             lock(this->mutex_);
 
@@ -4313,9 +4313,9 @@ namespace {
         const boost::intrusive_ptr<externproto_node> result(
             new externproto_node(*this, scope, initial_values));
 
-        const externproto_node_class & node_class =
-            static_cast<const externproto_node_class &>(this->node_class());
-        if (!node_class.externproto_node_types_cleared_) {
+        const externproto_node_metatype & node_metatype =
+            static_cast<const externproto_node_metatype &>(this->metatype());
+        if (!node_metatype.externproto_node_types_cleared_) {
             this->externproto_nodes_.push_back(result);
         } else {
             assert(this->externproto_nodes_.empty());
@@ -5315,17 +5315,17 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 
 
 /**
- * @class openvrml::node_class_id
+ * @class openvrml::node_metatype_id
  *
- * @brief Identifier for <code>node_class</code>es.
+ * @brief Identifier for <code>node_metatype</code>es.
  *
- * <code>node_class</code> identifiers take the following form:
+ * <code>node_metatype</code> identifiers take the following form:
  *
  * <pre>
  * absolute-uri ['#' proto-id ['#' proto-id [...]]]
  * </pre>
  *
- * A <code>node_class</code> identifier is basically like an absolute URI;
+ * A <code>node_metatype</code> identifier is basically like an absolute URI;
  * except the fragment identifier syntax has been extended to support referring
  * to nested <code>PROTO</code>s.
  *
@@ -5341,7 +5341,7 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  * }
  * </pre>
  *
- * The <code>node_class_id</code> string for <code>Outer</code> would be
+ * The <code>node_metatype_id</code> string for <code>Outer</code> would be
  * <code>%http://example.com/example.wrl#Outer</code>; and for
  * <code>Inner</code>,
  * <code>%http://example.com/example.wrl#Outer#Inner</code>.
@@ -5350,44 +5350,44 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 /**
  * @internal
  *
- * @var std::string openvrml::node_class_id::id_
+ * @var std::string openvrml::node_metatype_id::id_
  *
  * @brief The identifier string.
  */
 
 namespace {
 
-    struct OPENVRML_LOCAL node_class_id_grammar :
-        public boost::spirit::grammar<node_class_id_grammar> {
+    struct OPENVRML_LOCAL node_metatype_id_grammar :
+        public boost::spirit::grammar<node_metatype_id_grammar> {
 
         template <typename ScannerT>
         struct definition {
             typedef boost::spirit::rule<ScannerT> rule_type;
 
-            rule_type node_class_id;
+            rule_type node_metatype_id;
             absolute_uri_grammar<> absolute_uri;
             uric_grammar uric;
 
-            definition(const node_class_id_grammar & self);
+            definition(const node_metatype_id_grammar & self);
 
             const boost::spirit::rule<ScannerT> & start() const;
         };
     };
 
     template <typename ScannerT>
-    node_class_id_grammar::definition<ScannerT>::
-    definition(const node_class_id_grammar &)
+    node_metatype_id_grammar::definition<ScannerT>::
+    definition(const node_metatype_id_grammar &)
     {
-        node_class_id
+        node_metatype_id
             =   absolute_uri >> *('#' >> *uric)
             ;
     }
 
     template <typename ScannerT>
     const boost::spirit::rule<ScannerT> &
-    node_class_id_grammar::definition<ScannerT>::start() const
+    node_metatype_id_grammar::definition<ScannerT>::start() const
     {
-        return this->node_class_id;
+        return this->node_metatype_id;
     }
 }
 
@@ -5397,21 +5397,21 @@ namespace {
  * @param[in] id    the identifier.
  *
  * @exception std::invalid_argument if @p id is not a valid
- *                                  <code>node_class</code> identifier.
+ *                                  <code>node_metatype</code> identifier.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @todo Need to make sure the fragment part is valid.
  */
-openvrml::node_class_id::node_class_id(const char * id)
+openvrml::node_metatype_id::node_metatype_id(const char * id)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
     id_(id)
 {
     using namespace boost::spirit;
 
-    node_class_id_grammar g;
+    node_metatype_id_grammar g;
     if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {
         throw std::invalid_argument('<' + this->id_ + "> is not a valid "
-                                    "node_class identifier");
+                                    "node_metatype identifier");
     }
 }
 
@@ -5421,58 +5421,58 @@ openvrml::node_class_id::node_class_id(const char * id)
  * @param[in] id    the identifier.
  *
  * @exception std::invalid_argument if @p id is not a valid
- *                                  <code>node_class</code> identifier.
+ *                                  <code>node_metatype</code> identifier.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @todo Need to make sure the fragment part is valid.
  */
-openvrml::node_class_id::node_class_id(const std::string & id)
+openvrml::node_metatype_id::node_metatype_id(const std::string & id)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
     id_(id)
 {
     using namespace boost::spirit;
 
-    node_class_id_grammar g;
+    node_metatype_id_grammar g;
     if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {
         throw std::invalid_argument('<' + this->id_ + "> is not a valid "
-                                    "node_class identifier");
+                                    "node_metatype identifier");
     }
 }
 
 /**
  * @brief Convert to a <code>std::string</code>.
  *
- * @return the <code>node_class</code> identifier as a
+ * @return the <code>node_metatype</code> identifier as a
  *         <code>std::string</code>.
  */
-openvrml::node_class_id::operator std::string() const
+openvrml::node_metatype_id::operator std::string() const
 {
     return this->id_;
 }
 
 /**
- * @relates openvrml::node_class_id
+ * @relates openvrml::node_metatype_id
  *
  * @param[in] lhs
  * @param[in] rhs
  *
  * @return @c true if @p lhs and @p rhs are equal, @c false otherwise.
  */
-bool openvrml::operator==(const node_class_id & lhs, const node_class_id & rhs)
+bool openvrml::operator==(const node_metatype_id & lhs, const node_metatype_id & rhs)
     OPENVRML_NOTHROW
 {
     return lhs.id_ == rhs.id_;
 }
 
 /**
- * @relates openvrml::node_class_id
+ * @relates openvrml::node_metatype_id
  *
  * @param[in] lhs
  * @param[in] rhs
  *
  * @return @c true if @p lhs and @p rhs are not equal, @c false otherwise.
  */
-bool openvrml::operator!=(const node_class_id & lhs, const node_class_id & rhs)
+bool openvrml::operator!=(const node_metatype_id & lhs, const node_metatype_id & rhs)
     OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
@@ -5510,25 +5510,25 @@ bool openvrml::operator!=(const node_class_id & lhs, const node_class_id & rhs)
 /**
  * @internal
  *
- * @class openvrml::browser::node_class_map
+ * @class openvrml::browser::node_metatype_map
  *
- * @brief The map of <code>node_class</code>es.
+ * @brief The map of <code>node_metatype</code>es.
  */
 
 /**
- * @var boost::mutex openvrml::browser::node_class_map::mutex_
+ * @var boost::mutex openvrml::browser::node_metatype_map::mutex_
  *
  * @brief Object mutex.
  */
 
 /**
- * @typedef openvrml::browser::node_class_map::map_t
+ * @typedef openvrml::browser::node_metatype_map::map_t
  *
  * @brief Map type.
  */
 
 /**
- * @var openvrml::browser::node_class_map::map_t openvrml::browser::node_class_map::map_
+ * @var openvrml::browser::node_metatype_map::map_t openvrml::browser::node_metatype_map::map_
  *
  * @brief Map.
  */
@@ -5536,27 +5536,27 @@ bool openvrml::operator!=(const node_class_id & lhs, const node_class_id & rhs)
 /**
  * @brief Construct.
  */
-openvrml::browser::node_class_map::node_class_map()
+openvrml::browser::node_metatype_map::node_metatype_map()
 {}
 
 # ifndef NDEBUG
 namespace {
-    struct OPENVRML_LOCAL node_class_equals_ :
+    struct OPENVRML_LOCAL node_metatype_equals_ :
         public std::unary_function<std::pair<std::string,
-                                             boost::shared_ptr<openvrml::node_class> >,
+                                             boost::shared_ptr<openvrml::node_metatype> >,
                                    bool> {
-        explicit node_class_equals_(
-            const boost::shared_ptr<openvrml::node_class> & node_class):
-            node_class_(node_class)
+        explicit node_metatype_equals_(
+            const boost::shared_ptr<openvrml::node_metatype> & node_metatype):
+            node_metatype_(node_metatype)
         {}
 
         bool operator()(const argument_type & arg) const
         {
-            return arg.second == this->node_class_;
+            return arg.second == this->node_metatype_;
         }
 
     private:
-        boost::shared_ptr<openvrml::node_class> node_class_;
+        boost::shared_ptr<openvrml::node_metatype> node_metatype_;
     };
 }
 # endif
@@ -5564,7 +5564,7 @@ namespace {
 /**
  * @brief Destroy.
  */
-openvrml::browser::node_class_map::~node_class_map() OPENVRML_NOTHROW
+openvrml::browser::node_metatype_map::~node_metatype_map() OPENVRML_NOTHROW
 {
 # ifndef NDEBUG
     for (map_t::const_iterator entry = this->map_.begin();
@@ -5575,15 +5575,15 @@ openvrml::browser::node_class_map::~node_class_map() OPENVRML_NOTHROW
         const difference_type count =
             std::count_if(this->map_.begin(),
                           this->map_.end(),
-                          node_class_equals_(entry->second));
+                          node_metatype_equals_(entry->second));
         assert(entry->second.use_count() == count
-               && "shared_ptr<node_class> use_count does not match the number of entries in the browser's node_class_map");
+               && "shared_ptr<node_metatype> use_count does not match the number of entries in the browser's node_metatype_map");
     }
 # endif
 }
 
 /**
- * @fn openvrml::browser::node_class_map::node_class_map(const node_class_map &)
+ * @fn openvrml::browser::node_metatype_map::node_metatype_map(const node_metatype_map &)
  *
  * @brief Not implemented.
  */
@@ -5593,8 +5593,8 @@ openvrml::browser::node_class_map::~node_class_map() OPENVRML_NOTHROW
  *
  * @param[in] ncm   the value to assign.
  */
-openvrml::browser::node_class_map &
-openvrml::browser::node_class_map::operator=(const node_class_map & ncm)
+openvrml::browser::node_metatype_map &
+openvrml::browser::node_metatype_map::operator=(const node_metatype_map & ncm)
 {
     boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(ncm.mutex_);
     map_t temp(ncm.map_);
@@ -5603,20 +5603,20 @@ openvrml::browser::node_class_map::operator=(const node_class_map & ncm)
 }
 
 namespace {
-    typedef std::map<std::string, boost::shared_ptr<openvrml::node_class> >
-        node_class_map_t;
+    typedef std::map<std::string, boost::shared_ptr<openvrml::node_metatype> >
+        node_metatype_map_t;
 
-    struct OPENVRML_LOCAL init_node_class :
-        std::unary_function<void, node_class_map_t::value_type>
+    struct OPENVRML_LOCAL init_node_metatype :
+        std::unary_function<void, node_metatype_map_t::value_type>
     {
-        init_node_class(openvrml::viewpoint_node * initial_viewpoint,
+        init_node_metatype(openvrml::viewpoint_node * initial_viewpoint,
                         const double time)
             OPENVRML_NOTHROW:
             initial_viewpoint_(initial_viewpoint),
             time_(time)
         {}
 
-        void operator()(const node_class_map_t::value_type & value) const
+        void operator()(const node_metatype_map_t::value_type & value) const
             OPENVRML_NOTHROW
         {
             assert(value.second);
@@ -5630,88 +5630,88 @@ namespace {
 }
 
 /**
- * @brief Initialize the <code>node_class</code>es.
+ * @brief Initialize the <code>node_metatype</code>es.
  *
  * @param[in] initial_viewpoint the viewpoint_node that should be initially active.
  * @param[in] timestamp         the current time.
  */
 void
-openvrml::browser::node_class_map::init(viewpoint_node * initial_viewpoint,
+openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
                                         const double timestamp)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(),
-             init_node_class(initial_viewpoint, timestamp));
+             init_node_metatype(initial_viewpoint, timestamp));
 }
 
 /**
- * @brief Insert a <code>node_class</code>.
+ * @brief Insert a <code>node_metatype</code>.
  *
- * This operation will "fail" silently. That is, if a <code>node_class</code>
+ * This operation will "fail" silently. That is, if a <code>node_metatype</code>
  * corresponding to @p id already exists in the map, the existing element will
  * simply be returned.
  *
  * @param[in] id            the implementation identifier.
- * @param[in] node_class    a <code>node_class</code>.
+ * @param[in] node_metatype    a <code>node_metatype</code>.
  *
- * @return the element in the node_class_map corresponding to @p id.
+ * @return the element in the node_metatype_map corresponding to @p id.
  */
-const boost::shared_ptr<openvrml::node_class>
-openvrml::browser::node_class_map::
+const boost::shared_ptr<openvrml::node_metatype>
+openvrml::browser::node_metatype_map::
 insert(const std::string & id,
-       const boost::shared_ptr<openvrml::node_class> & node_class)
+       const boost::shared_ptr<openvrml::node_metatype> & node_metatype)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->map_.insert(make_pair(id, node_class)).first->second;
+    return this->map_.insert(make_pair(id, node_metatype)).first->second;
 }
 
 /**
- * @brief Remove a <code>node_class</code>.
+ * @brief Remove a <code>node_metatype</code>.
  *
  * @param[in] id    the implementation identifier.
  *
- * @return @c true if a <code>node_class</code> is removed; @c false otherwise.
+ * @return @c true if a <code>node_metatype</code> is removed; @c false otherwise.
  */
-bool openvrml::browser::node_class_map::remove(const std::string & id)
+bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     return this->map_.erase(id) > 0;
 }
 
 /**
- * @brief Find a <code>node_class</code>.
+ * @brief Find a <code>node_metatype</code>.
  *
  * @param[in] id    an implementation id.
  *
- * @return the <code>node_class</code> corresponding to @p id, or a null
- *         pointer if no such <code>node_class</code> exists in the map.
+ * @return the <code>node_metatype</code> corresponding to @p id, or a null
+ *         pointer if no such <code>node_metatype</code> exists in the map.
  */
-const boost::shared_ptr<openvrml::node_class>
-openvrml::browser::node_class_map::find(const std::string & id) const
+const boost::shared_ptr<openvrml::node_metatype>
+openvrml::browser::node_metatype_map::find(const std::string & id) const
 {
     const map_t::const_iterator pos = this->map_.find(id);
     return (pos != this->map_.end())
         ? pos->second
-        : boost::shared_ptr<openvrml::node_class>();
+        : boost::shared_ptr<openvrml::node_metatype>();
 }
 
 /**
- * @brief The @c node_class identifiers associated with @p node_class.
+ * @brief The @c node_metatype identifiers associated with @p node_metatype.
  *
- * @param[in] node_class    a @c node_class.
+ * @param[in] node_metatype    a @c node_metatype.
  *
- * @return the @c node_class identifiers associated with @p node_class.
+ * @return the @c node_metatype identifiers associated with @p node_metatype.
  */
-const std::vector<openvrml::node_class_id>
-openvrml::browser::node_class_map::
-node_class_ids(const openvrml::node_class & node_class) const
+const std::vector<openvrml::node_metatype_id>
+openvrml::browser::node_metatype_map::
+node_metatype_ids(const openvrml::node_metatype & node_metatype) const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    std::vector<node_class_id> ids;
+    std::vector<node_metatype_id> ids;
     for (map_t::const_iterator entry = this->map_.begin();
          entry != this->map_.end();
          ++entry) {
-        if (entry->second.get() == &node_class) {
+        if (entry->second.get() == &node_metatype) {
             ids.push_back(entry->first);
         }
     }
@@ -5720,13 +5720,13 @@ node_class_ids(const openvrml::node_class & node_class) const
 
 namespace {
 
-    struct OPENVRML_LOCAL render_node_class :
-            std::unary_function<void, node_class_map_t::value_type> {
-        explicit render_node_class(openvrml::viewer & viewer):
+    struct OPENVRML_LOCAL render_node_metatype :
+            std::unary_function<void, node_metatype_map_t::value_type> {
+        explicit render_node_metatype(openvrml::viewer & viewer):
             viewer(&viewer)
         {}
 
-        void operator()(const node_class_map_t::value_type & value) const
+        void operator()(const node_metatype_map_t::value_type & value) const
         {
             value.second->render(*this->viewer);
         }
@@ -5737,25 +5737,25 @@ namespace {
 }
 
 /**
- * @brief Render the <code>node_class</code>es.
+ * @brief Render the <code>node_metatype</code>es.
  *
  * @param[in,out] v a viewer.
  */
-void openvrml::browser::node_class_map::render(openvrml::viewer & v)
+void openvrml::browser::node_metatype_map::render(openvrml::viewer & v)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(), render_node_class(v));
+    for_each(this->map_.begin(), this->map_.end(), render_node_metatype(v));
 }
 
 namespace {
 
-    struct OPENVRML_LOCAL shutdown_node_class :
-            std::unary_function<void, node_class_map_t::value_type> {
-        explicit shutdown_node_class(const double timestamp):
+    struct OPENVRML_LOCAL shutdown_node_metatype :
+            std::unary_function<void, node_metatype_map_t::value_type> {
+        explicit shutdown_node_metatype(const double timestamp):
             timestamp_(timestamp)
         {}
 
-        void operator()(const node_class_map_t::value_type & value) const
+        void operator()(const node_metatype_map_t::value_type & value) const
         {
             value.second->shutdown(this->timestamp_);
         }
@@ -5766,17 +5766,17 @@ namespace {
 }
 
 /**
- * @brief Shut down the <code>node_class</code>es.
+ * @brief Shut down the <code>node_metatype</code>es.
  *
  * @param[in] timestamp         the current time.
  */
 void
-openvrml::browser::node_class_map::shutdown(const double timestamp)
+openvrml::browser::node_metatype_map::shutdown(const double timestamp)
     OPENVRML_NOTHROW
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(),
-             shutdown_node_class(timestamp));
+             shutdown_node_metatype(timestamp));
 }
 
 /**
@@ -5790,7 +5790,7 @@ openvrml::browser::node_class_map::shutdown(const double timestamp)
 /**
  * @internal
  *
- * @var std::auto_ptr<openvrml::null_node_class> openvrml::browser::null_node_class_
+ * @var std::auto_ptr<openvrml::null_node_metatype> openvrml::browser::null_node_metatype_
  *
  * @brief "Null" class object for default nodes (e.g., default_viewpoint).
  */
@@ -5806,7 +5806,7 @@ openvrml::browser::node_class_map::shutdown(const double timestamp)
 /**
  * @internal
  *
- * @var openvrml::browser::node_class_map openvrml::browser::node_class_map_
+ * @var openvrml::browser::node_metatype_map openvrml::browser::node_metatype_map_
  *
  * @brief A map of URIs to node implementations.
  */
@@ -5814,9 +5814,9 @@ openvrml::browser::node_class_map::shutdown(const double timestamp)
 /**
  * @internal
  *
- * @var openvrml::script_node_class openvrml::browser::script_node_class_
+ * @var openvrml::script_node_metatype openvrml::browser::script_node_metatype_
  *
- * @brief <code>node_class</code> for Script nodes in the browser.
+ * @brief <code>node_metatype</code> for Script nodes in the browser.
  */
 
 /**
@@ -6000,25 +6000,25 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
  */
 
 namespace {
-    void OPENVRML_LOCAL register_node_classes(openvrml::browser & b)
+    void OPENVRML_LOCAL register_node_metatypes(openvrml::browser & b)
     {
-        register_core_node_classes(b);
-        register_vrml97_node_classes(b);
-        register_networking_node_classes(b);
-        register_grouping_node_classes(b);
-        register_rendering_node_classes(b);
-        register_shape_node_classes(b);
-        register_geometry2d_node_classes(b);
-        register_texturing_node_classes(b);
-        register_interpolation_node_classes(b);
-        register_key_device_sensor_node_classes(b);
-        register_event_utilities_node_classes(b);
-        register_dis_node_classes(b);
-        register_environmental_effects_node_classes(b);
-        register_geospatial_node_classes(b);
-        register_hanim_node_classes(b);
-        register_nurbs_node_classes(b);
-        register_cad_geometry_node_classes(b);
+        register_core_node_metatypes(b);
+        register_vrml97_node_metatypes(b);
+        register_networking_node_metatypes(b);
+        register_grouping_node_metatypes(b);
+        register_rendering_node_metatypes(b);
+        register_shape_node_metatypes(b);
+        register_geometry2d_node_metatypes(b);
+        register_texturing_node_metatypes(b);
+        register_interpolation_node_metatypes(b);
+        register_key_device_sensor_node_metatypes(b);
+        register_event_utilities_node_metatypes(b);
+        register_dis_node_metatypes(b);
+        register_environmental_effects_node_metatypes(b);
+        register_geospatial_node_metatypes(b);
+        register_hanim_node_metatypes(b);
+        register_nurbs_node_metatypes(b);
+        register_cad_geometry_node_metatypes(b);
     }
 }
 
@@ -6032,9 +6032,9 @@ namespace {
  */
 openvrml::browser::browser(std::ostream & out, std::ostream & err)
     OPENVRML_THROW1(std::bad_alloc):
-    null_node_class_(new null_node_class(*this)),
-    null_node_type_(new null_node_type(*null_node_class_)),
-    script_node_class_(*this),
+    null_node_metatype_(new null_node_metatype(*this)),
+    null_node_type_(new null_node_type(*null_node_metatype_)),
+    script_node_metatype_(*this),
     scene_(new scene(*this)),
     default_viewpoint_(new default_viewpoint(*null_node_type_)),
     active_viewpoint_(node_cast<viewpoint_node *>(default_viewpoint_.get())),
@@ -6052,7 +6052,7 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
 {
     assert(this->active_viewpoint_);
     assert(this->active_navigation_info_);
-    register_node_classes(*this);
+    register_node_metatypes(*this);
 }
 
 /**
@@ -6064,7 +6064,7 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
 
     if (this->scene_) { this->scene_->shutdown(now); }
 
-    this->node_class_map_.shutdown(now);
+    this->node_metatype_map_.shutdown(now);
     assert(this->viewpoint_list.empty());
     assert(this->scoped_lights.empty());
     assert(this->scripts.empty());
@@ -6072,48 +6072,48 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Add a <code>node_class</code>.
+ * @brief Add a <code>node_metatype</code>.
  *
- * If a <code>node_class</code> identified by @p id has already been added to
+ * If a <code>node_metatype</code> identified by @p id has already been added to
  * the browser, it will be replaced.
  *
  * @warning If <code>std::bad_alloc</code> is thrown here, the
- *          <code>browser</code>'s <code>node_class</code> map is left in an
+ *          <code>browser</code>'s <code>node_metatype</code> map is left in an
  *          unknown state. In all likelihood any preexisting entry in the map
  *          with the same implementation identifier as @p id will have been
  *          removed.
  *
- * @param[in] id    a <code>node_class</code> identifier.
- * @param[in] nc    a <code>shared_ptr</code> to a <code>node_class</code>
+ * @param[in] id    a <code>node_metatype</code> identifier.
+ * @param[in] nc    a <code>shared_ptr</code> to a <code>node_metatype</code>
  *
  * @exception std::invalid_argument if @p nc is null.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 void
 openvrml::browser::
-add_node_class(const node_class_id & id,
-               const boost::shared_ptr<openvrml::node_class> & nc)
+add_node_metatype(const node_metatype_id & id,
+               const boost::shared_ptr<openvrml::node_metatype> & nc)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
     if (!nc) {
-        throw std::invalid_argument("cannot add null node_class pointer");
+        throw std::invalid_argument("cannot add null node_metatype pointer");
     }
-    this->node_class_map_.remove(id); // Remove any existing entry.
-    this->node_class_map_.insert(id, nc);
+    this->node_metatype_map_.remove(id); // Remove any existing entry.
+    this->node_metatype_map_.insert(id, nc);
 }
 
 /**
- * @brief Get the <code>node_class</code> corresponding to @p id.
+ * @brief Get the <code>node_metatype</code> corresponding to @p id.
  *
- * @param[in] id    a <code>node_class</code> identifier.
+ * @param[in] id    a <code>node_metatype</code> identifier.
  *
- * @return the <code>node_class</code> corresponding to @p id; or a null
- *         pointer if no such <code>node_class</code> exists.
+ * @return the <code>node_metatype</code> corresponding to @p id; or a null
+ *         pointer if no such <code>node_metatype</code> exists.
  */
-const boost::shared_ptr<openvrml::node_class>
-openvrml::browser::node_class(const node_class_id & id) const OPENVRML_NOTHROW
+const boost::shared_ptr<openvrml::node_metatype>
+openvrml::browser::node_metatype(const node_metatype_id & id) const OPENVRML_NOTHROW
 {
-    return this->node_class_map_.find(id);
+    return this->node_metatype_map_.find(id);
 }
 
 /**
@@ -6541,7 +6541,7 @@ void openvrml::browser::set_world(resource_istream & in)
     //
     double now = browser::current_time();
     if (this->scene_) { this->scene_->shutdown(now); }
-    this->node_class_map_.shutdown(now);
+    this->node_metatype_map_.shutdown(now);
     for_each(this->listeners_.begin(), this->listeners_.end(),
              boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
                             browser_event(*this, browser_event::shutdown)));
@@ -6556,9 +6556,9 @@ void openvrml::browser::set_world(resource_istream & in)
     //
     // Create the new scene.
     //
-    node_class_map new_map;
-    this->node_class_map_ = new_map;
-    register_node_classes(*this);
+    node_metatype_map new_map;
+    this->node_metatype_map_ = new_map;
+    register_node_metatypes(*this);
     this->scene_.reset(new scene(*this));
     this->scene_->load(in);
 
@@ -6585,9 +6585,9 @@ void openvrml::browser::set_world(resource_istream & in)
     }
 
     //
-    // Initialize the node_classes.
+    // Initialize the node_metatypes.
     //
-    this->node_class_map_.init(initial_viewpoint, now);
+    this->node_metatype_map_.init(initial_viewpoint, now);
 
     if (this->active_viewpoint_
         != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
@@ -6623,10 +6623,10 @@ openvrml::browser::replace_world(
     this->scene_->nodes(nodes);
     this->scene_->initialize(now);
     //
-    // Initialize the node_classes.
+    // Initialize the node_metatypes.
     //
     static viewpoint_node * const initial_viewpoint = 0;
-    this->node_class_map_.init(initial_viewpoint, now);
+    this->node_metatype_map_.init(initial_viewpoint, now);
     this->modified(true);
     this->new_view = true; // Force resetUserNav
 }
@@ -6703,8 +6703,8 @@ void openvrml::browser::description(const std::string & description)
 
 //
 // stream_id_index_ is used to construct the URI for the stream; this is used
-// to identify any PROTOs in the stream in the browser's node_class map.  A
-// side-effect of this approach is that the node_class map will keep growing,
+// to identify any PROTOs in the stream in the browser's node_metatype map.  A
+// side-effect of this approach is that the node_metatype map will keep growing,
 // even if identical streams are repeatedly loaded.  For this reason it is
 // preferable to use an EXTERNPROTO in the stream.
 //
@@ -6957,11 +6957,11 @@ void openvrml::browser::render()
     if (!this->viewer_) { return; }
 
     //
-    // Per-node_class rendering happens before viewer::set_viewpoint is called
+    // Per-node_metatype rendering happens before viewer::set_viewpoint is called
     // This is important for things like background rendering, since
     // viewer::insert_background must be called before viewer::set_viewpoint.
     //
-    this->node_class_map_.render(*this->viewer_);
+    this->node_metatype_map_.render(*this->viewer_);
 
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
@@ -7876,16 +7876,16 @@ void openvrml::scene::scene_loaded()
 {}
 
 
-openvrml::null_node_class::null_node_class(openvrml::browser & browser)
+openvrml::null_node_metatype::null_node_metatype(openvrml::browser & browser)
     OPENVRML_NOTHROW:
-    node_class("urn:X-openvrml:node:null", browser)
+    node_metatype("urn:X-openvrml:node:null", browser)
 {}
 
-openvrml::null_node_class::~null_node_class() OPENVRML_NOTHROW
+openvrml::null_node_metatype::~null_node_metatype() OPENVRML_NOTHROW
 {}
 
 const boost::shared_ptr<openvrml::node_type>
-openvrml::null_node_class::
+openvrml::null_node_metatype::
 do_create_type(const std::string &, const node_interface_set &) const
     OPENVRML_NOTHROW
 {
@@ -7895,7 +7895,7 @@ do_create_type(const std::string &, const node_interface_set &) const
 }
 
 
-openvrml::null_node_type::null_node_type(null_node_class & nodeClass)
+openvrml::null_node_type::null_node_type(null_node_metatype & nodeClass)
     OPENVRML_NOTHROW:
     node_type(nodeClass, std::string())
 {}
@@ -7937,10 +7937,10 @@ namespace {
                         std::bad_alloc)
     {
         using boost::shared_ptr;
-        using openvrml::node_class;
+        using openvrml::node_metatype;
         using openvrml::node_type;
 
-        const shared_ptr<node_class> class_ = b.node_class(urn);
+        const shared_ptr<node_metatype> class_ = b.node_metatype(urn);
         assert(class_);
         const shared_ptr<node_type> type = class_->create_type(node_name,
                                                                interface_set);

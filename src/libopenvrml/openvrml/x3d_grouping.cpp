@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for StaticGroup nodes.
      */
-    class OPENVRML_LOCAL static_group_class : public node_class {
+    class OPENVRML_LOCAL static_group_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit static_group_class(openvrml::browser & browser);
-        virtual ~static_group_class() OPENVRML_NOTHROW;
+        explicit static_group_metatype(openvrml::browser & browser);
+        virtual ~static_group_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -53,12 +53,13 @@ namespace {
     };
 }
 
-void register_grouping_node_classes(openvrml::browser & b)
+void register_grouping_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(static_group_class::id,
-                     shared_ptr<node_class>(new static_group_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(static_group_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new static_group_metatype(b)));
 }
 
 namespace {
@@ -68,7 +69,7 @@ namespace {
         public abstract_node<static_group_node>,
         public grouping_node {
 
-        friend class static_group_class;
+        friend class static_group_metatype;
 
         mfnode children_;
         sfvec3f bbox_center_;
@@ -101,24 +102,24 @@ namespace {
     };
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const static_group_class::id =
+    const char * const static_group_metatype::id =
         "urn:X-openvrml:node:StaticGroup";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this static_group_class.
+     * @param browser the browser associated with this static_group_metatype.
      */
-    static_group_class::static_group_class(openvrml::browser & browser):
-        node_class(static_group_class::id, browser)
+    static_group_metatype::static_group_metatype(openvrml::browser & browser):
+        node_metatype(static_group_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    static_group_class::~static_group_class() OPENVRML_NOTHROW
+    static_group_metatype::~static_group_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -130,11 +131,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating StaticGroup nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by static_group_class.
+     *                                  not supported by static_group_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    static_group_class::do_create_type(const std::string & id,
+    static_group_metatype::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
@@ -214,7 +215,7 @@ namespace {
      */
 
     /**
-     * @var static_group_node::StaticGroup_class
+     * @var static_group_node::static_group_metatype
      *
      * @brief Class object for StaticGroup nodes.
      */

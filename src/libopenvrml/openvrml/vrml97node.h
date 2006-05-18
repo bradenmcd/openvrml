@@ -28,6 +28,6 @@ namespace openvrml {
     class browser;
 }
 
-extern "C" void register_vrml97_node_classes(openvrml::browser & b);
+extern "C" void register_vrml97_node_metatypes(openvrml::browser & b);
 
 # endif

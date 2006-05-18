@@ -39,12 +39,12 @@ namespace {
     /**
      * @brief Class object for TextureBackground nodes.
      */
-    class OPENVRML_LOCAL texture_background_class : public node_class {
+    class OPENVRML_LOCAL texture_background_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit texture_background_class(openvrml::browser & browser);
-        virtual ~texture_background_class() OPENVRML_NOTHROW;
+        explicit texture_background_metatype(openvrml::browser & browser);
+        virtual ~texture_background_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -54,12 +54,13 @@ namespace {
     };
 }
 
-void register_environmental_effects_node_classes(openvrml::browser & b)
+void register_environmental_effects_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(texture_background_class::id,
-                     shared_ptr<node_class>(new texture_background_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(texture_background_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new texture_background_metatype(b)));
 }
 
 namespace {
@@ -69,7 +70,7 @@ namespace {
         public abstract_node<texture_background_node>,
         public child_node {
 
-        friend class texture_background_class;
+        friend class texture_background_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -107,26 +108,26 @@ namespace {
     };
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const texture_background_class::id =
+    const char * const texture_background_metatype::id =
         "urn:X-openvrml:node:TextureBackground";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                    @c texture_background_class.
+     *                    @c texture_background_metatype.
      */
-    texture_background_class::
-    texture_background_class(openvrml::browser & browser):
-        node_class(texture_background_class::id, browser)
+    texture_background_metatype::
+    texture_background_metatype(openvrml::browser & browser):
+        node_metatype(texture_background_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    texture_background_class::~texture_background_class() OPENVRML_NOTHROW
+    texture_background_metatype::~texture_background_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -135,14 +136,14 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating TextureBackground nodes.
+     * @return a @c node_type capable of creating TextureBackground nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by texture_background_class.
+     *                                  not supported by texture_background_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    texture_background_class::
+    texture_background_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -436,7 +437,7 @@ namespace {
      */
 
     /**
-     * @var texture_background_node::TextureBackground_class
+     * @var texture_background_node::texture_background_metatype
      *
      * @brief Class object for TextureBackground nodes.
      */

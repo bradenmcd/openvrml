@@ -165,7 +165,7 @@ namespace openvrml {
 
     class viewer;
     class scene;
-    class null_node_class;
+    class null_node_metatype;
     class null_node_type;
 
     class OPENVRML_API browser : boost::noncopyable {
@@ -177,31 +177,31 @@ namespace openvrml {
         struct root_scene_loader;
         struct vrml_from_url_creator;
 
-        class OPENVRML_LOCAL node_class_map {
+        class OPENVRML_LOCAL node_metatype_map {
             mutable boost::mutex mutex_;
-            typedef std::map<std::string, boost::shared_ptr<node_class> >
+            typedef std::map<std::string, boost::shared_ptr<node_metatype> >
                 map_t;
             map_t map_;
 
         public:
-            node_class_map();
-            ~node_class_map() OPENVRML_NOTHROW;
+            node_metatype_map();
+            ~node_metatype_map() OPENVRML_NOTHROW;
 
-            node_class_map & operator=(const node_class_map & ncm);
+            node_metatype_map & operator=(const node_metatype_map & ncm);
 
             void init(viewpoint_node * initial_viewpoint, double timestamp);
 
-            const boost::shared_ptr<openvrml::node_class>
+            const boost::shared_ptr<openvrml::node_metatype>
                 insert(const std::string & id,
-                       const boost::shared_ptr<openvrml::node_class> & node_class);
+                       const boost::shared_ptr<openvrml::node_metatype> & metatype);
 
             bool remove(const std::string & id);
 
-            const boost::shared_ptr<node_class>
+            const boost::shared_ptr<node_metatype>
                 find(const std::string & id) const;
 
-            const std::vector<node_class_id>
-                node_class_ids(const openvrml::node_class & node_class) const
+            const std::vector<node_metatype_id>
+                node_metatype_ids(const openvrml::node_metatype & metatype) const
                 OPENVRML_THROW1(std::bad_alloc);
 
             void render(viewer & v);
@@ -213,14 +213,14 @@ namespace openvrml {
             // No convenient way to make copy-construction thread-safe, and we
             // don't really need it.
             //
-            node_class_map(const node_class_map & map);
+            node_metatype_map(const node_metatype_map & map);
         };
 
         mutable boost::recursive_mutex mutex_;
-        std::auto_ptr<null_node_class> null_node_class_;
+        std::auto_ptr<null_node_metatype> null_node_metatype_;
         std::auto_ptr<null_node_type> null_node_type_;
-        node_class_map node_class_map_;
-        script_node_class script_node_class_;
+        node_metatype_map node_metatype_map_;
+        script_node_metatype script_node_metatype_;
         boost::scoped_ptr<scene> scene_;
         const boost::intrusive_ptr<node> default_viewpoint_;
         viewpoint_node * active_viewpoint_;
@@ -256,11 +256,12 @@ namespace openvrml {
             OPENVRML_THROW1(std::bad_alloc);
         virtual ~browser() OPENVRML_NOTHROW;
 
-        void add_node_class(const node_class_id & id,
-                            const boost::shared_ptr<openvrml::node_class> & nc)
+        void add_node_metatype(
+            const node_metatype_id & id,
+            const boost::shared_ptr<openvrml::node_metatype> & metatype)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-        const boost::shared_ptr<openvrml::node_class>
-        node_class(const node_class_id & id) const OPENVRML_NOTHROW;
+        const boost::shared_ptr<openvrml::node_metatype>
+        node_metatype(const node_metatype_id & id) const OPENVRML_NOTHROW;
 
         scene * root_scene() const OPENVRML_NOTHROW;
 

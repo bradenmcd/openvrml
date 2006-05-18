@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for KeySensor nodes.
      */
-    class OPENVRML_LOCAL key_sensor_class : public node_class {
+    class OPENVRML_LOCAL key_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit key_sensor_class(openvrml::browser & browser);
-        virtual ~key_sensor_class() OPENVRML_NOTHROW;
+        explicit key_sensor_metatype(openvrml::browser & browser);
+        virtual ~key_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for StringSensor nodes.
      */
-    class OPENVRML_LOCAL string_sensor_class : public node_class {
+    class OPENVRML_LOCAL string_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit string_sensor_class(openvrml::browser & browser);
-        virtual ~string_sensor_class() OPENVRML_NOTHROW;
+        explicit string_sensor_metatype(openvrml::browser & browser);
+        virtual ~string_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -71,14 +71,14 @@ namespace {
     };
 }
 
-void register_key_device_sensor_node_classes(openvrml::browser & b)
+void register_key_device_sensor_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(key_sensor_class::id,
-                     shared_ptr<node_class>(new key_sensor_class(b)));
-    b.add_node_class(string_sensor_class::id,
-                     shared_ptr<node_class>(new string_sensor_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(key_sensor_metatype::id,
+                     shared_ptr<node_metatype>(new key_sensor_metatype(b)));
+    b.add_node_metatype(string_sensor_metatype::id,
+                     shared_ptr<node_metatype>(new string_sensor_metatype(b)));
 }
 
 namespace {
@@ -87,7 +87,7 @@ namespace {
 
     class OPENVRML_LOCAL key_sensor_node : public abstract_node<key_sensor_node>,
                                            public child_node {
-        friend class key_sensor_class;
+        friend class key_sensor_metatype;
 
         exposedfield<sfbool> enabled_;
         sfint32 action_key_press_;
@@ -118,7 +118,7 @@ namespace {
         public abstract_node<string_sensor_node>,
         public child_node {
 
-        friend class string_sensor_class;
+        friend class string_sensor_metatype;
 
         exposedfield<sfbool> deletion_allowed_;
         exposedfield<sfbool> enabled_;
@@ -137,24 +137,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const key_sensor_class::id =
+    const char * const key_sensor_metatype::id =
         "urn:X-openvrml:node:KeySensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c key_sensor_class.
+     * @param browser the @c browser associated with this @c key_sensor_metatype.
      */
-    key_sensor_class::key_sensor_class(openvrml::browser & browser):
-        node_class(key_sensor_class::id, browser)
+    key_sensor_metatype::key_sensor_metatype(openvrml::browser & browser):
+        node_metatype(key_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    key_sensor_class::~key_sensor_class() OPENVRML_NOTHROW
+    key_sensor_metatype::~key_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -166,11 +166,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating KeySensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by key_sensor_class.
+     *                                  not supported by key_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    key_sensor_class::do_create_type(const std::string & id,
+    key_sensor_metatype::do_create_type(const std::string & id,
                                      const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
@@ -327,7 +327,7 @@ namespace {
      */
 
     /**
-     * @var key_sensor_node::key_sensor_class
+     * @var key_sensor_node::key_sensor_metatype
      *
      * @brief Class object for KeySensor nodes.
      */
@@ -419,25 +419,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const string_sensor_class::id =
+    const char * const string_sensor_metatype::id =
         "urn:X-openvrml:node:StringSensor";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c string_sensor_class.
+     *                @c string_sensor_metatype.
      */
-    string_sensor_class::string_sensor_class(openvrml::browser & browser):
-        node_class(string_sensor_class::id, browser)
+    string_sensor_metatype::string_sensor_metatype(openvrml::browser & browser):
+        node_metatype(string_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    string_sensor_class::~string_sensor_class() OPENVRML_NOTHROW
+    string_sensor_metatype::~string_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -449,11 +449,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating StringSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by string_sensor_class.
+     *                                  not supported by string_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    string_sensor_class::
+    string_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -575,7 +575,7 @@ namespace {
      */
 
     /**
-     * @var string_sensor_node::StringSensor_class
+     * @var string_sensor_node::string_sensor_metatype
      *
      * @brief Class object for StringSensor nodes.
      */

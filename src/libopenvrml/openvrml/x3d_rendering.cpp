@@ -39,12 +39,12 @@ namespace {
     /**
      * @brief Class object for ColorRGBA nodes.
      */
-    class OPENVRML_LOCAL color_rgba_class : public node_class {
+    class OPENVRML_LOCAL color_rgba_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit color_rgba_class(openvrml::browser & browser);
-        virtual ~color_rgba_class() throw ();
+        explicit color_rgba_metatype(openvrml::browser & browser);
+        virtual ~color_rgba_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -57,12 +57,12 @@ namespace {
     /**
      * @brief Class object for IndexedTriangleFanSet nodes.
      */
-    class OPENVRML_LOCAL indexed_triangle_fan_set_class : public node_class {
+    class OPENVRML_LOCAL indexed_triangle_fan_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit indexed_triangle_fan_set_class(openvrml::browser & browser);
-        virtual ~indexed_triangle_fan_set_class() OPENVRML_NOTHROW;
+        explicit indexed_triangle_fan_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_triangle_fan_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -75,12 +75,12 @@ namespace {
     /**
      * @brief Class object for IndexedTriangleSet nodes.
      */
-    class OPENVRML_LOCAL indexed_triangle_set_class : public node_class {
+    class OPENVRML_LOCAL indexed_triangle_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit indexed_triangle_set_class(openvrml::browser & browser);
-        virtual ~indexed_triangle_set_class() OPENVRML_NOTHROW;
+        explicit indexed_triangle_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_triangle_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -93,12 +93,12 @@ namespace {
     /**
      * @brief Class object for IndexedTriangleStripSet nodes.
      */
-    class OPENVRML_LOCAL indexed_triangle_strip_set_class : public node_class {
+    class OPENVRML_LOCAL indexed_triangle_strip_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit indexed_triangle_strip_set_class(openvrml::browser & browser);
-        virtual ~indexed_triangle_strip_set_class() OPENVRML_NOTHROW;
+        explicit indexed_triangle_strip_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_triangle_strip_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -111,12 +111,12 @@ namespace {
     /**
      * @brief Class object for TriangleFanSet nodes.
      */
-    class OPENVRML_LOCAL triangle_fan_set_class : public node_class {
+    class OPENVRML_LOCAL triangle_fan_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit triangle_fan_set_class(openvrml::browser & browser);
-        virtual ~triangle_fan_set_class() OPENVRML_NOTHROW;
+        explicit triangle_fan_set_metatype(openvrml::browser & browser);
+        virtual ~triangle_fan_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -129,12 +129,12 @@ namespace {
     /**
      * @brief Class object for TriangleSet nodes.
      */
-    class OPENVRML_LOCAL triangle_set_class : public node_class {
+    class OPENVRML_LOCAL triangle_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit triangle_set_class(openvrml::browser & browser);
-        virtual ~triangle_set_class() OPENVRML_NOTHROW;
+        explicit triangle_set_metatype(openvrml::browser & browser);
+        virtual ~triangle_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -147,12 +147,12 @@ namespace {
     /**
      * @brief Class object for TriangleStripSet nodes.
      */
-    class OPENVRML_LOCAL triangle_strip_set_class : public node_class {
+    class OPENVRML_LOCAL triangle_strip_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit triangle_strip_set_class(openvrml::browser & browser);
-        virtual ~triangle_strip_set_class() OPENVRML_NOTHROW;
+        explicit triangle_strip_set_metatype(openvrml::browser & browser);
+        virtual ~triangle_strip_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -162,27 +162,30 @@ namespace {
     };
 }
 
-void register_rendering_node_classes(openvrml::browser & b)
+void register_rendering_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(color_rgba_class::id,
-                     shared_ptr<node_class>(new color_rgba_class(b)));
-    b.add_node_class(indexed_triangle_fan_set_class::id,
-                     shared_ptr<node_class>(
-                         new indexed_triangle_fan_set_class(b)));
-    b.add_node_class(indexed_triangle_set_class::id,
-                     shared_ptr<node_class>(
-                         new indexed_triangle_set_class(b)));
-    b.add_node_class(indexed_triangle_strip_set_class::id,
-                     shared_ptr<node_class>(
-                         new indexed_triangle_strip_set_class(b)));
-    b.add_node_class(triangle_fan_set_class::id,
-                     shared_ptr<node_class>(new triangle_fan_set_class(b)));
-    b.add_node_class(triangle_set_class::id,
-                     shared_ptr<node_class>(new triangle_set_class(b)));
-    b.add_node_class(triangle_strip_set_class::id,
-                     shared_ptr<node_class>(new triangle_strip_set_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(color_rgba_metatype::id,
+                        shared_ptr<node_metatype>(new color_rgba_metatype(b)));
+    b.add_node_metatype(indexed_triangle_fan_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new indexed_triangle_fan_set_metatype(b)));
+    b.add_node_metatype(indexed_triangle_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new indexed_triangle_set_metatype(b)));
+    b.add_node_metatype(indexed_triangle_strip_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new indexed_triangle_strip_set_metatype(b)));
+    b.add_node_metatype(triangle_fan_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new triangle_fan_set_metatype(b)));
+    b.add_node_metatype(triangle_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new triangle_set_metatype(b)));
+    b.add_node_metatype(triangle_strip_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new triangle_strip_set_metatype(b)));
 }
 
 namespace {
@@ -193,7 +196,7 @@ namespace {
         public abstract_node<color_rgba_node>,
         public openvrml::color_rgba_node {
 
-        friend class color_rgba_class;
+        friend class color_rgba_metatype;
 
         exposedfield<mfcolorrgba> color_;
 
@@ -214,7 +217,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class indexed_triangle_fan_set_class;
+        friend class indexed_triangle_fan_set_metatype;
 
         class set_index_listener : public event_listener_base<self_t>,
                                    public mfint32_listener {
@@ -262,7 +265,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class indexed_triangle_set_class;
+        friend class indexed_triangle_set_metatype;
 
         class set_index_listener :
                 public event_listener_base<self_t>,
@@ -312,7 +315,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class indexed_triangle_strip_set_class;
+        friend class indexed_triangle_strip_set_metatype;
 
         class set_index_listener : public event_listener_base<self_t>,
                                    public mfint32_listener {
@@ -361,7 +364,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class triangle_fan_set_class;
+        friend class triangle_fan_set_metatype;
 
         exposedfield<sfnode> color_;
         exposedfield<sfnode> coord_;
@@ -396,7 +399,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class triangle_set_class;
+        friend class triangle_set_metatype;
 
         exposedfield<sfnode> color_;
         exposedfield<sfnode> coord_;
@@ -429,7 +432,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class triangle_strip_set_class;
+        friend class triangle_strip_set_metatype;
 
         exposedfield<sfnode> color_;
         exposedfield<sfnode> coord_;
@@ -461,23 +464,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const color_rgba_class::id = "urn:X-openvrml:node:ColorRGBA";
+    const char * const color_rgba_metatype::id = "urn:X-openvrml:node:ColorRGBA";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c color_rgba_class.
+     * @param browser the @c browser associated with this @c color_rgba_metatype.
      */
-    color_rgba_class::color_rgba_class(openvrml::browser & browser):
-        node_class(color_rgba_class::id, browser)
+    color_rgba_metatype::color_rgba_metatype(openvrml::browser & browser):
+        node_metatype(color_rgba_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    color_rgba_class::~color_rgba_class() throw ()
+    color_rgba_metatype::~color_rgba_metatype() throw ()
     {}
 
     /**
@@ -489,11 +492,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating ColorRGBA nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by color_rgba_class.
+     *                                  not supported by color_rgba_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    color_rgba_class::do_create_type(const std::string & id,
+    color_rgba_metatype::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
@@ -557,26 +560,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const indexed_triangle_fan_set_class::id =
+    const char * const indexed_triangle_fan_set_metatype::id =
         "urn:X-openvrml:node:IndexedTriangleFanSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c indexed_triangle_fan_set_class.
+     *                @c indexed_triangle_fan_set_metatype.
      */
-    indexed_triangle_fan_set_class::
-    indexed_triangle_fan_set_class(openvrml::browser & browser):
-        node_class(indexed_triangle_fan_set_class::id, browser)
+    indexed_triangle_fan_set_metatype::
+    indexed_triangle_fan_set_metatype(openvrml::browser & browser):
+        node_metatype(indexed_triangle_fan_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_triangle_fan_set_class::~indexed_triangle_fan_set_class()
+    indexed_triangle_fan_set_metatype::~indexed_triangle_fan_set_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -589,11 +592,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating IndexedTriangleFanSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by indexed_triangle_fan_set_class.
+     *                                  not supported by indexed_triangle_fan_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    indexed_triangle_fan_set_class::do_create_type(const std::string & id,
+    indexed_triangle_fan_set_metatype::do_create_type(const std::string & id,
                                                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
@@ -775,26 +778,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const indexed_triangle_set_class::id =
+    const char * const indexed_triangle_set_metatype::id =
         "urn:X-openvrml:node:IndexedTriangleSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c indexed_triangle_set_class.
+     *                @c indexed_triangle_set_metatype.
      */
-    indexed_triangle_set_class::
-    indexed_triangle_set_class(openvrml::browser & browser):
-        node_class(indexed_triangle_set_class::id, browser)
+    indexed_triangle_set_metatype::
+    indexed_triangle_set_metatype(openvrml::browser & browser):
+        node_metatype(indexed_triangle_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_triangle_set_class::~indexed_triangle_set_class() OPENVRML_NOTHROW
+    indexed_triangle_set_metatype::~indexed_triangle_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -806,11 +809,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating IndexedTriangleSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by indexed_triangle_set_class.
+     *                                  not supported by indexed_triangle_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    indexed_triangle_set_class::do_create_type(const std::string & id,
+    indexed_triangle_set_metatype::do_create_type(const std::string & id,
                                                const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
@@ -992,26 +995,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const indexed_triangle_strip_set_class::id =
+    const char * const indexed_triangle_strip_set_metatype::id =
         "urn:X-openvrml:node:IndexedTriangleStripSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c indexed_triangle_strip_set_class.
+     *                @c indexed_triangle_strip_set_metatype.
      */
-    indexed_triangle_strip_set_class::
-    indexed_triangle_strip_set_class(openvrml::browser & browser):
-        node_class(indexed_triangle_strip_set_class::id, browser)
+    indexed_triangle_strip_set_metatype::
+    indexed_triangle_strip_set_metatype(openvrml::browser & browser):
+        node_metatype(indexed_triangle_strip_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_triangle_strip_set_class::~indexed_triangle_strip_set_class() OPENVRML_NOTHROW
+    indexed_triangle_strip_set_metatype::~indexed_triangle_strip_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1023,12 +1026,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating IndexedTriangleStripSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by indexed_triangle_strip_set_class.
+     *                                  not supported by indexed_triangle_strip_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    indexed_triangle_strip_set_class::do_create_type(const std::string & id,
-                                                     const node_interface_set & interfaces) const
+    indexed_triangle_strip_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
@@ -1228,25 +1232,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const triangle_fan_set_class::id =
+    const char * const triangle_fan_set_metatype::id =
         "urn:X-openvrml:node:TriangleFanSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c triangle_fan_set_class.
+     *                @c triangle_fan_set_metatype.
      */
-    triangle_fan_set_class::triangle_fan_set_class(openvrml::browser & browser):
-        node_class(triangle_fan_set_class::id, browser)
+    triangle_fan_set_metatype::triangle_fan_set_metatype(openvrml::browser & browser):
+        node_metatype(triangle_fan_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    triangle_fan_set_class::~triangle_fan_set_class() OPENVRML_NOTHROW
+    triangle_fan_set_metatype::~triangle_fan_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1258,12 +1262,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TriangleFanSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by triangle_fan_set_class.
+     *                                  not supported by triangle_fan_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    triangle_fan_set_class::do_create_type(const std::string & id,
-                                           const node_interface_set & interfaces) const
+    triangle_fan_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
@@ -1442,25 +1447,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const triangle_set_class::id =
+    const char * const triangle_set_metatype::id =
         "urn:X-openvrml:node:TriangleSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c triangle_set_class.
+     *                @c triangle_set_metatype.
      */
-    triangle_set_class::triangle_set_class(openvrml::browser & browser):
-        node_class(triangle_set_class::id, browser)
+    triangle_set_metatype::triangle_set_metatype(openvrml::browser & browser):
+        node_metatype(triangle_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    triangle_set_class::~triangle_set_class() OPENVRML_NOTHROW
+    triangle_set_metatype::~triangle_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1472,12 +1477,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TriangleSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by triangle_set_class.
+     *                                  not supported by triangle_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    triangle_set_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    triangle_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 9> supported_interfaces_t;
@@ -1636,25 +1642,25 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const triangle_strip_set_class::id =
+    const char * const triangle_strip_set_metatype::id =
         "urn:X-openvrml:node:TriangleStripSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c triangle_strip_set_class.
+     *                @c triangle_strip_set_metatype.
      */
-    triangle_strip_set_class::triangle_strip_set_class(openvrml::browser & browser):
-        node_class(triangle_strip_set_class::id, browser)
+    triangle_strip_set_metatype::triangle_strip_set_metatype(openvrml::browser & browser):
+        node_metatype(triangle_strip_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    triangle_strip_set_class::~triangle_strip_set_class() OPENVRML_NOTHROW
+    triangle_strip_set_metatype::~triangle_strip_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1666,12 +1672,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TriangleStripSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by triangle_strip_set_class.
+     *                                  not supported by triangle_strip_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    triangle_strip_set_class::do_create_type(const std::string & id,
-                                             const node_interface_set & interfaces) const
+    triangle_strip_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 10> supported_interfaces_t;
@@ -1856,7 +1863,7 @@ namespace {
      */
 
     /**
-     * @var color_rgba_node::ColorRGBA_class
+     * @var color_rgba_node::ColorRGBA_metatype
      *
      * @brief Class object for ColorRGBA nodes.
      */
@@ -1907,7 +1914,7 @@ namespace {
      */
 
     /**
-     * @var indexed_triangle_fan_set_node::IndexedTriangleFanSet_class
+     * @var indexed_triangle_fan_set_node::indexed_triangle_fan_set_metatype
      *
      * @brief Class object for IndexedTriangleFanSet nodes.
      */
@@ -2100,7 +2107,7 @@ namespace {
      */
 
     /**
-     * @var indexed_triangle_set_node::IndexedTriangleSet_class
+     * @var indexed_triangle_set_node::indexed_triangle_set_metatype
      *
      * @brief Class object for IndexedTriangleSet nodes.
      */
@@ -2293,7 +2300,7 @@ namespace {
      */
 
     /**
-     * @var indexed_triangle_strip_set_node::IndexedTriangleStripSet_class
+     * @var indexed_triangle_strip_set_node::indexed_triangle_strip_set_metatype
      *
      * @brief Class object for IndexedTriangleStripSet nodes.
      */
@@ -2494,7 +2501,7 @@ namespace {
      */
 
     /**
-     * @var triangle_fan_set_node::TriangleFanSet_class
+     * @var triangle_fan_set_node::triangle_fan_set_metatype
      *
      * @brief Class object for TriangleFanSet nodes.
      */
@@ -2663,7 +2670,7 @@ namespace {
      */
 
     /**
-     * @var triangle_set_node::TriangleSet_class
+     * @var triangle_set_node::triangle_set_metatype
      *
      * @brief Class object for TriangleSet nodes.
      */
@@ -2791,7 +2798,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     triangle_set_node::
     triangle_set_node(const node_type & type,
@@ -2825,7 +2832,7 @@ namespace {
      */
 
     /**
-     * @var triangle_strip_set_node::TriangleStripSet_class
+     * @var triangle_strip_set_node::triangle_strip_set_metatype
      *
      * @brief Class object for TriangleStripSet nodes.
      */

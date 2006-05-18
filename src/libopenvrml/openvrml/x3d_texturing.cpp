@@ -38,17 +38,17 @@ namespace {
     /**
      * @brief Class object for MultiTexture nodes.
      */
-    class OPENVRML_LOCAL multi_texture_class : public node_class {
+    class OPENVRML_LOCAL multi_texture_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit multi_texture_class(openvrml::browser & browser);
-        virtual ~multi_texture_class() throw ();
+        explicit multi_texture_metatype(openvrml::browser & browser);
+        virtual ~multi_texture_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 
@@ -56,17 +56,17 @@ namespace {
     /**
      * @brief Class object for MultiTextureCoordinate nodes.
      */
-    class OPENVRML_LOCAL multi_texture_coordinate_class : public node_class {
+    class OPENVRML_LOCAL multi_texture_coordinate_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit multi_texture_coordinate_class(openvrml::browser & browser);
-        virtual ~multi_texture_coordinate_class() throw ();
+        explicit multi_texture_coordinate_metatype(openvrml::browser & browser);
+        virtual ~multi_texture_coordinate_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 
@@ -74,17 +74,17 @@ namespace {
     /**
      * @brief Class object for MultiTextureTransform nodes.
      */
-    class OPENVRML_LOCAL multi_texture_transform_class : public node_class {
+    class OPENVRML_LOCAL multi_texture_transform_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit multi_texture_transform_class(openvrml::browser & browser);
-        virtual ~multi_texture_transform_class() throw ();
+        explicit multi_texture_transform_metatype(openvrml::browser & browser);
+        virtual ~multi_texture_transform_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 
@@ -92,38 +92,38 @@ namespace {
     /**
      * @brief Class object for TextureCoordinateGenerator nodes.
      */
-    class OPENVRML_LOCAL texture_coordinate_generator_class :
-        public node_class {
+    class OPENVRML_LOCAL texture_coordinate_generator_metatype :
+        public node_metatype {
     public:
         static const char * const id;
 
-        explicit texture_coordinate_generator_class(
+        explicit texture_coordinate_generator_metatype(
             openvrml::browser & browser);
-        virtual ~texture_coordinate_generator_class() throw ();
+        virtual ~texture_coordinate_generator_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             throw (unsupported_interface, std::bad_alloc);
     };
 }
 
-void register_texturing_node_classes(openvrml::browser & b)
+void register_texturing_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(multi_texture_class::id,
-                     shared_ptr<node_class>(new multi_texture_class(b)));
-    b.add_node_class(
-        multi_texture_coordinate_class::id,
-        shared_ptr<node_class>(new multi_texture_coordinate_class(b)));
-    b.add_node_class(
-        multi_texture_transform_class::id,
-        shared_ptr<node_class>(new multi_texture_transform_class(b)));
-    b.add_node_class(
-        texture_coordinate_generator_class::id,
-        shared_ptr<node_class>(new texture_coordinate_generator_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(multi_texture_metatype::id,
+                        shared_ptr<node_metatype>(new multi_texture_metatype(b)));
+    b.add_node_metatype(
+        multi_texture_coordinate_metatype::id,
+        shared_ptr<node_metatype>(new multi_texture_coordinate_metatype(b)));
+    b.add_node_metatype(
+        multi_texture_transform_metatype::id,
+        shared_ptr<node_metatype>(new multi_texture_transform_metatype(b)));
+    b.add_node_metatype(
+        texture_coordinate_generator_metatype::id,
+        shared_ptr<node_metatype>(new texture_coordinate_generator_metatype(b)));
 }
 
 namespace {
@@ -133,7 +133,7 @@ namespace {
     class OPENVRML_LOCAL multi_texture_node :
         public abstract_node<multi_texture_node> {
 
-        friend class multi_texture_class;
+        friend class multi_texture_metatype;
 
         exposedfield<sffloat> alpha_;
         exposedfield<sfcolor> color_;
@@ -152,64 +152,64 @@ namespace {
     class OPENVRML_LOCAL multi_texture_coordinate_node :
         public abstract_node<multi_texture_coordinate_node> {
 
-        friend class multi_texture_coordinate_class;
+        friend class multi_texture_coordinate_metatype;
 
         exposedfield<mfnode> tex_coord_;
 
     public:
         multi_texture_coordinate_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+                                      const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~multi_texture_coordinate_node() throw ();
     };
 
 
     class OPENVRML_LOCAL multi_texture_transform_node :
         public abstract_node<multi_texture_transform_node> {
-        friend class multi_texture_transform_class;
+        friend class multi_texture_transform_metatype;
 
         exposedfield<mfnode> texture_transform_;
 
     public:
         multi_texture_transform_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+                                     const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~multi_texture_transform_node() throw ();
     };
 
 
     class OPENVRML_LOCAL texture_coordinate_generator_node :
         public abstract_node<texture_coordinate_generator_node> {
-        friend class texture_coordinate_generator_class;
+        friend class texture_coordinate_generator_metatype;
 
         exposedfield<sfstring> mode_;
         exposedfield<mffloat> parameter_;
 
     public:
         texture_coordinate_generator_node(const node_type & type,
-                           const boost::shared_ptr<openvrml::scope> & scope);
+                                          const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~texture_coordinate_generator_node() throw ();
     };
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const multi_texture_class::id =
+    const char * const multi_texture_metatype::id =
         "urn:X-openvrml:node:MultiTexture";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c multi_texture_class.
+     *                @c multi_texture_metatype.
      */
-    multi_texture_class::multi_texture_class(openvrml::browser & browser):
-        node_class(multi_texture_class::id, browser)
+    multi_texture_metatype::multi_texture_metatype(openvrml::browser & browser):
+        node_metatype(multi_texture_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    multi_texture_class::~multi_texture_class() throw ()
+    multi_texture_metatype::~multi_texture_metatype() throw ()
     {}
 
     /**
@@ -218,16 +218,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating MultiTexture
-     *         nodes.
+     * @return a @c node_type capable of creating MultiTexture nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by multi_texture_class.
+     *                                  not supported by multi_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    multi_texture_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    multi_texture_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -385,26 +385,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const multi_texture_coordinate_class::id =
+    const char * const multi_texture_coordinate_metatype::id =
         "urn:X-openvrml:node:MultiTextureCoordinate";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c multi_texture_coordinate_class.
+     *                @c multi_texture_coordinate_metatype.
      */
-    multi_texture_coordinate_class::
-    multi_texture_coordinate_class(openvrml::browser & browser):
-        node_class(multi_texture_coordinate_class::id, browser)
+    multi_texture_coordinate_metatype::
+    multi_texture_coordinate_metatype(openvrml::browser & browser):
+        node_metatype(multi_texture_coordinate_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    multi_texture_coordinate_class::~multi_texture_coordinate_class() throw ()
+    multi_texture_coordinate_metatype::~multi_texture_coordinate_metatype() throw ()
     {}
 
     /**
@@ -413,15 +413,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating MultiTextureCoordinate nodes.
+     * @return a @c node_type capable of creating MultiTextureCoordinate nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by multi_texture_coordinate_class.
+     *                                  not supported by multi_texture_coordinate_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    multi_texture_coordinate_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    multi_texture_coordinate_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -484,26 +485,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const multi_texture_transform_class::id =
+    const char * const multi_texture_transform_metatype::id =
         "urn:X-openvrml:node:MultiTextureTransform";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c multi_texture_transform_class.
+     *                @c multi_texture_transform_metatype.
      */
-    multi_texture_transform_class::
-    multi_texture_transform_class(openvrml::browser & browser):
-        node_class(multi_texture_transform_class::id, browser)
+    multi_texture_transform_metatype::
+    multi_texture_transform_metatype(openvrml::browser & browser):
+        node_metatype(multi_texture_transform_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    multi_texture_transform_class::~multi_texture_transform_class() throw ()
+    multi_texture_transform_metatype::~multi_texture_transform_metatype() throw ()
     {}
 
     /**
@@ -512,15 +513,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating MultiTextureTransform nodes.
+     * @return a @c node_type capable of creating MultiTextureTransform nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by multi_texture_transform_class.
+     *                                  not supported by multi_texture_transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    multi_texture_transform_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    multi_texture_transform_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -583,26 +585,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const texture_coordinate_generator_class::id =
+    const char * const texture_coordinate_generator_metatype::id =
         "urn:X-openvrml:node:TextureCoordinateGenerator";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c texture_coordinate_generator_class.
+     *                @c texture_coordinate_generator_metatype.
      */
-    texture_coordinate_generator_class::
-    texture_coordinate_generator_class(openvrml::browser & browser):
-        node_class(texture_coordinate_generator_class::id, browser)
+    texture_coordinate_generator_metatype::
+    texture_coordinate_generator_metatype(openvrml::browser & browser):
+        node_metatype(texture_coordinate_generator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    texture_coordinate_generator_class::~texture_coordinate_generator_class() throw ()
+    texture_coordinate_generator_metatype::~texture_coordinate_generator_metatype() throw ()
     {}
 
     /**
@@ -614,12 +616,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TextureCoordinateGenerator nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by texture_coordinate_generator_class.
+     *                                  not supported by texture_coordinate_generator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    texture_coordinate_generator_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    texture_coordinate_generator_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -707,7 +710,7 @@ namespace {
      */
 
     /**
-     * @var multi_texture_node::MultiTexture_class
+     * @var multi_texture_node::MultiTexture_metatype
      *
      * @brief Class object for MultiTexture nodes.
      */
@@ -758,14 +761,14 @@ namespace {
     multi_texture_node::
     multi_texture_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      abstract_node<self_t>(type, scope),
-      alpha_(*this, 1),
-      color_(*this, color(1,1,1)),
-      function_(*this),
-      mode_(*this),
-      source_(*this),
-      texture_(*this)
+        node(type, scope),
+        abstract_node<self_t>(type, scope),
+        alpha_(*this, 1),
+        color_(*this, color(1,1,1)),
+        function_(*this),
+        mode_(*this),
+        source_(*this),
+        texture_(*this)
     {}
 
     /**
@@ -782,7 +785,7 @@ namespace {
      */
 
     /**
-     * @var multi_texture_coordinate_node::MultiTextureCoordinate_class
+     * @var multi_texture_coordinate_node::multi_texture_coordinate_metatype
      *
      * @brief Class object for MultiTextureCoordinate nodes.
      */
@@ -823,7 +826,7 @@ namespace {
      */
 
     /**
-     * @var multi_texture_transform_node::MultiTextureTransform_class
+     * @var multi_texture_transform_node::multi_texture_transform_metatype
      *
      * @brief Class object for MultiTextureTransform nodes.
      */
@@ -864,7 +867,7 @@ namespace {
      */
 
     /**
-     * @var texture_coordinate_generator_node::TextureCoordinateGenerator_class
+     * @var texture_coordinate_generator_node::texture_coordinate_generator_metatype
      *
      * @brief Class object for TextureCoordinateGenerator nodes.
      */

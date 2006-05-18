@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for Arc2D nodes.
      */
-    class OPENVRML_LOCAL arc2d_class : public node_class {
+    class OPENVRML_LOCAL arc2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit arc2d_class(openvrml::browser & browser);
-        virtual ~arc2d_class() OPENVRML_NOTHROW;
+        explicit arc2d_metatype(openvrml::browser & browser);
+        virtual ~arc2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for ArcClose2D nodes.
      */
-    class OPENVRML_LOCAL arc_close2d_class : public node_class {
+    class OPENVRML_LOCAL arc_close2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit arc_close2d_class(openvrml::browser & browser);
-        virtual ~arc_close2d_class() OPENVRML_NOTHROW;
+        explicit arc_close2d_metatype(openvrml::browser & browser);
+        virtual ~arc_close2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for Circle2D nodes.
      */
-    class OPENVRML_LOCAL circle2d_class : public node_class {
+    class OPENVRML_LOCAL circle2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit circle2d_class(openvrml::browser & browser);
-        virtual ~circle2d_class() OPENVRML_NOTHROW;
+        explicit circle2d_metatype(openvrml::browser & browser);
+        virtual ~circle2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for Disk2D nodes.
      */
-    class OPENVRML_LOCAL disk2d_class : public node_class {
+    class OPENVRML_LOCAL disk2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit disk2d_class(openvrml::browser & browser);
-        virtual ~disk2d_class() OPENVRML_NOTHROW;
+        explicit disk2d_metatype(openvrml::browser & browser);
+        virtual ~disk2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for Polyline2D nodes.
      */
-    class OPENVRML_LOCAL polyline2d_class : public node_class {
+    class OPENVRML_LOCAL polyline2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit polyline2d_class(openvrml::browser & browser);
-        virtual ~polyline2d_class() OPENVRML_NOTHROW;
+        explicit polyline2d_metatype(openvrml::browser & browser);
+        virtual ~polyline2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -128,12 +128,12 @@ namespace {
     /**
      * @brief Class object for Polypoint2D nodes.
      */
-    class OPENVRML_LOCAL polypoint2d_class : public node_class {
+    class OPENVRML_LOCAL polypoint2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit polypoint2d_class(openvrml::browser & browser);
-        virtual ~polypoint2d_class() OPENVRML_NOTHROW;
+        explicit polypoint2d_metatype(openvrml::browser & browser);
+        virtual ~polypoint2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -146,12 +146,12 @@ namespace {
     /**
      * @brief Class object for Rectangle2D nodes.
      */
-    class OPENVRML_LOCAL rectangle2d_class : public node_class {
+    class OPENVRML_LOCAL rectangle2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit rectangle2d_class(openvrml::browser & browser);
-        virtual ~rectangle2d_class() OPENVRML_NOTHROW;
+        explicit rectangle2d_metatype(openvrml::browser & browser);
+        virtual ~rectangle2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -164,12 +164,12 @@ namespace {
     /**
      * @brief Class object for TriangleSet2D nodes.
      */
-    class OPENVRML_LOCAL triangle_set2d_class : public node_class {
+    class OPENVRML_LOCAL triangle_set2d_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit triangle_set2d_class(openvrml::browser & browser);
-        virtual ~triangle_set2d_class() OPENVRML_NOTHROW;
+        explicit triangle_set2d_metatype(openvrml::browser & browser);
+        virtual ~triangle_set2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -179,26 +179,26 @@ namespace {
     };
 }
 
-void register_geometry2d_node_classes(openvrml::browser & b)
+void register_geometry2d_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(arc2d_class::id,
-                     shared_ptr<node_class>(new arc2d_class(b)));
-    b.add_node_class(arc_close2d_class::id,
-                     shared_ptr<node_class>(new arc_close2d_class(b)));
-    b.add_node_class(circle2d_class::id,
-                     shared_ptr<node_class>(new circle2d_class(b)));
-    b.add_node_class(disk2d_class::id,
-                     shared_ptr<node_class>(new disk2d_class(b)));
-    b.add_node_class(polyline2d_class::id,
-                     shared_ptr<node_class>(new polyline2d_class(b)));
-    b.add_node_class(polypoint2d_class::id,
-                     shared_ptr<node_class>(new polypoint2d_class(b)));
-    b.add_node_class(rectangle2d_class::id,
-                     shared_ptr<node_class>(new rectangle2d_class(b)));
-    b.add_node_class(triangle_set2d_class::id,
-                     shared_ptr<node_class>(new triangle_set2d_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(arc2d_metatype::id,
+                        shared_ptr<node_metatype>(new arc2d_metatype(b)));
+    b.add_node_metatype(arc_close2d_metatype::id,
+                        shared_ptr<node_metatype>(new arc_close2d_metatype(b)));
+    b.add_node_metatype(circle2d_metatype::id,
+                        shared_ptr<node_metatype>(new circle2d_metatype(b)));
+    b.add_node_metatype(disk2d_metatype::id,
+                        shared_ptr<node_metatype>(new disk2d_metatype(b)));
+    b.add_node_metatype(polyline2d_metatype::id,
+                        shared_ptr<node_metatype>(new polyline2d_metatype(b)));
+    b.add_node_metatype(polypoint2d_metatype::id,
+                        shared_ptr<node_metatype>(new polypoint2d_metatype(b)));
+    b.add_node_metatype(rectangle2d_metatype::id,
+                        shared_ptr<node_metatype>(new rectangle2d_metatype(b)));
+    b.add_node_metatype(triangle_set2d_metatype::id,
+                        shared_ptr<node_metatype>(new triangle_set2d_metatype(b)));
 }
 
 namespace {
@@ -208,7 +208,7 @@ namespace {
     class OPENVRML_LOCAL arc2d_node : public abstract_node<arc2d_node>,
                                       public geometry_node,
                                       public child_node {
-        friend class arc2d_class;
+        friend class arc2d_metatype;
 
         sffloat end_angle_;
         sffloat radius_;
@@ -231,7 +231,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class arc_close2d_class;
+        friend class arc_close2d_metatype;
 
         sfstring closure_type_;
         sffloat end_angle_;
@@ -254,7 +254,7 @@ namespace {
     class OPENVRML_LOCAL circle2d_node : public abstract_node<circle2d_node>,
                                          public geometry_node,
                                          public child_node {
-        friend class circle2d_class;
+        friend class circle2d_metatype;
 
         sffloat radius_;
 
@@ -273,7 +273,7 @@ namespace {
     class OPENVRML_LOCAL disk2d_node : public abstract_node<disk2d_node>,
                                        public geometry_node,
                                        public child_node {
-        friend class disk2d_class;
+        friend class disk2d_metatype;
 
         sffloat inner_radius_;
         sffloat outer_radius_;
@@ -296,7 +296,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class polyline2d_class;
+        friend class polyline2d_metatype;
 
         mfvec2f line_segments_;
 
@@ -316,7 +316,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class polypoint2d_class;
+        friend class polypoint2d_metatype;
 
         mfvec2f point_;
 
@@ -336,7 +336,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class rectangle2d_class;
+        friend class rectangle2d_metatype;
 
         sfvec2f size_;
         sfbool solid_;
@@ -357,7 +357,7 @@ namespace {
         public geometry_node,
         public child_node {
 
-        friend class triangle_set2d_class;
+        friend class triangle_set2d_metatype;
 
         exposedfield<mfvec2f> vertices_;
         sfbool solid_;
@@ -375,23 +375,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const arc2d_class::id = "urn:X-openvrml:node:Arc2D";
+    const char * const arc2d_metatype::id = "urn:X-openvrml:node:Arc2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c arc2d_class.
+     * @param browser the @c browser associated with this @c arc2d_metatype.
      */
-    arc2d_class::arc2d_class(openvrml::browser & browser):
-        node_class(arc2d_class::id, browser)
+    arc2d_metatype::arc2d_metatype(openvrml::browser & browser):
+        node_metatype(arc2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    arc2d_class::~arc2d_class() OPENVRML_NOTHROW
+    arc2d_metatype::~arc2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -403,12 +403,12 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating Arc2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by arc2d_class.
+     *                                  not supported by arc2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    arc2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    arc2d_metatype::do_create_type(const std::string & id,
+                                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -487,7 +487,7 @@ namespace {
      */
 
     /**
-     * @var arc2d_node::Arc2D_class
+     * @var arc2d_node::arc2d_metatype
      *
      * @brief Class object for Arc2D nodes.
      */
@@ -544,11 +544,10 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
-    arc2d_node::
-    arc2d_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
+    arc2d_node::arc2d_node(const node_type & type,
+                           const boost::shared_ptr<openvrml::scope> & scope):
       node(type, scope),
       bounded_volume_node(type, scope),
       abstract_node<self_t>(type, scope),
@@ -566,24 +565,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const arc_close2d_class::id =
+    const char * const arc_close2d_metatype::id =
         "urn:X-openvrml:node:ArcClose2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c arc_close2d_class.
+     * @param browser the @c browser associated with this @c arc_close2d_metatype.
      */
-    arc_close2d_class::arc_close2d_class(openvrml::browser & browser):
-        node_class(arc_close2d_class::id, browser)
+    arc_close2d_metatype::arc_close2d_metatype(openvrml::browser & browser):
+        node_metatype(arc_close2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    arc_close2d_class::~arc_close2d_class() OPENVRML_NOTHROW
+    arc_close2d_metatype::~arc_close2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -595,12 +594,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating ArcClose2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by arc_close2d_class.
+     *                                  not supported by arc_close2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    arc_close2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    arc_close2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 6> supported_interfaces_t;
@@ -699,7 +699,7 @@ namespace {
      */
 
     /**
-     * @var arc_close2d_node::ArcClose2D_class
+     * @var arc_close2d_node::arc_close2d_metatype
      *
      * @brief Class object for ArcClose2D nodes.
      */
@@ -738,7 +738,7 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      *
      * @todo Implement this!
@@ -768,11 +768,11 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     arc_close2d_node::
     arc_close2d_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
+                     const boost::shared_ptr<openvrml::scope> & scope):
       node(type, scope),
       bounded_volume_node(type, scope),
       abstract_node<self_t>(type, scope),
@@ -791,23 +791,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const circle2d_class::id = "urn:X-openvrml:node:Circle2D";
+    const char * const circle2d_metatype::id = "urn:X-openvrml:node:Circle2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c circle2d_class.
+     * @param browser the @c browser associated with this @c circle2d_metatype.
      */
-    circle2d_class::circle2d_class(openvrml::browser & browser):
-        node_class(circle2d_class::id, browser)
+    circle2d_metatype::circle2d_metatype(openvrml::browser & browser):
+        node_metatype(circle2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    circle2d_class::~circle2d_class() OPENVRML_NOTHROW
+    circle2d_metatype::~circle2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -816,15 +816,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating Circle2D nodes.
+     * @return a node_type capable of creating Circle2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by circle2d_class.
+     *                                  not supported by circle2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    circle2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    circle2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -883,7 +884,7 @@ namespace {
      */
 
     /**
-     * @var circle2d_node::Circle2D_class
+     * @var circle2d_node::Circle2D_metatype
      *
      * @brief Class object for Circle2D nodes.
      */
@@ -928,7 +929,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     circle2d_node::
     circle2d_node(const node_type & type,
@@ -949,23 +950,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const disk2d_class::id = "urn:X-openvrml:node:Disk2D";
+    const char * const disk2d_metatype::id = "urn:X-openvrml:node:Disk2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c disk2d_class.
+     * @param browser the @c browser associated with this @c disk2d_metatype.
      */
-    disk2d_class::disk2d_class(openvrml::browser & browser):
-        node_class(disk2d_class::id, browser)
+    disk2d_metatype::disk2d_metatype(openvrml::browser & browser):
+        node_metatype(disk2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    disk2d_class::~disk2d_class() OPENVRML_NOTHROW
+    disk2d_metatype::~disk2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -974,15 +975,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating Disk2D nodes.
+     * @return a node_type capable of creating Disk2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by disk2d_class.
+     *                                  not supported by disk2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    disk2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    disk2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -1061,7 +1063,7 @@ namespace {
      */
 
     /**
-     * @var disk2d_node::Disk2D_class
+     * @var disk2d_node::disk2d_metatype
      *
      * @brief Class object for Disk2D nodes.
      */
@@ -1137,24 +1139,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const polyline2d_class::id =
+    const char * const polyline2d_metatype::id =
         "urn:X-openvrml:node:Polyline2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c polyline2d_class.
+     * @param browser the @c browser associated with this @c polyline2d_metatype.
      */
-    polyline2d_class::polyline2d_class(openvrml::browser & browser):
-        node_class(polyline2d_class::id, browser)
+    polyline2d_metatype::polyline2d_metatype(openvrml::browser & browser):
+        node_metatype(polyline2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    polyline2d_class::~polyline2d_class() OPENVRML_NOTHROW
+    polyline2d_metatype::~polyline2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1166,12 +1168,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating Polyline2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by polyline2d_class.
+     *                                  not supported by polyline2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    polyline2d_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+    polyline2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -1225,24 +1228,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const polypoint2d_class::id =
+    const char * const polypoint2d_metatype::id =
         "urn:X-openvrml:node:Polypoint2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c polypoint2d_class.
+     * @param browser the @c browser associated with this @c polypoint2d_metatype.
      */
-    polypoint2d_class::polypoint2d_class(openvrml::browser & browser):
-        node_class(polypoint2d_class::id, browser)
+    polypoint2d_metatype::polypoint2d_metatype(openvrml::browser & browser):
+        node_metatype(polypoint2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    polypoint2d_class::~polypoint2d_class() OPENVRML_NOTHROW
+    polypoint2d_metatype::~polypoint2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1254,12 +1257,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating Polypoint2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by polypoint2d_class.
+     *                                  not supported by polypoint2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    polypoint2d_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+    polypoint2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 2> supported_interfaces_t;
@@ -1313,24 +1317,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const rectangle2d_class::id =
+    const char * const rectangle2d_metatype::id =
         "urn:X-openvrml:node:Rectangle2D";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c rectangle2d_class.
+     * @param browser the @c browser associated with this @c rectangle2d_metatype.
      */
-    rectangle2d_class::rectangle2d_class(openvrml::browser & browser):
-        node_class(rectangle2d_class::id, browser)
+    rectangle2d_metatype::rectangle2d_metatype(openvrml::browser & browser):
+        node_metatype(rectangle2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    rectangle2d_class::~rectangle2d_class() OPENVRML_NOTHROW
+    rectangle2d_metatype::~rectangle2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1342,12 +1346,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating Rectangle2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by rectangle2d_class.
+     *                                  not supported by rectangle2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    rectangle2d_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+    rectangle2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -1411,25 +1416,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const triangle_set2d_class::id =
+    const char * const triangle_set2d_metatype::id =
         "urn:X-openvrml:node:TriangleSet2D";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c triangle_set2d_class.
+     *                @c triangle_set2d_metatype.
      */
-    triangle_set2d_class::triangle_set2d_class(openvrml::browser & browser):
-        node_class(triangle_set2d_class::id, browser)
+    triangle_set2d_metatype::triangle_set2d_metatype(openvrml::browser & browser):
+        node_metatype(triangle_set2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    triangle_set2d_class::~triangle_set2d_class() OPENVRML_NOTHROW
+    triangle_set2d_metatype::~triangle_set2d_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1441,12 +1446,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TriangleSet2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by triangle_set2d_class.
+     *                                  not supported by triangle_set2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    triangle_set2d_class::do_create_type(const std::string & id,
-                                         const node_interface_set & interfaces) const
+    triangle_set2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -1525,7 +1531,7 @@ namespace {
      */
 
     /**
-     * @var polyline2d_node::Polyline2D_class
+     * @var polyline2d_node::Polyline2D_metatype
      *
      * @brief Class object for Polyline2D nodes.
      */
@@ -1596,7 +1602,7 @@ namespace {
      */
 
     /**
-     * @var polypoint2d_node::Polypoint2D_class
+     * @var polypoint2d_node::polypoint2d_metatype
      *
      * @brief Class object for Polypoint2D nodes.
      */
@@ -1611,7 +1617,7 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      *
      * @todo Implement this!
@@ -1641,7 +1647,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     polypoint2d_node::
     polypoint2d_node(const node_type & type,
@@ -1667,7 +1673,7 @@ namespace {
      */
 
     /**
-     * @var rectangle2d_node::Rectangle2D_class
+     * @var rectangle2d_node::rectangle2d_metatype
      *
      * @brief Class object for Rectangle2D nodes.
      */
@@ -1688,7 +1694,7 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      *
      * @todo Implement this!
@@ -1745,7 +1751,7 @@ namespace {
      */
 
     /**
-     * @var triangle_set2d_node::TriangleSet2D_class
+     * @var triangle_set2d_node::triangle_set2d_metatype
      *
      * @brief Class object for TriangleSet2D nodes.
      */

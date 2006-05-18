@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for MetadataDouble nodes.
      */
-    class OPENVRML_LOCAL metadata_double_class : public node_class {
+    class OPENVRML_LOCAL metadata_double_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit metadata_double_class(openvrml::browser & browser);
-        virtual ~metadata_double_class() OPENVRML_NOTHROW;
+        explicit metadata_double_metatype(openvrml::browser & browser);
+        virtual ~metadata_double_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for MetadataFloat nodes.
      */
-    class OPENVRML_LOCAL metadata_float_class : public node_class {
+    class OPENVRML_LOCAL metadata_float_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit metadata_float_class(openvrml::browser & browser);
-        virtual ~metadata_float_class() OPENVRML_NOTHROW;
+        explicit metadata_float_metatype(openvrml::browser & browser);
+        virtual ~metadata_float_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for MetadataInteger nodes.
      */
-    class OPENVRML_LOCAL metadata_integer_class : public node_class {
+    class OPENVRML_LOCAL metadata_integer_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit metadata_integer_class(openvrml::browser & browser);
-        virtual ~metadata_integer_class() OPENVRML_NOTHROW;
+        explicit metadata_integer_metatype(openvrml::browser & browser);
+        virtual ~metadata_integer_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for MetadataSet nodes.
      */
-    class OPENVRML_LOCAL metadata_set_class : public node_class {
+    class OPENVRML_LOCAL metadata_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit metadata_set_class(openvrml::browser & browser);
-        virtual ~metadata_set_class() OPENVRML_NOTHROW;
+        explicit metadata_set_metatype(openvrml::browser & browser);
+        virtual ~metadata_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for MetadataString nodes.
      */
-    class OPENVRML_LOCAL metadata_string_class : public node_class {
+    class OPENVRML_LOCAL metadata_string_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit metadata_string_class(openvrml::browser & browser);
-        virtual ~metadata_string_class() OPENVRML_NOTHROW;
+        explicit metadata_string_metatype(openvrml::browser & browser);
+        virtual ~metadata_string_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -125,20 +125,25 @@ namespace {
     };
 }
 
-void register_core_node_classes(openvrml::browser & b)
+void register_core_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(metadata_double_class::id,
-                     shared_ptr<node_class>(new metadata_double_class(b)));
-    b.add_node_class(metadata_float_class::id,
-                     shared_ptr<node_class>(new metadata_float_class(b)));
-    b.add_node_class(metadata_integer_class::id,
-                     shared_ptr<node_class>(new metadata_integer_class(b)));
-    b.add_node_class(metadata_set_class::id,
-                     shared_ptr<node_class>(new metadata_set_class(b)));
-    b.add_node_class(metadata_string_class::id,
-                     shared_ptr<node_class>(new metadata_string_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(metadata_double_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new metadata_double_metatype(b)));
+    b.add_node_metatype(metadata_float_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new metadata_float_metatype(b)));
+    b.add_node_metatype(metadata_integer_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new metadata_integer_metatype(b)));
+    b.add_node_metatype(metadata_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new metadata_set_metatype(b)));
+    b.add_node_metatype(metadata_string_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new metadata_string_metatype(b)));
 }
 
 namespace {
@@ -146,7 +151,7 @@ namespace {
     class OPENVRML_LOCAL metadata_double_node :
         public abstract_node<metadata_double_node> {
 
-        friend class metadata_double_class;
+        friend class metadata_double_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfstring> reference_;
@@ -161,7 +166,7 @@ namespace {
     class OPENVRML_LOCAL metadata_float_node :
         public abstract_node<metadata_float_node> {
 
-        friend class metadata_float_class;
+        friend class metadata_float_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfstring> reference_;
@@ -176,7 +181,7 @@ namespace {
     class OPENVRML_LOCAL metadata_integer_node :
         public abstract_node<metadata_integer_node> {
 
-        friend class metadata_integer_class;
+        friend class metadata_integer_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfstring> reference_;
@@ -191,7 +196,7 @@ namespace {
     class OPENVRML_LOCAL metadata_set_node :
         public abstract_node<metadata_set_node> {
 
-        friend class metadata_set_class;
+        friend class metadata_set_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfstring> reference_;
@@ -206,7 +211,7 @@ namespace {
     class OPENVRML_LOCAL metadata_string_node :
         public abstract_node<metadata_string_node> {
 
-        friend class metadata_string_class;
+        friend class metadata_string_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfstring> reference_;
@@ -220,25 +225,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const metadata_double_class::id =
+    const char * const metadata_double_metatype::id =
         "urn:X-openvrml:node:MetadataDouble";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c metadata_double_class.
+     *                @c metadata_double_metatype.
      */
-    metadata_double_class::metadata_double_class(openvrml::browser & browser):
-        node_class(metadata_double_class::id, browser)
+    metadata_double_metatype::metadata_double_metatype(openvrml::browser & browser):
+        node_metatype(metadata_double_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    metadata_double_class::~metadata_double_class() OPENVRML_NOTHROW
+    metadata_double_metatype::~metadata_double_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -251,11 +256,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  @c metadata_double_class.
+     *                                  @c metadata_double_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    metadata_double_class::
+    metadata_double_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -358,25 +363,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const metadata_float_class::id =
+    const char * const metadata_float_metatype::id =
         "urn:X-openvrml:node:MetadataFloat";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c metadata_float_class.
+     *                @c metadata_float_metatype.
      */
-    metadata_float_class::metadata_float_class(openvrml::browser & browser):
-        node_class(metadata_float_class::id, browser)
+    metadata_float_metatype::metadata_float_metatype(openvrml::browser & browser):
+        node_metatype(metadata_float_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    metadata_float_class::~metadata_float_class() OPENVRML_NOTHROW
+    metadata_float_metatype::~metadata_float_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -388,11 +393,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating MetadataFloat nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by metadata_float_class.
+     *                                  not supported by metadata_float_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    metadata_float_class::do_create_type(const std::string & id,
+    metadata_float_metatype::do_create_type(const std::string & id,
                                          const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
@@ -494,26 +499,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const metadata_integer_class::id =
+    const char * const metadata_integer_metatype::id =
         "urn:X-openvrml:node:MetadataInteger";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c metadata_integer_class.
+     *                @c metadata_integer_metatype.
      */
-    metadata_integer_class::
-    metadata_integer_class(openvrml::browser & browser):
-        node_class(metadata_integer_class::id, browser)
+    metadata_integer_metatype::
+    metadata_integer_metatype(openvrml::browser & browser):
+        node_metatype(metadata_integer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    metadata_integer_class::~metadata_integer_class() OPENVRML_NOTHROW
+    metadata_integer_metatype::~metadata_integer_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -525,12 +530,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating MetadataInteger nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by metadata_integer_class.
+     *                                  not supported by metadata_integer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    metadata_integer_class::do_create_type(const std::string & id,
-                                           const node_interface_set & interfaces) const
+    metadata_integer_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -630,25 +636,25 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const metadata_set_class::id =
+    const char * const metadata_set_metatype::id =
         "urn:X-openvrml:node:MetadataSet";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c metadata_set_class.
+     *                @c metadata_set_metatype.
      */
-    metadata_set_class::metadata_set_class(openvrml::browser & browser):
-        node_class(metadata_set_class::id, browser)
+    metadata_set_metatype::metadata_set_metatype(openvrml::browser & browser):
+        node_metatype(metadata_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    metadata_set_class::~metadata_set_class() OPENVRML_NOTHROW
+    metadata_set_metatype::~metadata_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -660,12 +666,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating MetadataSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by metadata_set_class.
+     *                                  not supported by metadata_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    metadata_set_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    metadata_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -766,25 +773,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const metadata_string_class::id =
+    const char * const metadata_string_metatype::id =
         "urn:X-openvrml:node:MetadataString";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c metadata_string_class.
+     *                @c metadata_string_metatype.
      */
-    metadata_string_class::metadata_string_class(openvrml::browser & browser):
-        node_class(metadata_string_class::id, browser)
+    metadata_string_metatype::metadata_string_metatype(openvrml::browser & browser):
+        node_metatype(metadata_string_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    metadata_string_class::~metadata_string_class() OPENVRML_NOTHROW
+    metadata_string_metatype::~metadata_string_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -796,12 +803,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating MetadataString nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by metadata_string_class.
+     *                                  not supported by metadata_string_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    metadata_string_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    metadata_string_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -908,7 +916,7 @@ namespace {
      */
 
     /**
-     * @var metadata_double_node::MetadataDouble_class
+     * @var metadata_double_node::metadata_double_metatype
      *
      * @brief Class object for MetadataDouble nodes.
      */
@@ -962,7 +970,7 @@ namespace {
      */
 
     /**
-     * @var metadata_float_node::MetadataFloat_class
+     * @var metadata_float_node::metadata_float_metatype
      *
      * @brief Class object for MetadataFloat nodes.
      */
@@ -1016,7 +1024,7 @@ namespace {
      */
 
     /**
-     * @var metadata_integer_node::MetadataInteger_class
+     * @var metadata_integer_node::metadata_integer_metatype
      *
      * @brief Class object for MetadataInteger nodes.
      */
@@ -1044,7 +1052,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     metadata_integer_node::
     metadata_integer_node(const node_type & type,
@@ -1070,7 +1078,7 @@ namespace {
      */
 
     /**
-     * @var metadata_set_node::MetadataSet_class
+     * @var metadata_set_node::metadata_set_metatype
      *
      * @brief Class object for MetadataSet nodes.
      */
@@ -1124,7 +1132,7 @@ namespace {
      */
 
     /**
-     * @var metadata_string_node::MetadataString_class
+     * @var metadata_string_node::metadata_string_metatype
      *
      * @brief Class object for MetadataString nodes.
      */

@@ -47,7 +47,7 @@
  * This exception is thrown by node::event_listener and node::event_emitter to
  * indicate that the node doesn't support the interface through which the
  * caller is trying to modify the node. It is also thrown by
- * node_class::create_type if the class object doesn't support an interface
+ * node_metatype::create_type if the class object doesn't support an interface
  * specified in the node_interface_set given to that method.
  */
 
@@ -569,47 +569,47 @@ openvrml::find_interface(const node_interface_set & interfaces,
 
 
 /**
- * @class openvrml::node_class
+ * @class openvrml::node_metatype
  *
  * @ingroup nodes
  *
  * @brief A class object for node instances.
  *
- * <code>node_class</code> can be thought of as a "supertype" of sorts. A given
- * node implementation can support as many node types as there are unique
- * combinations of the interfaces it supports. The most readily apparent
- * role of the <code>node_class</code> object for a node implementation is to
- * serve as a factory for these <code>node_type</code>s.
+ * @c node_metatype can be thought of as a &ldquo;supertype&rdquo; of sorts.
+ * A given node implementation can support as many node types as there are
+ * unique combinations of the interfaces it supports.  The most readily
+ * apparent role of the @c node_metatype object for a node implementation is to
+ * serve as a factory for these @c node_type%s.
  */
 
 /**
  * @internal
  *
- * @var const std::string openvrml::node_class::id_
+ * @var const std::string openvrml::node_metatype::id_
  *
- * @brief @c node_class identifier.
+ * @brief @c node_metatype identifier.
  */
 
 /**
  * @internal
  *
- * @var openvrml::browser * const openvrml::node_class::browser_
+ * @var openvrml::browser * const openvrml::node_metatype::browser_
  *
- * @brief The @c browser associated with this @c node_class.
+ * @brief The @c browser associated with this @c node_metatype.
  */
 
 /**
  * @brief Constructor.
  *
- * A @c node_class is constructed using a @c browser.  All @c node instances
- * that share a particular @c node_class &ldquo;belong to&rdquo; the
- * @c browser associated with the @c node_class.
+ * A @c node_metatype is constructed using a @c browser.  All @c node instances
+ * that share a particular @c node_metatype &ldquo;belong to&rdquo; the
+ * @c browser associated with the @c node_metatype.
  *
  * @param[in] id    an identifier unique to @p b.
- * @param[in] b     the @c browser to be associated with the @c node_class.
+ * @param[in] b     the @c browser to be associated with the @c node_metatype.
  */
-openvrml::node_class::node_class(const node_class_id & id,
-                                 openvrml::browser & b)
+openvrml::node_metatype::node_metatype(const node_metatype_id & id,
+                                       openvrml::browser & b)
     OPENVRML_NOTHROW:
     id_(id),
     browser_(&b)
@@ -618,40 +618,38 @@ openvrml::node_class::node_class(const node_class_id & id,
 /**
  * @brief Destructor.
  */
-openvrml::node_class::~node_class() OPENVRML_NOTHROW
+openvrml::node_metatype::~node_metatype() OPENVRML_NOTHROW
 {}
 
 /**
  * @brief Identifier.
  *
- * @return the @c node_class identifier.
+ * @return the @c node_metatype identifier.
  */
-const openvrml::node_class_id & openvrml::node_class::id() const
+const openvrml::node_metatype_id & openvrml::node_metatype::id() const
     OPENVRML_NOTHROW
 {
     return this->id_;
 }
 
 /**
- * @brief The <code>browser</code> associated with this
- *        <code>node_class</code>.
+ * @brief The @c browser associated with this @c node_metatype.
  *
- * @return the <code>browser</code> associated with this
- *         <code>node_class</code>.
+ * @return the @c browser associated with this @c node_metatype.
  */
-openvrml::browser & openvrml::node_class::browser() const OPENVRML_NOTHROW
+openvrml::browser & openvrml::node_metatype::browser() const OPENVRML_NOTHROW
 {
     assert(this->browser_);
     return *this->browser_;
 }
 
 /**
- * @brief <code>node_class</code>-specific initialization.
+ * @brief <code>node_metatype</code>-specific initialization.
  *
  * This method is called during initialization of a <code>browser</code> object
  * with a new root <code>scene</code>. It is called after the individual
  * <code>node</code> instances have been initialized, and before the world
- * starts running. It delegates to <code>node_class::do_initialize</code>.
+ * starts running. It delegates to <code>node_metatype::do_initialize</code>.
  *
  * @param[in,out] initial_viewpoint the <code>viewpoint_node</code> that should
  *                                  be bound initially; or 0 if the default
@@ -659,7 +657,7 @@ openvrml::browser & openvrml::node_class::browser() const OPENVRML_NOTHROW
  *                                  bound.
  * @param[in] time                  the current time.
  */
-void openvrml::node_class::initialize(viewpoint_node * initial_viewpoint,
+void openvrml::node_metatype::initialize(viewpoint_node * initial_viewpoint,
                                       const double time)
     OPENVRML_NOTHROW
 {
@@ -667,57 +665,57 @@ void openvrml::node_class::initialize(viewpoint_node * initial_viewpoint,
 }
 
 /**
- * @brief <code>node_class</code>-specific initialization.
+ * @brief <code>node_metatype</code>-specific initialization.
  *
  * Node implementations should override this method to perform any
- * <code>node_class</code>-wide initialization.
+ * <code>node_metatype</code>-wide initialization.
  *
  * @param[in,out] initial_viewpoint the <code>viewpoint_node</code> that should be
  *                          bound initially; or 0 if the default
  *                          <code>viewpoint_node</code> should be bound.
  * @param[in] time              the current time.
  *
- * @sa node_class::initialize
+ * @sa node_metatype::initialize
  */
-void openvrml::node_class::do_initialize(viewpoint_node *, double)
+void openvrml::node_metatype::do_initialize(viewpoint_node *, double)
     OPENVRML_NOTHROW
 {}
 
 /**
- * @brief <code>node_class</code>-specific rendering.
+ * @brief <code>node_metatype</code>-specific rendering.
  *
- * This function delegates to <code>node_class::do_render</code>.
+ * This function delegates to <code>node_metatype::do_render</code>.
  *
  * @param[in,out] v    the viewer to render to.
  */
-void openvrml::node_class::render(viewer & v) const OPENVRML_NOTHROW
+void openvrml::node_metatype::render(viewer & v) const OPENVRML_NOTHROW
 {
     this->do_render(v);
 }
 
 /**
- * @brief <code>node_class</code>-specific rendering.
+ * @brief <code>node_metatype</code>-specific rendering.
  *
  * The default implementation of this method does nothing.
  *
  * @param[in,out] v    the viewer to render to.
  *
- * @sa node_class::render
+ * @sa node_metatype::render
  */
-void openvrml::node_class::do_render(viewer &) const OPENVRML_NOTHROW
+void openvrml::node_metatype::do_render(viewer &) const OPENVRML_NOTHROW
 {}
 
 /**
  * @brief Create a new <code>node_type</code>.
  *
  * <code>node_type</code>s can be said to subset the master type provided by
- * the <code>node_class</code>. Each <code>node_class</code> instance can
+ * the <code>node_metatype</code>. Each <code>node_metatype</code> instance can
  * support certain <code>node</code> interfaces; the
  * <code>node_interface_set</code> passed to
- * <code>node_class::create_type</code> must be a subset of those supported
+ * <code>node_metatype::create_type</code> must be a subset of those supported
  * interfaces.
  *
- * This function delegates to <code>node_class::do_create_type</code>.
+ * This function delegates to <code>node_metatype::do_create_type</code>.
  *
  * @param[in] id            the name for the new <code>node_type</code>.
  * @param[in] interfaces    a <code>node_interface_set</code> containing the
@@ -725,7 +723,7 @@ void openvrml::node_class::do_render(viewer &) const OPENVRML_NOTHROW
  *
  * @return a newly created <code>node_type</code>.
  *
- * @exception unsupported_interface if the <code>node_class</code> cannot
+ * @exception unsupported_interface if the <code>node_metatype</code> cannot
  *                                  support one of the
  *                                  <code>node_interface</code>s in
  *                                  @p interfaces.
@@ -734,7 +732,7 @@ void openvrml::node_class::do_render(viewer &) const OPENVRML_NOTHROW
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 const boost::shared_ptr<openvrml::node_type>
-openvrml::node_class::create_type(const std::string & id,
+openvrml::node_metatype::create_type(const std::string & id,
                                   const node_interface_set & interfaces)
     OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
 {
@@ -742,7 +740,7 @@ openvrml::node_class::create_type(const std::string & id,
 }
 
 /**
- * @fn const boost::shared_ptr<openvrml::node_type> openvrml::node_class::do_create_type(const std::string & id, const node_interface_set & interfaces) const
+ * @fn const boost::shared_ptr<openvrml::node_type> openvrml::node_metatype::do_create_type(const std::string & id, const node_interface_set & interfaces) const
  *
  * @brief Create a new <code>node_type</code>.
  *
@@ -752,13 +750,13 @@ openvrml::node_class::create_type(const std::string & id,
  *
  * @return a newly created <code>node_type</code>.
  *
- * @exception unsupported_interface if the <code>node_class</code> cannot
+ * @exception unsupported_interface if the <code>node_metatype</code> cannot
  *                                  support one of the
  *                                  <code>node_interface</code>s in
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa node_class::create_type
+ * @sa node_metatype::create_type
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -767,11 +765,11 @@ openvrml::node_class::create_type(const std::string & id,
  *
  * This function is called during destruction of the @c browser, after
  * the root scene has been shut down. This function delegates to
- * @c node_class::do_shutdown.
+ * @c node_metatype::do_shutdown.
  *
  * @param[in] time  the current time.
  */
-void openvrml::node_class::shutdown(const double time) OPENVRML_NOTHROW
+void openvrml::node_metatype::shutdown(const double time) OPENVRML_NOTHROW
 {
     this->do_shutdown(time);
 }
@@ -779,11 +777,11 @@ void openvrml::node_class::shutdown(const double time) OPENVRML_NOTHROW
 /**
  * @brief Shut down.
  *
- * This function is called by @c node_class::shutdown.
+ * This function is called by @c node_metatype::shutdown.
  *
  * @param[in] time  the current time.
  */
-void openvrml::node_class::do_shutdown(double) OPENVRML_NOTHROW
+void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
 {}
 
 
@@ -806,7 +804,7 @@ void openvrml::node_class::do_shutdown(double) OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @var openvrml::node_class & openvrml::node_type::node_class_
+ * @var openvrml::node_metatype & openvrml::node_type::metatype_
  *
  * @brief The class object associated with the <code>node_type</code>.
  */
@@ -827,10 +825,10 @@ void openvrml::node_class::do_shutdown(double) OPENVRML_NOTHROW
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::node_type::node_type(const openvrml::node_class & c,
+openvrml::node_type::node_type(const openvrml::node_metatype & c,
                                const std::string & id)
     OPENVRML_THROW1(std::bad_alloc):
-    node_class_(c),
+    metatype_(c),
     id_(id)
 {}
 
@@ -841,20 +839,20 @@ openvrml::node_type::~node_type() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief The class object associated with the <code>node_type</code>.
+ * @brief The class object associated with the @c node_type.
  *
- * @return the class object associated with the <code>node_type</code>.
+ * @return the class object associated with the @c node_type.
  */
-const openvrml::node_class & openvrml::node_type::node_class() const
+const openvrml::node_metatype & openvrml::node_type::metatype() const
     OPENVRML_NOTHROW
 {
-    return this->node_class_;
+    return this->metatype_;
 }
 
 /**
- * @brief The name of the <code>node_type</code>.
+ * @brief The name of the @c node_type.
  *
- * @return the name of the <code>node_type</code>.
+ * @return the name of the @c node_type.
  */
 const std::string & openvrml::node_type::id() const OPENVRML_NOTHROW
 {
@@ -862,9 +860,9 @@ const std::string & openvrml::node_type::id() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the set of interfaces for the <code>node_type</code>.
+ * @brief Get the set of interfaces for the @c node_type.
  *
- * This function delegates to <code>node_type::do_interfaces</code>.
+ * This function delegates to @c node_type::do_interfaces.
  *
  * @return the set of interfaces.
  */
@@ -946,8 +944,8 @@ create_node(const boost::shared_ptr<scope> & scope,
  *
  *   - <code>t.id() == u.id()</code>
  *   - <code>t.interfaces() == u.interfaces()</code>
- *   - <code>t.node_class().id()</code> is in the set of identifiers
- *      associated with @c u in the <code>browser</code>'s @c node_class map.
+ *   - <code>t.metatype().id()</code> is in the set of identifiers
+ *      associated with @c u in the <code>browser</code>'s @c node_metatype map.
  *
  * Note that the latter requirement makes this comparison a rather expensive
  * operation.
@@ -963,11 +961,11 @@ bool openvrml::operator==(const node_type & lhs, const node_type & rhs)
     if (lhs.id() != rhs.id()) { return false; }
     if (lhs.interfaces() != rhs.interfaces()) { return false; }
 
-    const std::vector<node_class_id> ids =
-        rhs.node_class().browser()
-        .node_class_map_.node_class_ids(rhs.node_class());
-    const std::vector<node_class_id>::const_iterator pos =
-        std::find(ids.begin(), ids.end(), lhs.node_class().id());
+    const std::vector<node_metatype_id> ids =
+        rhs.metatype().browser()
+        .node_metatype_map_.node_metatype_ids(rhs.metatype());
+    const std::vector<node_metatype_id>::const_iterator pos =
+        std::find(ids.begin(), ids.end(), lhs.metatype().id());
     return pos != ids.end();
 }
 
@@ -2391,7 +2389,7 @@ void openvrml::node::modified(const bool value)
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     this->modified_ = value;
-    if (this->modified_) { this->type_.node_class().browser().modified(true); }
+    if (this->modified_) { this->type_.metatype().browser().modified(true); }
 }
 
 /**
@@ -3113,7 +3111,7 @@ void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
     boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
-        this->type().node_class().browser().flags_need_updating = true;
+        this->type().metatype().browser().flags_need_updating = true;
     }
 }
 
@@ -3126,9 +3124,9 @@ void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
 bool openvrml::bounded_volume_node::bounding_volume_dirty() const
 {
     boost::recursive_mutex::scoped_lock lock(this->mutex());
-    if (this->type().node_class().browser().flags_need_updating) {
-        this->type().node_class().browser().update_flags();
-        this->type().node_class().browser().flags_need_updating = false;
+    if (this->type().metatype().browser().flags_need_updating) {
+        this->type().metatype().browser().update_flags();
+        this->type().metatype().browser().flags_need_updating = false;
     }
     return this->bounding_volume_dirty_;
 }

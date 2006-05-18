@@ -38,17 +38,17 @@ namespace {
     /**
      * @brief Class object for CADFace nodes.
      */
-    class OPENVRML_LOCAL cad_face_class : public node_class {
+    class OPENVRML_LOCAL cad_face_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cad_face_class(openvrml::browser & browser);
-        virtual ~cad_face_class() OPENVRML_NOTHROW;
+        explicit cad_face_metatype(openvrml::browser & browser);
+        virtual ~cad_face_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 
@@ -56,32 +56,29 @@ namespace {
     /**
      * @brief Class object for IndexedQuadSet and QuadSet nodes.
      */
-    class OPENVRML_LOCAL quad_set_class : public node_class {
+    class OPENVRML_LOCAL quad_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit quad_set_class(openvrml::browser & browser);
-        virtual ~quad_set_class() OPENVRML_NOTHROW;
+        explicit quad_set_metatype(openvrml::browser & browser);
+        virtual ~quad_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
+            do_create_type(const std::string & id,
+                           const node_interface_set & interfaces) const
             OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
     };
 }
 
-void register_cad_geometry_node_classes(openvrml::browser & b)
+void register_cad_geometry_node_metatypes(openvrml::browser & b)
 {
-    using openvrml::node_class;
+    using openvrml::node_metatype;
     using boost::shared_ptr;
-    b.add_node_class(cad_face_class::id,
-                     shared_ptr<node_class>(new cad_face_class(b)));
-    //NOTE: This has been moved to vrml97node.cpp for the time being.
-    //b.add_node_class("urn:X-openvrml:node:CADLayer",
-    //                 shared_ptr<node_class>(new cad_layer_class(b)));
-    b.add_node_class(quad_set_class::id,
-                     shared_ptr<node_class>(new quad_set_class(b)));
+    b.add_node_metatype(cad_face_metatype::id,
+                        shared_ptr<node_metatype>(new cad_face_metatype(b)));
+    b.add_node_metatype(quad_set_metatype::id,
+                        shared_ptr<node_metatype>(new quad_set_metatype(b)));
 }
 
 namespace {
@@ -89,7 +86,7 @@ namespace {
 
     class OPENVRML_LOCAL cad_face_node : public abstract_node<cad_face_node>,
                                          public grouping_node {
-        friend class cad_face_class;
+        friend class cad_face_metatype;
 
         exposedfield<sfstring> name_;
         exposedfield<sfnode> shape_;
@@ -114,18 +111,18 @@ namespace {
 
     class OPENVRML_LOCAL quad_set_node : public abstract_node<quad_set_node>,
                                          public geometry_node {
-        friend class quad_set_class;
+        friend class quad_set_metatype;
 
         class set_index_listener : public event_listener_base<self_t>,
                                    public mfint32_listener {
-            public:
-                explicit set_index_listener(self_t & node);
-                virtual ~set_index_listener() OPENVRML_NOTHROW;
+        public:
+            explicit set_index_listener(self_t & node);
+            virtual ~set_index_listener() OPENVRML_NOTHROW;
 
-            private:
-                virtual void do_process_event(const mfint32 & fraction,
-                                              double timestamp)
-                    OPENVRML_THROW1(std::bad_alloc);
+        private:
+            virtual void do_process_event(const mfint32 & fraction,
+                                          double timestamp)
+                OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_index_listener set_index_listener_;
@@ -150,7 +147,7 @@ namespace {
 
     private:
         virtual const openvrml::bounding_volume &
-        do_bounding_volume() const;
+            do_bounding_volume() const;
 
         virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
                                                     rendering_context context);
@@ -160,23 +157,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cad_face_class::id = "urn:X-openvrml:node:CADFace";
+    const char * const cad_face_metatype::id = "urn:X-openvrml:node:CADFace";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this cad_face_class.
+     * @param browser the browser associated with this cad_face_metatype.
      */
-    cad_face_class::cad_face_class(openvrml::browser & browser):
-        node_class(cad_face_class::id, browser)
+    cad_face_metatype::cad_face_metatype(openvrml::browser & browser):
+        node_metatype(cad_face_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cad_face_class::~cad_face_class() OPENVRML_NOTHROW
+    cad_face_metatype::~cad_face_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -185,15 +182,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating CADFace nodes.
+     * @return a @c node_type capable of creating CADFace nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cad_face_class.
+     *                                  not supported by cad_face_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cad_face_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    cad_face_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -275,23 +273,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const quad_set_class::id = "urn:X-openvrml:node:QuadSet";
+    const char * const quad_set_metatype::id = "urn:X-openvrml:node:QuadSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this quad_set_class.
+     * @param browser the browser associated with this quad_set_metatype.
      */
-    quad_set_class::quad_set_class(openvrml::browser & browser):
-        node_class(cad_face_class::id, browser)
+    quad_set_metatype::quad_set_metatype(openvrml::browser & browser):
+        node_metatype(cad_face_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    quad_set_class::~quad_set_class() OPENVRML_NOTHROW
+    quad_set_metatype::~quad_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -300,15 +298,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating IndexedQuadSet nodes.
+     * @return a @c node_type capable of creating IndexedQuadSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by quad_set_class.
+     *                                  not supported by quad_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    quad_set_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    quad_set_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 11> supported_interfaces_t;
@@ -494,19 +493,19 @@ namespace {
      */
 
     /**
-     * @var cad_face_node::CADFace_class
+     * @var cad_face_node::cad_face_metatype
      *
      * @brief Class object for CADFace nodes.
      */
 
     /**
-     * @var abstract_node<self_t>::exposedfield<sfstring> >( cad_face_node::name_
+     * @var abstract_node<self_t>::exposedfield<sfstring> cad_face_node::name_
      *
      * @brief name exposedField
      */
 
     /**
-     * @var abstract_node<self_t>::exposedfield<sfnode> > cad_face_node::shape_
+     * @var abstract_node<self_t>::exposedfield<sfnode> cad_face_node::shape_
      *
      * @brief shape exposedField
      */
@@ -569,18 +568,18 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     cad_face_node::
     cad_face_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      bounded_volume_node(type, scope),
-      child_node(type, scope),
-      abstract_node<self_t>(type, scope),
-      grouping_node(type, scope),
-      name_(*this),
-      shape_(*this)
+                  const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        bounded_volume_node(type, scope),
+        child_node(type, scope),
+        abstract_node<self_t>(type, scope),
+        grouping_node(type, scope),
+        name_(*this),
+        shape_(*this)
     {}
 
     /**
@@ -596,7 +595,7 @@ namespace {
      */
 
     /**
-     * @var quad_set_node::IndexedQuadSet_class
+     * @var quad_set_node::indexed_quad_set_metatype
      *
      * @brief Class object for IndexedQuadSet nodes.
      */
@@ -682,25 +681,25 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param type  the @c node_type associated with this node.
+     * @param scope the @c scope to which the node belongs.
      */
     quad_set_node::
     quad_set_node(const node_type & type,
-                const boost::shared_ptr<openvrml::scope> & scope):
-      node(type, scope),
-      bounded_volume_node(type, scope),
-      abstract_node<self_t>(type, scope),
-      geometry_node(type, scope),
-      set_index_listener_(*this),
-      color_(*this),
-      coord_(*this),
-      normal_(*this),
-      tex_coord_(*this),
-      ccw_(true),
-      color_per_vertex_(true),
-      normal_per_vertex_(true),
-      solid_(true)
+                  const boost::shared_ptr<openvrml::scope> & scope):
+        node(type, scope),
+        bounded_volume_node(type, scope),
+        abstract_node<self_t>(type, scope),
+        geometry_node(type, scope),
+        set_index_listener_(*this),
+        color_(*this),
+        coord_(*this),
+        normal_(*this),
+        tex_coord_(*this),
+        ccw_(true),
+        color_per_vertex_(true),
+        normal_per_vertex_(true),
+        solid_(true)
     {}
 
     /**
@@ -785,5 +784,4 @@ namespace {
             || (this->tex_coord_.sfnode::value()
                 && this->tex_coord_.sfnode::value()->modified());
     }
-
 }

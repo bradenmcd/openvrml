@@ -291,11 +291,11 @@ void openvrml::script::process_direct_output(double timestamp)
 
 
 /**
- * @class openvrml::script_node_class
+ * @class openvrml::script_node_metatype
  *
  * @brief Class object for <code>script_node</code>s.
  *
- * There is one script_node_class per browser instance.
+ * There is one script_node_metatype per browser instance.
  *
  * @see browser::scriptNodeClass
  */
@@ -304,16 +304,16 @@ void openvrml::script::process_direct_output(double timestamp)
  * @brief Construct.
  *
  * @param[in] browser   the @c browser to be associated with the
- *                      @c script_node_class.
+ *                      @c script_node_metatype.
  */
-openvrml::script_node_class::script_node_class(openvrml::browser & browser):
-    node_class("urn:X-openvrml:node:Script", browser)
+openvrml::script_node_metatype::script_node_metatype(openvrml::browser & browser):
+    node_metatype("urn:X-openvrml:node:Script", browser)
 {}
 
 /**
  * @brief Destroy.
  */
-openvrml::script_node_class::~script_node_class() OPENVRML_NOTHROW
+openvrml::script_node_metatype::~script_node_metatype() OPENVRML_NOTHROW
 {}
 
 /**
@@ -324,7 +324,7 @@ openvrml::script_node_class::~script_node_class() OPENVRML_NOTHROW
  * an @c EXTERNPROTO. It is an error to call this method.
  */
 const boost::shared_ptr<openvrml::node_type>
-openvrml::script_node_class::do_create_type(const std::string &,
+openvrml::script_node_metatype::do_create_type(const std::string &,
                                             const node_interface_set &) const
     OPENVRML_NOTHROW
 {
@@ -535,10 +535,10 @@ namespace {
 /**
  * @brief Construct.
  *
- * @param[in] class_    the node_class for @link script_node script_nodes@endlink.
+ * @param[in] class_    the node_metatype for @link script_node script_nodes@endlink.
  */
 openvrml::script_node::script_node_type::
-script_node_type(script_node_class & class_):
+script_node_type(script_node_metatype & class_):
     node_type(class_, "Script")
 {
     for (size_t i = 0; i < built_in_script_interfaces_.size(); ++i) {
@@ -622,10 +622,10 @@ do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
     // script_node_type a friend of node_type. That's not straightforward
     // since script_node_type is an inner class of script_node.
     //
-    script_node_class & scriptNodeClass =
-        *const_cast<script_node_class *>(
-            polymorphic_downcast<const script_node_class *>(
-                &this->node_class()));
+    script_node_metatype & scriptNodeClass =
+        *const_cast<script_node_metatype *>(
+            polymorphic_downcast<const script_node_metatype *>(
+                &this->metatype()));
 
     //
     // First, we need the set of node_interfaces *without* the built-in
@@ -1513,8 +1513,8 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  * provides a consistent interface for cloning any node, regardless of its
  * type.  OpenVRML uses this internally when instantiating <code>PROTO</code>s.
  *
- * @param[in] class_            the <code>script_node_class</code>.  Typically
- *                          there is one <code>script_node_class</code> per
+ * @param[in] class_            the <code>script_node_metatype</code>.  Typically
+ *                          there is one <code>script_node_metatype</code> per
  *                          browser instance.
  * @param[in] scope             the <code>scope</code> to which the node should
  *                          belong.
@@ -1543,7 +1543,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *                                    @p interfaces.
  */
 openvrml::script_node::
-script_node(script_node_class & class_,
+script_node(script_node_metatype & class_,
             const boost::shared_ptr<openvrml::scope> & scope,
             const node_interface_set & interfaces,
             const initial_value_map & initial_values)
@@ -4167,7 +4167,7 @@ JSBool getName(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const name =
-        script->script_node().node::type().node_class().browser().name();
+        script->script_node().node::type().metatype().browser().name();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
     return JS_TRUE;
 }
@@ -4181,7 +4181,7 @@ JSBool getVersion(JSContext * const cx, JSObject *,
     assert(script);
 
     const char * const version =
-        script->script_node().node::type().node_class().browser().version();
+        script->script_node().node::type().metatype().browser().version();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
     return JS_TRUE;
 }
@@ -4194,7 +4194,7 @@ JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
         static_cast<js_::script *>(JS_GetContextPrivate(cx));
     assert(script);
 
-    float speed = script->script_node().node::type().node_class()
+    float speed = script->script_node().node::type().metatype()
                   .browser().current_speed();
     *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
     return JS_TRUE;
@@ -4212,7 +4212,7 @@ JSBool getCurrentFrameRate(JSContext * const cx,
     assert(script);
 
     jsdouble * d = JS_NewDouble(cx,
-                                script->script_node().node::type().node_class()
+                                script->script_node().node::type().metatype()
                                 .browser().frame_rate());
     *rval = DOUBLE_TO_JSVAL(d);
     return JS_TRUE;
@@ -4230,7 +4230,7 @@ JSBool getWorldURL(JSContext * const cx,
     assert(script);
 
     const std::string url =
-        script->script_node().node::type().node_class().browser().world_url();
+        script->script_node().node::type().metatype().browser().world_url();
     *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
     return JS_TRUE;
 }

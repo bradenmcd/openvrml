@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for FillProperties nodes.
      */
-    class OPENVRML_LOCAL fill_properties_class : public node_class {
+    class OPENVRML_LOCAL fill_properties_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit fill_properties_class(openvrml::browser & browser);
-        virtual ~fill_properties_class() OPENVRML_NOTHROW;
+        explicit fill_properties_metatype(openvrml::browser & browser);
+        virtual ~fill_properties_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for LineProperties nodes.
      */
-    class OPENVRML_LOCAL line_properties_class : public node_class {
+    class OPENVRML_LOCAL line_properties_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit line_properties_class(openvrml::browser & browser);
-        virtual ~line_properties_class() OPENVRML_NOTHROW;
+        explicit line_properties_metatype(openvrml::browser & browser);
+        virtual ~line_properties_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -71,14 +71,16 @@ namespace {
     };
 }
 
-void register_shape_node_classes(openvrml::browser & b)
+void register_shape_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(fill_properties_class::id,
-                     shared_ptr<node_class>(new fill_properties_class(b)));
-    b.add_node_class(line_properties_class::id,
-                     shared_ptr<node_class>(new line_properties_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(fill_properties_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new fill_properties_metatype(b)));
+    b.add_node_metatype(line_properties_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new line_properties_metatype(b)));
 }
 
 namespace {
@@ -88,7 +90,7 @@ namespace {
     class OPENVRML_LOCAL fill_properties_node :
         public abstract_node<fill_properties_node> {
 
-        friend class fill_properties_class;
+        friend class fill_properties_metatype;
 
         exposedfield<sfbool> filled_;
         exposedfield<sfcolor> hatch_color_;
@@ -105,7 +107,7 @@ namespace {
     class OPENVRML_LOCAL line_properties_node :
         public abstract_node<line_properties_node> {
 
-        friend class line_properties_class;
+        friend class line_properties_metatype;
 
         exposedfield<sfbool> applied_;
         exposedfield<sfint32> line_type_;
@@ -119,24 +121,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const fill_properties_class::id =
+    const char * const fill_properties_metatype::id =
         "urn:X-openvrml:node:FillProperties";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this fill_properties_class.
+     * @param browser the browser associated with this fill_properties_metatype.
      */
-    fill_properties_class::fill_properties_class(openvrml::browser & browser):
-        node_class(fill_properties_class::id, browser)
+    fill_properties_metatype::fill_properties_metatype(openvrml::browser & browser):
+        node_metatype(fill_properties_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    fill_properties_class::~fill_properties_class() OPENVRML_NOTHROW
+    fill_properties_metatype::~fill_properties_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -148,12 +150,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating FillProperties nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by fill_properties_class.
+     *                                  not supported by fill_properties_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    fill_properties_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    fill_properties_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -279,7 +282,7 @@ namespace {
      */
 
     /**
-     * @var fill_properties_node::FillProperties_class
+     * @var fill_properties_node::fill_properties_metatype
      *
      * @brief Class object for FillProperties nodes.
      */
@@ -334,25 +337,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const line_properties_class::id =
+    const char * const line_properties_metatype::id =
         "urn:X-openvrml:node:LineProperties";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c line_properties_class.
+     *                @c line_properties_metatype.
      */
-    line_properties_class::line_properties_class(openvrml::browser & browser):
-        node_class(line_properties_class::id, browser)
+    line_properties_metatype::line_properties_metatype(openvrml::browser & browser):
+        node_metatype(line_properties_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    line_properties_class::~line_properties_class() OPENVRML_NOTHROW
+    line_properties_metatype::~line_properties_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -364,12 +367,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating LineProperties nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by line_properties_class.
+     *                                  not supported by line_properties_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    line_properties_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    line_properties_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -476,7 +480,7 @@ namespace {
      */
 
     /**
-     * @var line_properties_node::LineProperties_class
+     * @var line_properties_node::line_properties_metatype
      *
      * @brief Class object for LineProperties nodes.
      */

@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for HAnimDisplacer nodes.
      */
-    class OPENVRML_LOCAL hanim_displacer_class : public node_class {
+    class OPENVRML_LOCAL hanim_displacer_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit hanim_displacer_class(openvrml::browser & browser);
-        virtual ~hanim_displacer_class() OPENVRML_NOTHROW;
+        explicit hanim_displacer_metatype(openvrml::browser & browser);
+        virtual ~hanim_displacer_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for HAnimHumanoid nodes.
      */
-    class OPENVRML_LOCAL hanim_humanoid_class : public node_class {
+    class OPENVRML_LOCAL hanim_humanoid_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit hanim_humanoid_class(openvrml::browser & browser);
-        virtual ~hanim_humanoid_class() OPENVRML_NOTHROW;
+        explicit hanim_humanoid_metatype(openvrml::browser & browser);
+        virtual ~hanim_humanoid_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for HAnimJoint nodes.
      */
-    class OPENVRML_LOCAL hanim_joint_class : public node_class {
+    class OPENVRML_LOCAL hanim_joint_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit hanim_joint_class(openvrml::browser & browser);
-        virtual ~hanim_joint_class() OPENVRML_NOTHROW;
+        explicit hanim_joint_metatype(openvrml::browser & browser);
+        virtual ~hanim_joint_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for HAnimSegment nodes.
      */
-    class OPENVRML_LOCAL hanim_segment_class : public node_class {
+    class OPENVRML_LOCAL hanim_segment_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit hanim_segment_class(openvrml::browser & browser);
-        virtual ~hanim_segment_class() OPENVRML_NOTHROW;
+        explicit hanim_segment_metatype(openvrml::browser & browser);
+        virtual ~hanim_segment_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for HAnimSite nodes.
      */
-    class OPENVRML_LOCAL hanim_site_class : public node_class {
+    class OPENVRML_LOCAL hanim_site_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit hanim_site_class(openvrml::browser & browser);
-        virtual ~hanim_site_class() OPENVRML_NOTHROW;
+        explicit hanim_site_metatype(openvrml::browser & browser);
+        virtual ~hanim_site_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -125,20 +125,24 @@ namespace {
     };
 }
 
-void register_hanim_node_classes(openvrml::browser & b)
+void register_hanim_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(hanim_displacer_class::id,
-                     shared_ptr<node_class>(new hanim_displacer_class(b)));
-    b.add_node_class(hanim_humanoid_class::id,
-                     shared_ptr<node_class>(new hanim_humanoid_class(b)));
-    b.add_node_class(hanim_joint_class::id,
-                     shared_ptr<node_class>(new hanim_joint_class(b)));
-    b.add_node_class(hanim_segment_class::id,
-                     shared_ptr<node_class>(new hanim_segment_class(b)));
-    b.add_node_class(hanim_site_class::id,
-                     shared_ptr<node_class>(new hanim_site_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(hanim_displacer_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new hanim_displacer_metatype(b)));
+    b.add_node_metatype(hanim_humanoid_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new hanim_humanoid_metatype(b)));
+    b.add_node_metatype(hanim_joint_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new hanim_joint_metatype(b)));
+    b.add_node_metatype(hanim_segment_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new hanim_segment_metatype(b)));
+    b.add_node_metatype(hanim_site_metatype::id,
+                        shared_ptr<node_metatype>(new hanim_site_metatype(b)));
 }
 
 namespace {
@@ -147,7 +151,7 @@ namespace {
     class OPENVRML_LOCAL hanim_displacer_node :
         public abstract_node<hanim_displacer_node> {
 
-        friend class hanim_displacer_class;
+        friend class hanim_displacer_metatype;
 
         exposedfield<mfint32> coord_index_;
         exposedfield<mfvec3f> displacements_;
@@ -164,7 +168,7 @@ namespace {
         public abstract_node<hanim_humanoid_node>,
         public child_node {
 
-        friend class hanim_humanoid_class;
+        friend class hanim_humanoid_metatype;
 
         exposedfield<sfvec3f> center_;
         exposedfield<mfstring> info_;
@@ -195,7 +199,7 @@ namespace {
         public abstract_node<hanim_joint_node>,
         public child_node {
 
-        friend class hanim_joint_class;
+        friend class hanim_joint_metatype;
 
         class add_children_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -250,7 +254,7 @@ namespace {
         public abstract_node<hanim_segment_node>,
         public child_node {
 
-        friend class hanim_segment_class;
+        friend class hanim_segment_metatype;
 
         class add_children_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -298,12 +302,10 @@ namespace {
         public abstract_node<hanim_site_node>,
         public child_node {
 
-        friend class hanim_site_class;
+        friend class hanim_site_metatype;
 
-        class add_children_listener :
-            public event_listener_base<self_t>,
-            public mfnode_listener
-        {
+        class add_children_listener : public event_listener_base<self_t>,
+                                      public mfnode_listener {
             public:
                 explicit add_children_listener(self_t & node);
                 virtual ~add_children_listener() OPENVRML_NOTHROW;
@@ -346,25 +348,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const hanim_displacer_class::id =
+    const char * const hanim_displacer_metatype::id =
         "urn:X-openvrml:node:HAnimDisplacer";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c hanim_displacer_class.
+     *                @c hanim_displacer_metatype.
      */
-    hanim_displacer_class::hanim_displacer_class(openvrml::browser & browser):
-        node_class(hanim_displacer_class::id, browser)
+    hanim_displacer_metatype::hanim_displacer_metatype(openvrml::browser & browser):
+        node_metatype(hanim_displacer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    hanim_displacer_class::~hanim_displacer_class() OPENVRML_NOTHROW
+    hanim_displacer_metatype::~hanim_displacer_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -373,15 +375,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating HAnimDisplacer nodes.
+     * @return a @c node_type capable of creating HAnimDisplacer nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by hanim_displacer_class.
+     *                                  not supported by hanim_displacer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    hanim_displacer_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    hanim_displacer_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -501,25 +504,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const hanim_humanoid_class::id =
+    const char * const hanim_humanoid_metatype::id =
         "urn:X-openvrml:node:HAnimHumanoid";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c hanim_humanoid_class.
+     *                @c hanim_humanoid_metatype.
      */
-    hanim_humanoid_class::hanim_humanoid_class(openvrml::browser & browser):
-        node_class(hanim_humanoid_class::id, browser)
+    hanim_humanoid_metatype::hanim_humanoid_metatype(openvrml::browser & browser):
+        node_metatype(hanim_humanoid_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    hanim_humanoid_class::~hanim_humanoid_class() OPENVRML_NOTHROW
+    hanim_humanoid_metatype::~hanim_humanoid_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -531,12 +534,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating HAnimHumanoid nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by hanim_humanoid_class.
+     *                                  not supported by hanim_humanoid_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    hanim_humanoid_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    hanim_humanoid_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 19> supported_interfaces_t;
@@ -904,24 +908,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const hanim_joint_class::id =
+    const char * const hanim_joint_metatype::id =
         "urn:X-openvrml:node:HAnimJoint";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c hanim_joint_class.
+     * @param browser the @c browser associated with this @c hanim_joint_metatype.
      */
-    hanim_joint_class::hanim_joint_class(openvrml::browser & browser):
-        node_class(hanim_joint_class::id, browser)
+    hanim_joint_metatype::hanim_joint_metatype(openvrml::browser & browser):
+        node_metatype(hanim_joint_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    hanim_joint_class::~hanim_joint_class() OPENVRML_NOTHROW
+    hanim_joint_metatype::~hanim_joint_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -930,15 +934,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating HAnimJoint nodes.
+     * @return a @c node_type capable of creating HAnimJoint nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by hanim_joint_class.
+     *                                  not supported by hanim_joint_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    hanim_joint_class::do_create_type(const std::string & id,
-                                      const node_interface_set & interfaces) const
+    hanim_joint_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 19> supported_interfaces_t;
@@ -1290,25 +1295,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const hanim_segment_class::id =
+    const char * const hanim_segment_metatype::id =
         "urn:X-openvrml:node:HAnimSegment";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c hanim_segment_class.
+     *                @c hanim_segment_metatype.
      */
-    hanim_segment_class::hanim_segment_class(openvrml::browser & browser):
-        node_class(hanim_segment_class::id, browser)
+    hanim_segment_metatype::hanim_segment_metatype(openvrml::browser & browser):
+        node_metatype(hanim_segment_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    hanim_segment_class::~hanim_segment_class() OPENVRML_NOTHROW
+    hanim_segment_metatype::~hanim_segment_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1317,15 +1322,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating HAnimSegment nodes.
+     * @return a @c node_type capable of creating HAnimSegment nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by hanim_segment_class.
+     *                                  not supported by hanim_segment_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    hanim_segment_class::do_create_type(const std::string & id,
-                                        const node_interface_set & interfaces) const
+    hanim_segment_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
@@ -1543,24 +1549,24 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const hanim_site_class::id =
+    const char * const hanim_site_metatype::id =
         "urn:X-openvrml:node:HAnimSite";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c hanim_site_class.
+     * @param browser the @c browser associated with this @c hanim_site_metatype.
      */
-    hanim_site_class::hanim_site_class(openvrml::browser & browser):
-        node_class(hanim_site_class::id, browser)
+    hanim_site_metatype::hanim_site_metatype(openvrml::browser & browser):
+        node_metatype(hanim_site_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    hanim_site_class::~hanim_site_class() OPENVRML_NOTHROW
+    hanim_site_metatype::~hanim_site_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1569,15 +1575,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating HAnimSite nodes.
+     * @return a @c node_type capable of creating HAnimSite nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by hanim_site_class.
+     *                                  not supported by hanim_site_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    hanim_site_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+    hanim_site_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 12> supported_interfaces_t;
@@ -1802,7 +1809,7 @@ namespace {
      */
 
     /**
-     * @var hanim_displacer_node::HAnimDisplacer_class
+     * @var hanim_displacer_node::hanim_displacer_metatype
      *
      * @brief Class object for HAnimDisplacer nodes.
      */
@@ -1863,7 +1870,7 @@ namespace {
      */
 
     /**
-     * @var hanim_humanoid_node::HAnimHumanoid_class
+     * @var hanim_humanoid_node::hanim_humanoid_metatype
      *
      * @brief Class object for HAnimHumanoid nodes.
      */
@@ -1981,7 +1988,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     hanim_humanoid_node::
     hanim_humanoid_node(const node_type & type,
@@ -2023,7 +2030,7 @@ namespace {
      */
 
     /**
-     * @var hanim_joint_node::HAnimJoint_class
+     * @var hanim_joint_node::hanim_joint_metatype
      *
      * @brief Class object for HAnimJoint nodes.
      */
@@ -2219,7 +2226,7 @@ namespace {
      */
 
     /**
-     * @var hanim_segment_node::HAnimSegment_class
+     * @var hanim_segment_node::hanim_segment_metatype
      *
      * @brief Class object for HAnimSegment nodes.
      */
@@ -2366,7 +2373,7 @@ namespace {
      */
 
     /**
-     * @var hanim_site_node::HAnimSite_class
+     * @var hanim_site_node::hanim_site_metatype
      *
      * @brief Class object for HAnimSite nodes.
      */

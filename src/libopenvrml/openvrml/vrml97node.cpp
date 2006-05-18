@@ -63,12 +63,12 @@ namespace {
     /**
      * @brief Class object for Anchor nodes.
      */
-    class OPENVRML_LOCAL anchor_class : public node_class {
+    class OPENVRML_LOCAL anchor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit anchor_class(openvrml::browser & browser);
-        virtual ~anchor_class() OPENVRML_NOTHROW;
+        explicit anchor_metatype(openvrml::browser & browser);
+        virtual ~anchor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -80,12 +80,12 @@ namespace {
     /**
      * @brief Class object for Appearance nodes.
      */
-    class OPENVRML_LOCAL appearance_class : public node_class {
+    class OPENVRML_LOCAL appearance_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit appearance_class(openvrml::browser & browser);
-        virtual ~appearance_class() OPENVRML_NOTHROW;
+        explicit appearance_metatype(openvrml::browser & browser);
+        virtual ~appearance_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -98,12 +98,12 @@ namespace {
     /**
      * @brief Class object for AudioClip nodes.
      */
-    class OPENVRML_LOCAL audio_clip_class : public node_class {
+    class OPENVRML_LOCAL audio_clip_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit audio_clip_class(openvrml::browser & browser);
-        virtual ~audio_clip_class() OPENVRML_NOTHROW;
+        explicit audio_clip_metatype(openvrml::browser & browser);
+        virtual ~audio_clip_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -118,15 +118,15 @@ namespace {
     /**
      * @brief Class object for Background nodes.
      */
-    class OPENVRML_LOCAL background_class : public node_class {
+    class OPENVRML_LOCAL background_metatype : public node_metatype {
         background_node * first;
         bound_node_stack<background_node> bound_nodes;
 
     public:
         static const char * const id;
 
-        explicit background_class(openvrml::browser & browser);
-        virtual ~background_class() OPENVRML_NOTHROW;
+        explicit background_metatype(openvrml::browser & browser);
+        virtual ~background_metatype() OPENVRML_NOTHROW;
 
         void set_first(background_node & background) OPENVRML_NOTHROW;
         void reset_first() OPENVRML_NOTHROW;
@@ -149,13 +149,13 @@ namespace {
     };
 
     /**
-     * @var background_node * background_class::first
+     * @var background_node * background_metatype::first
      *
      * @brief The first Background node in the initial scene graph.
      */
 
     /**
-     * @var openvrml::node_impl_util::bound_node_stack<background_node> background_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<background_node> background_metatype::bound_nodes
      *
      * @brief The bound Background node stack.
      */
@@ -163,12 +163,12 @@ namespace {
     /**
      * @brief Class object for Billboard nodes.
      */
-    class OPENVRML_LOCAL billboard_class : public node_class {
+    class OPENVRML_LOCAL billboard_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit billboard_class(openvrml::browser & browser);
-        virtual ~billboard_class() OPENVRML_NOTHROW;
+        explicit billboard_metatype(openvrml::browser & browser);
+        virtual ~billboard_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -181,12 +181,12 @@ namespace {
     /**
      * @brief Class object for Box nodes.
      */
-    class OPENVRML_LOCAL box_class : public node_class {
+    class OPENVRML_LOCAL box_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit box_class(openvrml::browser & browser);
-        virtual ~box_class() OPENVRML_NOTHROW;
+        explicit box_metatype(openvrml::browser & browser);
+        virtual ~box_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -199,12 +199,12 @@ namespace {
     /**
      * @brief Class object for Collision nodes.
      */
-    class OPENVRML_LOCAL collision_class : public node_class {
+    class OPENVRML_LOCAL collision_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit collision_class(openvrml::browser & browser);
-        virtual ~collision_class() OPENVRML_NOTHROW;
+        explicit collision_metatype(openvrml::browser & browser);
+        virtual ~collision_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -217,12 +217,12 @@ namespace {
     /**
      * @brief Class object for Color nodes.
      */
-    class OPENVRML_LOCAL color_class : public node_class {
+    class OPENVRML_LOCAL color_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit color_class(openvrml::browser & browser);
-        virtual ~color_class() OPENVRML_NOTHROW;
+        explicit color_metatype(openvrml::browser & browser);
+        virtual ~color_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -235,12 +235,12 @@ namespace {
     /**
      * @brief Class object for ColorInterpolator nodes.
      */
-    class OPENVRML_LOCAL color_interpolator_class : public node_class {
+    class OPENVRML_LOCAL color_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit color_interpolator_class(openvrml::browser & browser);
-        virtual ~color_interpolator_class() OPENVRML_NOTHROW;
+        explicit color_interpolator_metatype(openvrml::browser & browser);
+        virtual ~color_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -253,12 +253,12 @@ namespace {
     /**
      * @brief Class object for Cone nodes.
      */
-    class OPENVRML_LOCAL cone_class : public node_class {
+    class OPENVRML_LOCAL cone_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cone_class(openvrml::browser & browser);
-        virtual ~cone_class() OPENVRML_NOTHROW;
+        explicit cone_metatype(openvrml::browser & browser);
+        virtual ~cone_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -271,12 +271,12 @@ namespace {
     /**
      * @brief Class object for Coordinate nodes.
      */
-    class OPENVRML_LOCAL coordinate_class : public node_class {
+    class OPENVRML_LOCAL coordinate_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit coordinate_class(openvrml::browser & browser);
-        virtual ~coordinate_class() OPENVRML_NOTHROW;
+        explicit coordinate_metatype(openvrml::browser & browser);
+        virtual ~coordinate_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -289,12 +289,12 @@ namespace {
     /**
      * @brief Class object for CoordinateInterpolator nodes.
      */
-    class OPENVRML_LOCAL coordinate_interpolator_class : public node_class {
+    class OPENVRML_LOCAL coordinate_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit coordinate_interpolator_class(openvrml::browser & browser);
-        virtual ~coordinate_interpolator_class() OPENVRML_NOTHROW;
+        explicit coordinate_interpolator_metatype(openvrml::browser & browser);
+        virtual ~coordinate_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -307,12 +307,12 @@ namespace {
     /**
      * @brief Class object for Cylinder nodes.
      */
-    class OPENVRML_LOCAL cylinder_class : public node_class {
+    class OPENVRML_LOCAL cylinder_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cylinder_class(openvrml::browser & browser);
-        virtual ~cylinder_class() OPENVRML_NOTHROW;
+        explicit cylinder_metatype(openvrml::browser & browser);
+        virtual ~cylinder_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -325,12 +325,12 @@ namespace {
     /**
      * @brief Class object for CylinderSensor nodes.
      */
-    class OPENVRML_LOCAL cylinder_sensor_class : public node_class {
+    class OPENVRML_LOCAL cylinder_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cylinder_sensor_class(openvrml::browser & browser);
-        virtual ~cylinder_sensor_class() OPENVRML_NOTHROW;
+        explicit cylinder_sensor_metatype(openvrml::browser & browser);
+        virtual ~cylinder_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -343,12 +343,12 @@ namespace {
     /**
      * @brief Class object for DirectionalLight nodes.
      */
-    class OPENVRML_LOCAL directional_light_class : public node_class {
+    class OPENVRML_LOCAL directional_light_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit directional_light_class(openvrml::browser & browser);
-        virtual ~directional_light_class() OPENVRML_NOTHROW;
+        explicit directional_light_metatype(openvrml::browser & browser);
+        virtual ~directional_light_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -361,12 +361,12 @@ namespace {
     /**
      * @brief Class object for ElevationGrid nodes.
      */
-    class OPENVRML_LOCAL elevation_grid_class : public node_class {
+    class OPENVRML_LOCAL elevation_grid_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit elevation_grid_class(openvrml::browser & browser);
-        virtual ~elevation_grid_class() OPENVRML_NOTHROW;
+        explicit elevation_grid_metatype(openvrml::browser & browser);
+        virtual ~elevation_grid_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -379,12 +379,12 @@ namespace {
     /**
      * @brief Class object for Extrusion nodes.
      */
-    class OPENVRML_LOCAL extrusion_class : public node_class {
+    class OPENVRML_LOCAL extrusion_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit extrusion_class(openvrml::browser & browser);
-        virtual ~extrusion_class() OPENVRML_NOTHROW;
+        explicit extrusion_metatype(openvrml::browser & browser);
+        virtual ~extrusion_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -399,15 +399,15 @@ namespace {
     /**
      * @brief Class object for Fog nodes.
      */
-    class OPENVRML_LOCAL fog_class : public node_class {
+    class OPENVRML_LOCAL fog_metatype : public node_metatype {
         fog_node * first;
         bound_node_stack<fog_node> bound_nodes;
 
     public:
         static const char * const id;
 
-        explicit fog_class(openvrml::browser & browser);
-        virtual ~fog_class() OPENVRML_NOTHROW;
+        explicit fog_metatype(openvrml::browser & browser);
+        virtual ~fog_metatype() OPENVRML_NOTHROW;
 
         void set_first(fog_node & fog) OPENVRML_NOTHROW;
         void reset_first() OPENVRML_NOTHROW;
@@ -430,13 +430,13 @@ namespace {
     };
 
     /**
-     * @var fog_node * fog_class::first
+     * @var fog_node * fog_metatype::first
      *
      * @brief The first Fog node in the initial scene graph.
      */
 
     /**
-     * @var openvrml::node_impl_util::bound_node_stack<fog_node> fog_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<fog_node> fog_metatype::bound_nodes
      *
      * @brief The bound Fog node stack.
      */
@@ -445,12 +445,12 @@ namespace {
     /**
      * @brief Class object for FontStyle nodes.
      */
-    class OPENVRML_LOCAL font_style_class : public node_class {
+    class OPENVRML_LOCAL font_style_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit font_style_class(openvrml::browser & browser);
-        virtual ~font_style_class() OPENVRML_NOTHROW;
+        explicit font_style_metatype(openvrml::browser & browser);
+        virtual ~font_style_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -463,12 +463,12 @@ namespace {
     /**
      * @brief Class object for Group nodes.
      */
-    class OPENVRML_LOCAL group_class : public node_class {
+    class OPENVRML_LOCAL group_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit group_class(openvrml::browser & browser);
-        virtual ~group_class() OPENVRML_NOTHROW;
+        explicit group_metatype(openvrml::browser & browser);
+        virtual ~group_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -481,12 +481,12 @@ namespace {
     /**
      * @brief Class object for ImageTexture nodes.
      */
-    class OPENVRML_LOCAL image_texture_class : public node_class {
+    class OPENVRML_LOCAL image_texture_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit image_texture_class(openvrml::browser & browser);
-        virtual ~image_texture_class() OPENVRML_NOTHROW;
+        explicit image_texture_metatype(openvrml::browser & browser);
+        virtual ~image_texture_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -499,12 +499,12 @@ namespace {
     /**
      * @brief Class object for IndexedFaceSet nodes.
      */
-    class OPENVRML_LOCAL indexed_face_set_class : public node_class {
+    class OPENVRML_LOCAL indexed_face_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit indexed_face_set_class(openvrml::browser & browser);
-        virtual ~indexed_face_set_class() OPENVRML_NOTHROW;
+        explicit indexed_face_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_face_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -517,12 +517,12 @@ namespace {
     /**
      * @brief Class object for IndexedLineSet nodes.
      */
-    class OPENVRML_LOCAL indexed_line_set_class : public node_class {
+    class OPENVRML_LOCAL indexed_line_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit indexed_line_set_class(openvrml::browser & browser);
-        virtual ~indexed_line_set_class() OPENVRML_NOTHROW;
+        explicit indexed_line_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_line_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -535,12 +535,12 @@ namespace {
     /**
      * @brief Class object for Inline nodes.
      */
-    class OPENVRML_LOCAL inline_class : public node_class {
+    class OPENVRML_LOCAL inline_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit inline_class(openvrml::browser & browser);
-        virtual ~inline_class() OPENVRML_NOTHROW;
+        explicit inline_metatype(openvrml::browser & browser);
+        virtual ~inline_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -553,12 +553,12 @@ namespace {
     /**
      * @brief Class object for LOD nodes.
      */
-    class OPENVRML_LOCAL lod_class : public node_class {
+    class OPENVRML_LOCAL lod_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit lod_class(openvrml::browser & browser);
-        virtual ~lod_class() OPENVRML_NOTHROW;
+        explicit lod_metatype(openvrml::browser & browser);
+        virtual ~lod_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -571,12 +571,12 @@ namespace {
     /**
      * @brief Class object for Material nodes.
      */
-    class OPENVRML_LOCAL material_class : public node_class {
+    class OPENVRML_LOCAL material_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit material_class(openvrml::browser & browser);
-        virtual ~material_class() OPENVRML_NOTHROW;
+        explicit material_metatype(openvrml::browser & browser);
+        virtual ~material_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -589,12 +589,12 @@ namespace {
     /**
      * @brief Class object for MovieTexture nodes.
      */
-    class OPENVRML_LOCAL movie_texture_class : public node_class {
+    class OPENVRML_LOCAL movie_texture_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit movie_texture_class(openvrml::browser & browser);
-        virtual ~movie_texture_class() OPENVRML_NOTHROW;
+        explicit movie_texture_metatype(openvrml::browser & browser);
+        virtual ~movie_texture_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -609,15 +609,15 @@ namespace {
     /**
      * @brief Class object for NavigationInfo nodes.
      */
-    class OPENVRML_LOCAL navigation_info_class : public node_class {
+    class OPENVRML_LOCAL navigation_info_metatype : public node_metatype {
         navigation_info_node * first;
         bound_node_stack<navigation_info_node> bound_nodes;
 
     public:
         static const char * const id;
 
-        explicit navigation_info_class(openvrml::browser & browser);
-        virtual ~navigation_info_class() OPENVRML_NOTHROW;
+        explicit navigation_info_metatype(openvrml::browser & browser);
+        virtual ~navigation_info_metatype() OPENVRML_NOTHROW;
 
         void set_first(navigation_info_node & nav_info) OPENVRML_NOTHROW;
         void reset_first() OPENVRML_NOTHROW;
@@ -642,12 +642,12 @@ namespace {
     /**
      * @brief Class object for Normal nodes.
      */
-    class OPENVRML_LOCAL normal_class : public node_class {
+    class OPENVRML_LOCAL normal_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit normal_class(openvrml::browser & browser);
-        virtual ~normal_class() OPENVRML_NOTHROW;
+        explicit normal_metatype(openvrml::browser & browser);
+        virtual ~normal_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -660,12 +660,12 @@ namespace {
     /**
      * @brief Class object for NormalInterpolator nodes.
      */
-    class OPENVRML_LOCAL normal_interpolator_class : public node_class {
+    class OPENVRML_LOCAL normal_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit normal_interpolator_class(openvrml::browser & browser);
-        virtual ~normal_interpolator_class() OPENVRML_NOTHROW;
+        explicit normal_interpolator_metatype(openvrml::browser & browser);
+        virtual ~normal_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -678,13 +678,13 @@ namespace {
     /**
      * @brief Class object for OrientationInterpolator nodes.
      */
-    class OPENVRML_LOCAL orientation_interpolator_class : public node_class {
+    class OPENVRML_LOCAL orientation_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit orientation_interpolator_class(
+        explicit orientation_interpolator_metatype(
             openvrml::browser & browser);
-        virtual ~orientation_interpolator_class() OPENVRML_NOTHROW;
+        virtual ~orientation_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -697,12 +697,12 @@ namespace {
     /**
      * @brief Class object for PixelTexture nodes.
      */
-    class OPENVRML_LOCAL pixel_texture_class : public node_class {
+    class OPENVRML_LOCAL pixel_texture_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit pixel_texture_class(openvrml::browser & browser);
-        virtual ~pixel_texture_class() OPENVRML_NOTHROW;
+        explicit pixel_texture_metatype(openvrml::browser & browser);
+        virtual ~pixel_texture_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -715,12 +715,12 @@ namespace {
     /**
      * @brief Class object for PlaneSensor nodes.
      */
-    class OPENVRML_LOCAL plane_sensor_class : public node_class {
+    class OPENVRML_LOCAL plane_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit plane_sensor_class(openvrml::browser & browser);
-        virtual ~plane_sensor_class() OPENVRML_NOTHROW;
+        explicit plane_sensor_metatype(openvrml::browser & browser);
+        virtual ~plane_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -733,12 +733,12 @@ namespace {
     /**
      * @brief Class object for PointLight nodes.
      */
-    class OPENVRML_LOCAL point_light_class : public node_class {
+    class OPENVRML_LOCAL point_light_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit point_light_class(openvrml::browser & browser);
-        virtual ~point_light_class() OPENVRML_NOTHROW;
+        explicit point_light_metatype(openvrml::browser & browser);
+        virtual ~point_light_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -751,12 +751,12 @@ namespace {
     /**
      * @brief Class object for PointSet nodes.
      */
-    class OPENVRML_LOCAL point_set_class : public node_class {
+    class OPENVRML_LOCAL point_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit point_set_class(openvrml::browser & browser);
-        virtual ~point_set_class() OPENVRML_NOTHROW;
+        explicit point_set_metatype(openvrml::browser & browser);
+        virtual ~point_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -769,12 +769,12 @@ namespace {
     /**
      * @brief Class object for PositionInterpolator nodes.
      */
-    class OPENVRML_LOCAL position_interpolator_class : public node_class {
+    class OPENVRML_LOCAL position_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit position_interpolator_class(openvrml::browser & browser);
-        virtual ~position_interpolator_class() OPENVRML_NOTHROW;
+        explicit position_interpolator_metatype(openvrml::browser & browser);
+        virtual ~position_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -787,12 +787,12 @@ namespace {
     /**
      * @brief Class object for ProximitySensor nodes.
      */
-    class OPENVRML_LOCAL proximity_sensor_class : public node_class {
+    class OPENVRML_LOCAL proximity_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit proximity_sensor_class(openvrml::browser & browser);
-        virtual ~proximity_sensor_class() OPENVRML_NOTHROW;
+        explicit proximity_sensor_metatype(openvrml::browser & browser);
+        virtual ~proximity_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -805,12 +805,12 @@ namespace {
     /**
      * @brief Class object for ScalarInterpolator nodes.
      */
-    class OPENVRML_LOCAL scalar_interpolator_class : public node_class {
+    class OPENVRML_LOCAL scalar_interpolator_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit scalar_interpolator_class(openvrml::browser & browser);
-        virtual ~scalar_interpolator_class() OPENVRML_NOTHROW;
+        explicit scalar_interpolator_metatype(openvrml::browser & browser);
+        virtual ~scalar_interpolator_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -823,12 +823,12 @@ namespace {
     /**
      * @brief Class object for Shape nodes.
      */
-    class OPENVRML_LOCAL shape_class : public node_class {
+    class OPENVRML_LOCAL shape_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit shape_class(openvrml::browser & browser);
-        virtual ~shape_class() OPENVRML_NOTHROW;
+        explicit shape_metatype(openvrml::browser & browser);
+        virtual ~shape_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -841,12 +841,12 @@ namespace {
     /**
      * @brief Class object for Sound nodes.
      */
-    class OPENVRML_LOCAL sound_class : public node_class {
+    class OPENVRML_LOCAL sound_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit sound_class(openvrml::browser & browser);
-        virtual ~sound_class() OPENVRML_NOTHROW;
+        explicit sound_metatype(openvrml::browser & browser);
+        virtual ~sound_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -859,12 +859,12 @@ namespace {
     /**
      * @brief Class object for Sphere nodes.
      */
-    class OPENVRML_LOCAL sphere_class : public node_class {
+    class OPENVRML_LOCAL sphere_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit sphere_class(openvrml::browser & browser);
-        virtual ~sphere_class() OPENVRML_NOTHROW;
+        explicit sphere_metatype(openvrml::browser & browser);
+        virtual ~sphere_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -877,12 +877,12 @@ namespace {
     /**
      * @brief Class object for SphereSensor nodes.
      */
-    class OPENVRML_LOCAL sphere_sensor_class : public node_class {
+    class OPENVRML_LOCAL sphere_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit sphere_sensor_class(openvrml::browser & browser);
-        virtual ~sphere_sensor_class() OPENVRML_NOTHROW;
+        explicit sphere_sensor_metatype(openvrml::browser & browser);
+        virtual ~sphere_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -895,12 +895,12 @@ namespace {
     /**
      * @brief Class object for SpotLight nodes.
      */
-    class OPENVRML_LOCAL spot_light_class : public node_class {
+    class OPENVRML_LOCAL spot_light_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit spot_light_class(openvrml::browser & browser);
-        virtual ~spot_light_class() OPENVRML_NOTHROW;
+        explicit spot_light_metatype(openvrml::browser & browser);
+        virtual ~spot_light_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -913,12 +913,12 @@ namespace {
     /**
      * @brief Class object for Switch nodes.
      */
-    class OPENVRML_LOCAL switch_class : public node_class {
+    class OPENVRML_LOCAL switch_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit switch_class(openvrml::browser & browser);
-        virtual ~switch_class() OPENVRML_NOTHROW;
+        explicit switch_metatype(openvrml::browser & browser);
+        virtual ~switch_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -931,7 +931,7 @@ namespace {
     /**
      * @brief Class object for Text nodes.
      */
-    class OPENVRML_LOCAL text_class : public node_class {
+    class OPENVRML_LOCAL text_metatype : public node_metatype {
     public:
         static const char * const id;
 
@@ -939,8 +939,8 @@ namespace {
         FT_Library freeTypeLibrary;
 # endif
 
-        explicit text_class(openvrml::browser & browser);
-        virtual ~text_class() OPENVRML_NOTHROW;
+        explicit text_metatype(openvrml::browser & browser);
+        virtual ~text_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -953,12 +953,12 @@ namespace {
     /**
      * @brief Class object for TextureCoordinate nodes.
      */
-    class OPENVRML_LOCAL texture_coordinate_class : public node_class {
+    class OPENVRML_LOCAL texture_coordinate_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit texture_coordinate_class(openvrml::browser & browser);
-        virtual ~texture_coordinate_class() OPENVRML_NOTHROW;
+        explicit texture_coordinate_metatype(openvrml::browser & browser);
+        virtual ~texture_coordinate_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -971,12 +971,12 @@ namespace {
     /**
      * @brief Class object for TextureTransform nodes.
      */
-    class OPENVRML_LOCAL texture_transform_class : public node_class {
+    class OPENVRML_LOCAL texture_transform_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit texture_transform_class(openvrml::browser & browser);
-        virtual ~texture_transform_class() OPENVRML_NOTHROW;
+        explicit texture_transform_metatype(openvrml::browser & browser);
+        virtual ~texture_transform_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -989,12 +989,12 @@ namespace {
     /**
      * @brief Class object for TimeSensor nodes.
      */
-    class OPENVRML_LOCAL time_sensor_class : public node_class {
+    class OPENVRML_LOCAL time_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit time_sensor_class(openvrml::browser & browser);
-        virtual ~time_sensor_class() OPENVRML_NOTHROW;
+        explicit time_sensor_metatype(openvrml::browser & browser);
+        virtual ~time_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1007,12 +1007,12 @@ namespace {
     /**
      * @brief Class object for TouchSensor nodes.
      */
-    class OPENVRML_LOCAL touch_sensor_class : public node_class {
+    class OPENVRML_LOCAL touch_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit touch_sensor_class(openvrml::browser & browser);
-        virtual ~touch_sensor_class() OPENVRML_NOTHROW;
+        explicit touch_sensor_metatype(openvrml::browser & browser);
+        virtual ~touch_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1025,12 +1025,12 @@ namespace {
     /**
      * @brief Class object for Transform nodes.
      */
-    class OPENVRML_LOCAL transform_class : public node_class {
+    class OPENVRML_LOCAL transform_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit transform_class(openvrml::browser & browser);
-        virtual ~transform_class() OPENVRML_NOTHROW;
+        explicit transform_metatype(openvrml::browser & browser);
+        virtual ~transform_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1045,15 +1045,15 @@ namespace {
     /**
      * @brief Class object for Viewpoint nodes.
      */
-    class OPENVRML_LOCAL viewpoint_class : public node_class {
+    class OPENVRML_LOCAL viewpoint_metatype : public node_metatype {
         viewpoint_node * first;
         bound_node_stack<viewpoint_node> bound_nodes;
 
     public:
         static const char * const id;
 
-        explicit viewpoint_class(openvrml::browser & browser);
-        virtual ~viewpoint_class() OPENVRML_NOTHROW;
+        explicit viewpoint_metatype(openvrml::browser & browser);
+        virtual ~viewpoint_metatype() OPENVRML_NOTHROW;
 
         void set_first(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
         void reset_first() OPENVRML_NOTHROW;
@@ -1079,12 +1079,12 @@ namespace {
     /**
      * @brief Class object for VisibilitySensor nodes.
      */
-    class OPENVRML_LOCAL visibility_sensor_class : public node_class {
+    class OPENVRML_LOCAL visibility_sensor_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit visibility_sensor_class(openvrml::browser & browser);
-        virtual ~visibility_sensor_class() OPENVRML_NOTHROW;
+        explicit visibility_sensor_metatype(openvrml::browser & browser);
+        virtual ~visibility_sensor_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1097,12 +1097,12 @@ namespace {
     /**
      * @brief Class object for WorldInfo nodes.
      */
-    class OPENVRML_LOCAL world_info_class : public node_class {
+    class OPENVRML_LOCAL world_info_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit world_info_class(openvrml::browser & browser);
-        virtual ~world_info_class() OPENVRML_NOTHROW;
+        explicit world_info_metatype(openvrml::browser & browser);
+        virtual ~world_info_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1114,12 +1114,12 @@ namespace {
     /**
      * @brief Class object for CADLayer nodes.
      */
-    class OPENVRML_LOCAL cad_layer_class : public node_class {
+    class OPENVRML_LOCAL cad_layer_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cad_layer_class(openvrml::browser & browser);
-        virtual ~cad_layer_class() throw ();
+        explicit cad_layer_metatype(openvrml::browser & browser);
+        virtual ~cad_layer_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1131,12 +1131,12 @@ namespace {
     /**
      * @brief Class object for CADAssembly nodes.
      */
-    class OPENVRML_LOCAL cad_assembly_class : public node_class {
+    class OPENVRML_LOCAL cad_assembly_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit cad_assembly_class(openvrml::browser & browser);
-        virtual ~cad_assembly_class() throw ();
+        explicit cad_assembly_metatype(openvrml::browser & browser);
+        virtual ~cad_assembly_metatype() throw ();
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -1146,120 +1146,148 @@ namespace {
     };
 }
 
-void register_vrml97_node_classes(openvrml::browser & b)
+void register_vrml97_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(anchor_class::id,
-                     shared_ptr<node_class>(new anchor_class(b)));
-    b.add_node_class(appearance_class::id,
-                     shared_ptr<node_class>(new appearance_class(b)));
-    b.add_node_class(audio_clip_class::id,
-                     shared_ptr<node_class>(new audio_clip_class(b)));
-    b.add_node_class(background_class::id,
-                     shared_ptr<node_class>(new background_class(b)));
-    b.add_node_class(billboard_class::id,
-                     shared_ptr<node_class>(new billboard_class(b)));
-    b.add_node_class(box_class::id, shared_ptr<node_class>(new box_class(b)));
-    b.add_node_class(collision_class::id,
-                     shared_ptr<node_class>(new collision_class(b)));
-    b.add_node_class(color_class::id,
-                     shared_ptr<node_class>(new color_class(b)));
-    b.add_node_class(color_interpolator_class::id,
-                     shared_ptr<node_class>(new color_interpolator_class(b)));
-    b.add_node_class(cone_class::id,
-                     shared_ptr<node_class>(new cone_class(b)));
-    b.add_node_class(coordinate_class::id,
-                     shared_ptr<node_class>(new coordinate_class(b)));
-    b.add_node_class(coordinate_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new coordinate_interpolator_class(b)));
-    b.add_node_class(cylinder_class::id,
-                     shared_ptr<node_class>(new cylinder_class(b)));
-    b.add_node_class(cylinder_sensor_class::id,
-                     shared_ptr<node_class>(new cylinder_sensor_class(b)));
-    b.add_node_class(directional_light_class::id,
-                     shared_ptr<node_class>(new directional_light_class(b)));
-    b.add_node_class(elevation_grid_class::id,
-                     shared_ptr<node_class>(new elevation_grid_class(b)));
-    b.add_node_class(extrusion_class::id,
-                     shared_ptr<node_class>(new extrusion_class(b)));
-    b.add_node_class(fog_class::id, shared_ptr<node_class>(new fog_class(b)));
-    b.add_node_class(font_style_class::id,
-                     shared_ptr<node_class>(new font_style_class(b)));
-    b.add_node_class(group_class::id,
-                     shared_ptr<node_class>(new group_class(b)));
-    b.add_node_class(image_texture_class::id,
-                     shared_ptr<node_class>(new image_texture_class(b)));
-    b.add_node_class(indexed_face_set_class::id,
-                     shared_ptr<node_class>(new indexed_face_set_class(b)));
-    b.add_node_class(indexed_line_set_class::id,
-                     shared_ptr<node_class>(new indexed_line_set_class(b)));
-    b.add_node_class(inline_class::id,
-                     shared_ptr<node_class>(new inline_class(b)));
-    b.add_node_class(lod_class::id, shared_ptr<node_class>(new lod_class(b)));
-    b.add_node_class(material_class::id,
-                     shared_ptr<node_class>(new material_class(b)));
-    b.add_node_class(movie_texture_class::id,
-                     shared_ptr<node_class>(new movie_texture_class(b)));
-    b.add_node_class(navigation_info_class::id,
-                     shared_ptr<node_class>(new navigation_info_class(b)));
-    b.add_node_class(normal_class::id,
-                     shared_ptr<node_class>(new normal_class(b)));
-    b.add_node_class(normal_interpolator_class::id,
-                     shared_ptr<node_class>(new normal_interpolator_class(b)));
-    b.add_node_class(orientation_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new orientation_interpolator_class(b)));
-    b.add_node_class(pixel_texture_class::id,
-                     shared_ptr<node_class>(new pixel_texture_class(b)));
-    b.add_node_class(plane_sensor_class::id,
-                     shared_ptr<node_class>(new plane_sensor_class(b)));
-    b.add_node_class(point_light_class::id,
-                     shared_ptr<node_class>(new point_light_class(b)));
-    b.add_node_class(point_set_class::id,
-                     shared_ptr<node_class>(new point_set_class(b)));
-    b.add_node_class(position_interpolator_class::id,
-                     shared_ptr<node_class>(
-                         new position_interpolator_class(b)));
-    b.add_node_class(proximity_sensor_class::id,
-                     shared_ptr<node_class>(new proximity_sensor_class(b)));
-    b.add_node_class(scalar_interpolator_class::id,
-                     shared_ptr<node_class>(new scalar_interpolator_class(b)));
-    b.add_node_class(shape_class::id,
-                     shared_ptr<node_class>(new shape_class(b)));
-    b.add_node_class(sound_class::id,
-                     shared_ptr<node_class>(new sound_class(b)));
-    b.add_node_class(sphere_class::id,
-                     shared_ptr<node_class>(new sphere_class(b)));
-    b.add_node_class(sphere_sensor_class::id,
-                     shared_ptr<node_class>(new sphere_sensor_class(b)));
-    b.add_node_class(spot_light_class::id,
-                     shared_ptr<node_class>(new spot_light_class(b)));
-    b.add_node_class(switch_class::id,
-                     shared_ptr<node_class>(new switch_class(b)));
-    b.add_node_class(text_class::id,
-                     shared_ptr<node_class>(new text_class(b)));
-    b.add_node_class(texture_coordinate_class::id,
-                     shared_ptr<node_class>(new texture_coordinate_class(b)));
-    b.add_node_class(texture_transform_class::id,
-                     shared_ptr<node_class>(new texture_transform_class(b)));
-    b.add_node_class(time_sensor_class::id,
-                     shared_ptr<node_class>(new time_sensor_class(b)));
-    b.add_node_class(touch_sensor_class::id,
-                     shared_ptr<node_class>(new touch_sensor_class(b)));
-    b.add_node_class(transform_class::id,
-                     shared_ptr<node_class>(new transform_class(b)));
-    b.add_node_class(viewpoint_class::id,
-                     shared_ptr<node_class>(new viewpoint_class(b)));
-    b.add_node_class(visibility_sensor_class::id,
-                     shared_ptr<node_class>(new visibility_sensor_class(b)));
-    b.add_node_class(world_info_class::id,
-                     shared_ptr<node_class>(new world_info_class(b)));
-    b.add_node_class(cad_layer_class::id,
-                     shared_ptr<node_class>(new cad_layer_class(b)));
-    b.add_node_class(cad_assembly_class::id,
-                     shared_ptr<node_class>(new cad_assembly_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(anchor_metatype::id,
+                        shared_ptr<node_metatype>(new anchor_metatype(b)));
+    b.add_node_metatype(appearance_metatype::id,
+                        shared_ptr<node_metatype>(new appearance_metatype(b)));
+    b.add_node_metatype(audio_clip_metatype::id,
+                        shared_ptr<node_metatype>(new audio_clip_metatype(b)));
+    b.add_node_metatype(background_metatype::id,
+                        shared_ptr<node_metatype>(new background_metatype(b)));
+    b.add_node_metatype(billboard_metatype::id,
+                        shared_ptr<node_metatype>(new billboard_metatype(b)));
+    b.add_node_metatype(box_metatype::id,
+                        shared_ptr<node_metatype>(new box_metatype(b)));
+    b.add_node_metatype(collision_metatype::id,
+                        shared_ptr<node_metatype>(new collision_metatype(b)));
+    b.add_node_metatype(color_metatype::id,
+                        shared_ptr<node_metatype>(new color_metatype(b)));
+    b.add_node_metatype(color_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new color_interpolator_metatype(b)));
+    b.add_node_metatype(cone_metatype::id,
+                        shared_ptr<node_metatype>(new cone_metatype(b)));
+    b.add_node_metatype(coordinate_metatype::id,
+                        shared_ptr<node_metatype>(new coordinate_metatype(b)));
+    b.add_node_metatype(coordinate_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new coordinate_interpolator_metatype(b)));
+    b.add_node_metatype(cylinder_metatype::id,
+                        shared_ptr<node_metatype>(new cylinder_metatype(b)));
+    b.add_node_metatype(cylinder_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new cylinder_sensor_metatype(b)));
+    b.add_node_metatype(directional_light_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new directional_light_metatype(b)));
+    b.add_node_metatype(elevation_grid_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new elevation_grid_metatype(b)));
+    b.add_node_metatype(extrusion_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new extrusion_metatype(b)));
+    b.add_node_metatype(fog_metatype::id,
+                        shared_ptr<node_metatype>(new fog_metatype(b)));
+    b.add_node_metatype(font_style_metatype::id,
+                        shared_ptr<node_metatype>(new font_style_metatype(b)));
+    b.add_node_metatype(group_metatype::id,
+                        shared_ptr<node_metatype>(new group_metatype(b)));
+    b.add_node_metatype(image_texture_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new image_texture_metatype(b)));
+    b.add_node_metatype(indexed_face_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new indexed_face_set_metatype(b)));
+    b.add_node_metatype(indexed_line_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new indexed_line_set_metatype(b)));
+    b.add_node_metatype(inline_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new inline_metatype(b)));
+    b.add_node_metatype(lod_metatype::id,
+                        shared_ptr<node_metatype>(new lod_metatype(b)));
+    b.add_node_metatype(material_metatype::id,
+                        shared_ptr<node_metatype>(new material_metatype(b)));
+    b.add_node_metatype(movie_texture_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new movie_texture_metatype(b)));
+    b.add_node_metatype(navigation_info_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new navigation_info_metatype(b)));
+    b.add_node_metatype(normal_metatype::id,
+                        shared_ptr<node_metatype>(new normal_metatype(b)));
+    b.add_node_metatype(normal_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new normal_interpolator_metatype(b)));
+    b.add_node_metatype(orientation_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new orientation_interpolator_metatype(b)));
+    b.add_node_metatype(pixel_texture_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new pixel_texture_metatype(b)));
+    b.add_node_metatype(plane_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new plane_sensor_metatype(b)));
+    b.add_node_metatype(point_light_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new point_light_metatype(b)));
+    b.add_node_metatype(point_set_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new point_set_metatype(b)));
+    b.add_node_metatype(position_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new position_interpolator_metatype(b)));
+    b.add_node_metatype(proximity_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new proximity_sensor_metatype(b)));
+    b.add_node_metatype(scalar_interpolator_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new scalar_interpolator_metatype(b)));
+    b.add_node_metatype(shape_metatype::id,
+                        shared_ptr<node_metatype>(new shape_metatype(b)));
+    b.add_node_metatype(sound_metatype::id,
+                        shared_ptr<node_metatype>(new sound_metatype(b)));
+    b.add_node_metatype(sphere_metatype::id,
+                        shared_ptr<node_metatype>(new sphere_metatype(b)));
+    b.add_node_metatype(sphere_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new sphere_sensor_metatype(b)));
+    b.add_node_metatype(spot_light_metatype::id,
+                        shared_ptr<node_metatype>(new spot_light_metatype(b)));
+    b.add_node_metatype(switch_metatype::id,
+                        shared_ptr<node_metatype>(new switch_metatype(b)));
+    b.add_node_metatype(text_metatype::id,
+                        shared_ptr<node_metatype>(new text_metatype(b)));
+    b.add_node_metatype(texture_coordinate_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new texture_coordinate_metatype(b)));
+    b.add_node_metatype(texture_transform_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new texture_transform_metatype(b)));
+    b.add_node_metatype(time_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new time_sensor_metatype(b)));
+    b.add_node_metatype(touch_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new touch_sensor_metatype(b)));
+    b.add_node_metatype(transform_metatype::id,
+                        shared_ptr<node_metatype>(new transform_metatype(b)));
+    b.add_node_metatype(viewpoint_metatype::id,
+                        shared_ptr<node_metatype>(new viewpoint_metatype(b)));
+    b.add_node_metatype(visibility_sensor_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new visibility_sensor_metatype(b)));
+    b.add_node_metatype(world_info_metatype::id,
+                        shared_ptr<node_metatype>(new world_info_metatype(b)));
+    b.add_node_metatype(cad_layer_metatype::id,
+                        shared_ptr<node_metatype>(new cad_layer_metatype(b)));
+    b.add_node_metatype(cad_assembly_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new cad_assembly_metatype(b)));
 }
 
 namespace {
@@ -2328,7 +2356,7 @@ namespace {
 
     class OPENVRML_LOCAL anchor_node : public grouping_node_base<anchor_node>,
                                        public pointing_device_sensor_node {
-        friend class anchor_class;
+        friend class anchor_metatype;
 
         exposedfield<sfstring> description_;
         exposedfield<mfstring> parameter_;
@@ -2351,7 +2379,7 @@ namespace {
         public abstract_node<appearance_node>,
         public openvrml::appearance_node {
 
-        friend class appearance_class;
+        friend class appearance_metatype;
 
         exposedfield<sfnode> material_;
         exposedfield<sfnode> texture_;
@@ -2383,7 +2411,7 @@ namespace {
         public abstract_node<audio_clip_node>,
         public time_dependent_node {
 
-        friend class audio_clip_class;
+        friend class audio_clip_metatype;
 
         exposedfield<sfstring> description_;
         exposedfield<sfbool> loop_;
@@ -2419,7 +2447,7 @@ namespace {
         public abstract_node<background_node>,
         public child_node {
 
-        friend class background_class;
+        friend class background_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -2578,7 +2606,7 @@ namespace {
 
     class OPENVRML_LOCAL billboard_node :
         public grouping_node_base<billboard_node> {
-        friend class billboard_class;
+        friend class billboard_metatype;
 
         exposedfield<sfvec3f> axis_of_rotation_;
 
@@ -2600,7 +2628,7 @@ namespace {
 
     class OPENVRML_LOCAL box_node : public abstract_node<box_node>,
                                     public geometry_node {
-        friend class box_class;
+        friend class box_metatype;
 
         sfvec3f size;
         sfbool solid_;
@@ -2624,7 +2652,7 @@ namespace {
     class OPENVRML_LOCAL collision_node :
         public grouping_node_base<collision_node> {
 
-        friend class collision_class;
+        friend class collision_metatype;
 
         exposedfield<sfbool> collide_;
         sfnode proxy_;
@@ -2644,7 +2672,7 @@ namespace {
 
     class OPENVRML_LOCAL color_node : public abstract_node<color_node>,
                                       public openvrml::color_node {
-        friend class color_class;
+        friend class color_metatype;
 
         exposedfield<mfcolor> color_;
 
@@ -2665,7 +2693,7 @@ namespace {
         public abstract_node<color_interpolator_node>,
         public child_node {
 
-        friend class color_interpolator_class;
+        friend class color_interpolator_metatype;
 
         class set_fraction_listener :
             public event_listener_base<self_t>,
@@ -2696,7 +2724,7 @@ namespace {
 
     class OPENVRML_LOCAL cone_node : public abstract_node<cone_node>,
                                      public geometry_node {
-        friend class cone_class;
+        friend class cone_metatype;
 
         sfbool bottom;
         sffloat bottomRadius;
@@ -2719,7 +2747,7 @@ namespace {
         public abstract_node<coordinate_node>,
         public openvrml::coordinate_node {
 
-        friend class coordinate_class;
+        friend class coordinate_metatype;
 
         exposedfield<mfvec3f> point_;
 
@@ -2739,7 +2767,7 @@ namespace {
         public abstract_node<coordinate_interpolator_node>,
         public child_node {
 
-        friend class coordinate_interpolator_class;
+        friend class coordinate_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -2770,7 +2798,7 @@ namespace {
 
     class OPENVRML_LOCAL cylinder_node : public abstract_node<cylinder_node>,
                                          public geometry_node {
-        friend class cylinder_class;
+        friend class cylinder_metatype;
 
         sfbool bottom;
         sffloat height;
@@ -2794,7 +2822,7 @@ namespace {
         public abstract_node<cylinder_sensor_node>,
         public pointing_device_sensor_node {
 
-        friend class cylinder_sensor_class;
+        friend class cylinder_sensor_metatype;
 
         exposedfield<sfbool> auto_offset_;
         exposedfield<sffloat> disk_angle_;
@@ -2834,7 +2862,7 @@ namespace {
     class OPENVRML_LOCAL directional_light_node :
         public abstract_light_node<directional_light_node> {
 
-        friend class directional_light_class;
+        friend class directional_light_metatype;
 
         exposedfield<sfvec3f> direction_;
 
@@ -2854,7 +2882,7 @@ namespace {
         public abstract_node<elevation_grid_node>,
         public geometry_node {
 
-        friend class elevation_grid_class;
+        friend class elevation_grid_metatype;
 
         class set_height_listener : public event_listener_base<self_t>,
                                     public mffloat_listener {
@@ -2899,7 +2927,7 @@ namespace {
     class OPENVRML_LOCAL extrusion_node : public abstract_node<extrusion_node>,
                                           public geometry_node {
 
-        friend class extrusion_class;
+        friend class extrusion_metatype;
 
         class set_cross_section_listener :
             public event_listener_base<self_t>,
@@ -2978,7 +3006,7 @@ namespace {
 
     class OPENVRML_LOCAL fog_node : public abstract_node<fog_node>,
                                     public child_node {
-        friend class fog_class;
+        friend class fog_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -3018,7 +3046,7 @@ namespace {
         public abstract_node<font_style_node>,
         public openvrml::font_style_node {
 
-        friend class font_style_class;
+        friend class font_style_metatype;
 
         mfstring family_;
         sfbool horizontal_;
@@ -3051,7 +3079,7 @@ namespace {
 
 
     class OPENVRML_LOCAL group_node : public grouping_node_base<group_node> {
-        friend class group_class;
+        friend class group_metatype;
 
     public:
         group_node(const node_type & type,
@@ -3063,7 +3091,7 @@ namespace {
     class OPENVRML_LOCAL image_texture_node :
         public abstract_texture_node<image_texture_node> {
 
-        friend class image_texture_class;
+        friend class image_texture_metatype;
 
         class url_exposedfield : public exposedfield<mfstring> {
         public:
@@ -3102,7 +3130,7 @@ namespace {
     class OPENVRML_LOCAL indexed_face_set_node :
         public abstract_indexed_set_node<indexed_face_set_node> {
 
-        friend class indexed_face_set_class;
+        friend class indexed_face_set_metatype;
 
         class set_normal_index_listener :
             public event_listener_base<self_t>,
@@ -3168,7 +3196,7 @@ namespace {
     class OPENVRML_LOCAL indexed_line_set_node :
         public abstract_indexed_set_node<indexed_line_set_node> {
 
-        friend class indexed_line_set_class;
+        friend class indexed_line_set_metatype;
 
         exposedfield<mfint32> vertex_count_;
 
@@ -3187,7 +3215,7 @@ namespace {
 
     class OPENVRML_LOCAL inline_node : public abstract_node<inline_node>,
                                        public grouping_node {
-        friend class inline_class;
+        friend class inline_metatype;
 
         struct load_inline_scene;
 
@@ -3216,7 +3244,7 @@ namespace {
 
 
     class OPENVRML_LOCAL lod_node : public grouping_node_base<lod_node> {
-        friend class lod_class;
+        friend class lod_metatype;
 
         sfvec3f center_;
         mffloat range_;
@@ -3241,7 +3269,7 @@ namespace {
 
     class OPENVRML_LOCAL material_node : public abstract_node<material_node>,
                                          public openvrml::material_node {
-        friend class material_class;
+        friend class material_metatype;
 
         exposedfield<sffloat> ambient_intensity_;
         exposedfield<sfcolor> diffuse_color_;
@@ -3271,7 +3299,7 @@ namespace {
         public abstract_texture_node<movie_texture_node>,
         public time_dependent_node {
 
-        friend class movie_texture_class;
+        friend class movie_texture_metatype;
 
         class set_speed_listener : public event_listener_base<self_t>,
                                    public sffloat_listener {
@@ -3324,7 +3352,7 @@ namespace {
         public abstract_node<navigation_info_node>,
         public openvrml::navigation_info_node {
 
-        friend class navigation_info_class;
+        friend class navigation_info_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -3373,7 +3401,7 @@ namespace {
 
     class OPENVRML_LOCAL normal_node : public abstract_node<normal_node>,
                                        public openvrml::normal_node {
-        friend class normal_class;
+        friend class normal_metatype;
 
         exposedfield<mfvec3f> vector_;
 
@@ -3393,7 +3421,7 @@ namespace {
         public abstract_node<normal_interpolator_node>,
         public child_node {
 
-        friend class normal_interpolator_class;
+        friend class normal_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -3425,7 +3453,7 @@ namespace {
         public abstract_node<orientation_interpolator_node>,
         public child_node {
 
-        friend class orientation_interpolator_class;
+        friend class orientation_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -3457,7 +3485,7 @@ namespace {
     class OPENVRML_LOCAL pixel_texture_node :
         public abstract_texture_node<pixel_texture_node> {
 
-        friend class pixel_texture_class;
+        friend class pixel_texture_metatype;
 
         exposedfield<sfimage> image_;
 
@@ -3477,7 +3505,7 @@ namespace {
         public abstract_node<plane_sensor_node>,
         public pointing_device_sensor_node {
 
-        friend class plane_sensor_class;
+        friend class plane_sensor_metatype;
 
         exposedfield<sfbool> auto_offset_;
         exposedfield<sfbool> enabled_;
@@ -3516,7 +3544,7 @@ namespace {
         public abstract_light_node<point_light_node>,
         public scoped_light_node {
 
-        friend class point_light_class;
+        friend class point_light_metatype;
 
         exposedfield<sfvec3f> attenuation_;
         exposedfield<sfvec3f> location_;
@@ -3537,7 +3565,7 @@ namespace {
     class OPENVRML_LOCAL point_set_node : public abstract_node<point_set_node>,
                                           public geometry_node {
 
-        friend class point_set_class;
+        friend class point_set_metatype;
 
         exposedfield<sfnode> color_;
         exposedfield<sfnode> coord_;
@@ -3567,7 +3595,7 @@ namespace {
         public abstract_node<position_interpolator_node>,
         public child_node {
 
-        friend class position_interpolator_class;
+        friend class position_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -3599,7 +3627,7 @@ namespace {
         public abstract_node<proximity_sensor_node>,
         public child_node {
 
-        friend class proximity_sensor_class;
+        friend class proximity_sensor_metatype;
 
         exposedfield<sfvec3f> center_;
         exposedfield<sfbool> enabled_;
@@ -3633,7 +3661,7 @@ namespace {
         public abstract_node<scalar_interpolator_node>,
         public child_node {
 
-        friend class scalar_interpolator_class;
+        friend class scalar_interpolator_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -3663,7 +3691,7 @@ namespace {
 
     class OPENVRML_LOCAL shape_node : public abstract_node<shape_node>,
                                       public child_node {
-        friend class shape_class;
+        friend class shape_metatype;
 
         exposedfield<sfnode> appearance_;
         exposedfield<sfnode> geometry_;
@@ -3689,7 +3717,7 @@ namespace {
 
     class OPENVRML_LOCAL sound_node : public abstract_node<sound_node>,
                                       public child_node {
-        friend class sound_class;
+        friend class sound_metatype;
 
         exposedfield<sfvec3f> direction_;
         exposedfield<sffloat> intensity_;
@@ -3715,7 +3743,7 @@ namespace {
 
     class OPENVRML_LOCAL sphere_node : public abstract_node<sphere_node>,
                                        public geometry_node {
-        friend class sphere_class;
+        friend class sphere_metatype;
 
         sffloat radius;
         sfbool solid_;
@@ -3737,7 +3765,7 @@ namespace {
         public abstract_node<sphere_sensor_node>,
         public pointing_device_sensor_node {
 
-        friend class sphere_sensor_class;
+        friend class sphere_sensor_metatype;
 
         exposedfield<sfbool> auto_offset_;
         exposedfield<sfbool> enabled_;
@@ -3773,7 +3801,7 @@ namespace {
         public abstract_light_node<spot_light_node>,
         public scoped_light_node {
 
-        friend class spot_light_class;
+        friend class spot_light_metatype;
 
         exposedfield<sfvec3f> attenuation_;
         exposedfield<sffloat> beam_width_;
@@ -3796,7 +3824,7 @@ namespace {
 
 
     class OPENVRML_LOCAL switch_node : public grouping_node_base<switch_node> {
-        friend class switch_class;
+        friend class switch_metatype;
 
         class which_choice_exposedfield : public exposedfield<sfint32> {
         public:
@@ -3838,7 +3866,7 @@ namespace {
 
     class OPENVRML_LOCAL text_node : public abstract_node<text_node>,
                                      public geometry_node {
-        friend class text_class;
+        friend class text_metatype;
 
         class string_exposedfield : public exposedfield<mfstring> {
         public:
@@ -3958,7 +3986,7 @@ namespace {
         public abstract_node<texture_coordinate_node>,
         public openvrml::texture_coordinate_node {
 
-        friend class texture_coordinate_class;
+        friend class texture_coordinate_metatype;
 
         exposedfield<mfvec2f> point_;
 
@@ -3979,7 +4007,7 @@ namespace {
         public abstract_node<texture_transform_node>,
         public openvrml::texture_transform_node {
 
-        friend class texture_transform_class;
+        friend class texture_transform_metatype;
 
         exposedfield<sfvec2f> center_;
         exposedfield<sffloat> rotation_;
@@ -4002,7 +4030,7 @@ namespace {
         public time_dependent_node,
         public child_node {
 
-        friend class time_sensor_class;
+        friend class time_sensor_metatype;
 
         class set_cycle_interval_listener : public event_listener_base<self_t>,
                                             public sftime_listener {
@@ -4085,7 +4113,7 @@ namespace {
         public abstract_node<touch_sensor_node>,
         public pointing_device_sensor_node {
 
-        friend class touch_sensor_class;
+        friend class touch_sensor_metatype;
 
         exposedfield<sfbool> enabled_;
         exposedfield<sfstring> description_;
@@ -4117,7 +4145,7 @@ namespace {
         public grouping_node_base<transform_node>,
         public openvrml::transform_node {
 
-        friend class transform_class;
+        friend class transform_metatype;
 
         class center_exposedfield : public exposedfield<sfvec3f> {
         public:
@@ -4223,7 +4251,7 @@ namespace {
         public abstract_node<viewpoint_node>,
         public openvrml::viewpoint_node {
 
-        friend class viewpoint_class;
+        friend class viewpoint_metatype;
 
         class set_bind_listener : public event_listener_base<self_t>,
                                   public sfbool_listener {
@@ -4315,7 +4343,7 @@ namespace {
         public abstract_node<visibility_sensor_node>,
         public child_node {
 
-        friend class visibility_sensor_class;
+        friend class visibility_sensor_metatype;
 
         exposedfield<sfvec3f> center_;
         exposedfield<sfbool> enabled_;
@@ -4343,7 +4371,7 @@ namespace {
         public abstract_node<world_info_node>,
         public child_node {
 
-        friend class world_info_class;
+        friend class world_info_metatype;
 
         mfstring info;
         sfstring title;
@@ -4356,23 +4384,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const anchor_class::id = "urn:X-openvrml:node:Anchor";
+    const char * const anchor_metatype::id = "urn:X-openvrml:node:Anchor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c anchor_class.
+     * @param browser the @c browser associated with this @c anchor_metatype.
      */
-    anchor_class::anchor_class(openvrml::browser & browser):
-        node_class(anchor_class::id, browser)
+    anchor_metatype::anchor_metatype(openvrml::browser & browser):
+        node_metatype(anchor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    anchor_class::~anchor_class() OPENVRML_NOTHROW
+    anchor_metatype::~anchor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4384,11 +4412,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating Anchor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by anchor_class.
+     *                                  not supported by anchor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    anchor_class::do_create_type(const std::string & id,
+    anchor_metatype::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
@@ -4556,7 +4584,7 @@ namespace {
      */
 
     /**
-     * @var anchor_node::anchor_class
+     * @var anchor_node::anchor_metatype
      *
      * @brief Class object for Anchor nodes.
      */
@@ -4647,24 +4675,24 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const appearance_class::id = "urn:X-openvrml:node:Appearance";
+    const char * const appearance_metatype::id = "urn:X-openvrml:node:Appearance";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    appearance_class::
-    appearance_class(openvrml::browser & browser):
-        node_class(appearance_class::id, browser)
+    appearance_metatype::
+    appearance_metatype(openvrml::browser & browser):
+        node_metatype(appearance_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    appearance_class::~appearance_class() OPENVRML_NOTHROW
+    appearance_metatype::~appearance_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -4677,11 +4705,11 @@ namespace {
      *         creating Appearance nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by appearance_class.
+     *                                  not supported by appearance_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    appearance_class::
+    appearance_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -4827,7 +4855,7 @@ namespace {
      */
 
     /**
-     * @var appearance_node::appearance_class
+     * @var appearance_node::appearance_metatype
      *
      * @brief Class object for Appearance nodes.
      */
@@ -5001,24 +5029,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const audio_clip_class::id = "urn:X-openvrml:node:AudioClip";
+    const char * const audio_clip_metatype::id = "urn:X-openvrml:node:AudioClip";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    audio_clip_class::
-    audio_clip_class(openvrml::browser & browser):
-        node_class(audio_clip_class::id, browser)
+    audio_clip_metatype::
+    audio_clip_metatype(openvrml::browser & browser):
+        node_metatype(audio_clip_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    audio_clip_class::~audio_clip_class() OPENVRML_NOTHROW
+    audio_clip_metatype::~audio_clip_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5031,11 +5059,11 @@ namespace {
      *         creating AudioClip nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by audio_clip_class.
+     *                                  not supported by audio_clip_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    audio_clip_class::
+    audio_clip_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -5284,7 +5312,7 @@ namespace {
      */
 
     /**
-     * @var audio_clip_node::audio_clip_class
+     * @var audio_clip_node::audio_clip_metatype
      *
      * @brief Class object for AudioClip nodes.
      */
@@ -5420,25 +5448,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const background_class::id = "urn:X-openvrml:node:Background";
+    const char * const background_metatype::id = "urn:X-openvrml:node:Background";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    background_class::
-    background_class(openvrml::browser & browser):
-        node_class(background_class::id, browser),
+    background_metatype::
+    background_metatype(openvrml::browser & browser):
+        node_metatype(background_metatype::id, browser),
         first(0)
     {}
 
     /**
      * @brief Destroy.
      */
-    background_class::~background_class() OPENVRML_NOTHROW
+    background_metatype::~background_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -5451,7 +5479,7 @@ namespace {
      * @param background    a Background node.
      */
     void
-    background_class::
+    background_metatype::
     set_first(background_node & background) OPENVRML_NOTHROW
     {
         this->first = &background;
@@ -5463,7 +5491,7 @@ namespace {
      *
      * This function is called by <code>background_node::do_shutdown</code>.
      */
-    void background_class::reset_first() OPENVRML_NOTHROW
+    void background_metatype::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -5476,7 +5504,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool background_class::has_first() const OPENVRML_NOTHROW
+    bool background_metatype::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -5489,7 +5517,7 @@ namespace {
      * @return @c true if @p background is the fist node; @c false otherwise.
      */
     bool
-    background_class::is_first(background_node & background)
+    background_metatype::is_first(background_node & background)
         OPENVRML_NOTHROW
     {
         return &background == this->first;
@@ -5503,7 +5531,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void background_class::bind(background_node & background,
+    void background_metatype::bind(background_node & background,
                                 const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -5518,7 +5546,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void background_class::unbind(background_node & background,
+    void background_metatype::unbind(background_node & background,
                                   const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -5526,14 +5554,14 @@ namespace {
     }
 
     /**
-     * @brief node_class-specific initialization.
+     * @brief node_metatype-specific initialization.
      *
      * @param initial_viewpoint the viewpoint_node that should be bound
      *                          initially.
      * @param timestamp         the current time.
      */
     void
-    background_class::
+    background_metatype::
     do_initialize(openvrml::viewpoint_node *, const double timestamp)
         OPENVRML_NOTHROW
     {
@@ -5550,13 +5578,13 @@ namespace {
     }
 
     /**
-     * @brief node_class-specific rendering.
+     * @brief node_metatype-specific rendering.
      *
      * Render the active Background node.
      *
      * @param v viewer.
      */
-    void background_class::do_render(viewer & v) const
+    void background_metatype::do_render(viewer & v) const
         OPENVRML_NOTHROW
     {
         if (this->bound_nodes.empty()) {
@@ -5629,11 +5657,11 @@ namespace {
      *         creating Background nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by background_class.
+     *                                  not supported by background_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    background_class::
+    background_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -5907,7 +5935,7 @@ namespace {
      */
 
     /**
-     * @var background_node::background_class
+     * @var background_node::background_metatype
      *
      * @brief Class object for Background nodes.
      */
@@ -5955,14 +5983,14 @@ namespace {
         try {
             background_node & node =
                 dynamic_cast<background_node &>(this->node());
-            background_class & node_class =
-                const_cast<background_class &>(
-                    static_cast<const background_class &>(
-                        node.type().node_class()));
+            background_metatype & node_metatype =
+                const_cast<background_metatype &>(
+                    static_cast<const background_metatype &>(
+                        node.type().metatype()));
             if (value.value()) {
-                node_class.bind(node, timestamp);
+                node_metatype.bind(node, timestamp);
             } else {
-                node_class.unbind(node, timestamp);
+                node_metatype.unbind(node, timestamp);
             }
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6663,19 +6691,19 @@ namespace {
      */
     void background_node::do_initialize(double) OPENVRML_NOTHROW
     {
-        assert(dynamic_cast<const background_class *>(
-                   &this->type().node_class()));
-        background_class & nodeClass =
-            const_cast<background_class &>(
-                static_cast<const background_class &>(
-                    this->type().node_class()));
+        assert(dynamic_cast<const background_metatype *>(
+                   &this->type().metatype()));
+        background_metatype & nodeClass =
+            const_cast<background_metatype &>(
+                static_cast<const background_metatype &>(
+                    this->type().metatype()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
     /**
      * @brief Shut down.
      *
-     * Calls background_class::unbind to unbind the node if it is bound.
+     * Calls background_metatype::unbind to unbind the node if it is bound.
      *
      * @param timestamp the current time.
      */
@@ -6683,13 +6711,13 @@ namespace {
     background_node::do_shutdown(const double timestamp)
         OPENVRML_NOTHROW
     {
-        background_class & node_class =
-            const_cast<background_class &>(
-                static_cast<const background_class &>(
-                    this->type().node_class()));
-        node_class.unbind(*this, timestamp);
+        background_metatype & node_metatype =
+            const_cast<background_metatype &>(
+                static_cast<const background_metatype &>(
+                    this->type().metatype()));
+        node_metatype.unbind(*this, timestamp);
 
-        if (node_class.is_first(*this)) { node_class.reset_first(); }
+        if (node_metatype.is_first(*this)) { node_metatype.reset_first(); }
     }
 
 # ifdef OPENVRML_ENABLE_PNG_TEXTURES
@@ -7485,24 +7513,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const billboard_class::id = "urn:X-openvrml:node:Billboard";
+    const char * const billboard_metatype::id = "urn:X-openvrml:node:Billboard";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    billboard_class::
-    billboard_class(openvrml::browser & browser):
-        node_class(billboard_class::id, browser)
+    billboard_metatype::
+    billboard_metatype(openvrml::browser & browser):
+        node_metatype(billboard_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    billboard_class::~billboard_class() OPENVRML_NOTHROW
+    billboard_metatype::~billboard_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7515,11 +7543,11 @@ namespace {
      *         creating Billboard nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by billboard_class.
+     *                                  not supported by billboard_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    billboard_class::
+    billboard_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -7650,7 +7678,7 @@ namespace {
      */
 
     /**
-     * @var billboard_node::billboard_class
+     * @var billboard_node::billboard_metatype
      *
      * @brief Class object for Billboard nodes.
      */
@@ -7810,23 +7838,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const box_class::id = "urn:X-openvrml:node:Box";
+    const char * const box_metatype::id = "urn:X-openvrml:node:Box";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    box_class::box_class(openvrml::browser & browser):
-        node_class(box_class::id, browser)
+    box_metatype::box_metatype(openvrml::browser & browser):
+        node_metatype(box_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    box_class::~box_class() OPENVRML_NOTHROW
+    box_metatype::~box_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -7839,11 +7867,11 @@ namespace {
      *         creating Box nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by box_class.
+     *                                  not supported by box_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    box_class::
+    box_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -7913,7 +7941,7 @@ namespace {
      */
 
     /**
-     * @var box_node::box_class
+     * @var box_node::box_metatype
      *
      * @brief Class object for Box nodes.
      */
@@ -7991,24 +8019,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const collision_class::id = "urn:X-openvrml:node:Collision";
+    const char * const collision_metatype::id = "urn:X-openvrml:node:Collision";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    collision_class::
-    collision_class(openvrml::browser & browser):
-        node_class(collision_class::id, browser)
+    collision_metatype::
+    collision_metatype(openvrml::browser & browser):
+        node_metatype(collision_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    collision_class::~collision_class() OPENVRML_NOTHROW
+    collision_metatype::~collision_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8021,11 +8049,11 @@ namespace {
      *         creating Collision nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by collision_class.
+     *                                  not supported by collision_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    collision_class::
+    collision_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -8207,7 +8235,7 @@ namespace {
      */
 
     /**
-     * @var collision_node::collision_class
+     * @var collision_node::collision_metatype
      *
      * @brief Class object for Collision nodes.
      */
@@ -8275,23 +8303,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const color_class::id = "urn:X-openvrml:node:Color";
+    const char * const color_metatype::id = "urn:X-openvrml:node:Color";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    color_class::color_class(openvrml::browser & browser):
-        node_class(color_class::id, browser)
+    color_metatype::color_metatype(openvrml::browser & browser):
+        node_metatype(color_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    color_class::~color_class() OPENVRML_NOTHROW {}
+    color_metatype::~color_metatype() OPENVRML_NOTHROW {}
 
     /**
      * @brief Create a node_type.
@@ -8303,11 +8331,11 @@ namespace {
      *         creating Color nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by color_class.
+     *                                  not supported by color_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    color_class::
+    color_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -8377,7 +8405,7 @@ namespace {
      */
 
     /**
-     * @var color_node::color_class
+     * @var color_node::color_metatype
      *
      * @brief Class object for Color nodes.
      */
@@ -8422,9 +8450,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const color_interpolator_class::id =
+    const char * const color_interpolator_metatype::id =
         "urn:X-openvrml:node:ColorInterpolator";
 
     /**
@@ -8432,15 +8460,15 @@ namespace {
      *
      * @param browser the browser associated with this class object.
      */
-    color_interpolator_class::
-    color_interpolator_class(openvrml::browser & browser):
-        node_class(color_interpolator_class::id, browser)
+    color_interpolator_metatype::
+    color_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(color_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    color_interpolator_class::~color_interpolator_class()
+    color_interpolator_metatype::~color_interpolator_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -8455,11 +8483,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  color_interpolator_class.
+     *                                  color_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    color_interpolator_class::
+    color_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -8577,7 +8605,7 @@ namespace {
      */
 
     /**
-     * @var color_interpolator_node::color_interpolator_class
+     * @var color_interpolator_node::color_interpolator_metatype
      *
      * @brief Class object for ColorInterpolator nodes.
      */
@@ -8740,23 +8768,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cone_class::id = "urn:X-openvrml:node:Cone";
+    const char * const cone_metatype::id = "urn:X-openvrml:node:Cone";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    cone_class::cone_class(openvrml::browser & browser):
-        node_class(cone_class::id, browser)
+    cone_metatype::cone_metatype(openvrml::browser & browser):
+        node_metatype(cone_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cone_class::~cone_class() OPENVRML_NOTHROW
+    cone_metatype::~cone_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8769,11 +8797,11 @@ namespace {
      *         creating Cone nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cone_class.
+     *                                  not supported by cone_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cone_class::
+    cone_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -8874,7 +8902,7 @@ namespace {
      */
 
     /**
-     * @var cone_node::cone_class
+     * @var cone_node::cone_metatype
      *
      * @brief Class object for Cone nodes.
      */
@@ -8949,24 +8977,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const coordinate_class::id = "urn:X-openvrml:node:Coordinate";
+    const char * const coordinate_metatype::id = "urn:X-openvrml:node:Coordinate";
 
     /**
      * @brief Construct.
      *
      * @param browser the browser associated with this node class object.
      */
-    coordinate_class::
-    coordinate_class(openvrml::browser & browser):
-        node_class(coordinate_class::id, browser)
+    coordinate_metatype::
+    coordinate_metatype(openvrml::browser & browser):
+        node_metatype(coordinate_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    coordinate_class::~coordinate_class() OPENVRML_NOTHROW
+    coordinate_metatype::~coordinate_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -8979,11 +9007,11 @@ namespace {
      *         creating Coordinate nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by coordinate_class.
+     *                                  not supported by coordinate_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    coordinate_class::
+    coordinate_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -9053,7 +9081,7 @@ namespace {
      */
 
     /**
-     * @var coordinate_node::coordinate_class
+     * @var coordinate_node::coordinate_metatype
      *
      * @brief Class object for Coordinate nodes.
      */
@@ -9098,9 +9126,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const coordinate_interpolator_class::id =
+    const char * const coordinate_interpolator_metatype::id =
         "urn:X-openvrml:node:CoordinateInterpolator";
 
     /**
@@ -9108,16 +9136,16 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    coordinate_interpolator_class::
-    coordinate_interpolator_class(openvrml::browser & browser):
-        node_class(coordinate_interpolator_class::id, browser)
+    coordinate_interpolator_metatype::
+    coordinate_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(coordinate_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    coordinate_interpolator_class::
-    ~coordinate_interpolator_class() OPENVRML_NOTHROW
+    coordinate_interpolator_metatype::
+    ~coordinate_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9131,11 +9159,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  coordinate_interpolator_class.
+     *                                  coordinate_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    coordinate_interpolator_class::
+    coordinate_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -9255,7 +9283,7 @@ namespace {
      */
 
     /**
-     * @var class coordinate_interpolator_node::coordinate_interpolator_class
+     * @var class coordinate_interpolator_node::coordinate_interpolator_metatype
      *
      * @brief Class object for CoordinateInterpolator nodes.
      */
@@ -9412,24 +9440,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cylinder_class::id = "urn:X-openvrml:node:Cylinder";
+    const char * const cylinder_metatype::id = "urn:X-openvrml:node:Cylinder";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    cylinder_class::
-    cylinder_class(openvrml::browser & browser):
-        node_class(cylinder_class::id, browser)
+    cylinder_metatype::
+    cylinder_metatype(openvrml::browser & browser):
+        node_metatype(cylinder_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cylinder_class::~cylinder_class() OPENVRML_NOTHROW
+    cylinder_metatype::~cylinder_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9442,11 +9470,11 @@ namespace {
      *         creating Cylinder nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cylinder_class.
+     *                                  not supported by cylinder_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cylinder_class::
+    cylinder_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -9557,7 +9585,7 @@ namespace {
      */
 
     /**
-     * @var cylinder_node::cylinder_class
+     * @var cylinder_node::cylinder_metatype
      *
      * @brief Class object for Cylinder nodes.
      */
@@ -9642,9 +9670,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cylinder_sensor_class::id =
+    const char * const cylinder_sensor_metatype::id =
         "urn:X-openvrml:node:CylinderSensor";
 
     /**
@@ -9652,15 +9680,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    cylinder_sensor_class::
-    cylinder_sensor_class(openvrml::browser & browser):
-        node_class(cylinder_sensor_class::id, browser)
+    cylinder_sensor_metatype::
+    cylinder_sensor_metatype(openvrml::browser & browser):
+        node_metatype(cylinder_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cylinder_sensor_class::~cylinder_sensor_class() OPENVRML_NOTHROW
+    cylinder_sensor_metatype::~cylinder_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -9673,11 +9701,11 @@ namespace {
      *         creating CylinderSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cylinder_sensor_class.
+     *                                  not supported by cylinder_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cylinder_sensor_class::
+    cylinder_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -9924,7 +9952,7 @@ namespace {
      */
 
     /**
-     * @var cylinder_sensor_node::cylinder_sensor_class
+     * @var cylinder_sensor_node::cylinder_sensor_metatype
      *
      * @brief Class object for CylinderSensor nodes.
      */
@@ -10183,9 +10211,9 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const directional_light_class::id =
+    const char * const directional_light_metatype::id =
         "urn:X-openvrml:node:DirectionalLight";
 
     /**
@@ -10193,15 +10221,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    directional_light_class::
-    directional_light_class(openvrml::browser & browser):
-        node_class(directional_light_class::id, browser)
+    directional_light_metatype::
+    directional_light_metatype(openvrml::browser & browser):
+        node_metatype(directional_light_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    directional_light_class::~directional_light_class()
+    directional_light_metatype::~directional_light_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -10216,11 +10244,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  directional_light_class.
+     *                                  directional_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    directional_light_class::
+    directional_light_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -10379,7 +10407,7 @@ namespace {
      */
 
     /**
-     * @var directional_light_node::directional_light_class
+     * @var directional_light_node::directional_light_metatype
      *
      * @brief Class object for DirectionalLight nodes.
      */
@@ -10437,9 +10465,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const elevation_grid_class::id =
+    const char * const elevation_grid_metatype::id =
         "urn:X-openvrml:node:ElevationGrid";
 
     /**
@@ -10447,15 +10475,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    elevation_grid_class::
-    elevation_grid_class(openvrml::browser & browser):
-        node_class(elevation_grid_class::id, browser)
+    elevation_grid_metatype::
+    elevation_grid_metatype(openvrml::browser & browser):
+        node_metatype(elevation_grid_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    elevation_grid_class::~elevation_grid_class() OPENVRML_NOTHROW
+    elevation_grid_metatype::~elevation_grid_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10468,11 +10496,11 @@ namespace {
      *         creating ElevationGrid nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by elevation_grid_class.
+     *                                  not supported by elevation_grid_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    elevation_grid_class::
+    elevation_grid_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -10691,7 +10719,7 @@ namespace {
      */
 
     /**
-     * @var elevation_grid_node::elevation_grid_class
+     * @var elevation_grid_node::elevation_grid_metatype
      *
      * @brief Class object for ElevationGrid nodes.
      */
@@ -10958,24 +10986,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const extrusion_class::id = "urn:X-openvrml:node:Extrusion";
+    const char * const extrusion_metatype::id = "urn:X-openvrml:node:Extrusion";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    extrusion_class::
-    extrusion_class(openvrml::browser & browser):
-        node_class(extrusion_class::id, browser)
+    extrusion_metatype::
+    extrusion_metatype(openvrml::browser & browser):
+        node_metatype(extrusion_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    extrusion_class::~extrusion_class() OPENVRML_NOTHROW
+    extrusion_metatype::~extrusion_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -10988,11 +11016,11 @@ namespace {
      *         creating Extrusion nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by extrusion_class.
+     *                                  not supported by extrusion_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    extrusion_class::
+    extrusion_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -11187,7 +11215,7 @@ namespace {
      */
 
     /**
-     * @var extrusion_node::extrusion_class
+     * @var extrusion_node::extrusion_metatype
      *
      * @brief Class object for Extrusion nodes.
      */
@@ -11569,24 +11597,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const fog_class::id = "urn:X-openvrml:node:Fog";
+    const char * const fog_metatype::id = "urn:X-openvrml:node:Fog";
 
     /**
      * @brief Construct.
      *
      * @param browser the browser associated with this class object.
      */
-    fog_class::fog_class(openvrml::browser & browser):
-        node_class(fog_class::id, browser),
+    fog_metatype::fog_metatype(openvrml::browser & browser):
+        node_metatype(fog_metatype::id, browser),
         first(0)
     {}
 
     /**
      * @brief Destroy.
      */
-    fog_class::~fog_class() OPENVRML_NOTHROW
+    fog_metatype::~fog_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -11597,7 +11625,7 @@ namespace {
      *
      * @param fog   a Fog node.
      */
-    void fog_class::set_first(fog_node & fog) OPENVRML_NOTHROW
+    void fog_metatype::set_first(fog_node & fog) OPENVRML_NOTHROW
     {
         this->first = &fog;
     }
@@ -11607,7 +11635,7 @@ namespace {
      *
      * This function is called by <code>fog_node::do_shutdown</code>.
      */
-    void fog_class::reset_first() OPENVRML_NOTHROW
+    void fog_metatype::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -11620,7 +11648,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool fog_class::has_first() const OPENVRML_NOTHROW
+    bool fog_metatype::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -11632,7 +11660,7 @@ namespace {
      *
      * @return @c true if @p fog is the fist node; @c false otherwise.
      */
-    bool fog_class::is_first(fog_node & fog) OPENVRML_NOTHROW
+    bool fog_metatype::is_first(fog_node & fog) OPENVRML_NOTHROW
     {
         return &fog == this->first;
     }
@@ -11645,7 +11673,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void fog_class::bind(fog_node & fog, const double timestamp)
+    void fog_metatype::bind(fog_node & fog, const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
         this->bound_nodes.bind(fog, timestamp);
@@ -11659,21 +11687,21 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void fog_class::unbind(fog_node & fog, const double timestamp)
+    void fog_metatype::unbind(fog_node & fog, const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
         this->bound_nodes.unbind(fog, timestamp);
     }
 
     /**
-     * @brief node_class-specific initialization.
+     * @brief node_metatype-specific initialization.
      *
      * @param initial_viewpoint the viewpoint_node that should be bound
      *                          initially.
      * @param timestamp         the current time.
      */
     void
-    fog_class::do_initialize(openvrml::viewpoint_node *,
+    fog_metatype::do_initialize(openvrml::viewpoint_node *,
                              const double timestamp)
         OPENVRML_NOTHROW
     {
@@ -11690,13 +11718,13 @@ namespace {
     }
 
     /**
-     * @brief node_class-specific rendering.
+     * @brief node_metatype-specific rendering.
      *
      * Render the active Fog node.
      *
      * @param v a viewer.
      */
-    void fog_class::do_render(viewer & v) const OPENVRML_NOTHROW
+    void fog_metatype::do_render(viewer & v) const OPENVRML_NOTHROW
     {
         if (!this->bound_nodes.empty()) {
             fog_node & fog =
@@ -11717,11 +11745,11 @@ namespace {
      *         creating Fog nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by fog_class.
+     *                                  not supported by fog_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    fog_class::
+    fog_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -11862,7 +11890,7 @@ namespace {
      */
 
     /**
-     * @var class fog_node::fog_class
+     * @var class fog_node::fog_metatype
      *
      * @brief Class object for Fog nodes.
      */
@@ -11909,13 +11937,13 @@ namespace {
     {
         try {
             fog_node & fog = dynamic_cast<fog_node &>(this->node());
-            fog_class & node_class =
-                const_cast<fog_class &>(
-                    static_cast<const fog_class &>(fog.type().node_class()));
+            fog_metatype & node_metatype =
+                const_cast<fog_metatype &>(
+                    static_cast<const fog_metatype &>(fog.type().metatype()));
             if (bind.value()) {
-                node_class.bind(fog, timestamp);
+                node_metatype.bind(fog, timestamp);
             } else {
-                node_class.unbind(fog, timestamp);
+                node_metatype.unbind(fog, timestamp);
             }
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -12013,50 +12041,50 @@ namespace {
     void fog_node::do_initialize(double)
         OPENVRML_NOTHROW
     {
-        fog_class & nodeClass =
-            const_cast<fog_class &>(
-                static_cast<const fog_class &>(this->type().node_class()));
+        fog_metatype & nodeClass =
+            const_cast<fog_metatype &>(
+                static_cast<const fog_metatype &>(this->type().metatype()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
     /**
      * @brief Shut down.
      *
-     * Calls fog_class::unbind to unbind the node if it is bound.
+     * Calls fog_metatype::unbind to unbind the node if it is bound.
      *
      * @param timestamp the current time.
      */
     void fog_node::do_shutdown(const double timestamp)
         OPENVRML_NOTHROW
     {
-        fog_class & node_class =
-            const_cast<fog_class &>(
-                static_cast<const fog_class &>(this->type().node_class()));
-        node_class.unbind(*this, timestamp);
+        fog_metatype & node_metatype =
+            const_cast<fog_metatype &>(
+                static_cast<const fog_metatype &>(this->type().metatype()));
+        node_metatype.unbind(*this, timestamp);
 
-        if (node_class.is_first(*this)) { node_class.reset_first(); }
+        if (node_metatype.is_first(*this)) { node_metatype.reset_first(); }
     }
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const font_style_class::id = "urn:X-openvrml:node:FontStyle";
+    const char * const font_style_metatype::id = "urn:X-openvrml:node:FontStyle";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this class object.
      */
-    font_style_class::
-    font_style_class(openvrml::browser & browser):
-        node_class(font_style_class::id, browser)
+    font_style_metatype::
+    font_style_metatype(openvrml::browser & browser):
+        node_metatype(font_style_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    font_style_class::~font_style_class() OPENVRML_NOTHROW
+    font_style_metatype::~font_style_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -12069,11 +12097,11 @@ namespace {
      *         creating FontStyle nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by font_style_class.
+     *                                  not supported by font_style_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    font_style_class::
+    font_style_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -12214,7 +12242,7 @@ namespace {
      */
 
     /**
-     * @var font_style_node::font_style_class
+     * @var font_style_node::font_style_metatype
      *
      * @brief Class object for FontStyle nodes.
      */
@@ -12410,23 +12438,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const group_class::id = "urn:X-openvrml:node:Group";
+    const char * const group_metatype::id = "urn:X-openvrml:node:Group";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    group_class::group_class(openvrml::browser & browser):
-        node_class(group_class::id, browser)
+    group_metatype::group_metatype(openvrml::browser & browser):
+        node_metatype(group_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    group_class::~group_class() OPENVRML_NOTHROW {}
+    group_metatype::~group_metatype() OPENVRML_NOTHROW {}
 
     /**
      * @brief Create a node_type.
@@ -12438,11 +12466,11 @@ namespace {
      *         creating Group nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by group_class.
+     *                                  not supported by group_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    group_class::
+    group_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -12553,7 +12581,7 @@ namespace {
      */
 
     /**
-     * @var group_node::group_class
+     * @var group_node::group_metatype
      *
      * @brief Class object for Group nodes.
      */
@@ -12579,25 +12607,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const image_texture_class::id =
+    const char * const image_texture_metatype::id =
         "urn:X-openvrml:node:ImageTexture";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    image_texture_class::
-    image_texture_class(openvrml::browser & browser):
-        node_class(image_texture_class::id, browser)
+    image_texture_metatype::
+    image_texture_metatype(openvrml::browser & browser):
+        node_metatype(image_texture_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    image_texture_class::~image_texture_class() OPENVRML_NOTHROW
+    image_texture_metatype::~image_texture_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -12610,11 +12638,11 @@ namespace {
      *         creating ImageTexture nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by image_texture_class.
+     *                                  not supported by image_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    image_texture_class::
+    image_texture_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -12704,7 +12732,7 @@ namespace {
      */
 
     /**
-     * @var class image_texture_node::image_texture_class
+     * @var class image_texture_node::image_texture_metatype
      *
      * @brief Class object for ImageTexture nodes.
      */
@@ -12883,25 +12911,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const indexed_face_set_class::id =
+    const char * const indexed_face_set_metatype::id =
         "urn:X-openvrml:node:IndexedFaceSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    indexed_face_set_class::
-    indexed_face_set_class(openvrml::browser & browser):
-        node_class(indexed_face_set_class::id, browser)
+    indexed_face_set_metatype::
+    indexed_face_set_metatype(openvrml::browser & browser):
+        node_metatype(indexed_face_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_face_set_class::~indexed_face_set_class()
+    indexed_face_set_metatype::~indexed_face_set_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -12916,11 +12944,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  indexed_face_set_class.
+     *                                  indexed_face_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    indexed_face_set_class::
+    indexed_face_set_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -13306,7 +13334,7 @@ namespace {
     }
 
     /**
-     * @var indexed_face_set_node::indexed_face_set_class
+     * @var indexed_face_set_node::indexed_face_set_metatype
      *
      * @brief Class object for IndexedFaceSet nodes.
      */
@@ -13555,25 +13583,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const indexed_line_set_class::id =
+    const char * const indexed_line_set_metatype::id =
         "urn:X-openvrml:node:IndexedLineSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    indexed_line_set_class::
-    indexed_line_set_class(openvrml::browser & browser):
-        node_class(indexed_line_set_class::id, browser)
+    indexed_line_set_metatype::
+    indexed_line_set_metatype(openvrml::browser & browser):
+        node_metatype(indexed_line_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    indexed_line_set_class::~indexed_line_set_class()
+    indexed_line_set_metatype::~indexed_line_set_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -13588,11 +13616,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  indexed_line_set_class.
+     *                                  indexed_line_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    indexed_line_set_class::
+    indexed_line_set_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -13759,7 +13787,7 @@ namespace {
      */
 
     /**
-     * @var indexed_line_set_node::indexed_line_set_class
+     * @var indexed_line_set_node::indexed_line_set_metatype
      *
      * @brief Class object for IndexedLineSet nodes.
      */
@@ -13836,23 +13864,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const inline_class::id = "urn:X-openvrml:node:Inline";
+    const char * const inline_metatype::id = "urn:X-openvrml:node:Inline";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    inline_class::inline_class(openvrml::browser & browser):
-        node_class(inline_class::id, browser)
+    inline_metatype::inline_metatype(openvrml::browser & browser):
+        node_metatype(inline_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    inline_class::~inline_class() OPENVRML_NOTHROW
+    inline_metatype::~inline_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -13865,11 +13893,11 @@ namespace {
      *         creating Inline nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by inline_class.
+     *                                  not supported by inline_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    inline_class::
+    inline_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -13978,7 +14006,7 @@ namespace {
      */
 
     /**
-     * @var inline_node::inline_class
+     * @var inline_node::inline_metatype
      *
      * @brief Class object for Inline nodes.
      */
@@ -14158,23 +14186,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const lod_class::id = "urn:X-openvrml:node:LOD";
+    const char * const lod_metatype::id = "urn:X-openvrml:node:LOD";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    lod_class::lod_class(openvrml::browser & browser):
-        node_class(lod_class::id, browser)
+    lod_metatype::lod_metatype(openvrml::browser & browser):
+        node_metatype(lod_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    lod_class::~lod_class() OPENVRML_NOTHROW
+    lod_metatype::~lod_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14187,11 +14215,11 @@ namespace {
      *         creating LOD nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by lod_class.
+     *                                  not supported by lod_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    lod_class::
+    lod_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -14342,7 +14370,7 @@ namespace {
      */
 
     /**
-     * @var lod_node::lod_class
+     * @var lod_node::lod_metatype
      *
      * @brief Class object for LOD nodes.
      */
@@ -14520,24 +14548,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const material_class::id = "urn:X-openvrml:node:Material";
+    const char * const material_metatype::id = "urn:X-openvrml:node:Material";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    material_class::
-    material_class(openvrml::browser & browser):
-        node_class(material_class::id, browser)
+    material_metatype::
+    material_metatype(openvrml::browser & browser):
+        node_metatype(material_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    material_class::~material_class() OPENVRML_NOTHROW
+    material_metatype::~material_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14550,11 +14578,11 @@ namespace {
      *         creating Material nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by material_class.
+     *                                  not supported by material_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    material_class::
+    material_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -14719,7 +14747,7 @@ namespace {
      */
 
     /**
-     * @var material_node::material_class
+     * @var material_node::material_metatype
      *
      * @brief Class object for Material nodes.
      */
@@ -14851,9 +14879,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const movie_texture_class::id =
+    const char * const movie_texture_metatype::id =
         "urn:X-openvrml:node:MovieTexture";
 
     /**
@@ -14861,15 +14889,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    movie_texture_class::
-    movie_texture_class(openvrml::browser & browser):
-        node_class(movie_texture_class::id, browser)
+    movie_texture_metatype::
+    movie_texture_metatype(openvrml::browser & browser):
+        node_metatype(movie_texture_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    movie_texture_class::~movie_texture_class() OPENVRML_NOTHROW
+    movie_texture_metatype::~movie_texture_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -14882,11 +14910,11 @@ namespace {
      *         creating MovieTexture nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by movie_texture_class.
+     *                                  not supported by movie_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    movie_texture_class::
+    movie_texture_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -15134,7 +15162,7 @@ namespace {
      */
 
     /**
-     * @var class movie_texture_node::movie_texture_class
+     * @var class movie_texture_node::movie_texture_metatype
      *
      * @brief Class object for MovieTexture nodes.
      */
@@ -15444,7 +15472,7 @@ namespace {
         // Tell the scene when the next update is needed.
         if (this->active_.value) {
             double d = this->lastFrameTime + fabs(1 / this->speed_.value) - time;
-            this->type().node_class().browser().delta(0.9 * d);
+            this->type().metatype().browser().delta(0.9 * d);
         }
 # endif
     }
@@ -15520,21 +15548,21 @@ namespace {
 
 
     /**
-     * @var navigation_info_node * navigation_info_class::first
+     * @var navigation_info_node * navigation_info_metatype::first
      *
      * @brief The first NavigationInfo node in the initial scene graph.
      */
 
     /**
-     * @var openvrml::node_impl_util::bound_node_stack<navigation_info_node> navigation_info_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<navigation_info_node> navigation_info_metatype::bound_nodes
      *
      * @brief The bound NavigationInfo node stack.
      */
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const navigation_info_class::id =
+    const char * const navigation_info_metatype::id =
         "urn:X-openvrml:node:NavigationInfo";
 
     /**
@@ -15542,16 +15570,16 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    navigation_info_class::
-    navigation_info_class(openvrml::browser & browser):
-        node_class(navigation_info_class::id, browser),
+    navigation_info_metatype::
+    navigation_info_metatype(openvrml::browser & browser):
+        node_metatype(navigation_info_metatype::id, browser),
         first(0)
     {}
 
     /**
      * @brief Destroy.
      */
-    navigation_info_class::~navigation_info_class() OPENVRML_NOTHROW
+    navigation_info_metatype::~navigation_info_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -15564,7 +15592,7 @@ namespace {
      * @param nav_info    a NavigationInfo node.
      */
     void
-    navigation_info_class::
+    navigation_info_metatype::
     set_first(navigation_info_node & nav_info) OPENVRML_NOTHROW
     {
         this->first = &nav_info;
@@ -15577,7 +15605,7 @@ namespace {
      * This function is called by
      * <code>navigation_info_node::do_shutdown</code>.
      */
-    void navigation_info_class::reset_first() OPENVRML_NOTHROW
+    void navigation_info_metatype::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -15590,7 +15618,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool navigation_info_class::has_first() const OPENVRML_NOTHROW
+    bool navigation_info_metatype::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -15603,7 +15631,7 @@ namespace {
      * @return @c true if @p nav_info is the fist node; @c false otherwise.
      */
     bool
-    navigation_info_class::
+    navigation_info_metatype::
     is_first(navigation_info_node & nav_info) OPENVRML_NOTHROW
     {
         return &nav_info == this->first;
@@ -15617,7 +15645,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void navigation_info_class::bind(navigation_info_node & nav_info,
+    void navigation_info_metatype::bind(navigation_info_node & nav_info,
                                      const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -15633,7 +15661,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void navigation_info_class::unbind(navigation_info_node & nav_info,
+    void navigation_info_metatype::unbind(navigation_info_node & nav_info,
                                        const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -15646,14 +15674,14 @@ namespace {
     }
 
     /**
-     * @brief node_class-specific initialization.
+     * @brief node_metatype-specific initialization.
      *
      * @param initial_viewpoint the viewpoint_node that should be bound
      *                          initially.
      * @param timestamp         the current time.
      */
     void
-    navigation_info_class::
+    navigation_info_metatype::
     do_initialize(openvrml::viewpoint_node *, const double timestamp)
         OPENVRML_NOTHROW
     {
@@ -15679,11 +15707,11 @@ namespace {
      *         creating NavigationInfo nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by navigation_info_class.
+     *                                  not supported by navigation_info_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    navigation_info_class::
+    navigation_info_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -15897,7 +15925,7 @@ namespace {
      */
 
     /**
-     * @var class navigation_info_node::navigation_info_class
+     * @var class navigation_info_node::navigation_info_metatype
      *
      * @brief Class object for NavigationInfo nodes.
      */
@@ -15946,14 +15974,14 @@ namespace {
         try {
             navigation_info_node & node =
                 dynamic_cast<navigation_info_node &>(this->node());
-            navigation_info_class & node_class =
-                const_cast<navigation_info_class &>(
-                    static_cast<const navigation_info_class &>(
-                        this->node().type().node_class()));
+            navigation_info_metatype & node_metatype =
+                const_cast<navigation_info_metatype &>(
+                    static_cast<const navigation_info_metatype &>(
+                        this->node().type().metatype()));
             if (bind.value()) {
-                node_class.bind(node, timestamp);
+                node_metatype.bind(node, timestamp);
             } else {
-                node_class.unbind(node, timestamp);
+                node_metatype.unbind(node, timestamp);
             }
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -16127,11 +16155,11 @@ namespace {
     {
         using boost::polymorphic_downcast;
 
-        navigation_info_class & node_class =
-            const_cast<navigation_info_class &>(
-                *polymorphic_downcast<const navigation_info_class *>(
-                    &this->node::type().node_class()));
-        if (!node_class.has_first()) { node_class.set_first(*this); }
+        navigation_info_metatype & node_metatype =
+            const_cast<navigation_info_metatype &>(
+                *polymorphic_downcast<const navigation_info_metatype *>(
+                    &this->node::type().metatype()));
+        if (!node_metatype.has_first()) { node_metatype.set_first(*this); }
     }
 
     /**
@@ -16145,34 +16173,34 @@ namespace {
     {
         using boost::polymorphic_downcast;
 
-        navigation_info_class & node_class =
-            const_cast<navigation_info_class &>(
-                *polymorphic_downcast<const navigation_info_class *>(
-                    &this->node::type().node_class()));
-        node_class.unbind(*this, timestamp);
+        navigation_info_metatype & node_metatype =
+            const_cast<navigation_info_metatype &>(
+                *polymorphic_downcast<const navigation_info_metatype *>(
+                    &this->node::type().metatype()));
+        node_metatype.unbind(*this, timestamp);
 
-        if (node_class.is_first(*this)) { node_class.reset_first(); }
+        if (node_metatype.is_first(*this)) { node_metatype.reset_first(); }
     }
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const normal_class::id = "urn:X-openvrml:node:Normal";
+    const char * const normal_metatype::id = "urn:X-openvrml:node:Normal";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    normal_class::normal_class(openvrml::browser & browser):
-        node_class(normal_class::id, browser)
+    normal_metatype::normal_metatype(openvrml::browser & browser):
+        node_metatype(normal_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    normal_class::~normal_class() OPENVRML_NOTHROW
+    normal_metatype::~normal_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16185,11 +16213,11 @@ namespace {
      *         creating Normal nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by normal_class.
+     *                                  not supported by normal_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    normal_class::
+    normal_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -16259,7 +16287,7 @@ namespace {
      */
 
     /**
-     * @var normal_node::normal_class
+     * @var normal_node::normal_metatype
      *
      * @brief Class object for Normal nodes.
      */
@@ -16304,9 +16332,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const normal_interpolator_class::id =
+    const char * const normal_interpolator_metatype::id =
         "urn:X-openvrml:node:NormalInterpolator";
 
     /**
@@ -16314,15 +16342,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    normal_interpolator_class::
-    normal_interpolator_class(openvrml::browser & browser):
-        node_class(normal_interpolator_class::id, browser)
+    normal_interpolator_metatype::
+    normal_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(normal_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    normal_interpolator_class::~normal_interpolator_class()
+    normal_interpolator_metatype::~normal_interpolator_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -16337,11 +16365,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  normal_interpolator_class.
+     *                                  normal_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    normal_interpolator_class::
+    normal_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -16459,7 +16487,7 @@ namespace {
      */
 
     /**
-     * @var class normal_interpolator_node::normal_interpolator_class
+     * @var class normal_interpolator_node::normal_interpolator_metatype
      *
      * @brief Class object for NormalInterpolator nodes.
      */
@@ -16636,9 +16664,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const orientation_interpolator_class::id =
+    const char * const orientation_interpolator_metatype::id =
         "urn:X-openvrml:node:OrientationInterpolator";
 
     /**
@@ -16646,16 +16674,16 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    orientation_interpolator_class::
-    orientation_interpolator_class(openvrml::browser & browser):
-        node_class(orientation_interpolator_class::id, browser)
+    orientation_interpolator_metatype::
+    orientation_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(orientation_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    orientation_interpolator_class::
-    ~orientation_interpolator_class() OPENVRML_NOTHROW
+    orientation_interpolator_metatype::
+    ~orientation_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -16669,11 +16697,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  orientation_interpolator_class.
+     *                                  orientation_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    orientation_interpolator_class::
+    orientation_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -16793,7 +16821,7 @@ namespace {
      */
 
     /**
-     * @var class orientation_interpolator_node::orientation_interpolator_class
+     * @var class orientation_interpolator_node::orientation_interpolator_metatype
      *
      * @brief Class object for OrientationInterpolator nodes.
      */
@@ -16971,9 +16999,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const pixel_texture_class::id =
+    const char * const pixel_texture_metatype::id =
         "urn:X-openvrml:node:PixelTexture";
 
     /**
@@ -16981,15 +17009,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    pixel_texture_class::
-    pixel_texture_class(openvrml::browser & browser):
-        node_class(pixel_texture_class::id, browser)
+    pixel_texture_metatype::
+    pixel_texture_metatype(openvrml::browser & browser):
+        node_metatype(pixel_texture_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    pixel_texture_class::~pixel_texture_class() OPENVRML_NOTHROW
+    pixel_texture_metatype::~pixel_texture_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17002,11 +17030,11 @@ namespace {
      *         creating PixelTexture nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by pixel_texture_class.
+     *                                  not supported by pixel_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    pixel_texture_class::
+    pixel_texture_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -17095,7 +17123,7 @@ namespace {
      */
 
     /**
-     * @var pixel_texture_node::pixel_texture_class
+     * @var pixel_texture_node::pixel_texture_metatype
      *
      * @brief Class object for PixelTexture nodes.
      */
@@ -17157,9 +17185,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const plane_sensor_class::id =
+    const char * const plane_sensor_metatype::id =
         "urn:X-openvrml:node:PlaneSensor";
 
     /**
@@ -17167,15 +17195,15 @@ namespace {
      *
      * @param browser the browser associated with this node class object.
      */
-    plane_sensor_class::
-    plane_sensor_class(openvrml::browser & browser):
-        node_class(plane_sensor_class::id, browser)
+    plane_sensor_metatype::
+    plane_sensor_metatype(openvrml::browser & browser):
+        node_metatype(plane_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    plane_sensor_class::~plane_sensor_class() OPENVRML_NOTHROW
+    plane_sensor_metatype::~plane_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17188,11 +17216,11 @@ namespace {
      *         creating PlaneSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by plane_sensor_class.
+     *                                  not supported by plane_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    plane_sensor_class::
+    plane_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -17405,7 +17433,7 @@ namespace {
      */
 
     /**
-     * @var plane_sensor_node::plane_sensor_class
+     * @var plane_sensor_node::plane_sensor_metatype
      *
      * @brief Class object for PlaneSensor instances.
      */
@@ -17638,9 +17666,9 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const point_light_class::id =
+    const char * const point_light_metatype::id =
         "urn:X-openvrml:node:PointLight";
 
     /**
@@ -17648,15 +17676,15 @@ namespace {
      *
      * @param browser the @c browser associated with this class object.
      */
-    point_light_class::
-    point_light_class(openvrml::browser & browser):
-        node_class(point_light_class::id, browser)
+    point_light_metatype::
+    point_light_metatype(openvrml::browser & browser):
+        node_metatype(point_light_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    point_light_class::~point_light_class() OPENVRML_NOTHROW
+    point_light_metatype::~point_light_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17669,11 +17697,11 @@ namespace {
      *         creating PointLight nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by point_light_class.
+     *                                  not supported by point_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    point_light_class::
+    point_light_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -17857,7 +17885,7 @@ namespace {
      */
 
     /**
-     * @var point_light_node::point_light_class
+     * @var point_light_node::point_light_metatype
      *
      * @brief Class object for PointLight instances.
      */
@@ -17963,24 +17991,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const point_set_class::id = "urn:X-openvrml:node:PointSet";
+    const char * const point_set_metatype::id = "urn:X-openvrml:node:PointSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    point_set_class::
-    point_set_class(openvrml::browser & browser):
-        node_class(point_set_class::id, browser)
+    point_set_metatype::
+    point_set_metatype(openvrml::browser & browser):
+        node_metatype(point_set_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    point_set_class::~point_set_class() OPENVRML_NOTHROW
+    point_set_metatype::~point_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -17993,11 +18021,11 @@ namespace {
      *         creating PointSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by point_set_class.
+     *                                  not supported by point_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    point_set_class::
+    point_set_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -18086,7 +18114,7 @@ namespace {
      */
 
     /**
-     * @var point_set_node::point_set_class
+     * @var point_set_node::point_set_metatype
      *
      * @brief Class object for PointSet instances.
      */
@@ -18237,26 +18265,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const position_interpolator_class::id =
+    const char * const position_interpolator_metatype::id =
         "urn:X-openvrml:node:PositionInterpolator";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    position_interpolator_class::
-    position_interpolator_class(openvrml::browser & browser):
-        node_class(position_interpolator_class::id, browser)
+    position_interpolator_metatype::
+    position_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(position_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    position_interpolator_class::
-    ~position_interpolator_class() OPENVRML_NOTHROW
+    position_interpolator_metatype::
+    ~position_interpolator_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -18270,11 +18298,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  position_interpolator_class.
+     *                                  position_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    position_interpolator_class::
+    position_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -18393,7 +18421,7 @@ namespace {
      */
 
     /**
-     * @var class position_interpolator_node::position_interpolator_class
+     * @var class position_interpolator_node::position_interpolator_metatype
      *
      * @brief Class object for PositionInterpolator nodes.
      */
@@ -18534,25 +18562,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const proximity_sensor_class::id =
+    const char * const proximity_sensor_metatype::id =
         "urn:X-openvrml:node:ProximitySensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    proximity_sensor_class::
-    proximity_sensor_class(openvrml::browser & browser):
-        node_class(proximity_sensor_class::id, browser)
+    proximity_sensor_metatype::
+    proximity_sensor_metatype(openvrml::browser & browser):
+        node_metatype(proximity_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    proximity_sensor_class::~proximity_sensor_class()
+    proximity_sensor_metatype::~proximity_sensor_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -18567,11 +18595,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  proximity_sensor_class.
+     *                                  proximity_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    proximity_sensor_class::
+    proximity_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -18755,7 +18783,7 @@ namespace {
      */
 
     /**
-     * @var proximity_sensor_node::proximity_sensor_class
+     * @var proximity_sensor_node::proximity_sensor_metatype
      *
      * @brief Class object for ProximitySensor instances.
      */
@@ -18969,25 +18997,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const scalar_interpolator_class::id =
+    const char * const scalar_interpolator_metatype::id =
         "urn:X-openvrml:node:ScalarInterpolator";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    scalar_interpolator_class::
-    scalar_interpolator_class(openvrml::browser & browser):
-        node_class(scalar_interpolator_class::id, browser)
+    scalar_interpolator_metatype::
+    scalar_interpolator_metatype(openvrml::browser & browser):
+        node_metatype(scalar_interpolator_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    scalar_interpolator_class::~scalar_interpolator_class()
+    scalar_interpolator_metatype::~scalar_interpolator_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -19006,7 +19034,7 @@ namespace {
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    scalar_interpolator_class::
+    scalar_interpolator_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -19121,7 +19149,7 @@ namespace {
      */
 
     /**
-     * @var class scalar_interpolator_node::scalar_interpolator_class
+     * @var class scalar_interpolator_node::scalar_interpolator_metatype
      *
      * @brief Class object for ScalarInterpolator nodes.
      */
@@ -19261,23 +19289,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const shape_class::id = "urn:X-openvrml:node:Shape";
+    const char * const shape_metatype::id = "urn:X-openvrml:node:Shape";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    shape_class::shape_class(openvrml::browser & browser):
-        node_class(shape_class::id, browser)
+    shape_metatype::shape_metatype(openvrml::browser & browser):
+        node_metatype(shape_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    shape_class::~shape_class() OPENVRML_NOTHROW
+    shape_metatype::~shape_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19290,11 +19318,11 @@ namespace {
      *         creating Shape nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by shape_class.
+     *                                  not supported by shape_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    shape_class::
+    shape_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -19403,7 +19431,7 @@ namespace {
      */
 
     /**
-     * @var shape_node::shape_class
+     * @var shape_node::shape_metatype
      *
      * @brief Class object for Shape instances.
      */
@@ -19584,23 +19612,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const sound_class::id = "urn:X-openvrml:node:Sound";
+    const char * const sound_metatype::id = "urn:X-openvrml:node:Sound";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    sound_class::sound_class(openvrml::browser & browser):
-        node_class(sound_class::id, browser)
+    sound_metatype::sound_metatype(openvrml::browser & browser):
+        node_metatype(sound_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    sound_class::~sound_class() OPENVRML_NOTHROW
+    sound_metatype::~sound_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19613,11 +19641,11 @@ namespace {
      *         creating Sound nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by sound_class.
+     *                                  not supported by sound_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    sound_class::
+    sound_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -19849,7 +19877,7 @@ namespace {
      */
 
     /**
-     * @var sound_node::sound_class
+     * @var sound_node::sound_metatype
      *
      * @brief Class object for Sound instances.
      */
@@ -19965,23 +19993,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const sphere_class::id = "urn:X-openvrml:node:Sphere";
+    const char * const sphere_metatype::id = "urn:X-openvrml:node:Sphere";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    sphere_class::sphere_class(openvrml::browser & browser):
-        node_class(sphere_class::id, browser)
+    sphere_metatype::sphere_metatype(openvrml::browser & browser):
+        node_metatype(sphere_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    sphere_class::~sphere_class() OPENVRML_NOTHROW
+    sphere_metatype::~sphere_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -19994,11 +20022,11 @@ namespace {
      *         creating Sphere nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by sphere_class.
+     *                                  not supported by sphere_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    sphere_class::
+    sphere_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -20069,7 +20097,7 @@ namespace {
      */
 
     /**
-     * @var sphere_node::sphere_class
+     * @var sphere_node::sphere_metatype
      *
      * @brief Class object for Sphere instances.
      */
@@ -20145,25 +20173,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const sphere_sensor_class::id =
+    const char * const sphere_sensor_metatype::id =
         "urn:X-openvrml:node:SphereSensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    sphere_sensor_class::
-    sphere_sensor_class(openvrml::browser & browser):
-        node_class(sphere_sensor_class::id, browser)
+    sphere_sensor_metatype::
+    sphere_sensor_metatype(openvrml::browser & browser):
+        node_metatype(sphere_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    sphere_sensor_class::~sphere_sensor_class() OPENVRML_NOTHROW
+    sphere_sensor_metatype::~sphere_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20176,11 +20204,11 @@ namespace {
      *         creating SphereSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by sphere_sensor_class.
+     *                                  not supported by sphere_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    sphere_sensor_class::
+    sphere_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -20351,7 +20379,7 @@ namespace {
      */
 
     /**
-     * @var sphere_sensor_node::sphere_sensor_class
+     * @var sphere_sensor_node::sphere_sensor_metatype
      *
      * @brief Class object for SphereSensor instances.
      */
@@ -20582,24 +20610,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const spot_light_class::id = "urn:X-openvrml:node:SpotLight";
+    const char * const spot_light_metatype::id = "urn:X-openvrml:node:SpotLight";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    spot_light_class::
-    spot_light_class(openvrml::browser & browser):
-        node_class(spot_light_class::id, browser)
+    spot_light_metatype::
+    spot_light_metatype(openvrml::browser & browser):
+        node_metatype(spot_light_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    spot_light_class::~spot_light_class() OPENVRML_NOTHROW
+    spot_light_metatype::~spot_light_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -20612,11 +20640,11 @@ namespace {
      *         creating SpotLight nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by spot_light_class.
+     *                                  not supported by spot_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    spot_light_class::
+    spot_light_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -20857,7 +20885,7 @@ namespace {
      */
 
     /**
-     * @var spot_light_node::spot_light_class
+     * @var spot_light_node::spot_light_metatype
      *
      * @brief Class object for SpotLight instances.
      */
@@ -20987,23 +21015,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const switch_class::id = "urn:X-openvrml:node:Switch";
+    const char * const switch_metatype::id = "urn:X-openvrml:node:Switch";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    switch_class::switch_class(openvrml::browser & browser):
-        node_class(switch_class::id, browser)
+    switch_metatype::switch_metatype(openvrml::browser & browser):
+        node_metatype(switch_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    switch_class::~switch_class() OPENVRML_NOTHROW
+    switch_metatype::~switch_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -21016,11 +21044,11 @@ namespace {
      *         creating Switch nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by switch_class.
+     *                                  not supported by switch_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    switch_class::
+    switch_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -21170,7 +21198,7 @@ namespace {
      */
 
     /**
-     * @var class switch_node::switch_class
+     * @var class switch_node::switch_metatype
      *
      * @brief Class object for Switch nodes.
      */
@@ -21395,12 +21423,12 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const text_class::id = "urn:X-openvrml:node:Text";
+    const char * const text_metatype::id = "urn:X-openvrml:node:Text";
 
     /**
-     * @var FT_Library text_class::freeTypeLibrary
+     * @var FT_Library text_metatype::freeTypeLibrary
      *
      * @brief FreeType library handle.
      *
@@ -21410,10 +21438,10 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    text_class::text_class(openvrml::browser & browser):
-        node_class(text_class::id, browser)
+    text_metatype::text_metatype(openvrml::browser & browser):
+        node_metatype(text_metatype::id, browser)
     {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
@@ -21427,7 +21455,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    text_class::~text_class() OPENVRML_NOTHROW
+    text_metatype::~text_metatype() OPENVRML_NOTHROW
     {
 # if OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
@@ -21448,11 +21476,11 @@ namespace {
      *         creating Text nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by text_class.
+     *                                  not supported by text_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    text_class::
+    text_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -21583,7 +21611,7 @@ namespace {
      */
 
     /**
-     * @var class text_node::text_class
+     * @var class text_node::text_metatype
      *
      * @brief Class object for Text nodes.
      */
@@ -22847,10 +22875,10 @@ namespace {
                 result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0, &id);
                 if (result != FcResultMatch) { throw FontconfigError(result); }
 
-                text_class & nodeClass =
-                    const_cast<text_class &>(
-                        static_cast<const text_class &>(
-                            this->type().node_class()));
+                text_metatype & nodeClass =
+                    const_cast<text_metatype &>(
+                        static_cast<const text_metatype &>(
+                            this->type().metatype()));
 
                 size_t filenameLen = 0;
                 for (; filename[filenameLen]; ++filenameLen) {}
@@ -23390,25 +23418,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const texture_coordinate_class::id =
+    const char * const texture_coordinate_metatype::id =
         "urn:X-openvrml:node:TextureCoordinate";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    texture_coordinate_class::
-    texture_coordinate_class(openvrml::browser & browser):
-        node_class(texture_coordinate_class::id, browser)
+    texture_coordinate_metatype::
+    texture_coordinate_metatype(openvrml::browser & browser):
+        node_metatype(texture_coordinate_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    texture_coordinate_class::~texture_coordinate_class()
+    texture_coordinate_metatype::~texture_coordinate_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -23423,11 +23451,11 @@ namespace {
     *
     * @exception unsupported_interface if @p interfaces includes an interface
     *                                  not supported by
-    *                                  texture_coordinate_class.
+    *                                  texture_coordinate_metatype.
     * @exception std::bad_alloc        if memory allocation fails.
     */
     const boost::shared_ptr<openvrml::node_type>
-    texture_coordinate_class::
+    texture_coordinate_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -23501,7 +23529,7 @@ namespace {
      */
 
     /**
-     * @var texture_coordinate_node::texture_coordinate_class
+     * @var texture_coordinate_node::texture_coordinate_metatype
      *
      * @brief Class object for TextureCoordinate instances.
      */
@@ -23547,25 +23575,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const texture_transform_class::id =
+    const char * const texture_transform_metatype::id =
         "urn:X-openvrml:node:TextureTransform";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    texture_transform_class::
-    texture_transform_class(openvrml::browser & browser):
-        node_class(texture_transform_class::id, browser)
+    texture_transform_metatype::
+    texture_transform_metatype(openvrml::browser & browser):
+        node_metatype(texture_transform_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    texture_transform_class::~texture_transform_class()
+    texture_transform_metatype::~texture_transform_metatype()
         OPENVRML_NOTHROW
     {}
 
@@ -23580,11 +23608,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  texture_transform_class.
+     *                                  texture_transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    texture_transform_class::
+    texture_transform_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -23724,7 +23752,7 @@ namespace {
      */
 
     /**
-     * @var texture_transform_node::texture_transform_class
+     * @var texture_transform_node::texture_transform_metatype
      *
      * @brief Class object for TextureTransform instances.
      */
@@ -23795,25 +23823,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const time_sensor_class::id =
+    const char * const time_sensor_metatype::id =
         "urn:X-openvrml:node:TimeSensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser   the @c browser associated with this @c node_class.
+     * @param browser   the @c browser associated with this @c node_metatype.
      */
-    time_sensor_class::
-    time_sensor_class(openvrml::browser & browser):
-        node_class(time_sensor_class::id, browser)
+    time_sensor_metatype::
+    time_sensor_metatype(openvrml::browser & browser):
+        node_metatype(time_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    time_sensor_class::~time_sensor_class() OPENVRML_NOTHROW
+    time_sensor_metatype::~time_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -23826,11 +23854,11 @@ namespace {
      *         creating TimeSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by time_sensor_class.
+     *                                  not supported by time_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    time_sensor_class::
+    time_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -24078,7 +24106,7 @@ namespace {
      */
 
     /**
-     * @var class time_sensor_node::time_sensor_class
+     * @var class time_sensor_node::time_sensor_metatype
      *
      * @brief Class object for TimeSensor nodes.
      */
@@ -24559,7 +24587,7 @@ namespace {
             // Should check whether time, fraction_changed eventOuts are
             // being used, and set delta to cycleTime if not...
             if (this->is_active_.value()) {
-                this->type().node_class().browser().delta(0.0);
+                this->type().metatype().browser().delta(0.0);
             }
             this->lastTime = currentTime;
         }
@@ -24595,25 +24623,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const touch_sensor_class::id =
+    const char * const touch_sensor_metatype::id =
         "urn:X-openvrml:node:TouchSensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    touch_sensor_class::
-    touch_sensor_class(openvrml::browser & browser):
-        node_class(touch_sensor_class::id, browser)
+    touch_sensor_metatype::
+    touch_sensor_metatype(openvrml::browser & browser):
+        node_metatype(touch_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    touch_sensor_class::~touch_sensor_class() OPENVRML_NOTHROW
+    touch_sensor_metatype::~touch_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24626,11 +24654,11 @@ namespace {
      *         creating TouchSensor nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by touch_sensor_class.
+     *                                  not supported by touch_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    touch_sensor_class::
+    touch_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -24785,7 +24813,7 @@ namespace {
      */
 
     /**
-     * @var touch_sensor_node::touch_sensor_class
+     * @var touch_sensor_node::touch_sensor_metatype
      *
      * @brief Class object for TouchSensor instances.
      */
@@ -24933,24 +24961,24 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const transform_class::id = "urn:X-openvrml:node:Transform";
+    const char * const transform_metatype::id = "urn:X-openvrml:node:Transform";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    transform_class::
-    transform_class(openvrml::browser & browser):
-        node_class(transform_class::id, browser)
+    transform_metatype::
+    transform_metatype(openvrml::browser & browser):
+        node_metatype(transform_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    transform_class::~transform_class() OPENVRML_NOTHROW
+    transform_metatype::~transform_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -24963,11 +24991,11 @@ namespace {
      *         creating Transform nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by transform_class.
+     *                                  not supported by transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    transform_class::
+    transform_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -25175,7 +25203,7 @@ namespace {
      */
 
     /**
-     * @var class transform_node::transform_class
+     * @var class transform_node::transform_metatype
      *
      * @brief Class object for Transform nodes.
      */
@@ -25760,37 +25788,37 @@ namespace {
 
 
     /**
-     * @var viewpoint_node * viewpoint_class::first
+     * @var viewpoint_node * viewpoint_metatype::first
      *
      * @brief The first Viewpoint node in the initial scene graph.
      */
 
     /**
-     * @var openvrml::node_impl_util::bound_node_stack<viewpoint_node> viewpoint_class::bound_nodes
+     * @var openvrml::node_impl_util::bound_node_stack<viewpoint_node> viewpoint_metatype::bound_nodes
      *
      * @brief The stack of bound Viewpoint nodes.
      */
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const viewpoint_class::id = "urn:X-openvrml:node:Viewpoint";
+    const char * const viewpoint_metatype::id = "urn:X-openvrml:node:Viewpoint";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    viewpoint_class::
-    viewpoint_class(openvrml::browser & browser):
-        node_class(viewpoint_class::id, browser),
+    viewpoint_metatype::
+    viewpoint_metatype(openvrml::browser & browser):
+        node_metatype(viewpoint_metatype::id, browser),
         first(0)
     {}
 
     /**
      * @brief Destroy.
      */
-    viewpoint_class::~viewpoint_class() OPENVRML_NOTHROW
+    viewpoint_metatype::~viewpoint_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -25802,7 +25830,7 @@ namespace {
      * @param viewpoint    a Viewpoint node.
      */
     void
-    viewpoint_class::set_first(viewpoint_node & viewpoint)
+    viewpoint_metatype::set_first(viewpoint_node & viewpoint)
         OPENVRML_NOTHROW
     {
         assert(!this->has_first());
@@ -25815,7 +25843,7 @@ namespace {
      *
      * This function is called by <code>viewpoint_node::do_shutdown</code>.
      */
-    void viewpoint_class::reset_first() OPENVRML_NOTHROW
+    void viewpoint_metatype::reset_first() OPENVRML_NOTHROW
     {
         this->first = 0;
     }
@@ -25828,7 +25856,7 @@ namespace {
      * @return @c true if the first node has already been set; @c false
      *         otherwise.
      */
-    bool viewpoint_class::has_first() const OPENVRML_NOTHROW
+    bool viewpoint_metatype::has_first() const OPENVRML_NOTHROW
     {
         return this->first;
     }
@@ -25841,7 +25869,7 @@ namespace {
      * @return @c true if @p viewpoint is the fist node; @c false otherwise.
      */
     bool
-    viewpoint_class::is_first(viewpoint_node & viewpoint)
+    viewpoint_metatype::is_first(viewpoint_node & viewpoint)
         OPENVRML_NOTHROW
     {
         return &viewpoint == this->first;
@@ -25855,7 +25883,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void viewpoint_class::bind(viewpoint_node & viewpoint,
+    void viewpoint_metatype::bind(viewpoint_node & viewpoint,
                                const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -25871,7 +25899,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void viewpoint_class::unbind(viewpoint_node & viewpoint,
+    void viewpoint_metatype::unbind(viewpoint_node & viewpoint,
                                  const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -25884,14 +25912,14 @@ namespace {
     }
 
     /**
-     * @brief node_class-specific initialization.
+     * @brief node_metatype-specific initialization.
      *
      * @param initial_viewpoint the viewpoint_node that should be bound
      *                          initially.
      * @param timestamp         the current time.
      */
     void
-    viewpoint_class::
+    viewpoint_metatype::
     do_initialize(openvrml::viewpoint_node * initial_viewpoint,
                   const double timestamp)
         OPENVRML_NOTHROW
@@ -25919,11 +25947,11 @@ namespace {
      *         creating Viewpoint nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by viewpoint_class.
+     *                                  not supported by viewpoint_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    viewpoint_class::
+    viewpoint_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -26134,7 +26162,7 @@ namespace {
      */
 
     /**
-     * @var class viewpoint_node::viewpoint_class
+     * @var class viewpoint_node::viewpoint_metatype
      *
      * @brief Class object for Viewpoint nodes.
      */
@@ -26181,14 +26209,14 @@ namespace {
         try {
             viewpoint_node & node =
                 dynamic_cast<viewpoint_node &>(this->node());
-            viewpoint_class & node_class =
-                const_cast<viewpoint_class &>(
-                    static_cast<const viewpoint_class &>(
-                        node.type().node_class()));
+            viewpoint_metatype & node_metatype =
+                const_cast<viewpoint_metatype &>(
+                    static_cast<const viewpoint_metatype &>(
+                        node.type().metatype()));
             if (value.value()) {
-                node_class.bind(node, timestamp);
+                node_metatype.bind(node, timestamp);
             } else {
-                node_class.unbind(node, timestamp);
+                node_metatype.unbind(node, timestamp);
             }
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -26584,12 +26612,12 @@ namespace {
     {
         assert(this->scene());
         this->scene()->browser().add_viewpoint(*this);
-        assert(dynamic_cast<const viewpoint_class *>(
-                   &this->type().node_class()));
-        viewpoint_class & nodeClass =
-            const_cast<viewpoint_class &>(
-                static_cast<const viewpoint_class &>(
-                    this->type().node_class()));
+        assert(dynamic_cast<const viewpoint_metatype *>(
+                   &this->type().metatype()));
+        viewpoint_metatype & nodeClass =
+            const_cast<viewpoint_metatype &>(
+                static_cast<const viewpoint_metatype &>(
+                    this->type().metatype()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
@@ -26636,15 +26664,15 @@ namespace {
      */
     void viewpoint_node::do_shutdown(const double timestamp) OPENVRML_NOTHROW
     {
-        viewpoint_class & node_class =
-            const_cast<viewpoint_class &>(
-                static_cast<const viewpoint_class &>(
-                    this->type().node_class()));
-        node_class.unbind(*this, timestamp);
+        viewpoint_metatype & node_metatype =
+            const_cast<viewpoint_metatype &>(
+                static_cast<const viewpoint_metatype &>(
+                    this->type().metatype()));
+        node_metatype.unbind(*this, timestamp);
         assert(this->scene());
         this->scene()->browser().remove_viewpoint(*this);
 
-        if (node_class.is_first(*this)) { node_class.reset_first(); }
+        if (node_metatype.is_first(*this)) { node_metatype.reset_first(); }
     }
 
     /**
@@ -26673,25 +26701,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const visibility_sensor_class::id =
+    const char * const visibility_sensor_metatype::id =
         "urn:X-openvrml:node:VisibilitySensor";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    visibility_sensor_class::
-    visibility_sensor_class(openvrml::browser & browser):
-        node_class(visibility_sensor_class::id, browser)
+    visibility_sensor_metatype::
+    visibility_sensor_metatype(openvrml::browser & browser):
+        node_metatype(visibility_sensor_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    visibility_sensor_class::~visibility_sensor_class() OPENVRML_NOTHROW
+    visibility_sensor_metatype::~visibility_sensor_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -26705,11 +26733,11 @@ namespace {
      *
      * @exception unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
-     *                                  visibility_sensor_class.
+     *                                  visibility_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    visibility_sensor_class::
+    visibility_sensor_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -26860,7 +26888,7 @@ namespace {
      */
 
     /**
-     * @var visibility_sensor_node::visibility_sensor_class
+     * @var visibility_sensor_node::visibility_sensor_metatype
      *
      * @brief Class object for VisibilitySensor instances.
      */
@@ -26987,7 +27015,7 @@ namespace {
                 using openvrml_::fequal;
 
                 openvrml::navigation_info_node & nav_info =
-                    this->type().node_class().browser()
+                    this->type().metatype().browser()
                     .active_navigation_info();
                 if (!fequal<float>()(nav_info.visibility_limit(), 0.0f)
                     && xyz[0][2] < -(nav_info.visibility_limit())) {
@@ -27026,23 +27054,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const world_info_class::id = "urn:X-openvrml:node:WorldInfo";
+    const char * const world_info_metatype::id = "urn:X-openvrml:node:WorldInfo";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class.
+     * @param browser the @c browser associated with this @c node_metatype.
      */
-    world_info_class::world_info_class(openvrml::browser & browser):
-        node_class(world_info_class::id, browser)
+    world_info_metatype::world_info_metatype(openvrml::browser & browser):
+        node_metatype(world_info_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    world_info_class::~world_info_class() OPENVRML_NOTHROW
+    world_info_metatype::~world_info_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -27055,11 +27083,11 @@ namespace {
      *         creating WorldInfo nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by world_info_class.
+     *                                  not supported by world_info_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    world_info_class::
+    world_info_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -27130,7 +27158,7 @@ namespace {
      */
 
     /**
-     * @var world_info_node::world_info_class
+     * @var world_info_node::world_info_metatype
      *
      * @brief Class object for WorldInfo instances.
      */
@@ -27172,7 +27200,7 @@ namespace {
     class OPENVRML_LOCAL cad_layer_node : 
         public grouping_node_base<cad_layer_node> {
 
-        friend class cad_layer_class;
+        friend class cad_layer_metatype;
 
         class visible_exposedfield : public exposedfield<mfbool> {
         public:
@@ -27217,23 +27245,23 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cad_layer_class::id = "urn:X-openvrml:node:CADLayer";
+    const char * const cad_layer_metatype::id = "urn:X-openvrml:node:CADLayer";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c cad_layer_class.
+     * @param browser the @c browser associated with this @c cad_layer_metatype.
      */
-    cad_layer_class::cad_layer_class(openvrml::browser & browser):
-        node_class(cad_layer_class::id, browser)
+    cad_layer_metatype::cad_layer_metatype(openvrml::browser & browser):
+        node_metatype(cad_layer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cad_layer_class::~cad_layer_class() throw ()
+    cad_layer_metatype::~cad_layer_metatype() throw ()
     {}
 
     /**
@@ -27245,11 +27273,11 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating CADLayer nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cad_layer_class.
+     *                                  not supported by cad_layer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cad_layer_class::do_create_type(const std::string & id,
+    cad_layer_metatype::do_create_type(const std::string & id,
                                  const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
     {
@@ -27403,7 +27431,7 @@ namespace {
      */
 
     /**
-     * @var cad_layer_node::CADLayer_class
+     * @var cad_layer_node::CADLayer_metatype
      *
      * @brief Class object for CADLayer nodes.
      */
@@ -27637,7 +27665,7 @@ namespace {
 
    class OPENVRML_LOCAL cad_assembly_node :
         public grouping_node_base<cad_assembly_node> {
-        friend class cad_assembly_class;
+        friend class cad_assembly_metatype;
 
         //for CADAssembly node
         exposedfield<sfstring> name_;
@@ -27649,24 +27677,24 @@ namespace {
     };
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const cad_assembly_class::id =
+    const char * const cad_assembly_metatype::id =
         "urn:X-openvrml:node:CADAssembly";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_class object.
+     * @param browser the @c browser associated with this @c node_metatype object.
      */
-    cad_assembly_class::cad_assembly_class(openvrml::browser & browser):
-        node_class(cad_layer_class::id, browser)
+    cad_assembly_metatype::cad_assembly_metatype(openvrml::browser & browser):
+        node_metatype(cad_layer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    cad_assembly_class::~cad_assembly_class() throw () {}
+    cad_assembly_metatype::~cad_assembly_metatype() throw () {}
 
     /**
      * @brief Create a node_type.
@@ -27678,11 +27706,11 @@ namespace {
      *         creating Group nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by cad_assembly_class.
+     *                                  not supported by cad_assembly_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    cad_assembly_class::
+    cad_assembly_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         throw (unsupported_interface, std::bad_alloc)
@@ -27813,7 +27841,7 @@ namespace {
      */
 
     /**
-     * @var cad_assembly_node::cad_assembly_class
+     * @var cad_assembly_node::cad_assembly_metatype
      *
      * @brief Class object for Group nodes.
      */

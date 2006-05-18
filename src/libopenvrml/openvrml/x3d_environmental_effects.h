@@ -28,6 +28,6 @@ namespace openvrml {
 }
 
 extern "C" void
-register_environmental_effects_node_classes(openvrml::browser & b);
+register_environmental_effects_node_metatypes(openvrml::browser & b);
 
 # endif

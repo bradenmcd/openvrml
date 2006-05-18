@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for EspduTransform nodes.
      */
-    class OPENVRML_LOCAL espdu_transform_class : public node_class {
+    class OPENVRML_LOCAL espdu_transform_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit espdu_transform_class(openvrml::browser & browser);
-        virtual ~espdu_transform_class() OPENVRML_NOTHROW;
+        explicit espdu_transform_metatype(openvrml::browser & browser);
+        virtual ~espdu_transform_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for ReceiverPdu nodes.
      */
-    class OPENVRML_LOCAL receiver_pdu_class : public node_class {
+    class OPENVRML_LOCAL receiver_pdu_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit receiver_pdu_class(openvrml::browser & browser);
-        virtual ~receiver_pdu_class() OPENVRML_NOTHROW;
+        explicit receiver_pdu_metatype(openvrml::browser & browser);
+        virtual ~receiver_pdu_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for SignalPdu nodes.
      */
-    class OPENVRML_LOCAL signal_pdu_class : public node_class {
+    class OPENVRML_LOCAL signal_pdu_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit signal_pdu_class(openvrml::browser & browser);
-        virtual ~signal_pdu_class() OPENVRML_NOTHROW;
+        explicit signal_pdu_metatype(openvrml::browser & browser);
+        virtual ~signal_pdu_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for TransmitterPdu nodes.
      */
-    class OPENVRML_LOCAL transmitter_pdu_class : public node_class {
+    class OPENVRML_LOCAL transmitter_pdu_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit transmitter_pdu_class(openvrml::browser & browser);
-        virtual ~transmitter_pdu_class() OPENVRML_NOTHROW;
+        explicit transmitter_pdu_metatype(openvrml::browser & browser);
+        virtual ~transmitter_pdu_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -107,18 +107,21 @@ namespace {
     };
 }
 
-void register_dis_node_classes(openvrml::browser & b)
+void register_dis_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(espdu_transform_class::id,
-                     shared_ptr<node_class>(new espdu_transform_class(b)));
-    b.add_node_class(receiver_pdu_class::id,
-                     shared_ptr<node_class>(new receiver_pdu_class(b)));
-    b.add_node_class(signal_pdu_class::id,
-                     shared_ptr<node_class>(new signal_pdu_class(b)));
-    b.add_node_class(transmitter_pdu_class::id,
-                     shared_ptr<node_class>(new transmitter_pdu_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(espdu_transform_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new espdu_transform_metatype(b)));
+    b.add_node_metatype(receiver_pdu_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new receiver_pdu_metatype(b)));
+    b.add_node_metatype(signal_pdu_metatype::id,
+                        shared_ptr<node_metatype>(new signal_pdu_metatype(b)));
+    b.add_node_metatype(transmitter_pdu_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new transmitter_pdu_metatype(b)));
 }
 
 namespace {
@@ -128,7 +131,7 @@ namespace {
         public abstract_node<espdu_transform_node>,
         public child_node {
 
-        friend class espdu_transform_class;
+        friend class espdu_transform_metatype;
 
         class add_children_listener : public event_listener_base<self_t>,
                                       public mfnode_listener {
@@ -142,10 +145,8 @@ namespace {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class remove_children_listener :
-                public event_listener_base<self_t>,
-                public mfnode_listener
-        {
+        class remove_children_listener : public event_listener_base<self_t>,
+                                         public mfnode_listener {
         public:
             explicit remove_children_listener(self_t & node);
             virtual ~remove_children_listener() OPENVRML_NOTHROW;
@@ -157,9 +158,8 @@ namespace {
         };
 
         class set_articulation_parameter_value0_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value0_listener(self_t & node);
             virtual ~set_articulation_parameter_value0_listener()
@@ -172,9 +172,8 @@ namespace {
         };
 
         class set_articulation_parameter_value1_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value1_listener(self_t & node);
             virtual ~set_articulation_parameter_value1_listener()
@@ -187,9 +186,8 @@ namespace {
         };
 
         class set_articulation_parameter_value2_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value2_listener(self_t & node);
             virtual ~set_articulation_parameter_value2_listener()
@@ -202,9 +200,8 @@ namespace {
         };
 
         class set_articulation_parameter_value3_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value3_listener(self_t & node);
             virtual ~set_articulation_parameter_value3_listener()
@@ -217,9 +214,8 @@ namespace {
         };
 
         class set_articulation_parameter_value4_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value4_listener(self_t & node);
             virtual ~set_articulation_parameter_value4_listener()
@@ -232,9 +228,8 @@ namespace {
         };
 
         class set_articulation_parameter_value5_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value5_listener(self_t & node);
             virtual ~set_articulation_parameter_value5_listener()
@@ -247,9 +242,8 @@ namespace {
         };
 
         class set_articulation_parameter_value6_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value6_listener(self_t & node);
             virtual ~set_articulation_parameter_value6_listener()
@@ -262,9 +256,8 @@ namespace {
         };
 
         class set_articulation_parameter_value7_listener :
-                public event_listener_base<self_t>,
-                public sffloat_listener
-        {
+            public event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_articulation_parameter_value7_listener(self_t & node);
             virtual ~set_articulation_parameter_value7_listener() OPENVRML_NOTHROW;
@@ -392,7 +385,7 @@ namespace {
         public abstract_node<receiver_pdu_node>,
         public child_node {
 
-        friend class receiver_pdu_class;
+        friend class receiver_pdu_metatype;
 
         exposedfield<sfstring> address_;
         exposedfield<sfint32> application_id_;
@@ -434,9 +427,11 @@ namespace {
         virtual ~receiver_pdu_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL signal_pdu_node : public abstract_node<signal_pdu_node>,
-                                           public child_node {
-        friend class signal_pdu_class;
+    class OPENVRML_LOCAL signal_pdu_node :
+        public abstract_node<signal_pdu_node>,
+        public child_node {
+
+        friend class signal_pdu_metatype;
 
         exposedfield<sfstring> address_;
         exposedfield<sfint32> application_id_;
@@ -482,7 +477,7 @@ namespace {
         public abstract_node<transmitter_pdu_node>,
         public child_node {
 
-        friend class transmitter_pdu_class;
+        friend class transmitter_pdu_metatype;
 
         exposedfield<sfstring> address_;
         exposedfield<sfvec3f> antenna_location_;
@@ -542,25 +537,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const espdu_transform_class::id =
+    const char * const espdu_transform_metatype::id =
         "urn:X-openvrml:node:EspduTransform";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c espdu_transform_class.
+     *                @c espdu_transform_metatype.
      */
-    espdu_transform_class::espdu_transform_class(openvrml::browser & browser):
-        node_class(espdu_transform_class::id, browser)
+    espdu_transform_metatype::espdu_transform_metatype(openvrml::browser & browser):
+        node_metatype(espdu_transform_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    espdu_transform_class::~espdu_transform_class() OPENVRML_NOTHROW
+    espdu_transform_metatype::~espdu_transform_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -569,15 +564,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating EspduTransform nodes.
+     * @return a @c node_type capable of creating EspduTransform nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by espdu_transform_class.
+     *                                  not supported by espdu_transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    espdu_transform_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    espdu_transform_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 88> supported_interfaces_t;
@@ -2015,25 +2011,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const receiver_pdu_class::id =
+    const char * const receiver_pdu_metatype::id =
         "urn:X-openvrml:node:ReceiverPdu";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c receiver_pdu_class.
+     *                @c receiver_pdu_metatype.
      */
-    receiver_pdu_class::receiver_pdu_class(openvrml::browser & browser):
-        node_class(receiver_pdu_class::id, browser)
+    receiver_pdu_metatype::receiver_pdu_metatype(openvrml::browser & browser):
+        node_metatype(receiver_pdu_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    receiver_pdu_class::~receiver_pdu_class() OPENVRML_NOTHROW
+    receiver_pdu_metatype::~receiver_pdu_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2042,15 +2038,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating ReceiverPdu nodes.
+     * @return a @c node_type capable of creating ReceiverPdu nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by receiver_pdu_class.
+     *                                  not supported by receiver_pdu_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    receiver_pdu_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    receiver_pdu_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 28> supported_interfaces_t;
@@ -2540,24 +2537,24 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const signal_pdu_class::id =
+    const char * const signal_pdu_metatype::id =
         "urn:X-openvrml:node:SignalPdu";
 
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c signal_pdu_class.
+     * @param browser the @c browser associated with this @c signal_pdu_metatype.
      */
-    signal_pdu_class::signal_pdu_class(openvrml::browser & browser):
-        node_class(signal_pdu_class::id, browser)
+    signal_pdu_metatype::signal_pdu_metatype(openvrml::browser & browser):
+        node_metatype(signal_pdu_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    signal_pdu_class::~signal_pdu_class() OPENVRML_NOTHROW
+    signal_pdu_metatype::~signal_pdu_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -2566,15 +2563,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating SignalPdu nodes.
+     * @return a @c node_type capable of creating SignalPdu nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by signal_pdu_class.
+     *                                  not supported by signal_pdu_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    signal_pdu_class::do_create_type(const std::string & id,
-                                     const node_interface_set & interfaces) const
+    signal_pdu_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 28> supported_interfaces_t;
@@ -3064,25 +3062,25 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const transmitter_pdu_class::id =
+    const char * const transmitter_pdu_metatype::id =
         "urn:X-openvrml:node:TransmitterPdu";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c transmitter_pdu_class.
+     *                @c transmitter_pdu_metatype.
      */
-    transmitter_pdu_class::transmitter_pdu_class(openvrml::browser & browser):
-        node_class(transmitter_pdu_class::id, browser)
+    transmitter_pdu_metatype::transmitter_pdu_metatype(openvrml::browser & browser):
+        node_metatype(transmitter_pdu_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    transmitter_pdu_class::~transmitter_pdu_class() OPENVRML_NOTHROW
+    transmitter_pdu_metatype::~transmitter_pdu_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -3091,15 +3089,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating TransmitterPdu nodes.
+     * @return a @c node_type capable of creating TransmitterPdu nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by transmitter_pdu_class.
+     *                                  not supported by transmitter_pdu_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    transmitter_pdu_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    transmitter_pdu_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 44> supported_interfaces_t;
@@ -3900,7 +3899,7 @@ namespace {
      */
 
     /**
-     * @var espdu_transform_node::EspduTransform_class
+     * @var espdu_transform_node::espdu_transform_metatype
      *
      * @brief Class object for EspduTransform nodes.
      */
@@ -4722,7 +4721,7 @@ namespace {
      */
 
     /**
-     * @var receiver_pdu_node::ReceiverPdu_class
+     * @var receiver_pdu_node::receiver_pdu_metatype
      *
      * @brief Class object for ReceiverPdu nodes.
      */
@@ -4945,7 +4944,7 @@ namespace {
      */
 
     /**
-     * @var signal_pdu_node::SignalPdu_class
+     * @var signal_pdu_node::signal_pdu_metatype
      *
      * @brief Class object for SignalPdu nodes.
      */
@@ -5168,7 +5167,7 @@ namespace {
      */
 
     /**
-     * @var transmitter_pdu_node::TransmitterPdu_class
+     * @var transmitter_pdu_node::transmitter_pdu_metatype
      *
      * @brief Class object for TransmitterPdu nodes.
      */

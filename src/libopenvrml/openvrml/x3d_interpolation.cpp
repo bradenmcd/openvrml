@@ -38,12 +38,13 @@ namespace {
     /**
      * @brief Class object for CoordinateInterpolator2D nodes.
      */
-    class OPENVRML_LOCAL coordinate_interpolator2d_class : public node_class {
+    class OPENVRML_LOCAL coordinate_interpolator2d_metatype :
+        public node_metatype {
     public:
         static const char * const id;
 
-        explicit coordinate_interpolator2d_class(openvrml::browser & browser);
-        virtual ~coordinate_interpolator2d_class() OPENVRML_NOTHROW;
+        explicit coordinate_interpolator2d_metatype(openvrml::browser & browser);
+        virtual ~coordinate_interpolator2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +57,13 @@ namespace {
     /**
      * @brief Class object for PositionInterpolator2D nodes.
      */
-    class OPENVRML_LOCAL position_interpolator2d_class : public node_class {
+    class OPENVRML_LOCAL position_interpolator2d_metatype :
+        public node_metatype {
     public:
         static const char * const id;
 
-        explicit position_interpolator2d_class(openvrml::browser & browser);
-        virtual ~position_interpolator2d_class() OPENVRML_NOTHROW;
+        explicit position_interpolator2d_metatype(openvrml::browser & browser);
+        virtual ~position_interpolator2d_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -71,16 +73,16 @@ namespace {
     };
 }
 
-void register_interpolation_node_classes(openvrml::browser & b)
+void register_interpolation_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(coordinate_interpolator2d_class::id,
-                     shared_ptr<node_class>(
-                         new coordinate_interpolator2d_class(b)));
-    b.add_node_class(position_interpolator2d_class::id,
-                     shared_ptr<node_class>(
-                         new position_interpolator2d_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(coordinate_interpolator2d_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new coordinate_interpolator2d_metatype(b)));
+    b.add_node_metatype(position_interpolator2d_metatype::id,
+                        shared_ptr<node_metatype>(
+                            new position_interpolator2d_metatype(b)));
 }
 
 namespace {
@@ -91,7 +93,7 @@ namespace {
         public abstract_node<coordinate_interpolator2d_node>,
         public child_node {
 
-        friend class coordinate_interpolator2d_class;
+        friend class coordinate_interpolator2d_metatype;
 
         class set_fraction_listener : public event_listener_base<self_t>,
                                       public sffloat_listener {
@@ -117,14 +119,14 @@ namespace {
         virtual ~coordinate_interpolator2d_node() OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_LOCAL position_interpolator2d_node : public abstract_node<position_interpolator2d_node>,
-                                                        public child_node {
-        friend class position_interpolator2d_class;
+    class OPENVRML_LOCAL position_interpolator2d_node :
+        public abstract_node<position_interpolator2d_node>,
+        public child_node {
 
-        class set_fraction_listener :
-            public event_listener_base<self_t>,
-            public sffloat_listener
-        {
+        friend class position_interpolator2d_metatype;
+
+        class set_fraction_listener : public event_listener_base<self_t>,
+                                      public sffloat_listener {
             public:
                 explicit set_fraction_listener(self_t & node);
                 virtual ~set_fraction_listener() OPENVRML_NOTHROW;
@@ -149,26 +151,27 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const coordinate_interpolator2d_class::id =
+    const char * const coordinate_interpolator2d_metatype::id =
         "urn:X-openvrml:node:CoordinateInterpolator2D";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c coordinate_interpolator2d_class.
+     *                @c coordinate_interpolator2d_metatype.
      */
-    coordinate_interpolator2d_class::
-    coordinate_interpolator2d_class(openvrml::browser & browser):
-        node_class(coordinate_interpolator2d_class::id, browser)
+    coordinate_interpolator2d_metatype::
+    coordinate_interpolator2d_metatype(openvrml::browser & browser):
+        node_metatype(coordinate_interpolator2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    coordinate_interpolator2d_class::~coordinate_interpolator2d_class() OPENVRML_NOTHROW
+    coordinate_interpolator2d_metatype::~coordinate_interpolator2d_metatype()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -177,15 +180,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating CoordinateInterpolator2D nodes.
+     * @return a @c node_type capable of creating CoordinateInterpolator2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by coordinate_interpolator2d_class.
+     *                                  not supported by coordinate_interpolator2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    coordinate_interpolator2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    coordinate_interpolator2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -289,26 +293,27 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const position_interpolator2d_class::id =
+    const char * const position_interpolator2d_metatype::id =
         "urn:X-openvrml:node:PositionInterpolator2D";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c position_interpolator2d_class.
+     *                @c position_interpolator2d_metatype.
      */
-    position_interpolator2d_class::
-    position_interpolator2d_class(openvrml::browser & browser):
-        node_class(position_interpolator2d_class::id, browser)
+    position_interpolator2d_metatype::
+    position_interpolator2d_metatype(openvrml::browser & browser):
+        node_metatype(position_interpolator2d_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    position_interpolator2d_class::~position_interpolator2d_class() OPENVRML_NOTHROW
+    position_interpolator2d_metatype::~position_interpolator2d_metatype()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -317,15 +322,16 @@ namespace {
      * @param id            the name for the new node_type.
      * @param interfaces    the interfaces for the new node_type.
      *
-     * @return a node_type_ptr to a node_type capable of creating PositionInterpolator2D nodes.
+     * @return a @c node_type capable of creating PositionInterpolator2D nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by position_interpolator2d_class.
+     *                                  not supported by position_interpolator2d_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    position_interpolator2d_class::do_create_type(const std::string & id,
-                                 const node_interface_set & interfaces) const
+    position_interpolator2d_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -435,7 +441,7 @@ namespace {
      */
 
     /**
-     * @var coordinate_interpolator2d_node::CoordinateInterpolator2D_class
+     * @var coordinate_interpolator2d_node::coordinate_interpolator2d_metatype
      *
      * @brief Class object for CoordinateInterpolator2D nodes.
      */
@@ -518,7 +524,7 @@ namespace {
      */
 
     /**
-     * @var position_interpolator2d_node::PositionInterpolator2D_class
+     * @var position_interpolator2d_node::position_interpolator2d_metatype
      *
      * @brief Class object for PositionInterpolator2D nodes.
      */

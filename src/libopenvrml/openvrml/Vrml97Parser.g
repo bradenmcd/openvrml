@@ -701,10 +701,10 @@ options { defaultErrorHandler=false; }
     using boost::dynamic_pointer_cast;
 
     node_interface_set interfaces;
-    proto_node_class::default_value_map_t default_value_map;
+    proto_node_metatype::default_value_map_t default_value_map;
     vector<boost::intrusive_ptr<openvrml::node> > impl_nodes;
-    proto_node_class::is_map_t is_map;
-    proto_node_class::routes_t routes;
+    proto_node_metatype::is_map_t is_map;
+    proto_node_metatype::routes_t routes;
 }
     :   KEYWORD_PROTO id:ID {
             assert(scope);
@@ -721,9 +721,9 @@ options { defaultErrorHandler=false; }
                          impl_nodes,
                          is_map,
                          routes] RBRACE {
-            const shared_ptr<openvrml::node_class>
-                node_class(
-                    new proto_node_class(path(*proto_scope),
+            const shared_ptr<openvrml::node_metatype>
+                node_metatype(
+                    new proto_node_metatype(path(*proto_scope),
                                          scene.browser(),
                                          interfaces,
                                          default_value_map,
@@ -731,22 +731,22 @@ options { defaultErrorHandler=false; }
                                          is_map,
                                          routes));
             //
-            // Add the new node_class (prototype definition) to the browser's
-            // node_class_map.
+            // Add the new node_metatype (prototype definition) to the browser's
+            // node_metatype_map.
             //
-            scene.browser().add_node_class(node_class->id(), node_class);
+            scene.browser().add_node_metatype(node_metatype->id(), node_metatype);
 
-            if (!dynamic_pointer_cast<proto_node_class>(
-                    scene.browser().node_class(node_class_id(this->uri)))) {
-                scene.browser().add_node_class(node_class_id(this->uri),
-                                               node_class);
+            if (!dynamic_pointer_cast<proto_node_metatype>(
+                    scene.browser().node_metatype(node_metatype_id(this->uri)))) {
+                scene.browser().add_node_metatype(node_metatype_id(this->uri),
+                                               node_metatype);
             }
 
             //
             // PROTOs implicitly introduce a new node type as well.
             //
             const shared_ptr<node_type> node_type =
-                node_class->create_type(id->getText(), interfaces);
+                node_metatype->create_type(id->getText(), interfaces);
             assert(node_type);
             if (!scope->add_type(node_type).second) {
                 using antlr::SemanticException;
@@ -765,7 +765,7 @@ protoInterfaceDeclaration[
     const boost::shared_ptr<const openvrml::scope> & outer_scope,
     const std::string & proto_id,
     node_interface_set & interfaces,
-    proto_node_class::default_value_map_t & default_value_map]
+    proto_node_metatype::default_value_map_t & default_value_map]
 options { defaultErrorHandler=false; }
 {
     using antlr::SemanticException;
@@ -836,8 +836,8 @@ protoBody[const openvrml::scene & scene,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & interfaces,
           std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
-          proto_node_class::is_map_t & is_map,
-          proto_node_class::routes_t & routes]
+          proto_node_metatype::is_map_t & is_map,
+          proto_node_metatype::routes_t & routes]
 options { defaultErrorHandler=false; }
 {
     assert(scope);
@@ -870,8 +870,8 @@ protoBodyStatement[
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & interfaces,
     std::vector<boost::intrusive_ptr<openvrml::node> > & impl_nodes,
-    proto_node_class::is_map_t & is_map,
-    proto_node_class::routes_t & routes]
+    proto_node_metatype::is_map_t & is_map,
+    proto_node_metatype::routes_t & routes]
 options { defaultErrorHandler=false; }
 {
     assert(scope);
@@ -895,8 +895,8 @@ options { defaultErrorHandler=false; }
 protoNodeStatement[const openvrml::scene & scene,
                    const boost::shared_ptr<openvrml::scope> & scope,
                    const node_interface_set & proto_interfaces,
-                   proto_node_class::is_map_t & is_map,
-                   proto_node_class::routes_t & routes,
+                   proto_node_metatype::is_map_t & is_map,
+                   proto_node_metatype::routes_t & routes,
                    const std::string & script_node_id]
 returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler=false; }
@@ -959,23 +959,23 @@ options { defaultErrorHandler=false; }
                     ? ::uri(*resource_id)
                     : ::uri(*resource_id)
                         .resolve_against(::uri(this->uri));
-                const shared_ptr<openvrml::node_class> node_class =
-                    scene.browser().node_class(node_class_id(absolute_uri));
-                if (node_class) {
-                    node_type = node_class->create_type(id->getText(),
+                const shared_ptr<openvrml::node_metatype> node_metatype =
+                    scene.browser().node_metatype(node_metatype_id(absolute_uri));
+                if (node_metatype) {
+                    node_type = node_metatype->create_type(id->getText(),
                                                         interfaces);
                     break;
                 }
             }
 
             if (!node_type) {
-                const shared_ptr<node_class> externproto_class(
-                    new externproto_node_class(
+                const shared_ptr<node_metatype> externproto_class(
+                    new externproto_node_metatype(
                         path(*scope) + '#' + id->getText(),
                         scene,
                         alt_uris));
 
-                scene.browser().add_node_class(externproto_class->id(),
+                scene.browser().add_node_metatype(externproto_class->id(),
                                                externproto_class);
                 for (vector<string>::const_iterator resource_id =
                          alt_uris.begin();
@@ -986,7 +986,7 @@ options { defaultErrorHandler=false; }
                             ? ::uri(*resource_id)
                             : ::uri(*resource_id).resolve_against(
                                 ::uri(this->uri));
-                    scene.browser().add_node_class(node_class_id(absolute_uri),
+                    scene.browser().add_node_metatype(node_metatype_id(absolute_uri),
                                                    externproto_class);
                 }
 
@@ -1104,7 +1104,7 @@ options { defaultErrorHandler=false; }
     ;
 
 protoRouteStatement[const openvrml::scope & scope,
-                    proto_node_class::routes_t & routes]
+                    proto_node_metatype::routes_t & routes]
 options { defaultErrorHandler=false; }
     :   KEYWORD_ROUTE from_node_id:ID PERIOD eventout_id:ID
         KEYWORD_TO to_node_id:ID PERIOD eventin_id:ID
@@ -1180,7 +1180,7 @@ options { defaultErrorHandler=false; }
                                         eventin_id->getColumn());
             }
 
-            const proto_node_class::route r(*from_node, eventout_id->getText(),
+            const proto_node_metatype::route r(*from_node, eventout_id->getText(),
                                             *to_node, eventin_id->getText());
             routes.push_back(r);
         }
@@ -1211,7 +1211,7 @@ options { defaultErrorHandler = false; }
                                            node_id]
             )* RBRACE {
             n = intrusive_ptr<openvrml::node>(
-                new script_node(scene.browser().script_node_class_,
+                new script_node(scene.browser().script_node_metatype_,
                                 scope,
                                 interfaces,
                                 initial_values));
@@ -1379,8 +1379,8 @@ options { defaultErrorHandler=false; }
 protoNode[const openvrml::scene & scene,
           const boost::shared_ptr<openvrml::scope> & scope,
           const node_interface_set & proto_interfaces,
-          proto_node_class::is_map_t & is_map,
-          proto_node_class::routes_t & routes,
+          proto_node_metatype::is_map_t & is_map,
+          proto_node_metatype::routes_t & routes,
           const std::string & node_id]
 returns [boost::intrusive_ptr<openvrml::node> n]
 options { defaultErrorHandler=false; }
@@ -1413,7 +1413,7 @@ options { defaultErrorHandler=false; }
                                                 is_mappings]
             )* RBRACE {
                 n = boost::intrusive_ptr<openvrml::node>(
-                    new script_node(scene.browser().script_node_class_,
+                    new script_node(scene.browser().script_node_metatype_,
                                     scope,
                                     interfaces,
                                     initial_values));
@@ -1444,7 +1444,7 @@ options { defaultErrorHandler=false; }
             for (is_list::const_iterator is_mapping = is_mappings.begin();
                  is_mapping != is_mappings.end();
                  ++is_mapping) {
-                typedef proto_node_class::is_target is_target;
+                typedef proto_node_metatype::is_target is_target;
                 is_map.insert(make_pair(is_mapping->second,
                                         is_target(*n, is_mapping->first)));
             }
@@ -1454,8 +1454,8 @@ options { defaultErrorHandler=false; }
 protoNodeBodyElement[const openvrml::scene & scene,
                      const boost::shared_ptr<openvrml::scope> & scope,
                      const node_interface_set & proto_interfaces,
-                     proto_node_class::is_map_t & is_map,
-                     proto_node_class::routes_t & routes,
+                     proto_node_metatype::is_map_t & is_map,
+                     proto_node_metatype::routes_t & routes,
                      const node_interface_set & node_interfaces,
                      initial_value_map & initial_values,
                      is_list & is_mappings]
@@ -1512,8 +1512,8 @@ protoScriptInterfaceDeclaration[
     const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & proto_interfaces,
-    proto_node_class::is_map_t & is_map,
-    proto_node_class::routes_t & routes,
+    proto_node_metatype::is_map_t & is_map,
+    proto_node_metatype::routes_t & routes,
     const std::string & script_node_id,
     node_interface_set & interfaces,
     initial_value_map & initial_values,
@@ -1554,8 +1554,8 @@ protoScriptFieldInterfaceDeclaration[
     const openvrml::scene & scene,
     const boost::shared_ptr<openvrml::scope> & scope,
     const node_interface_set & proto_interfaces,
-    proto_node_class::is_map_t & is_map,
-    proto_node_class::routes_t & routes,
+    proto_node_metatype::is_map_t & is_map,
+    proto_node_metatype::routes_t & routes,
     node_interface_set & interfaces,
     initial_value_map & initial_values,
     const std::string & script_node_id,
@@ -1656,8 +1656,8 @@ options { defaultErrorHandler=false; }
 protoFieldValue[const openvrml::scene & scene,
                 const boost::shared_ptr<openvrml::scope> & scope,
                 const node_interface_set & proto_interfaces,
-                proto_node_class::is_map_t & is_map,
-                proto_node_class::routes_t & routes,
+                proto_node_metatype::is_map_t & is_map,
+                proto_node_metatype::routes_t & routes,
                 const field_value::type_id ft,
                 const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> fv]
@@ -1716,8 +1716,8 @@ options { defaultErrorHandler=false; }
 protoNodeFieldValue[const openvrml::scene & scene,
                     const boost::shared_ptr<openvrml::scope> & scope,
                     const node_interface_set & proto_interfaces,
-                    proto_node_class::is_map_t & is_map,
-                    proto_node_class::routes_t & routes,
+                    proto_node_metatype::is_map_t & is_map,
+                    proto_node_metatype::routes_t & routes,
                     field_value::type_id ft,
                     const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> fv]
@@ -1921,8 +1921,8 @@ options { defaultErrorHandler=false; }
 protoSfNodeValue[const openvrml::scene & scene,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
-                 proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes,
+                 proto_node_metatype::is_map_t & is_map,
+                 proto_node_metatype::routes_t & routes,
                  const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> snv]
 options { defaultErrorHandler=false; }
@@ -1971,8 +1971,8 @@ options { defaultErrorHandler=false; }
 protoMfNodeValue[const openvrml::scene & scene,
                  const boost::shared_ptr<openvrml::scope> & scope,
                  const node_interface_set & proto_interfaces,
-                 proto_node_class::is_map_t & is_map,
-                 proto_node_class::routes_t & routes,
+                 proto_node_metatype::is_map_t & is_map,
+                 proto_node_metatype::routes_t & routes,
                  const std::string & script_node_id]
 returns [boost::shared_ptr<field_value> mnv =
          boost::shared_ptr<field_value>(new mfnode)]

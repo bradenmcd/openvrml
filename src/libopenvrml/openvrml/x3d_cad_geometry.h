@@ -26,6 +26,6 @@ namespace openvrml {
     class browser;
 }
 
-extern "C" void register_cad_geometry_node_classes(openvrml::browser & b);
+extern "C" void register_cad_geometry_node_metatypes(openvrml::browser & b);
 
 # endif

@@ -38,12 +38,12 @@ namespace {
     /**
      * @brief Class object for BooleanFilter nodes.
      */
-    class OPENVRML_LOCAL boolean_filter_class : public node_class {
+    class OPENVRML_LOCAL boolean_filter_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit boolean_filter_class(openvrml::browser & browser);
-        virtual ~boolean_filter_class() OPENVRML_NOTHROW;
+        explicit boolean_filter_metatype(openvrml::browser & browser);
+        virtual ~boolean_filter_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for BooleanSequencer nodes.
      */
-    class OPENVRML_LOCAL boolean_sequencer_class : public node_class {
+    class OPENVRML_LOCAL boolean_sequencer_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit boolean_sequencer_class(openvrml::browser & browser);
-        virtual ~boolean_sequencer_class() OPENVRML_NOTHROW;
+        explicit boolean_sequencer_metatype(openvrml::browser & browser);
+        virtual ~boolean_sequencer_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -74,12 +74,12 @@ namespace {
     /**
      * @brief Class object for BooleanToggle nodes.
      */
-    class OPENVRML_LOCAL boolean_toggle_class : public node_class {
+    class OPENVRML_LOCAL boolean_toggle_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit boolean_toggle_class(openvrml::browser & browser);
-        virtual ~boolean_toggle_class() OPENVRML_NOTHROW;
+        explicit boolean_toggle_metatype(openvrml::browser & browser);
+        virtual ~boolean_toggle_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -92,12 +92,12 @@ namespace {
     /**
      * @brief Class object for BooleanTrigger nodes.
      */
-    class OPENVRML_LOCAL boolean_trigger_class : public node_class {
+    class OPENVRML_LOCAL boolean_trigger_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit boolean_trigger_class(openvrml::browser & browser);
-        virtual ~boolean_trigger_class() OPENVRML_NOTHROW;
+        explicit boolean_trigger_metatype(openvrml::browser & browser);
+        virtual ~boolean_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -110,12 +110,12 @@ namespace {
     /**
      * @brief Class object for IntegerSequencer nodes.
      */
-    class OPENVRML_LOCAL integer_sequencer_class : public node_class {
+    class OPENVRML_LOCAL integer_sequencer_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit integer_sequencer_class(openvrml::browser & browser);
-        virtual ~integer_sequencer_class() OPENVRML_NOTHROW;
+        explicit integer_sequencer_metatype(openvrml::browser & browser);
+        virtual ~integer_sequencer_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -128,12 +128,12 @@ namespace {
     /**
      * @brief Class object for IntegerTrigger nodes.
      */
-    class OPENVRML_LOCAL integer_trigger_class : public node_class {
+    class OPENVRML_LOCAL integer_trigger_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit integer_trigger_class(openvrml::browser & browser);
-        virtual ~integer_trigger_class() OPENVRML_NOTHROW;
+        explicit integer_trigger_metatype(openvrml::browser & browser);
+        virtual ~integer_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -146,12 +146,12 @@ namespace {
     /**
      * @brief Class object for TimeTrigger nodes.
      */
-    class OPENVRML_LOCAL time_trigger_class : public node_class {
+    class OPENVRML_LOCAL time_trigger_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit time_trigger_class(openvrml::browser & browser);
-        virtual ~time_trigger_class() OPENVRML_NOTHROW;
+        explicit time_trigger_metatype(openvrml::browser & browser);
+        virtual ~time_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -161,24 +161,24 @@ namespace {
     };
 }
 
-void register_event_utilities_node_classes(openvrml::browser & b)
+void register_event_utilities_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;
-    using openvrml::node_class;
-    b.add_node_class(boolean_filter_class::id,
-                     shared_ptr<node_class>(new boolean_filter_class(b)));
-    b.add_node_class(boolean_sequencer_class::id,
-                     shared_ptr<node_class>(new boolean_sequencer_class(b)));
-    b.add_node_class(boolean_toggle_class::id,
-                     shared_ptr<node_class>(new boolean_toggle_class(b)));
-    b.add_node_class(boolean_trigger_class::id,
-                     shared_ptr<node_class>(new boolean_trigger_class(b)));
-    b.add_node_class(integer_sequencer_class::id,
-                     shared_ptr<node_class>(new integer_sequencer_class(b)));
-    b.add_node_class(integer_trigger_class::id,
-                     shared_ptr<node_class>(new integer_trigger_class(b)));
-    b.add_node_class(time_trigger_class::id,
-                     shared_ptr<node_class>(new time_trigger_class(b)));
+    using openvrml::node_metatype;
+    b.add_node_metatype(boolean_filter_metatype::id,
+                     shared_ptr<node_metatype>(new boolean_filter_metatype(b)));
+    b.add_node_metatype(boolean_sequencer_metatype::id,
+                     shared_ptr<node_metatype>(new boolean_sequencer_metatype(b)));
+    b.add_node_metatype(boolean_toggle_metatype::id,
+                     shared_ptr<node_metatype>(new boolean_toggle_metatype(b)));
+    b.add_node_metatype(boolean_trigger_metatype::id,
+                     shared_ptr<node_metatype>(new boolean_trigger_metatype(b)));
+    b.add_node_metatype(integer_sequencer_metatype::id,
+                     shared_ptr<node_metatype>(new integer_sequencer_metatype(b)));
+    b.add_node_metatype(integer_trigger_metatype::id,
+                     shared_ptr<node_metatype>(new integer_trigger_metatype(b)));
+    b.add_node_metatype(time_trigger_metatype::id,
+                     shared_ptr<node_metatype>(new time_trigger_metatype(b)));
 }
 
 namespace {
@@ -187,11 +187,10 @@ namespace {
 
     class OPENVRML_LOCAL boolean_filter_node : public abstract_node<boolean_filter_node>,
                                                public child_node {
-        friend class boolean_filter_class;
+        friend class boolean_filter_metatype;
 
-        class set_boolean_listener :
-                public event_listener_base<self_t>,
-                public sfbool_listener {
+        class set_boolean_listener : public event_listener_base<self_t>,
+                                     public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
             virtual ~set_boolean_listener() OPENVRML_NOTHROW;
@@ -220,7 +219,7 @@ namespace {
         public abstract_node<boolean_sequencer_node>,
         public child_node {
 
-        friend class boolean_sequencer_class;
+        friend class boolean_sequencer_metatype;
 
         class next_listener : public event_listener_base<self_t>,
                               public sfbool_listener {
@@ -277,7 +276,7 @@ namespace {
         public abstract_node<boolean_toggle_node>,
         public child_node {
 
-        friend class boolean_toggle_class;
+        friend class boolean_toggle_metatype;
 
         class set_boolean_listener : public event_listener_base<self_t>,
                                      public sfbool_listener {
@@ -305,7 +304,7 @@ namespace {
         public abstract_node<boolean_trigger_node>,
         public child_node {
 
-        friend class boolean_trigger_class;
+        friend class boolean_trigger_metatype;
 
         class set_trigger_time_listener : public event_listener_base<self_t>,
                                           public sftime_listener {
@@ -334,7 +333,7 @@ namespace {
         public abstract_node<integer_sequencer_node>,
         public child_node {
 
-        friend class integer_sequencer_class;
+        friend class integer_sequencer_metatype;
 
         class next_listener : public event_listener_base<self_t>,
                               public sfbool_listener {
@@ -392,7 +391,7 @@ namespace {
         public abstract_node<integer_trigger_node>,
         public child_node {
 
-        friend class integer_trigger_class;
+        friend class integer_trigger_metatype;
 
         class set_boolean_listener : public event_listener_base<self_t>,
                                      public sfbool_listener {
@@ -422,7 +421,7 @@ namespace {
         public abstract_node<time_trigger_node>,
         public child_node {
 
-        friend class time_trigger_class;
+        friend class time_trigger_metatype;
 
         class set_boolean_listener : public event_listener_base<self_t>,
                                      public sfbool_listener {
@@ -448,25 +447,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const boolean_filter_class::id =
+    const char * const boolean_filter_metatype::id =
         "urn:X-openvrml:node:BooleanFilter";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c boolean_filter_class.
+     *                @c boolean_filter_metatype.
      */
-    boolean_filter_class::boolean_filter_class(openvrml::browser & browser):
-        node_class(boolean_filter_class::id, browser)
+    boolean_filter_metatype::boolean_filter_metatype(openvrml::browser & browser):
+        node_metatype(boolean_filter_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    boolean_filter_class::~boolean_filter_class() OPENVRML_NOTHROW
+    boolean_filter_metatype::~boolean_filter_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -478,12 +477,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating BooleanFilter nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by boolean_filter_class.
+     *                                  not supported by boolean_filter_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    boolean_filter_class::do_create_type(const std::string & id,
-                                         const node_interface_set & interfaces) const
+    boolean_filter_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 5> supported_interfaces_t;
@@ -571,25 +571,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const boolean_sequencer_class::id =
+    const char * const boolean_sequencer_metatype::id =
         "urn:X-openvrml:node:BooleanSequencer";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c boolean_sequencer_class.
+     *                @c boolean_sequencer_metatype.
      */
-    boolean_sequencer_class::boolean_sequencer_class(openvrml::browser & browser):
-        node_class(boolean_sequencer_class::id, browser)
+    boolean_sequencer_metatype::boolean_sequencer_metatype(openvrml::browser & browser):
+        node_metatype(boolean_sequencer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    boolean_sequencer_class::~boolean_sequencer_class() OPENVRML_NOTHROW
+    boolean_sequencer_metatype::~boolean_sequencer_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -601,12 +601,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating BooleanSequencer nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by boolean_sequencer_class.
+     *                                  not supported by boolean_sequencer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    boolean_sequencer_class::do_create_type(const std::string & id,
-                                            const node_interface_set & interfaces) const
+    boolean_sequencer_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -732,25 +733,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const boolean_toggle_class::id =
+    const char * const boolean_toggle_metatype::id =
         "urn:X-openvrml:node:BooleanToggle";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with
-     *                @c this boolean_toggle_class.
+     *                @c this boolean_toggle_metatype.
      */
-    boolean_toggle_class::boolean_toggle_class(openvrml::browser & browser):
-        node_class(boolean_toggle_class::id, browser)
+    boolean_toggle_metatype::boolean_toggle_metatype(openvrml::browser & browser):
+        node_metatype(boolean_toggle_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    boolean_toggle_class::~boolean_toggle_class() OPENVRML_NOTHROW
+    boolean_toggle_metatype::~boolean_toggle_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -762,12 +763,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating BooleanToggle nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by boolean_toggle_class.
+     *                                  not supported by boolean_toggle_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    boolean_toggle_class::do_create_type(const std::string & id,
-                                         const node_interface_set & interfaces) const
+    boolean_toggle_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -841,25 +843,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const boolean_trigger_class::id =
+    const char * const boolean_trigger_metatype::id =
         "urn:X-openvrml:node:BooleanTrigger";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c boolean_trigger_class.
+     *                @c boolean_trigger_metatype.
      */
-    boolean_trigger_class::boolean_trigger_class(openvrml::browser & browser):
-        node_class(boolean_trigger_class::id, browser)
+    boolean_trigger_metatype::boolean_trigger_metatype(openvrml::browser & browser):
+        node_metatype(boolean_trigger_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    boolean_trigger_class::~boolean_trigger_class() OPENVRML_NOTHROW
+    boolean_trigger_metatype::~boolean_trigger_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -871,12 +873,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating BooleanTrigger nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by boolean_trigger_class.
+     *                                  not supported by boolean_trigger_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    boolean_trigger_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    boolean_trigger_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -942,26 +945,26 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const integer_sequencer_class::id =
+    const char * const integer_sequencer_metatype::id =
         "urn:X-openvrml:node:IntegerSequencer";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c integer_sequencer_class.
+     *                @c integer_sequencer_metatype.
      */
-    integer_sequencer_class::
-    integer_sequencer_class(openvrml::browser & browser):
-        node_class(integer_sequencer_class::id, browser)
+    integer_sequencer_metatype::
+    integer_sequencer_metatype(openvrml::browser & browser):
+        node_metatype(integer_sequencer_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    integer_sequencer_class::~integer_sequencer_class() OPENVRML_NOTHROW
+    integer_sequencer_metatype::~integer_sequencer_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -973,12 +976,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating IntegerSequencer nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by integer_sequencer_class.
+     *                                  not supported by integer_sequencer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    integer_sequencer_class::do_create_type(const std::string & id,
-                                            const node_interface_set & interfaces) const
+    integer_sequencer_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 7> supported_interfaces_t;
@@ -1104,25 +1108,25 @@ namespace {
 
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const integer_trigger_class::id =
+    const char * const integer_trigger_metatype::id =
         "urn:X-openvrml:node:IntegerTrigger";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c integer_trigger_class.
+     *                @c integer_trigger_metatype.
      */
-    integer_trigger_class::integer_trigger_class(openvrml::browser & browser):
-        node_class(integer_trigger_class::id, browser)
+    integer_trigger_metatype::integer_trigger_metatype(openvrml::browser & browser):
+        node_metatype(integer_trigger_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    integer_trigger_class::~integer_trigger_class() OPENVRML_NOTHROW
+    integer_trigger_metatype::~integer_trigger_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1134,12 +1138,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating IntegerTrigger nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by integer_trigger_class.
+     *                                  not supported by integer_trigger_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    integer_trigger_class::do_create_type(const std::string & id,
-                                          const node_interface_set & interfaces) const
+    integer_trigger_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 4> supported_interfaces_t;
@@ -1223,25 +1228,25 @@ namespace {
     }
 
     /**
-     * @brief @c node_class identifier.
+     * @brief @c node_metatype identifier.
      */
-    const char * const time_trigger_class::id =
+    const char * const time_trigger_metatype::id =
         "urn:X-openvrml:node:TimeTrigger";
 
     /**
      * @brief Construct.
      *
      * @param browser the @c browser associated with this
-     *                @c time_trigger_class.
+     *                @c time_trigger_metatype.
      */
-    time_trigger_class::time_trigger_class(openvrml::browser & browser):
-        node_class(time_trigger_class::id, browser)
+    time_trigger_metatype::time_trigger_metatype(openvrml::browser & browser):
+        node_metatype(time_trigger_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    time_trigger_class::~time_trigger_class() OPENVRML_NOTHROW
+    time_trigger_metatype::~time_trigger_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -1253,12 +1258,13 @@ namespace {
      * @return a node_type_ptr to a node_type capable of creating TimeTrigger nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by time_trigger_class.
+     *                                  not supported by time_trigger_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    time_trigger_class::do_create_type(const std::string & id,
-                                       const node_interface_set & interfaces) const
+    time_trigger_metatype::
+    do_create_type(const std::string & id,
+                   const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
     {
         typedef boost::array<node_interface, 3> supported_interfaces_t;
@@ -1330,7 +1336,7 @@ namespace {
      */
 
     /**
-     * @var boolean_filter_node::BooleanFilter_class
+     * @var boolean_filter_node::boolean_filter_metatype
      *
      * @brief Class object for BooleanFilter nodes.
      */
@@ -1382,7 +1388,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     boolean_filter_node::
     boolean_filter_node(const node_type & type,
@@ -1411,7 +1417,7 @@ namespace {
      */
 
     /**
-     * @var boolean_sequencer_node::BooleanSequencer_class
+     * @var boolean_sequencer_node::boolean_sequencer_metatype
      *
      * @brief Class object for BooleanSequencer nodes.
      */
@@ -1511,7 +1517,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     boolean_sequencer_node::
     boolean_sequencer_node(const node_type & type,
@@ -1542,7 +1548,7 @@ namespace {
      */
 
     /**
-     * @var boolean_toggle_node::BooleanToggle_class
+     * @var boolean_toggle_node::BooleanToggle_metatype
      *
      * @brief Class object for BooleanToggle nodes.
      */
@@ -1609,7 +1615,7 @@ namespace {
      */
 
     /**
-     * @var boolean_trigger_node::BooleanTrigger_class
+     * @var boolean_trigger_node::boolean_trigger_metatype
      *
      * @brief Class object for BooleanTrigger nodes.
      */
@@ -1649,7 +1655,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     boolean_trigger_node::
     boolean_trigger_node(const node_type & type,
@@ -1676,7 +1682,7 @@ namespace {
      */
 
     /**
-     * @var integer_sequencer_node::IntegerSequencer_class
+     * @var integer_sequencer_node::integer_sequencer_metatype
      *
      * @brief Class object for IntegerSequencer nodes.
      */
@@ -1776,7 +1782,7 @@ namespace {
      * @brief Construct.
      *
      * @param type  the node_type associated with this node.
-     * @param scope     the scope to which the node belongs.
+     * @param scope the scope to which the node belongs.
      */
     integer_sequencer_node::
     integer_sequencer_node(const node_type & type,
@@ -1807,7 +1813,7 @@ namespace {
      */
 
     /**
-     * @var integer_trigger_node::IntegerTrigger_class
+     * @var integer_trigger_node::integer_trigger_metatype
      *
      * @brief Class object for IntegerTrigger nodes.
      */
@@ -1881,7 +1887,7 @@ namespace {
      */
 
     /**
-     * @var time_trigger_node::TimeTrigger_class
+     * @var time_trigger_node::time_trigger_metatype
      *
      * @brief Class object for TimeTrigger nodes.
      */
