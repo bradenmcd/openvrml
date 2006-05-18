@@ -2012,17 +2012,15 @@ class SFNode;
 class MFNode;
 
 namespace Browser {
-    OPENVRML_LOCAL JSBool addRoute(JSContext * cx,
-                                   JSObject * obj,
-                                   uintN argc,
-                                   jsval * argv,
-                                   jsval * rval)
+    OPENVRML_LOCAL JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
+                                            uintN argc, jsval * argv,
+                                            jsval * rval)
         OPENVRML_NOTHROW;
-    OPENVRML_LOCAL JSBool deleteRoute(JSContext * cx,
-                                      JSObject * obj,
-                                      uintN argc,
-                                      jsval * argv,
-                                      jsval * rval)
+    OPENVRML_LOCAL JSBool addRoute(JSContext * cx, JSObject * obj,
+                                   uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_NOTHROW;
+    OPENVRML_LOCAL JSBool deleteRoute(JSContext * cx, JSObject * obj,
+                                      uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
 }
 
@@ -2030,6 +2028,10 @@ class OPENVRML_LOCAL script : public openvrml::script {
 
     friend class SFNode;
     friend class MFNode;
+    friend JSBool Browser::createVrmlFromURL(JSContext * cx, JSObject * obj,
+                                             uintN argc, jsval * argv,
+                                             jsval * rval)
+        OPENVRML_NOTHROW;
     friend JSBool Browser::addRoute(JSContext * cx, JSObject * obj,
                                     uintN argc, jsval * argv, jsval * rval)
         OPENVRML_NOTHROW;
@@ -4378,71 +4380,58 @@ JSBool createVrmlFromString(JSContext * const cx,
 
 // createVrmlFromURL( MFString url, SFNode node, SFString event )
 
-JSBool createVrmlFromURL(JSContext *,
-                         JSObject *,
-                         uintN,
-                         jsval *,
-                         jsval *)
+JSBool createVrmlFromURL(JSContext * const cx,
+                         JSObject * const obj,
+                         const uintN argc,
+                         jsval * const argv,
+                         jsval * const rval)
     OPENVRML_NOTHROW
 {
-# if 0
     using std::auto_ptr;
 
-    assert(JS_GetContextPrivate(cx));
-    js_::script & script =
-        *static_cast<js_::script *>(JS_GetContextPrivate(cx));
-
-    Doc2 * relative = script.script_node().type.node_class.browser.urlDoc();
-
-    //
-    // Make sure our first argument (the URL) is an MFString.
-    //
-    JSObject * arg0_obj;
-    if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg0_obj, &MFString::jsclass, argv)) {
+    JSObject * url_obj = 0, * node_obj = 0;
+    JSString * event_str = 0;
+    if (!JS_ConvertArguments(cx, argc, argv, "ooS",
+                             &url_obj, &node_obj, &event_str)) {
         return JS_FALSE;
     }
 
-    auto_ptr<openvrml::mfstring>
-        url(MFString::createFromJSObject(cx, arg0_obj));
+    if (!JS_InstanceOf(cx, url_obj, &MFString::jsclass, argv)) {
+        return JS_FALSE;
+    }
+    auto_ptr<openvrml::mfstring> url(MFString::createFromJSObject(cx,
+                                                                  url_obj));
     assert(url.get());
 
-    //
-    // Make sure our second arument is an SFNode.
-    //
     js_::script & script =
         *static_cast<js_::script *>(JS_GetContextPrivate(cx));
     JSClass & sfnode_jsclass = script.sfnode_class;
-
-    JSObject * arg1_obj;
-    if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
-    if (!JS_InstanceOf(cx, arg1_obj, &sfnode_jsclass, argv)) {
+    if (!JS_InstanceOf(cx, node_obj, &sfnode_jsclass, argv)) {
+        return JS_FALSE;
+    }
+    auto_ptr<openvrml::sfnode> node(SFNode::createFromJSObject(cx, node_obj));
+    assert(node.get());
+    if (!node->value()) {
+        JS_ReportError(cx, "node argument is NULL");
         return JS_FALSE;
     }
 
-    auto_ptr<openvrml::sfnode>
-        sfnode(SFNode::createFromJSObject(cx, arg1_obj));
-    assert(sfnode.get());
-    node_ptr node(sfnode->get());
-    if (!node) { return JS_FALSE; }
+    const char * const event = JS_GetStringBytes(event_str);
 
-    //
-    // Make sure our third argument is a string.
-    //
-    JSString * arg2_str = JS_ValueToString(cx, argv[2]);
-    if (!arg2_str) { return JS_FALSE; }
-
-    const char * const eventInId = JS_GetStringBytes(arg2_str);
-    openvrml::browser & browser =
-        script.script_node().type.node_class.browser;
-    auto_ptr<openvrml::mfnode> kids(browser.readWrl(*url, relative));
-
-    if (!kids.get()) { return JS_FALSE; }
-
-    node->processEvent(eventInId, *kids, s_timeStamp); // fix me...
+    try {
+        script.script_node().openvrml::node::type().metatype().browser()
+            .create_vrml_from_url(url->value(),
+                                  node->value(),
+                                  event ? event : "");
+    } catch (const std::bad_cast & ex) {
+        JS_ReportError(cx, "%s is not of type MFNode", event);
+        return JS_FALSE;
+    } catch (std::exception & ex) {
+        JS_ReportError(cx, ex.what());
+        return JS_FALSE;
+    }
 
     *rval = JSVAL_VOID;
-# endif
     return JS_TRUE;
 }
 

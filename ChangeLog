@@ -1,5 +1,17 @@
 2006-05-18 Braden McDaniel  <braden@endoframe.com>
 
+	Implemented Browser.createVrmlFromURL() in the Script node
+	JavaScript binding.
+
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::script): Granted friendship to
+	js_::Browser::createVrmlFromUrl.
+	(js_::Browser::createVrmlFromURL(JSContext *, JSObject *, uintN,
+	jsval *, jsval *)): Delegate to
+	openvrml::browser::create_vrml_from_url.
+
+2006-05-18 Braden McDaniel  <braden@endoframe.com>
+
 	Renamed "node_class" to "node_metatype".
 
 	* src/libopenvrml/openvrml/Vrml97Parser.g
