@@ -1,5 +1,11 @@
 2006-05-18 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::SetWindow(NPWindow &)): Set the command channel
+	encoding to null (i.e., no encoding).
+
+2006-05-18 Braden McDaniel  <braden@endoframe.com>
+
 	Implemented Browser.createVrmlFromURL() in the Script node
 	JavaScript binding.
 

@@ -1151,6 +1151,20 @@ namespace {
             if (succeeded) {
                 this->command_channel = g_io_channel_unix_new(standard_input);
                 if (!this->command_channel) { throw std::bad_alloc(); }
+                const GIOStatus status =
+                    g_io_channel_set_encoding(this->command_channel,
+                                              0, // binary (no encoding)
+                                              &error);
+                if (status != G_IO_STATUS_NORMAL) {
+                    if (error) {
+                        g_critical(error->message);
+                        g_error_free(error);
+                    }
+                    // XXX
+                    // XXX Should probably throw here instead.
+                    // XXX
+                    return;
+                }
 
                 this->request_channel = g_io_channel_unix_new(standard_output);
                 if (!this->command_channel) { throw std::bad_alloc(); }
