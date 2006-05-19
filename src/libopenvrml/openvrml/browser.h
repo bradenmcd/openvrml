@@ -171,7 +171,7 @@ namespace openvrml {
     class OPENVRML_API browser : boost::noncopyable {
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
-        friend bool operator==(const node_type &, const node_type &)
+        friend bool OPENVRML_API operator==(const node_type &, const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;

@@ -1,5 +1,11 @@
 2006-05-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Added OPENVRML_API to friend declaration of
+	operator==(const node_type &, const node_type &).
+
+2006-05-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.h
 	(openvrml::gl::viewer::modelview_matrix_stack): Added missing
 	OPENVRML_LOCAL.
