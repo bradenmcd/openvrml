@@ -78,7 +78,7 @@ namespace openvrml {
                 cursor_crosshair
             };
 
-            class modelview_matrix_stack {
+            class OPENVRML_LOCAL modelview_matrix_stack {
                 size_t size;
                 std::stack<mat4f> spillover;
 

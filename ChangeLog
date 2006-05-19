@@ -1,5 +1,11 @@
 2006-05-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer::modelview_matrix_stack): Added missing
+	OPENVRML_LOCAL.
+
+2006-05-19 Braden McDaniel  <braden@endoframe.com>
+
 	Microsoft Visual Studio project file updates.
 
 	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
