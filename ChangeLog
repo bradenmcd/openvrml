@@ -1,3 +1,9 @@
+2006-05-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.h
+	(node_metatype_id): The Microsoft compiler wants OPENVRML_API in
+	the friend declaration.
+
 2006-05-18 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp

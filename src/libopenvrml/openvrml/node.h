@@ -182,8 +182,8 @@ namespace openvrml {
 
 
     class OPENVRML_API node_metatype_id {
-        friend bool operator==(const node_metatype_id & lhs,
-                               const node_metatype_id & rhs)
+        friend OPENVRML_API bool operator==(const node_metatype_id & lhs,
+                                            const node_metatype_id & rhs)
             OPENVRML_NOTHROW;
 
         std::string id_;
