@@ -22,7 +22,7 @@
 				AdditionalOptions="/Zm400"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;NOMINMAX;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -71,7 +71,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;NOMINMAX;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_LIB;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -118,7 +118,7 @@
 				AdditionalOptions="/Zm400"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;NOMINMAX;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -169,7 +169,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="WIN32;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
+				PreprocessorDefinitions="WIN32;NOMINMAX;BOOST_SPIRIT_THREADSAFE;NDEBUG;PACKAGE_VERSION=\&quot;0.15.99\&quot;;OPENVRML_BUILD_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
@@ -284,8 +284,57 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
-						EnableFunctionLevelLinking="FALSE"/>
+						EnableFunctionLevelLinking="FALSE"
+						DebugInformationFormat="2"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_cad_geometry.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_core.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_dis.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_environmental_effects.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_event_utilities.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geometry2d.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geospatial.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_grouping.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_hanim.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_interpolation.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_key_device_sensor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_networking.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_nurbs.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_rendering.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_shape.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_texturing.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -353,6 +402,54 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\Vrml97ParserTokenTypes.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_cad_geometry.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_core.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_dis.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_environmental_effects.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_event_utilities.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geometry2d.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geospatial.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_grouping.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_hanim.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_interpolation.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_key_device_sensor.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_networking.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_nurbs.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_rendering.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_shape.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_texturing.h">
 			</File>
 		</Filter>
 		<Filter

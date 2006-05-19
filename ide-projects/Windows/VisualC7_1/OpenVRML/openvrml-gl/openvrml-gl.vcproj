@@ -108,7 +108,7 @@
 			Name="Debug DLL|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -129,7 +129,8 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLibrarianTool"/>
+				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -145,6 +146,8 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -177,7 +180,8 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"/>
+				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool

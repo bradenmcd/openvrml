@@ -1,5 +1,15 @@
 2006-05-19 Braden McDaniel  <braden@endoframe.com>
 
+	Microsoft Visual Studio project file updates.
+
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
+2006-05-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.h
 	(node_metatype_id): The Microsoft compiler wants OPENVRML_API in
 	the friend declaration.
