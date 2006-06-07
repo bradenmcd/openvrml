@@ -35,6 +35,7 @@
 # include <algorithm>
 # include <iterator>
 # include <limits>
+# include <sstream>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
 # include <boost/thread.hpp>
@@ -6737,11 +6738,14 @@ namespace {
     extern "C" void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
                                                   long num_bytes);
     extern "C" void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
+    extern "C" void openvrml_jpeg_error_exit(j_common_ptr cinfo);
+    extern "C" void openvrml_jpeg_output_message(j_common_ptr cinfo);
 # endif
 
     class OPENVRML_LOCAL image_stream_listener :
         public openvrml::stream_listener {
 
+        const std::string uri_;
         boost::recursive_mutex & node_mutex_;
         openvrml::image & image_;
         openvrml::node & node_;
@@ -6788,6 +6792,8 @@ namespace {
         friend void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo,
                                                   long num_bytes);
         friend void openvrml_jpeg_term_source(j_decompress_ptr cinfo);
+        friend void openvrml_jpeg_error_exit(j_common_ptr cinfo);
+        friend void openvrml_jpeg_output_message(j_common_ptr cinfo);
 
         class jpeg_reader : public image_reader {
         public:
@@ -6796,12 +6802,15 @@ namespace {
                 jpeg_reader * reader;
             };
 
-        private:
-            jpeg_decompress_struct cinfo_;
             struct error_mgr {
                 jpeg_error_mgr pub;
                 jmp_buf jmpbuf;
-            } error_mgr_;
+                image_stream_listener * stream_listener;
+            };
+
+        private:
+            jpeg_decompress_struct cinfo_;
+            error_mgr error_mgr_;
             source_mgr source_mgr_;
 
         public:
@@ -6838,7 +6847,8 @@ namespace {
         boost::scoped_ptr<image_reader> image_reader_;
 
     public:
-        image_stream_listener(openvrml::image & image,
+        image_stream_listener(const std::string & uri,
+                              openvrml::image & image,
                               openvrml::node & node,
                               boost::recursive_mutex & node_mutex);
         virtual ~image_stream_listener() OPENVRML_NOTHROW;
@@ -7155,6 +7165,28 @@ namespace {
     void openvrml_jpeg_term_source(j_decompress_ptr)
     {}
 
+    void openvrml_jpeg_error_exit(j_common_ptr cinfo)
+    {
+        typedef image_stream_listener::jpeg_reader::error_mgr error_mgr;
+        error_mgr * const err = reinterpret_cast<error_mgr *>(cinfo->err);
+        (*cinfo->err->output_message)(cinfo);
+        longjmp(err->jmpbuf, 1);
+    }
+
+    void openvrml_jpeg_output_message(j_common_ptr cinfo)
+    {
+        typedef image_stream_listener::jpeg_reader::error_mgr error_mgr;
+        error_mgr * const err = reinterpret_cast<error_mgr *>(cinfo->err);
+        char buffer[JMSG_LENGTH_MAX];
+        (*cinfo->err->format_message)(cinfo, buffer);
+        assert(err->stream_listener);
+        std::ostringstream msg;
+        msg << err->stream_listener->uri_ << ": " << buffer << std::endl;
+        openvrml::browser & browser =
+            err->stream_listener->node_.type().metatype().browser();
+        browser.err(msg.str());
+    }
+
     image_stream_listener::jpeg_reader::
     jpeg_reader(image_stream_listener & stream_listener):
         stream_listener(stream_listener),
@@ -7169,8 +7201,11 @@ namespace {
         //std::memset(&this->source_mgr_, 0, sizeof this->source_mgr_);
 
         this->cinfo_.err = jpeg_std_error(&this->error_mgr_.pub);
+        this->error_mgr_.pub.error_exit = openvrml_jpeg_error_exit;
+        this->error_mgr_.pub.output_message = openvrml_jpeg_output_message;
         int jmpval = setjmp(this->error_mgr_.jmpbuf);
         if (jmpval != 0) { return; }
+        this->error_mgr_.stream_listener = &stream_listener;
         jpeg_create_decompress(&this->cinfo_);
         this->source_mgr_.pub.next_input_byte = 0;
         this->source_mgr_.pub.bytes_in_buffer = 0;
@@ -7373,9 +7408,11 @@ namespace {
 # endif // defined OPENVRML_ENABLE_JPEG_TEXTURES
 
     image_stream_listener::
-    image_stream_listener(openvrml::image & image,
+    image_stream_listener(const std::string & uri,
+                          openvrml::image & image,
                           openvrml::node & node,
                           boost::recursive_mutex & node_mutex):
+        uri_(uri),
         node_mutex_(node_mutex),
         image_(image),
         node_(node)
@@ -7418,13 +7455,14 @@ namespace {
                 this->front = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->front_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->front,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->front_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->front,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->front_needs_update = false;
@@ -7434,13 +7472,14 @@ namespace {
                 this->back = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->back_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->back,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->back_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->back,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->back_needs_update = false;
@@ -7450,13 +7489,14 @@ namespace {
                 this->left = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->left_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->left,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->left_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->left,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->left_needs_update = false;
@@ -7466,13 +7506,14 @@ namespace {
                 this->right = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->right_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->right,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->right_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->right,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->right_needs_update = false;
@@ -7482,13 +7523,14 @@ namespace {
                 this->top = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->top_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->top,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->top_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->top,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->top_needs_update = false;
@@ -7498,13 +7540,14 @@ namespace {
                 this->bottom = image();
             } else {
                 using std::auto_ptr;
-                auto_ptr<resource_istream>
-                    in(this->scene()
-                       ->get_resource(this->bottom_url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->bottom,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<resource_istream> in(
+                    this->scene()->get_resource(
+                        this->bottom_url_.mfstring::value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->bottom,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->bottom_needs_update = false;
@@ -12899,10 +12942,11 @@ namespace {
                 using std::auto_ptr;
                 auto_ptr<resource_istream> in(
                     this->scene()->get_resource(this->url_.mfstring::value()));
-                auto_ptr<stream_listener>
-                    listener(new image_stream_listener(this->image_,
-                                                       *this,
-                                                       this->mutex()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              this->image_,
+                                              *this,
+                                              this->mutex()));
                 read_stream(in, listener);
             }
             this->texture_needs_update = false;

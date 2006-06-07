@@ -1,3 +1,30 @@
+2006-06-07 Braden McDaniel  <braden@endoframe.com>
+
+	Provide an error handler for libjpeg; the default one calls exit.
+	Instead, print the error message using openvrml::browser::err.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(openvrml_jpeg_error_exit): Added callback to handle the error
+	without calling exit.
+	(openvrml_jpeg_output_message): Added callback to print the error
+	message using openvrml::browser::err.
+	(image_stream_listener): Added uri_ member; made
+	openvrml_jpeg_error_exit and openvrml_jpeg_output_message friends.
+	(image_stream_listener::jpeg_reader): Moved error_mgr from private
+	to public.
+	(image_stream_listener::jpeg_reader::error_mgr): Added
+	stream_listener member.
+	(image_stream_listener::jpeg_reader::jpeg_reader(image_stream_listener&)):
+	Set error_exit and output_message callbacks for the error_mgr;
+	initialize error_mgr_'s image_stream_listener pointer.
+	(image_stream_listener::image_stream_listener(const std::string &,
+	openvrml::image &, openvrml::node &, boost::recursive_mutex &)):
+	Construct using the stream URI.
+	(background_node::update_textures()): Construct
+	image_stream_listener with the stream URI.
+	(image_texture_node::update_textures()): Construct
+	image_stream_listener with the stream URI.
+
 2006-05-19 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.h
