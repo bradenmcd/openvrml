@@ -1,3 +1,15 @@
+2006-07-08 Braden McDaniel  <braden@endoframe.com>
+
+	Use a more compact representation for the command_streambuf.
+
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp
+	(openvrml_player::command_streambuf::underflow()): Apply
+	traits_type::to_char_type and traits_type::to_int_type
+	consistently.
+	* mozilla-plugin/src/openvrml-player/command_istream.h
+	(openvrml_player::command_streambuf): Changed source_buffer_ to be
+	a bounded_buffer of char_type instead of int_type.
+
 2006-06-07 Braden McDaniel  <braden@endoframe.com>
 
 	Provide an error handler for libjpeg; the default one calls exit.

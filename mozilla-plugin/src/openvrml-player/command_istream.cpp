@@ -29,11 +29,11 @@ openvrml_player::command_streambuf::command_streambuf()
 openvrml_player::command_streambuf::int_type
 openvrml_player::command_streambuf::underflow()
 {
-    int_type c = this->source_buffer_.get();
+    int_type c = traits_type::to_int_type(this->source_buffer_.get());
     if (c == traits_type::eof()) { return traits_type::eof(); }
-    this->c_ = c;
+    this->c_ = traits_type::to_char_type(c);
     this->setg(&this->c_, &this->c_, &this->c_ + 1);
-    return *this->gptr();
+    return traits_type::to_int_type(*this->gptr());
 }
 
 
@@ -74,7 +74,7 @@ gboolean command_data_available(GIOChannel * source,
 
         g_assert(bytes_read == 1);
 
-        streambuf.source_buffer_.put(traits_type::to_int_type(c));
+        streambuf.source_buffer_.put(c);
 
     } while (g_io_channel_get_buffer_condition(source) & G_IO_IN);
 
