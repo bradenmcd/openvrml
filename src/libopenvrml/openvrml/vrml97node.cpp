@@ -2601,7 +2601,7 @@ namespace {
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
-        void update_textures();
+        void update_textures() OPENVRML_THROW1(std::bad_alloc);
     };
 
 
@@ -7181,7 +7181,7 @@ namespace {
         (*cinfo->err->format_message)(cinfo, buffer);
         assert(err->stream_listener);
         std::ostringstream msg;
-        msg << err->stream_listener->uri_ << ": " << buffer << std::endl;
+        msg << err->stream_listener->uri_ << ": " << buffer;
         openvrml::browser & browser =
             err->stream_listener->node_.type().metatype().browser();
         browser.err(msg.str());
@@ -7445,111 +7445,77 @@ namespace {
         if (this->image_reader_) { this->image_reader_->read(data); }
     }
 
+    void update_texture(background_node & node,
+                        boost::recursive_mutex & node_mutex,
+                        const openvrml::mfstring & url,
+                        openvrml::image & img)
+        OPENVRML_THROW1(std::bad_alloc)
+    try {
+        using openvrml::image;
+
+        if (url.value().empty()) {
+            img = image();
+        } else {
+            using std::auto_ptr;
+            using openvrml::resource_istream;
+
+            auto_ptr<resource_istream> in(
+                node.scene()->get_resource(url.value()));
+            auto_ptr<stream_listener> listener(
+                new image_stream_listener(in->url(),
+                                          img,
+                                          node,
+                                          node_mutex));
+            read_stream(in, listener);
+        }
+    } catch (const openvrml::no_alternative_url & ex) {}
+
     /**
      * @brief Called lazily to update texture data.
      */
     void background_node::update_textures()
+        OPENVRML_THROW1(std::bad_alloc)
     {
         if (this->front_needs_update) {
-            if (this->front_url_.mfstring::value().empty()) {
-                this->front = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->front_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->front,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->front_url_,
+                           this->front);
             this->front_needs_update = false;
         }
         if (this->back_needs_update) {
-            if (this->back_url_.mfstring::value().empty()) {
-                this->back = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->back_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->back,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->back_url_,
+                           this->back);
             this->back_needs_update = false;
         }
         if (this->left_needs_update) {
-            if (this->left_url_.mfstring::value().empty()) {
-                this->left = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->left_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->left,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->left_url_,
+                           this->left);
             this->left_needs_update = false;
         }
         if (this->right_needs_update) {
-            if (this->right_url_.mfstring::value().empty()) {
-                this->right = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->right_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->right,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->right_url_,
+                           this->right);
             this->right_needs_update = false;
         }
         if (this->top_needs_update) {
-            if (this->top_url_.mfstring::value().empty()) {
-                this->top = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->top_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->top,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->top_url_,
+                           this->top);
             this->top_needs_update = false;
         }
         if (this->bottom_needs_update) {
-            if (this->bottom_url_.mfstring::value().empty()) {
-                this->bottom = image();
-            } else {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(
-                        this->bottom_url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->bottom,
-                                              *this,
-                                              this->mutex()));
-                read_stream(in, listener);
-            }
+            update_texture(*this,
+                           this->mutex(),
+                           this->bottom_url_,
+                           this->bottom);
             this->bottom_needs_update = false;
         }
     }

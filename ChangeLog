@@ -1,3 +1,15 @@
+2006-07-09 Braden McDaniel  <braden@endoframe.com>
+
+	Swallow the openvrml::no_alternative_url exception when loading
+	Background node textures.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(update_texture(background_node &, boost::recursive_mutex &, const
+	openvrml::mfstring &, openvrml::image)): Added function; called by
+	background_node::update_textures; swallow the
+	openvrml::no_alternative_url exception.
+	(background_node::update_textures()): Delegate to update_texture.
+
 2006-07-08 Braden McDaniel  <braden@endoframe.com>
 
 	Use a more compact representation for the command_streambuf.
