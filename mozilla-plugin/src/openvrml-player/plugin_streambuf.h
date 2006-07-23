@@ -39,8 +39,6 @@ namespace openvrml_player {
         friend class command_istream_reader;
 
         mutable boost::mutex mutex_;
-        int get_url_result_;
-        mutable boost::condition received_get_url_result_;
         bool initialized_;
         mutable boost::condition streambuf_initialized_;
         std::string url_;
@@ -54,8 +52,6 @@ namespace openvrml_player {
 
     public:
         explicit plugin_streambuf(const std::string & requested_url);
-        void set_get_url_result(int result);
-        int get_url_result() const;
         void init(size_t stream_id,
                   const std::string & received_url,
                   const std::string & type);

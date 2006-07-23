@@ -1080,8 +1080,8 @@ namespace {
                 if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
                 openvrml_player_cmd_argv[0] =
                     g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-player");
-                if (!openvrml_player_cmd_argv[0]) { throw std::bad_alloc(); }
                 openvrml_player_cmd_argv[1] = 0;
+                if (!openvrml_player_cmd_argv[0]) { throw std::bad_alloc(); }
             } else {
                 GError * error = 0;
                 gboolean succeeded =
@@ -1214,9 +1214,9 @@ namespace {
         return bytes_written;
     }
 
-    gboolean request_data_available(GIOChannel * const source,
+    gboolean request_data_available(GIOChannel * source,
                                     GIOCondition,
-                                    const gpointer data)
+                                    gpointer data)
     {
         using std::string;
 
@@ -1251,20 +1251,9 @@ namespace {
             if (request_type == "get-url") {
                 string url, target;
                 pluginInstance.request_line >> url >> target;
-                NPError result =
-                    NPN_GetURL(pluginInstance.npp,
-                               url.c_str(),
-                               target.empty() ? 0 : target.c_str());
-                std::ostringstream command;
-                command << "get-url-result " << url << ' ' << result
-                        << '\n';
-                const ssize_t bytes_written =
-                    pluginInstance.WriteCommand(command.str());
-                if (bytes_written != command.str().length()) {
-                    // XXX
-                    // XXX Do what here? Console message?
-                    // XXX
-                }
+                NPN_GetURL(pluginInstance.npp,
+                           url.c_str(),
+                           target.empty() ? 0 : target.c_str());
             }
         }
 

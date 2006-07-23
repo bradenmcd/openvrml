@@ -1,3 +1,15 @@
+2006-07-23 Braden McDaniel  <braden@endoframe.com>
+
+	Backed out change to set the plugin_resource_istream initial state
+	to invalid if the Web browser's get-url function fails.  The
+	attempted solution deadlocks.
+
+	* mozilla-plugin/src/openvrml.cpp
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+
 2006-07-09 Braden McDaniel  <braden@endoframe.com>
 
 	Swallow the openvrml::no_alternative_url exception when loading
