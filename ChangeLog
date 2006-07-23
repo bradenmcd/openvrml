@@ -1,5 +1,11 @@
 2006-07-23 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::SetWindow(NPWindow &)): Use g_malloc0 to
+	zero-initialize the allocated memory for openvrml_player_cmd_argv.
+
+2006-07-23 Braden McDaniel  <braden@endoframe.com>
+
 	Backed out change to set the plugin_resource_istream initial state
 	to invalid if the Web browser's get-url function fails.  The
 	attempted solution deadlocks.

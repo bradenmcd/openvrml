@@ -1065,7 +1065,7 @@ namespace {
             // The OPENVRML_PLAYER environment variable overrides the default
             // path to the child process executable.  To allow OPENVRML_PLAYER
             // to include arguments (rather than just be a path to an
-            // executable), it is parsed wit g_shell_parse_argv.  This is
+            // executable), it is parsed with g_shell_parse_argv.  This is
             // particularly useful in case we want to run the child process in
             // a harness like valgrind.
             //
@@ -1076,11 +1076,10 @@ namespace {
             if (!openvrml_player_cmd) {
                 openvrml_player_cmd_argc = 1;
                 openvrml_player_cmd_argv =
-                    static_cast<gchar **>(g_malloc(sizeof (gchar *) * 2));
+                    static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
                 if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
                 openvrml_player_cmd_argv[0] =
                     g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-player");
-                openvrml_player_cmd_argv[1] = 0;
                 if (!openvrml_player_cmd_argv[0]) { throw std::bad_alloc(); }
             } else {
                 GError * error = 0;
