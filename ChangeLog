@@ -1,6 +1,12 @@
 2006-07-23 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
+	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Made arguments const.
+
+2006-07-23 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp
 	(PluginInstance::SetWindow(NPWindow &)): Use g_malloc0 to
 	zero-initialize the allocated memory for openvrml_player_cmd_argv.
 

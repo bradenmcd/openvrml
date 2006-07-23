@@ -1213,9 +1213,9 @@ namespace {
         return bytes_written;
     }
 
-    gboolean request_data_available(GIOChannel * source,
+    gboolean request_data_available(GIOChannel * const source,
                                     GIOCondition,
-                                    gpointer data)
+                                    const gpointer data)
     {
         using std::string;
 
