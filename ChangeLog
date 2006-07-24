@@ -1,5 +1,33 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	Changed uninitialized_plugin_streambuf_map to use a std::multimap
+	since the map may need to contain more than one request for the
+	same resource.
+
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp
+	(browser::do_get_resource(const
+	std::string&)::plugin_resource_istream::plugin_resource_istream(const
+	std:string &, GIOChannel *)):
+	uninitialized_plugin_streambuf_map::insert no longer returns a
+	value.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(main(int, char *[])): uninitialized_plugin_streambuf_map::insert
+	no longer returns a value.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::uninitialized_plugin_streambuf_map::insert(const
+	std::string &, const boost::shared_ptr<plugin_streambuf> &)): For
+	std::multimap, insert necessarily succeeds or throws.
+	(openvrml_player::uninitialized_plugin_streambuf_map::erase(const
+	std::string &)): Erase only the first matching element.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::uninitialized_plugin_streambuf_map::map_t):
+	Changed to a std::multimap.
+	(openvrml_player::uninitialized_plugin_streambuf_map::insert(const
+	std::string &, const boost::shared_ptr<plugin_streambuf> &)):
+	Don't return a value.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(stream_reader::operator()() const): Call
 	stream_listener::data_available only if the data vector is not

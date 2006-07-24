@@ -245,7 +245,6 @@ namespace {
 
 int main(int argc, char * argv[])
 {
-    using std::string;
     using std::vector;
     using boost::function0;
     using boost::shared_ptr;
@@ -334,10 +333,8 @@ int main(int argc, char * argv[])
         
         shared_ptr<plugin_streambuf> initial_stream(
             new plugin_streambuf(initial_stream_uri));
-        bool succeeded =
-            uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
-                                                       initial_stream);
-        g_return_val_if_fail(succeeded, EXIT_FAILURE);
+        uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
+                                                   initial_stream);
         function0<void> initial_stream_reader_func =
             initial_stream_reader(initial_stream,
                                   *GTK_VRML_BROWSER(vrml_browser));

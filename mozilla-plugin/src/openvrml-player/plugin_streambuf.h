@@ -79,14 +79,14 @@ namespace openvrml_player {
 
     extern class uninitialized_plugin_streambuf_map {
         mutable boost::mutex mutex_;
-        typedef std::map<std::string, boost::shared_ptr<plugin_streambuf> >
+        typedef std::multimap<std::string, boost::shared_ptr<plugin_streambuf> >
             map_t;
         map_t map_;
 
     public:
         const boost::shared_ptr<plugin_streambuf>
         find(const std::string & url) const;
-        bool insert(const std::string & url,
+        void insert(const std::string & url,
                     const boost::shared_ptr<plugin_streambuf> & streambuf);
         bool erase(const std::string & url);
         size_t size() const;

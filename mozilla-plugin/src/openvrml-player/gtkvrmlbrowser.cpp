@@ -497,10 +497,8 @@ namespace {
                 using openvrml_player::uninitialized_plugin_streambuf_map_;
 
                 this->rdbuf(this->streambuf_.get());
-                bool succeeded =
-                    uninitialized_plugin_streambuf_map_
-                    .insert(uri, this->streambuf_);
-                g_assert(succeeded);
+                uninitialized_plugin_streambuf_map_.insert(uri,
+                                                           this->streambuf_);
 
                 ostringstream request;
                 request << "get-url " << uri << '\n';

@@ -159,21 +159,33 @@ find(const std::string & url) const
         : pos->second;
 }
 
-bool
+void
 openvrml_player::uninitialized_plugin_streambuf_map::
 insert(const std::string & url,
-       const boost::shared_ptr<openvrml_player::plugin_streambuf> & streambuf)
+       const boost::shared_ptr<plugin_streambuf> & streambuf)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->map_.insert(make_pair(url, streambuf)).second;
+    this->map_.insert(make_pair(url, streambuf));
 }
 
+/**
+ * @brief Erase the first entry corresponding to @p url.
+ *
+ * The map may have multiple entries corresponding to @p url if the same
+ * resource has been requested multiple times.  A single call to @c erase will
+ * only remove one of them.
+ *
+ * @return @c true if an entry was removed; @c false otherwise.
+ */
 bool
 openvrml_player::uninitialized_plugin_streambuf_map::
 erase(const std::string & url)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    return this->map_.erase(url) == 1;
+    const map_t::iterator pos = this->map_.find(url);
+    if (pos == this->map_.end()) { return false; }
+    this->map_.erase(pos);
+    return true;
 }
 
 size_t openvrml_player::uninitialized_plugin_streambuf_map::size() const
