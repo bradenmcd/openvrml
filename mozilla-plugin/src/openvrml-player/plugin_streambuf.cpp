@@ -138,10 +138,20 @@ openvrml_player::plugin_streambuf::underflow()
     while (!this->initialized_) {
         this->streambuf_initialized_.wait(lock);
     }
-    if (this->c_ == traits_type::eof()) { return traits_type::eof(); }
-    this->c_ = this->buf_.get();
+
+    if (traits_type::eq_int_type(this->i_, traits_type::eof())) {
+        return traits_type::eof();
+    }
+
+    this->i_ = this->buf_.get();
+    this->c_ = traits_type::to_char_type(this->i_);
+
+    if (traits_type::eq_int_type(this->i_, traits_type::eof())) {
+        return traits_type::eof();
+    }
+
     this->setg(&this->c_, &this->c_, &this->c_ + 1);
-    return *this->gptr();
+    return traits_type::to_int_type(*this->gptr());
 }
 
 

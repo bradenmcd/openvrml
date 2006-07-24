@@ -1,5 +1,11 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::underflow()): Fixes for
+	char_type/int_type consistency.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp: Doc-comment improvements.
 
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
