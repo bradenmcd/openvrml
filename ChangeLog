@@ -1,3 +1,8 @@
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.h: Added
+	copyright statement.
+
 2006-07-23 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
