@@ -21,17 +21,72 @@
 # include <glib.h>
 # include "plugin_streambuf.h"
 
+openvrml_player::plugin_streambuf::npstream_buffer::npstream_buffer():
+    begin_(0),
+    end_(0),
+    buffered_(0),
+    npstream_destroyed_(false)
+{}
+
+void
+openvrml_player::plugin_streambuf::npstream_buffer::put(const char_type & c)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->buffered_ == npstream_buffer::buffer_size) {
+        this->buffer_not_full_.wait(lock);
+    }
+    this->buf_[this->end_] = c;
+    this->end_ = (this->end_ + 1) % npstream_buffer::buffer_size;
+    ++this->buffered_;
+    this->buffer_not_empty_or_eof_.notify_one();
+}
+
+openvrml_player::plugin_streambuf::int_type
+openvrml_player::plugin_streambuf::npstream_buffer::get()
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->buffered_ == 0 && !this->npstream_destroyed_) {
+        this->buffer_not_empty_or_eof_.wait(lock);
+    }
+    if (this->buffered_ == 0 && this->npstream_destroyed_) {
+        return traits_type::eof();
+    }
+    const char_type c = this->buf_[this->begin_];
+    this->begin_ = (this->begin_ + 1) % npstream_buffer::buffer_size;
+    --this->buffered_;
+    this->buffer_not_full_.notify_one();
+    const int_type i = traits_type::to_int_type(c);
+    assert(!traits_type::eq_int_type(i, traits_type::eof()));
+    return i;
+}
+
+size_t openvrml_player::plugin_streambuf::npstream_buffer::buffered() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->buffered_;
+}
+
+void openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed()
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    this->npstream_destroyed_ = true;
+    this->buffer_not_empty_or_eof_.notify_one();
+}
+
 openvrml_player::plugin_streambuf::
 plugin_streambuf(const std::string & requested_url):
     initialized_(false),
     url_(requested_url),
-    c_('\0'),
-    npstream_destroyed_(false)
+    i_(0),
+    c_('\0')
 {
     //
     // This is really just here to emphasize that c_ must not be EOF.
     //
-    this->c_ = traits_type::not_eof(this->c_);
+    this->i_ = traits_type::not_eof(this->i_);
+    this->c_ =
+        traits_type::to_char_type(
+            traits_type::not_eof(traits_type::to_int_type(this->c_)));
 
     this->setg(&this->c_, &this->c_, &this->c_);
 }
@@ -87,11 +142,6 @@ openvrml_player::plugin_streambuf::underflow()
     this->c_ = this->buf_.get();
     this->setg(&this->c_, &this->c_, &this->c_ + 1);
     return *this->gptr();
-}
-
-void openvrml_player::plugin_streambuf::npstream_destroyed()
-{
-    this->npstream_destroyed_ = true;
 }
 
 

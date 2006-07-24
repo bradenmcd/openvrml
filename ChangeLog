@@ -1,5 +1,39 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	Replace use of the bounded_buffer template with an implementation
+	specific to the plugin_streambuf; we need a way to signal that the
+	stream has been destroyed and this requires access to the
+	condition variable associated with the bounded buffer.
+
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()() const):
+	Call npstream_destroyed on the npstream_buffer.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::npstream_buffer::npstream_buffer()):
+	Construct.
+	(openvrml_player::plugin_streambuf::npstream_buffer::put(const
+	char_type &)): Insert a character into the buffer.
+	(openvrml_player::plugin_streambuf::npstream_buffer::get()): Get a
+	character from the buffer.
+	(openvrml_player::plugin_streambuf::npstream_buffer::buffered()
+	const): Return the number of characters currently in the buffer.
+	(openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed()):
+	Called to indicate that the associated stream from the Web browser
+	has been destroyed.
+	(openvrml_player::plugin_streambuf::plugin_streambuf(const std::string &)):
+	Initialize i_; remove initialization of npstream_destroyed_.
+	(openvrml_player::plugin_streambuf::npstream_destroyed(): Removed.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf::npstream_buffer): Added class.
+	(openvrml_player::plugin_streambuf::buf_): Changed to be an
+	npstream_buffer.
+	(openvrml_player::plugin_streambuf::i_): Added int_type
+	representation of the current byte.
+	(openvrml_player::plugin_streambuf::npstream_destroyed_): Removed.
+	(openvrml_player::plugin_streambuf::npstream_destroyed()): Removed.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp
 	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
 	gchar **)): Check for pointers to null in the url and parameter
