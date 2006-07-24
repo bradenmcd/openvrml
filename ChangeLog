@@ -1,5 +1,9 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am (dist-hook): Made html-local a prerequisite.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	Replace use of the bounded_buffer template with an implementation
 	specific to the plugin_streambuf; we need a way to signal that the
 	stream has been destroyed and this requires access to the

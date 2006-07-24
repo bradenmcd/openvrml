@@ -67,3 +67,5 @@ uninstall-local:
 
 manual/index.html: $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
 	cd $(srcdir) && $(DOXYGEN)
+
+dist-hook: html-local
