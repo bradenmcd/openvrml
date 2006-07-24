@@ -1,5 +1,12 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(stream_reader::operator()() const): Call
+	stream_listener::data_available only if the data vector is not
+	empty.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am (dist-hook): Made html-local a prerequisite.
 
 2006-07-24 Braden McDaniel  <braden@endoframe.com>

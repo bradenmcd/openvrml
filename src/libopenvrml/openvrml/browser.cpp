@@ -5088,7 +5088,9 @@ namespace {
                         break;
                     }
                 }
-                this->listener_->data_available(data);
+                if (!data.empty()) {
+                    this->listener_->data_available(data);
+                }
             }
         }
 
