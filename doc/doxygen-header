@@ -20,6 +20,10 @@ body, td {
   font-size: 100%;
 }
 
+p, center, td, th, ul, dl, div {
+  font-family: inherit;
+}
+
 div.nav {
   background-color: transparent;
   text-align: left;
@@ -131,7 +135,9 @@ div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
   font-weight: bold;
 }
 
-td.memItemLeft, td.memItemRight, .memproto td {
+.memItemLeft, .memItemRight,
+.memTemplParams, .memTemplItemLeft, .memTemplItemRight,
+.memproto, .memproto td {
   font-family: "Bitstream Vera Sans Mono",
                "LucidaTypewriter",
                "Lucida Console",
@@ -171,6 +177,11 @@ td.invalid {
 .memproto {
   background-color: rgb(90%, 90%, 90%);
   border-color: rgb(65%, 65%, 65%);
+  font-weight: inherit;
+}
+
+.memname {
+  font-weight: inherit;
 }
 
 div.tabs {
