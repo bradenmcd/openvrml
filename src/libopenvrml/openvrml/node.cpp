@@ -161,7 +161,8 @@ namespace {
  *
  * @relatesalso openvrml::node_interface
  *
- * If @p type is node_interface::invalid_type_id, @c failbit is set on @p out.
+ * If @p type is @c node_interface::invalid_type_id, @c failbit is set on
+ * @p out.
  *
  * @param[in,out] out   an output stream.
  * @param[in]     type  a node interface type.
@@ -249,10 +250,10 @@ openvrml::node_interface::node_interface(const type_id type,
  *
  * @brief Compare for equality.
  *
- * @param[in] lhs   a node_interface.
- * @param[in] rhs   a node_interface.
+ * @param[in] lhs   a @c node_interface.
+ * @param[in] rhs   a @c node_interface.
  *
- * @return @c true if the two node_interfaces are equal, @c false otherwise.
+ * @return @c true if the two @c node_interface%s are equal, @c false otherwise.
  */
 bool openvrml::operator==(const node_interface & lhs,
                           const node_interface & rhs)
@@ -268,10 +269,10 @@ bool openvrml::operator==(const node_interface & lhs,
  *
  * @brief Compare for openvrml::inequality.
  *
- * @param[in] lhs   a node_interface.
- * @param[in] rhs   a node_interface.
+ * @param[in] lhs   a @c node_interface.
+ * @param[in] rhs   a @c node_interface.
  *
- * @return @c true if the two node_interfaces are equal, @c false otherwise.
+ * @return @c true if the two @c node_interface%s are equal, @c false otherwise.
  */
 bool openvrml::operator!=(const node_interface & lhs,
                           const node_interface & rhs)
@@ -332,23 +333,22 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_matches_eventin::result_type openvrml::node_interface_matches_eventin::operator()(const first_argument_type & interface, const second_argument_type & eventin_id) const
  *
- * @brief Determine if a <code>node_interface</code> matches an eventIn
- *        identifier.
+ * @brief Determine if a @c node_interface matches an @c eventIn identifier.
  *
- * A node_interface matches an eventIn identifier if:
- * - the <code>node_interface</code>'s @a type is node_interface::eventin_id
+ * A @c node_interface matches an @c eventIn identifier if:
+ * - the <code>node_interface</code>'s @a type is @c node_interface::eventin_id
  *   and
  *   - the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventIn identifier
+ *     the @c eventIn identifier
  *   - or the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventIn identifier with the string &ldquo;set_&rdquo; prepended.
+ *     the @c eventIn identifier with the string &ldquo;set_&rdquo; prepended.
  * - or, the <code>node_interface</code>'s @a type is
- *     <code>node_interface::exposedfield_id</code> and
+ *     @c node_interface::exposedfield_id and
  *   - the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventIn identifier
+ *     the @c eventIn identifier
  *   - or the <code>node_interface</code>'s @a id with the string
- *     &ldquo;set_&rdquo; prepended is lexicographically equal to the eventIn
- *     identifier.
+ *     &ldquo;set_&rdquo; prepended is lexicographically equal to the
+ *     @c eventIn identifier.
  *
  * @param[in] interface     node_interface.
  * @param[in] eventin_id    eventIn identifier.
@@ -362,8 +362,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a <code>node_interface</code> matches an eventOut
- *        identifier.
+ * @brief Determine if a @c node_interface matches an @c eventOut identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -375,26 +374,26 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_matches_eventout::result_type openvrml::node_interface_matches_eventout::operator()(const first_argument_type & interface, const second_argument_type & eventout_id) const
  *
- * @brief Determine if a <code>node_interface</code> matches an eventOut
- *        identifier.
+ * @brief Determine if a @c node_interface matches an @c eventOut identifier.
  *
- * A <code>node_interface</code> matches an eventOut identifier if:
+ * A @c node_interface matches an @c eventOut identifier if:
  * - the <code>node_interface</code>'s @a type is
- *   <code>node_interface::eventout_id</code> and
+ *   @c node_interface::eventout_id and
  *   - the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventOut identifier
+ *     the @c eventOut identifier
  *   - or the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventOut identifier with the string &ldquo;_changed&rdquo; appended.
+ *     the @c eventOut identifier with the string &ldquo;_changed&rdquo;
+ *     appended.
  * - or, the <code>node_interface</code>'s @a type is
- *     <code>node_interface::exposedfield_id</code> and
+ *     @c node_interface::exposedfield_id and
  *   - the <code>node_interface</code>'s @a id is lexicographically equal to
- *     the eventOut identifier
+ *     the @c eventOut identifier
  *   - or the <code>node_interface</code>'s @a id with the string
  *     &ldquo;_changed&rdquo; appended is lexicographically equal to the
- *     eventOut identifier.
+ *     @c eventOut identifier.
  *
- * @param[in] interface     node_interface.
- * @param[in] eventout_id   eventOut identifier.
+ * @param[in] interface     @c node_interface.
+ * @param[in] eventout_id   @c eventOut identifier.
  *
  * @return @c true if @p interface matches @p eventout_id; @c false otherwise.
  */
@@ -405,8 +404,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a <code>node_interface</code> matches an exposedField
- *        identifier.
+ * @brief Determine if a @c node_interface matches an @c exposedField
+ * identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -418,17 +417,16 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_matches_exposedfield::result_type openvrml::node_interface_matches_exposedfield::operator()(const first_argument_type & interface, const second_argument_type & exposedfield_id) const
  *
- * @brief Determine if a <code>node_interface</code> matches an exposedField
+ * @brief Determine if a @c node_interface matches an @c exposedField
  *        identifier.
  *
- * A <code>node_interface</code> matches an exposedField identifier if the
- * <code>node_interface</code>'s @a type is
- * <code>node_interface::exposedfield_id</code> and the
- * <code>node_interface</code>'s @a id is lexicographically equal to the
- * exposedField identifier.
+ * A @c node_interface matches an @c exposedField identifier if the
+ * @c node_interface%'s @a type is @c node_interface::exposedfield_id and the
+ * @c node_interface%'s @a id is lexicographically equal to the @c exposedField
+ * identifier.
  *
- * @param[in] interface         <code>node_interface</code>.
- * @param[in] exposedfield_id   exposedField identifier.
+ * @param[in] interface         @c node_interface.
+ * @param[in] exposedfield_id   @c exposedField identifier.
  *
  * @return @c true if @p interface matches @p exposedfield_id; @c false
  *         otherwise.
@@ -440,7 +438,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a <code>node_interface</code> matches an field
+ * @brief Determine if a @c node_interface matches an field
  *        identifier.
  *
  * @par Model of
@@ -453,17 +451,14 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_matches_field::result_type openvrml::node_interface_matches_field::operator()(const first_argument_type & interface, const second_argument_type & field_id) const
  *
- * @brief Determine if a <code>node_interface</code> matches an field
- *        identifier.
+ * @brief Determine if a @c node_interface matches an field identifier.
  *
- * A <code>node_interface</code> matches a field identifier if the
- * <code>node_interface</code>'s @a type is
- * <code>node_interface::field_id</code> or
- * <code>node_interface::exposedfield_id</code> and the
- * <code>node_interface</code>'s @a id is lexicographically equal to the field
+ * A @c node_interface matches a field identifier if the @c node_interface's
+ * @a type is @c node_interface::field_id or @c node_interface::exposedfield_id
+ * and the @c node_interface's @a id is lexicographically equal to the field
  * identifier.
  *
- * @param[in] interface node_interface.
+ * @param[in] interface @c node_interface.
  * @param[in] field_id  field identifier.
  *
  * @return @c true if @p interface matches @p field_id; @c false otherwise.
@@ -475,19 +470,19 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Function object to compare two <code>node_interface</code>s based on
- *        their id.
+ * @brief Function object to compare two @c node_interface%s based on their
+ * id.
  *
- * <code>node_interface_compare</code> provides a
- * <a href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">
- * Strict Weak Ordering</a> for <code>node_interface</code>s and ensures that
- * exposedField definitions appropriately encroach on the namespace of eventIn
- * and eventOut definitions. That is, per 4.7 of the VRML97 spec: &ldquo;An
- * exposedField named &lsquo;zzz@rsquo; can be referred to as
+ * @c node_interface_compare provides a <a
+ * href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">Strict Weak
+ * Ordering</a> for @c node_interface%s and ensures that @c exposedField
+ * definitions appropriately encroach on the namespace of @c eventIn and
+ * @c eventOut definitions. That is, per 4.7 of the VRML97 spec: &ldquo;An
+ * exposedField named &lsquo;zzz&rsquo; can be referred to as
  * &lsquo;set_zzz&rsquo; and treated as an eventIn, and can be referred to as
  * &lsquo;zzz_changed&rsquo; and treated as an eventOut.&rdquo;
  *
- * <code>node_interface_compare</code> is the comparator used by
+ * @c node_interface_compare is the comparator used by
  * <code>@link openvrml::node_interface_set node_interface_set@endlink</code>.
  *
  * @par Model of
@@ -646,15 +641,14 @@ openvrml::browser & openvrml::node_metatype::browser() const OPENVRML_NOTHROW
 /**
  * @brief <code>node_metatype</code>-specific initialization.
  *
- * This method is called during initialization of a <code>browser</code> object
- * with a new root <code>scene</code>. It is called after the individual
- * <code>node</code> instances have been initialized, and before the world
- * starts running. It delegates to <code>node_metatype::do_initialize</code>.
+ * This method is called during initialization of a @c browser object with a
+ * new root @c scene. It is called after the individual @c node instances have
+ * been initialized, and before the world starts running. It delegates to
+ * @c node_metatype::do_initialize.
  *
- * @param[in,out] initial_viewpoint the <code>viewpoint_node</code> that should
- *                                  be bound initially; or 0 if the default
- *                                  <code>viewpoint_node</code> should be
- *                                  bound.
+ * @param[in,out] initial_viewpoint the @c viewpoint_node that should be bound
+ *                                  initially; or 0 if the default
+ *                                  @c viewpoint_node should be bound.
  * @param[in] time                  the current time.
  */
 void openvrml::node_metatype::initialize(viewpoint_node * initial_viewpoint,
@@ -670,10 +664,10 @@ void openvrml::node_metatype::initialize(viewpoint_node * initial_viewpoint,
  * Node implementations should override this method to perform any
  * <code>node_metatype</code>-wide initialization.
  *
- * @param[in,out] initial_viewpoint the <code>viewpoint_node</code> that should be
- *                          bound initially; or 0 if the default
- *                          <code>viewpoint_node</code> should be bound.
- * @param[in] time              the current time.
+ * @param[in,out] initial_viewpoint the @c viewpoint_node that should be
+ *                                  bound initially; or 0 if the default
+ *                                  @c vewpoint_node should be bound.
+ * @param[in] time                  the current time.
  *
  * @sa node_metatype::initialize
  */
@@ -1765,7 +1759,7 @@ openvrml::node::~node() OPENVRML_NOTHROW
  * @brief Decrement the reference count.
  *
  * Remove an owning reference; <strong>but do not destroy the instance if the
- * reference count drops to zero</string>. This function should be used with
+ * reference count drops to zero</strong>. This function should be used with
  * caution. It is really only appropriate when the caller is aware that the
  * reference count may drop to zero but destroying the instance in that case
  * would be inappropriate. In most cases it is appropriate to use

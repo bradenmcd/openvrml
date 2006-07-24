@@ -1,5 +1,9 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp: Doc-comment improvements.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	Changed uninitialized_plugin_streambuf_map to use a std::multimap
 	since the map may need to contain more than one request for the
 	same resource.
