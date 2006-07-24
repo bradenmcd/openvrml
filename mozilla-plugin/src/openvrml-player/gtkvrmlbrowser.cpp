@@ -170,8 +170,8 @@ void gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
 
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(vrml_browser->viewer);
     vector<string> url_vec, param_vec;
-    while (url) { url_vec.push_back(*(url++)); }
-    while (parameter) { param_vec.push_back(*(parameter++)); }
+    while (url && *url) { url_vec.push_back(*(url++)); }
+    while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
     viewer.browser_.load_url(url_vec, param_vec);
 }
 

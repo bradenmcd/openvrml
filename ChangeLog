@@ -1,5 +1,12 @@
 2006-07-24 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp
+	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
+	gchar **)): Check for pointers to null in the url and parameter
+	lists.
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/x3d_key_device_sensor.h: Added
 	copyright statement.
 
