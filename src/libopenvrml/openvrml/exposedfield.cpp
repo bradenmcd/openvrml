@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -28,17 +28,17 @@
 /**
  * @class openvrml::exposedfield
  *
- * @brief Class template to simplify implementation of exposedFields.
+ * @brief Class template to simplify implementation of @c exposedField%s.
  *
- * <code>exposedfield</code> conveniently implements an
- * <code>event_listener</code> and an <code>event_emitter</code>. Trivial
- * exposedFields can be implemented simply by instantiating this template with
- * a FieldValue. For the purposes of OpenVRML, a <em>trivial exposedField</em>
- * is one that has <strong>no</strong> side-effects. That is, it simply
- * receives an event, updates an internal value, and fires an eventOut.
- * Nontrivial exposedFields (i.e., those with side-effects) can generally be
- * implemented by inheriting an instance of this class template and overriding
- * <code>exposedfield<FieldValue>::event_side_effect</code>.
+ * @c exposedfield conveniently implements an @c event_listener and an @c
+ * event_emitter.  Trivial @c exposedField%s can be implemented simply by
+ * instantiating this template with a @link openvrml::FieldValueConcept
+ * FieldValue @endlink.  For the purposes of OpenVRML, a <em>trivial @c
+ * exposedField</em> is one that has <strong>no</strong> side-effects.  That
+ * is, it simply receives an event, updates an internal value, and fires an @c
+ * eventOut.  Nontrivial @c exposedField%s (i.e., those with side-effects) can
+ * generally be implemented by inheriting an instance of this class template
+ * and overriding @c exposedfield<FieldValue>::event_side_effect.
  */
 
 /**
@@ -46,7 +46,8 @@
  *
  * @brief Construct.
  *
- * @param[in] node  a reference to the node to which the exposedField belongs.
+ * @param[in] node  a reference to the @c node to which the @c exposedField
+ *                  belongs.
  * @param[in] value default value.
  */
 
@@ -71,14 +72,14 @@
  *
  * This function performs the following steps:
  *
- * -# set the exposedField value.
- * -# call <code>exposedfield<FieldValue>::event_side_effect</code>.
+ * -# set the @c exposedField value.
+ * -# call @c exposedfield<FieldValue>::event_side_effect.
  * -# set the modified flag.
  * -# emit the event.
  *
  * @warning This function should not be overridden by subclasses.  Subclasses
  *          should override
- *          <code>exposedfield<FieldValue>::event_side_effect</code> instead.
+ *          @c exposedfield<FieldValue>::event_side_effect instead.
  *
  * @param[in] value     new value.
  * @param[in] timestamp the current time.
@@ -89,10 +90,10 @@
 /**
  * @fn void openvrml::exposedfield::event_side_effect(const FieldValue & value, double timestamp)
  *
- * @brief Called by <code>exposedfield<FieldValue>::do_process_event</code>.
+ * @brief Called by @c exposedfield<FieldValue>::do_process_event.
  *
  * Subclasses should override this method to implement event handling
- * functionality specific to a particular exposedField. The default
+ * functionality specific to a particular @c exposedField. The default
  * implementation of this function does nothing.
  *
  * @param[in] value     new value.

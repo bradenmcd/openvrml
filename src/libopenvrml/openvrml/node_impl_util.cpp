@@ -51,6 +51,8 @@
  * circumvents the &ldquo;contravariance problem&rdquo; with pointer-to-member
  * types. That is, the type <code>Base Object::*</code> is not compatible with
  * the type <code>Derived Object::*</code>.
+ *
+ * @sa openvrml::node_impl_util::ptr_to_polymorphic_mem_impl
  */
 
 /**
@@ -68,9 +70,7 @@
  */
 
 /**
- * @fn const MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem::deref(const Object & obj)
- *
- * @brief Dereference.
+ * @overload const MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem::deref(const Object & obj)
  *
  * @return a @c const reference to the base type of the member.
  */
@@ -113,9 +113,7 @@
  */
 
 /**
- * @fn const MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::deref(const Object & obj)
- *
- * @brief Dereference.
+ * @overload const MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::deref(const Object & obj)
  *
  * @return a @c const reference to the base type of the member.
  */

@@ -869,7 +869,7 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
 /**
  * @fn const openvrml::node_interface_set & openvrml::node_type::do_interfaces() const
  *
- * @brief Get the set of interfaces for the <code>node_type</code>.
+ * @brief Get the set of interfaces for the @c node_type.
  *
  * Subclasses must implement this function.
  *
@@ -877,14 +877,15 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  */
 
 /**
- * @brief Create a new node with this <code>node_type</code>.
+ * @brief Create a new node with this @c node_type.
  *
- * @param[in] scope             the scope to which the new <code>node</code>
+ * @param[in] scope             the @c scope to which the new @c node
  *                              should belong.
  * @param[in] initial_values    a map of initial values for the
- *                              <code>node</code>'s fields and exposedFields.
+ *                              <code>node</code>'s fields and
+ *                              @c exposedField%s.
  *
- * @return a <code>boost::intrusive_ptr</code> to a new node.
+ * @return a @c boost::intrusive_ptr to a new node.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -893,7 +894,7 @@ const openvrml::node_interface_set & openvrml::node_type::interfaces() const
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa http://boost.org/libs/smart_ptr/intrustive_ptr.html
+ * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
  */
 const boost::intrusive_ptr<openvrml::node>
 openvrml::node_type::
@@ -907,16 +908,17 @@ create_node(const boost::shared_ptr<scope> & scope,
 /**
  * @fn const boost::intrusive_ptr<openvrml::node> openvrml::node_type::do_create_node(const boost::shared_ptr<scope> & scope, const initial_value_map & initial_values) const
  *
- * @brief Create a new node with this <code>node_type</code>.
+ * @brief Create a new node with this @c node_type.
  *
  * Subclasses must implement this function.
  *
- * @param[in] scope             the <code>scope</code> to which the new
- *                              <code>node</code> should belong.
+ * @param[in] scope             the @c scope to which the new
+ *                              @c node should belong.
  * @param[in] initial_values    a map of initial values for the
- *                              <code>node</code>'s fields and exposedFields.
+ *                              <code>node</code>'s fields and
+ *                              @c exposedField%s.
  *
- * @return a <code>boost::intrusive_ptr</code> to a new node.
+ * @return a @c boost::intrusive_ptr to a new node.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -925,7 +927,7 @@ create_node(const boost::shared_ptr<scope> & scope,
  *                                  wrong type.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa http://boost.org/libs/smart_ptr/intrustive_ptr.html
+ * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
  */
 
 /**
