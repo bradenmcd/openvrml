@@ -27,18 +27,17 @@
  * @brief Utility classes to facilitate node implementations.
  *
  * While the API comprising the members of the @c openvrml namespace
- * provides everything <em>necessary</em> to implement nodes, node
- * implementation can be very verbose. The members of the
- * @c openvrml::node_impl_util namespace can make node implementation
+ * provides everything @e necessary to implement nodes, node
+ * implementation can be very verbose.  The members of the @c
+ * openvrml::node_impl_util namespace can make node implementation
  * more concise by abstracting and providing code that many node
  * implementations are likely to have in common.
  *
- * Specifically, @c node_type_impl centralizes the logic for
- * generalized field access. By using an instance of this class template
- * for your @c openvrml::node_type implementation you can avoid a lot
- * of tedious and repetitive code to implement
- * @c openvrml::node::do_field,
- * @c openvrml::node::do_event_listener, and
+ * In particular, @c node_type_impl centralizes the logic for
+ * generalized field access. By using an instance of this class
+ * template for your @c openvrml::node_type implementation you can
+ * avoid a lot of tedious and repetitive code to implement @c
+ * openvrml::node::do_field, @c openvrml::node::do_event_listener, and
  * @c openvrml::node::do_event_emitter.
  */
 
@@ -364,9 +363,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn const std::string openvrml::node_impl_util::event_listener_base::do_eventin_id() const
  *
- * @brief The associated eventIn identifier.
+ * @brief The associated @c eventIn identifier.
  *
- * @return the associated eventIn identifier.
+ * @return the associated @c eventIn identifier.
  */
 
 
@@ -382,7 +381,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @var openvrml::node * openvrml::node_impl_util::event_emitter_base::node_
  *
- * @brief The node with which the @c event_emitter is associated.
+ * @brief The @c node with which the @c event_emitter is associated.
  */
 
 /**
@@ -457,9 +456,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn const std::string openvrml::node_impl_util::event_emitter_base::do_eventout_id() const
  *
- * @brief The associated eventOut identifier.
+ * @brief The associated @c eventOut identifier.
  *
- * @return the associated eventOut identifier.
+ * @return the associated @c eventOut identifier.
  */
 
 
@@ -469,163 +468,163 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief Abstract base class for node implementations.
  *
  * @c abstract_node encapsulates the mechanisms for field access and
- * mutation, event dispatch, and eventOut access.
+ * mutation, event dispatch, and @c eventOut access.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfbool> openvrml::node_impl_util::abstract_node::sfbool_listener
  *
- * @brief @c openvrml::sfbool listener. Provided for convenience.
+ * @brief @c openvrml::sfbool listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfcolor> openvrml::node_impl_util::abstract_node::sfcolor_listener
  *
- * @brief @c openvrml::sfcolor listener. Provided for convenience.
+ * @brief @c openvrml::sfcolor listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sffloat> openvrml::node_impl_util::abstract_node::sffloat_listener
  *
- * @brief @c openvrml::sffloat listener. Provided for convenience.
+ * @brief @c openvrml::sffloat listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfdouble> openvrml::node_impl_util::abstract_node::sfdouble_listener
  *
- * @brief @c openvrml::sfdouble listener. Provided for convenience.
+ * @brief @c openvrml::sfdouble listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfimage> openvrml::node_impl_util::abstract_node::sfimage_listener
  *
- * @brief @c openvrml::sfimage listener. Provided for convenience.
+ * @brief @c openvrml::sfimage listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfint32> openvrml::node_impl_util::abstract_node::sfint32_listener
  *
- * @brief @c openvrml::sfint32 listener. Provided for convenience.
+ * @brief @c openvrml::sfint32 listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfnode> openvrml::node_impl_util::abstract_node::sfnode_listener
  *
- * @brief @c openvrml::sfnode listener. Provided for convenience.
+ * @brief @c openvrml::sfnode listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfrotation> openvrml::node_impl_util::abstract_node::sfrotation_listener
  *
- * @brief @c openvrml::sfrotation listener. Provided for convenience.
+ * @brief @c openvrml::sfrotation listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfstring> openvrml::node_impl_util::abstract_node::sfstring_listener
  *
- * @brief @c openvrml::sfstring listener. Provided for convenience.
+ * @brief @c openvrml::sfstring listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sftime> openvrml::node_impl_util::abstract_node::sftime_listener
  *
- * @brief @c openvrml::sftime listener. Provided for convenience.
+ * @brief @c openvrml::sftime listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfvec2f> openvrml::node_impl_util::abstract_node::sfvec2f_listener
  *
- * @brief @c openvrml::sfvec2f listener. Provided for convenience.
+ * @brief @c openvrml::sfvec2f listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfvec2d> openvrml::node_impl_util::abstract_node::sfvec2d_listener
  *
- * @brief @c openvrml::sfvec2d listener. Provided for convenience.
+ * @brief @c openvrml::sfvec2d listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfvec3f> openvrml::node_impl_util::abstract_node::sfvec3f_listener
  *
- * @brief @c openvrml::sfvec3f listener. Provided for convenience.
+ * @brief @c openvrml::sfvec3f listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::sfvec3d> openvrml::node_impl_util::abstract_node::sfvec3d_listener
  *
- * @brief @c openvrml::sfvec3d listener. Provided for convenience.
+ * @brief @c openvrml::sfvec3d listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfcolor> openvrml::node_impl_util::abstract_node::mfcolor_listener
  *
- * @brief @c openvrml::mfcolor listener. Provided for convenience.
+ * @brief @c openvrml::mfcolor listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mffloat> openvrml::node_impl_util::abstract_node::mffloat_listener
  *
- * @brief @c openvrml::mffloat listener. Provided for convenience.
+ * @brief @c openvrml::mffloat listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfdouble> openvrml::node_impl_util::abstract_node::mfdouble_listener
  *
- * @brief @c openvrml::mfdouble listener. Provided for convenience.
+ * @brief @c openvrml::mfdouble listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfint32> openvrml::node_impl_util::abstract_node::mfint32_listener
  *
- * @brief @c openvrml::mfint32 listener. Provided for convenience.
+ * @brief @c openvrml::mfint32 listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfnode> openvrml::node_impl_util::abstract_node::mfnode_listener
  *
- * @brief @c openvrml::mfnode listener. Provided for convenience.
+ * @brief @c openvrml::mfnode listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfrotation> openvrml::node_impl_util::abstract_node::mfrotation_listener
  *
- * @brief @c openvrml::mfrotation listener. Provided for convenience.
+ * @brief @c openvrml::mfrotation listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfstring> openvrml::node_impl_util::abstract_node::mfstring_listener
  *
- * @brief @c openvrml::mfstring listener. Provided for convenience.
+ * @brief @c openvrml::mfstring listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mftime> openvrml::node_impl_util::abstract_node::mftime_listener
  *
- * @brief @c openvrml::mftime listener. Provided for convenience.
+ * @brief @c openvrml::mftime listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfvec2f> openvrml::node_impl_util::abstract_node::mfvec2f_listener
  *
- * @brief @c openvrml::mfvec2f listener. Provided for convenience.
+ * @brief @c openvrml::mfvec2f listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfvec2d> openvrml::node_impl_util::abstract_node::mfvec2d_listener
  *
- * @brief @c openvrml::mfvec2d listener. Provided for convenience.
+ * @brief @c openvrml::mfvec2d listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfvec3f> openvrml::node_impl_util::abstract_node::mfvec3f_listener
  *
- * @brief @c openvrml::mfvec3f listener. Provided for convenience.
+ * @brief @c openvrml::mfvec3f listener.  Provided for convenience.
  */
 
 /**
  * @typedef openvrml::node_field_value_listener<openvrml::mfvec3d> openvrml::node_impl_util::abstract_node::mfvec3d_listener
  *
- * @brief @c openvrml::mfvec3d listener. Provided for convenience.
+ * @brief @c openvrml::mfvec3d listener.  Provided for convenience.
  */
 
 /**
@@ -639,7 +638,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param[in] node  node from which events will be emitted.
+ * @param[in] node  @c node from which events will be emitted.
  * @param[in] value associated field value.
  */
 
@@ -845,8 +844,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with this node.
- * @param[in] scope the scope to which the node belongs.
+ * @param[in] type  the @c node_type associated with this node.
+ * @param[in] scope the @c scope to which the @c node belongs.
  */
 
 /**
@@ -858,11 +857,11 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn const openvrml::field_value & openvrml::node_impl_util::abstract_node::do_field(const std::string & id) const
  *
- * @brief Get a field value for a node.
+ * @brief Get a field value for a @c node.
  *
  * @param[in] id    a field name.
  *
- * @exception unsupported_interface  if the node has no field @p id.
+ * @exception unsupported_interface  if the @c node has no @c field @p id.
  */
 
 /**
@@ -870,13 +869,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Get an event listener.
  *
- * This method is called by node::event_listener.
+ * This method is called by @c node::event_listener.
  *
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  *
  * @return the event listener.
  *
- * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception unsupported_interface if the @c node has no @c eventIn @p id.
  */
 
 /**
@@ -884,13 +883,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Get an event emitter.
  *
- * This method is called by node::event_emitter.
+ * This method is called by @c node::event_emitter.
  *
- * @param[in] id    eventOut identifier.
+ * @param[in] id    @c eventOut identifier.
  *
  * @return the event emitter.
  *
- * @exception unsupported_interface if the node has no eventOut @p id.
+ * @exception unsupported_interface if the @c node has no @c eventOut @p id.
  */
 
 /**
@@ -917,7 +916,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn openvrml::node_impl_util::node_type_impl::event_listener_ptr::event_listener_ptr(EventListenerMember Node::* ptr_to_mem)
  *
- * @brief Construct
+ * @brief Construct.
  *
  * @param[in] ptr_to_mem    a pointer to an
  *                          @c openvrml::event_listener member.
@@ -932,7 +931,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn openvrml::node_impl_util::node_type_impl::event_emitter_ptr::event_emitter_ptr(EventEmitterMember Node::* ptr_to_mem)
  *
- * @brief Construct
+ * @brief Construct.
  *
  * @param[in] ptr_to_mem    a pointer to an
  *                          @c openvrml::event_emitter member.
@@ -956,15 +955,15 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn void openvrml::node_impl_util::node_type_impl::add_eventin(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener)
  *
- * @brief Add an eventIn.
+ * @brief Add an @c eventIn.
  *
  * @param[in] type              the field value type.
- * @param[in] id                the eventIn identifier.
- * @param[in] event_listener    the @c openvrml::event_listener
- *                              associated with the eventIn.
+ * @param[in] id                the @c eventIn identifier.
+ * @param[in] event_listener    the @c openvrml::event_listener associated
+ *                              with the @c eventIn.
  *
- * @exception std::invalid_argument if an interface with a conflicting
- *                                  @p id has already been added to the
+ * @exception std::invalid_argument if an interface with a conflicting @p id
+ *                                  has already been added to the
  *                                  @c node_type.
  * @exception std::bad_alloc        if memory allocation fails.
  */
@@ -972,12 +971,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn void openvrml::node_impl_util::node_type_impl::add_eventout(const openvrml::field_value::type_id type, const std::string & id, const event_emitter_ptr_ptr & event_emitter)
  *
- * @brief Add an eventOut.
+ * @brief Add an @c eventOut.
  *
  * @param[in] type          the field value type.
- * @param[in] id            the eventOut identifier.
+ * @param[in] id            the @c eventOut identifier.
  * @param[in] event_emitter the @c openvrml::event_emitter
- *                          associated with the eventOut.
+ *                          associated with the @c eventOut.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -988,16 +987,16 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener, const field_ptr_ptr & field, const event_emitter_ptr_ptr & event_emitter)
  *
- * @brief Add an exposedField.
+ * @brief Add an @c exposedField.
  *
  * @param[in] type              the field value type.
- * @param[in] id                the exposedField identifier.
+ * @param[in] id                the @c exposedField identifier.
  * @param[in] event_listener    the @c openvrml::event_listener
- *                              associated with the exposedField.
+ *                              associated with the @c exposedField.
  * @param[in] field             the @c openvrml::field_value
- *                              associated with the exposedField.
+ *                              associated with the @c exposedField.
  * @param[in] event_emitter     the @c openvrml::event_emitter
- *                              associated with the exposedField.
+ *                              associated with the @c exposedField.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -1008,12 +1007,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & field)
  *
- * @brief Add a field.
+ * @brief Add a @c field.
  *
  * @param[in] type  the field value type.
  * @param[in] id    the field identifier.
  * @param[in] field the @c openvrml::field_value associated with the
- *                  field.
+ *                  @c field.
  *
  * @exception std::invalid_argument if an interface with a conflicting
  *                                  @p id has already been added to the
@@ -1031,12 +1030,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @param[in] node  the @c openvrml::node for which to return the
  *                  @c openvrml::field_value.
- * @param[in] id    field identifier.
+ * @param[in] id    @c field identifier.
  * 
  * @return @p node's @c openvrml::field_value corresponding to
- *         the field identifier @p id.
+ *         the @c field identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no field
+ * @exception openvrml::unsupported_interface   if @p node has no @c field
  *                                              @p id.
  */
 
@@ -1048,12 +1047,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @param[in] node  the node for which to return the
  *                  @c openvrml::field_value.
- * @param[in] id    field identifier.
+ * @param[in] id    @c field identifier.
  * 
  * @return @p node's @c openvrml::field_value corresponding to
- *         the field identifier @p id.
+ *         the @c field identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no field
+ * @exception openvrml::unsupported_interface   if @p node has no @c field
  *                                              @p id.
  */
 
@@ -1061,19 +1060,19 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::event_listener(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's @c openvrml::event_listener corresponding to
- *        the eventIn identifier @p id.
+ *        the @c eventIn identifier @p id.
  *
  * Delegates to
  * @c node_type_impl<Node>::do_event_listener.
  *
  * @param[in] node  the @c openvrml::node for which to return the
  *                  @c openvrml::event_listener.
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  * 
  * @return @p node's @c openvrml::event_listener corresponding to
  *         the eventIn identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no eventIn
+ * @exception openvrml::unsupported_interface   if @p node has no @c eventIn
  *                                              @p id.
  */
 
@@ -1081,16 +1080,16 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @fn openvrml::event_listener & openvrml::node_impl_util::node_type_impl::do_event_listener(Node & node, const std::string & id) const
  *
  * @brief @p node's @c openvrml::event_listener corresponding to
- *        the eventIn identifier @p id.
+ *        the @c eventIn identifier @p id.
  *
  * @param[in] node  the @c openvrml::node for which to return the
  *                  @c openvrml::event_listener.
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  * 
  * @return @p node's @c openvrml::event_listener corresponding to
- *         the eventIn identifier @p id.
+ *         the @c eventIn identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no eventIn
+ * @exception openvrml::unsupported_interface   if @p node has no @c eventIn
  *                                              @p id.
  */
 
@@ -1098,18 +1097,18 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::event_emitter(openvrml::node & node, const std::string & id) const
  *
  * @brief @p node's @c openvrml::event_emitter corresponding to
- *        the eventOut identifier @p id.
+ *        the @c eventOut identifier @p id.
  *
  * Delegates to @c node_type_impl<Node>::do_event_emitter.
  *
  * @param[in] node  the @c openvrml::node for which to return the
  *                  @c openvrml::event_emitter.
- * @param[in] id    eventOut identifier.
+ * @param[in] id    @c eventOut identifier.
  * 
  * @return @p node's @c openvrml::event_emitter corresponding to
- *         the eventOut identifier @p id.
+ *         the @c eventOut identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no eventOut
+ * @exception openvrml::unsupported_interface   if @p node has no @c eventOut
  *                                              @p id.
  */
 
@@ -1117,18 +1116,18 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @fn openvrml::event_emitter & openvrml::node_impl_util::node_type_impl::do_event_emitter(Node & node, const std::string & id) const
  *
  * @brief @p node's @c openvrml::event_emitter corresponding to
- *        the eventOut identifier @p id.
+ *        the @c eventOut identifier @p id.
  *
  * Delegates to @c node_type_impl<Node>::do_event_emitter.
  *
  * @param[in] node  the @c openvrml::node for which to return the
  *                  @c openvrml::event_emitter.
- * @param[in] id    eventOut identifier.
+ * @param[in] id    @c eventOut identifier.
  * 
  * @return @p node's @c openvrml::event_emitter corresponding to
- *         the eventOut identifier @p id.
+ *         the @c eventOut identifier @p id.
  *
- * @exception openvrml::unsupported_interface   if @p node has no eventOut
+ * @exception openvrml::unsupported_interface   if @p node has no @c eventOut
  *                                              @p id.
  */
 
@@ -1147,9 +1146,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Create a node instance.
  *
- * @param[in] scope             the @c scope the new node will belong
- *                              to.
- * @param[in] initial_values    initial values for the new node's fields.
+ * @param[in] scope             the @c scope the new node will belong to.
+ * @param[in] initial_values    initial values for the new <code>node</code>'s
+ *                              fields.
  *
  * @return a new node instance.
  *

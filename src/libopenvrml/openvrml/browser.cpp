@@ -102,11 +102,10 @@ namespace openvrml {
      *
      * @brief @c node_metatype for @c PROTO%s.
      *
-     * The <code>proto_node_metatype</code> is %OpenVRML's in-memory
-     * representation of a @c PROTO (as opposed to a
-     * @c PROTO instance).  Through the <code>proto_node_type</code>
-     * intermediary, it facilitates spawning any number of
-     * <code>proto_node</code> instances.
+     * The @c proto_node_metatype is OpenVRML's in-memory representation of a
+     * @c PROTO (as opposed to a @c PROTO instance).  Through the @c
+     * proto_node_type intermediary, it facilitates spawning any number of @c
+     * proto_node instances.
      */
     class OPENVRML_LOCAL proto_node_metatype : public node_metatype {
         friend class proto_node;
@@ -169,7 +168,7 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @brief <code>node_type</code> for PROTO node instances.
+     * @brief @c node_type for @c PROTO node instances.
      */
     class OPENVRML_LOCAL proto_node_type : public node_type {
         node_interface_set interfaces_;
@@ -1305,8 +1304,8 @@ namespace openvrml {
      *
      * @todo It's annoying that we need to carry this around.  Should
      *       investigate the possibility of promoting all this stuff to
-     *       proto_eventout and have proto_eventout privately inherit
-     *       field_value_listener<FieldValue>.
+     *       @c proto_eventout and have @c proto_eventout privately inherit
+     *       @c field_value_listener<FieldValue>.
      */
 
     /**
@@ -1349,7 +1348,7 @@ namespace openvrml {
     {}
 
     /**
-     * @brief Get the associated eventIn identifier.
+     * @brief Get the associated @c eventIn identifier.
      */
     template <typename FieldValue>
     const std::string
@@ -1411,7 +1410,7 @@ namespace openvrml {
      *
      * @param[in] node          @c abstract_proto_node.
      * @param[in] initial_value initial value.  This is used by
-     *                      @c proto_exposedfield<FieldValue>
+     *                          @c proto_exposedfield<FieldValue>
      */
     template <typename FieldValue>
     abstract_proto_node::proto_eventout<FieldValue>::
