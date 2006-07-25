@@ -1,5 +1,23 @@
 2006-07-25 Braden McDaniel  <braden@endoframe.com>
 
+	When processing a stream from browser::create_vrml_from_stream,
+	resolve EXTERNPROTO URLs relative to the browser::world_url.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(externproto): Check to see if the URI used to instantiate the
+	parser is an anonymous stream (i.e., from
+	browser::create_vrml_from_stream) identifier.  If it is, resolve
+	relative URLs against browser::world_url instead.
+	* src/libopenvrml/openvrml/browser.cpp
+	(anonymous_stream_id(const uri &)): Check to see whether a uri is
+	an anonymous stream identifier (i.e., from
+	browser::create_vrml_from_stream).
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Use anonymous_stream_id_prefix_ when constructing
+	the stream identifier.
+
+2006-07-25 Braden McDaniel  <braden@endoframe.com>
+
 	Changes to tests for parity with the change from node_class to
 	node_metatype.
 

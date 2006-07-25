@@ -33,7 +33,8 @@ namespace openvrml {
 }
 
 namespace {
-    class Vrml97Scanner : public antlr::TokenStream {
+
+    class OPENVRML_LOCAL Vrml97Scanner : public antlr::TokenStream {
     public:
         static const int EOF_;
         //
@@ -947,6 +948,10 @@ options { defaultErrorHandler=false; }
     openvrml::node_interface_set interfaces;
     openvrml::mfstring uri_list;
     shared_ptr<node_type> node_type;
+
+    const ::uri base_uri = anonymous_stream_id(::uri(uri))
+        ? ::uri(scene.browser().world_url())
+        : ::uri(this->uri);
 }
     :   KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
@@ -955,15 +960,14 @@ options { defaultErrorHandler=false; }
             for (vector<string>::const_iterator resource_id = alt_uris.begin();
                  resource_id != alt_uris.end();
                  ++resource_id) {
-                const ::uri absolute_uri = !relative(::uri(*resource_id))
-                    ? ::uri(*resource_id)
-                    : ::uri(*resource_id)
-                        .resolve_against(::uri(this->uri));
+                const ::uri absolute_uri = relative(::uri(*resource_id))
+                    ? ::uri(*resource_id).resolve_against(base_uri)
+                    : ::uri(*resource_id);
                 const shared_ptr<openvrml::node_metatype> node_metatype =
                     scene.browser().node_metatype(node_metatype_id(absolute_uri));
                 if (node_metatype) {
                     node_type = node_metatype->create_type(id->getText(),
-                                                        interfaces);
+                                                           interfaces);
                     break;
                 }
             }
@@ -976,18 +980,17 @@ options { defaultErrorHandler=false; }
                         alt_uris));
 
                 scene.browser().add_node_metatype(externproto_class->id(),
-                                               externproto_class);
+                                                  externproto_class);
                 for (vector<string>::const_iterator resource_id =
                          alt_uris.begin();
                      resource_id != alt_uris.end();
                      ++resource_id) {
-                    const ::uri absolute_uri =
-                        !relative(::uri(*resource_id))
-                            ? ::uri(*resource_id)
-                            : ::uri(*resource_id).resolve_against(
-                                ::uri(this->uri));
-                    scene.browser().add_node_metatype(node_metatype_id(absolute_uri),
-                                                   externproto_class);
+                    const ::uri absolute_uri = relative(::uri(*resource_id))
+                        ? ::uri(*resource_id).resolve_against(base_uri)
+                        : ::uri(*resource_id);
+                    scene.browser()
+                        .add_node_metatype(node_metatype_id(absolute_uri),
+                                           externproto_class);
                 }
 
                 node_type = externproto_class->create_type(id->getText(),

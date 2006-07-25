@@ -34,6 +34,7 @@
 #   include <sys/time.h>
 # endif
 # include <boost/algorithm/string/predicate.hpp>
+# include <boost/array.hpp>
 # include <boost/bind.hpp>
 # include <boost/enable_shared_from_this.hpp>
 # include <boost/functional.hpp>
@@ -3641,9 +3642,21 @@ namespace {
             OPENVRML_THROW1(std::bad_alloc);
     };
 
-    inline bool relative(const uri & id)
+    OPENVRML_LOCAL inline bool relative(const uri & id)
     {
         return id.scheme().empty();
+    }
+
+    const std::string anonymous_stream_id_prefix_ =
+        "urn:X-openvrml:stream:";
+
+    OPENVRML_LOCAL bool anonymous_stream_id(const uri & id)
+    {
+        const std::string str(id);
+        return str.length() > anonymous_stream_id_prefix_.length()
+            && std::equal(anonymous_stream_id_prefix_.begin(),
+                          anonymous_stream_id_prefix_.end(),
+                          str.begin());
     }
 
     uri::uri() OPENVRML_THROW1(std::bad_alloc)
@@ -6732,6 +6745,7 @@ const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::browser::create_vrml_from_stream(std::istream & in,
                                            const std::string & type)
 {
+    using std::ostringstream;
     using std::string;
     using std::vector;
     using boost::lexical_cast;
@@ -6741,14 +6755,15 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
         ++stream_id_index_;
     }
 
-    const string stream_id =
-        "urn:X-openvrml:stream:" + lexical_cast<string>(stream_id_index_);
+    ostringstream stream_id;
+    stream_id << anonymous_stream_id_prefix_
+              << lexical_cast<string>(stream_id_index_);
 
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
         assert(this->scene_);
         std::map<string, string> meta;
-        parse_vrml(in, stream_id, type, *this->scene_, nodes, meta);
+        parse_vrml(in, stream_id.str(), type, *this->scene_, nodes, meta);
     } catch (openvrml::bad_media_type & ex) {
         throw std::invalid_argument(ex.what());
     }
