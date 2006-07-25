@@ -1,5 +1,14 @@
 2006-07-25 Braden McDaniel  <braden@endoframe.com>
 
+	Changes to tests for parity with the change from node_class to
+	node_metatype.
+
+	* tests/Makefile.am
+	* tests/node_class_id.cpp: Removed file.
+	* tests/node_metatype_id.cpp: Added file.
+
+2006-07-25 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
 
 2006-07-25 Braden McDaniel  <braden@endoframe.com>
