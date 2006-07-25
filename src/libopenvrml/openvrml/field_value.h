@@ -149,7 +149,7 @@ namespace openvrml {
         field_value(const field_value & value) OPENVRML_THROW1(std::bad_alloc);
 
         template <typename FieldValue>
-        FieldValue & operator=(const FieldValue & value)
+        FieldValue & operator=(const FieldValue & fv)
             OPENVRML_THROW1(std::bad_alloc);
 
     private:

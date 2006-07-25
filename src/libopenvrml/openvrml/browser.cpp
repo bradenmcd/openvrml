@@ -100,11 +100,11 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @brief <code>node_metatype</code> for <code>PROTO</code>s.
+     * @brief @c node_metatype for @c PROTO%s.
      *
      * The <code>proto_node_metatype</code> is %OpenVRML's in-memory
-     * representation of a <code>PROTO</code> (as opposed to a
-     * <code>PROTO</code> instance).  Through the <code>proto_node_type</code>
+     * representation of a @c PROTO (as opposed to a
+     * @c PROTO instance).  Through the <code>proto_node_type</code>
      * intermediary, it facilitates spawning any number of
      * <code>proto_node</code> instances.
      */
@@ -433,35 +433,30 @@ namespace openvrml {
     /**
      * @internal
      *
-     * @brief A <code>PROTO</code> instance node.
+     * @brief A @c PROTO instance node.
      *
-     * Like a typical node implementation, <code>proto_node</code>s have a
-     * many-to-one relationship with the <code>proto_node_type</code> instance
-     * that creates them. And <code>proto_node_type</code> has, in turn, a
-     * many-to-one relationship with the <code>proto_node_metatype</code> instance
-     * that creates them. Unlike a typical node implementation, there will very
-     * likely be more than one <code>proto_node_metatype</code> instance known to
-     * the <code>browser</code> instance; there will be one for each
-     * <code>PROTO</code> known to the <code>browser</code>.
+     * Like a typical node implementation, @c proto_node%s have a many-to-one
+     * relationship with the @c proto_node_type instance that creates them.
+     * And @c proto_node_type has, in turn, a many-to-one relationship with
+     * the @c proto_node_metatype instance that creates them.  Unlike a
+     * typical node implementation, there will very likely be more than one @c
+     * proto_node_metatype instance known to the @c browser instance; there
+     * will be one for each @c PROTO known to the @c browser.
      *
-     * As the <code>proto_node_metatype</code> encodes the data in a
-     * <code>PROTO</code>, the <code>proto_node_type</code> can be seen as
-     * modeling <code>EXTERNPROTO</code>. Each <code>EXTERNPROTO</code> will
-     * spawn a new <code>proto_node_type</code> from the
-     * <code>proto_node_metatype</code> that corresponds to the <code>PROTO</code>
-     * to which the <code>EXTERNPROTO</code> refers. Recall that an
-     * <code>EXTERNPROTO</code> provides a subset of the interfaces defined for
-     * a <code>PROTO</code>; thus, for a <code>PROTO</code> with <var>n</var>
-     * interfaces, there are <var>n</var>! possible unique
-     * <code>EXTERNPROTO</code>s (and thus unique <code>proto_node_type</code>
-     * instances).
+     * As the @c proto_node_metatype encodes the data in a @c PROTO, the @c
+     * proto_node_type can be seen as modeling @c EXTERNPROTO. Each @c
+     * EXTERNPROTO will spawn a new @c proto_node_type from the @c
+     * proto_node_metatype that corresponds to the @c PROTO to which the @c
+     * EXTERNPROTO refers.  Recall that an @c EXTERNPROTO provides a subset of
+     * the interfaces defined for a @c PROTO; thus, for a @c PROTO with
+     * <var>n</var> interfaces, there are <var>n</var>! possible unique @c
+     * EXTERNPROTO%s (and thus unique @c proto_node_type instances).
      *
-     * Structurally, the implementation of <code>proto_node</code> is very
-     * similar to that of <code>proto_node_metatype</code>. The difference is that
-     * event pathways for <code>ROUTE</code>s and <code>IS</code> mappings are
-     * actually created in the <code>proto_node</code>. The
-     * <code>proto_node_metatype</code>, on the other hand, includes metadata
-     * about how these event pathways @e should be created.
+     * Structurally, the implementation of @c proto_node is very similar to
+     * that of @c proto_node_metatype. The difference is that event pathways
+     * for @c ROUTE%s and @c IS mappings are actually created in the @c
+     * proto_node.  The @c proto_node_metatype, on the other hand, includes
+     * metadata about how these event pathways @e should be created.
      */
     class OPENVRML_LOCAL proto_node : public abstract_proto_node {
         friend class externproto_node;
@@ -1056,7 +1051,7 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param[in] impl_node             a node in the PROTO implementation.
+     * @param[in] impl_node             a node in the @c PROTO implementation.
      * @param[in] impl_node_interface   an interface of @p impl_node.
      */
     proto_node_metatype::
@@ -1070,9 +1065,9 @@ namespace openvrml {
      * @brief Construct.
      *
      * @param[in] from      event source node.
-     * @param[in] eventout  eventOut of @p from.
+     * @param[in] eventout  @c eventOut of @p from.
      * @param[in] to        event destination node.
-     * @param[in] eventin   eventIn of @p to.
+     * @param[in] eventin   @c eventIn of @p to.
      */
     proto_node_metatype::route::route(node & from,
                                    const std::string & eventout,
@@ -1087,11 +1082,11 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param[in] node_metatype    the proto_node_metatype that spawned the
-     *                      proto_node_type.
-     * @param[in] id            node_type identifier.
+     * @param[in] node_metatype the proto_node_metatype that spawned the
+     *                          @c proto_node_type.
+     * @param[in] id            @c node_type identifier.
      * @param[in] interfaces    a subset of the interfaces supported by the
-     *                      @p node_metatype.
+     *                          @p node_metatype.
      *
      * @exception unsupported_interface if an interface in @p interfaces is not
      *                                  supported by the @p node_metatype.
@@ -1152,7 +1147,7 @@ namespace openvrml {
      *
      * @class abstract_proto_node::proto_eventin
      *
-     * @brief PROTO eventIn handler class template.
+     * @brief @c PROTO @c eventIn handler class template.
      */
 
     /**
@@ -1223,9 +1218,9 @@ namespace openvrml {
     }
 
     /**
-     * @brief The name of the associated eventIn.
+     * @brief The name of the associated @c eventIn.
      *
-     * @return the name of the associated eventIn.
+     * @return the name of the associated @c eventIn.
      */
     template <typename FieldValue>
     const std::string
@@ -1242,9 +1237,9 @@ namespace openvrml {
     }
 
     /**
-     * @brief Add a listener to delegate to. Corresponds to an IS statement.
+     * @brief Add a listener to delegate to.  Corresponds to an @c IS statement.
      *
-     * @param[in] listener  an event_listener to delegate to.
+     * @param[in] listener  an @c event_listener to delegate to.
      *
      * @return @c true if @p listener is added successfully; @c false
      *         otherwise (if it already exists in the list of delegates).
@@ -1261,12 +1256,13 @@ namespace openvrml {
     }
 
     /**
-     * @brief Factory function for proto_eventin<FieldValue> instances.
+     * @brief Factory function for @c proto_eventin<FieldValue> instances.
      *
-     * @param[in] type  field_value::type_id.
-     * @param[in] node  proto_node.
+     * @param[in] type  @c field_value::type_id.
+     * @param[in] node  @c proto_node.
      *
-     * @return a boost::shared_ptr to a proto_eventin<FieldValue> instance.
+     * @return a @c boost::shared_ptr to a @c proto_eventin<FieldValue>
+     *         instance.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
@@ -1289,7 +1285,7 @@ namespace openvrml {
      *
      * @class abstract_proto_node::proto_eventout
      *
-     * @brief PROTO eventOut handler class template.
+     * @brief @c PROTO @c eventOut handler class template.
      */
 
     /**
@@ -1297,14 +1293,15 @@ namespace openvrml {
      *
      * @class abstract_proto_node::proto_eventout::listener_t
      *
-     * @brief Listens for events emitted from nodes in the PROTO implementation
-     *        in order to propagate them out of the PROTO instance.
+     * @brief Listens for events emitted from @c node%s in the @c PROTO
+     *        implementation in order to propagate them out of the @c PROTO
+     *        instance.
      */
 
     /**
      * @var abstract_proto_node::proto_eventout & abstract_proto_node::proto_eventout::listener_t::emitter
      *
-     * @brief Reference to the outer proto_eventout class.
+     * @brief Reference to the outer @c proto_eventout class.
      *
      * @todo It's annoying that we need to carry this around.  Should
      *       investigate the possibility of promoting all this stuff to
@@ -1329,7 +1326,7 @@ namespace openvrml {
      *
      * @param[in] emitter       @c proto_eventout.
      * @param[in] node          @c abstract_proto_node.
-     * @param[in] initial_value initial value (used for exposedFields).
+     * @param[in] initial_value initial value (used for @c exposedFields).
      */
     template <typename FieldValue>
     abstract_proto_node::proto_eventout<FieldValue>::listener_t::
@@ -1437,7 +1434,7 @@ namespace openvrml {
      * @brief Create an @c IS mapping.
      *
      * @param[in,out] emitter   the @c event_emitter from a node in the @c PROTO
-     *                  implementation.
+     *                          implementation.
      *
      * @return @c true if the @c IS mapping is created successfully; @c false
      *         otherwise (i.e., if it already exists).
@@ -1453,9 +1450,9 @@ namespace openvrml {
     }
 
     /**
-     * @brief The name of the associated eventOut.
+     * @brief The name of the associated @c eventOut.
      *
-     * @return the name of the associated eventOut.
+     * @return the name of the associated @c eventOut.
      */
     template <typename FieldValue>
     const std::string
@@ -1501,7 +1498,7 @@ namespace openvrml {
      *
      * @class proto_node::proto_exposedfield
      *
-     * @brief PROTO exposedField handler class template.
+     * @brief @c PROTO @c exposedField handler class template.
      */
 
     /**
@@ -1548,12 +1545,12 @@ namespace openvrml {
     }
 
     /**
-     * @brief Factory function for proto_exposedfield<FieldValue> instances.
+     * @brief Factory function for @c proto_exposedfield<FieldValue> instances.
      *
-     * @param[in] type  field_value::type_id.
-     * @param[in] node  proto_node.
+     * @param[in] type  @c field_value::type_id.
+     * @param[in] node  @c proto_node.
      *
-     * @return a boost::shared_ptr to a proto_exposedfield<FieldValue>
+     * @return a @c boost::shared_ptr to a @c proto_exposedfield<FieldValue>
      *         instance.
      *
      * @exception std::bad_alloc    if memory allocation fails.
@@ -1577,8 +1574,8 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param[in] type  node_type.
-     * @param[in] scope scope.
+     * @param[in] type  @c node_type.
+     * @param[in] scope @c scope.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
@@ -1794,7 +1791,7 @@ namespace openvrml {
     {}
 
     /**
-     * @brief Indicate whether the node needs to be rerendered.
+     * @brief Indicate whether the @c node needs to be rerendered.
      *
      * @return @c true if the node has changed and needs to be rerendered;
      *         @c false otherwise.
@@ -1833,9 +1830,9 @@ namespace openvrml {
      *
      * @param[in] id    field identifier.
      *
-     * @exception unsupported_interface if the node has no field @p id.
+     * @exception unsupported_interface if the @c node has no field @p id.
      *
-     * @todo Make this function handle exposedFields.
+     * @todo Make this function handle @c exposedFields.
      */
     const field_value & proto_node::do_field(const std::string & id) const
         OPENVRML_THROW1(unsupported_interface)
@@ -1882,13 +1879,13 @@ namespace openvrml {
     }
 
     /**
-     * @brief event_listener accessor implementation.
+     * @brief @c event_listener accessor implementation.
      *
-     * @param[in] id    eventIn identifier.
+     * @param[in] id    @c eventIn identifier.
      *
-     * @return the event_listener for the eventIn @p id.
+     * @return the @c event_listener for the eventIn @p id.
      *
-     * @exception unsupported_interface if the node has no eventIn @p id.
+     * @exception unsupported_interface if the node has no @c eventIn @p id.
      */
     event_listener &
     proto_node::do_event_listener(const std::string & id)
@@ -1904,13 +1901,13 @@ namespace openvrml {
     }
 
     /**
-     * @brief event_emitter accessor implementation.
+     * @brief @c event_emitter accessor implementation.
      *
-     * @param[in] id    eventOut identifier.
+     * @param[in] id    @c eventOut identifier.
      *
-     * @return the event_emitter for the eventOut @p id.
+     * @return the @c event_emitter for the eventOut @p id.
      *
-     * @exception unsupported_interface if the node has no eventOut @p id.
+     * @exception unsupported_interface if the node has no @c eventOut @p id.
      */
     event_emitter & proto_node::do_event_emitter(const std::string & id)
         OPENVRML_THROW1(unsupported_interface)
@@ -1941,10 +1938,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a script_node.
+     * @brief Cast to a @c script_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a script_node, or 0 otherwise.
+     *         is a @c script_node, or 0 otherwise.
      */
     script_node * proto_node::to_script() OPENVRML_NOTHROW
     {
@@ -1954,10 +1951,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to an appearance_node.
+     * @brief Cast to an @c appearance_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is an appearance_node, or 0 otherwise.
+     *         is an @c appearance_node, or 0 otherwise.
      */
     appearance_node * proto_node::to_appearance() OPENVRML_NOTHROW
     {
@@ -1967,10 +1964,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>bounded_volume_node</code>.
+     * @brief Cast to a @c bounded_volume_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>bounded_volume_node</code>, or 0 otherwise.
+     *         is a @c bounded_volume_node, or 0 otherwise.
      */
     bounded_volume_node * proto_node::to_bounded_volume() OPENVRML_NOTHROW
     {
@@ -1980,10 +1977,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a child_node.
+     * @brief Cast to a @c child_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a child_node, or 0 otherwise.
+     *         is a @c child_node, or 0 otherwise.
      */
     child_node * proto_node::to_child() OPENVRML_NOTHROW
     {
@@ -1993,10 +1990,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a color_node.
+     * @brief Cast to a @c color_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a color_node, or 0 otherwise.
+     *         is a @c color_node, or 0 otherwise.
      */
     color_node * proto_node::to_color() OPENVRML_NOTHROW
     {
@@ -2019,10 +2016,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a coordinate_node.
+     * @brief Cast to a @c coordinate_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a coordinate_node, or 0 otherwise.
+     *         is a @c coordinate_node, or 0 otherwise.
      */
     coordinate_node * proto_node::to_coordinate() OPENVRML_NOTHROW
     {
@@ -2032,10 +2029,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a font_style_node.
+     * @brief Cast to a @c font_style_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a font_style_node, or 0 otherwise.
+     *         is a @c font_style_node, or 0 otherwise.
      */
     font_style_node * proto_node::to_font_style() OPENVRML_NOTHROW
     {
@@ -2045,10 +2042,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a geometry_node.
+     * @brief Cast to a @c geometry_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a geometry_node, or 0 otherwise.
+     *         is a @c geometry_node, or 0 otherwise.
      */
     geometry_node * proto_node::to_geometry() OPENVRML_NOTHROW
     {
@@ -2058,10 +2055,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>grouping_node</code>.
+     * @brief Cast to a @c grouping_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>grouping_node</code>, or 0 otherwise.
+     *         is a @c grouping_node, or 0 otherwise.
      */
     grouping_node * proto_node::to_grouping() OPENVRML_NOTHROW
     {
@@ -2071,10 +2068,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>light_node</code>.
+     * @brief Cast to a @c light_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>light_node</code>, or 0 otherwise.
+     *         is a @c light_node, or 0 otherwise.
      */
     light_node * proto_node::to_light() OPENVRML_NOTHROW
     {
@@ -2084,10 +2081,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a material_node.
+     * @brief Cast to a @c material_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a material_node, or 0 otherwise.
+     *         is a @c material_node, or 0 otherwise.
      */
     material_node * proto_node::to_material() OPENVRML_NOTHROW
     {
@@ -2097,10 +2094,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>navigation_info_node</code>.
+     * @brief Cast to a @c navigation_info_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>navigation_info_node</code>, or 0 otherwise.
+     *         is a @c navigation_info_node, or 0 otherwise.
      */
     navigation_info_node * proto_node::to_navigation_info() OPENVRML_NOTHROW
     {
@@ -2110,10 +2107,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a normal_node.
+     * @brief Cast to a @c normal_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a normal_node, or 0 otherwise.
+     *         is a @c normal_node, or 0 otherwise.
      */
     normal_node * proto_node::to_normal() OPENVRML_NOTHROW
     {
@@ -2123,10 +2120,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>pointing_device_sensor_node</code>.
+     * @brief Cast to a @c pointing_device_sensor_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>pointing_device_sensor_node</code>, or 0 otherwise.
+     *         is a @c pointing_device_sensor_node, or 0 otherwise.
      */
     pointing_device_sensor_node * proto_node::to_pointing_device_sensor()
         OPENVRML_NOTHROW
@@ -2138,10 +2135,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>scoped_light_node</code>.
+     * @brief Cast to a @c scoped_light_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>scoped_light_node</code>, or 0 otherwise.
+     *         is a @c scoped_light_node, or 0 otherwise.
      */
     scoped_light_node * proto_node::to_scoped_light() OPENVRML_NOTHROW
     {
@@ -2151,10 +2148,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a sound_source_node.
+     * @brief Cast to a @c sound_source_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a sound_source_node, or 0 otherwise.
+     *         is a @c sound_source_node, or 0 otherwise.
      */
     sound_source_node * proto_node::to_sound_source() OPENVRML_NOTHROW
     {
@@ -2164,10 +2161,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a texture_node.
+     * @brief Cast to a @c texture_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a texture_node, or 0 otherwise.
+     *         is a @c texture_node, or 0 otherwise.
      */
     texture_node * proto_node::to_texture() OPENVRML_NOTHROW
     {
@@ -2177,10 +2174,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a texture_coordinate_node.
+     * @brief Cast to a @c texture_coordinate_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a texture_coordinate_node, or 0 otherwise.
+     *         is a @c texture_coordinate_node, or 0 otherwise.
      */
     texture_coordinate_node * proto_node::to_texture_coordinate()
         OPENVRML_NOTHROW
@@ -2191,10 +2188,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a texture_transform_node.
+     * @brief Cast to a @c texture_transform_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a texture_transform_node, or 0 otherwise.
+     *         is a @c texture_transform_node, or 0 otherwise.
      */
     texture_transform_node * proto_node::to_texture_transform()
         OPENVRML_NOTHROW
@@ -2205,10 +2202,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a <code>time_dependent_node</code>.
+     * @brief Cast to a @c time_dependent_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a <code>time_dependent_node</code>, or 0 otherwise.
+     *         is a @c time_dependent_node, or 0 otherwise.
      */
     time_dependent_node * proto_node::to_time_dependent() OPENVRML_NOTHROW
     {
@@ -2218,10 +2215,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a transform_node.
+     * @brief Cast to a @c transform_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a transform_node, or 0 otherwise.
+     *         is a @c transform_node, or 0 otherwise.
      */
     transform_node * proto_node::to_transform() OPENVRML_NOTHROW
     {
@@ -2231,10 +2228,10 @@ namespace openvrml {
     }
 
     /**
-     * @brief Cast to a viewpoint_node.
+     * @brief Cast to a @c viewpoint_node.
      *
      * @return a pointer to the first node in the implementation if that node
-     *         is a viewpoint_node, or 0 otherwise.
+     *         is a @c viewpoint_node, or 0 otherwise.
      */
     viewpoint_node * proto_node::to_viewpoint() OPENVRML_NOTHROW
     {
@@ -2731,7 +2728,7 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param[in] type  the browser's null_node_type instance.
+     * @param[in] type  the <code>browser</code>'s @c null_node_type instance.
      */
     default_viewpoint::default_viewpoint(const openvrml::null_node_type & type)
         OPENVRML_NOTHROW:
@@ -4141,8 +4138,8 @@ namespace {
      */
     externproto_node_metatype::
     externproto_node_metatype(const openvrml::node_metatype_id & id,
-                           const openvrml::scene & scene,
-                           const std::vector<std::string> & uris)
+                              const openvrml::scene & scene,
+                              const std::vector<std::string> & uris)
         OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
         node_metatype(id, scene.browser()),
         externproto_node_types_cleared_(false),
@@ -4603,10 +4600,10 @@ void openvrml::externproto_node::do_shutdown(const double timestamp)
 }
 
 /**
- * @brief Cast to a script_node.
+ * @brief Cast to a @c script_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a script_node, or 0 otherwise.
+ *         is a @c script_node, or 0 otherwise.
  */
 openvrml::script_node * openvrml::externproto_node::to_script()
     OPENVRML_NOTHROW
@@ -4615,10 +4612,10 @@ openvrml::script_node * openvrml::externproto_node::to_script()
 }
 
 /**
- * @brief Cast to an appearance_node.
+ * @brief Cast to an @c appearance_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is an appearance_node, or 0 otherwise.
+ *         is an @c appearance_node, or 0 otherwise.
  */
 openvrml::appearance_node *
 openvrml::externproto_node::to_appearance() OPENVRML_NOTHROW
@@ -4627,10 +4624,10 @@ openvrml::externproto_node::to_appearance() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a <code>bounded_volume_node</code>.
+ * @brief Cast to a @c bounded_volume_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>bounded_volume_node</code>, or 0 otherwise.
+ *         is a @c bounded_volume_node, or 0 otherwise.
  */
 openvrml::bounded_volume_node * openvrml::externproto_node::to_bounded_volume()
     OPENVRML_NOTHROW
@@ -4639,10 +4636,10 @@ openvrml::bounded_volume_node * openvrml::externproto_node::to_bounded_volume()
 }
 
 /**
- * @brief Cast to a child_node.
+ * @brief Cast to a @c child_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a child_node, or 0 otherwise.
+ *         is a @c child_node, or 0 otherwise.
  */
 openvrml::child_node * openvrml::externproto_node::to_child() OPENVRML_NOTHROW
 {
@@ -4650,10 +4647,10 @@ openvrml::child_node * openvrml::externproto_node::to_child() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a color_node.
+ * @brief Cast to a @c color_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a color_node, or 0 otherwise.
+ *         is a @c color_node, or 0 otherwise.
  */
 openvrml::color_node * openvrml::externproto_node::to_color() OPENVRML_NOTHROW
 {
@@ -4673,10 +4670,10 @@ openvrml::color_rgba_node * openvrml::externproto_node::to_color_rgba()
 }
 
 /**
- * @brief Cast to a coordinate_node.
+ * @brief Cast to a @c coordinate_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a coordinate_node, or 0 otherwise.
+ *         is a @c coordinate_node, or 0 otherwise.
  */
 openvrml::coordinate_node *
 openvrml::externproto_node::to_coordinate() OPENVRML_NOTHROW
@@ -4685,10 +4682,10 @@ openvrml::externproto_node::to_coordinate() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a font_style_node.
+ * @brief Cast to a @c font_style_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a font_style_node, or 0 otherwise.
+ *         is a @c font_style_node, or 0 otherwise.
  */
 openvrml::font_style_node *
 openvrml::externproto_node::to_font_style() OPENVRML_NOTHROW
@@ -4697,10 +4694,10 @@ openvrml::externproto_node::to_font_style() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a geometry_node.
+ * @brief Cast to a @c geometry_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a geometry_node, or 0 otherwise.
+ *         is a @c geometry_node, or 0 otherwise.
  */
 openvrml::geometry_node * openvrml::externproto_node::to_geometry()
     OPENVRML_NOTHROW
@@ -4709,10 +4706,10 @@ openvrml::geometry_node * openvrml::externproto_node::to_geometry()
 }
 
 /**
- * @brief Cast to a <code>grouping_node</code>.
+ * @brief Cast to a @c grouping_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>grouping_node</code>, or 0 otherwise.
+ *         is a @c grouping_node, or 0 otherwise.
  */
 openvrml::grouping_node * openvrml::externproto_node::to_grouping()
     OPENVRML_NOTHROW
@@ -4721,10 +4718,10 @@ openvrml::grouping_node * openvrml::externproto_node::to_grouping()
 }
 
 /**
- * @brief Cast to a <code>light_node</code>.
+ * @brief Cast to a @c light_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>light_node</code>, or 0 otherwise.
+ *         is a @c light_node, or 0 otherwise.
  */
 openvrml::light_node * openvrml::externproto_node::to_light() OPENVRML_NOTHROW
 {
@@ -4732,10 +4729,10 @@ openvrml::light_node * openvrml::externproto_node::to_light() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a material_node.
+ * @brief Cast to a @c material_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a material_node, or 0 otherwise.
+ *         is a @c material_node, or 0 otherwise.
  */
 openvrml::material_node * openvrml::externproto_node::to_material()
     OPENVRML_NOTHROW
@@ -4744,10 +4741,10 @@ openvrml::material_node * openvrml::externproto_node::to_material()
 }
 
 /**
- * @brief Cast to a <code>navigation_info_node</code>.
+ * @brief Cast to a @c navigation_info_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>navigation_info_node</code>, or 0 otherwise.
+ *         is a @c navigation_info_node, or 0 otherwise.
  */
 openvrml::navigation_info_node *
 openvrml::externproto_node::to_navigation_info()
@@ -4757,10 +4754,10 @@ openvrml::externproto_node::to_navigation_info()
 }
 
 /**
- * @brief Cast to a normal_node.
+ * @brief Cast to a @c normal_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a normal_node, or 0 otherwise.
+ *         is a @c normal_node, or 0 otherwise.
  */
 openvrml::normal_node * openvrml::externproto_node::to_normal()
     OPENVRML_NOTHROW
@@ -4769,10 +4766,10 @@ openvrml::normal_node * openvrml::externproto_node::to_normal()
 }
 
 /**
- * @brief Cast to a <code>pointing_device_sensor_node</code>.
+ * @brief Cast to a @c pointing_device_sensor_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>pointing_device_sensor_node</code>, or 0 otherwise.
+ *         is a @c pointing_device_sensor_node, or 0 otherwise.
  */
 openvrml::pointing_device_sensor_node *
 openvrml::externproto_node::to_pointing_device_sensor()
@@ -4782,10 +4779,10 @@ openvrml::externproto_node::to_pointing_device_sensor()
 }
 
 /**
- * @brief Cast to a <code>scoped_light_node</code>.
+ * @brief Cast to a @c scoped_light_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>scoped_light_node</code>, or 0 otherwise.
+ *         is a @c scoped_light_node, or 0 otherwise.
  */
 openvrml::scoped_light_node *
 openvrml::externproto_node::to_scoped_light() OPENVRML_NOTHROW
@@ -4794,10 +4791,10 @@ openvrml::externproto_node::to_scoped_light() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a sound_source_node.
+ * @brief Cast to a @c sound_source_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a sound_source_node, or 0 otherwise.
+ *         is a @c sound_source_node, or 0 otherwise.
  */
 openvrml::sound_source_node *
 openvrml::externproto_node::to_sound_source() OPENVRML_NOTHROW
@@ -4806,10 +4803,10 @@ openvrml::externproto_node::to_sound_source() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Cast to a texture_node.
+ * @brief Cast to a @c texture_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a texture_node, or 0 otherwise.
+ *         is a @c texture_node, or 0 otherwise.
  */
 openvrml::texture_node * openvrml::externproto_node::to_texture()
     OPENVRML_NOTHROW
@@ -4818,10 +4815,10 @@ openvrml::texture_node * openvrml::externproto_node::to_texture()
 }
 
 /**
- * @brief Cast to a texture_coordinate_node.
+ * @brief Cast to a @c texture_coordinate_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a texture_coordinate_node, or 0 otherwise.
+ *         is a @c texture_coordinate_node, or 0 otherwise.
  */
 openvrml::texture_coordinate_node *
 openvrml::externproto_node::to_texture_coordinate()
@@ -4831,10 +4828,10 @@ openvrml::externproto_node::to_texture_coordinate()
 }
 
 /**
- * @brief Cast to a texture_transform_node.
+ * @brief Cast to a @c texture_transform_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a texture_transform_node, or 0 otherwise.
+ *         is a @c texture_transform_node, or 0 otherwise.
  */
 openvrml::texture_transform_node *
 openvrml::externproto_node::to_texture_transform()
@@ -4844,10 +4841,10 @@ openvrml::externproto_node::to_texture_transform()
 }
 
 /**
- * @brief Cast to a <code>time_dependent_node</code>.
+ * @brief Cast to a @c time_dependent_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a <code>time_dependent_node</code>, or 0 otherwise.
+ *         is a @c time_dependent_node, or 0 otherwise.
  */
 openvrml::time_dependent_node * openvrml::externproto_node::to_time_dependent()
     OPENVRML_NOTHROW
@@ -4856,10 +4853,10 @@ openvrml::time_dependent_node * openvrml::externproto_node::to_time_dependent()
 }
 
 /**
- * @brief Cast to a transform_node.
+ * @brief Cast to a @c transform_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a transform_node, or 0 otherwise.
+ *         is a @c transform_node, or 0 otherwise.
  */
 openvrml::transform_node * openvrml::externproto_node::to_transform()
     OPENVRML_NOTHROW
@@ -4868,10 +4865,10 @@ openvrml::transform_node * openvrml::externproto_node::to_transform()
 }
 
 /**
- * @brief Cast to a viewpoint_node.
+ * @brief Cast to a @c viewpoint_node.
  *
  * @return a pointer to the first node in the implementation if that node
- *         is a viewpoint_node, or 0 otherwise.
+ *         is a @c viewpoint_node, or 0 otherwise.
  */
 openvrml::viewpoint_node * openvrml::externproto_node::to_viewpoint()
     OPENVRML_NOTHROW
@@ -4912,10 +4909,10 @@ const char openvrml::x3d_vrml_media_type[15] = "model/x3d+vrml";
  *
  * @brief An abstract input stream for network resources.
  *
- * <code>resource_istream</code> inherits <code>std::istream</code>, adding
- * functions to get the URI and the MIME content type associated with the
- * stream. Users of the library must provide an implementation of this class,
- * to be returned from <code>openvrml::browser::do_get_resource</code>.
+ * @c resource_istream inherits @c std::istream, adding functions to get the
+ * URI and the MIME content type associated with the stream.  Users of the
+ * library must provide an implementation of this class, to be returned from
+ * @c openvrml::browser::do_get_resource.
  *
  * @sa openvrml::browser::do_get_resource(const std::string &)
  */
@@ -5005,8 +5002,8 @@ bool openvrml::resource_istream::data_available() const OPENVRML_NOTHROW
 /**
  * @class openvrml::stream_listener
  *
- * @brief An interface to simplify asynchronously reading a
- *        <code>resource_istream</code>.
+ * @brief An interface to simplify asynchronously reading a @c
+ *        resource_istream.
  */
 
 /**
@@ -5018,7 +5015,7 @@ openvrml::stream_listener::~stream_listener() OPENVRML_NOTHROW
 /**
  * @brief Called once the stream is available for use.
  *
- * This function calls <code>stream_listener::do_stream_available</code>.
+ * This function calls @c stream_listener::do_stream_available.
  *
  * @param[in] uri           the URI associated with the stream.
  * @param[in] media_type    the MIME media type for the stream.
@@ -5033,9 +5030,9 @@ openvrml::stream_listener::stream_available(const std::string & uri,
 /**
  * @fn void openvrml::stream_listener::do_stream_available(const std::string & uri, const std::string & media_type)
  *
- * @brief Called by <code>stream_listener::stream_available</code>.
+ * @brief Called by @c stream_listener::stream_available.
  *
- * Concrete <code>stream_listener</code>s must override this function.
+ * Concrete @c stream_listener%s must override this function.
  *
  * @param[in] uri           the URI associated with the stream.
  * @param[in] media_type    the MIME media type for the stream.
@@ -5044,7 +5041,7 @@ openvrml::stream_listener::stream_available(const std::string & uri,
 /**
  * @brief Called when data is available.
  *
- * This function calls <code>stream_listener::do_data_available</code>.
+ * This function calls @c stream_listener::do_data_available.
  *
  * @param[in] data  the data.
  */
@@ -5058,7 +5055,7 @@ data_available(const std::vector<unsigned char> & data)
 /**
  * @fn void openvrml::stream_listener::do_data_available(const std::vector<unsigned char> & data)
  *
- * @brief Called by <code>stream_listener::data_available</code>
+ * @brief Called by @c stream_listener::data_available.
  *
  * @param[in] data  the data.
  */
@@ -5103,8 +5100,8 @@ namespace {
 /**
  * @brief Read a stream in a new thread.
  *
- * <code>read_stream</code> takes ownership of its arguments; the resources
- * are released when reading the stream completes and the thread terminates.
+ * @c read_stream takes ownership of its arguments; the resources are released
+ * when reading the stream completes and the thread terminates.
  *
  * @param[in] in        an input stream.
  * @param[in] listener  a stream listener.
@@ -5169,9 +5166,9 @@ openvrml::invalid_vrml::~invalid_vrml() throw ()
 /**
  * @class openvrml::viewer_in_use
  *
- * @brief Exception thrown when attempting to associate a <code>viewer</code>
- *        with a <code>browser</code> when the <code>viewer</code> is already
- *        associated with a <code>browser</code>.
+ * @brief Exception thrown when attempting to associate a @c viewer
+ *        with a @c browser when the @c viewer is already
+ *        associated with a @c browser.
  */
 
 /**
@@ -5197,27 +5194,27 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
 /**
  * @var openvrml::browser_event::browser
  *
- * @brief Only <code>browser</code>s can construct <code>browser_event</code>s.
+ * @brief Only @c browser%s can construct @c browser_event%s.
  */
 
 /**
  * @enum openvrml::browser_event::type_id
  *
- * @brief <code>browser_event</code> type identifier.
+ * @brief @c browser_event type identifier.
  */
 
 /**
  * @var openvrml::browser_event::initialized
  *
- * @brief An <code>initialized</code> event is sent once the world has loaded
- *        and all nodes in the initial scene have been initialized.
+ * @brief An @c initialized event is sent once the world has loaded and all
+ *        nodes in the initial scene have been initialized.
  */
 
 /**
  * @var openvrml::browser_event::shutdown
  *
- * @brief A <code>shutdown</code> event is sent once all of the nodes in the
- *        scene have been shut down.
+ * @brief A @c shutdown event is sent once all of the nodes in the scene have
+ *        been shut down.
  */
 
 /**
@@ -5225,7 +5222,7 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
  *
  * @var openvrml::browser * openvrml::browser_event::source_
  *
- * @brief The <code>browser</code> from which the event originated.
+ * @brief The @c browser from which the event originated.
  */
 
 /**
@@ -5241,7 +5238,7 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
  *
  * @brief Construct.
  *
- * @param[in] b     the <code>browser</code> from which the event originated.
+ * @param[in] b     the @c browser from which the event originated.
  * @param[in] id    the event type.
  */
 openvrml::browser_event::browser_event(browser & b, type_id id)
@@ -5262,9 +5259,9 @@ openvrml::browser_event::type_id openvrml::browser_event::id() const
 }
 
 /**
- * @brief The <code>browser</code> that emitted the event.
+ * @brief The @c browser that emitted the event.
  *
- * @return the <code>browser</code> that emitted the event.
+ * @return the @c browser that emitted the event.
  */
 openvrml::browser & openvrml::browser_event::source() const OPENVRML_NOTHROW
 {
@@ -5276,7 +5273,7 @@ openvrml::browser & openvrml::browser_event::source() const OPENVRML_NOTHROW
  * @class openvrml::browser_listener
  *
  * @brief This class should be inherited by classes that want to listen for
- *        <code>browser_event</code>s.
+ *        @c browser_event%s.
  */
 
 /**
@@ -5284,8 +5281,8 @@ openvrml::browser & openvrml::browser_event::source() const OPENVRML_NOTHROW
  *
  * @var openvrml::browser_listener::browser
  *
- * @brief <code>browser</code> instances need to call
- *        <code>browser_listener::browser_changed</code>.
+ * @brief @c browser instances need to call @c
+ *        browser_listener::browser_changed.
  */
 
 /**
@@ -5297,12 +5294,12 @@ openvrml::browser_listener::~browser_listener() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Send a <code>browser_event</code>.
+ * @brief Send a @c browser_event.
  *
  * This function delegates to
- * <code>browser_listener::do_browser_changed</code>.
+ * @c browser_listener::do_browser_changed.
  *
- * @param[in] event the <code>browser_event</code> to send.
+ * @param[in] event the @c browser_event to send.
  */
 void openvrml::browser_listener::browser_changed(const browser_event & event)
 {
@@ -5312,26 +5309,26 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 /**
  * @fn void openvrml::browser_listener::do_browser_changed(const browser_event & event)
  *
- * @param[in] event the <code>browser_event</code> to send.
+ * @param[in] event the @c browser_event to send.
  */
 
 
 /**
  * @class openvrml::node_metatype_id
  *
- * @brief Identifier for <code>node_metatype</code>es.
+ * @brief Identifier for @c node_metatype%s.
  *
- * <code>node_metatype</code> identifiers take the following form:
+ * @c node_metatype identifiers take the following form:
  *
  * <pre>
  * absolute-uri ['#' proto-id ['#' proto-id [...]]]
  * </pre>
  *
- * A <code>node_metatype</code> identifier is basically like an absolute URI;
+ * A @c node_metatype identifier is basically like an absolute URI;
  * except the fragment identifier syntax has been extended to support referring
- * to nested <code>PROTO</code>s.
+ * to nested @c PROTO%s.
  *
- * For example, supposing the following %VRML world resides at
+ * For example, supposing the following VRML world resides at
  * <code>%http://example.com/example.wrl</code>:
  *
  * <pre>
@@ -5343,9 +5340,8 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  * }
  * </pre>
  *
- * The <code>node_metatype_id</code> string for <code>Outer</code> would be
- * <code>%http://example.com/example.wrl#Outer</code>; and for
- * <code>Inner</code>,
+ * The @c node_metatype_id string for @c Outer would be
+ * <code>%http://example.com/example.wrl#Outer</code>; and for @c Inner,
  * <code>%http://example.com/example.wrl#Outer#Inner</code>.
  */
 
@@ -5399,7 +5395,7 @@ namespace {
  * @param[in] id    the identifier.
  *
  * @exception std::invalid_argument if @p id is not a valid
- *                                  <code>node_metatype</code> identifier.
+ *                                  @c node_metatype identifier.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @todo Need to make sure the fragment part is valid.
@@ -5418,12 +5414,12 @@ openvrml::node_metatype_id::node_metatype_id(const char * id)
 }
 
 /**
- * @brief Construct from a <code>std::string</code>.
+ * @brief Construct from a @c std::string.
  *
  * @param[in] id    the identifier.
  *
  * @exception std::invalid_argument if @p id is not a valid
- *                                  <code>node_metatype</code> identifier.
+ *                                  @c node_metatype identifier.
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @todo Need to make sure the fragment part is valid.
@@ -5442,10 +5438,9 @@ openvrml::node_metatype_id::node_metatype_id(const std::string & id)
 }
 
 /**
- * @brief Convert to a <code>std::string</code>.
+ * @brief Convert to a @c std::string.
  *
- * @return the <code>node_metatype</code> identifier as a
- *         <code>std::string</code>.
+ * @return the @c node_metatype identifier as a @c std::string.
  */
 openvrml::node_metatype_id::operator std::string() const
 {
@@ -5486,15 +5481,15 @@ bool openvrml::operator!=(const node_metatype_id & lhs, const node_metatype_id &
  *
  * @brief Encapsulates a VRML browser.
  *
- * <code>browser</code> is the foundation of the OpenVRML runtime. Users need
- * to inherit this class and override <code>browser::do_get_resource</code> and
- * provide an implementation of <code>resource_istream</code>.
+ * @c browser is the foundation of the OpenVRML runtime.  Users need to
+ * inherit this class and override @c browser::do_get_resource and provide an
+ * implementation of @c resource_istream.
  */
 
 /**
  * @example sdl_viewer.cpp
  *
- * Basic example using openvrml::browser.
+ * Basic example using @c openvrml::browser.
  */
 
 /**
@@ -5514,7 +5509,7 @@ bool openvrml::operator!=(const node_metatype_id & lhs, const node_metatype_id &
  *
  * @class openvrml::browser::node_metatype_map
  *
- * @brief The map of <code>node_metatype</code>es.
+ * @brief The map of @c node_metatype%s.
  */
 
 /**
@@ -5632,9 +5627,10 @@ namespace {
 }
 
 /**
- * @brief Initialize the <code>node_metatype</code>es.
+ * @brief Initialize the @c node_metatype%s.
  *
- * @param[in] initial_viewpoint the viewpoint_node that should be initially active.
+ * @param[in] initial_viewpoint the @c viewpoint_node that should be initially
+ *                              active.
  * @param[in] timestamp         the current time.
  */
 void
@@ -5647,14 +5643,14 @@ openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
 }
 
 /**
- * @brief Insert a <code>node_metatype</code>.
+ * @brief Insert a @c node_metatype.
  *
- * This operation will "fail" silently. That is, if a <code>node_metatype</code>
- * corresponding to @p id already exists in the map, the existing element will
- * simply be returned.
+ * This operation will &ldquo;fail&rdquo; silently.  That is, if a @c
+ * node_metatype corresponding to @p id already exists in the map, the
+ * existing element will simply be returned.
  *
  * @param[in] id            the implementation identifier.
- * @param[in] node_metatype    a <code>node_metatype</code>.
+ * @param[in] node_metatype a @c node_metatype.
  *
  * @return the element in the node_metatype_map corresponding to @p id.
  */
@@ -5668,11 +5664,11 @@ insert(const std::string & id,
 }
 
 /**
- * @brief Remove a <code>node_metatype</code>.
+ * @brief Remove a @c node_metatype.
  *
  * @param[in] id    the implementation identifier.
  *
- * @return @c true if a <code>node_metatype</code> is removed; @c false otherwise.
+ * @return @c true if a @c node_metatype is removed; @c false otherwise.
  */
 bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 {
@@ -5681,12 +5677,12 @@ bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 }
 
 /**
- * @brief Find a <code>node_metatype</code>.
+ * @brief Find a @c node_metatype.
  *
  * @param[in] id    an implementation id.
  *
- * @return the <code>node_metatype</code> corresponding to @p id, or a null
- *         pointer if no such <code>node_metatype</code> exists in the map.
+ * @return the @c node_metatype corresponding to @p id, or a null
+ *         pointer if no such @c node_metatype exists in the map.
  */
 const boost::shared_ptr<openvrml::node_metatype>
 openvrml::browser::node_metatype_map::find(const std::string & id) const
@@ -5739,9 +5735,9 @@ namespace {
 }
 
 /**
- * @brief Render the <code>node_metatype</code>es.
+ * @brief Render the @c node_metatype%s.
  *
- * @param[in,out] v a viewer.
+ * @param[in,out] v a @c viewer.
  */
 void openvrml::browser::node_metatype_map::render(openvrml::viewer & v)
 {
@@ -5768,9 +5764,9 @@ namespace {
 }
 
 /**
- * @brief Shut down the <code>node_metatype</code>es.
+ * @brief Shut down the @c node_metatype%s.
  *
- * @param[in] timestamp         the current time.
+ * @param[in] timestamp the current time.
  */
 void
 openvrml::browser::node_metatype_map::shutdown(const double timestamp)
@@ -5794,7 +5790,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::auto_ptr<openvrml::null_node_metatype> openvrml::browser::null_node_metatype_
  *
- * @brief "Null" class object for default nodes (e.g., default_viewpoint).
+ * @brief &ldquo;Null&rdquo; class object for default nodes (e.g.,
+ *        @c default_viewpoint).
  */
 
 /**
@@ -5802,7 +5799,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::auto_ptr<openvrml::null_node_type> openvrml::browser::null_node_type_
  *
- * @brief "Null" type object for default nodes (e.g., default_viewpoint).
+ * @brief &ldquo;Null&rdquo; type object for default nodes (e.g., @c
+ *        default_viewpoint).
  */
 
 /**
@@ -5818,7 +5816,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var openvrml::script_node_metatype openvrml::browser::script_node_metatype_
  *
- * @brief <code>node_metatype</code> for Script nodes in the browser.
+ * @brief @c node_metatype for Script nodes in the browser.
  */
 
 /**
@@ -5834,8 +5832,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var boost::intrusive_ptr<openvrml::node> openvrml::browser::default_viewpoint_
  *
- * @brief The "default" viewpoint_node used when no viewpoint_node in the scene
- *        is bound.
+ * @brief The &ldquo;default&rdquo; @c viewpoint_node used when no @c
+ *        viewpoint_node in the scene is bound.
  */
 
 /**
@@ -5843,7 +5841,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var openvrml::viewpoint_node * openvrml::browser::active_viewpoint_
  *
- * @brief The currently "active" viewpoint_node.
+ * @brief The currently &ldquo;active&rdquo; @c viewpoint_node.
  */
 
 /**
@@ -5851,8 +5849,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var boost::intrusive_ptr<openvrml::node> openvrml::browser::default_navigation_info_
  *
- * @brief The "default" navigation_info_node used when no navigation_info_node
- *        in the scene is bound.
+ * @brief The &ldquo;default&rdquo; @c navigation_info_node used when no @c
+ *        navigation_info_node in the scene is bound.
  */
 
 /**
@@ -5860,7 +5858,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var openvrml::navigation_info_node * openvrml::browser::active_navigation_info_
  *
- * @brief The currently "active" navigation_info_node.
+ * @brief The currently &ldquo;active&rdquo; @c navigation_info_node.
  */
 
 /**
@@ -5900,8 +5898,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::set<openvrml::browser_listener *> openvrml::browser::listeners_
  *
- * @brief The set of <code>browser_listener</code>s that will receive
- *        <code>browser_event</code>s.
+ * @brief The set of @c browser_listener%s that will receive @c
+ *        browser_event%s.
  *
  * @sa openvrml::browser::add_listener
  * @sa openvrml::browser::remove_listener
@@ -5910,13 +5908,13 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @var bool openvrml::browser::modified_
  *
- * @brief Flag to indicate whether the browser has been modified.
+ * @brief Flag to indicate whether the @c browser has been modified.
  */
 
 /**
  * @var boost::mutex openvrml::browser::modified_mutex_
  *
- * @brief Mutex protecting <code>browser::modified_</code>.
+ * @brief Mutex protecting @c browser::modified_.
  */
 
 /**
@@ -5934,7 +5932,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @var openvrml::openvrml::viewer * openvrml::browser::viewer_
  *
- * @brief The current <code>viewer</code>.
+ * @brief The current @c viewer.
  */
 
 /**
@@ -5993,11 +5991,11 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 /**
  * @var bool openvrml::browser::flags_need_updating
  *
- * @brief Set by node::bounding_volume_dirty on any node in this browser graph,
- *      cleared by update_flags.
+ * @brief Set by @c node::bounding_volume_dirty on any node in this browser graph,
+ *      cleared by @c update_flags.
  *
  * @c true if the bvolume dirty flag has been set on a node in the
- * browser graph, but has not yet been propegated to that node's
+ * browser graph, but has not yet been propagated to that node's
  * ancestors.
  */
 
@@ -6074,19 +6072,18 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Add a <code>node_metatype</code>.
+ * @brief Add a @c node_metatype.
  *
- * If a <code>node_metatype</code> identified by @p id has already been added to
+ * If a @c node_metatype identified by @p id has already been added to
  * the browser, it will be replaced.
  *
- * @warning If <code>std::bad_alloc</code> is thrown here, the
- *          <code>browser</code>'s <code>node_metatype</code> map is left in an
- *          unknown state. In all likelihood any preexisting entry in the map
- *          with the same implementation identifier as @p id will have been
- *          removed.
+ * @warning If @c std::bad_alloc is thrown here, the <code>browser</code>'s @c
+ *          node_metatype map is left in an unknown state.  In all likelihood
+ *          any preexisting entry in the map with the same implementation
+ *          identifier as @p id will have been removed.
  *
- * @param[in] id    a <code>node_metatype</code> identifier.
- * @param[in] nc    a <code>shared_ptr</code> to a <code>node_metatype</code>
+ * @param[in] id    a @c node_metatype identifier.
+ * @param[in] nc    a @c boost::shared_ptr to a @c node_metatype
  *
  * @exception std::invalid_argument if @p nc is null.
  * @exception std::bad_alloc        if memory allocation fails.
@@ -6105,12 +6102,12 @@ add_node_metatype(const node_metatype_id & id,
 }
 
 /**
- * @brief Get the <code>node_metatype</code> corresponding to @p id.
+ * @brief Get the @c node_metatype corresponding to @p id.
  *
- * @param[in] id    a <code>node_metatype</code> identifier.
+ * @param[in] id    a @c node_metatype identifier.
  *
- * @return the <code>node_metatype</code> corresponding to @p id; or a null
- *         pointer if no such <code>node_metatype</code> exists.
+ * @return the @c node_metatype corresponding to @p id; or a null pointer if
+ *         no such @c node_metatype exists.
  */
 const boost::shared_ptr<openvrml::node_metatype>
 openvrml::browser::node_metatype(const node_metatype_id & id) const OPENVRML_NOTHROW
@@ -6119,9 +6116,9 @@ openvrml::browser::node_metatype(const node_metatype_id & id) const OPENVRML_NOT
 }
 
 /**
- * @brief Get the root scene.
+ * @brief Get the root @c scene.
  *
- * @return the root scene, or 0 if no scene is loaded.
+ * @return the root @c scene, or 0 if no @c scene is loaded.
  */
 openvrml::scene * openvrml::browser::root_scene() const OPENVRML_NOTHROW
 {
@@ -6130,13 +6127,13 @@ openvrml::scene * openvrml::browser::root_scene() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the path to a node in the scene graph.
+ * @brief Get the path to a @c node in the scene graph.
  *
- * @param[in] n  the objective node.
+ * @param[in] n  the objective @c node.
  *
- * @return the path to @p node, starting with a root node, and ending with
+ * @return the path to @p node, starting with a root @c node, and ending with
  *         @p node. If @p node is not in the scene graph, the returned
- *         node_path is empty.
+ *         @c node_path is empty.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6179,12 +6176,12 @@ const openvrml::node_path openvrml::browser::find_node(const node & n) const
 }
 
 /**
- * @brief Get the active viewpoint_node.
+ * @brief Get the active @c viewpoint_node.
  *
- * The active viewpoint_node is the one currently associated with the user
+ * The active @c viewpoint_node is the one currently associated with the user
  * view.
  *
- * @return the active viewpoint_node.
+ * @return the active @c viewpoint_node.
  */
 openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const
     OPENVRML_NOTHROW
@@ -6194,9 +6191,9 @@ openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const
 }
 
 /**
- * @brief Set the active viewpoint_node.
+ * @brief Set the active @c viewpoint_node.
  *
- * @param[in] viewpoint a viewpoint_node.
+ * @param[in] viewpoint a @c viewpoint_node.
  */
 void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_NOTHROW
@@ -6206,7 +6203,7 @@ void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint)
 }
 
 /**
- * @brief Reset the active viewpoint_node to the default.
+ * @brief Reset the active @c viewpoint_node to the default.
  */
 void openvrml::browser::reset_default_viewpoint() OPENVRML_NOTHROW
 {
@@ -6218,12 +6215,12 @@ void openvrml::browser::reset_default_viewpoint() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the active navigation_info_node.
+ * @brief Get the active @c navigation_info_node.
  *
- * The active navigation_info_node is the one currently associated with the
+ * The active @c navigation_info_node is the one currently associated with the
  * user view.
  *
- * @return the active navigation_info_node.
+ * @return the active @c navigation_info_node.
  */
 openvrml::navigation_info_node &
 openvrml::browser::active_navigation_info() const OPENVRML_NOTHROW
@@ -6233,9 +6230,9 @@ openvrml::browser::active_navigation_info() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Set the active navigation_info_node.
+ * @brief Set the active @c navigation_info_node.
  *
- * @param[in] nav_info a navigation_info_node.
+ * @param[in] nav_info a @c navigation_info_node.
  */
 void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
     OPENVRML_NOTHROW
@@ -6245,7 +6242,7 @@ void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
 }
 
 /**
- * @brief Reset the active navigation_info_node to the default.
+ * @brief Reset the active @c navigation_info_node to the default.
  */
 void openvrml::browser::reset_default_navigation_info() OPENVRML_NOTHROW
 {
@@ -6258,13 +6255,15 @@ void openvrml::browser::reset_default_navigation_info() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Add a viewpoint_node to the list of viewpoint_nodes for the browser.
+ * @brief Add a @c viewpoint_node to the list of @c viewpoint_node%s for the
+ *        @c browser.
  *
- * @param[in] viewpoint a viewpoint_node.
+ * @param[in] viewpoint a @c viewpoint_node.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @pre @p viewpoint is not in the list of viewpoint_nodes for the browser.
+ * @pre @p viewpoint is not in the list of @c viewpoint_node%s for the @c
+ *      browser.
  */
 void openvrml::browser::add_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_THROW1(std::bad_alloc)
@@ -6276,12 +6275,12 @@ void openvrml::browser::add_viewpoint(viewpoint_node & viewpoint)
 }
 
 /**
- * @brief Remove a viewpoint_node from the list of viewpoint_nodes for the
- *      browser.
+ * @brief Remove a @c viewpoint_node from the list of @c viewpoint_node%s for
+ *        the @c browser.
  *
- * @param[in] viewpoint a viewpoint_node.
+ * @param[in] viewpoint a @c viewpoint_node.
  *
- * @pre @p viewpoint is in the list of viewpoint_nodes for the browser.
+ * @pre @p viewpoint is in the list of @c viewpoint_node%s for the @c browser.
  */
 void openvrml::browser::remove_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_NOTHROW
@@ -6311,12 +6310,12 @@ openvrml::browser::viewpoints() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Set the current <code>viewer</code>.
+ * @brief Set the current @c viewer.
  *
- * @param[in] v <code>viewer</code>.
+ * @param[in] v @c viewer.
  *
  * @exception viewer_in_use if @p v is already associated with a
- *                          <code>browser</code>.
+ *                          @c browser.
  */
 void openvrml::browser::viewer(openvrml::viewer * v)
     OPENVRML_THROW1(viewer_in_use)
@@ -6329,9 +6328,9 @@ void openvrml::browser::viewer(openvrml::viewer * v)
 }
 
 /**
- * @brief The current <code>viewer</code>.
+ * @brief The current @c viewer.
  *
- * @return the current <code>viewer</code>.
+ * @return the current @c viewer.
  */
 openvrml::viewer * openvrml::browser::viewer() const OPENVRML_NOTHROW
 {
@@ -6357,13 +6356,12 @@ openvrml::browser::get_resource(const std::string & uri)
  *
  * @brief Fetch a network resource.
  *
- * Called by <code>browser::get_resource</code>, clients of %OpenVRML are
- * required to provide an implementation for this function. %OpenVRML depends
- * on the implementation of this function for all of its input needs. As such,
- * what kind of resources %OpenVRML is capable of resolving is entirely
- * dependent on code provided by the application. A trivial implementation
- * designed to handle only <code>file</code> resources can use
- * <code>std::filebuf</code>:
+ * Called by @c browser::get_resource, clients of OpenVRML are required to
+ * provide an implementation for this function.  OpenVRML depends on the
+ * implementation of this function for all of its input needs.  As such, what
+ * kind of resources OpenVRML is capable of resolving is entirely dependent on
+ * code provided by the application.  A trivial implementation designed to
+ * handle only @c file resources can use @c std::filebuf:
  *
  * @code
  * std::auto_ptr<openvrml::resource_istream>
@@ -6460,10 +6458,10 @@ openvrml::browser::get_resource(const std::string & uri)
  * }
  * @endcode
  *
- * The @p uri parameter is provided by %OpenVRML and can be assumed to be an
- * absolute URI. As such, it will always have a scheme through which the client
- * code can choose a resolution mechanism. For more information on URI syntax,
- * see <a href="http://www.isi.edu/in-notes/rfc2396.txt">Internet
+ * The @p uri parameter is provided by OpenVRML and can be assumed to be an
+ * absolute URI.  As such, it will always have a scheme through which the
+ * client code can choose a resolution mechanism.  For more information on URI
+ * syntax, see <a href="http://www.isi.edu/in-notes/rfc2396.txt">Internet
  * RFC&nbsp;2396</a>.
  *
  * @param[in] uri   an absolute Uniform Resource Identifier.
@@ -6486,7 +6484,7 @@ const char * openvrml::browser::name() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the browser version.
+ * @brief Get the @c browser version.
  *
  * @return the version of openvrml.
  *
@@ -6529,7 +6527,7 @@ const std::string openvrml::browser::world_url() const
  *
  * @exception bad_media_type    if @p in.type() is not "model/vrml",
  *                              "x-world/x-vrml", or "model/x3d+vrml".
- * @excpetion invalid_vrml      if @p in has invalid syntax.
+ * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::browser::set_world(resource_istream & in)
 {
@@ -6830,13 +6828,13 @@ create_vrml_from_url(const std::vector<std::string> & url,
 }
 
 /**
- * @brief Add a listener for <code>browser_event</code>s.
+ * @brief Add a listener for @c browser_event%s.
  *
- * @param[in] listener  a <code>browser_listener</code>.
+ * @param[in] listener  a @c browser_listener.
  *
  * @return @c true if @p listener is added successfully; @c false otherwise (if
  *         @p listener is already listening for events from the
- *         <code>browser</code>).
+ *         @c browser).
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -6847,13 +6845,13 @@ bool openvrml::browser::add_listener(browser_listener & listener)
 }
 
 /**
- * @brief Remove a listener for <code>browser_event</code>s.
+ * @brief Remove a listener for @c browser_event%s.
  *
- * @param[in] listener  a <code>browser_listener</code>.
+ * @param[in] listener  a @c browser_listener.
  *
  * @return @c true if @p listener is removed successfully; @c false otherwise
  *         (if @p listener is not listening for events from the
- *         <code>browser</code>).
+ *         @c browser).
  */
 bool openvrml::browser::remove_listener(browser_listener & listener)
     OPENVRML_NOTHROW
@@ -6873,7 +6871,7 @@ double openvrml::browser::frame_rate() const
 }
 
 /**
- * Called by the viewer when the cursor passes over, clicks, drags, or
+ * Called by the @c viewer when the cursor passes over, clicks, drags, or
  * releases a sensitive object (an Anchor or another grouping node with
  * an enabled TouchSensor child).
  */
@@ -6905,11 +6903,11 @@ void openvrml::browser::sensitive_event(node * const n,
 }
 
 /**
- * @brief Process events (update the browser).
+ * @brief Process events (update the @c browser).
  *
  * This method should be called after each frame is rendered.
  *
- * @return @c true if the browser needs to be rerendered, @c false otherwise.
+ * @return @c true if the @c browser needs to be rerendered, @c false otherwise.
  */
 bool openvrml::browser::update(double current_time)
 {
@@ -6951,7 +6949,7 @@ bool openvrml::browser::headlight_on()
 }
 
 /**
- * @brief Draw this browser into the specified viewer
+ * @brief Draw this @c browser into the specified @c viewer
  */
 void openvrml::browser::render()
 {
@@ -7034,7 +7032,8 @@ void openvrml::browser::render()
  * @brief Indicate whether rendering is necessary.
  *
  * @param[in] value @c true to indicate that the browser state has changed and
- *              rerendering is necessary; @c false once rendering has occurred.
+ *                  rerendering is necessary; @c false once rendering has
+ *                  occurred.
  */
 void openvrml::browser::modified(const bool value)
 {
@@ -7065,9 +7064,9 @@ void openvrml::browser::delta(const double d)
 }
 
 /**
- * @brief Get the time interval between browser updates.
+ * @brief Get the time interval between @c browser updates.
  *
- * @return the time interval between browser updates.
+ * @return the time interval between @c browser updates.
  */
 double openvrml::browser::delta() const
 {
@@ -7076,11 +7075,11 @@ double openvrml::browser::delta() const
 }
 
 /**
- * @brief Add a scoped light node to the browser.
+ * @brief Add a scoped light node to the @c browser.
  *
  * @param[in] light a light node.
  *
- * @pre @p light is not in the list of light nodes for the browser.
+ * @pre @p light is not in the list of light nodes for the @c browser.
  */
 void
 openvrml::browser::add_scoped_light(scoped_light_node & light)
@@ -7092,11 +7091,11 @@ openvrml::browser::add_scoped_light(scoped_light_node & light)
 }
 
 /**
- * @brief Remove a scoped light node from the browser.
+ * @brief Remove a scoped light node from the @c browser.
  *
  * @param[in] light the light node to remove.
  *
- * @pre @p light is in the list of light nodes for the browser.
+ * @pre @p light is in the list of light nodes for the @c browser.
  */
 void
 openvrml::browser::
@@ -7117,7 +7116,7 @@ remove_scoped_light(scoped_light_node & light)
  *
  * @param[in] script    a Script node.
  *
- * @pre @p script is not in the list of Script nodes for the browser.
+ * @pre @p script is not in the list of Script nodes for the @c browser.
  */
 void openvrml::browser::add_script(script_node & script)
 {
@@ -7132,7 +7131,7 @@ void openvrml::browser::add_script(script_node & script)
  *
  * @param[in] script    the Script node to remove.
  *
- * @pre @p script is in the list of Script nodes for the browser.
+ * @pre @p script is in the list of Script nodes for the @c browser.
  */
 void openvrml::browser::remove_script(script_node & script)
 {
@@ -7149,10 +7148,9 @@ void openvrml::browser::remove_script(script_node & script)
 /**
  * @brief Add a time-dependent node to the browser.
  *
- * @param[in] n a <code>time_dependent_node</code>.
+ * @param[in] n a @c time_dependent_node.
  *
- * @pre @p n is not in the list of <code>time_dependent_node</code>s for the
- *      browser.
+ * @pre @p n is not in the list of @c time_dependent_node%s for the @c browser.
  */
 void openvrml::browser::add_time_dependent(time_dependent_node & n)
 {
@@ -7165,10 +7163,9 @@ void openvrml::browser::add_time_dependent(time_dependent_node & n)
 /**
  * @brief Remove a time-dependent node from the browser.
  *
- * @param[in] n the <code>time_dependent_node</code> to remove.
+ * @param[in] n the @c time_dependent_node to remove.
  *
- * @pre @p n is in the list of <code>time_dependent_node</code>s for the
- *      browser.
+ * @pre @p n is in the list of @c time_dependent_node%s for the @c browser.
  */
 void
 openvrml::browser::remove_time_dependent(time_dependent_node & n)
@@ -7185,9 +7182,9 @@ openvrml::browser::remove_time_dependent(time_dependent_node & n)
 /**
  * @brief Propagate the bvolume dirty flag from children to ancestors.
  *
- * The invariant is that if a node's bounding volume is out of date,
- * then the bounding volumes of all that nodes's ancestors must be
- * out of date. However, Node does not maintain a parent pointer. So
+ * The invariant is that if a <code>node</code>'s bounding volume is out of
+ * date, then the bounding volumes of all that <code>node</code>'s ancestors
+ * must be out of date.  However, @c node does not maintain a parent pointer.  So
  * we must do a traversal of the entire browser graph to do the propagation.
  *
  * @see node::setBVolumeDirty
@@ -7339,7 +7336,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  *
  * @var openvrml::browser * const openvrml::scene::browser_
  *
- * @brief A reference to the browser associated with the scene.
+ * @brief A reference to the @c browser associated with the @c scene.
  */
 
 /**
@@ -7347,9 +7344,9 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  *
  * @var openvrml::scene * const openvrml::scene::parent_
  *
- * @brief A pointer to the parent scene.
+ * @brief A pointer to the parent @c scene.
  *
- * If the scene is the root scene, @a parent will be 0.
+ * If the @c scene is the root @c scene, @a parent will be 0.
  */
 
 /**
@@ -7418,7 +7415,7 @@ namespace {
     {}
 
     /**
-     * @brief Create an absolute "file" URL from a relative path.
+     * @brief Create an absolute &ldquo;file&rdquo; URL from a relative path.
      *
      * @param[in] relative_uri  a relative URI.
      *
@@ -7489,8 +7486,8 @@ namespace {
 /**
  * @brief Construct.
  *
- * @param[in] browser   the browser associated with the scene.
- * @param[in] parent    the parent scene.
+ * @param[in] browser   the @c browser associated with the @c scene.
+ * @param[in] parent    the parent @c scene.
  */
 openvrml::scene::scene(openvrml::browser & browser, scene * parent)
     OPENVRML_NOTHROW:
@@ -7505,9 +7502,9 @@ openvrml::scene::~scene() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Get the associated <code>browser</code>.
+ * @brief Get the associated @c browser.
  *
- * @return the associated <code>browser</code>.
+ * @return the associated @c browser.
  */
 openvrml::browser & openvrml::scene::browser() const OPENVRML_NOTHROW
 {
@@ -7515,10 +7512,9 @@ openvrml::browser & openvrml::scene::browser() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the parent <code>scene</code>.
+ * @brief Get the parent @c scene.
  *
- * @return the parent <code>scene</code>, or 0 if this is the root
- *         <code>scene</code>.
+ * @return the parent @c scene, or 0 if this is the root @c scene.
  */
 openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
 {
@@ -7532,7 +7528,7 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
  *
  * @exception bad_media_type    if @p in.type() is not "model/vrml",
  *                              "x-world/x-vrml", or "model/x3d+vrml".
- * @excpetion invalid_vrml      if @p in has invalid syntax.
+ * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::scene::load(resource_istream & in)
 {
@@ -7649,11 +7645,12 @@ openvrml::scene::nodes() const throw()
 }
 
 /**
- * @brief Set the root nodes for the scene.
+ * @brief Set the root @c node%s for the @c scene.
  *
- * This function calls @c scene::shutdown to shut down the scene's existing nodes.
+ * This function calls @c scene::shutdown to shut down the
+ * <code>scene</code>'s existing nodes.
  *
- * @param[in] n the new root nodes for the scene.
+ * @param[in] n the new root nodes for the @c scene.
  *
  * @exception std::invalid_argument if any of the nodes in @p n has already been
  *                                  initialized.
@@ -7714,8 +7711,8 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 /**
  * @brief Render the scene.
  *
- * @param[in,out] viewer    a viewer to render to.
- * @param[in]     context   a rendering_context.
+ * @param[in,out] viewer    a @c viewer to render to.
+ * @param[in]     context   a @c rendering_context.
  */
 void openvrml::scene::render(openvrml::viewer & viewer,
                              rendering_context context)
@@ -7746,16 +7743,16 @@ void openvrml::scene::render(openvrml::viewer & viewer,
  *         Viewpoint named "NodeId" exists in the scene, this method will not
  *         try any subsequent URIs in the list.
  *
- * @param[in] url       an array of URIs. Per VRML97 convention, the first resource
- *                  in the sequence that can be reached will be loaded into the
- *                  browser.
+ * @param[in] url       an array of URIs.  Per VRML97 convention, the first
+ *                      resource in the sequence that can be reached will be
+ *                      loaded into the browser.
  * @param[in] parameter an array of parameters to be associated with the URIs in
- *                  @p uri.
+ *                      @p uri.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
  * @todo This method currently fails silently if any of the URIs in @p url is
- *      invalid. Should this throw invalid_url?
+ *       invalid.  Should this throw invalid_url?
  */
 void openvrml::scene::load_url(const std::vector<std::string> & url,
                                const std::vector<std::string> & parameter)

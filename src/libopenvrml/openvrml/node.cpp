@@ -42,19 +42,19 @@
  *
  * @ingroup nodes
  *
- * @brief Exception to indicate that a node interface is not supported.
+ * @brief Exception to indicate that a @c node interface is not supported.
  *
- * This exception is thrown by node::event_listener and node::event_emitter to
- * indicate that the node doesn't support the interface through which the
- * caller is trying to modify the node. It is also thrown by
- * node_metatype::create_type if the class object doesn't support an interface
- * specified in the node_interface_set given to that method.
+ * This exception is thrown by @c node::event_listener and @c
+ * node::event_emitter to indicate that the node doesn't support the interface
+ * through which the caller is trying to modify the node.  It is also thrown
+ * by @c node_metatype::create_type if the class object doesn't support an
+ * interface specified in the @c node_interface_set given to that method.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] interface a node_interface.
+ * @param[in] interface a @c node_interface.
  */
 openvrml::unsupported_interface::
 unsupported_interface(const node_interface & interface)
@@ -66,7 +66,7 @@ unsupported_interface(const node_interface & interface)
 /**
  * @brief Construct.
  *
- * @param[in] type          the node type.
+ * @param[in] type          the @c node_type.
  * @param[in] interface_id  the name of the interface that is not available.
  */
 openvrml::unsupported_interface::
@@ -78,7 +78,7 @@ unsupported_interface(const node_type & type, const std::string & interface_id)
 /**
  * @brief Construct.
  *
- * @param[in] type              the node type.
+ * @param[in] type              the @c node_type.
  * @param[in] interface_type    the type of the interface that is not
  *                              available.
  * @param[in] interface_id      the name of the interface that is not
@@ -106,7 +106,7 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
  *
  * @ingroup nodes
  *
- * @brief Type information for an interface of a node.
+ * @brief Type information for an interface of a @c node.
  */
 
 /**
@@ -124,25 +124,25 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
 /**
  * @var openvrml::node_interface::type_id openvrml::node_interface::eventin_id
  *
- * @brief An eventIn.
+ * @brief An @c eventIn.
  */
 
 /**
  * @var openvrml::node_interface::type_id openvrml::node_interface::eventout_id
  *
- * @brief An eventOut.
+ * @brief An @c eventOut.
  */
 
 /**
  * @var openvrml::node_interface::type_id openvrml::node_interface::exposedfield_id
  *
- * @brief An exposedField.
+ * @brief An @c exposedField.
  */
 
 /**
  * @var openvrml::node_interface::type_id openvrml::node_interface::field_id
  *
- * @brief A field.
+ * @brief A @c field.
  */
 
 namespace {
@@ -165,7 +165,7 @@ namespace {
  * @p out.
  *
  * @param[in,out] out   an output stream.
- * @param[in]     type  a node interface type.
+ * @param[in]     type  a @c node interface type.
  *
  * @return @p out.
  */
@@ -186,7 +186,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @relatesalso node_interface
  *
  * @param[in,out] in    an input stream.
- * @param[in]     type  a node interface type.
+ * @param[in]     type  a @c node interface type.
  *
  * @return @p in.
  */
@@ -287,7 +287,7 @@ bool openvrml::operator!=(const node_interface & lhs,
  * @brief Stream output.
  *
  * @param[in,out] out       output stream.
- * @param[in]     interface node_interface.
+ * @param[in]     interface @c node_interface.
  *
  * @return @p out.
  */
@@ -304,7 +304,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @brief Stream input.
  *
  * @param[in,out] in        input stream.
- * @param[in]     interface node_interface.
+ * @param[in]     interface @c node_interface.
  *
  * @return @p in.
  */
@@ -320,8 +320,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief Determine if a <code>node_interface</code> matches an eventIn
- *        identifier.
+ * @brief Determine if a @c node_interface matches an @c eventIn identifier.
  *
  * @par Model of
  * <a href="http://www.sgi.com/tech/stl/AdaptableBinaryPredicate.html">
@@ -350,8 +349,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  *     &ldquo;set_&rdquo; prepended is lexicographically equal to the
  *     @c eventIn identifier.
  *
- * @param[in] interface     node_interface.
- * @param[in] eventin_id    eventIn identifier.
+ * @param[in] interface     @c node_interface.
+ * @param[in] eventin_id    @c eventIn identifier.
  *
  * @return @c true if @p interface matches @p eventin_id; @c false otherwise.
  */
@@ -476,8 +475,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  * @c node_interface_compare provides a <a
  * href="http://www.sgi.com/tech/stl/StrictWeakOrdering.html">Strict Weak
  * Ordering</a> for @c node_interface%s and ensures that @c exposedField
- * definitions appropriately encroach on the namespace of @c eventIn and
- * @c eventOut definitions. That is, per 4.7 of the VRML97 spec: &ldquo;An
+ * definitions appropriately encroach on the namespace of @c eventIn and @c
+ * eventOut definitions.  That is, per 4.7 of the VRML97 spec: &ldquo;An
  * exposedField named &lsquo;zzz&rsquo; can be referred to as
  * &lsquo;set_zzz&rsquo; and treated as an eventIn, and can be referred to as
  * &lsquo;zzz_changed&rsquo; and treated as an eventOut.&rdquo;
@@ -499,10 +498,10 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @fn openvrml::node_interface_compare::result_type openvrml::node_interface_compare::operator()(const first_argument_type & lhs, const second_argument_type & rhs) const
  *
- * @brief Compare two <code>node_interface</code>s based on their id.
+ * @brief Compare two @c node_interface%s based on their id.
  *
- * @param[in] lhs   node_interface.
- * @param[in] rhs   node_interface.
+ * @param[in] lhs   @c node_interface.
+ * @param[in] rhs   @c node_interface.
  *
  * @return @c true if @p lhs.id is lexicographically less than @p rhs.id;
  *         @c false otherwise.
@@ -514,13 +513,12 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup nodes
  *
- * @brief A group of unique <code>node_interface</code>s.
+ * @brief A group of unique @c node_interface%s.
  *
- * <code>node_interface_set</code>s are used to construct new
- * <code>node_type</code>s. <code>node_type</code> objects also expose their
- * interfaces as a <code>node_interface_set</code>. The interfaces in a
- * <code>node_interface_set</code> are guaranteed to be unique and
- * non-conflicting.
+ * @c node_interface_set%s are used to construct new @c node_type%s.  @c
+ * node_type objects also expose their interfaces as a @c node_interface_set.
+ * The interfaces in a @c node_interface_set are guaranteed to be unique and
+ * nonconflicting.
  */
 
 /**
@@ -528,18 +526,18 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @brief Find an interface matching @p id.
  *
- * If no interface is found with an interface identifier that is an exact match
- * for @p id, this function will look for @c set_ and @c _changed variants. If
- * @p interfaces contains a field @c zzz along with an eventIn @c set_zzz
- * and/or an eventOut @c zzz_changed, the eventIn or eventOut will only be
- * found if the @c set_zzz or @c zzz_changed form, respectively, is used for
- * @p id.
+ * If no interface is found with an interface identifier that is an exact
+ * match for @p id, this function will look for @c set_ and @c _changed
+ * variants.  If @p interfaces contains a @c field @c zzz along with an @c
+ * eventIn @c set_zzz and/or an @c eventOut @c zzz_changed, the @c eventIn or
+ * @c eventOut will only be found if the @c set_zzz or @c zzz_changed form,
+ * respectively, is used for @p id.
  *
- * @param[in] interfaces    a set of <code>node_interface</code>s.
- * @param[in] id            the interface id to look for.
+ * @param[in] interfaces    a set of @c node_interface%s.
+ * @param[in] id            the interface identifier to look for.
  *
- * @return a <code>const_iterator</code> to the interface, or
- *         <code>node_interface_set::end</code> if no interface is found.
+ * @return a @c const_iterator to the interface, or @c node_interface_set::end
+ *         if no interface is found.
  */
 const openvrml::node_interface_set::const_iterator
 openvrml::find_interface(const node_interface_set & interfaces,
@@ -642,9 +640,9 @@ openvrml::browser & openvrml::node_metatype::browser() const OPENVRML_NOTHROW
  * @brief <code>node_metatype</code>-specific initialization.
  *
  * This method is called during initialization of a @c browser object with a
- * new root @c scene. It is called after the individual @c node instances have
- * been initialized, and before the world starts running. It delegates to
- * @c node_metatype::do_initialize.
+ * new root @c scene.  It is called after the individual @c node instances
+ * have been initialized, and before the world starts running.  It delegates
+ * to @c node_metatype::do_initialize.
  *
  * @param[in,out] initial_viewpoint the @c viewpoint_node that should be bound
  *                                  initially; or 0 if the default
@@ -666,7 +664,7 @@ void openvrml::node_metatype::initialize(viewpoint_node * initial_viewpoint,
  *
  * @param[in,out] initial_viewpoint the @c viewpoint_node that should be
  *                                  bound initially; or 0 if the default
- *                                  @c vewpoint_node should be bound.
+ *                                  @c viewpoint_node should be bound.
  * @param[in] time                  the current time.
  *
  * @sa node_metatype::initialize
@@ -678,9 +676,9 @@ void openvrml::node_metatype::do_initialize(viewpoint_node *, double)
 /**
  * @brief <code>node_metatype</code>-specific rendering.
  *
- * This function delegates to <code>node_metatype::do_render</code>.
+ * This function delegates to @c node_metatype::do_render.
  *
- * @param[in,out] v    the viewer to render to.
+ * @param[in,out] v    the @c viewer to which to render.
  */
 void openvrml::node_metatype::render(viewer & v) const OPENVRML_NOTHROW
 {
@@ -692,7 +690,7 @@ void openvrml::node_metatype::render(viewer & v) const OPENVRML_NOTHROW
  *
  * The default implementation of this method does nothing.
  *
- * @param[in,out] v    the viewer to render to.
+ * @param[in,out] v    the @c viewer to which to render.
  *
  * @sa node_metatype::render
  */
@@ -700,26 +698,23 @@ void openvrml::node_metatype::do_render(viewer &) const OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Create a new <code>node_type</code>.
+ * @brief Create a new @c node_type.
  *
- * <code>node_type</code>s can be said to subset the master type provided by
- * the <code>node_metatype</code>. Each <code>node_metatype</code> instance can
- * support certain <code>node</code> interfaces; the
- * <code>node_interface_set</code> passed to
- * <code>node_metatype::create_type</code> must be a subset of those supported
- * interfaces.
+ * @c node_type%s can be said to subset the master type provided by the @c
+ * node_metatype.  Each @c node_metatype instance can support certain @c node
+ * interfaces; the @c node_interface_set passed to @c
+ * node_metatype::create_type must be a subset of those supported interfaces.
  *
- * This function delegates to <code>node_metatype::do_create_type</code>.
+ * This function delegates to @c node_metatype::do_create_type.
  *
- * @param[in] id            the name for the new <code>node_type</code>.
- * @param[in] interfaces    a <code>node_interface_set</code> containing the
+ * @param[in] id            the name for the new @c node_type.
+ * @param[in] interfaces    a @c node_interface_set containing the
  *                          interfaces for the new type.
  *
- * @return a newly created <code>node_type</code>.
+ * @return a newly created @c node_type.
  *
- * @exception unsupported_interface if the <code>node_metatype</code> cannot
- *                                  support one of the
- *                                  <code>node_interface</code>s in
+ * @exception unsupported_interface if the @c node_metatype cannot
+ *                                  support one of the @c node_interface%s in
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
@@ -736,17 +731,16 @@ openvrml::node_metatype::create_type(const std::string & id,
 /**
  * @fn const boost::shared_ptr<openvrml::node_type> openvrml::node_metatype::do_create_type(const std::string & id, const node_interface_set & interfaces) const
  *
- * @brief Create a new <code>node_type</code>.
+ * @brief Create a new @c node_type.
  *
- * @param[in] id            the name for the new <code>node_type</code>.
- * @param[in] interfaces    a <code>node_interface_set</code> containing the
- *                      interfaces for the new type.
+ * @param[in] id            the name for the new @c node_type.
+ * @param[in] interfaces    a @c node_interface_set containing the
+ *                          interfaces for the new type.
  *
- * @return a newly created <code>node_type</code>.
+ * @return a newly created @c node_type.
  *
- * @exception unsupported_interface if the <code>node_metatype</code> cannot
- *                                  support one of the
- *                                  <code>node_interface</code>s in
+ * @exception unsupported_interface if the @c node_metatype cannot support one
+ *                                  of the @c node_interface%s in
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
@@ -757,9 +751,9 @@ openvrml::node_metatype::create_type(const std::string & id,
 /**
  * @brief Shut down.
  *
- * This function is called during destruction of the @c browser, after
- * the root scene has been shut down. This function delegates to
- * @c node_metatype::do_shutdown.
+ * This function is called during destruction of the @c browser, after the
+ * root @c scene has been shut down.  This function delegates to @c
+ * node_metatype::do_shutdown.
  *
  * @param[in] time  the current time.
  */
@@ -782,8 +776,7 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
 /**
  * @typedef openvrml::initial_value_map
  *
- * @brief A map of the initial values with which a <code>node</code> is
- *        instantiated.
+ * @brief A map of the initial values with which a @c node is instantiated.
  */
 
 
@@ -792,7 +785,7 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
  *
  * @ingroup nodes
  *
- * @brief Type information object for <code>node</code>s.
+ * @brief Type information object for @c node%s.
  */
 
 /**
@@ -800,7 +793,7 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
  *
  * @var openvrml::node_metatype & openvrml::node_type::metatype_
  *
- * @brief The class object associated with the <code>node_type</code>.
+ * @brief The class object associated with the @c node_type.
  */
 
 /**
@@ -808,14 +801,14 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
  *
  * @var const std::string openvrml::node_type::id_
  *
- * @brief The name of the <code>node_type</code>.
+ * @brief The name of the @c node_type.
  */
 
 /**
  * @brief Constructor.
  *
- * @param[in] c     the class object associated with the <code>node_type</code>.
- * @param[in] id    the name for the <code>node_type</code>.
+ * @param[in] c     the class object associated with the @c node_type.
+ * @param[in] id    the name for the @c node_type.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1010,8 +1003,8 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  *
  * @ingroup nodes
  *
- * @brief A path to a node in the scene starting with one of the scene root
- *      nodes and ending with the objective node.
+ * @brief A path to a @c node in the @c scene starting with one of the @c
+ *        scene root @c node%s and ending with the objective @c node.
  */
 
 
@@ -1022,11 +1015,11 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  *
  * @relatesalso openvrml::node
  *
- * @brief Downcast a node to one of the abstract node types.
+ * @brief Downcast a @c node to one of the abstract @c node types.
  *
- * @param[in] n a node.
+ * @param[in] n a @c node.
  *
- * @return a pointer to the downcast node, or 0 if the cast fails.
+ * @return a pointer to the downcast @c node, or 0 if the cast fails.
  */
 
 /**
@@ -1034,7 +1027,7 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  *
  * @ingroup nodes
  *
- * @brief A node in the scene graph.
+ * @brief A @c node in the scene graph.
  */
 
 /**
@@ -1046,181 +1039,181 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @fn openvrml::script_node * openvrml::node::node_cast<script_node *>(node * n)
  *
- * @brief Cast to a <code>script_node</code>.
+ * @brief Cast to a @c script_node.
  */
 
 /**
  * @fn openvrml::appearance_node * openvrml::node::node_cast<appearance_node *>(node * n)
  *
- * @brief Cast to a <code>appearance_node</code>.
+ * @brief Cast to a @c appearance_node.
  */
 
 /**
  * @fn openvrml::child_node * openvrml::node::node_cast<child_node *>(node * n)
  *
- * @brief Cast to a <code>child_node</code>.
+ * @brief Cast to a @c child_node.
  */
 
 /**
  * @fn openvrml::color_node * openvrml::node::node_cast<color_node *>(node * n)
  *
- * @brief Cast to a <code>color_node</code>.
+ * @brief Cast to a @c color_node.
  */
 
 /**
  * @fn openvrml::color_rgba_node * openvrml::node::node_cast<color_rgba_node *>(node * n)
  *
- * @brief Cast to a <code>color_rgba_node</code>.
+ * @brief Cast to a @c color_rgba_node.
  */
 
 /**
  * @fn openvrml::coordinate_node * openvrml::node::node_cast<coordinate_node *>(node * n)
  *
- * @brief Cast to a <code>coordinate_node</code>.
+ * @brief Cast to a @c coordinate_node.
  */
 
 /**
  * @fn openvrml::font_style_node * openvrml::node::node_cast<font_style_node *>(node * n)
  *
- * @brief Cast to a <code>font_style_node</code>.
+ * @brief Cast to a @c font_style_node.
  */
 
 /**
  * @fn openvrml::geometry_node * openvrml::node::node_cast<geometry_node *>(node * n)
  *
- * @brief Cast to a <code>geometry_node</code>.
+ * @brief Cast to a @c geometry_node.
  */
 
 /**
  * @fn openvrml::grouping_node * openvrml::node::node_cast<grouping_node *>(node * n)
  *
- * @brief Cast to a <code>grouping_node</code>.
+ * @brief Cast to a @c grouping_node.
  */
 
 /**
  * @fn openvrml::material_node * openvrml::node::node_cast<material_node *>(node * n)
  *
- * @brief Cast to a <code>material_node</code>.
+ * @brief Cast to a @c material_node.
  */
 
 /**
  * @fn openvrml::navigation_info_node * openvrml::node::node_cast<navigation_info_node *>(node * n)
  *
- * @brief Cast to a <code>navigation_info_node</code>.
+ * @brief Cast to a @c navigation_info_node.
  */
 
 /**
  * @fn openvrml::normal_node * openvrml::node::node_cast<normal_node *>(node * n)
  *
- * @brief Cast to a <code>normal_node</code>.
+ * @brief Cast to a @c normal_node.
  */
 
 /**
  * @fn openvrml::sound_source_node * openvrml::node::node_cast<sound_source_node *>(node * n)
  *
- * @brief Cast to a <code>sound_source_node</code>.
+ * @brief Cast to a @c sound_source_node.
  */
 
 /**
  * @fn openvrml::texture_node * openvrml::node::node_cast<texture_node *>(node * n)
  *
- * @brief Cast to a <code>texture_node</code>.
+ * @brief Cast to a @c texture_node.
  */
 
 /**
  * @fn openvrml::texture_coordinate_node * openvrml::node::node_cast<texture_coordinate_node *>(node * n)
  *
- * @brief Cast to a <code>texture_coordinate_node</code>.
+ * @brief Cast to a @c texture_coordinate_node.
  */
 
 /**
  * @fn openvrml::texture_transform_node * openvrml::node::node_cast<texture_transform_node *>(node * n)
  *
- * @brief Cast to a <code>texture_transform_node</code>.
+ * @brief Cast to a @c texture_transform_node.
  */
 
 /**
  * @fn openvrml::transform_node * openvrml::node::node_cast<transform_node *>(node * n)
  *
- * @brief Cast to a <code>transform_node</code>.
+ * @brief Cast to a @c transform_node.
  */
 
 /**
  * @fn openvrml::viewpoint_node * openvrml::node::node_cast<viewpoint_node *>(node * n)
  *
- * @brief Cast to a <code>viewpoint_node</code>.
+ * @brief Cast to a @c viewpoint_node.
  */
 
 /**
  * @var class openvrml::node::proto_node
  *
- * @brief A <code>PROTO</code> instance.
+ * @brief A @c PROTO instance.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfbool>
  *
- * @brief <code>sfbool</code> <code>field_value_listener</code>.
+ * @brief @c sfbool @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfcolor>
  *
- * @brief <code>sfcolor</code> <code>field_value_listener</code>.
+ * @brief @c sfcolor @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfcolorrgba>
  *
- * @brief <code>sfcolorrgba</code> <code>field_value_listener</code>.
+ * @brief @c sfcolorrgba @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfdouble>
  *
- * @brief <code>sfdouble</code> <code>field_value_listener</code>.
+ * @brief @c sfdouble @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sffloat>
  *
- * @brief <code>sffloat</code> <code>field_value_listener</code>.
+ * @brief @c sffloat @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfimage>
  *
- * @brief <code>sfimage</code> <code>field_value_listener</code>.
+ * @brief @c sfimage @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfint32>
  *
- * @brief <code>sfint32</code> <code>field_value_listener</code>.
+ * @brief @c sfint32 @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfnode>
  *
- * @brief <code>sfnode</code> <code>field_value_listener</code>.
+ * @brief @c sfnode @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfrotation>
  *
- * @brief <code>sfrotation</code> <code>field_value_listener</code>.
+ * @brief @c sfrotation @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfstring>
  *
- * @brief <code>sfstring</code> <code>field_value_listener</code>.
+ * @brief @c sfstring @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sftime>
  *
- * @brief <code>sftime</code> <code>field_value_listener</code>.
+ * @brief @c sftime @c field_value_listener.
  */
 
 /**
@@ -1232,109 +1225,109 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @var class openvrml::node::field_value_listener<sfvec2f>
  *
- * @brief <code>sfvec2f</code> <code>field_value_listener</code>.
+ * @brief @c sfvec2f @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfvec3d>
  *
- * @brief <code>sfvec3d</code> <code>field_value_listener</code>.
+ * @brief @c sfvec3d @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<sfvec3f>
  *
- * @brief <code>sfvec3f</code> <code>field_value_listener</code>.
+ * @brief @c sfvec3f @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfbool>
  *
- * @brief <code>mfbool</code> <code>field_value_listener</code>.
+ * @brief @c mfbool @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfcolor>
  *
- * @brief <code>mfcolor</code> <code>field_value_listener</code>.
+ * @brief @c mfcolor @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfcolorrgba>
  *
- * @brief <code>mfcolorrgba</code> <code>field_value_listener</code>.
+ * @brief @c mfcolorrgba @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfdouble>
  *
- * @brief <code>mfdouble</code> <code>field_value_listener</code>.
+ * @brief @c mfdouble @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mffloat>
  *
- * @brief <code>mffloat</code> <code>field_value_listener</code>.
+ * @brief @c mffloat @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfimage>
  *
- * @brief <code>mfimage</code> <code>field_value_listener</code>.
+ * @brief @c mfimage @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfint32>
  *
- * @brief <code>mfint32</code> <code>field_value_listener</code>.
+ * @brief @c mfint32 @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfnode>
  *
- * @brief <code>mfnode</code> <code>field_value_listener</code>.
+ * @brief @c mfnode @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfrotation>
  *
- * @brief <code>mfrotation</code> <code>field_value_listener</code>.
+ * @brief @c mfrotation @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfstring>
  *
- * @brief <code>mfstring</code> <code>field_value_listener</code>.
+ * @brief @c mfstring @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mftime>
  *
- * @brief <code>mftime</code> <code>field_value_listener</code>.
+ * @brief @c mftime @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfvec2d>
  *
- * @brief <code>mfvec2d</code> <code>field_value_listener</code>.
+ * @brief @c mfvec2d @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfvec2f>
  *
- * @brief <code>mfvec2f</code> <code>field_value_listener</code>.
+ * @brief @c mfvec2f @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfvec3d>
  *
- * @brief <code>mfvec3d</code> <code>field_value_listener</code>.
+ * @brief @c mfvec3d @c field_value_listener.
  */
 
 /**
  * @var class openvrml::node::field_value_listener<mfvec3f>
  *
- * @brief <code>mfvec3f</code> <code>field_value_listener</code>.
+ * @brief @c mfvec3f @c field_value_listener.
  */
 
 /**
@@ -2531,7 +2524,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const node & n)
 /**
  * @brief node subclass-specific initialization.
  *
- * This method is called by node::initialize. Subclasses of node should
+ * This method is called by @c node::initialize. Subclasses of node should
  * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
@@ -2549,8 +2542,8 @@ void openvrml::node::do_initialize(double)
  *
  * @brief Get an event listener.
  *
- * This method is called by node::event_listener. Subclasses must implement
- * this method.
+ * This method is called by @c node::event_listener.  Subclasses must
+ * implement this method.
  *
  * @param[in] id    eventIn identifier.
  *

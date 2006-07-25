@@ -2,6 +2,16 @@
 
 	Doc-comment improvements.
 
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/node.cpp
+
+2006-07-24 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
 	* src/libopenvrml/openvrml/exposedfield.cpp
 	* src/libopenvrml/openvrml/node.cpp
 	* src/libopenvrml/openvrml/node_impl_util.cpp

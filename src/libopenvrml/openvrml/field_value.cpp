@@ -472,7 +472,7 @@ openvrml::field_value::~field_value() OPENVRML_NOTHROW
  *
  * @brief Assignment operator.
  *
- * @param[in] value field value to assign.
+ * @param[in] fv    field value to assign.
  */
 
 /**
@@ -571,7 +571,8 @@ openvrml::field_value::type_id openvrml::field_value::type() const
  *
  * @brief Get the field type.
  *
- * @return the type_id enumerant corresponding to the field_value's type
+ * @return the @c type_id enumerant corresponding to the
+ *         <code>field_value</code>'s type.
  */
 
 /**
@@ -634,11 +635,11 @@ namespace {
  *
  * @relatesalso openvrml::field_value
  *
- * If @p type is <code>field_value::invalid_type</code>, @c failbit is set on
+ * If @p type is @c field_value::invalid_type, @c failbit is set on
  * @p out.
  *
- * @param[in,out] out       output stream.
- * @param[in] type_id   <code>field_value</code> type identifier.
+ * @param[in,out] out   output stream.
+ * @param[in] type_id   @c field_value type identifier.
  *
  * @return @p out.
  */
@@ -658,8 +659,8 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  *
  * @relatesalso openvrml::field_value
  *
- * @param[in,out] in        input stream.
- * @param[in] type_id   <code>field_value</code> type identifier.
+ * @param[in,out] in    input stream.
+ * @param[in] type_id   @c field_value type identifier.
  *
  * @return @p in.
  */
@@ -684,9 +685,9 @@ std::istream & openvrml::operator>>(std::istream & in,
  * @struct openvrml::FieldValueConcept
  *
  * @brief Concept checking class to validate that a template parameter is a
- *        model of the FieldValue concept.
+ *        model of the Field Value concept.
  *
- * A Field Value is a concrete type that inherits field_value and holds a
+ * A Field Value is a concrete type that inherits @c field_value and holds a
  * value for a field of a node.
  *
  * @par Refinement of
@@ -746,36 +747,54 @@ std::istream & openvrml::operator>>(std::istream & in,
  * </table>
  *
  * @par Models
- * - <code>sfbool</code>
- * - <code>sfcolor</code>
- * - <code>sfcolorrgba</code>
- * - <code>sfdouble</code>
- * - <code>sffloat</code>
- * - <code>sfimage</code>
- * - <code>sfint32</code>
- * - <code>sfnode</code>
- * - <code>sfrotation</code>
- * - <code>sfstring</code>
- * - <code>sftime</code>
- * - <code>sfvec2d</code>
- * - <code>sfvec2f</code>
- * - <code>sfvec3d</code>
- * - <code>sfvec3f</code>
- * - <code>mfbool</code>
- * - <code>mfcolor</code>
- * - <code>mfcolorrgba</code>
- * - <code>mfdouble</code>
- * - <code>mffloat</code>
- * - <code>mfimage</code>
- * - <code>mfint32</code>
- * - <code>mfnode</code>
- * - <code>mfrotation</code>
- * - <code>mfstring</code>
- * - <code>mftime</code>
- * - <code>mfvec2d</code>
- * - <code>mfvec2f</code>
- * - <code>mfvec3d</code>
- * - <code>mfvec3f</code>
+ * - @c sfbool
+ * - @c sfcolor
+ * - @c sfcolorrgba
+ * - @c sfdouble
+ * - @c sffloat
+ * - @c sfimage
+ * - @c sfint32
+ * - @c sfnode
+ * - @c sfrotation
+ * - @c sfstring
+ * - @c sftime
+ * - @c sfvec2d
+ * - @c sfvec2f
+ * - @c sfvec3d
+ * - @c sfvec3f
+ * - @c mfbool
+ * - @c mfcolor
+ * - @c mfcolorrgba
+ * - @c mfdouble
+ * - @c mffloat
+ * - @c mfimage
+ * - @c mfint32
+ * - @c mfnode
+ * - @c mfrotation
+ * - @c mfstring
+ * - @c mftime
+ * - @c mfvec2d
+ * - @c mfvec2f
+ * - @c mfvec3d
+ * - @c mfvec3f
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::field_value * openvrml::FieldValueConcept::base_ptr
+ */
+
+/**
+ * @internal
+ *
+ * @var T * openvrml::FieldValueConcept::fv
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::field_value::type_id openvrml::FieldValueConcept::id
  */
 
 /**
@@ -789,7 +808,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *
  * @ingroup fieldvalues
  *
- * @brief A boolean node field value.
+ * @brief A boolean @c node field value.
  *
  * @par Model of
  * @link openvrml::FieldValueConcept Field Value@endlink
@@ -804,7 +823,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @var const openvrml::field_value::type_id openvrml::sfbool::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2701,7 +2720,7 @@ void openvrml::sftime::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param[in,out] sfb   the value to swap with this one.
+ * @param[in,out] sft   the value to swap with this one.
  */
 void openvrml::sftime::swap(sftime & sft) OPENVRML_NOTHROW
 {
@@ -3631,7 +3650,7 @@ void openvrml::mfbool::value(const value_type & val)
 /**
  * @brief Swap.
  *
- * @param[in,out] mfc   the value to swap with this one.
+ * @param[in,out] mfb   the value to swap with this one.
  */
 void openvrml::mfbool::swap(mfbool & mfb) OPENVRML_NOTHROW
 {
