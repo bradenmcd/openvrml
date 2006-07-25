@@ -1,5 +1,9 @@
 2006-07-25 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Doc-comment improvements.
+
+2006-07-25 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(create_file_url(const uri &)): Removed invalid assertion.
 	From Andrew Grieve <sgrieve@users.sourceforge.net>

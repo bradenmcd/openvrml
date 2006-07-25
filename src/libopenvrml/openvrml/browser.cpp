@@ -7520,12 +7520,14 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Load the scene from a stream.
+ * @brief Load the @c scene from a stream.
  *
  * @param[in,out] in    an input stream.
  *
- * @exception bad_media_type    if @p in.type() is not "model/vrml",
- *                              "x-world/x-vrml", or "model/x3d+vrml".
+ * @exception bad_media_type    if @p in.type() is not
+ *                              &ldquo;model/vrml&rdquo;,
+ *                              &ldquo;x-world/x-vrml&rdquo;, or
+ *                              &ldquo;model/x3d+vrml&rdquo;.
  * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::scene::load(resource_istream & in)
@@ -7543,7 +7545,7 @@ void openvrml::scene::load(resource_istream & in)
 }
 
 /**
- * @brief Initialize the scene.
+ * @brief Initialize the @c scene.
  *
  * @param[in] timestamp the current time.
  *
@@ -7631,9 +7633,9 @@ const std::vector<std::string> openvrml::scene::meta_keys() const
 }
 
 /**
- * @brief Root nodes for the scene.
+ * @brief Root @c node%s for the @c scene.
  *
- * @return the root nodes for the scene.
+ * @return the root @c node%s for the @c scene.
  */
 const std::vector<boost::intrusive_ptr<openvrml::node> > &
 openvrml::scene::nodes() const throw()
@@ -7646,12 +7648,12 @@ openvrml::scene::nodes() const throw()
  * @brief Set the root @c node%s for the @c scene.
  *
  * This function calls @c scene::shutdown to shut down the
- * <code>scene</code>'s existing nodes.
+ * <code>scene</code>'s existing @c node%s.
  *
  * @param[in] n the new root nodes for the @c scene.
  *
- * @exception std::invalid_argument if any of the nodes in @p n has already been
- *                                  initialized.
+ * @exception std::invalid_argument if any of the @c node%s in @p n has
+ *                                  already been initialized.
  * @exception std::bad_alloc        if memory allocation fails.
  */
 void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
@@ -7675,9 +7677,9 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
 }
 
 /**
- * @brief Get the root scope.
+ * @brief Get the root @c scope.
  *
- * @return the root scope.
+ * @return the root @c scope.
  */
 const openvrml::scope * openvrml::scene::root_scope() const
     OPENVRML_NOTHROW
@@ -7689,9 +7691,9 @@ const openvrml::scope * openvrml::scene::root_scope() const
 }
 
 /**
- * @brief Get the absolute URI for the scene.
+ * @brief Get the absolute URI for the @c scene.
  *
- * @return the absolute URI for the scene.
+ * @return the absolute URI for the @c scene.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -7730,7 +7732,7 @@ void openvrml::scene::render(openvrml::viewer & viewer,
  * @brief Load a resource into @a browser.
  *
  * This method simply resolves any relative references in @p uri and calls
- * browser::load_url.
+ * @c browser::load_url.
  *
  * @note There are a couple of edge cases here where we are probably doing the
  *      wrong thing:
@@ -7790,7 +7792,7 @@ void openvrml::scene::load_url(const std::vector<std::string> & url,
  * @brief Get a resource using a list of alternative URIs.
  *
  * Relative URIs in @p url are resolved against the absolute URI of the
- * <code>scene</code>.
+ * @c scene.
  *
  * @param[in] url   a list of alternative URIs.
  *
