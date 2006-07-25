@@ -7438,8 +7438,8 @@ namespace {
 # ifdef _WIN32
             //
             // _fullpath returns a string starting with the drive letter; for
-            // the URL, the path must begin with a '/'. So we simply put one at
-            // the beginning of the buffer.
+            // the URL, the path must begin with a '/'.  So we simply put one
+            // at the beginning of the buffer.
             //
             char buffer[_MAX_PATH] = { '/' };
             char * resolved_path =
@@ -7451,7 +7451,6 @@ namespace {
             std::replace_if(resolved_path,
                             resolved_path + strlen(resolved_path) + 1,
                             std::bind2nd(std::equal_to<char>(), '\\'), '/');
-            assert(resolved_path == buffer);
 # else
             char buffer[PATH_MAX];
             const char * resolved_path = realpath(relative_uri.path().c_str(),
