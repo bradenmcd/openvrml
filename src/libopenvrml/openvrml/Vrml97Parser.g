@@ -949,8 +949,17 @@ options { defaultErrorHandler=false; }
     openvrml::mfstring uri_list;
     shared_ptr<node_type> node_type;
 
+    //
+    // If we are parsing an "anonymous" stream--that is, one passed to
+    // browser::create_vrml_from_stream--we cannot use the URI associated with
+    // the stream to resolve relative URIs.  So in this instance, we get the
+    // base URI from browser::world_url.  If browser::world_url is an empty
+    // string, we call create_file_url with an empty (relative) uri.
+    //
     const ::uri base_uri = anonymous_stream_id(::uri(uri))
-        ? ::uri(scene.browser().world_url())
+        ? scene.browser().world_url().empty()
+            ? create_file_url(::uri())
+            : ::uri(scene.browser().world_url())
         : ::uri(this->uri);
 }
     :   KEYWORD_EXTERNPROTO id:ID LBRACKET

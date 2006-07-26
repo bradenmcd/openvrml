@@ -3624,6 +3624,9 @@ namespace {
         uri() OPENVRML_THROW1(std::bad_alloc);
         explicit uri(const std::string & str)
             OPENVRML_THROW2(openvrml::invalid_url, std::bad_alloc);
+        uri(const uri & id) OPENVRML_THROW1(std::bad_alloc);
+
+        uri & operator=(const uri & id) OPENVRML_THROW1(std::bad_alloc);
 
         operator std::string() const OPENVRML_THROW1(std::bad_alloc);
 
@@ -3678,6 +3681,45 @@ namespace {
         if (!parse(begin, end, g, space_p).full) {
             throw openvrml::invalid_url();
         }
+    }
+
+    uri::uri(const uri & id) OPENVRML_THROW1(std::bad_alloc):
+        str_(id.str_)
+    {
+        using std::string;
+        using namespace boost::spirit;
+
+        actions a(*this);
+        uri_grammar<actions> g(a);
+
+        string::const_iterator begin = this->str_.begin();
+        string::const_iterator end = this->str_.end();
+
+        if (!parse(begin, end, g, space_p).full) {
+            assert(false); // We started with a uri; it had better be valid.
+        }
+    }
+
+    uri & uri::operator=(const uri & id) OPENVRML_THROW1(std::bad_alloc)
+    {
+        using std::string;
+        using namespace boost::spirit;
+
+        if (&id == this) { return *this; }
+
+        this->str_ = id.str_;
+
+        actions a(*this);
+        uri_grammar<actions> g(a);
+
+        string::const_iterator begin = this->str_.begin();
+        string::const_iterator end = this->str_.end();
+
+        if (!parse(begin, end, g, space_p).full) {
+            assert(false); // We started with a uri; it had better be valid.
+        }
+
+        return *this;
     }
 
     uri::operator std::string() const OPENVRML_THROW1(std::bad_alloc)
@@ -3985,6 +4027,61 @@ namespace {
 
         using boost::ptr_map<std::string, component>::at;
     } component_registry_;
+
+
+    /**
+     * @brief Create an absolute &ldquo;file&rdquo; URL from a relative path.
+     *
+     * This function constructs a syntactically valid &ldquo;file&rdquo; URL;
+     * it does not check to see whether the file actually exists.
+     *
+     * @param[in] relative_uri  a relative URI.
+     *
+     * @return an absolute &ldquo;file&rdquo; URL corresponding to
+     *         @p relative_uri.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     *
+     * @sa ftp://ftp.rfc-editor.org/in-notes/rfc1738.txt
+     */
+    OPENVRML_LOCAL const uri create_file_url(const uri & relative_uri)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        assert(relative(relative_uri));
+
+        using std::string;
+        using std::ostringstream;
+
+        ostringstream base_uri;
+        base_uri.unsetf(ostringstream::skipws);
+        base_uri << "file://";
+
+# ifdef _WIN32
+        std::vector<char> cwd_buf(_MAX_PATH);
+        while (!_getcwd(&cwd_buf.front(), cwd_buf.size()) && errno == ERANGE) {
+            cwd_buf.resize(cwd_buf.size() * 2);
+        }
+        std::replace_if(cwd_buf.begin(),
+                        cwd_buf.begin() + strlen(&cwd_buf.front()) + 1,
+                        std::bind2nd(std::equal_to<char>(), '\\'), '/');
+# else
+        std::vector<char> cwd_buf(PATH_MAX);
+        while (!getcwd(&cwd_buf.front(), cwd_buf.size()) && errno == ERANGE) {
+            cwd_buf.resize(cwd_buf.size() * 2);
+        }
+# endif
+        base_uri << &cwd_buf.front();
+
+        //
+        // Don't trust getcwd implementations not to vary on this--add a
+        // trailing slash if there isn't one.
+        //
+        if (base_uri.str()[base_uri.str().length() - 1] != '/') {
+            base_uri << '/';
+        }
+
+        return relative_uri.resolve_against(uri(base_uri.str()));
+    }
 } // namespace
 
 //
@@ -4095,8 +4192,10 @@ namespace {
                      ++alt_uri) {
                     const uri absolute_uri = !relative(uri(*alt_uri))
                         ? uri(*alt_uri)
-                        : uri(*alt_uri).resolve_against(
-                            uri(this->scene_->url()));
+                        : this->scene_->url().empty()
+                            ? create_file_url(uri(*alt_uri))
+                            : uri(*alt_uri).resolve_against(
+                                uri(this->scene_->url()));
 
                     const shared_ptr<openvrml::node_metatype> node_metatype =
                         this->scene_->browser()
@@ -6480,7 +6579,7 @@ openvrml::browser::get_resource(const std::string & uri)
  *
  * @return the requested resource as a stream.
  *
- * @sa http://www.isi.edu/in-notes/rfc2396.txt
+ * @sa ftp://ftp.rfc-editor.org/in-notes/std/std66.txt
  */
 
 /**
@@ -7412,89 +7511,6 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  *
  * @brief Scene metadata map.
  */
-
-namespace {
-
-    class OPENVRML_LOCAL bad_path : public openvrml::bad_url {
-    public:
-        explicit bad_path(const std::string & message);
-        virtual ~bad_path() throw ();
-    };
-
-    bad_path::bad_path(const std::string & message):
-        openvrml::bad_url(message)
-    {}
-
-    bad_path::~bad_path() throw ()
-    {}
-
-    /**
-     * @brief Create an absolute &ldquo;file&rdquo; URL from a relative path.
-     *
-     * @param[in] relative_uri  a relative URI.
-     *
-     * @exception bad_path          if @p relative_uri cannot be resolved.
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    OPENVRML_LOCAL const uri create_file_url(const uri & relative_uri)
-        OPENVRML_THROW2(bad_path, std::bad_alloc)
-    {
-        assert(relative(relative_uri));
-
-        using std::string;
-        using std::ostringstream;
-
-        ostringstream result;
-        result.unsetf(ostringstream::skipws);
-        result << "file://";
-        uri result_uri;
-
-        try {
-# ifdef _WIN32
-            //
-            // _fullpath returns a string starting with the drive letter; for
-            // the URL, the path must begin with a '/'.  So we simply put one
-            // at the beginning of the buffer.
-            //
-            char buffer[_MAX_PATH] = { '/' };
-            char * resolved_path =
-                _fullpath(buffer + 1, relative_uri.path().c_str(), _MAX_PATH);
-            if (!resolved_path) {
-                throw bad_path("cannot resolve \"" + relative_uri.path()
-                               + "\"");
-            }
-            std::replace_if(resolved_path,
-                            resolved_path + strlen(resolved_path) + 1,
-                            std::bind2nd(std::equal_to<char>(), '\\'), '/');
-# else
-            char buffer[PATH_MAX];
-            const char * resolved_path = realpath(relative_uri.path().c_str(),
-                                                  buffer);
-            if (!resolved_path) {
-                static const size_t buf_size = 256;
-                char buf[buf_size];
-                strerror_r(errno, buf, buf_size);
-                throw bad_path(buf);
-            }
-# endif
-
-            result << resolved_path;
-
-            const string query = relative_uri.query();
-            if (!query.empty()) { result << '?' << query; }
-
-            const string fragment = relative_uri.fragment();
-            if (!fragment.empty()) { result << '#' << fragment; }
-
-            result_uri = uri(result.str());
-
-        } catch (openvrml::invalid_url &) {
-            assert(false); // If we constructed a bad URI, something is wrong.
-        }
-
-        return result_uri;
-    }
-} // namespace
 
 /**
  * @brief Construct.

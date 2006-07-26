@@ -1,3 +1,24 @@
+2006-07-26 Braden McDaniel  <braden@endoframe.com>
+
+	More fixes to support EXTERNPROTOs in
+	browser::create_vrml_from_stream.  This includes fixes to the uri
+	class such that it can be copied reliably.  (The default copy
+	semantics resulted in a bunch of invalid iterators.)
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(externproto): If browser::world_url is empty, resolve relative
+	URIs against the current working directory (i.e., call
+	create_file_url).
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::uri(const uri &)): Defined copy constructor.
+	(uri::operator=(const uri &)): Defined assignment operator.
+	(create_file_url(const uri &)): Changed semantics to no longer
+	check whether the URL actually refers to a valid resource;
+	instead, the function simply composes a file URL.
+	(externproto_node_metatype::load_proto::operator()()): If
+	browser::world_url is empty, resolve relative URIs against the
+	current working directory (i.e., call create_file_url).
+
 2006-07-25 Braden McDaniel  <braden@endoframe.com>
 
 	When processing a stream from browser::create_vrml_from_stream,
