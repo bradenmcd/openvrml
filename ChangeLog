@@ -1,5 +1,9 @@
 2006-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in: Updates for Fedora Core 5.
+
+2006-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	More fixes to support EXTERNPROTOs in
 	browser::create_vrml_from_stream.  This includes fixes to the uri
 	class such that it can be copied reliably.  (The default copy
