@@ -1,5 +1,10 @@
 2006-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fail if libGLU cannot be found and building the GL
+	renderer is enabled.
+
+2006-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in: Updates for Fedora Core 5.
 
 2006-07-26 Braden McDaniel  <braden@endoframe.com>

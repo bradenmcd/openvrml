@@ -234,7 +234,10 @@ AC_ARG_ENABLE([gl-renderer],
                               [do not build GL renderer])])
 if test "X$enable_gl_renderer" != "Xno"; then
   if test "X$no_gl" = "Xyes"; then
-    AC_MSG_FAILURE([OpenGL/Mesa is required for the GL renderer])
+    AC_MSG_FAILURE([OpenGL/Mesa (libGL) is required for the GL renderer])
+  fi
+  if test "X$no_glu" = "Xyes"; then
+    AC_MSG_FAILURE([the OpenGL Utility library (libGLU) is required for the GL renderer])
   fi
   AC_CONFIG_FILES([openvrml-gl.pc])
 fi
@@ -274,7 +277,7 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Optional dependencies (substituted in the pkg-config metadata files).
 #
 AC_SUBST([OPENVRML_PKG_REQUIRES])
-if test -n "${openvrml_run_path}"; then 
+if test -n "${openvrml_run_path}"; then
   OPENVRML_RPATH="-rpath ${openvrml_run_path}"
 fi
 AC_SUBST([OPENVRML_RPATH])
