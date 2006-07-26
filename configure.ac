@@ -250,6 +250,11 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
+if test X$enable_mozilla_plugin != Xno; then
+  if test X$enable_gl_renderer = Xno; then
+    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GL renderer])
+  fi
+fi
 
 #
 # build examples
