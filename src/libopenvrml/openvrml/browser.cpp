@@ -3630,6 +3630,8 @@ namespace {
 
         operator std::string() const OPENVRML_THROW1(std::bad_alloc);
 
+        void swap(uri & id) OPENVRML_NOTHROW;
+
         const std::string scheme() const OPENVRML_THROW1(std::bad_alloc);
         const std::string scheme_specific_part() const
             OPENVRML_THROW1(std::bad_alloc);
@@ -3684,47 +3686,81 @@ namespace {
     }
 
     uri::uri(const uri & id) OPENVRML_THROW1(std::bad_alloc):
-        str_(id.str_)
-    {
-        using std::string;
-        using namespace boost::spirit;
-
-        actions a(*this);
-        uri_grammar<actions> g(a);
-
-        string::const_iterator begin = this->str_.begin();
-        string::const_iterator end = this->str_.end();
-
-        if (!parse(begin, end, g, space_p).full) {
-            assert(false); // We started with a uri; it had better be valid.
-        }
-    }
+        str_(id.str_),
+        scheme_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                        id.scheme_begin)),
+        scheme_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                      id.scheme_end)),
+        scheme_specific_part_begin(
+            this->str_.begin() + std::distance(id.str_.begin(),
+                                               id.scheme_specific_part_begin)),
+        scheme_specific_part_end(
+            this->str_.begin() + std::distance(id.str_.begin(),
+                                               id.scheme_specific_part_end)),
+        authority_begin(this->str_.begin()
+                        + std::distance(id.str_.begin(), id.authority_begin)),
+        authority_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                         id.authority_end)),
+        userinfo_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                          id.userinfo_begin)),
+        userinfo_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                        id.userinfo_end)),
+        host_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                      id.host_begin)),
+        host_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                    id.host_end)),
+        port_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                      id.port_begin)),
+        port_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                    id.port_end)),
+        path_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                      id.path_begin)),
+        path_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                    id.path_end)),
+        query_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                       id.query_begin)),
+        query_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                     id.query_end)),
+        fragment_begin(this->str_.begin() + std::distance(id.str_.begin(),
+                                                          id.fragment_begin)),
+        fragment_end(this->str_.begin() + std::distance(id.str_.begin(),
+                                                        id.fragment_end))
+    {}
 
     uri & uri::operator=(const uri & id) OPENVRML_THROW1(std::bad_alloc)
     {
-        using std::string;
-        using namespace boost::spirit;
-
-        if (&id == this) { return *this; }
-
-        this->str_ = id.str_;
-
-        actions a(*this);
-        uri_grammar<actions> g(a);
-
-        string::const_iterator begin = this->str_.begin();
-        string::const_iterator end = this->str_.end();
-
-        if (!parse(begin, end, g, space_p).full) {
-            assert(false); // We started with a uri; it had better be valid.
-        }
-
+        uri temp(id);
+        this->swap(temp);
         return *this;
     }
 
     uri::operator std::string() const OPENVRML_THROW1(std::bad_alloc)
     {
         return this->str_;
+    }
+
+    void uri::swap(uri & id) OPENVRML_NOTHROW
+    {
+        using std::swap;
+        swap(this->str_, id.str_);
+        swap(this->scheme_begin, id.scheme_begin);
+        swap(this->scheme_end, id.scheme_end);
+        swap(this->scheme_specific_part_begin, id.scheme_specific_part_begin);
+        swap(this->scheme_specific_part_end, id.scheme_specific_part_end);
+        swap(this->authority_begin, id.authority_begin);
+        swap(this->authority_end, id.authority_end);
+        swap(this->userinfo_begin, id.userinfo_begin);
+        swap(this->userinfo_end, id.userinfo_end);
+        swap(this->host_begin, id.host_begin);
+        swap(this->host_end, id.host_end);
+        swap(this->port_begin, id.port_begin);
+        swap(this->port_end, id.port_end);
+        swap(this->path_begin, id.path_begin);
+        swap(this->path_end, id.path_end);
+        swap(this->query_begin, id.query_begin);
+        swap(this->query_end, id.query_end);
+        swap(this->fragment_begin, id.fragment_begin);
+        swap(this->fragment_end, id.fragment_end);
     }
 
     const std::string uri::scheme() const OPENVRML_THROW1(std::bad_alloc)

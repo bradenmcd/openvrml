@@ -1,5 +1,15 @@
 2006-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	Avoid redundantly parsing the string in uri's copy constructor and
+	assignment operator.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::uri(const uri &)): Initialize the iterators using std::distance.
+	(uri::operator=(const uri &)): Delegate to uri::swap.
+	(uri::swap(uri &)): Added swap semantics.
+
+2006-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Fail if the user attempts to build the Mozilla
 	plug-in without building the GL renderer.
 
