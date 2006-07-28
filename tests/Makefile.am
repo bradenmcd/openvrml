@@ -19,7 +19,7 @@ libtest_openvrml_la_SOURCES = test_browser.cpp
 libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 browser_SOURCES = browser.cpp
-browser_LDADD = libtest-openvrml.la -lboost_unit_test_framework
+browser_LDADD = libtest-openvrml.la -lboost_unit_test_framework -lboost_filesystem
 
 parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = libtest-openvrml.la

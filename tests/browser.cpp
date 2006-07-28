@@ -19,12 +19,16 @@
 
 # include <fstream>
 # include <sstream>
+# include <boost/filesystem/operations.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/thread.hpp>
 # include <boost/test/unit_test.hpp>
 # include "test_browser.h"
 
 using namespace std;
 using namespace openvrml;
+using namespace boost::filesystem;
+using namespace boost::multi_index::detail; // for scope_guard
 
 void create_vrml_from_stream()
 {
@@ -39,6 +43,31 @@ void create_vrml_from_stream()
     BOOST_REQUIRE(nodes.size() == 1);
     BOOST_REQUIRE(nodes[0] != boost::intrusive_ptr<node>(0));
     BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Group");
+}
+
+void create_vrml_from_stream_with_externproto()
+{
+    {
+        ofstream file("test.wrl");
+        file << "#VRML V2.0 utf8" << endl
+             << "PROTO Node [] { Group {} }" << endl;
+    }
+    scope_guard test_file_guard =
+        make_guard(&boost::filesystem::remove,
+                   boost::filesystem::path("test.wrl"));
+    boost::ignore_unused_variable_warning(test_file_guard);
+
+    const char vrmlstring[] = "EXTERNPROTO Node [] [ \"test.wrl\" ] Node {}";
+    stringstream vrmlstream(vrmlstring);
+
+    test_browser b;
+
+    vector<boost::intrusive_ptr<node> > nodes =
+        b.create_vrml_from_stream(vrmlstream);
+
+    BOOST_REQUIRE(nodes.size() == 1);
+    BOOST_REQUIRE(nodes[0] != boost::intrusive_ptr<node>(0));
+    BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Node");
 }
 
 void create_vrml_from_url()
@@ -75,6 +104,11 @@ void create_vrml_from_url()
         file << "#VRML V2.0 utf8" << endl
 	     << "Shape {}" << endl;
     }
+    scope_guard test_file_guard =
+        make_guard(&boost::filesystem::remove,
+                   boost::filesystem::path("test.wrl"));
+    boost::ignore_unused_variable_warning(test_file_guard);
+
     test_browser b;
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
@@ -108,9 +142,6 @@ void create_vrml_from_url()
     const vector<boost::intrusive_ptr<node> > & children = group->children();
     BOOST_REQUIRE(children.size() == 1);
     BOOST_CHECK_EQUAL(children[0]->type().id(), "Shape");
-
-    int remove_result = remove("test.wrl");
-    BOOST_CHECK(remove_result == 0);
 }
 
 boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
@@ -118,6 +149,7 @@ boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
     using boost::unit_test::test_suite;
     test_suite * const suite = BOOST_TEST_SUITE("browser");
     suite->add(BOOST_TEST_CASE(&create_vrml_from_stream));
+    suite->add(BOOST_TEST_CASE(&create_vrml_from_stream_with_externproto));
     suite->add(BOOST_TEST_CASE(&create_vrml_from_url));
     return suite;
 }

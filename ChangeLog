@@ -1,5 +1,18 @@
 2006-07-28 Braden McDaniel  <braden@endoframe.com>
 
+	Added test to confirm that EXTERNPROTOs can be loaded in
+	browser::create_vrml_from_stream.
+
+	* tests/Makefile.am (browser_LDADD): Added -lboost_filesystem.
+	* tests/browser.cpp
+	(create_vrml_from_stream_with_externproto()): Test to check that
+	EXTERNPROTOs can be loaded in browser::create_vrml_from_stream.
+	(create_vrml_from_url()): Use scope_guard to remove the test file.
+	(init_unit_test_suite(int, char *[])): Added
+	create_vrml_from_stream_with_externproto to the test suite.
+
+2006-07-28 Braden McDaniel  <braden@endoframe.com>
+
 	Require that all threads loading EXTERNPROTO implementations are
 	joined before destroying the browser.  (Otherwise, we deadlock.)
 
