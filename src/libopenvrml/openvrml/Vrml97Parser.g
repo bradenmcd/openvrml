@@ -986,7 +986,8 @@ options { defaultErrorHandler=false; }
                     new externproto_node_metatype(
                         path(*scope) + '#' + id->getText(),
                         scene,
-                        alt_uris));
+                        alt_uris,
+                        scene.browser().load_proto_thread_group_));
 
                 scene.browser().add_node_metatype(externproto_class->id(),
                                                   externproto_class);

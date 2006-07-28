@@ -1,3 +1,27 @@
+2006-07-28 Braden McDaniel  <braden@endoframe.com>
+
+	Require that all threads loading EXTERNPROTO implementations are
+	joined before destroying the browser.  (Otherwise, we deadlock.)
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(externproto): Pass browser::load_proto_thread_group_ to the
+	externproto_node_metatype constructor.
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_metatype::load_proto_thread_): Changed to a raw
+	pointer.  The thread is now owned by
+	browser::load_proto_thread_group_.
+	(externproto_node_metatype::externproto_node_metatype(const
+	openvrml::node_metatype_id &, const openvrml::scene &, const
+	std::vector<std::string> &, boost::thread_group &)): Pass the
+	thread_group that owns the load_proto threads; that is,
+	browser::load_proto_thread_group_.
+	(openvrml::browser::~browser()): Join all the
+	load_proto_thread_group_ threads.
+	(openvrml::browser::set_world(resource_istream &)): Join all the
+	load_proto_thread_group_ threads when clearing the current scene.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser): Added load_proto_thread_group_ member.
+
 2006-07-26 Braden McDaniel  <braden@endoframe.com>
 
 	Avoid redundantly parsing the string in uri's copy constructor and

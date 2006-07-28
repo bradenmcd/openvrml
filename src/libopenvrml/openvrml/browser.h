@@ -23,6 +23,7 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
+#   include <boost/thread.hpp>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -219,6 +220,7 @@ namespace openvrml {
         mutable boost::recursive_mutex mutex_;
         std::auto_ptr<null_node_metatype> null_node_metatype_;
         std::auto_ptr<null_node_type> null_node_type_;
+        boost::thread_group load_proto_thread_group_;
         node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;
         boost::scoped_ptr<scene> scene_;

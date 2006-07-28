@@ -2305,12 +2305,14 @@ namespace {
         mutable externproto_node_types externproto_node_types_;
         bool externproto_node_types_cleared_;
 
-        boost::scoped_ptr<boost::thread> load_proto_thread_;
+        boost::thread * const load_proto_thread_;
 
     public:
-        externproto_node_metatype(const openvrml::node_metatype_id & id,
-                               const openvrml::scene & scene,
-                               const std::vector<std::string> & uris)
+        externproto_node_metatype(
+            const openvrml::node_metatype_id & id,
+            const openvrml::scene & scene,
+            const std::vector<std::string> & uris,
+            boost::thread_group & load_proto_thread_group)
             OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
         virtual ~externproto_node_metatype() OPENVRML_NOTHROW;
 
@@ -4286,12 +4288,13 @@ namespace {
     externproto_node_metatype::
     externproto_node_metatype(const openvrml::node_metatype_id & id,
                               const openvrml::scene & scene,
-                              const std::vector<std::string> & uris)
+                              const std::vector<std::string> & uris,
+                              boost::thread_group & load_proto_thread_group)
         OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
         node_metatype(id, scene.browser()),
         externproto_node_types_cleared_(false),
         load_proto_thread_(
-            new boost::thread(
+            load_proto_thread_group.create_thread(
                 boost::function0<void>(load_proto(*this, scene, uris))))
     {}
 
@@ -5792,8 +5795,8 @@ openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
 /**
  * @brief Insert a @c node_metatype.
  *
- * This operation will &ldquo;fail&rdquo; silently.  That is, if a @c
- * node_metatype corresponding to @p id already exists in the map, the
+ * This operation will &ldquo;fail&rdquo; silently.  That is, if a
+ * @c node_metatype corresponding to @p id already exists in the map, the
  * existing element will simply be returned.
  *
  * @param[in] id            the implementation identifier.
@@ -5826,7 +5829,7 @@ bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 /**
  * @brief Find a @c node_metatype.
  *
- * @param[in] id    an implementation id.
+ * @param[in] id    an implementation identifier.
  *
  * @return the @c node_metatype corresponding to @p id, or a null
  *         pointer if no such @c node_metatype exists in the map.
@@ -5948,6 +5951,16 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @brief &ldquo;Null&rdquo; type object for default nodes (e.g., @c
  *        default_viewpoint).
+ */
+
+/**
+ * @internal
+ *
+ * @var boost::thread_group openvrml::browser::load_proto_thread_group_
+ *
+ * @brief The threads that load EXTERNPROTO implementations.
+ *
+ * These threads @b must be joined by the browser before it is destroyed.
  */
 
 /**
@@ -6207,6 +6220,8 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
  */
 openvrml::browser::~browser() OPENVRML_NOTHROW
 {
+    this->load_proto_thread_group_.join_all();
+
     const double now = browser::current_time();
 
     if (this->scene_) { this->scene_->shutdown(now); }
@@ -6686,6 +6701,7 @@ void openvrml::browser::set_world(resource_istream & in)
     //
     // Clear out the current scene.
     //
+    this->load_proto_thread_group_.join_all();
     double now = browser::current_time();
     if (this->scene_) { this->scene_->shutdown(now); }
     this->node_metatype_map_.shutdown(now);
