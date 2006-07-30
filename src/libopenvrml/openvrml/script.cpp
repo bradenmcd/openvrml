@@ -4381,7 +4381,7 @@ JSBool createVrmlFromString(JSContext * const cx,
 // createVrmlFromURL( MFString url, SFNode node, SFString event )
 
 JSBool createVrmlFromURL(JSContext * const cx,
-                         JSObject * const obj,
+                         JSObject *,
                          const uintN argc,
                          jsval * const argv,
                          jsval * const rval)

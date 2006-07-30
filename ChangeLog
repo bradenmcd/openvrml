@@ -1,3 +1,9 @@
+2006-07-30 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::Browser::createVrmlFromURL(JSContext *, JSObject *, uintN,
+	jsval *, jsval *)): Quelled unused variable warning from gcc.
+
 2006-07-28 Braden McDaniel  <braden@endoframe.com>
 
 	Added test to confirm that EXTERNPROTOs can be loaded in
