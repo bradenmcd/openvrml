@@ -52,7 +52,8 @@ namespace openvrml_player {
             void put(const char_type & c);
             int_type get();
             size_t buffered() const;
-            void npstream_destroyed();
+            void set_npstream_destroyed();
+            bool npstream_destroyed() const;
         };
 
         mutable boost::mutex mutex_;

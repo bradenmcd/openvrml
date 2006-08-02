@@ -1,3 +1,29 @@
+2006-08-02 Braden McDaniel  <braden@endoframe.com>
+
+	Check whether the stream has been destroyed in
+	plugin_streambuf::data_available.  The streambuf should be treated
+	as having data available once it has been "destroyed" by the Web
+	browser so that EOF can be gotten from it.
+
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()()): Removed
+	attempt to put an EOF character into the stream; this won't work.
+	Changed npstream_destroyed call to set_npstream_destroyed.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::npstream_buffer::put(const
+	char_type &)): Call buffer_not_empty_or_eof_.notify_all instead of
+	notify_one.
+	(openvrml_player::plugin_streambuf::npstream_buffer::set_npstream_destroyed()):
+	Changed name from npstream_destroyed; call
+	buffer_not_empty_or_eof_.notify_all instead of notify_one.
+	(openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed()
+	const): Added accessor function.
+	(openvrml_player::plugin_streambuf::data_available() const):
+	return true if the stream has been destroyed.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf::npstream_buffer): Added
+	accessor to check whether the stream has been destroyed.
+
 2006-08-01 Braden McDaniel  <braden@endoframe.com>
 
 	Changed fequal, fless_equal, and fgreater_equal to be instances of

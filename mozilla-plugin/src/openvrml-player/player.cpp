@@ -107,8 +107,7 @@ namespace openvrml_player {
                         g_warning("Attempt to destroy a nonexistent stream.");
                         continue;
                     }
-                    pos->second->buf_.put(std::char_traits<char>::eof());
-                    pos->second->buf_.npstream_destroyed();
+                    pos->second->buf_.set_npstream_destroyed();
                     plugin_streambuf_map.erase(pos);
                 } else if (command == "write") {
                     size_t stream_id, offset, length;

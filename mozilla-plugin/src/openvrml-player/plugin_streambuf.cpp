@@ -38,7 +38,7 @@ openvrml_player::plugin_streambuf::npstream_buffer::put(const char_type & c)
     this->buf_[this->end_] = c;
     this->end_ = (this->end_ + 1) % npstream_buffer::buffer_size;
     ++this->buffered_;
-    this->buffer_not_empty_or_eof_.notify_one();
+    this->buffer_not_empty_or_eof_.notify_all();
 }
 
 openvrml_player::plugin_streambuf::int_type
@@ -66,11 +66,18 @@ size_t openvrml_player::plugin_streambuf::npstream_buffer::buffered() const
     return this->buffered_;
 }
 
-void openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed()
+void openvrml_player::plugin_streambuf::npstream_buffer::set_npstream_destroyed()
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     this->npstream_destroyed_ = true;
-    this->buffer_not_empty_or_eof_.notify_one();
+    this->buffer_not_empty_or_eof_.notify_all();
+}
+
+bool
+openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->npstream_destroyed_;
 }
 
 openvrml_player::plugin_streambuf::
@@ -128,7 +135,12 @@ const std::string & openvrml_player::plugin_streambuf::type() const
 
 bool openvrml_player::plugin_streambuf::data_available() const
 {
-    return this->buf_.buffered() > 0;
+    //
+    // It may seem a bit counterintuitive to return true here if the stream
+    // has been destroyed; however, if we don't return true in this case,
+    // clients may never get EOF from the stream.
+    //
+    return this->buf_.buffered() > 0 || this->buf_.npstream_destroyed();
 }
 
 openvrml_player::plugin_streambuf::int_type
