@@ -466,7 +466,7 @@ void openvrml::bounding_sphere::do_extend(const vec3f & p)
     float zn = z1 - z0;
     float dn = float(sqrt(xn * xn + yn * yn + zn * zn));
 
-    if (fequal<float>()(dn, 0.0f)) { return; }
+    if (fequal(dn, 0.0f)) { return; }
 
     if (dn < r0) {
         // point is inside sphere
@@ -542,7 +542,7 @@ void openvrml::bounding_sphere::do_extend(const bounding_sphere & b)
     float zn = z1 - z0;
     float dn = float(sqrt(xn * xn + yn * yn + zn * zn));
 
-    if (fequal<float>()(dn, 0.0f)) { return; }
+    if (fequal(dn, 0.0f)) { return; }
 
     if (dn + r1 < r0) { // inside us, so no change
         return;

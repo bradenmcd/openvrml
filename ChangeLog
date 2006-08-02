@@ -1,3 +1,14 @@
+2006-08-01 Braden McDaniel  <braden@endoframe.com>
+
+	Changed fequal, fless_equal, and fgreater_equal to be instances of
+	types that have a template operator().
+
+	* src/libopenvrml/private.h
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
 2006-07-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp

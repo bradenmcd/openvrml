@@ -2059,10 +2059,10 @@ options { defaultErrorHandler=false; }
             vec3f axis(x, y, z);
 
             const float axisLength = axis.length();
-            if (!fequal<float>()(axisLength, 1.0f)) {
+            if (!fequal(axisLength, 1.0f)) {
                 this->reportWarning("axis component of a rotation must be "
                                     "a normalized vector");
-                if (fequal<float>()(axisLength, 0.0f)) {
+                if (fequal(axisLength, 0.0f)) {
                     axis.z(1.0);
                 } else {
                     axis = axis.normalize();

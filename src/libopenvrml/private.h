@@ -114,9 +114,8 @@ namespace {
             return f < 0.0 ? -f : f;
         }
 
-        template <typename Float>
-        struct OPENVRML_LOCAL fequal :
-            std::binary_function<Float, Float, bool> {
+        struct OPENVRML_LOCAL fequal_t {
+            template <typename Float>
             bool operator()(Float a, Float b) const
             {
                 const Float diff = fabs(a - b);
@@ -129,23 +128,27 @@ namespace {
             }
         };
 
-        template <typename Float>
-        struct OPENVRML_LOCAL fless_equal :
-            std::binary_function<Float, Float, bool> {
+        const fequal_t fequal = fequal_t();
+
+        struct OPENVRML_LOCAL fless_equal_t {
+            template <typename Float>
             bool operator()(Float a, Float b) const
             {
-                return a < b || fequal<Float>()(a, b);
+                return a < b || fequal(a, b);
             }
         };
 
-        template <typename Float>
-        struct OPENVRML_LOCAL fgreater_equal :
-            std::binary_function<Float, Float, bool> {
+        const fless_equal_t fless_equal = fless_equal_t();
+
+        struct OPENVRML_LOCAL fgreater_equal_t {
+            template <typename Float>
             bool operator()(Float a, Float b) const
             {
-                return a > b || fequal<Float>()(a, b);
+                return a > b || fequal(a, b);
             }
         };
+
+        const fgreater_equal_t fgreater_equal = fgreater_equal_t();
 
 
         class OPENVRML_LOCAL scope_guard_impl_base {

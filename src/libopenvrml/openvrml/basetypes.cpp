@@ -265,7 +265,7 @@ bool openvrml::operator==(const color & lhs, const color & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal);
 }
 
 /**
@@ -484,7 +484,7 @@ bool openvrml::operator==(const color_rgba & lhs, const color_rgba & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal);
 }
 
 /**
@@ -826,7 +826,7 @@ const openvrml::vec2f openvrml::vec2f::normalize() const OPENVRML_NOTHROW
     using openvrml_::fequal;
     const float len = this->length();
     vec2f result(*this);
-    if (!fequal<float>()(len, 0.0)) { result /= len; }
+    if (!fequal(len, 0.0f)) { result /= len; }
     return result;
 }
 
@@ -845,7 +845,7 @@ bool openvrml::operator==(const vec2f & lhs, const vec2f & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal);
 }
 
 /**
@@ -1187,7 +1187,7 @@ const openvrml::vec2d openvrml::vec2d::normalize() const OPENVRML_NOTHROW
     using openvrml_::fequal;
     const double len = this->length();
     vec2d result(*this);
-    if (!fequal<double>()(len, 0.0)) { result /= len; }
+    if (!fequal(len, 0.0)) { result /= len; }
     return result;
 }
 
@@ -1206,7 +1206,7 @@ bool openvrml::operator==(const vec2d & lhs, const vec2d & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal<double>());
+    return std::equal(&lhs[0], &lhs[0] + 2, &rhs[0], fequal);
 }
 
 /**
@@ -1678,7 +1678,7 @@ const openvrml::vec3f openvrml::vec3f::normalize() const OPENVRML_NOTHROW
     using openvrml_::fequal;
     const float len = this->length();
     vec3f result(*this);
-    if (!fequal<float>()(len, 0.0f)) { result /= len; }
+    if (!fequal(len, 0.0f)) { result /= len; }
     return result;
 }
 
@@ -1697,7 +1697,7 @@ bool openvrml::operator==(const vec3f & lhs, const vec3f & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal);
 }
 
 /**
@@ -2169,7 +2169,7 @@ const openvrml::vec3d openvrml::vec3d::normalize() const OPENVRML_NOTHROW
     using openvrml_::fequal;
     const double len = this->length();
     vec3d result(*this);
-    if (!fequal<double>()(len, 0.0f)) { result /= len; }
+    if (!fequal(len, 0.0)) { result /= len; }
     return result;
 }
 
@@ -2188,7 +2188,7 @@ bool openvrml::operator==(const vec3d & lhs, const vec3d & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal<double>());
+    return std::equal(&lhs[0], &lhs[0] + 3, &rhs[0], fequal);
 }
 
 /**
@@ -2338,7 +2338,7 @@ openvrml::rotation::rotation(const quatf & quat) OPENVRML_NOTHROW
     using openvrml_::fequal;
 
     const float val = float(acos(quat.w()));
-    if (fequal<float>()(val, 0.0f)) {
+    if (fequal(val, 0.0f)) {
         this->rot[0] = 0.0;
         this->rot[1] = 0.0;
         this->rot[2] = 1.0;
@@ -2445,7 +2445,7 @@ namespace {
     {
         using openvrml_::fequal;
         const float len = float(length_(vec));
-        if (!fequal<float>()(len, 0.0f)) {
+        if (!fequal(len, 0.0f)) {
             vec[0] /= len;
             vec[1] /= len;
             vec[2] /= len;
@@ -2456,7 +2456,7 @@ namespace {
     {
         using openvrml_::fequal;
         const float axis_length = float(length_(axis));
-        if (fequal<float>()(axis_length, 0.0)) {
+        if (fequal(axis_length, 0.0f)) {
             axis[2] = 1.0;
         } else {
             normalize_(axis);
@@ -2569,7 +2569,7 @@ const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
     // Calculate coefficients.
     //
     double scale0, scale1;
-    if (!fequal<double>()(cosom, 0.0)) {
+    if (!fequal(cosom, 0.0)) {
         const double omega = acos(cosom);
         const double sinom = sin(omega);
         scale0 = sin((1.0 - t) * omega) / sinom;
@@ -2605,7 +2605,7 @@ bool openvrml::operator==(const rotation & lhs, const rotation & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal);
 }
 
 /**
@@ -2801,15 +2801,15 @@ openvrml::mat4f::transformation(const vec3f & t,
     if (c != vec3f(0.0, 0.0, 0.0)) {
         mat = translation(c) * mat; // M = C * M   = C * T
     }
-    if (!fequal<float>()(r.angle(), 0.0f)) {
+    if (!fequal(r.angle(), 0.0f)) {
         mat = rotation(r) * mat; // M = R * M    = R * C * T
     }
     if (s != vec3f(1.0, 1.0, 1.0)) {
-        if (!fequal<float>()(sr.angle(), 0.0f)) {
+        if (!fequal(sr.angle(), 0.0f)) {
             mat = rotation(sr) * mat; // M = SR * M    = SR * R * C * T
         }
         mat = scale(s) * mat; // M = S * M     = S * SR * R * C * T
-        if (!fequal<float>()(sr.angle(), 0.0f)) {
+        if (!fequal(sr.angle(), 0.0f)) {
             // M = -SR * M   = -SR * S * SR * R * C * T
             mat = rotation(sr.inverse()) * mat;
         }
@@ -3080,8 +3080,8 @@ void openvrml::mat4f::transformation(vec3f & t,
     //
     // Check if it is singular.
     //
-    assert(!fequal<float>()(this->mat[3][3], 0.0f));
-    if (fequal<float>()(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
+    assert(!fequal(this->mat[3][3], 0.0f));
+    if (fequal(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
        OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
        return;
     }
@@ -3176,8 +3176,8 @@ void openvrml::mat4f::transformation(vec3f & t,
     //
     // Check if it is singular.
     //
-    assert(!fequal<float>()(this->mat[3][3], 0.0f));
-    if (fequal<float>()(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
+    assert(!fequal(this->mat[3][3], 0.0f));
+    if (fequal(det3(*this, 0, 1, 2, 0, 1, 2), 0.0f)){
         OPENVRML_PRINT_MESSAGE_("Warning: matrix is singular.");
         return;
     }
@@ -3477,8 +3477,7 @@ bool openvrml::operator==(const mat4f & lhs, const mat4f & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0],
-                      fequal<float>());
+    return std::equal(&lhs[0][0], &lhs[0][0] + 16, &rhs[0][0], fequal);
 }
 
 /**
@@ -3590,7 +3589,7 @@ openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
         s = float(sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0));
         this->quat[i] = s * 0.5f;
 
-        if (!fequal<float>()(s, 0.0f)) { s = 0.5f / s; }
+        if (!fequal(s, 0.0f)) { s = 0.5f / s; }
         this->quat[3] = (mat[j][k] - mat[k][j]) * s;
         this->quat[j] = (mat[i][j] + mat[j][i]) * s;
         this->quat[k] = (mat[i][k] + mat[k][i]) * s;
@@ -3604,11 +3603,7 @@ openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
  */
 openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
 {
-# ifndef NDEBUG
-    using openvrml_::fequal;
-    fequal<float> feq;
-# endif
-    assert(feq(rot.axis().length(), 1.0));
+    assert(openvrml_::fequal(rot.axis().length(), 1.0f));
 
     const float sin_angle = float(sin(rot.angle() / 2.0));
     this->quat[0] = rot.x() * sin_angle;
@@ -3996,7 +3991,7 @@ bool openvrml::operator==(const quatf & lhs, const quatf & rhs)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
-    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal<float>());
+    return std::equal(&lhs[0], &lhs[0] + 4, &rhs[0], fequal);
 }
 
 /**

@@ -10198,7 +10198,7 @@ namespace {
                 cx = cx.normalize();
                 if (cx.length() == 0.0) { return; }
                 rot = radius * float(acos(dir2.dot(dir1)));
-                if (fequal<float>()(cx.y(), -1.0f)) { rot = -rot; }
+                if (fequal(cx.y(), -1.0f)) { rot = -rot; }
                 if (this->auto_offset_.sfbool::value()) {
                     rot = this->offset_.sffloat::value() + rot;
                 }
@@ -16584,7 +16584,7 @@ namespace {
 
                             float alpha, beta;
                             const float dot_product = v1->dot(*v2);
-                            if (!fequal<float>()(dot_product, 1.0f)
+                            if (!fequal(dot_product, 1.0f)
                                 && v1->normalize() != v2->normalize()) {
                                 // Vectors are not opposite and not coincident.
                                 const float omega = float(acos(dot_product));
@@ -18954,15 +18954,12 @@ namespace {
             MV = MV.inverse();
             x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
             bool inside =
-                fless_equal<float>()(
-                    fabs(x - this->center_.sfvec3f::value().x()),
-                    0.5f * this->size_.sfvec3f::value().x())
-                && fless_equal<float>()(
-                    fabs(y - this->center_.sfvec3f::value().y()),
-                    0.5f * this->size_.sfvec3f::value().y())
-                && fless_equal<float>()(
-                    fabs(z - this->center_.sfvec3f::value().z()),
-                    0.5f * this->size_.sfvec3f::value().z());
+                fless_equal(fabs(x - this->center_.sfvec3f::value().x()),
+                            0.5f * this->size_.sfvec3f::value().x())
+                && fless_equal(fabs(y - this->center_.sfvec3f::value().y()),
+                               0.5f * this->size_.sfvec3f::value().y())
+                && fless_equal(fabs(z - this->center_.sfvec3f::value().z()),
+                               0.5f * this->size_.sfvec3f::value().z());
             bool wasIn = this->is_active_.value();
 
             // Check if viewer has entered the box
@@ -24266,7 +24263,7 @@ namespace {
                         : 0.0;
 
                     // Fraction of cycle message
-                    node.fraction_changed_.value(float(fequal<double>()(f, 0.0)
+                    node.fraction_changed_.value(float(fequal(f, 0.0)
                                                        ? 1.0
                                                        : (f / cycleInt)));
                 } else {
@@ -24543,12 +24540,11 @@ namespace {
 
                 // Are we done? Choose min of stopTime or start + single cycle.
                 if ((this->stop_time_.sftime::value() > this->start_time_.value()
-                     && fless_equal<double>()(this->stop_time_.sftime::value(),
-                                              timeNow.value()))
+                     && fless_equal(this->stop_time_.sftime::value(),
+                                    timeNow.value()))
                     || (!this->loop_.sfbool::value()
-                        && fless_equal<double>()(this->start_time_.value()
-                                                 + cycleInt,
-                                                 timeNow.value()))) {
+                        && fless_equal(this->start_time_.value() + cycleInt,
+                                       timeNow.value()))) {
                     this->is_active_.value(false);
 
                     // Must respect stopTime/cycleInterval exactly
@@ -24567,10 +24563,8 @@ namespace {
                            cycleInt)
                     : 0.0;
 
-                fequal<double> feq;
-
                 // Fraction of cycle message
-                this->fraction_changed_.value(feq(f, 0.0)
+                this->fraction_changed_.value(fequal(f, 0.0)
                                               ? 1.0f
                                               : float(f / cycleInt));
                 node::emit_event(this->fraction_changed_emitter_,
@@ -24581,7 +24575,7 @@ namespace {
                 node::emit_event(this->time_emitter_, timeNow.value());
 
                 // End of cycle message (this may miss cycles...)
-                if (feq(this->fraction_changed_.value(), 1.0)) {
+                if (fequal(this->fraction_changed_.value(), 1.0f)) {
                     this->cycle_time_.value(timeNow.value());
                     node::emit_event(this->cycle_time_emitter_,
                                      timeNow.value());
@@ -27027,7 +27021,7 @@ namespace {
                 openvrml::navigation_info_node & nav_info =
                     this->type().metatype().browser()
                     .active_navigation_info();
-                if (!fequal<float>()(nav_info.visibility_limit(), 0.0f)
+                if (!fequal(nav_info.visibility_limit(), 0.0f)
                     && xyz[0][2] < -(nav_info.visibility_limit())) {
                     inside = false;
                 }
