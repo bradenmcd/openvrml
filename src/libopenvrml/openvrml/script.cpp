@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -79,7 +79,7 @@ openvrml::script::~script()
 /**
  * @brief Initialize the Script node.
  *
- * Delegates to <code>script::do_initialize</code>.
+ * Delegates to @c script::do_initialize.
  *
  * @param[in] timestamp the current time.
  */
@@ -100,7 +100,7 @@ void openvrml::script::initialize(double timestamp)
 /**
  * @brief Process an event.
  *
- * Delegates to <code>script::do_process_event</code>.
+ * Delegates to @c script::do_process_event.
  *
  * @param[in] id        eventIn identifier.
  * @param[in] value     event value.
@@ -119,7 +119,7 @@ void openvrml::script::process_event(const std::string & id,
  *
  * @brief Process an event.
  *
- * @param[in] id        eventIn identifier.
+ * @param[in] id        @c eventIn identifier.
  * @param[in] value     event value.
  * @param[in] timestamp the current time.
  */
@@ -127,7 +127,7 @@ void openvrml::script::process_event(const std::string & id,
 /**
  * @brief Execute script code after processing events.
  *
- * Delegates to <code>script::do_events_processed</code>.
+ * Delegates to @c script::do_events_processed.
  *
  * @param[in] timestamp the current time.
  */
@@ -215,8 +215,8 @@ void openvrml::script::field(const std::string & id, const field_value & value)
  * @brief Add an event for direct output processing at the end of script
  *        execution.
  *
- * @param[in] listener  the <code>event_listener</code> to which the event should
- *                  be sent.
+ * @param[in] listener  the @c event_listener to which the event should be
+ *                      sent.
  * @param[in] value     the value to send.
  *
  * @exception field_value_type_mismatch if @p listener is not the correct type
@@ -293,9 +293,9 @@ void openvrml::script::process_direct_output(double timestamp)
 /**
  * @class openvrml::script_node_metatype
  *
- * @brief Class object for <code>script_node</code>s.
+ * @brief Class object for @c script_node%s.
  *
- * There is one script_node_metatype per browser instance.
+ * There is one @c script_node_metatype per browser instance.
  *
  * @see browser::scriptNodeClass
  */
@@ -321,7 +321,7 @@ openvrml::script_node_metatype::~script_node_metatype() OPENVRML_NOTHROW
  *
  * This method is not implemented because the Script node implementation,
  * unlike other node implementations, cannot provide the implementation of
- * an @c EXTERNPROTO. It is an error to call this method.
+ * an @c EXTERNPROTO.  It is an error to call this method.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml::script_node_metatype::do_create_type(const std::string &,
@@ -348,19 +348,19 @@ openvrml::script_node_metatype::do_create_type(const std::string &,
 /**
  * @typedef openvrml::script_node::field_value_map_t
  *
- * @brief A std::map that keys field values on their field name.
+ * @brief A @c std::map that keys field values on their field name.
  */
 
 /**
  * @class openvrml::script_node::eventout
  *
- * @brief An event_emitter along with the emitted value.
+ * @brief An @c event_emitter along with the emitted value.
  */
 
 /**
  * @var openvrml::script_node & openvrml::script_node::eventout::node_
  *
- * @brief The containing script_node.
+ * @brief The containing @c script_node.
  */
 
 /**
@@ -385,7 +385,7 @@ openvrml::script_node_metatype::do_create_type(const std::string &,
  * @brief Construct.
  *
  * @param[in] type  field value type identifier.
- * @param[in] node  script_node.
+ * @param[in] node  @c script_node.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -399,9 +399,9 @@ openvrml::script_node::eventout::eventout(const field_value::type_id type,
 {}
 
 /**
- * @brief The value that will be sent from the eventOut.
+ * @brief The value that will be sent from the @c eventOut.
  *
- * @return the value that will be sent from the eventOut.
+ * @return the value that will be sent from the @c eventOut.
  */
 const openvrml::field_value & openvrml::script_node::eventout::value() const
     OPENVRML_NOTHROW
@@ -410,10 +410,10 @@ const openvrml::field_value & openvrml::script_node::eventout::value() const
 }
 
 /**
- * @brief Set the value that will be sent from the eventOut.
+ * @brief Set the value that will be sent from the @c eventOut.
  *
- * After calling this function, modified will return @c true until emit_event
- * is called.
+ * After calling this function, modified will return @c true until
+ * @c emit_event is called.
  *
  * @param[in] val   field value.
  *
@@ -444,7 +444,7 @@ void openvrml::script_node::eventout::value(const field_value & val)
 /**
  * @brief Whether the value has been modified.
  *
- * @return @c true if the value has been changed since emit_event was last
+ * @return @c true if the value has been changed since @c emit_event was last
  *         called; @c false otherwise.
  */
 bool openvrml::script_node::eventout::modified() const OPENVRML_NOTHROW
@@ -453,9 +453,9 @@ bool openvrml::script_node::eventout::modified() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief The event_emitter associated with the eventout.
+ * @brief The @c event_emitter associated with the @c eventout.
  *
- * @return the event_emitter associated with the eventout.
+ * @return the @c event_emitter associated with the @c eventout.
  */
 openvrml::event_emitter & openvrml::script_node::eventout::emitter()
     OPENVRML_NOTHROW
@@ -464,10 +464,10 @@ openvrml::event_emitter & openvrml::script_node::eventout::emitter()
 }
 
 /**
- * @brief Cause the contained event_emitter to emit an event.
+ * @brief Cause the contained @c event_emitter to emit an event.
  *
  * Events should be emitted from Script nodes by calling this function instead
- * of passing the event_emitter directly to node::emit_event.
+ * of passing the @c event_emitter directly to @c node::emit_event.
  *
  * @param[in] timestamp the current time.
  *
@@ -483,13 +483,13 @@ void openvrml::script_node::eventout::emit_event(const double timestamp)
 /**
  * @typedef openvrml::script_node::eventout_ptr
  *
- * @brief Reference-counted smart pointer to an eventout.
+ * @brief Reference-counted smart pointer to an @c eventout.
  */
 
 /**
  * @typedef openvrml::script_node::eventout_map_t
  *
- * @brief Map of eventout instances.
+ * @brief Map of @c eventout instances.
  */
 
 /**
@@ -497,7 +497,7 @@ void openvrml::script_node::eventout::emit_event(const double timestamp)
  *
  * @class openvrml::script_node::script_node_type
  *
- * @brief Type objects for @link script_node script_nodes@endlink.
+ * @brief Type objects for @c script_node%s.
  *
  * @see script_node::type
  */
@@ -511,7 +511,7 @@ void openvrml::script_node::eventout::emit_event(const double timestamp)
 namespace {
 
     //
-    // The order of the node_interfaces in this array is significant. This
+    // The order of the node_interfaces in this array is significant.  This
     // range is used with std::set_difference, so the elements *must* be in
     // lexicographically increasing order according to their "id" member.
     //
@@ -535,7 +535,7 @@ namespace {
 /**
  * @brief Construct.
  *
- * @param[in] class_    the node_metatype for @link script_node script_nodes@endlink.
+ * @param[in] class_    the @c node_metatype for @c script_node%s.
  */
 openvrml::script_node::script_node_type::
 script_node_type(script_node_metatype & class_):
@@ -560,7 +560,7 @@ openvrml::script_node::script_node_type::~script_node_type() OPENVRML_NOTHROW
  * @param[in] interface
  *
  * @exception std::bad_alloc        if memory allocation fails.
- * @exception std::invalid_argument if the script_node_type already has an
+ * @exception std::invalid_argument if the @c script_node_type already has an
  *                                  interface that conflicts with @p interface.
  */
 void
@@ -576,9 +576,9 @@ add_interface(const node_interface & interface)
 }
 
 /**
- * @brief Get the interfaces for the node.
+ * @brief Get the interfaces for the @c node.
  *
- * @return the interfaces for the node.
+ * @return the interfaces for the @c node.
  */
 const openvrml::node_interface_set &
 openvrml::script_node::script_node_type::do_interfaces() const
@@ -588,16 +588,17 @@ openvrml::script_node::script_node_type::do_interfaces() const
 }
 
 /**
- * @brief Clone the Script node that has this node_type.
+ * @brief Clone the Script node that has this @c node_type.
  *
- * Since the node_type for a script_node is only available once a script_node
- * is instantiated, you have to have a script_node instance in order to be able
- * to use this method. The "primordial" script_node instance must be created
- * with a call to the script_node constructor.
+ * Since the @c node_type for a @c script_node is only available once a
+ * @c script_node is instantiated, you have to have a @c script_node instance
+ * in order to be able to use this method.  The &ldquo;primordial&rdquo;
+ * @c script_node instance must be created with a call to the
+ * @c script_node constructor.
  *
  * @param[in] scope             the scope to which the node should belong.
- * @param[in] initial_values    a map of initial values for the node's fields and
- *                          exposedFields.
+ * @param[in] initial_values    a map of initial values for the node's
+ *                              @c field%s and @c exposedField%s.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -679,14 +680,14 @@ private:
 /**
  * @var const std::string openvrml::script_node::script_event_listener::id
  *
- * @brief eventIn identifier.
+ * @brief @c eventIn identifier.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] id    eventIn identifier.
- * @param[in] node  script_node.
+ * @param[in] id    @c eventIn identifier.
+ * @param[in] node  @c script_node.
  */
 template <typename FieldValue>
 openvrml::script_node::script_event_listener<FieldValue>::
@@ -706,9 +707,9 @@ openvrml::script_node::script_event_listener<FieldValue>::
 {}
 
 /**
- * @brief The associated eventIn identifier.
+ * @brief The associated @c eventIn identifier.
  *
- * @return the associated eventIn identifier.
+ * @return the associated @c eventIn identifier.
  */
 template <typename FieldValue>
 const std::string
@@ -770,7 +771,7 @@ do_process_event(const FieldValue & value,
  *
  * @typedef openvrml::script_node::sfcolorrgba_listener
  *
- * @brief sfcolorrgba event listener.
+ * @brief @c sfcolorrgba event listener.
  */
 
 /**
@@ -866,7 +867,7 @@ do_process_event(const FieldValue & value,
  *
  * @typedef openvrml::script_node::mfbool_listener
  *
- * @brief mfbool event listener.
+ * @brief @c mfbool event listener.
  */
 
 /**
@@ -890,7 +891,7 @@ do_process_event(const FieldValue & value,
  *
  * @typedef openvrml::script_node::mfcolorrgba_listener
  *
- * @brief mfcolorrgba event listener.
+ * @brief @c mfcolorrgba event listener.
  */
 
 /**
@@ -906,7 +907,7 @@ do_process_event(const FieldValue & value,
  *
  * @typedef openvrml::script_node::mfimage_listener
  *
- * @brief mfimage event listener.
+ * @brief @c mfimage event listener.
  */
 
 /**
@@ -1111,9 +1112,9 @@ openvrml::script_node::script_event_emitter<FieldValue>::
 {}
 
 /**
- * @brief The eventOut identifier.
+ * @brief The @c eventOut identifier.
  *
- * @return the eventOut identifier.
+ * @return the @c eventOut identifier.
  */
 template <typename FieldValue>
 const std::string
@@ -1127,7 +1128,7 @@ openvrml::script_node::script_event_emitter<FieldValue>::do_eventout_id() const
     assert(pos != this->node_->eventout_map_.end());
     return pos->first;
 }
-    
+
 /**
  * @internal
  *
@@ -1167,7 +1168,7 @@ private:
  *
  * @brief Create a Script node event emitter.
  *
- * @param[in] node  the containing <code>script_node</code>.
+ * @param[in] node  the containing @c script_node.
  * @param[in] value the node field value associated with the emitter.
  *
  * @return a Script node event emitter.
@@ -1193,13 +1194,13 @@ openvrml::script_node::create_emitter(script_node & node,
  *
  * @class openvrml::script_node::set_url_listener_t
  *
- * @brief set_url event listener.
+ * @brief @c set_url event listener.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] node  a reference to the containing script_node.
+ * @param[in] node  a reference to the containing @c script_node.
  */
 openvrml::script_node::set_url_listener_t::
 set_url_listener_t(script_node & node):
@@ -1214,9 +1215,9 @@ openvrml::script_node::set_url_listener_t::~set_url_listener_t() OPENVRML_NOTHRO
 {}
 
 /**
- * @brief Get the eventIn identifier.
+ * @brief Get the @c eventIn identifier.
  *
- * @return the eventIn identifier.
+ * @return the @c eventIn identifier.
  */
 const std::string
 openvrml::script_node::set_url_listener_t::do_eventin_id() const OPENVRML_NOTHROW
@@ -1256,7 +1257,7 @@ do_process_event(const mfstring & value, const double timestamp)
  *
  * @class openvrml::script_node::url_changed_emitter
  *
- * @brief url_changed event emitter.
+ * @brief @c url_changed event emitter.
  */
 
 /**
@@ -3447,7 +3448,7 @@ jsval script::vrmlFieldToJSVal(const openvrml::field_value & fieldValue)
         {
             const openvrml::mfbool & mfbool =
                 *polymorphic_downcast<const openvrml::mfbool *>(&fieldValue);
-            if (!MFBool::toJsval(mfbool.value(), this->cx, globalObj, &rval)) 
+            if (!MFBool::toJsval(mfbool.value(), this->cx, globalObj, &rval))
             {
                 rval = JSVAL_NULL;
             }
@@ -5426,7 +5427,7 @@ JSBool SFNode::setProperty(JSContext * const cx,
             openvrml::field_value::type_id expectType = listener.type();
             auto_ptr<openvrml::field_value> fieldValue;
             fieldValue = createFieldValueFromJsval(cx, *vp, expectType);
-            
+
             assert(JS_GetContextPrivate(cx));
             js_::script & script =
                 *static_cast<js_::script *>(JS_GetContextPrivate(cx));

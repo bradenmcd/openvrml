@@ -1,5 +1,9 @@
 2006-08-02 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp: Doc-comment improvements.
+
+2006-08-02 Braden McDaniel  <braden@endoframe.com>
+
 	Check whether the stream has been destroyed in
 	plugin_streambuf::data_available.  The streambuf should be treated
 	as having data available once it has been "destroyed" by the Web
