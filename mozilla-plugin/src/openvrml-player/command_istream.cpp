@@ -18,10 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# include <cassert>
 # include <cerrno>
 # include "command_istream.h"
 
-openvrml_player::command_streambuf::command_streambuf()
+openvrml_player::command_streambuf::command_streambuf():
+    c_('\0')
 {
     this->setg(&this->c_, &this->c_, &this->c_);
 }
@@ -29,11 +31,13 @@ openvrml_player::command_streambuf::command_streambuf()
 openvrml_player::command_streambuf::int_type
 openvrml_player::command_streambuf::underflow()
 {
-    int_type c = traits_type::to_int_type(this->source_buffer_.get());
-    if (c == traits_type::eof()) { return traits_type::eof(); }
-    this->c_ = traits_type::to_char_type(c);
+    const int_type i = this->source_buffer_.get();
+    if (traits_type::eq_int_type(i, traits_type::eof())) {
+        return traits_type::eof();
+    }
+    this->c_ = traits_type::to_char_type(i);
     this->setg(&this->c_, &this->c_, &this->c_ + 1);
-    return traits_type::to_int_type(*this->gptr());
+    return i;
 }
 
 
@@ -66,7 +70,7 @@ gboolean command_data_available(GIOChannel * source,
             return false;
         }
         if (status == G_IO_STATUS_EOF) {
-            streambuf.source_buffer_.put(traits_type::eof());
+            streambuf.source_buffer_.set_eof();
             return false;
         }
         if (status == G_IO_STATUS_AGAIN) { continue; }

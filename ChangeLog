@@ -1,3 +1,39 @@
+2006-08-03 Braden McDaniel  <braden@endoframe.com>
+
+	Changed bounded_buffer to allow setting EOF.
+
+	* mozilla-plugin/src/openvrml-player/bounded_buffer.h
+	(openvrml_player::bounded_buffer::buffer_not_empty_or_eof_):
+	Changed member name from buffer_not_empty_ to signify that EOF is
+	a condition of which waiting threads will be notified.
+	(openvrml_player::bounded_buffer::eof_): Added member.
+	(openvrml_player::bounded_buffer::char_type): Added member type.
+	(openvrml_player::bounded_buffer::traits_type): Added member type.
+	(openvrml_player::bounded_buffer::int_type): Added member type.
+	(openvrml_player::bounded_buffer::set_eof()): Added member to set
+	EOF state.
+	(openvrml_player::bounded_buffer::eof()): Added EOF state
+	accessor.
+	(openvrml_player::bounded_buffer::bounded_buffer()): Initialize
+	eof_ to false.
+	(openvrml_player::bounded_buffer::get()): Only wait if set_eof has
+	not been called.  Return int_type to accommodate returning EOF.
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp
+	(openvrml_player::command_streambuf::command_streambuf()):
+	Initialize c_ to null.
+	(openvrml_player::command_streambuf::underflow()): Now that
+	bounded_buffer::get can actually return EOF, handle it correctly.
+	(command_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Call source_buffer_.set_eof rather than trying to put an EOF
+	character into the stream.
+
+2006-08-03 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml-player/Makefile.am
+	* mozilla-plugin/src/openvrml-player/bounded_buffer.h
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp
+	* mozilla-plugin/src/openvrml-player/command_istream.h
+
 2006-08-02 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp: Doc-comment improvements.
