@@ -38,30 +38,12 @@ namespace openvrml_player {
 
         friend class command_istream_reader;
 
-        class npstream_buffer {
-            mutable boost::mutex mutex_;
-            boost::condition buffer_not_full_, buffer_not_empty_or_eof_;
-
-            static const size_t buffer_size = 64;
-            char_type buf_[buffer_size];
-            size_t begin_, end_, buffered_;
-            bool npstream_destroyed_;
-
-        public:
-            npstream_buffer();
-            void put(const char_type & c);
-            int_type get();
-            size_t buffered() const;
-            void set_npstream_destroyed();
-            bool npstream_destroyed() const;
-        };
-
         mutable boost::mutex mutex_;
         bool initialized_;
         mutable boost::condition streambuf_initialized_;
         std::string url_;
         std::string type_;
-        npstream_buffer buf_;
+        bounded_buffer<char_type, 64> buf_;
         int_type i_;
         char_type c_;
 

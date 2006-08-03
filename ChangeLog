@@ -1,5 +1,34 @@
 2006-08-03 Braden McDaniel  <braden@endoframe.com>
 
+	Reverted plugin_streambuf to use bounded_buffer now that EOF can
+	be set on bounded_buffer.
+
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()() const):
+	Changed to call bounded_buffer::set_eof.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::npstream_buffer::npstream_buffer()):
+	Removed function.
+	(openvrml_player::plugin_streambuf::npstream_buffer::put(const
+	char_type &)): Removed function.
+	(openvrml_player::plugin_streambuf::npstream_buffer::get()):
+	Removed function.
+	(openvrml_player::plugin_streambuf::npstream_buffer::buffered()
+	const): Removed function.
+	(openvrml_player::plugin_streambuf::npstream_buffer::set_npstream_destroyed()):
+	Removed function.
+	(openvrml_player::plugin_streambuf::npstream_buffer::npstream_destroyed()
+	const): Removed function.
+	(openvrml_player::plugin_streambuf::plugin_streambuf()): Changed
+	to call bounded_buffer::eof.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf::npstream_buffer): Removed
+	class definition.
+	(openvrml_player::plugin_streambuf::buf_): Changed to use
+	bounded_buffer.
+
+2006-08-03 Braden McDaniel  <braden@endoframe.com>
+
 	Changed bounded_buffer to allow setting EOF.
 
 	* mozilla-plugin/src/openvrml-player/bounded_buffer.h
