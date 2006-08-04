@@ -97,21 +97,13 @@ namespace {
 }
 
 /**
- * @defgroup basetypes Base Types
- */
-
-/**
  * @typedef openvrml::int32
- *
- * @ingroup basetypes
  *
  * @brief 32-bit signed integer.
  */
 
 /**
  * @class openvrml::color
- *
- * @ingroup basetypes
  *
  * @brief A color.
  *
@@ -302,8 +294,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 
 /**
  * @class openvrml::color_rgba
- *
- * @ingroup basetypes
  *
  * @brief A color with alpha channel.
  *
@@ -522,8 +512,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
 
 /**
  * @class openvrml::vec2f
- *
- * @ingroup basetypes
  *
  * @brief Two-component single precision vector.
  */
@@ -884,8 +872,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 /**
  * @class openvrml::vec2d
  *
- * @ingroup basetypes
- *
  * @brief Two-component single precision vector.
  */
 
@@ -1244,8 +1230,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2d & v)
 
 /**
  * @class openvrml::vec3f
- *
- * @ingroup basetypes
  *
  * @brief Three-component single precision vector.
  */
@@ -1736,8 +1720,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
 /**
  * @class openvrml::vec3d
  *
- * @ingroup basetypes
- *
  * @brief Three-component single precision vector.
  */
 
@@ -2227,8 +2209,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
 /**
  * @class openvrml::rotation
  *
- * @ingroup basetypes
- *
  * @brief A rotation.
  *
  * VRML rotations are represented with four single precision floating point
@@ -2642,8 +2622,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
 
 /**
  * @class openvrml::mat4f
- *
- * @ingroup basetypes
  *
  * @brief A class for all matrix operations.
  *
@@ -3500,8 +3478,6 @@ bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs)
 /**
  * @class openvrml::quatf
  *
- * @ingroup basetypes
- *
  * @brief A quaternion.
  */
 
@@ -4013,8 +3989,6 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 
 /**
  * @class openvrml::image
- *
- * @ingroup basetypes
  *
  * @brief Pixmap data.
  *

@@ -1,5 +1,13 @@
 2006-08-04 Braden McDaniel  <braden@endoframe.com>
 
+	Removed use of @defgroup and @ingroup in doc-comments.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
+2006-08-04 Braden McDaniel  <braden@endoframe.com>
+
 	Set the plugin_resource_istream initial state to invalid if the
 	Web browser's get-url function fails.  This means that the child
 	process blocks until the Web browser has informed it of the

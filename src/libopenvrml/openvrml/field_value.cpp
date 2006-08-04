@@ -33,10 +33,6 @@
 # include "node.h"
 
 /**
- * @defgroup fieldvalues Field Values
- */
-
-/**
  * @brief Stream output.
  *
  * @param[in,out] out   an output stream.
@@ -53,8 +49,6 @@ std::ostream & openvrml::operator<<(std::ostream & out,
 
 /**
  * @class openvrml::field_value
- *
- * @ingroup fieldvalues
  *
  * @brief Abstract base class for the VRML field types.
  *
@@ -806,8 +800,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @class openvrml::sfbool
  *
- * @ingroup fieldvalues
- *
  * @brief A boolean @c node field value.
  *
  * @par Model of
@@ -986,8 +978,6 @@ bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs)
 /**
  * @class openvrml::sfcolor
  *
- * @ingroup fieldvalues
- *
  * @brief A color node field value.
  *
  * @par Model of
@@ -1165,8 +1155,6 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs)
 
 /**
  * @class openvrml::sfcolorrgba
- *
- * @ingroup fieldvalues
  *
  * @brief A color_rgba node field value.
  *
@@ -1348,8 +1336,6 @@ bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
 /**
  * @class openvrml::sffloat
  *
- * @ingroup fieldvalues
- *
  * @brief A single precision floating point node field value.
  *
  * @par Model of
@@ -1526,8 +1512,6 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs)
 
 /**
  * @class openvrml::sfdouble
- *
- * @ingroup fieldvalues
  *
  * @brief A single precision doubleing point node field value.
  *
@@ -1706,8 +1690,6 @@ bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs)
 
 /**
  * @class openvrml::sfimage
- *
- * @ingroup fieldvalues
  *
  * @brief A pixmap.
  *
@@ -1891,8 +1873,6 @@ bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs)
 /**
  * @class openvrml::sfint32
  *
- * @ingroup fieldvalues
- *
  * @brief A 32-bit integer node field value.
  *
  * @par Model of
@@ -2070,8 +2050,6 @@ bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs)
 
 /**
  * @class openvrml::sfnode
- *
- * @ingroup fieldvalues
  *
  * @brief A node field value to hold a single node reference.
  *
@@ -2255,8 +2233,6 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
 
 /**
  * @class openvrml::sfrotation
- *
- * @ingroup fieldvalues
  *
  * @brief A rotation node field value.
  *
@@ -2450,8 +2426,6 @@ bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
 /**
  * @class openvrml::sfstring
  *
- * @ingroup fieldvalues
- *
  * @brief A string node field value.
  *
  * @par Model of
@@ -2634,8 +2608,6 @@ bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs)
 /**
  * @class openvrml::sftime
  *
- * @ingroup fieldvalues
- *
  * @brief A double precision floating point node field value.
  *
  * @par Model of
@@ -2815,8 +2787,6 @@ bool openvrml::operator!=(const sftime & lhs, const sftime & rhs)
 /**
  * @class openvrml::sfvec2f
  *
- * @ingroup fieldvalues
- *
  * @brief A 2-component vector node field value.
  *
  * @par Model of
@@ -2993,8 +2963,6 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
 
 /**
  * @class openvrml::sfvec2d
- *
- * @ingroup fieldvalues
  *
  * @brief A 2-component vector node field value.
  *
@@ -3182,8 +3150,6 @@ bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
 /**
  * @class openvrml::sfvec3f
  *
- * @ingroup fieldvalues
- *
  * @brief A 3-component vector node field value.
  *
  * @par Model of
@@ -3360,8 +3326,6 @@ bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
 
 /**
  * @class openvrml::sfvec3d
- *
- * @ingroup fieldvalues
  *
  * @brief A 3-component vector node field value.
  *
@@ -3540,8 +3504,6 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
 
 /**
  * @class openvrml::mfbool
- *
- * @ingroup fieldvalues
  *
  * @brief A @c bool array node field value.
  *
@@ -3754,8 +3716,6 @@ bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs)
 /**
  * @class openvrml::mfcolor
  *
- * @ingroup fieldvalues
- *
  * @brief A color array node field value.
  *
  * @par Model of
@@ -3965,8 +3925,6 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs)
 
 /**
  * @class openvrml::mfcolorrgba
- *
- * @ingroup fieldvalues
  *
  * @brief A color_rgba array node field value.
  *
@@ -4182,8 +4140,6 @@ bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
 /**
  * @class openvrml::mffloat
  *
- * @ingroup fieldvalues
- *
  * @brief A float array node field value.
  *
  * @par Model of
@@ -4393,8 +4349,6 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
 
 /**
  * @class openvrml::mfdouble
- *
- * @ingroup fieldvalues
  *
  * @brief A double array node field value.
  *
@@ -4606,8 +4560,6 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs)
 /**
  * @class openvrml::mfimage
  *
- * @ingroup fieldvalues
- *
  * @brief A image array node field value.
  *
  * @par Model of
@@ -4817,8 +4769,6 @@ bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs)
 
 /**
  * @class openvrml::mfint32
- *
- * @ingroup fieldvalues
  *
  * @brief An integer array node field value.
  *
@@ -5030,8 +4980,6 @@ bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs)
 
 /**
  * @class openvrml::mfnode
- *
- * @ingroup fieldvalues
  *
  * @brief A node reference array node field value.
  *
@@ -5247,8 +5195,6 @@ bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs)
 /**
  * @class openvrml::mfrotation
  *
- * @ingroup fieldvalues
- *
  * @brief A rotation array node field value.
  *
  * @par Model of
@@ -5460,8 +5406,6 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
 
 /**
  * @class openvrml::mfstring
- *
- * @ingroup fieldvalues
  *
  * @brief A string array node field value.
  *
@@ -5676,8 +5620,6 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
 /**
  * @class openvrml::mftime
  *
- * @ingroup fieldvalues
- *
  * @brief A double array node field value.
  *
  * @par Model of
@@ -5891,8 +5833,6 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
 /**
  * @class openvrml::mfvec2f
  *
- * @ingroup fieldvalues
- *
  * @brief A 2-component vector array node field value.
  *
  * @par Model of
@@ -6103,8 +6043,6 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
 
 /**
  * @class openvrml::mfvec2d
- *
- * @ingroup fieldvalues
  *
  * @brief A 2-component vector array node field value.
  *
@@ -6318,8 +6256,6 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
 /**
  * @class openvrml::mfvec3f
  *
- * @ingroup fieldvalues
- *
  * @brief A 3-component vector array node field value.
  *
  * @par Model of
@@ -6531,8 +6467,6 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
 
 /**
  * @class openvrml::mfvec3d
- *
- * @ingroup fieldvalues
  *
  * @brief A 3-component vector array node field value.
  *

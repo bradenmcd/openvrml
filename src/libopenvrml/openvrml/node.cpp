@@ -34,13 +34,7 @@
 # include "browser.h"
 
 /**
- * @defgroup nodes Nodes
- */
-
-/**
  * @class openvrml::unsupported_interface
- *
- * @ingroup nodes
  *
  * @brief Exception to indicate that a @c node interface is not supported.
  *
@@ -103,8 +97,6 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
 
 /**
  * @class openvrml::node_interface
- *
- * @ingroup nodes
  *
  * @brief Type information for an interface of a @c node.
  */
@@ -318,8 +310,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @struct openvrml::node_interface_matches_eventin
  *
- * @ingroup nodes
- *
  * @brief Determine if a @c node_interface matches an @c eventIn identifier.
  *
  * @par Model of
@@ -358,8 +348,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 /**
  * @struct openvrml::node_interface_matches_eventout
- *
- * @ingroup nodes
  *
  * @brief Determine if a @c node_interface matches an @c eventOut identifier.
  *
@@ -401,8 +389,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @struct openvrml::node_interface_matches_exposedfield
  *
- * @ingroup nodes
- *
  * @brief Determine if a @c node_interface matches an @c exposedField
  * identifier.
  *
@@ -435,8 +421,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @struct openvrml::node_interface_matches_field
  *
- * @ingroup nodes
- *
  * @brief Determine if a @c node_interface matches an field
  *        identifier.
  *
@@ -466,8 +450,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 /**
  * @struct openvrml::node_interface_compare
- *
- * @ingroup nodes
  *
  * @brief Function object to compare two @c node_interface%s based on their
  * id.
@@ -511,8 +493,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 /**
  * @typedef std::set<openvrml::node_interface, openvrml::node_interface_compare> openvrml::node_interface_set
  *
- * @ingroup nodes
- *
  * @brief A group of unique @c node_interface%s.
  *
  * @c node_interface_set%s are used to construct new @c node_type%s.  @c
@@ -522,8 +502,6 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @ingroup nodes
- *
  * @brief Find an interface matching @p id.
  *
  * If no interface is found with an interface identifier that is an exact
@@ -563,8 +541,6 @@ openvrml::find_interface(const node_interface_set & interfaces,
 
 /**
  * @class openvrml::node_metatype
- *
- * @ingroup nodes
  *
  * @brief A class object for node instances.
  *
@@ -783,8 +759,6 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
 /**
  * @class openvrml::node_type
  *
- * @ingroup nodes
- *
  * @brief Type information object for @c node%s.
  */
 
@@ -978,8 +952,6 @@ bool openvrml::operator!=(const node_type & lhs, const node_type & rhs)
 /**
  * @class openvrml::field_value_type_mismatch
  *
- * @ingroup nodes
- *
  * @brief Thrown when field value types do not match, generally in a @c ROUTE
  *      or @c IS.
  */
@@ -1001,8 +973,6 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @typedef std::deque<openvrml::node *> openvrml::node_path
  *
- * @ingroup nodes
- *
  * @brief A path to a @c node in the @c scene starting with one of the @c
  *        scene root @c node%s and ending with the objective @c node.
  */
@@ -1010,8 +980,6 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 /**
  * @fn To * openvrml::node_cast(node * n)
- *
- * @ingroup nodes
  *
  * @relatesalso openvrml::node
  *
@@ -1024,8 +992,6 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 
 /**
  * @class openvrml::node
- *
- * @ingroup nodes
  *
  * @brief A @c node in the scene graph.
  */
@@ -2610,8 +2576,6 @@ namespace {
 }
 
 /**
- * @ingroup nodes
- *
  * @brief Add a route from an eventOut of this node to an eventIn of another
  *      node.
  *
@@ -2687,8 +2651,6 @@ namespace {
 }
 
 /**
- * @ingroup nodes
- *
  * @brief Remove a route from an eventOut of this node to an eventIn of another
  *      node.
  *
@@ -2922,8 +2884,6 @@ bool openvrml::delete_route(node & from,
 /**
  * @class openvrml::appearance_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for appearance nodes.
  */
 
@@ -3008,8 +2968,6 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
 
 /**
  * @class openvrml::bounded_volume_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for nodes that represent a bounded volume in the
  *        scene graph.
@@ -3134,8 +3092,6 @@ openvrml::bounded_volume_node::to_bounded_volume() OPENVRML_NOTHROW
 
 /**
  * @class openvrml::child_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for child nodes.
  */
@@ -3263,8 +3219,6 @@ void openvrml::child_node::do_relocate() OPENVRML_THROW1(std::bad_alloc)
 /**
  * @class openvrml::color_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for color nodes.
  */
 
@@ -3308,8 +3262,6 @@ openvrml::color_node * openvrml::color_node::to_color() OPENVRML_NOTHROW
 
 /**
  * @class openvrml::color_rgba_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for RGBA color nodes.
  */
@@ -3400,8 +3352,6 @@ openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate()
 
 /**
  * @class openvrml::font_style_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for font style nodes.
  */
@@ -3517,8 +3467,6 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
 
 /**
  * @class openvrml::geometry_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for geometry nodes.
  */
@@ -3651,8 +3599,6 @@ const openvrml::color_node * openvrml::geometry_node::color() const
 /**
  * @class openvrml::grouping_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for grouping nodes.
  */
 
@@ -3749,8 +3695,6 @@ activate_pointing_device_sensors(const double timestamp,
 /**
  * @class openvrml::light_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for light nodes.
  */
 
@@ -3788,8 +3732,6 @@ openvrml::light_node * openvrml::light_node::to_light() OPENVRML_NOTHROW
 
 /**
  * @class openvrml::material_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for material nodes.
  */
@@ -3876,8 +3818,6 @@ openvrml::material_node * openvrml::material_node::to_material()
 /**
  * @class openvrml::navigation_info_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for normal nodes.
  */
 
@@ -3956,8 +3896,6 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
 
 /**
  * @class openvrml::normal_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for normal nodes.
  */
@@ -4139,8 +4077,6 @@ openvrml::scoped_light_node * openvrml::scoped_light_node::to_scoped_light()
 /**
  * @class openvrml::sound_source_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for sound source nodes.
  */
 
@@ -4177,8 +4113,6 @@ openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
 
 /**
  * @class openvrml::texture_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for texture nodes.
  */
@@ -4296,8 +4230,6 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
 /**
  * @class openvrml::texture_coordinate_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for texture coordinate nodes.
  */
 
@@ -4343,8 +4275,6 @@ openvrml::texture_coordinate_node::to_texture_coordinate()
 
 /**
  * @class openvrml::texture_transform_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -4401,8 +4331,6 @@ openvrml::texture_transform_node::to_texture_transform()
 
 /**
  * @class openvrml::time_dependent_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for time-dependent nodes.
  */
@@ -4461,8 +4389,6 @@ openvrml::time_dependent_node::to_time_dependent() OPENVRML_NOTHROW
 /**
  * @class openvrml::transform_node
  *
- * @ingroup nodes
- *
  * @brief Abstract base class for texture transform nodes.
  */
 
@@ -4510,8 +4436,6 @@ openvrml::transform_node * openvrml::transform_node::to_transform()
 
 /**
  * @class openvrml::viewpoint_node
- *
- * @ingroup nodes
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -4595,8 +4519,6 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
 
 /**
  * @class openvrml::node_traverser
- *
- * @ingroup nodes
  *
  * @brief Traverse the children of each node in a node hierarchy only once.
  *
