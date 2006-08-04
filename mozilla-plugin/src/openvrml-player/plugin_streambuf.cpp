@@ -23,6 +23,7 @@
 
 openvrml_player::plugin_streambuf::
 plugin_streambuf(const std::string & requested_url):
+    get_url_result_(-1),
     initialized_(false),
     url_(requested_url),
     i_(0),
@@ -37,6 +38,23 @@ plugin_streambuf(const std::string & requested_url):
             traits_type::not_eof(traits_type::to_int_type(this->c_)));
 
     this->setg(&this->c_, &this->c_, &this->c_);
+}
+
+void openvrml_player::plugin_streambuf::set_get_url_result(const int result)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    assert(this->get_url_result_ == -1);
+    this->get_url_result_ = result;
+    this->received_get_url_result_.notify_all();
+}
+
+int openvrml_player::plugin_streambuf::get_url_result() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->get_url_result_ == -1) {
+        this->received_get_url_result_.wait(lock);
+    }
+    return this->get_url_result_;
 }
 
 void openvrml_player::plugin_streambuf::init(const size_t stream_id,

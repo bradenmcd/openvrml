@@ -1,3 +1,33 @@
+2006-08-04 Braden McDaniel  <braden@endoframe.com>
+
+	Set the plugin_resource_istream initial state to invalid if the
+	Web browser's get-url function fails.  This means that the child
+	process blocks until the Web browser has informed it of the
+	validity of the get-url operation.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(request_data_available): Write the result of NPN_GetURL to the
+	command channel.
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp
+	(browser::do_get_resource(const
+	std::string&)::plugin_resource_istream::plugin_resource_istream(const
+	std::string &, GIOChannel *)): Set the failbit if the Web
+	browser's get-url function failed.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(openvrml_player::command_istream_reader::operator()()): Handle
+	get-url-result command.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::set_get_url_result(int)): Set
+	the result of the get-url operation (from the get-url-result
+	command).
+	(openvrml_player::plugin_streambuf::get_url_result() const): Get
+	the result code from the Web browser's get-url operation (via the
+	get-url-result command).
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf): Added get_url_result_ and
+	received_get_url_result_ members; added set_get_url_result(int)
+	and get_url_result() member functions.
+
 2006-08-03 Braden McDaniel  <braden@endoframe.com>
 
 	Reverted plugin_streambuf to use bounded_buffer now that EOF can

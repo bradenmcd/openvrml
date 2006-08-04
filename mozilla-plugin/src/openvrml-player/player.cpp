@@ -73,7 +73,18 @@ namespace openvrml_player {
                 istringstream command_line_stream(command_line);
                 string command;
                 command_line_stream >> command;
-                if (command == "new-stream") {
+                if (command == "get-url-result") {
+                    using boost::shared_ptr;
+
+                    std::string url;
+                    int result;
+                    command_line_stream >> url >> result;
+
+                    shared_ptr<plugin_streambuf> streambuf =
+                        uninitialized_plugin_streambuf_map_.find(url);
+                    assert(streambuf);
+                    streambuf->set_get_url_result(result);
+                } else if (command == "new-stream") {
                     using boost::shared_ptr;
 
                     size_t stream_id;

@@ -1250,9 +1250,19 @@ namespace {
             if (request_type == "get-url") {
                 string url, target;
                 pluginInstance.request_line >> url >> target;
-                NPN_GetURL(pluginInstance.npp,
-                           url.c_str(),
-                           target.empty() ? 0 : target.c_str());
+                const NPError result =
+                    NPN_GetURL(pluginInstance.npp,
+                               url.c_str(),
+                               target.empty() ? 0 : target.c_str());
+                std::ostringstream command;
+                command << "get-url-result " << url << ' ' << result << '\n';
+                const ssize_t bytes_written =
+                    pluginInstance.WriteCommand(command.str());
+                if (bytes_written != command.str().length()) {
+                    // XXX
+                    // XXX Do what here? Console message?
+                    // XXX
+                }
             }
         }
 
