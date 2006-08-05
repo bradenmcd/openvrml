@@ -37,7 +37,7 @@ namespace openvrml_player {
                                                    GIOCondition condition,
                                                    gpointer data);
 
-        bounded_buffer<char_type, 64> source_buffer_;
+        bounded_buffer<char_type, 16384> source_buffer_;
         char_type c_;
 
     protected:

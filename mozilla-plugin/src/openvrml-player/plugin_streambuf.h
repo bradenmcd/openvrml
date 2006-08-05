@@ -45,7 +45,7 @@ namespace openvrml_player {
         mutable boost::condition streambuf_initialized_;
         std::string url_;
         std::string type_;
-        bounded_buffer<char_type, 64> buf_;
+        bounded_buffer<char_type, 16384> buf_;
         int_type i_;
         char_type c_;
 

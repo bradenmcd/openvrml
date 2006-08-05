@@ -1,3 +1,15 @@
+2006-08-05 Braden McDaniel  <braden@endoframe.com>
+
+	Increased buffer sizes to something a little more
+	reasonable (16kB).
+
+	* mozilla-plugin/src/openvrml-player/command_istream.h
+	(openvrml_player::command_streambuf::source_buffer_): Changed
+	buffer size to 16384.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf::buf_): Changed buffer size to
+	16384.
+
 2006-08-04 Braden McDaniel  <braden@endoframe.com>
 
 	Removed use of @defgroup and @ingroup in doc-comments.
