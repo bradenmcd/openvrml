@@ -44,15 +44,19 @@ DOCUMENTED_SOURCE_FILES = \
 
 EXTRA_DIST = $(DOCUMENTATION_FILES) manual
 
-MAINTAINERCLEANFILES = \
+DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/*.css \
         $(srcdir)/manual/*.html \
         $(srcdir)/manual/*.map \
         $(srcdir)/manual/*.md5 \
         $(srcdir)/manual/*inherit__graph*.png \
         $(srcdir)/manual/doxygen.png \
+        $(srcdir)/manual/formula.repository \
+        $(srcdir)/manual/form_*.png \
         $(srcdir)/manual/graph_legend.* \
         $(srcdir)/manual/tab_?.gif
+
+MAINTAINERCLEANFILES = $(DOXYGEN_OUTPUT_FILES)
 
 html-local: manual/index.html
 
@@ -66,6 +70,7 @@ uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
 
 manual/index.html: $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
+	rm -f $(DOXYGEN_OUTPUT_FILES)
 	cd $(srcdir) && $(DOXYGEN)
 
 dist-hook: html-local
