@@ -1675,7 +1675,7 @@ namespace {
 /**
  * @brief Destructor.
  *
- * Remove node name (if any) from the scope.
+ * Remove node name (if any) from the @c scope.
  */
 openvrml::node::~node() OPENVRML_NOTHROW
 {
@@ -1709,7 +1709,7 @@ openvrml::node::~node() OPENVRML_NOTHROW
  *
  * @brief Increment the reference count.
  *
- * This function is used by <code>boost::intrusive_ptr&lt;node&gt;</code>.
+ * This function is used by @c boost::intrusive_ptr<node>.
  *
  * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
  */
@@ -1720,11 +1720,11 @@ openvrml::node::~node() OPENVRML_NOTHROW
  * @brief Decrement the reference count.
  *
  * Remove an owning reference; <strong>but do not destroy the instance if the
- * reference count drops to zero</strong>. This function should be used with
- * caution. It is really only appropriate when the caller is aware that the
+ * reference count drops to zero</strong>.  This function should be used with
+ * caution.  It is really only appropriate when the caller is aware that the
  * reference count may drop to zero but destroying the instance in that case
  * would be inappropriate. In most cases it is appropriate to use
- * node::release.
+ * @c node::release.
  */
 
 /**
@@ -1735,13 +1735,13 @@ openvrml::node::~node() OPENVRML_NOTHROW
  */
 
 /**
- * @fn void openvrml::intrusive_ptr_release()
+ * @fn void openvrml::intrusive_ptr_release(const node * n)
  *
  * @relatesalso openvrml::node
  *
  * @brief Decrement the reference count.
  *
- * This function is used by <code>boost::intrusive_ptr&lt;node&gt;</code>.
+ * This function is used by @c boost::intrusive_ptr<node>.
  *
  * @sa http://boost.org/libs/smart_ptr/intrusive_ptr.html
  */
@@ -1886,7 +1886,7 @@ openvrml::node::field(const std::string & id) const
  *
  * @brief Generalized field accessor.
  *
- * @param[in] id    the name of the field.
+ * @param[in] id    the name of the @c field.
  *
  * @return the field value.
  *
@@ -1898,21 +1898,21 @@ openvrml::node::field(const std::string & id) const
 /**
  * @fn const openvrml::field_value & openvrml::node::do_field(const std::string & id) const
  *
- * @brief Called by node::field to get a field.
+ * @brief Called by @c node::field to get a @c field.
  *
  * @param[in] id    field identifier.
  *
  * @return the field value.
  *
- * @exception unsupported_interface if the node has no field @p id.
+ * @exception unsupported_interface if the @c node has no @c field @p id.
  */
 
 /**
  * @brief Get an event listener.
  *
- * @param[in] id    an eventIn identifier.
+ * @param[in] id    an @c eventIn identifier.
  *
- * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception unsupported_interface if the @c node has no @c eventIn @p id.
  */
 openvrml::event_listener &
 openvrml::node::event_listener(const std::string & id)
@@ -1926,17 +1926,17 @@ openvrml::node::event_listener(const std::string & id)
  *
  * @brief Get an event listener.
  *
- * @param[in] id    an eventIn identifier.
+ * @param[in] id    an @c eventIn identifier.
  *
- * @exception unsupported_interface if the node has no eventIn @p id.
- * @exception std::bad_cast         if the node's @p id eventIn is not a
- *                                  @p FieldValue.
+ * @exception unsupported_interface if the @c node has no @c eventIn @p id.
+ * @exception std::bad_cast         if the <code>node</code>'s @p id
+ *                                  @c eventIn is not a @p FieldValue.
  */
 
 /**
  * @brief Get an event emitter.
  *
- * @param[in] id    an eventOut identifier.
+ * @param[in] id    an @c eventOut identifier.
  *
  * @exception unsupported_interface if the node has no eventOut @p id.
  */
@@ -1951,18 +1951,18 @@ openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
  *
  * @brief Get an event emitter.
  *
- * @param[in] id    an eventOut identifier.
+ * @param[in] id    an @c eventOut identifier.
  *
- * @exception unsupported_interface if the node has no eventOut @p id.
- * @exception std::bad_cast         if the node's @p id eventOut is not a
- *                                  @p FieldValue.
+ * @exception unsupported_interface if the @c node has no @c eventOut @p id.
+ * @exception std::bad_cast         if the <code>node</code>'s @p id
+ *                                  @c eventOut is not a @p FieldValue.
  */
 
 /**
  * @brief Shut down the node.
  *
- * This method works recursively, shutting down any child nodes. If the node
- * has already been shut down, this method has no effect.
+ * This method works recursively, shutting down any child @c node%s.  If the
+ * @c node has already been shut down, this method has no effect.
  *
  * @param[in] timestamp the current time.
  *
@@ -2008,7 +2008,7 @@ void openvrml::node::shutdown(const double timestamp) OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a script_node.
+ * @brief Cast to a @c script_node.
  *
  * Default implementation returns 0.
  *
@@ -2022,7 +2022,7 @@ openvrml::script_node * openvrml::node::to_script() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to an appearance_node.
+ * @brief Cast to an @c appearance_node.
  *
  * Default implementation returns 0.
  *
@@ -2036,7 +2036,7 @@ openvrml::appearance_node * openvrml::node::to_appearance() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a <code>bounded_volume_node</code>.
+ * @brief Cast to a @c bounded_volume_node.
  *
  * Default implementation returns 0.
  *
@@ -2051,7 +2051,7 @@ openvrml::bounded_volume_node * openvrml::node::to_bounded_volume()
 /**
  * @internal
  *
- * @brief Cast to a child_node.
+ * @brief Cast to a @c child_node.
  *
  * Default implementation returns 0.
  *
@@ -2065,7 +2065,7 @@ openvrml::child_node * openvrml::node::to_child() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a color_node.
+ * @brief Cast to a @c color_node.
  *
  * Default implementation returns 0.
  *
@@ -2093,7 +2093,7 @@ openvrml::color_rgba_node * openvrml::node::to_color_rgba() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a coordinate_node.
+ * @brief Cast to a @c coordinate_node.
  *
  * Default implementation returns 0.
  *
@@ -2135,7 +2135,7 @@ openvrml::geometry_node * openvrml::node::to_geometry() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a grouping_node.
+ * @brief Cast to a @c grouping_node.
  *
  * Default implementation returns 0.
  *
@@ -2149,7 +2149,7 @@ openvrml::grouping_node * openvrml::node::to_grouping() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a light_node.
+ * @brief Cast to a @c light_node.
  *
  * Default implementation returns 0.
  *
@@ -2163,7 +2163,7 @@ openvrml::light_node * openvrml::node::to_light() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a material_node.
+ * @brief Cast to a @c material_node.
  *
  * Default implementation returns 0.
  *
@@ -2177,7 +2177,7 @@ openvrml::material_node * openvrml::node::to_material() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a navigation_info_node.
+ * @brief Cast to a @c navigation_info_node.
  *
  * Default implementation returns 0.
  *
@@ -2192,7 +2192,7 @@ openvrml::navigation_info_node * openvrml::node::to_navigation_info()
 /**
  * @internal
  *
- * @brief Cast to a normal_node.
+ * @brief Cast to a @c normal_node.
  *
  * Default implementation returns 0.
  *
@@ -2206,7 +2206,7 @@ openvrml::normal_node * openvrml::node::to_normal() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a <code>pointing_device_sensor_node</code>.
+ * @brief Cast to a @c pointing_device_sensor_node.
  *
  * Default implementation returns 0.
  *
@@ -2221,7 +2221,7 @@ openvrml::node::to_pointing_device_sensor() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a <code>scoped_light_node</code>.
+ * @brief Cast to a @c scoped_light_node.
  *
  * @return 0.
  */
@@ -2234,7 +2234,7 @@ openvrml::scoped_light_node * openvrml::node::to_scoped_light()
 /**
  * @internal
  *
- * @brief Cast to a sound_source_node.
+ * @brief Cast to a @c sound_source_node.
  *
  * Default implementation returns 0.
  *
@@ -2249,7 +2249,7 @@ openvrml::sound_source_node * openvrml::node::to_sound_source()
 /**
  * @internal
  *
- * @brief Cast to a texture_node.
+ * @brief Cast to a @c texture_node.
  *
  * Default implementation returns 0.
  *
@@ -2263,7 +2263,7 @@ openvrml::texture_node * openvrml::node::to_texture() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a texture_coordinate_node.
+ * @brief Cast to a @c texture_coordinate_node.
  *
  * Default implementation returns 0.
  *
@@ -2278,7 +2278,7 @@ openvrml::node::to_texture_coordinate() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a texture_transform_node.
+ * @brief Cast to a @c texture_transform_node.
  *
  * Default implementation returns 0.
  *
@@ -2293,7 +2293,7 @@ openvrml::node::to_texture_transform() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a time_dependent_node.
+ * @brief Cast to a @c time_dependent_node.
  *
  * Default implementation returns 0.
  *
@@ -2308,7 +2308,7 @@ openvrml::time_dependent_node * openvrml::node::to_time_dependent()
 /**
  * @internal
  *
- * @brief Cast to a transform_node.
+ * @brief Cast to a @c transform_node.
  *
  * Default implementation returns 0.
  *
@@ -2322,7 +2322,7 @@ openvrml::transform_node * openvrml::node::to_transform() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Cast to a viewpoint_node.
+ * @brief Cast to a @c viewpoint_node.
  *
  * Default implementation returns 0.
  *
@@ -2348,13 +2348,13 @@ void openvrml::node::modified(const bool value)
 }
 
 /**
- * @brief Determine whether the node has been modified.
+ * @brief Determine whether the @c node has been modified.
  *
- * The default implementation returns whether this node has been modified.
- * Subclasses that can have child nodes should override this method and
+ * The default implementation returns whether this @c node has been modified.
+ * Subclasses that can have child @c node%s should override this method and
  * return @c true if any of their children have been modified.
  *
- * @return @c true if the node has been modified; @c false otherwise.
+ * @return @c true if the @c node has been modified; @c false otherwise.
  */
 bool openvrml::node::modified() const
 {
@@ -2365,7 +2365,7 @@ bool openvrml::node::modified() const
 /**
  * @brief Emit an event.
  *
- * @param[in,out] emitter   an event_emitter.
+ * @param[in,out] emitter   an @c event_emitter.
  * @param[in]     timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -2380,12 +2380,12 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
 /**
  * @fn boost::recursive_mutex & openvrml::node::mutex() const
  *
- * @brief Get the mutex associated with the <code>node</code>.
+ * @brief Get the mutex associated with the @c node.
  *
- * Concrete node types should lock the <code>node</code> mutex when modifying
- * field values outside the rendering thread.
+ * Concrete node types should lock the @c node mutex when modifying field
+ * values outside the rendering thread.
  *
- * @return the mutex associated with the <code>node</code>.
+ * @return the mutex associated with the @c node.
  */
 
 namespace {
@@ -2455,7 +2455,7 @@ namespace {
 /**
  * @brief Pretty print.
  *
- * @param[in,out] out       output stream.
+ * @param[in,out] out   output stream.
  * @param[in] indent    number of spaces per indentation level.
  *
  * @return @p out.
@@ -2478,7 +2478,7 @@ std::ostream & openvrml::node::print(std::ostream & out,
  * @brief Stream output.
  *
  * @param[in,out] out   output stream.
- * @param[in]     n     a node.
+ * @param[in]     n     a @c node.
  *
  * @return @p out.
  */
@@ -2488,9 +2488,9 @@ std::ostream & openvrml::operator<<(std::ostream & out, const node & n)
 }
 
 /**
- * @brief node subclass-specific initialization.
+ * @brief @c node subclass-specific initialization.
  *
- * This method is called by @c node::initialize. Subclasses of node should
+ * This method is called by @c node::initialize.  Subclasses of node should
  * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
@@ -2511,11 +2511,11 @@ void openvrml::node::do_initialize(double)
  * This method is called by @c node::event_listener.  Subclasses must
  * implement this method.
  *
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  *
  * @return the event listener.
  *
- * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception unsupported_interface if the node has no @c eventIn @p id.
  */
 
 /**
@@ -2523,22 +2523,22 @@ void openvrml::node::do_initialize(double)
  *
  * @brief Get an event emitter.
  *
- * This method is called by node::event_emitter. Subclasses must implement this
- * method.
+ * This method is called by @c node::event_emitter.  Subclasses must implement
+ * this method.
  *
- * @param[in] id    eventOut identifier.
+ * @param[in] id    @c eventOut identifier.
  *
  * @return the event emitter.
  *
- * @exception unsupported_interface if the node has no eventOut @p id.
+ * @exception unsupported_interface if the node has no @c eventOut @p id.
  */
 
 /**
- * @brief node subclass-specific shut down.
+ * @brief @c node subclass-specific shut down.
  *
- * This method is called by node::shutdown. Subclasses of node should
- * override this method for any subclass-specific shut down. Note that
- * this method cannot throw.
+ * This method is called by @c node::shutdown.  Subclasses of node should
+ * override this method for any subclass-specific shut down.  Note that this
+ * method cannot throw.
  *
  * The default implementation of this method does nothing.
  *
@@ -2576,8 +2576,8 @@ namespace {
 }
 
 /**
- * @brief Add a route from an eventOut of this node to an eventIn of another
- *      node.
+ * @brief Add a route from an @c eventOut of this node to an @c eventIn of
+ *        another node.
  *
  * If the route being added already exists, this method has no effect.
  *
@@ -2651,21 +2651,21 @@ namespace {
 }
 
 /**
- * @brief Remove a route from an eventOut of this node to an eventIn of another
- *      node.
+ * @brief Remove a route from an @c eventOut of this @c node to an @c eventIn
+ *        of another @c node.
  *
  * If no such route exists, this method has no effect.
  *
- * @param[in,out] from      source node.
- * @param[in]     eventout  an eventOut of @p from.
- * @param[in,out] to        destination node.
- * @param[in]     eventin   an eventIn of @p to.
+ * @param[in,out] from      source @c node.
+ * @param[in]     eventout  an @c eventOut of @p from.
+ * @param[in,out] to        destination @c node.
+ * @param[in]     eventin   an @c eventIn of @p to.
  *
  * @return @c true if a route was deleted; @c false otherwise (if no such route
  *         existed).
  *
- * @exception unsupported_interface if @p from has no eventOut @p eventout or
- *                                  if @p to has no eventIn @p eventin.
+ * @exception unsupported_interface if @p from has no @c eventOut @p eventout
+ *                                  or if @p to has no @c eventIn @p eventin.
  */
 bool openvrml::delete_route(node & from,
                             const std::string & eventout,
@@ -2696,12 +2696,12 @@ bool openvrml::delete_route(node & from,
 /**
  * @fn template <> openvrml::script_node * openvrml::node_cast<openvrml::script_node *>(node * n)
  *
- * @brief Cast to a script_node.
+ * @brief Cast to a @c script_node.
  *
  * @param[in] n node.
  *
- * @return a script_node pointer to the node pointed to by @p n, or 0 if the
- *         node is not a script_node.
+ * @return a @c script_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c script_node.
  */
 
 /**
@@ -3297,11 +3297,11 @@ openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
 }
 
 /**
- * @fn const std::vector<openvrml::color_rgba> & openvrml::color_rgba_node::color() const
+ * @fn const std::vector<openvrml::color_rgba> & openvrml::color_rgba_node::color_rgba() const
  *
- * @brief Get the @c color_rgba array encapsulated by this node.
+ * @brief Get the @c color_rgba array encapsulated by this @c node.
  *
- * @return the @c color_rgba array for this node.
+ * @return the @c color_rgba array for this @c node.
  */
 
 
@@ -3314,8 +3314,8 @@ openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::coordinate_node::
 coordinate_node(const node_type & type,
@@ -3331,9 +3331,9 @@ openvrml::coordinate_node::~coordinate_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a coordinate_node.
+ * @brief Cast to a @c coordinate_node.
  *
- * @return a pointer to this coordinate_node.
+ * @return a pointer to this @c coordinate_node.
  */
 openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate()
     OPENVRML_NOTHROW
@@ -4318,9 +4318,9 @@ void openvrml::texture_transform_node::do_render_texture_transform(viewer &)
 {}
 
 /**
- * @brief Cast to a texture_transform_node.
+ * @brief Cast to a @c texture_transform_node.
  *
- * @return a pointer to this texture_transform_node.
+ * @return a pointer to this @c texture_transform_node.
  */
 openvrml::texture_transform_node *
 openvrml::texture_transform_node::to_texture_transform()
@@ -4338,8 +4338,8 @@ openvrml::texture_transform_node::to_texture_transform()
 /**
  * @brief Construct.
  *
- * @param[in] type  the <code>node_type</code> associated with the node.
- * @param[in] scope the <code>scope</code> the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::time_dependent_node::
 time_dependent_node(const node_type & type,
@@ -4357,7 +4357,7 @@ openvrml::time_dependent_node::~time_dependent_node() OPENVRML_NOTHROW
 /**
  * @brief Update with the current time.
  *
- * This function delegates to <code>time_dependent_node::do_update</code>.
+ * This function delegates to @c time_dependent_node::do_update.
  *
  * @param[in] time  the current time.
  */
@@ -4375,7 +4375,7 @@ void openvrml::time_dependent_node::update(double time)
  */
 
 /**
- * @brief Cast to a <code>time_dependent_node</code>.
+ * @brief Cast to a @c time_dependent_node.
  *
  * @return a pointer to the object.
  */
@@ -4389,14 +4389,14 @@ openvrml::time_dependent_node::to_time_dependent() OPENVRML_NOTHROW
 /**
  * @class openvrml::transform_node
  *
- * @brief Abstract base class for texture transform nodes.
+ * @brief Abstract base class for transform nodes.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::transform_node::
 transform_node(const node_type & type,
@@ -4415,9 +4415,9 @@ openvrml::transform_node::~transform_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a transform_node.
+ * @brief Cast to a @c transform_node.
  *
- * @return a pointer to this transform_node.
+ * @return a pointer to this @c transform_node.
  */
 openvrml::transform_node * openvrml::transform_node::to_transform()
     OPENVRML_NOTHROW
@@ -4428,23 +4428,23 @@ openvrml::transform_node * openvrml::transform_node::to_transform()
 /**
  * @fn const openvrml::mat4f & openvrml::transform_node::transform() const
  *
- * @brief Get the transformation associated with the node as a matrix.
+ * @brief Get the transformation associated with the @c node as a matrix.
  *
- * @return the transformation associated with the node.
+ * @return the transformation associated with the @c node.
  */
 
 
 /**
  * @class openvrml::viewpoint_node
  *
- * @brief Abstract base class for texture transform nodes.
+ * @brief Abstract base class for viewpoint nodes.
  */
 
 /**
  * @brief Constructor.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope     the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::viewpoint_node::
 viewpoint_node(const node_type & type,
@@ -4462,9 +4462,9 @@ openvrml::viewpoint_node::~viewpoint_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a viewpoint_node.
+ * @brief Cast to a @c viewpoint_node.
  *
- * @return a pointer to this viewpoint_node.
+ * @return a pointer to this @c viewpoint_node.
  */
 openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
     OPENVRML_NOTHROW
@@ -4475,27 +4475,28 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
 /**
  * @fn const openvrml::mat4f & openvrml::viewpoint_node::transformation() const
  *
- * @brief Get the transformation of the viewpoint_node in the global coordinate
- *      system.
+ * @brief Get the transformation of the @c viewpoint_node in the global
+ *        coordinate system.
  *
- * @return the transformation of the viewpoint_node in the global coordinate
- *      system.
+ * @return the transformation of the @c viewpoint_node in the global coordinate
+ *         system.
  */
 
 /**
  * @fn const openvrml::mat4f & openvrml::viewpoint_node::user_view_transform() const
  *
  * @brief Get the transformation of the user view relative to the
- *      viewpoint_node.
+ *      @c viewpoint_node.
  *
- * @return the transformation of the user view relative to the viewpoint_node.
+ * @return the transformation of the user view relative to the
+ *         @c viewpoint_node.
  */
 
 /**
  * @fn void openvrml::viewpoint_node::user_view_transform(const mat4f & transform)
  *
  * @brief Set the transformation of the user view relative to the
- *      viewpoint_node.
+ *        @c viewpoint_node.
  *
  * @param[in] transform the new transformation.
  */
@@ -4520,26 +4521,24 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
 /**
  * @class openvrml::node_traverser
  *
- * @brief Traverse the children of each node in a node hierarchy only once.
+ * @brief Traverse the children of each @c node in a node hierarchy only once.
  *
- * The <code>node_traverser</code> provides a generalized traversal mechanism
- * that avoids redundantly traversing branches of the node hierarchy. If a node
- * occurs multiple places in a branch, <b>the children of that node will be
- * visted in the traversal only once</b>.
+ * The @c node_traverser provides a generalized traversal mechanism that
+ * avoids redundantly traversing branches of the @c node hierarchy.  If a
+ * @c node occurs multiple places in a branch, <strong>the children of that
+ * @c node will be visted in the traversal only once</strong>.
  *
- * For each node encountered in the traversal, <code>node_traverser</code>
- * does the following:
+ * For each @c node encountered in the traversal, @c node_traverser does the
+ * following:
  *
- * -# Call <code>node_traverser::on_entering</code>.
+ * -# Call @c node_traverser::on_entering.
  * -# Traverse descendants, if any.
- * -# Call <code>node_traverser::on_leaving</code>.
+ * -# Call @c node_traverser::on_leaving.
  *
- * Concrete subclasses of <code>node_traverser</code> implement the
- * <code>@link node_traverser::on_entering on_entering@endlink</code> and/or
- * <code>@link node_traverser::on_leaving on_leaving@endlink</code> member
- * functions in order to perform some operation(s) on each node. The traversal
- * can be ended prematurely by calling
- * <code>node_traverser::halt_traversal</code>.
+ * Concrete subclasses of @c node_traverser implement the @c on_entering
+ * and/or @c on_leaving member functions in order to perform some operation(s)
+ * on each node.  The traversal can be ended prematurely by calling
+ * @c node_traverser::halt_traversal.
  */
 
 /**
@@ -4547,7 +4546,7 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
  *
  * @var std::set<openvrml::node *> openvrml::node_traverser::traversed_nodes
  *
- * @brief The set of nodes that have already been traversed.
+ * @brief The set of @c node%s that have already been traversed.
  */
 
 /**
@@ -4574,17 +4573,15 @@ openvrml::node_traverser::~node_traverser() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Traverse a <code>node</code>.
+ * @brief Traverse a @c node.
  *
- * No guarantee is made about the state of the node_traverser instance in the
- * event that this method throws.
+ * No guarantee is made about the state of the @c node_traverser instance in
+ * the event that this method throws.
  *
- * In addition to <code>std::bad_alloc</code>, this function throws any
- * exception thrown from
- * <code>@link node_traverser::on_entering on_entering@endlink</code> or
- * <code>@link node_traverser::on_leaving on_leaving@endlink</code>.
+ * In addition to @c std::bad_alloc, this function throws any exception thrown
+ * from @c on_entering or @c on_leaving.
  *
- * @param[in,out] n  the root node of the branch to traverse.
+ * @param[in,out] n  the root @c node of the branch to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4667,17 +4664,12 @@ openvrml::node_traverser::traverse(
 /**
  * @brief Halt the traversal.
  *
- * If this method is called during a traversal, no more descendant
- * @link openvrml::node nodes@endlink will be traversed. Note that if
- * <code>halt_traversal</code> is called in the implementation of
- * <code>@link node_traverser::on_entering on_entering@endlink</code>,
- * <code>@link node_traverser::on_leaving on_leaving@endlink</code> will still
- * be called for the current node and any parent nodes (that is, any node for
- * which <code>@link node_traverser::on_entering on_entering@endlink</code> has
- * been called). Implementations of
- * <code>@link node_traverser::on_leaving on_leaving@endlink</code> can call
- * <code>node_traverser::halted</code> to check whether the traversal has been
- * halted.
+ * If this method is called during a traversal, no more descendant @c node%s
+ * will be traversed.  Note that if @c halt_traversal is called in the
+ * implementation of @c on_entering, @c on_leaving will still be called for
+ * the current node and any parent nodes (that is, any node for which
+ * @c on_entering has been called).  Implementations of @c on_leaving can call
+ * @c node_traverser::halted to check whether the traversal has been halted.
  */
 void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
 {
@@ -4687,9 +4679,8 @@ void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
 /**
  * @brief Indicate whether the traversal has been halted.
  *
- * This function is useful in implementations of
- * <code>@link node_traverser::on_leaving on_leaving@endlink</code> that need
- * to check whether the traversal has been halted.
+ * This function is useful in implementations of @c on_leaving that need to
+ * check whether the traversal has been halted.
  *
  * @return @c true if the traversal has been halted; @c false otherwise.
  */
@@ -4699,9 +4690,9 @@ bool openvrml::node_traverser::halted() OPENVRML_NOTHROW
 }
 
 /**
- * @brief Check whether a <code>node</code> has been traversed.
+ * @brief Check whether a @c node has been traversed.
  *
- * @param[in] n the <code>node</code> to check.
+ * @param[in] n the @c node to check.
  *
  * @return @c true if @p n has been traversed; @c false otherwise.
  */
@@ -4713,9 +4704,9 @@ bool openvrml::node_traverser::traversed(node & n) OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Traverse a <code>node</code>.
+ * @brief Traverse a @c node.
  *
- * @param[in,out] n  the <code>node</code> to traverse.
+ * @param[in,out] n  the @c node to traverse.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -4756,19 +4747,19 @@ void openvrml::node_traverser::do_traversal(node & n)
 }
 
 /**
- * @brief Called for each <code>node</code> in the traversal <em>before</em>
- *      traversing the its descendants.
+ * @brief Called for each @c node in the traversal @e before
+ *        traversing the its descendants.
  *
- * @param[in,out] n  the <code>node</code> currently being traversed.
+ * @param[in,out] n  the @c node currently being traversed.
  */
 void openvrml::node_traverser::on_entering(node &)
 {}
 
 /**
- * @brief Called for each <code>node</code> in the traversal <em>after</em>
- *      traversing the its descendants.
+ * @brief Called for each @c node in the traversal @e after
+ *        traversing the its descendants.
  *
- * @param[in,out] n  the <code>node</code> currently being traversed.
+ * @param[in,out] n  the @c node currently being traversed.
  */
 void openvrml::node_traverser::on_leaving(node &)
 {}

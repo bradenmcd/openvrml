@@ -5605,7 +5605,8 @@ openvrml::node_metatype_id::operator std::string() const
  *
  * @return @c true if @p lhs and @p rhs are equal, @c false otherwise.
  */
-bool openvrml::operator==(const node_metatype_id & lhs, const node_metatype_id & rhs)
+bool openvrml::operator==(const node_metatype_id & lhs,
+                          const node_metatype_id & rhs)
     OPENVRML_NOTHROW
 {
     return lhs.id_ == rhs.id_;
@@ -5619,7 +5620,8 @@ bool openvrml::operator==(const node_metatype_id & lhs, const node_metatype_id &
  *
  * @return @c true if @p lhs and @p rhs are not equal, @c false otherwise.
  */
-bool openvrml::operator!=(const node_metatype_id & lhs, const node_metatype_id & rhs)
+bool openvrml::operator!=(const node_metatype_id & lhs,
+                          const node_metatype_id & rhs)
     OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
@@ -5724,7 +5726,8 @@ openvrml::browser::node_metatype_map::~node_metatype_map() OPENVRML_NOTHROW
                           this->map_.end(),
                           node_metatype_equals_(entry->second));
         assert(entry->second.use_count() == count
-               && "shared_ptr<node_metatype> use_count does not match the number of entries in the browser's node_metatype_map");
+               && "shared_ptr<node_metatype> use_count does not match the "
+               "number of entries in the browser's node_metatype_map");
     }
 # endif
 }
@@ -5785,7 +5788,7 @@ namespace {
  */
 void
 openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
-                                        const double timestamp)
+                                           const double timestamp)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(),

@@ -1375,9 +1375,9 @@ openvrml::script_node::metadata_changed_emitter::~metadata_changed_emitter()
 {}
 
 /**
- * @brief The eventOut identifier.
+ * @brief The @c eventOut identifier.
  *
- * @return the eventOut identifier.
+ * @return the @c eventOut identifier.
  */
 const std::string
 openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
@@ -1391,18 +1391,18 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var openvrml::script_node::script_node_type openvrml::script_node::type
  *
- * @brief Type object for the script_node instance.
+ * @brief Type object for the @c script_node instance.
  *
- * Script node @link openvrml::node_type node_types@endlink are significantly
- * different from other @link openvrml::node_type node_types@endlink. While
- * most @link openvrml::node_type node_types@endlink are shared by the node
- * instances they spawn, the script_node_type is unique to a script_node
- * instance, and it shares the script_node's lifetime. This reflects the fact
- * that Script nodes in VRML get their functionality by the addition of fields,
- * eventIns, and eventOuts on a per-instance basis.
+ * Script @c node @c node_type%s are significantly different from other
+ * @c node_type%s.  While most @c node_types are shared by the @c node
+ * instances they spawn, the @c script_node_type is unique to a @c script_node
+ * instance, and it shares the <code>script_node</code>'s lifetime.  This
+ * reflects the fact that Script @c node%s in VRML get their functionality by
+ * the addition of @c field%s, @c eventIn%s, and @c eventOut%s on a
+ * per-instance basis.
  *
- * For script_node instances, node::node_type is an alias for the
- * script_node_type object.
+ * For @c script_node instances, @c node::node_type is an alias for the
+ * @c script_node_type object.
  */
 
 /**
@@ -1506,39 +1506,38 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  * @brief Construct.
  *
  * Unlike other concrete node types, which are always instantiated via
- * <code>node_type::create_node</code>, the <code>script_node</code>
- * constructor is called directly when creating a new <code>script_node</code>
- * from scratch.  However, a <code>script_node</code> can be duplicated (or
- * "cloned") by calling <code>node_type::create_node</code> on
- * <code>script_node::type</code> of a <code>script_node</code> instance.  This
- * provides a consistent interface for cloning any node, regardless of its
- * type.  OpenVRML uses this internally when instantiating <code>PROTO</code>s.
+ * @c node_type::create_node, the @c script_node constructor is called
+ * directly when creating a new @c script_node from scratch.  However, a
+ * @c script_node can be duplicated (or &ldquo;cloned&rdquo;) by calling
+ * @c node_type::create_node on @c script_node::type of a @c script_node
+ * instance.  This provides a consistent interface for cloning any node,
+ * regardless of its type.  OpenVRML uses this internally when instantiating
+ * @c PROTO%s.
  *
- * @param[in] class_            the <code>script_node_metatype</code>.  Typically
- *                          there is one <code>script_node_metatype</code> per
- *                          browser instance.
- * @param[in] scope             the <code>scope</code> to which the node should
- *                          belong.
- * @param[in] interfaces        a <code>node_interface_set</code> containing
- *                          specifications of user-defined fields, eventIns,
- *                          and eventOuts particular to the
- *                          <code>script_node</code> instance.
- * @param[in] initial_values    a map of initial values for fields of the
- *                          <code>script_node</code>.
+ * @param[in] class_            the @c script_node_metatype.  Typically
+ *                              there is one @c script_node_metatype per
+ *                              browser instance.
+ * @param[in] scope             the @c scope to which the node should
+ *                              belong.
+ * @param[in] interfaces        a @c node_interface_set containing
+ *                              specifications of user-defined @c field%s,
+ *                              @c eventIn%s, and @c eventOut%s particular to
+ *                              the @c script_node instance.
+ * @param[in] initial_values    a map of initial values for @c field%s of the
+ *                              @c script_node.
  *
  * @exception unsupported_interface if @p initial_values specifies a field that
- *                                  is not supported by the
- *                                  <code>script_node</code>.
+ *                                  is not supported by the @c script_node.
  * @exception std::bad_cast         if @p initial_values includes a field value
  *                                  that is the wrong type for the specified
  *                                  field.
  * @exception std::bad_alloc        if memory allocation fails.
  * @exception std::invalid_argument if:
- *                                  - @p interfaces includes an exposedField
+ *                                  - @p interfaces includes an @c exposedField
  *                                    specification.
  *                                  - @p interfaces includes an interface
  *                                    specification that duplicates an existing
- *                                    Script node interface.
+ *                                    Script @c node interface.
  *                                  - @p initial_values is missing an initial
  *                                    value for a user-defined field in
  *                                    @p interfaces.
@@ -1750,9 +1749,9 @@ void openvrml::script_node::update(const double current_time)
  * @brief Special assignment function to take into account the fact that
  *        Script nodes can be self referential.
  *
- * "Undo" the refcounting appropriately: decrement the refcount on any
- * self-references we acquire ownership of, and increment the refcount on any
- * self-references for which ownership is relinquished.
+ * &ldquo;Undo&rdquo; the refcounting appropriately: decrement the refcount on
+ * any self-references we acquire ownership of and increment the refcount on
+ * any self-references for which ownership is relinquished.
  *
  * @param[in]  inval    input sfnode.
  * @param[out] retval   output sfnode.
@@ -1798,9 +1797,9 @@ void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
  * @brief Special assignment function to take into account the fact that
  *        Script nodes can be self referential.
  *
- * "Undo" the refcounting appropriately: decrement the refcount on any
- * self-references we acquire ownership of, and increment the refcount on any
- * self-references for which ownership is relinquished.
+ * &ldquo;Undo&rdquo; the refcounting appropriately: decrement the refcount on
+ * any self-references we acquire ownership of and increment the refcount on
+ * any self-references for which ownership is relinquished.
  *
  * @param[in]  inval    input mfnode.
  * @param[out] retval   output mfnode.
