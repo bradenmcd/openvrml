@@ -5482,7 +5482,7 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  * <code>%http://example.com/example.wrl</code>:
  *
  * <pre>
- * #VRML V2.0 utf8
+ * \#VRML V2.0 utf8
  *
  * PROTO Outer [] {
  *   PROTO Inner [] { Group {} }
@@ -5491,8 +5491,8 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  * </pre>
  *
  * The @c node_metatype_id string for @c Outer would be
- * <code>%http://example.com/example.wrl#Outer</code>; and for @c Inner,
- * <code>%http://example.com/example.wrl#Outer#Inner</code>.
+ * <code>%http://example.com/example.wrl\#Outer</code>; and for @c Inner,
+ * <code>%http://example.com/example.wrl\#Outer\#Inner</code>.
  */
 
 /**
@@ -6623,8 +6623,9 @@ openvrml::browser::get_resource(const std::string & uri)
  * The @p uri parameter is provided by OpenVRML and can be assumed to be an
  * absolute URI.  As such, it will always have a scheme through which the
  * client code can choose a resolution mechanism.  For more information on URI
- * syntax, see <a href="http://www.isi.edu/in-notes/rfc2396.txt">Internet
- * RFC&nbsp;2396</a>.
+ * syntax, see <a
+ * href="ftp://ftp.rfc-editor.org/in-notes/std/std66.txt">Internet
+ * STD&nbsp;66</a>.
  *
  * @param[in] uri   an absolute Uniform Resource Identifier.
  *

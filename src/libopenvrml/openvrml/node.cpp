@@ -626,7 +626,7 @@ openvrml::browser & openvrml::node_metatype::browser() const OPENVRML_NOTHROW
  * @param[in] time                  the current time.
  */
 void openvrml::node_metatype::initialize(viewpoint_node * initial_viewpoint,
-                                      const double time)
+                                         const double time)
     OPENVRML_NOTHROW
 {
     this->do_initialize(initial_viewpoint, time);
@@ -786,7 +786,7 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::node_type::node_type(const openvrml::node_metatype & c,
+openvrml::node_type::node_type(const node_metatype & c,
                                const std::string & id)
     OPENVRML_THROW1(std::bad_alloc):
     metatype_(c),

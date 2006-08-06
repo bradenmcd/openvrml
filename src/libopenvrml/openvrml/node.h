@@ -249,13 +249,13 @@ namespace openvrml {
 
 
     class OPENVRML_API node_type : boost::noncopyable {
-        const openvrml::node_metatype & metatype_;
+        const node_metatype & metatype_;
         const std::string id_;
 
     public:
         virtual ~node_type() OPENVRML_NOTHROW = 0;
 
-        const openvrml::node_metatype & metatype() const OPENVRML_NOTHROW;
+        const node_metatype & metatype() const OPENVRML_NOTHROW;
         const std::string & id() const OPENVRML_NOTHROW;
         const node_interface_set & interfaces() const OPENVRML_NOTHROW;
         const boost::intrusive_ptr<node>
@@ -266,7 +266,7 @@ namespace openvrml {
                             std::bad_alloc);
 
     protected:
-        node_type(const openvrml::node_metatype & c, const std::string & id)
+        node_type(const node_metatype & c, const std::string & id)
             OPENVRML_THROW1(std::bad_alloc);
 
     private:

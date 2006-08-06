@@ -2,6 +2,14 @@
 
 	Doc-comment improvements.
 
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+
+2006-08-05 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
 	* src/libopenvrml/openvrml/basetypes.cpp
 	* src/libopenvrml/openvrml/browser.cpp
 
