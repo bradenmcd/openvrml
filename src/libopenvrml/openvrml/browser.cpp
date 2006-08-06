@@ -6687,8 +6687,8 @@ const std::string openvrml::browser::world_url() const
  *
  * @param[in,out] in    an input stream.
  *
- * @exception bad_media_type    if @p in.type() is not "model/vrml",
- *                              "x-world/x-vrml", or "model/x3d+vrml".
+ * @exception bad_media_type    if @p in.type() is not @c model/vrml,
+ *                              @c x-world/x-vrml, or @c model/x3d+vrml.
  * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::browser::set_world(resource_istream & in)

@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -297,9 +297,9 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
  *
  * @brief A color with alpha channel.
  *
- * VRML <code>color_rgba</code>s are represented as four single precision
- * floating point components&mdash;red, green, blue, and alpha&mdash;ranging
- * from 0.0 to 1.0. For the alpha channel, 1.0 is opaque.
+ * VRML @c color_rgba%s are represented as four single precision floating
+ * point components&mdash;red, green, blue, and alpha&mdash;ranging from 0.0
+ * to 1.0. For the alpha channel, 1.0 is opaque.
  */
 
 /**
@@ -2802,7 +2802,7 @@ openvrml::mat4f::transformation(const vec3f & t,
 /**
  * @brief Construct.
  *
- * Matrix is initialized to the identity matrix.
+ * The matrix is initialized to the identity matrix.
  */
 openvrml::mat4f::mat4f() OPENVRML_NOTHROW
 {
@@ -2829,6 +2829,13 @@ openvrml::mat4f::mat4f() OPENVRML_NOTHROW
 
 /**
  * @brief Construct mat4f with given 16 elements in row-major order.
+ *
+ * \f[ \left[ \begin{array}{cccc}
+ *            f_{11} & f_{12} & f_{13} & f_{14} \\
+ *            f_{21} & f_{22} & f_{23} & f_{24} \\
+ *            f_{31} & f_{32} & f_{33} & f_{34} \\
+ *            f_{41} & f_{42} & f_{43} & f_{44} \\
+ *            \end{array} \right] \f]
  *
  * @param[in] f11
  * @param[in] f12
@@ -3037,9 +3044,9 @@ namespace {
  * @brief Get the translation, rotation and scale from the orthogonal
  *        transformation matrix.
  *
- * Here any projection or shear information in the matrix is ignored. The
- * caller is responsible for assuring that the transformation is in fact
- * orthogonal, otherwise the results are undefined.
+ * Any projection or shear information in the matrix is ignored.  The caller
+ * is responsible for assuring that the transformation is in fact orthogonal;
+ * otherwise the results are undefined.
  *
  * @param[out] t    translation.
  * @param[out] r    rotation.
@@ -3112,11 +3119,11 @@ void openvrml::mat4f::transformation(vec3f & t,
     }
 
     //
-    // At this point, the matrix (in rows[]) is orthonormal.
-    // That is, each row has length one and are mutually perpendicular.
-    // Is it needed to calculate the det of this matrix (1 or -1) for checking
-    // coordinate system flip ? (According to VRML standard, scale > 0.0)
-    // Calculate quaternion rotation from this matrix.
+    // At this point, the matrix (in rows[]) is orthonormal.  That is, each
+    // row has length one and are mutually perpendicular.  Is it necessary to
+    // calculate the det of this matrix (1 or -1) for checking coordinate
+    // system flip?  (According to VRML97, scale > 0.0.)  Calculate quaternion
+    // rotation from this matrix.
     //
     quatf quat(tmp_matrix);
 
@@ -3127,12 +3134,12 @@ void openvrml::mat4f::transformation(vec3f & t,
 }
 
 /**
- * @brief Get the translation, rotation, scale and shear from affine
- *      transformation matrix.
+ * @brief Get the translation, rotation, scale and shear from an affine
+ *        transformation matrix.
  *
- * Here any projection information in matrix is ignored. As VRML allows
- * non-uniform scaling, it is safe to call this routine. The caller is
- * responsible for assuring that the transformation is in fact affine,
+ * Any projection information in the matrix is ignored.  As VRML allows
+ * non-uniform scaling, it is safe to call this routine.  The caller is
+ * responsible for assuring that the transformation matrix is in fact affine;
  * otherwise the results are undefined.
  *
  * @param[out] t        translation.
@@ -3231,11 +3238,11 @@ void openvrml::mat4f::transformation(vec3f & t,
     }
 
     //
-    // At this point, the matrix (in rows[]) is orthonormal.
-    // That is, each row has length one and are mutually perpendicular.
-    // Is it needed to calculate the det of this matrix (1 or -1) for checking
-    // coordinate system flip ? (According to VRML standard, scale > 0.0)
-    // Calculate quaternion rotation from this matrix.
+    // At this point, the matrix (in rows[]) is orthonormal.  That is, each
+    // row has length one and are mutually perpendicular.  Is it needed to
+    // calculate the det of this matrix (1 or -1) for checking coordinate
+    // system flip?  (According to VRML standard, scale > 0.0.) Calculate
+    // quaternion rotation from this matrix.
     //
     quatf quat(tmp_matrix);
 
@@ -3247,12 +3254,12 @@ void openvrml::mat4f::transformation(vec3f & t,
 
 namespace {
     /**
-     * This is taken from Graphics Gems 2, Page 603 and it is valid for only
-     * affine matrix with dimension of 4x4. As here we are storing row-major
-     * order, this means the last column MUST be [0 0 0 1]
+     * This is taken from Graphics Gems 2, Page 603 and it is valid only for
+     * an affine matrix with dimension of 4x4.  Since we are using row-major
+     * order, this means the last column MUST be [0 0 0 1].
      *
-     * By this procedure there is a significant performance improvement over
-     * a general procedure that can invert any nonsingular matrix.
+     * By this procedure there is a significant performance improvement over a
+     * general procedure that can invert any nonsingular matrix.
      *
      *            -1
      *  -1   |    |      |  -1    |
@@ -3265,9 +3272,8 @@ namespace {
      *          A is the 3 by 3 upper left submatrix of M,
      *          B is the 1 by 3 lower left submatrix of M.
      *
-     * It aborts if input matrix is not affine.
-     * It returns without doing any calculations if the input matrix is
-     * singular.
+     * It aborts if input matrix is not affine.  It returns without doing any
+     * calculations if the input matrix is singular.
      *
      * @param[in] in   3D affine matrix.
      *
@@ -3524,8 +3530,9 @@ openvrml::quatf::quatf(const float x,
  * @brief Construct from an array of four values.
  *
  * @param[in] quat  the first three values in the array are used for the x, y,
- *                  and z vector components, respectively. The fourth value in
- *                  the array is used for the scalar part of the quaternion.
+ *                  and z vector components, respectively.  The fourth value
+ *                  in the array is used for the scalar part of the
+ *                  quaternion.
  */
 openvrml::quatf::quatf(const float (&quat)[4]) OPENVRML_NOTHROW
 {
@@ -3591,12 +3598,9 @@ openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
 /**
  * @brief Multiply by a quaternion.
  *
- * @note <b>qr</b> = (<b>q</b><sub><i>v</i></sub> x <b>r</b><sub><i>v</i></sub>
- *                   + <i>r<sub>w</sub></i><b>q</b><sub><i>v</i></sub>
- *                   + <i>q<sub>w</sub></i><b>r</b><sub><i>v</i></sub>,
- *                   <i>q<sub>w</sub>r<sub>w</sub></i>
- *                   - <b>q</b><sub><i>v</i></sub>
- *                   . <b>r</b><sub><i>v</i></sub>)
+ * @note \f[
+ *       qr = ( \vec{q_v} \times \vec{r_v} + r_w \vec{q_v} + q_w \vec{r_v}, q_w r_w - \vec{q_v} \cdotp \vec{r_v})
+ *       \f]
  *
  * @param[in] quat  the quaternion by which to multiply.
  *
@@ -3796,7 +3800,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Array element dereference operator (const version).
  *
- * @param[in] index an index from 0 - 3.
+ * @param[in] index an index from 0&ndash;3.
  *
  * @pre @p index is not larger than 3.
  */
@@ -3806,7 +3810,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  *
  * @brief Array element dereference operator (non-const version).
  *
- * @param[in] index an index from 0 - 3.
+ * @param[in] index an index from 0&ndash;3.
  *
  * @pre @p index is not larger than 3.
  */
@@ -3878,8 +3882,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
 /**
  * @brief Get the conjugate.
  *
- * @note <b>q</b><sup>*</sup> = (-<b>q</b><sub><i>v</i></sub>,
- *                              <i>q<sub>w</sub></i>)
+ * @note \f[ q^* = (- \vec{q_v}, q_w) \f]
  *
  * @return the conjugate of the quaternion.
  */
@@ -3895,7 +3898,7 @@ const openvrml::quatf openvrml::quatf::conjugate() const OPENVRML_NOTHROW
 /**
  * @brief Get the inverse.
  *
- * @note <b>q</b><sup>-1</sup> = <b>q</b><sup>*</sup> / <i>n</i>(<b>q</b>)
+ * @note \f[ q^{-1} = \frac{q^*}{n(q)} \f]
  *
  * @return the multiplicative inverse.
  */
@@ -3907,10 +3910,7 @@ const openvrml::quatf openvrml::quatf::inverse() const OPENVRML_NOTHROW
 /**
  * @brief Get the norm.
  *
- * @note <i>n</i>(<b>q</b>) = <i>q<sub>x</sub></i><sup>2</sup>
- *                            + <i>q<sub>y</sub></i><sup>2</sup>
- *                            + <i>q<sub>z</sub></i><sup>2</sup>
- *                            + <i>q<sub>w</sub></i><sup>2</sup>
+ * @note \f[ n(q) = q_x^2 + q_y^2 + q_z^2 + q_w^2 \f]
  *
  * @return the norm.
  */
@@ -3943,7 +3943,7 @@ const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
  * @brief Stream output.
  *
  * @param[in,out] out   an output stream.
- * @param[in] quat  a quaternion.
+ * @param[in] quat      a quaternion.
  *
  * @return @p out.
  */
@@ -3993,16 +3993,15 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
  * @brief Pixmap data.
  *
  * The first pixel in the @link image::array array@endlink is the lower left
- * pixel and the last is the upper right pixel.  Pixel values are limited
- * to 256 levels of intensity.  The elements of
- * @link image::array array@endlink are bytes, with one byte per pixel
- * component.  Thus the number of elements in the array is
- * @p x * @p y * @p comp.
+ * pixel and the last is the upper right pixel.  Pixel values are limited to
+ * 256 levels of intensity.  The elements of @link image::array array@endlink
+ * are bytes, with one byte per pixel component.  Thus the number of elements
+ * in the array is @p x * @p y * @p comp.
  *
  * A one-component image specifies one-byte greyscale values.  A two-component
- * image specifies the intensity in the first byte and the alpha opacity in the
- * second byte.  A three-component image specifies the red component in the
- * first byte, followed by the green and blue components.  Four-component
+ * image specifies the intensity in the first byte and the alpha opacity in
+ * the second byte.  A three-component image specifies the red component in
+ * the first byte, followed by the green and blue components.  Four-component
  * images specify the alpha opacity byte after red/green/blue.
  */
 
@@ -4231,7 +4230,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @param[in] begin input iterator to the beginning of a sequence.
  * @param[in] end   input iterator to the end of the sequence (one past the last
- *              element).
+ *                  element).
  */
 
 /**

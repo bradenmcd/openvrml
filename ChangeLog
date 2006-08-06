@@ -1,5 +1,12 @@
 2006-08-05 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+
+2006-08-05 Braden McDaniel  <braden@endoframe.com>
+
 	Increased buffer sizes to something a little more
 	reasonable (16kB).
 
