@@ -1,3 +1,9 @@
+2006-08-06 Braden McDaniel  <braden@endoframe.com>
+
+	Merged changes from 0.15.10 release.
+
+	* NEWS: Added record of 0.15.0 release.
+
 2006-08-05 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am: Remove doxygen-generated files before running

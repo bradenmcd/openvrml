@@ -1,3 +1,11 @@
+Changes new in version 0.15.10, 4 August, 2005
+==============================================
+
+- Now compiles with gcc 4.0.1.
+
+- Fixed problem compiling on FreeBSD.
+
+
 Changes new in version 0.15.9, 6 July, 2005
 ===========================================
 
