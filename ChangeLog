@@ -1,5 +1,10 @@
 2006-08-06 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am: Remove doxygen-generated files in a loop;
+	otherwise, rm may complain of too many arguments.
+
+2006-08-06 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements.
 
 	* src/libopenvrml/openvrml/browser.cpp

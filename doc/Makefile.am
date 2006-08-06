@@ -70,7 +70,7 @@ uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
 
 manual/index.html: $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
-	rm -f $(DOXYGEN_OUTPUT_FILES)
+	for x in $(DOXYGEN_OUTPUT_FILES); do rm -f $$x; done
 	cd $(srcdir) && $(DOXYGEN)
 
 dist-hook: html-local
