@@ -1,13 +1,124 @@
+// -*- mode: c++; fill-column: 78 -*-
+
 /**
-@mainpage
+ * @mainpage
+ *
+ * OpenVRML comprises a runtime library for VRML97 along with an OpenGL
+ * renderer.
+ *
+ * @section contents Contents
+ *
+ * <table>
+ * <tr><td>@ref intro</td></tr>
+ * <tr><td>@ref history</td></tr>
+ * <tr><td>@ref getting_started</td></tr>
+ * <tr><td>@ref resource_fetching</td></tr>
+ * <tr><td>@ref resource_fetching_rationale</td></tr>
+ * <tr><td>@ref introducing_resource_istream</td></tr>
+ * <tr><td>@ref introducing_browser</td></tr>
+ * <tr><td>@ref resource_istream_impl_considerations</td></tr>
+ * <tr><td>@ref conformance</td><td>NIST VRML Test Suite results</td></tr>
+ * </table>
+ *
+ * @section intro 1 Introduction
+ *
+ * OpenVRML is a runtime library for VRML97 and X3D worlds.  OpenVRML parses
+ * VRML/X3D directly into an in-memory scene graph format that can be further
+ * manipulated through its API and/or rendered.
+ *
+ * @subsection history 1.1 History
+ *
+ * OpenVRML was started as LibVRML97 by Chris Morley.  Since 2000 it has been
+ * maintained by Braden McDaniel.
+ *
+ * @section getting_started 2 Getting started
+ *
+ * @subsection resource_fetching 2.1 Fetching network resources
+ *
+ * @subsubsection resource_fetching_rationale 2.1.1 Rationale
+ *
+ * A VRML/X3D runtime must, of course, be able to fetch network resources
+ * using URIs.  However, there is no standard mechanism in C++ for network
+ * communication.  Various libraries are available to fill this void; but if
+ * OpenVRML were to depend on one of them it could make OpenVRML more
+ * difficult to integrate into applications that use some different network
+ * layer.
+ *
+ * In order to integrate into systems using arbitrary mechanisms for network
+ * I/O, OpenVRML requires the user to supply a resource fetching facility.  As
+ * such, the URI schemes (and corresponding resolution and transfer protocols)
+ * supported in worlds loaded into OpenVRML are a function of the
+ * user-supplied resource fetching mechanism.
+ *
+ * The resource fetching mechanism can be as full-featured or as spartan as
+ * the user application requires.  A minimal facility might only handle @c
+ * file: URLs.  But in general it is desirable to support at least the schemes
+ * supported by modern Web browsers (significantly, @c ftp: and @c http:).
+ *
+ * @subsubsection introducing_resource_istream 2.1.2 Introducing resource_istream
+ *
+ * OpenVRML accomplishes this extensibility by extending the C++ IOstreams
+ * framework.  @c openvrml::resource_istream inherits @c std::istream and adds
+ * a few member functions particular to network resource fetching:
+ *
+ * @code
+ * const std::string url() const throw (std::bad_alloc)
+ * const std::string type() const throw (std::bad_alloc)
+ * bool data_available() const throw ()
+ * @endcode
+ *
+ * @c resource_istream is an abstract class.  It is an interface through which
+ * OpenVRML can access user code.  You use @c resource_istream by inheriting
+ * it and providing implementations for its pure virtual functions.
+ *
+ * @subsubsection introducing_browser 2.1.3 Introducing browser
+ *
+ * The centerpiece of the OpenVRML library is @c openvrml::browser.  This
+ * class provides the interface for loading VRML/X3D worlds.  Most management
+ * of the runtime will be handled through its member functions.  Like @c
+ * resource_istream, @c browser is an abstract class that users must inherit.
+ * However, @c browser has only one pure virtual function you must implement:
+ * the one responsible for creating @c resource_istream%s.
+ *
+ * @code
+ * virtual std::auto_ptr<resource_istream> do_get_resource(const std::string & uri) = 0;
+ * @endcode
+ *
+ * The API documentation for @c openvrml::browser::do_get_resource provides
+ * more details on the requirements for this function's implementation.
+ * Briefly, your implementation will return a @c std::auto_ptr to an instance
+ * of your class that implements @c openvrml::resource_istream.
+ *
+ * @subsubsection resource_istream_impl_considerations 2.1.4 resource_istream implementation considerations
+ *
+ * OpenVRML supports a notion of data streaming.  In general, network
+ * resources are read asynchronously with respect to the rendering thread.
+ * User code that does not support data streaming (as in the example using @c
+ * std::filebuf in the documentation for @c
+ * openvrml::browser::do_get_resource) can remain largely oblivious
+ * synchronization issues.  However, user code that supports data streaming
+ * must be mindful of the fact that OpenVRML uses separate threads to read the
+ * data streams.  Care must be taken not to write to a buffer at the same time
+ * OpenVRML's stream reading thread is reading the buffer.
+ *
+ * The IOstreams framework is typically extended by inheriting @c
+ * std::streambuf to implement new sources and sinks for data.  (Full
+ * treatment of this topic is beyond the scope of this document; see <a
+ * href="http://www.josuttis.com/libbook/"><i>The C++ Standard Library</i> by
+ * Nicolai M. Josuttis</a> and <a
+ * href="http://www.angelikalanger.com/iostreams.html"><i>Standard C++
+ * IOStreams and Locales</i> by Angelika Langer and Klaus Kreft</a>.)
+ * However, <code>std::streambuf</code>'s interface is not thread-safe.  Since
+ * OpenVRML's stream-reading thread can be expected to be using the @c
+ * streambuf interface (by way of the @c std::istream member functions
+ * inherited by @c openvrml::resource_istream), it is only safe for user code
+ * to use the @c streambuf interface in that same thread; i.e., in code called
+ * by OpenVRML.
 
-%OpenVRML comprises a runtime library for VRML97 along with an OpenGL
-renderer.
-
-@section contents Contents
-
-<table>
-<tr><td>@ref conformance</td><td>NIST VRML Test Suite results</td>
-</table>
-
-*/
+ * If user code needs to feed data into a buffer in a separate thread, that
+ * buffer should not be the one managed by the @c streambuf interface.  In
+ * general it is appropriate to use a secondary buffer, protected with thread
+ * synchronization primitives, for writing incoming data.  Data can then be
+ * moved from this buffer to the <code>streambuf</code>'s buffer in the
+ * implementation of @c std::streambuf::underflow.
+ */

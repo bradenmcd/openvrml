@@ -1,3 +1,7 @@
+2006-08-08 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/index.doc: Added the beginnings of a user guide.
+
 2006-08-06 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am: Remove doxygen-generated files in a loop;
