@@ -116,8 +116,9 @@
  * by OpenVRML.
 
  * If user code needs to feed data into a buffer in a separate thread, that
- * buffer should not be the one managed by the @c streambuf interface.  In
- * general it is appropriate to use a secondary buffer, protected with thread
+ * buffer should not be the one managed by the @c streambuf interface (i.e.,
+ * the buffer to which @c eback, @c gptr, and @c egptr point).  In general it
+ * is appropriate to use a secondary buffer, protected with thread
  * synchronization primitives, for writing incoming data.  Data can then be
  * moved from this buffer to the <code>streambuf</code>'s buffer in the
  * implementation of @c std::streambuf::underflow.
