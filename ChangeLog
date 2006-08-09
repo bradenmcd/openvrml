@@ -1,5 +1,13 @@
 2006-08-08 Braden McDaniel  <braden@endoframe.com>
 
+	Updated libtool library version numbers.
+
+	* src/libopenvrml/Makefile.am (LIBRARY_VERSION): Updated to 6:0:0.
+	* src/libopenvrml-gl/Makefile.am (LIBRARY_VERSION): Updated to
+	6:2:0.
+
+2006-08-08 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/index.doc: Documentation improvements.
 
 2006-08-08 Braden McDaniel  <braden@endoframe.com>

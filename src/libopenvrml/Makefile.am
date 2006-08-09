@@ -62,7 +62,7 @@ noinst_HEADERS = \
         $(VRML97PARSER_BUILT_SOURCEFILES) \
         $(X3DVRMLPARSER_BUILT_SOURCEFILES)
 
-LIBRARY_VERSION = 5:3:0
+LIBRARY_VERSION = 6:0:0
 #                 | | |
 #          +------+ | +---+
 #          |        |     |
