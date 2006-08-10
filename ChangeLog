@@ -1,3 +1,9 @@
+2006-08-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/Makefile.am: Qualify antlr-generated sources
+	with $(srcdir) to prevent touch from creating the files in the
+	builddir.
+
 2006-08-08 Braden McDaniel  <braden@endoframe.com>
 
 	Updated libtool library version numbers.

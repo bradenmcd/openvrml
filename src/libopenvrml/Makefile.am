@@ -37,9 +37,9 @@ openvrml_include_HEADERS = \
         openvrml/x3d_cad_geometry.h
 
 VRML97PARSER_BUILT_SOURCEFILES = \
-        openvrml/Vrml97Parser.cpp \
-        openvrml/Vrml97Parser.hpp \
-        openvrml/Vrml97ParserTokenTypes.hpp
+        $(srcdir)/openvrml/Vrml97Parser.cpp \
+        $(srcdir)/openvrml/Vrml97Parser.hpp \
+        $(srcdir)/openvrml/Vrml97ParserTokenTypes.hpp
 VRML97PARSER_BUILT_TEXTFILES = \
         openvrml/Vrml97ParserTokenTypes.txt
 VRML97PARSER_BUILT_FILES = \
@@ -47,11 +47,11 @@ VRML97PARSER_BUILT_FILES = \
         $(VRML97PARSER_BUILT_TEXTFILES)
 
 X3DVRMLPARSER_BUILT_SOURCEFILES = \
-        openvrml/X3DVrmlParser.cpp \
-        openvrml/X3DVrmlParser.hpp \
-        openvrml/X3DVrmlParserTokenTypes.hpp
+        $(srcdir)/openvrml/X3DVrmlParser.cpp \
+        $(srcdir)/openvrml/X3DVrmlParser.hpp \
+        $(srcdir)/openvrml/X3DVrmlParserTokenTypes.hpp
 X3DVRMLPARSER_BUILT_TEXTFILES = \
-        openvrml/X3DVrmlParserTokenTypes.txt
+        $(srcdir)/openvrml/X3DVrmlParserTokenTypes.txt
 X3DVRMLPARSER_BUILT_FILES = \
         $(X3DVRMLPARSER_BUILT_SOURCEFILES) \
         $(X3DVRMLPARSER_BUILT_TEXTFILES)
