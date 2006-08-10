@@ -259,7 +259,7 @@ fi
 #
 # build examples
 #
-AC_ARG_ENABLE([lookat],
+AC_ARG_ENABLE([examples],
               [AC_HELP_STRING([--disable-examples],
                               [do not build the example programs])])
 if test "X$enable_examples" != "Xno"; then
