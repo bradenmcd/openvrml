@@ -29,6 +29,7 @@
 # include <functional>
 # ifdef _WIN32
 #   include <sys/timeb.h>
+#   include <direct.h>
 #   include <time.h>
 # else
 #   include <sys/time.h>
