@@ -1,5 +1,23 @@
 2006-08-10 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes to generate API documentation properly.
+
+	* doc/Makefile.am (DOXYGEN_OUTPUT_FILES): Avoid redundantly
+	listing files with wild cards.
+	(CUSTOMIZED_IMAGES): Added variable to list customized images for
+	the doxygen-generated documentation.
+	(EXTRA_DIST): Refer to DOXYGEN_OUTPUT_FILES and CUSTOMIZED_IMAGES
+	rather than manual in order to avoid pulling in the CVS
+	subdirectory.
+	(.PHONY): List html-local
+	(html-local): Run doxygen here.
+	(install-data-local): Made installdirs-local a prerequisite.
+	Removed html as a prerequisite; since html-local is now phony, we
+	don't want to regenerate the documentation as part of install.
+	(dist-hook): Removed.
+
+2006-08-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/Makefile.am: Qualify antlr-generated sources
 	with $(srcdir) to prevent touch from creating the files in the
 	builddir.

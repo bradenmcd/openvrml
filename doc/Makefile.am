@@ -42,8 +42,6 @@ DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.cpp \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.h
 
-EXTRA_DIST = $(DOCUMENTATION_FILES) manual
-
 DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/*.css \
         $(srcdir)/manual/*.html \
@@ -53,24 +51,30 @@ DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/doxygen.png \
         $(srcdir)/manual/formula.repository \
         $(srcdir)/manual/form_*.png \
-        $(srcdir)/manual/graph_legend.* \
+        $(srcdir)/manual/graph_legend.dot \
+        $(srcdir)/manual/graph_legend.png \
         $(srcdir)/manual/tab_?.gif
+
+CUSTOMIZED_IMAGES = \
+        $(srcdir)/manual/tab_b-openvrml.png \
+        $(srcdir)/manual/tab_l-openvrml.png \
+        $(srcdir)/manual/tab_r-openvrml.png
+
+EXTRA_DIST = $(DOCUMENTATION_FILES) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES)
 
 MAINTAINERCLEANFILES = $(DOXYGEN_OUTPUT_FILES)
 
-html-local: manual/index.html
+.PHONY: html-local
+
+html-local:
+	for x in $(DOXYGEN_OUTPUT_FILES); do rm -f $$x; done
+	cd $(srcdir) && $(DOXYGEN)
 
 installdirs-local:
 	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
 
-install-data-local: html installdirs-local
-	$(INSTALL_DATA) $(srcdir)/manual/* $(DESTDIR)$(docdir)/manual
+install-data-local: installdirs-local
+	$(INSTALL_DATA) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) $(DESTDIR)$(docdir)/manual
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual
-
-manual/index.html: $(DOCUMENTATION_FILES) $(DOCUMENTED_SOURCE_FILES)
-	for x in $(DOXYGEN_OUTPUT_FILES); do rm -f $$x; done
-	cd $(srcdir) && $(DOXYGEN)
-
-dist-hook: html-local
