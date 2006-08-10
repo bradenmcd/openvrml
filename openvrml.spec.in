@@ -72,14 +72,14 @@ VRML browser plug-in for Mozilla-based browsers.
 
 %build
 %configure --disable-exception-specs --disable-examples --disable-script-node-java CPPFLAGS="-DNDEBUG"
-make %{?_smp_mflags}
+%{__make} %{?_smp_mflags}
 
 %install
 %makeinstall
-rm $RPM_BUILD_ROOT%{_libdir}/mozilla/plugins/openvrml.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/mozilla/plugins/openvrml.la
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf $RPM_BUILD_ROOT
 
 %files
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
@@ -88,6 +88,8 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
 %doc doc/manual
+%{_includedir}/%{name}/openvrml-common.h
+%{_includedir}/%{name}/openvrml-config.h
 %{_includedir}/%{name}/openvrml/*.h
 %{_libdir}/libopenvrml.la
 %{_libdir}/libopenvrml.a
@@ -100,6 +102,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files gl-devel
 %doc AUTHORS COPYING.LESSER ChangeLog NEWS README THANKS
+%{_includedir}/%{name}/openvrml-gl-common.h
+%{_includedir}/%{name}/openvrml-gl-config.h
 %{_includedir}/%{name}/openvrml/gl
 %{_libdir}/libopenvrml-gl.la
 %{_libdir}/libopenvrml-gl.a
@@ -115,6 +119,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 10 2006  Braden McDaniel  <braden@endoframe.com>
+- Use %{__make} instead of make.
+- Use %{__rm} instead of rm.
+- Include openvrml-common.h and openvrml-config.h in openvrml-devel.
+- Include openvrml-gl-common.h and openvrml-gl-config.h in
+  openvrml-gl-devel.
+
 * Wed Jul 26 2006  Braden McDaniel  <braden@endoframe.com>
 - Require boost-devel 1.33.1.
 - Added dependency on boost-devel to openvrml-devel.
