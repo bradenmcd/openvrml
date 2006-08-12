@@ -1,5 +1,25 @@
+Changes new in version 0.16.0, 12 August, 2006
+========================================================================
+
+- User-extensible I/O subsystem based on the standard C++ IOstreams.
+
+- Asynchronously load Inline worlds.
+
+- Asynchronously load and progressively render PNG and JPEG images.
+
+- Added support for nonnative EXTERNPROTOs.  EXTERNPROTO
+  implementations are loaded asynchronously.
+
+- Support for constructing scene graphs from Classic VRML-encoded X3D,
+  including the Core, Interchange, Interactive, MPEG4, Immersive, and
+  Full profiles.
+
+- Mozilla plug-in now uses the Web browser for resource fetching; so
+  it gets the benefit of the Web browser's cache.
+
+
 Changes new in version 0.15.10, 4 August, 2005
-==============================================
+========================================================================
 
 - Now compiles with gcc 4.0.1.
 
@@ -7,13 +27,13 @@ Changes new in version 0.15.10, 4 August, 2005
 
 
 Changes new in version 0.15.9, 6 July, 2005
-===========================================
+========================================================================
 
 - Fixed 64-bit cleanliness issue in the Mozilla plug-in.
 
 
 Changes new in version 0.15.8, 5 June, 2005
-===========================================
+========================================================================
 
 - Really fixed --disable-mozilla-plugin configure option.
 
@@ -22,7 +42,7 @@ Changes new in version 0.15.8, 5 June, 2005
 
 
 Changes new in version 0.15.7, 20 April, 2005
-=============================================
+========================================================================
 
 - Fixed 64-bit cleanliness issue in the Mozilla plug-in.
 
@@ -32,7 +52,7 @@ Changes new in version 0.15.7, 20 April, 2005
 
 
 Changes new in version 0.15.6, 26 January, 2005
-===============================================
+========================================================================
 
 - Fixed build to more reliably find Mozilla headers.
 
@@ -46,7 +66,7 @@ Changes new in version 0.15.6, 26 January, 2005
 
 
 Changes new in version 0.15.5, 10 January, 2005
-===============================================
+========================================================================
 
 - Mozilla plug-in is now out-of-process. This addresses the
   interactivity issues present in 0.15.4 and provides an overall more
@@ -62,7 +82,7 @@ Changes new in version 0.15.5, 10 January, 2005
 
 
 Changes new in version 0.15.4, 29 December, 2004
-================================================
+========================================================================
 
 - Refactored use of GtkGLExt in the Mozilla plug-in.
 
@@ -70,7 +90,7 @@ Changes new in version 0.15.4, 29 December, 2004
 
 
 Changes new in version 0.15.3, 25 December, 2004
-================================================
+========================================================================
 
 - GtkGLExt is now incorporated into the OpenVRML distribution.
 
@@ -85,7 +105,7 @@ Changes new in version 0.15.3, 25 December, 2004
 
 
 Changes new in version 0.15.2, 3 December, 2004
-===============================================
+========================================================================
 
 - Made building the tests optional.
 
@@ -93,14 +113,14 @@ Changes new in version 0.15.2, 3 December, 2004
 
 
 Changes new in version 0.15.1, 27 November, 2004
-================================================
+========================================================================
 
 - Fixed problems compiling with Microsoft Visual C++ 7.1.  This release
   really does compile with that compiler. Honest.
 
 
 Changes new in version 0.15.0, 26 November, 2004
-================================================
+========================================================================
 
 - lookat now uses SDL instead of GLUT and is licenced under the terms of
   the GPL.  (The OpenVRML libraries remain available under the terms of
@@ -123,7 +143,7 @@ Changes new in version 0.15.0, 26 November, 2004
 
 
 Changes new in version 0.14.3, 16 November, 2003
-================================================
+========================================================================
 
 - Fixed crash in destruction of img.
 
@@ -131,20 +151,20 @@ Changes new in version 0.14.3, 16 November, 2003
 
 
 Changes new in version 0.14.2, 19 October, 2003
-===============================================
+========================================================================
 
 - Fixed a few crash-inducing bugs.
 
 
 Changes new in version 0.14.1, 30 September, 2003
-=================================================
+========================================================================
 
 - Fixed error in floating point tolerance computation that would result
   in assertion failures.
 
 
 Changes new in version 0.14.0, 28 September, 2003
-=================================================
+========================================================================
 
 - Changed naming convention for parity with the convention established
   by the C++ standard library.
@@ -155,7 +175,7 @@ Changes new in version 0.14.0, 28 September, 2003
 
 
 Changes new in version 0.13.0, 20 December, 2002
-================================================
+========================================================================
 
 - Fixed shutdown order problems that were causing crashes-on-exit in
   applications.
@@ -173,7 +193,7 @@ Changes new in version 0.13.0, 20 December, 2002
 
 
 Changes new in version 0.12.5, 15 November, 2002
-================================================
+========================================================================
 
 - Updated Microsoft Visual C++ project files are now included.
 
@@ -181,13 +201,13 @@ Changes new in version 0.12.5, 15 November, 2002
 
 
 Changes new in version 0.12.4, 1 July, 2002
-===========================================
+========================================================================
 
 - Fixed bug in GLUT detection macro.
 
 
 Changes new in version 0.12.3, 30 June, 2002
-============================================
+========================================================================
 
 - Fixed problems building with gcc 2.95.3, icc 6.0 build 020312Z,
   and cl 12.00.8804.
@@ -196,7 +216,7 @@ Changes new in version 0.12.3, 30 June, 2002
 
 
 Changes new in version 0.12.2, 20 June, 2002
-============================================
+========================================================================
 
 - Minor build fixes.
 
@@ -204,13 +224,13 @@ Changes new in version 0.12.2, 20 June, 2002
 
 
 Changes new in version 0.12.1, 17 June, 2002
-============================================
+========================================================================
 
 - Minor build fixes.
 
 
 Changes new in version 0.12.0, 16 June, 2002
-============================================
+========================================================================
 
 - Nodes have been completely rearchitected so as to abstract their
   implementations from the core library. Many bugs fixed in the
@@ -237,7 +257,7 @@ Changes new in version 0.12.0, 16 June, 2002
 
 
 Changes new in version 0.11.2, 18 October, 2001
-===============================================
+========================================================================
 
 - Fixed some minor regressions since 0.10.1.
 
@@ -245,7 +265,7 @@ Changes new in version 0.11.2, 18 October, 2001
 
 
 Changes new in version 0.11.1, 5 August, 2001
-=============================================
+========================================================================
 
 - Fixes to the Visual C++ build.
 
@@ -253,7 +273,7 @@ Changes new in version 0.11.1, 5 August, 2001
 
 
 Changes new in version 0.11.0, 30 July, 2001
-============================================
+========================================================================
 
 - New memory manager for nodes, using a refcounted smart pointer instead of
   an intrusive reference count.
@@ -273,13 +293,13 @@ Changes new in version 0.11.0, 30 July, 2001
 
 
 Changes new in version 0.10.1, 31 January, 2001
-===============================================
+========================================================================
 
 - Minor fixes to build and RPM spec file.
 
 
 Changes new in version 0.10.0, 21 January, 2001
-===============================================
+========================================================================
 
 - Changed package directory structure.
 
@@ -287,7 +307,7 @@ Changes new in version 0.10.0, 21 January, 2001
 
 
 Changes new in version 0.9.1, 14 December, 2000 (not publicly released)
-=======================================================================
+========================================================================
 
 - Changed library names from libvrml97 and libvrml97gl to libopenvrml
   and libopenvrml-gl, respectively.
@@ -302,7 +322,7 @@ Changes new in version 0.9.1, 14 December, 2000 (not publicly released)
 
 
 Changes new in version 0.9.0, 7 December, 2000
-==============================================
+========================================================================
 
 - Name change: the library is now called OpenVRML.
 
@@ -338,7 +358,7 @@ Changes new in version 0.9.0, 7 December, 2000
 
 
 Changes new in version 0.8.2, January 2000
-==========================================
+========================================================================
 
 - S. K. Bose <bose@pavan.barc.ernet.in> has revived the Win32 build.
 
@@ -347,7 +367,7 @@ Changes new in version 0.8.2, January 2000
 
 
 Changes new in version 0.8.1, December 1999
-===========================================
+========================================================================
 
 - LibVRML97 is now hosted on the Open VRML Advancement League (OVAL) CVS server.
 
@@ -365,7 +385,7 @@ Changes new in version 0.8.1, December 1999
 
 
 Changes new in version 0.8.0 March X 1999 (Unreleased)
-======================================================
+========================================================================
 
 - Erik Andersen <andersee@debian.org> has revived the win32 build
   and fixed a bunch of portability problems. MSVC++5 project and
@@ -410,7 +430,7 @@ Changes new in version 0.8.0 March X 1999 (Unreleased)
 
 
 Changes new in version 0.7.9 Nov 4 1998
-=======================================
+========================================================================
 
 - Erik Andersen <andersen@inconnect.com> contributed some code for a 
   GLP'd GTK viewer. It doesn't display anything yet, though, so it is
@@ -458,7 +478,7 @@ Changes new in version 0.7.9 Nov 4 1998
 
 
 Changes new in version 0.7.8
-===============================
+========================================================================
 
 - Subclass from System to provide xmlookat with better interface (well, a
   message box and a Viewpoints menu, anyway).
@@ -482,7 +502,7 @@ Changes new in version 0.7.8
 
 
 Changes new in version 0.7.7
-===============================
+========================================================================
 
 - Remove use of STL stack and its associated portability problems.
 
@@ -494,13 +514,13 @@ Changes new in version 0.7.7
 
 
 Changes new in version 0.7.6
-===============================
+========================================================================
 
 - Read PNG paletted grayscale images properly.
 
 
 Changes new in version 0.7.5
-===============================
+========================================================================
 
 - Fixes to material/texture handling. I think all but PNG paletted grayscale
   images are working properly now.
@@ -512,7 +532,7 @@ Changes new in version 0.7.5
 
 
 Changes new in version 0.7.4
-===============================
+========================================================================
 
 - Some navigation improvements: arrow keys can be used to navigate
   forward, backward, left, right; Page Up/Down cycles through viewpoints,
@@ -538,7 +558,7 @@ Changes new in version 0.7.4
 
 
 Changes new in version 0.7.3
-===============================
+========================================================================
 
 - Added support for "vrmlscript:" (actually just runs javascript).
 
@@ -558,7 +578,7 @@ Changes new in version 0.7.3
 
 
 Changes new in version 0.7.2
-===============================
+========================================================================
 
 - Javascript browser object API completed, including createVrmlFromString, 
   createVrmlFromUrl, loadUrl, add/deleteRoute, and replaceWorld.
@@ -568,7 +588,7 @@ Changes new in version 0.7.2
 
 
 Changes new in version 0.7.1
-===============================
+========================================================================
 
 - Due to popular demand, '/' (slash) key toggles frames/second display.
 
@@ -576,7 +596,7 @@ Changes new in version 0.7.1
 
 
 Changes new in version 0.7
-===============================
+========================================================================
 
 - More javascript API.
 
@@ -595,7 +615,7 @@ Changes new in version 0.7
 
 
 Changes new in version 0.7-pre
-==============================
+========================================================================
 
 This is a pre-release of 0.7 to make sure there are no build problems
 with the new makefile. When I complete the javascript support, I'll 

@@ -1,5 +1,15 @@
 2006-08-12 Braden McDaniel  <braden@endoframe.com>
 
+	Updated version, NEWS for 0.16.0.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* mozilla-plugin/configure.ac
+
+2006-08-12 Braden McDaniel  <braden@endoframe.com>
+
 	* README: 512 MB just isn't enough anymore.  Upped prerequisite to
 	768 MB.
 
