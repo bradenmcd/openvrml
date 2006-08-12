@@ -1,3 +1,8 @@
+2006-08-12 Braden McDaniel  <braden@endoframe.com>
+
+	* README: 512 MB just isn't enough anymore.  Upped prerequisite to
+	768 MB.
+
 2006-08-11 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed test for antlr such that configure does not
