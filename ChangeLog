@@ -1,3 +1,7 @@
+2006-08-14 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.spec.in: Depend on libXmu/libXmu-devel.
+
 2006-08-12 Braden McDaniel  <braden@endoframe.com>
 
 	Updated version, NEWS for 0.16.0.
