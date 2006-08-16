@@ -279,11 +279,10 @@ namespace {
     do_render_child(openvrml::viewer & viewer, rendering_context context)
     {
         if (context.cull_flag != bounding_volume::inside) {
-            assert(dynamic_cast<const bounding_sphere *>
-                   (&this->bounding_volume()));
+            using boost::polymorphic_downcast;
             const bounding_sphere & bs =
-                static_cast<const bounding_sphere &>(
-                    this->bounding_volume());
+                *polymorphic_downcast<const bounding_sphere *>(
+                    &this->bounding_volume());
             bounding_sphere bv_copy(bs);
             bv_copy.transform(context.matrix());
             bounding_volume::intersection r =

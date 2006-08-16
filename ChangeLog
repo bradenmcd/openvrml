@@ -1,3 +1,10 @@
+2006-08-16 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced static_casts with boost::polymorphic_downcast.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+
 2006-08-14 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.spec.in: Depend on libXmu/libXmu-devel.
