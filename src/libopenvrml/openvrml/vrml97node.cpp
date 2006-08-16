@@ -2074,7 +2074,7 @@ namespace {
     event_side_effect(const mfnode & value, double time)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        grouping_node_base<Derived> & group = 
+        grouping_node_base<Derived> & group =
             dynamic_cast<grouping_node_base<Derived> &>(
                 this->node_event_listener::node());
         group.do_children_event_side_effect(value, time);
@@ -2220,11 +2220,10 @@ namespace {
     do_render_child(openvrml::viewer & viewer, rendering_context context)
     {
         if (context.cull_flag != bounding_volume::inside) {
-            assert(dynamic_cast<const bounding_sphere *>
-                   (&this->bounding_volume()));
+            using boost::polymorphic_downcast;
             const bounding_sphere & bs =
-                static_cast<const bounding_sphere &>(
-                    this->bounding_volume());
+                *polymorphic_downcast<const bounding_sphere *>(
+                    &this->bounding_volume());
             bounding_sphere bv_copy(bs);
             bv_copy.transform(context.matrix());
             bounding_volume::intersection r =
@@ -6692,12 +6691,11 @@ namespace {
      */
     void background_node::do_initialize(double) OPENVRML_NOTHROW
     {
-        assert(dynamic_cast<const background_metatype *>(
-                   &this->type().metatype()));
+        using boost::polymorphic_downcast;
         background_metatype & nodeClass =
             const_cast<background_metatype &>(
-                static_cast<const background_metatype &>(
-                    this->type().metatype()));
+                *polymorphic_downcast<const background_metatype *>(
+                    &this->type().metatype()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
@@ -13487,12 +13485,13 @@ namespace {
         using std::vector;
 
         if (context.draw_bounding_spheres) {
-            assert(dynamic_cast<const bounding_sphere *>(
-                       &this->bounding_volume()));
+            using boost::polymorphic_downcast;
             const bounding_sphere & bs =
-                static_cast<const bounding_sphere &>(this->bounding_volume());
-            viewer.draw_bounding_sphere(bs,
-                                        static_cast<bounding_volume::intersection>(4));
+                *polymorphic_downcast<const bounding_sphere *>(
+                    &this->bounding_volume());
+            viewer.draw_bounding_sphere(
+                bs,
+                static_cast<bounding_volume::intersection>(4));
         }
 
         openvrml::coordinate_node * const coordinateNode =
@@ -18201,10 +18200,10 @@ namespace {
         using std::vector;
 
         if (context.draw_bounding_spheres) {
-            assert(dynamic_cast<const bounding_sphere *>
-                   (&this->bounding_volume()));
+            using boost::polymorphic_downcast;
             const bounding_sphere & bs =
-                static_cast<const bounding_sphere &>(this->bounding_volume());
+                *polymorphic_downcast<const bounding_sphere *>(
+                    &this->bounding_volume());
             viewer.draw_bounding_sphere(bs, bounding_volume::intersection(4));
         }
 
@@ -24181,7 +24180,7 @@ namespace {
     *
     * @brief enabled exposedField implementation.
     */
-    
+
     /**
      * @brief Construct.
      *
@@ -25715,10 +25714,10 @@ namespace {
     do_render_child(openvrml::viewer & viewer, rendering_context context)
     {
         if (context.cull_flag != bounding_volume::inside) {
-            assert(dynamic_cast<const bounding_sphere *>
-                   (&this->bounding_volume()));
+            using boost::polymorphic_downcast;
             const bounding_sphere & bs =
-                static_cast<const bounding_sphere &>(this->bounding_volume());
+                *polymorphic_downcast<const bounding_sphere *>(
+                    &this->bounding_volume());
             bounding_sphere bv_copy(bs);
             bv_copy.transform(context.matrix());
             bounding_volume::intersection r =
@@ -26614,14 +26613,13 @@ namespace {
     viewpoint_node::do_initialize(double)
         OPENVRML_NOTHROW
     {
+        using boost::polymorphic_downcast;
         assert(this->scene());
         this->scene()->browser().add_viewpoint(*this);
-        assert(dynamic_cast<const viewpoint_metatype *>(
-                   &this->type().metatype()));
         viewpoint_metatype & nodeClass =
             const_cast<viewpoint_metatype &>(
-                static_cast<const viewpoint_metatype &>(
-                    this->type().metatype()));
+                *polymorphic_downcast<const viewpoint_metatype *>(
+                    &this->type().metatype()));
         if (!nodeClass.has_first()) { nodeClass.set_first(*this); }
     }
 
@@ -27201,7 +27199,7 @@ namespace {
     {}
 
 
-    class OPENVRML_LOCAL cad_layer_node : 
+    class OPENVRML_LOCAL cad_layer_node :
         public grouping_node_base<cad_layer_node> {
 
         friend class cad_layer_metatype;
@@ -27229,9 +27227,9 @@ namespace {
         mfnode current_children_;
 
     public:
-        cad_layer_node(const node_type & type, 
+        cad_layer_node(const node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~cad_layer_node() throw ();   
+        virtual ~cad_layer_node() throw ();
 
         virtual bool modified() const;
 
@@ -27311,7 +27309,7 @@ namespace {
             node_interface(node_interface::field_id,
                             field_value::sfvec3f_id,
                             "bboxSize")
-        };    
+        };
         typedef node_type_impl<cad_layer_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
@@ -27465,7 +27463,7 @@ namespace {
     {
         try {
             const std::vector<bool> & visible = this->visible_.mfbool::value();
-            const mfnode::value_type & all_children = 
+            const mfnode::value_type & all_children =
                 this->children_.mfnode::value();
 
             mfnode::value_type children(visible.size());
@@ -27574,7 +27572,7 @@ namespace {
     {
         if (this->node::modified()) { return true; }
 
-        mfnode::value_type::const_iterator iter = 
+        mfnode::value_type::const_iterator iter =
             current_children_.value().begin();
         for (; iter != current_children_.value().end(); ++iter)
         {
@@ -27597,7 +27595,7 @@ namespace {
     cad_layer_node::
     do_render_child(openvrml::viewer & viewer, const rendering_context context)
     {
-        mfnode::value_type::const_iterator iter = 
+        mfnode::value_type::const_iterator iter =
             current_children_.value().begin();
         for (; iter != current_children_.value().end(); ++iter)
         {
@@ -27626,7 +27624,7 @@ namespace {
     {
         this->bsphere = bounding_sphere();
 
-        mfnode::value_type::const_iterator iter = 
+        mfnode::value_type::const_iterator iter =
             current_children_.value().begin();
         for (; iter != current_children_.value().end(); ++iter)
         {
