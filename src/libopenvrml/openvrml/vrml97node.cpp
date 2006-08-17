@@ -7448,25 +7448,27 @@ namespace {
                         const openvrml::mfstring & url,
                         openvrml::image & img)
         OPENVRML_THROW1(std::bad_alloc)
-    try {
-        using openvrml::image;
+	{
+        try {
+            using openvrml::image;
 
-        if (url.value().empty()) {
-            img = image();
-        } else {
-            using std::auto_ptr;
-            using openvrml::resource_istream;
+            if (url.value().empty()) {
+                img = image();
+            } else {
+                using std::auto_ptr;
+                using openvrml::resource_istream;
 
-            auto_ptr<resource_istream> in(
-                node.scene()->get_resource(url.value()));
-            auto_ptr<stream_listener> listener(
-                new image_stream_listener(in->url(),
-                                          img,
-                                          node,
-                                          node_mutex));
-            read_stream(in, listener);
-        }
-    } catch (const openvrml::no_alternative_url & ex) {}
+                auto_ptr<resource_istream> in(
+                    node.scene()->get_resource(url.value()));
+                auto_ptr<stream_listener> listener(
+                    new image_stream_listener(in->url(),
+                                              img,
+                                              node,
+                                              node_mutex));
+                read_stream(in, listener);
+            }
+        } catch (const openvrml::no_alternative_url &) {}
+    }
 
     /**
      * @brief Called lazily to update texture data.
