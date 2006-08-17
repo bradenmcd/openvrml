@@ -1,3 +1,11 @@
+2006-08-17 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(update_texture(background_node &, boost::recursive_mutex &, const
+	openvrml::mfstring &, openvrml::image &)): Removed
+	function-try-block; this still seems to confuse Microsoft cl
+	14.00.50727.42.
+
 2006-08-16 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced static_casts with boost::polymorphic_downcast.
