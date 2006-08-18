@@ -3667,12 +3667,48 @@ namespace {
                           str.begin());
     }
 
-    uri::uri() OPENVRML_THROW1(std::bad_alloc)
+    uri::uri() OPENVRML_THROW1(std::bad_alloc):
+        scheme_begin(this->str_.begin()),
+        scheme_end(this->str_.begin()),
+        scheme_specific_part_begin(this->str_.begin()),
+        scheme_specific_part_end(this->str_.begin()),
+        authority_begin(this->str_.begin()),
+        authority_end(this->str_.begin()),
+        userinfo_begin(this->str_.begin()),
+        userinfo_end(this->str_.begin()),
+        host_begin(this->str_.begin()),
+        host_end(this->str_.begin()),
+        port_begin(this->str_.begin()),
+        port_end(this->str_.begin()),
+        path_begin(this->str_.begin()),
+        path_end(this->str_.begin()),
+        query_begin(this->str_.begin()),
+        query_end(this->str_.begin()),
+        fragment_begin(this->str_.begin()),
+        fragment_end(this->str_.begin())
     {}
 
     uri::uri(const std::string & str)
         OPENVRML_THROW2(openvrml::invalid_url, std::bad_alloc):
-        str_(str)
+        str_(str),
+        scheme_begin(this->str_.begin()),
+        scheme_end(this->str_.begin()),
+        scheme_specific_part_begin(this->str_.begin()),
+        scheme_specific_part_end(this->str_.begin()),
+        authority_begin(this->str_.begin()),
+        authority_end(this->str_.begin()),
+        userinfo_begin(this->str_.begin()),
+        userinfo_end(this->str_.begin()),
+        host_begin(this->str_.begin()),
+        host_end(this->str_.begin()),
+        port_begin(this->str_.begin()),
+        port_end(this->str_.begin()),
+        path_begin(this->str_.begin()),
+        path_end(this->str_.begin()),
+        query_begin(this->str_.begin()),
+        query_end(this->str_.begin()),
+        fragment_begin(this->str_.begin()),
+        fragment_end(this->str_.begin())
     {
         using std::string;
         using namespace boost::spirit;
