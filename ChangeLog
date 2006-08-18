@@ -1,3 +1,12 @@
+2006-08-18 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::uri()): Initialize begin and end iterators for the various
+	URI parts to the beginning of the string.
+	(uri::uri(const std::string &)): Initialize begin and end
+	iterators for the various URI parts to the beginning of the
+	string.
+
 2006-08-17 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
