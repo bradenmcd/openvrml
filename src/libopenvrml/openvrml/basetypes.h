@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 2001  S. K. Bose
-// Copyright 2003, 2004  Braden McDaniel
+// Copyright 2003, 2004, 2005, 2006  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,14 @@ namespace openvrml {
     typedef int32_t int32;
 #   endif
 
+
+    class color;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, color & c);
+
     class OPENVRML_API color {
+        friend std::istream & operator>>(std::istream & in, color & c);
+
         float rgb[3];
 
     public:
@@ -107,7 +114,13 @@ namespace openvrml {
     }
 
 
+    class color_rgba;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, color_rgba & c);
+
     class OPENVRML_API color_rgba {
+        friend std::istream & operator>>(std::istream & in, color_rgba & c);
+
         float rgba[4];
 
     public:
@@ -188,7 +201,13 @@ namespace openvrml {
     }
 
 
+    class vec2f;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec2f & v);
+
     class OPENVRML_API vec2f {
+        friend std::istream & operator>>(std::istream & in, vec2f & v);
+
         float vec[2];
 
     public:
@@ -272,7 +291,13 @@ namespace openvrml {
     }
 
 
+    class vec2d;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec2d & v);
+
     class OPENVRML_API vec2d {
+        friend std::istream & operator>>(std::istream & in, vec2d & v);
+
         double vec[2];
 
     public:
@@ -357,8 +382,13 @@ namespace openvrml {
 
 
     class mat4f;
+    class vec3f;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec3f & v);
 
     class OPENVRML_API vec3f {
+        friend std::istream & operator>>(std::istream & in, vec3f & v);
+
         float vec[3];
 
     public:
@@ -469,7 +499,13 @@ namespace openvrml {
     }
 
 
+    class vec3d;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec3d & v);
+
     class OPENVRML_API vec3d {
+        friend std::istream & operator>>(std::istream & in, vec3d & v);
+
         double vec[3];
 
     public:
@@ -622,6 +658,7 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const rotation & lhs, const rotation & rhs)
         OPENVRML_NOTHROW;
+    OPENVRML_API std::istream & operator>>(std::istream & in, rotation & rot);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const rotation & r);
 
@@ -729,11 +766,16 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API const mat4f operator*(float scalar, const mat4f & mat)
         OPENVRML_NOTHROW;
+    OPENVRML_API std::istream & operator>>(std::istream & in, mat4f & mat);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const mat4f & mat);
 
 
+    OPENVRML_API std::istream & operator>>(std::istream & in, quatf & q);
+
     class OPENVRML_API quatf {
+        friend std::istream & operator>>(std::istream & in, quatf & q);
+
         float quat[4];
 
     public:
@@ -989,6 +1031,7 @@ namespace openvrml {
         this->pixel(y * this->x_ + x, value);
     }
 
+    OPENVRML_API std::istream & operator>>(std::istream & in, image & img);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const image & img);
 

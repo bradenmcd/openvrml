@@ -5,7 +5,10 @@ AM_CXXFLAGS = @PTHREAD_CFLAGS@
 AM_LDFLAGS = @OPENVRML_RPATH@
 
 TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
-TESTS = \
+TESTS = color \
+        rotation \
+        mat4f \
+        image \
         browser \
         parse_anchor \
         node_metatype_id \
@@ -17,6 +20,26 @@ noinst_HEADERS = test_browser.h
 
 libtest_openvrml_la_SOURCES = test_browser.cpp
 libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
+
+color_SOURCES = color.cpp
+color_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
+
+rotation_SOURCES = rotation.cpp
+rotation_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
+
+mat4f_SOURCES = mat4f.cpp
+mat4f_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
+
+image_SOURCES = image.cpp
+image_LDADD = \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        -lboost_unit_test_framework
 
 browser_SOURCES = browser.cpp
 browser_LDADD = libtest-openvrml.la -lboost_unit_test_framework -lboost_filesystem

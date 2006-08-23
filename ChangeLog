@@ -1,3 +1,79 @@
+2006-08-23 Braden McDaniel  <braden@endoframe.com>
+
+	Overloaded stream extraction operators for the fundamental types.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(vrml97_space_parser): Added a Spirit character parser to treat
+	comma as a whitespace character.
+	(vrml97_space_p): Instance of vrml97_space_parser.
+	(intensity_parser): Added a Spirit parser (used with
+	boost::spirit::functor_parser) to parse floating point values
+	between 0.0 and 1.0 (e.g., color component values).
+	(intensity_p): Instance of intensity_parser.
+	(openvrml::operator>>(std::istream &, color &)): Added stream
+	extraction operator for openvrml::color.
+	(openvrml::operator>>(std::istream &, color_rgba &)): Added stream
+	extraction operator for openvrml::color_rgba.
+	(openvrml::operator>>(std::istream &, vec2f &)): Added stream
+	extraction operator for openvrml::vec2f.
+	(openvrml::operator>>(std::istream &, vec2d &)): Added stream
+	extraction operator for openvrml::vec2d.
+	(openvrml::operator>>(std::istream &, vec3f &)): Added stream
+	extraction operator for openvrml::vec3f.
+	(openvrml::operator>>(std::istream &, vec3d &)): Added stream
+	extraction operator for openvrml::vec3d.
+	(is_normalized): Function object to validate the axis component of
+	a rotation.
+	(openvrml::operator>>(std::istream &, rotation &)): Added stream
+	extraction operator for openvrml::rotation.
+	(openvrml::operator>>(std::istream &, mat4f &)): Added stream
+	extraction operator for openvrml::mat4f.
+	(openvrml::operator>>(std::istream &, quatf &)): Added stream
+	extraction operator for openvrml::quatf.
+	(set_pixel): Semantic action to set a pixel when parsing an image.
+	(resize_image): Semantic action to resize an image given pixel
+	dimensions and the number of components.
+	(int32_parser): A Spirit functor parser to parse VRML97-style
+	integers.
+	(int32_p): An instance of int32_parser.
+	(openvrml::operator>>(std::istream &, image &)): Added stream
+	extraction operator for openvrml::image.
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::operator>>(std::istream &, color &)): Added function
+	declaration.
+	(openvrml::color): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, color_rgba &)): Added
+	function declaration.
+	(openvrml::color_rgba): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, vec2f &)): Added function
+	declaration.
+	(openvrml::vec2f): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, vec2d &)): Added function
+	declaration.
+	(openvrml::vec2d): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, vec3f &)): Added function
+	declaration.
+	(openvrml::vec3f): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, vec3d &)): Added function
+	declaration.
+	(openvrml::vec3d): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, rotation &)): Added function
+	declaration.
+	(openvrml::operator>>(std::istream &, mat4f &)): Added function
+	declaration.
+	(openvrml::operator>>(std::istream &, quatf &)): Added function
+	declaration.
+	(openvrml::quatf): Made operator>> a friend.
+	(openvrml::operator>>(std::istream &, image &)): Added function
+	declaration.
+	* tests/Makefile.am: Added color, image, mat4f, and rotation
+	tests.
+	* tests/color.cpp: Added file; a test suite for openvrml::color.
+	* tests/image.cpp: Added file; a test suite for openvrml::image.
+	* tests/mat4f.cpp: Added file; a test suite for openvrml::mat4f.
+	* tests/rotation.cpp: Added file; a test suite for
+	openvrml::rotation.
+
 2006-08-18 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
