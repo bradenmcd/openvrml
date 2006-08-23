@@ -1,5 +1,11 @@
 2006-08-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/event.cpp
+	(openvrml::event_emitter::event_emitter(const field_value &)):
+	Initialize last_time_ to 0.0.
+
+2006-08-23 Braden McDaniel  <braden@endoframe.com>
+
 	Overloaded stream extraction operators for the fundamental types.
 
 	* src/libopenvrml/openvrml/basetypes.cpp

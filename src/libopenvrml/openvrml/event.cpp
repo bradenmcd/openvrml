@@ -434,7 +434,8 @@ const std::string openvrml::node_event_listener::eventin_id() const
  */
 openvrml::event_emitter::event_emitter(const field_value & value)
     OPENVRML_NOTHROW:
-    value_(value)
+    value_(value),
+    last_time_(0.0)
 {}
 
 /**
