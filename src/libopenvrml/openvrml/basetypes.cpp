@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 2001  S. K. Bose
-// Copyright 2003, 2004  Braden McDaniel
+// Copyright 2003, 2004, 2005, 2006  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,10 @@
 
 # include <numeric>
 # include <ostream>
+# include <boost/spirit.hpp>
+# include <boost/spirit/actor.hpp>
+# include <boost/spirit/dynamic.hpp>
+# include <boost/spirit/phoenix.hpp>
 # include <private.h>
 # include "basetypes.h"
 
@@ -107,7 +111,7 @@ namespace {
  *
  * @brief A color.
  *
- * VRML colors are represented as three single precision floating point
+ * VRML colors are represented as three single-precision floating point
  * components&mdash;red, green, and blue&mdash;ranging from 0.0 to 1.0.
  */
 
@@ -277,13 +281,127 @@ bool openvrml::operator!=(const color & lhs, const color & rhs)
     return !(lhs == rhs);
 }
 
+namespace {
+    struct OPENVRML_LOCAL vrml97_space_parser :
+        boost::spirit::char_parser<vrml97_space_parser> {
+
+        typedef vrml97_space_parser self_t;
+
+        template <typename CharT>
+        bool test(const CharT & c) const
+        {
+            return isspace(c) || c == ',';
+        }
+    };
+
+    const vrml97_space_parser vrml97_space_p = vrml97_space_parser();
+
+    typedef std::istream::char_type char_t;
+    typedef boost::spirit::multi_pass<std::istreambuf_iterator<char_t> >
+        iterator_t;
+
+    typedef boost::spirit::skip_parser_iteration_policy<vrml97_space_parser>
+        iter_policy_t;
+    typedef boost::spirit::scanner_policies<iter_policy_t> scanner_policies_t;
+    typedef boost::spirit::scanner<iterator_t, scanner_policies_t> scanner_t;
+
+    typedef boost::spirit::rule<scanner_t> rule_t;
+
+
+    struct OPENVRML_LOCAL intensity_parser {
+
+        typedef double result_t;
+
+        struct valid {
+            explicit valid(result_t & value):
+                value_(value)
+            {}
+
+            bool operator()() const
+            {
+                return this->value_ >= 0.0 && this->value_ <= 1.0;
+            }
+
+        private:
+            result_t & value_;
+        };
+
+        template <typename ScannerT>
+        std::ptrdiff_t operator()(const ScannerT & scan,
+                                  result_t & result) const
+        {
+            using boost::spirit::assign_a;
+            using boost::spirit::eps_p;
+            using boost::spirit::real_p;
+            using boost::spirit::match_result;
+            typedef typename match_result<ScannerT, result_t>::type match_t;
+            typedef typename boost::spirit::rule<ScannerT> rule_t;
+
+            rule_t rule
+                =   real_p[assign_a(result)] >> eps_p(valid(result))
+                ;
+            match_t match = rule.parse(scan);
+            return match.length();
+        }
+    };
+
+    const boost::spirit::functor_parser<intensity_parser> intensity_p;
+}
+
+/**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * If any of the color components are outside the the range [0.0, 1.0], the
+ * @c failbit will be set on @p in and @p c will be left in an arbitrary
+ * state.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] c        a @c color.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, color & c)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t rule
+        =   intensity_p[assign_a(c.rgb[0])]
+            >> intensity_p[assign_a(c.rgb[1])]
+            >> intensity_p[assign_a(c.rgb[2])]
+        ;
+
+    match<> m = rule.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+        return in;
+    }
+
+    return in;
+}
+
 /**
  * @relatesalso openvrml::color
  *
  * @brief Stream output.
  *
  * @param[in,out] out   output stream.
- * @param[in] c         a color.
+ * @param[in] c         a @c color.
  *
  * @return @p out.
  */
@@ -297,7 +415,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
  *
  * @brief A color with alpha channel.
  *
- * VRML @c color_rgba%s are represented as four single precision floating
+ * VRML @c color_rgba%s are represented as four single-precision floating
  * point components&mdash;red, green, blue, and alpha&mdash;ranging from 0.0
  * to 1.0. For the alpha channel, 1.0 is opaque.
  */
@@ -495,6 +613,53 @@ bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs)
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * If any of the color components are outside the the range [0.0, 1.0], the
+ * @c failbit will be set on @p in and @p c will be left in an arbitrary
+ * state.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] c        a @c color_rgba.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t rule
+        =   intensity_p[assign_a(c.rgba[0])]
+            >> intensity_p[assign_a(c.rgba[1])]
+            >> intensity_p[assign_a(c.rgba[2])]
+            >> intensity_p[assign_a(c.rgba[3])];
+
+    match<> m = rule.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+        return in;
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::color_rgba
  *
  * @brief Stream output.
@@ -513,7 +678,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
 /**
  * @class openvrml::vec2f
  *
- * @brief Two-component single precision vector.
+ * @brief Two-component single-precision vector.
  */
 
 /**
@@ -854,6 +1019,46 @@ bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs)
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] v        a @c vec2f.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t r
+        =   real_p[assign_a(v.vec[0])] >> real_p[assign_a(v.vec[1])]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::vec2f
  *
  * @brief Stream output.
@@ -872,7 +1077,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 /**
  * @class openvrml::vec2d
  *
- * @brief Two-component single precision vector.
+ * @brief Two-component double-precision vector.
  */
 
 /**
@@ -1213,6 +1418,46 @@ bool openvrml::operator!=(const vec2d & lhs, const vec2d & rhs)
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] v        a @c vec2d.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, vec2d & v)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t r
+        =   real_p[assign_a(v.vec[0])] >> real_p[assign_a(v.vec[1])]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::vec2d
  *
  * @brief Stream output.
@@ -1231,7 +1476,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2d & v)
 /**
  * @class openvrml::vec3f
  *
- * @brief Three-component single precision vector.
+ * @brief Three-component single-precision vector.
  */
 
 /**
@@ -1702,6 +1947,48 @@ bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs)
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] v        a @c vec3f.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t r
+        =   real_p[assign_a(v.vec[0])]
+            >> real_p[assign_a(v.vec[1])]
+            >> real_p[assign_a(v.vec[2])]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::vec3f
  *
  * @brief Stream output.
@@ -1720,7 +2007,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
 /**
  * @class openvrml::vec3d
  *
- * @brief Three-component single precision vector.
+ * @brief Three-component double-precision vector.
  */
 
 /**
@@ -2191,6 +2478,48 @@ bool openvrml::operator!=(const vec3d & lhs, const vec3d & rhs)
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] v        a @c vec3d.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, vec3d & v)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t r
+        =   real_p[assign_a(v.vec[0])]
+            >> real_p[assign_a(v.vec[1])]
+            >> real_p[assign_a(v.vec[2])]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::vec3d
  *
  * @brief Stream output.
@@ -2211,7 +2540,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
  *
  * @brief A rotation.
  *
- * VRML rotations are represented with four single precision floating point
+ * VRML rotations are represented with four single-precision floating point
  * components. The first three are an axis of rotation, and the last is
  * rotation in radians.
  */
@@ -2602,6 +2931,82 @@ bool openvrml::operator!=(const rotation & lhs, const rotation & rhs)
     OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
+}
+
+namespace {
+    struct OPENVRML_LOCAL is_normalized {
+        is_normalized(float & x, float & y, float & z):
+            x_(x),
+            y_(y),
+            z_(z)
+        {}
+
+        bool operator()() const
+        {
+            using openvrml::vec3f;
+            using openvrml_::fequal;
+            return fequal(vec3f(this->x_, this->y_, this->z_).length(), 1.0f);
+        }
+
+    private:
+        float & x_, & y_, & z_;
+    };
+}
+
+/**
+ * @relatesalso openvrml::rotation
+ *
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * If the axis components of the rotation do not represent a normalized
+ * vector, the @c failbit will be set on @p in and @p rot will not be
+ * modified.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] rot      a @c rotation.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::eps_p;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    float x, y, z, angle;
+    rule_t rule
+        =   real_p[assign_a(x)] >> real_p[assign_a(y)] >> real_p[assign_a(z)]
+            >> eps_p(is_normalized(x, y, z))
+            >> real_p[assign_a(angle)]
+        ;
+
+    match<> m = rule.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+        return in;
+    }
+
+    rot.x(x);
+    rot.y(y);
+    rot.z(z);
+    rot.angle(angle);
+
+    return in;
 }
 
 /**
@@ -3421,16 +3826,92 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
 /**
  * @relatesalso openvrml::mat4f
  *
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * Optionally, brackets may be used in the input to group the rows; i.e., the
+ * following syntaxes are accepted:
+ *
+ * - [&nbsp;<var>f<sub>11</sub></var>,&nbsp;... <var>f<sub>14</sub></var>&nbsp;],&nbsp;... [&nbsp;<var>f<sub>41</sub></var>,&nbsp;... <var>f<sub>44</sub></var>&nbsp;]
+ * - <var>f<sub>11</sub></var>, <var>f<sub>12</sub></var>,&nbsp;... <var>f<sub>44</sub></var>
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] m        a matrix.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::ch_p;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+    using boost::spirit::increment_a;
+    using boost::spirit::decrement_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    size_t row1_bracket_count = 0, row2_bracket_count = 0, row3_bracket_count = 0,
+        row4_bracket_count = 0;
+
+    rule_t r
+        =   !ch_p('[')[increment_a(row1_bracket_count)]
+                >> real_p[assign_a(m[0][0])]
+                >> real_p[assign_a(m[0][1])]
+                >> real_p[assign_a(m[0][2])]
+                >> real_p[assign_a(m[0][3])]
+            >> !ch_p(']')[decrement_a(row1_bracket_count)]
+            >> !ch_p('[')[increment_a(row2_bracket_count)]
+                >> real_p[assign_a(m[1][0])]
+                >> real_p[assign_a(m[1][1])]
+                >> real_p[assign_a(m[1][2])]
+                >> real_p[assign_a(m[1][3])]
+            >> !ch_p(']')[decrement_a(row2_bracket_count)]
+            >> !ch_p('[')[increment_a(row3_bracket_count)]
+                >> real_p[assign_a(m[2][0])]
+                >> real_p[assign_a(m[2][1])]
+                >> real_p[assign_a(m[2][2])]
+                >> real_p[assign_a(m[2][3])]
+            >> !ch_p(']')[decrement_a(row3_bracket_count)]
+            >> !ch_p('[')[increment_a(row4_bracket_count)]
+                >> real_p[assign_a(m[3][0])]
+                >> real_p[assign_a(m[3][1])]
+                >> real_p[assign_a(m[3][2])]
+                >> real_p[assign_a(m[3][3])]
+            >> !ch_p(']')[decrement_a(row4_bracket_count)]
+        ;
+
+    boost::spirit::match<> match = r.parse(scan);
+
+    if (!match || row1_bracket_count != 0 || row2_bracket_count != 0
+        || row3_bracket_count != 0 || row4_bracket_count != 0) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
+ * @relatesalso openvrml::mat4f
+ *
  * @brief Stream output.
  *
  * @param[in,out] out   an output stream.
- * @param[in] mat   a matrix.
+ * @param[in] mat       a matrix.
  *
  * @return @p out.
  */
 std::ostream & openvrml::operator<<(std::ostream & out, const mat4f & mat)
 {
-    out << '[';
     for (size_t i = 0; i < 4; i++) {
         out << '[';
         for (size_t j = 0; j < 4; j++) {
@@ -3440,7 +3921,6 @@ std::ostream & openvrml::operator<<(std::ostream & out, const mat4f & mat)
         out << ']';
         if (i != 3) { out << ", "; }
     }
-    out << ']';
     return out;
 }
 
@@ -3938,6 +4418,49 @@ const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
 }
 
 /**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] q        a @c quatf.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, quatf & q)
+{
+    using std::istreambuf_iterator;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::real_p;
+    using boost::spirit::assign_a;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    rule_t r
+        =   real_p[assign_a(q.quat[0])]
+            >> real_p[assign_a(q.quat[1])]
+            >> real_p[assign_a(q.quat[2])]
+            >> real_p[assign_a(q.quat[3])]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
+}
+
+/**
  * @relatesalso openvrml::quatf
  *
  * @brief Stream output.
@@ -4314,6 +4837,126 @@ bool openvrml::operator!=(const image & lhs, const image & rhs)
     OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
+}
+
+namespace {
+
+    struct OPENVRML_LOCAL set_pixel {
+        set_pixel(openvrml::image & img, size_t & index):
+            img_(&img),
+            index_(&index)
+        {}
+
+        template <typename NumT>
+        void operator()(NumT val) const
+        {
+            this->img_->pixel(*this->index_, val);
+        }
+
+    private:
+        openvrml::image * const img_;
+        size_t * const index_;
+    };
+
+    struct OPENVRML_LOCAL resize_image {
+        resize_image(openvrml::image & img,
+                     size_t & x, size_t & y, size_t & comp):
+            img_(&img),
+            x_(&x),
+            y_(&y),
+            comp_(&comp)
+        {}
+
+        template <typename IteratorT>
+        void operator()(IteratorT, IteratorT) const
+        {
+            openvrml::image temp(*this->x_, *this->y_, *this->comp_);
+            this->img_->swap(temp);
+        }
+
+    private:
+        openvrml::image * const img_;
+        size_t * const x_, * const y_, * const comp_;
+    };
+
+
+    struct OPENVRML_LOCAL int32_parser {
+        typedef openvrml::int32 result_t;
+
+        template <typename ScannerT>
+        std::ptrdiff_t operator()(const ScannerT & scan,
+                                  result_t & result) const
+        {
+            using namespace boost::spirit;
+            using namespace phoenix;
+            typedef typename match_result<ScannerT, result_t>::type match_t;
+            match_t match
+                =   (   lexeme_d[
+                            ch_p('0') >> chset_p("Xx")
+                            >> hex_p[assign_a(result)]
+                        ]
+                    |   int_p[assign_a(result)]
+                    ).parse(scan);
+            return match.length();
+        }
+    };
+
+    const boost::spirit::functor_parser<int32_parser> int32_p = int32_parser();
+}
+
+/**
+ * @brief Stream input.
+ *
+ * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
+ * input are treated as whitespace.
+ *
+ * @param[in,out] in    input stream.
+ * @param[out] img      an @c image.
+ *
+ * @return @p in.
+ */
+std::istream & openvrml::operator>>(std::istream & in, image & img)
+{
+    using std::istreambuf_iterator;
+    using boost::ref;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::match;
+    using boost::spirit::eps_p;
+    using boost::spirit::int_p;
+    using boost::spirit::repeat_p;
+    using boost::spirit::assign_a;
+    using boost::spirit::increment_a;
+    using phoenix::arg1;
+    using phoenix::var;
+
+    iter_policy_t iter_policy(vrml97_space_p);
+    scanner_policies_t policies(iter_policy);
+    iterator_t
+        first(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        last(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    scanner_t scan(first, last, policies);
+
+    size_t x = 0, y = 0, comp = 0, pixels = 0, index = 0;
+    rule_t r
+        =   int32_p[var(pixels) = arg1][assign_a(x)]
+            >> int32_p[var(pixels) *= arg1][assign_a(y)]
+            >> int32_p[assign_a(comp)]
+            // Just resize the image once we have the x, y, and comp values to
+            // avoid unnecessary reallocation.
+            >> eps_p[resize_image(img, x, y, comp)]
+            >> repeat_p(ref(pixels))[
+                int32_p[set_pixel(img, index)][increment_a(index)]
+            ]
+        ;
+
+    match<> m = r.parse(scan);
+
+    if (!m) {
+        in.setstate(std::ios_base::failbit);
+    }
+
+    return in;
 }
 
 /**
