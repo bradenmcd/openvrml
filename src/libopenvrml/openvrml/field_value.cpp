@@ -3080,14 +3080,6 @@ std::auto_ptr<openvrml::field_value> openvrml::sfvec2d::do_clone() const
 openvrml::sfvec2d & openvrml::sfvec2d::do_assign(const field_value & value)
     OPENVRML_THROW1(std::bad_cast)
 {
-    //allow to convert from a float to a double
-    const sfvec2f * float_val = dynamic_cast<const sfvec2f *>(&value);
-    if (float_val != NULL)
-    {
-        this->value(vec2d(float_val->value()[0], float_val->value()[1]));
-        return *this;
-    }
-
     return (*this = dynamic_cast<const sfvec2d &>(value));
 }
 
