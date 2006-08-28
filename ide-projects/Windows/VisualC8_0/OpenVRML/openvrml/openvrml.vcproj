@@ -208,6 +208,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -580,6 +581,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.h"
 				>
 			</File>
@@ -677,7 +682,21 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
+				RelativePath=".\openvrml.rc"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="ANTLR Grammar Files"
+			Filter="g"
+			ParseFiles="false"
+			>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\Vrml97Parser.g"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\X3DVrmlParser.g"
 				>
 			</File>
 		</Filter>

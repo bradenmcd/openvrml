@@ -1,3 +1,15 @@
+2006-08-28 Braden McDaniel  <braden@endoframe.com>
+
+	Visual C++ 8.0 project file improvements.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/resource.h
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/resource.h
+
 2006-08-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/field_value.cpp
