@@ -339,6 +339,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml-gl\openvrml\gl\viewer.h"
 				>
 			</File>
@@ -347,6 +351,10 @@
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath=".\openvrml-gl.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
