@@ -1,5 +1,24 @@
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
+	Updated test programs to use make_* functions to create
+	fundamental types.
+
+	* tests/color.cpp
+	(stream_extraction_without_commas()): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	(stream_extraction_with_commas()): Use openvrml::make_color
+	instead of openvrml::color constructor.
+
+	* tests/mat4f.cpp
+	(stream_insertion()): Use openvrml::make_mat4f instead of
+	openvrml::mat4f constructor.
+	(stream_extraction_numbers_only()): Use openvrml::make_mat4f
+	instead of openvrml::mat4f constructor.
+	(stream_extraction_numbers_with_commas()): Use
+	openvrml::make_mat4f instead of openvrml::mat4f constructor.
+
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(trackball(float, float, float, float): Added missing "using
 	openvrml::make_vec3f".
