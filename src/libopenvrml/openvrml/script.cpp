@@ -4779,9 +4779,9 @@ JSBool SFColor::initObject(JSContext * const cx,
         using std::auto_ptr;
 
         auto_ptr<openvrml::sfcolor>
-            sfcolor(new openvrml::sfcolor(openvrml::color(rgb[0],
-                                                          rgb[1],
-                                                          rgb[2])));
+            sfcolor(new openvrml::sfcolor(openvrml::make_color(rgb[0],
+                                                               rgb[1],
+                                                               rgb[2])));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfcolor.get()));
         sfcolor.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -5625,18 +5625,16 @@ JSBool SFRotation::initObject(JSContext * const cx,
                               const jsdouble (&rot)[4])
     OPENVRML_NOTHROW
 {
-    const openvrml::vec3f axis(rot[0], rot[1], rot[2]);
+    const openvrml::vec3f axis = openvrml::make_vec3f(rot[0], rot[1], rot[2]);
     if (axis != axis.normalize()) {
         JS_ReportError(cx, "axis component of rotation is not normalized");
     }
 
     try {
         using std::auto_ptr;
-        auto_ptr<openvrml::sfrotation>
-            sfrotation(new openvrml::sfrotation(openvrml::rotation(rot[0],
-                                                                   rot[1],
-                                                                   rot[2],
-                                                                   rot[3])));
+        auto_ptr<openvrml::sfrotation> sfrotation(
+            new openvrml::sfrotation(
+                openvrml::make_rotation(rot[0], rot[1], rot[2], rot[3])));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfrotation.get()));
         sfrotation.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -5716,7 +5714,7 @@ JSBool SFRotation::setProperty(JSContext * const cx,
             return JS_FALSE;
         }
 
-        thisRot.value(openvrml::rotation(axis, angle));
+        thisRot.value(make_rotation(axis, angle));
         sfdata.changed = true;
     }
     return JS_TRUE;
@@ -5879,7 +5877,7 @@ JSBool SFRotation::multVec(JSContext * const cx,
             &robj_sfdata.field_value());
 
     resultVec.value(argVec.value()
-                    * openvrml::mat4f::rotation(thisRot.value()));
+                    * openvrml::make_rotation_mat4f(thisRot.value()));
 
     *rval = OBJECT_TO_JSVAL(robj);
     return JS_TRUE;
@@ -6119,7 +6117,8 @@ JSBool sfvec2_jsobject<SFVec2>::initObject(JSContext * const cx,
         typedef typename SFVec2::field_type sfvec2_t;
         typedef typename SFVec2::value_type vec2_t;
 
-        auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2_t(vec[0], vec[1])));
+        const vec2_t vec2 = { { vec[0], vec[1] } };
+        auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2.get()));
         sfvec2.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -6738,9 +6737,8 @@ JSBool sfvec3_jsobject<SFVec3>::initObject(JSContext * const cx,
     try {
         using std::auto_ptr;
 
-        auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3_t(vec[0],
-                                                      vec[1],
-                                                      vec[2])));
+        const vec3_t vec3 = { { vec[0], vec[1], vec[2] } };
+        auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3));
         auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3.get()));
         sfvec3.release();
         if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
@@ -9697,10 +9695,11 @@ JSBool VrmlMatrix::initObject(JSContext * const cx,
 
     try {
         std::auto_ptr<openvrml::mat4f> mat_ptr(
-            new openvrml::mat4f(mat[0], mat[1], mat[2], mat[3],
-                                mat[4], mat[5], mat[6], mat[7],
-                                mat[8], mat[9], mat[10], mat[11],
-                                mat[12], mat[13], mat[14], mat[15]));
+            new openvrml::mat4f(
+                openvrml::make_mat4f(mat[0], mat[1], mat[2], mat[3],
+                                     mat[4], mat[5], mat[6], mat[7],
+                                     mat[8], mat[9], mat[10], mat[11],
+                                     mat[12], mat[13], mat[14], mat[15])));
         if (!JS_SetPrivate(cx, obj, mat_ptr.get())) { return JS_FALSE; }
         mat_ptr.release();
     } catch (std::bad_alloc &) {
@@ -9756,7 +9755,9 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
     using boost::polymorphic_downcast;
     using openvrml::mat4f;
     using openvrml::rotation;
+    using openvrml::make_rotation;
     using openvrml::vec3f;
+    using openvrml::make_vec3f;
     using openvrml::sfrotation;
     using openvrml::sfvec3f;
 
@@ -9768,11 +9769,11 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
         return JS_FALSE;
     }
 
-    vec3f translation(0.0, 0.0, 0.0);
-    rotation rot(0.0, 0.0, 1.0, 0.0);
-    vec3f scale(1.0, 1.0, 1.0);
-    rotation scale_orientation(0.0, 0.0, 1.0, 0.0);
-    vec3f center(0.0, 0.0, 0.0);
+    vec3f translation = make_vec3f(0.0, 0.0, 0.0);
+    rotation rot = make_rotation(0.0, 0.0, 1.0, 0.0);
+    vec3f scale = make_vec3f(1.0, 1.0, 1.0);
+    rotation scale_orientation = make_rotation(0.0, 0.0, 1.0, 0.0);
+    vec3f center = make_vec3f(0.0, 0.0, 0.0);
 
     if (translation_obj) {
         if (!JS_InstanceOf(cx, translation_obj, &js_::SFVec3f::jsclass, argv)) {
@@ -9836,11 +9837,11 @@ JSBool VrmlMatrix::setTransform(JSContext * const cx,
     mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
     assert(thisMat);
 
-    *thisMat = mat4f::transformation(translation,
-                                     rot,
-                                     scale,
-                                     scale_orientation,
-                                     center);
+    *thisMat = make_transformation_mat4f(translation,
+                                         rot,
+                                         scale,
+                                         scale_orientation,
+                                         center);
     *rval = JSVAL_VOID;
     return JS_TRUE;
 }

@@ -2679,7 +2679,7 @@ namespace {
         children_(*this),
         geo_coords_(*this),
         geo_system_(default_geo_system),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -2846,7 +2846,7 @@ namespace {
         children_emitter_(*this, this->children_),
         geo_system_(default_geo_system),
         range_(10),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -3355,7 +3355,7 @@ namespace {
         bind_time_emitter_(*this, this->bind_time_),
         is_bound_emitter_(*this, this->is_bound_),
         geo_system_(default_geo_system),
-        position_(vec3d(0,0,100000)),
+        position_(make_vec3d(0.0, 0.0, 100000.0)),
         speed_factor_(1)
     {}
 

@@ -764,7 +764,7 @@ namespace {
         node(type, scope),
         abstract_node<self_t>(type, scope),
         alpha_(*this, 1),
-        color_(*this, color(1,1,1)),
+        color_(*this, make_color(1.0, 1.0, 1.0)),
         function_(*this),
         mode_(*this),
         source_(*this),

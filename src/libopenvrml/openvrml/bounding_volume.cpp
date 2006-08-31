@@ -559,7 +559,7 @@ void openvrml::bounding_sphere::do_extend(const bounding_sphere & b)
     float cz = z0 + zn * tmp;
 
     this->radius_ = cr;
-    this->center_ = vec3f(cx, cy, cz);
+    this->center_ = make_vec3f(cx, cy, cz);
 }
 
 /**
@@ -680,7 +680,7 @@ void openvrml::bounding_sphere::radius(const float r)
 void openvrml::bounding_sphere::do_maximize()
 {
     this->radius_ = std::numeric_limits<float>::max();
-    this->center_ = vec3f(0.0, 0.0, 0.0);
+    this->center_ = make_vec3f(0.0, 0.0, 0.0);
 }
 
 /**
@@ -710,7 +710,7 @@ void openvrml::bounding_sphere::do_ortho_transform(const mat4f & t)
 
     // uniform scale means we can pick any of the scale elements? wait:
     // can we really do this?
-    this->radius_ *= vec3f(t[0][0], t[1][0], t[2][0]).length();
+    this->radius_ *= make_vec3f(t[0][0], t[1][0], t[2][0]).length();
 }
 
 /**
@@ -724,9 +724,9 @@ void openvrml::bounding_sphere::do_transform(const mat4f & t)
     if (this->radius_ == -1) { return; }
     this->center_ *= t;
 
-    vec3f x_scale_v(t[0][0], t[1][0], t[2][0]);
-    vec3f y_scale_v(t[0][1], t[1][1], t[2][1]);
-    vec3f z_scale_v(t[0][2], t[1][2], t[2][2]);
+    vec3f x_scale_v = make_vec3f(t[0][0], t[1][0], t[2][0]);
+    vec3f y_scale_v = make_vec3f(t[0][1], t[1][1], t[2][1]);
+    vec3f z_scale_v = make_vec3f(t[0][2], t[1][2], t[2][2]);
 
     float scale_x = x_scale_v.length();
     float scale_y = y_scale_v.length();

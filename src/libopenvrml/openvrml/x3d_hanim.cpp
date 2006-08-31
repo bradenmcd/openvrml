@@ -2002,7 +2002,7 @@ namespace {
         joints_(*this),
         name_(*this),
         rotation_(*this),
-        scale_(*this, vec3f(1,1,1)),
+        scale_(*this, make_vec3f(1.0, 1.0, 1.0)),
         scale_orientation_(*this),
         segments_(*this),
         sites_(*this),
@@ -2013,7 +2013,7 @@ namespace {
         translation_(*this),
         version_(*this),
         viewpoints_(*this),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -2202,14 +2202,14 @@ namespace {
         llimit_(*this),
         name_(*this),
         rotation_(*this),
-        scale_(*this, vec3f(1,1,1)),
+        scale_(*this, make_vec3f(1.0, 1.0, 1.0)),
         scale_orientation_(*this),
         skin_coord_index_(*this),
         skin_coord_weight_(*this),
         stiffness_(*this, vector<float>(3,0.0f)),
         translation_(*this),
         ulimit_(*this),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -2356,7 +2356,7 @@ namespace {
         mass_(*this),
         moments_of_inertia_(*this, vector<float>(9,0.0f)),
         name_(*this),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -2500,10 +2500,10 @@ namespace {
         children_(*this),
         name_(*this),
         rotation_(*this),
-        scale_(*this, vec3f(1,1,1)),
+        scale_(*this, make_vec3f(1.0, 1.0, 1.0)),
         scale_orientation_(*this),
         translation_(*this),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**

@@ -1,5 +1,524 @@
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
+	Made openvrml::color, openvrml::color_rgba, openvrml::vec2f,
+	openvrml::vec2d, openvrml::vec3f, openvrml::vec3d,
+	openvrml::rotation, openvrml::mat4f, and openvrml::quatf
+	POD-structs.  This allows safe usage of these types in C APIs.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g (rotationValue): Use
+	construction functions instead of constructors.
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::color::color()): Removed constructor; use
+	openvrml::make_color() instead.
+	(openvrml::color::color(const float (&)[3])): Removed constructor;
+	use openvrml::make_color(const float (&)[3]) instead.
+	(openvrml::color::color(float, float, float)): Removed
+	constructor; use openvrml::make_color(float, float, float)
+	instead.
+	(openvrml::make_color()): Added function.
+	(openvrml::make_color(const float (&)[3])): Added function.
+	(openvrml::make_color(float, float, float)): Added function.
+	(openvrml::color_rgba::color_rgba()): Removed constructor; use
+	openvrml::make_color_rgba() instead.
+	(openvrml::color_rgba::color_rgba(const float (&)[4])): Removed
+	constructor; use openvrml::make_color_rgba(const float (&)[4])
+	instead.
+	(openvrml::color_rgba::color_rgba(float, float, float, float)):
+	Removed constructor; use openvrml::make_color_rgba(float, float,
+	float, float) instead.
+	(openvrml::make_color_rgba()): Added function.
+	(openvrml::make_color_rgba(const float (&)[4])): Added function.
+	(openvrml::make_color_rgba(float, float, float, float)): Added
+	function.
+	(openvrml::vec2f::vec2f()): Removed constructor; use
+	openvrml::make_vec2f() instead.
+	(openvrml::vec2f::vec2f(const float (&)[2])): Removed constructor;
+	use openvrml::make_vec2f(const float (&)[2]) instead.
+	(openvrml::vec2f::vec2f(float, float)): Removed constructor; use
+	openvrml::make_vec2f(float, float) instead.
+	(openvrml::vec2f::operator-()): Use make_vec2f instead of
+	constructor.
+	(openvrml::make_vec2f()): Added function.
+	(openvrml::make_vec2f(const float (&)[2])): Added function.
+	(openvrml::make_vec2f(float, float)): Added function.
+	(openvrml::vec2d::vec2d()): Removed constructor; use
+	openvrml::make_vec2d() instead.
+	(openvrml::vec2d::vec2d(const double (&)[2])): Removed
+	constructor; use openvrml::make_vec2d(const double (&)[2])
+	instead.
+	(openvrml::vec2d::vec2d(double, double)): Removed constructor; use
+	openvrml::make_vec2d(double, double) instead.
+	(openvrml::vec2d::operator-()): Use make_vec2d instead of
+	constructor.
+	(openvrml::make_vec2d()): Added function.
+	(openvrml::make_vec2d(const double (&)[2])): Added function.
+	(openvrml::make_vec2d(double, double)): Added function.
+	(openvrml::vec3f::vec3f()): Removed constructor; use
+	openvrml::make_vec3f() instead.
+	(openvrml::vec3f::vec3f(const float (&)[3])): Removed constructor;
+	use openvrml::make_vec3f(const float (&)[3]) instead.
+	(openvrml::vec3f::vec3f(float, float, float)): Removed
+	constructor; use openvrml::make_vec3f(float, float, float)
+	instead.
+	(openvrml::vec3f::operator-()): Use make_vec3f instead of
+	constructor.
+	(openvrml::make_vec3f()): Added function.
+	(openvrml::make_vec3f(const float (&)[3])): Added function.
+	(openvrml::make_vec3f(float, float, float)): Added function.
+	(openvrml::vec3d::vec3d()): Removed constructor; use
+	openvrml::make_vec3d() instead.
+	(openvrml::vec3d::vec3d(const double (&)[3])): Removed
+	constructor; use openvrml::make_vec3d(const double (&)[3])
+	instead.
+	(openvrml::vec3d::vec3d(double, double, double)): Removed
+	constructor; use openvrml::make_vec3d(double, double, double)
+	instead.
+	(openvrml::vec3d::operator-()): Use make_vec3d instead of
+	constructor.
+	(openvrml::make_vec3d()): Added function.
+	(openvrml::make_vec3d(const double (&)[3])): Added function.
+	(openvrml::make_vec3d(double, double, double)): Added function.
+	(openvrml::rotation::rotation()): Removed constructor; use
+	openvrml::make_rotation() instead.
+	(openvrml::rotation::rotation(const float (&)[4])): Removed
+	constructor; use openvrml::make_rotation(const float (&)[4])
+	instead.
+	(openvrml::rotation::rotation(float, float, float, float)):
+	Removed constructor; use openvrml::make_rotation(float, float,
+	float, float) instead.
+	(openvrml::rotation::rotation(const vec3f &, float)): Removed
+	constructor; use openvrml::make_rotation(const vec3f &, float)
+	instead.
+	(openvrml::rotation::rotation(const vec3f &, const vec3f &)):
+	Removed constructor; use openvrml::make_rotation(const vec3f &,
+	const vec3f &) instead.
+	(openvrml::rotation::rotation(const quatf &)): Removed
+	constructor; use openvrml::make_rotation(const quatf &) instead.
+	(openvrml::rotation::operator*=(const rotation &)): Use
+	make_rotation, make_quatf instead of constructors.
+	(openvrml::rotation::slerp(const rotation &, float)): Use
+	make_rotation, make_quatf instead of constructors.
+	(openvrml::make_rotation()): Added function.
+	(openvrml::make_rotation(const float (&)[4])): Added function.
+	(openvrml::make_rotation(float, float, float, float)): Added
+	function.
+	(openvrml::make_rotation(const vec3f &, float)): Added function.
+	(openvrml::make_rotation(const vec3f &, const vec3f &)): Added
+	function.
+	(openvrml::rotation::rotation(const quatf &)): Removed
+	constructor; use openvrml::make_rotation(const quatf &) instead.
+	(is_normalized::operator()() const): Use make_vec3f instead of
+	constructor.
+	(openvrml::mat4f::rotation(const openvrml::rotation &)): Removed
+	function; use openvrml::make_rotation_mat4f(const rotation &)
+	instead.
+	(openvrml::mat4f::rotation(const quatf &)): Removed function; use
+	openvrml::make_rotation_mat4f(const quatf &) instead.
+	(openvrml::mat4f::scale(float)): Removed function; use
+	openvrml::make_scale_mat4f(float) instead.
+	(openvrml::mat4f::scale(const vec3f &)): Removed function; use
+	openvrml::make_scale_mat4f(const vec3f &) instead.
+	(openvrml::mat4f::translation(const vec3f &)): Removed function;
+	use openvrml::make_translation_mat4f(const vec3f &) instead.
+	(openvrml::mat4f::transformation(const vec3f &, const
+	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
+	const vec3f &)): Removed function; use
+	openvrml::make_transformation_mat4f(const vec3f &, const
+	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
+	const vec3f &) instead.
+	(openvrml::mat4f::mat4f()): Removed constructor; use
+	openvrml::make_mat4f() instead.
+	(openvrml::mat4f::mat4f(float, float, float, float, float, float,
+	float, float, float, float, float, float, float, float, float,
+	float)): Removed constructor; use openvrml::make_mat4f(float,
+	float, float, float, float, float, float, float, float, float,
+	float, float, float, float, float, float) instead.
+	(openvrml::mat4f::mat4f(const float[])): Removed constructor; use
+	openvrml::make_mat4f(const float[]) instead.
+	(openvrml::mat4f::mat4f(const float (&)[4][4])): Removed
+	constructor; use openvrml::make_mat4f(const float (&)[4][4])
+	instead.
+	(openvrml::mat4f::transformation(vec3f &, openvrml::rotation &,
+	vec3f &)): Use make_vec3f, make_quatf, and make_rotation instead
+	of constructors.
+	(openvrml::mat4f::transpose() const): Use aggregate initializer
+	instead of constructor.
+	(openvrml::make_rotation_mat4f(const openvrml::rotation &)): Added
+	function.
+	(openvrml::make_rotation_mat4f(const quatf &)): Added function.
+	(openvrml::make_scale_mat4f(float)): Added function.
+	(openvrml::make_scale_mat4f(const vec3f &)): Added function.
+	(openvrml::make_translation_mat4f(const vec3f &)): Added function.
+	(openvrml::make_transformation_mat4f(const vec3f &, const
+	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
+	const vec3f &)): Added function.
+	(openvrml::make_mat4f()): Added function.
+	(openvrml::make_mat4f(float, float, float, float, float, float,
+	float, float, float, float, float, float, float, float, float,
+	float)): Added function.
+	(openvrml::make_mat4f(const float[])): Added function.
+	(openvrml::make_mat4f(const float (&)[4][4])): Added function.
+	(openvrml::quatf::quatf()): Removed constructor; use
+	openvrml::make_quatf() instead.
+	(openvrml::quatf::quatf(float, float, float, float)): Removed
+	constructor; use openvrml::make_quatf(float, float, float, float)
+	instead.
+	(openvrml::quatf::quatf(const float (&)[4])): Removed constructor;
+	use openvrml::make_quatf(const float (&)[4]) instead.
+	(openvrml::quatf::quatf(const mat4f &)): Removed constructor; use
+	openvrml::make_quatf(const mat4f &) instead.
+	(openvrml::quatf::quatf(const rotation &)): Removed constructor;
+	use openvrml::make_quatf(const rotation &) instead.
+	(openvrml::quatf::operator*=(const quatf &)): Use make_quatf
+	instead of constructor.
+	(openvrml::quatf::conjugate() const): Use aggregate initializer
+	instead of constructor.
+	(openvrml::quatf::normalize() const): Use aggregate initializer
+	instead of constructor.
+	(openvrml::make_quatf()): Added function.
+	(openvrml::make_quatf(float, float, float, float)): Added
+	function.
+	(openvrml::make_quatf(const float (&)[4])): Added function.
+	(openvrml::make_quatf(const mat4f &)): Added function.
+	(openvrml::make_quatf(const rotation &)): Added function.
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::color): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_color()): Added function declaration.
+	(openvrml::make_color(const float (&)[3])): Added function
+	declaration.
+	(openvrml::make_color(float, float, float)): Added function
+	declaration.
+	(openvrml::color_rgba): Changed to struct; removed unnecessary
+	friend declaration for operator>>; removed constructor
+	declarations.
+	(openvrml::make_color_rgba()): Added function declaration.
+	(openvrml::make_color_rgba(const float (&)[4])): Added function
+	declaration.
+	(openvrml::make_color_rgba(float, float, float, float)): Added
+	function declaration.
+	(openvrml::vec2f): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_vec2f()): Added function declaration.
+	(openvrml::make_vec2f(const float (&)[2])): Added function
+	declaration.
+	(openvrml::make_vec2f(float, float)): Added function declaration.
+	(openvrml::vec2d): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_vec2d()): Added function declaration.
+	(openvrml::make_vec2d(const double (&)[2])): Added function
+	declaration.
+	(openvrml::make_vec2d(double, double)): Added function
+	declaration.
+	(openvrml::vec3f): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_vec3f()): Added function declaration.
+	(openvrml::make_vec3f(const float (&)[3])): Added function
+	declaration.
+	(openvrml::make_vec3f(float, float, float)): Added function
+	declaration.
+	(openvrml::vec3d): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_vec3d()): Added function declaration.
+	(openvrml::make_vec3d(const double (&)[3])): Added function
+	declaration.
+	(openvrml::make_vec3d(double, double, double)): Added function
+	declaration.
+	(openvrml::rotation): Changed to struct; removed constructor
+	declarations.
+	(openvrml::make_rotation()): Added function declaration.
+	(openvrml::make_rotation(const float (&)[4])): Added function
+	declaration.
+	(openvrml::make_rotation(float, float, float, float)): Added
+	function declaration.
+	(openvrml::make_rotation(const vec3f &, float)): Added function
+	declaration.
+	(openvrml::make_rotation(const vec3f &, const vec3f &)): Added
+	function declaration.
+	(openvrml::make_rotation(const quatf &)): Added function
+	declaration.
+	(openvrml::rotation::axis()) const): Use make_vec3f instead of
+	constructor.
+	(openvrml::mat4f): Changed to struct; changed static creation
+	functions to be nonmembers; removed constructor declarations.
+	(openvrml::make_mat4f()): Added function declaration.
+	(openvrml::make_mat4f(float, float, float, float, float, float,
+	float, float, float, float, float, float, float, float, float,
+	float)): Added function declaration.
+	(openvrml::make_mat4f(const float[])): Added function declaration.
+	(openvrml::make_mat4f(const float (&)[4][4])): Added function
+	declaration.
+	(openvrml::make_rotation_mat4f(const rotation &)): Added function
+	declaration.
+	(openvrml::make_rotation_mat4f(const quatf &)): Added function
+	declaration.
+	(openvrml::make_scale_mat4f(float)): Added function declaration.
+	(openvrml::make_scale_mat4f(const vec3f &)): Added function
+	declaration.
+	(openvrml::make_translation_mat4f(const vec3f &)): Added function
+	declaration.
+	(openvrml::make_transformation_mat4f(const vec3f &, const rotation
+	&, const vec3f &, const rotation &, const vec3f &)): Added
+	function declaration.
+	(openvrml::quatf): Changed to struct; removed unnecessary friend
+	declaration for operator>>; removed constructor declarations.
+	(openvrml::make_quatf()): Added function declaration.
+	(openvrml::make_quatf(float, float, float, float)): Added function
+	declaration.
+	(openvrml::make_quatf(const float (&)[4])): Added function
+	declaration.
+	(openvrml::make_quatf(const rotation &)): Added function
+	declaration.
+	(openvrml::make_quatf(const mat4f &)): Added function declaration.
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	(openvrml::bounding_sphere::do_extend(const bounding_sphere &)):
+	Use make_vec3f instead of constructor.
+	(openvrml::bounding_sphere::do_maximize()): Use make_vec3f instead
+	of constructor.
+	(openvrml::bounding_sphere::do_ortho_transform(const mat4f &)):
+	Use make_vec3f instead of constructor.
+	(openvrml::bounding_sphere::do_transform(const mat4f &)): Use
+	make_vec3f instead of constructor.
+	* src/libopenvrml/openvrml/browser.cpp
+	(default_viewpoint::transformation() const): Use make_vec3f,
+	make_rotation instead of constructors.
+	(openvrml::browser::render()): Use make_color, make_vec3f instead
+	of constructors.
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::SFColor::initObject(JSContext *, JSObject *, const
+	jsdouble (&)[3])): Use openvrml::make_color instead of
+	openvrml::color constructor.
+	(js_::SFRotation::initObject(JSContext *, JSObject *, const
+	jsdouble (&)[4])): Use openvrml::make_vec3f and
+	openvrml::make_rotation instead of openvrml::vec3f and
+	openvrml::rotation constructors.
+	(js_::SFRotation::setProperty(JSContext *, JSObject *, jsval,
+	jsval *)): Use openvrml::make_rotation instead of
+	openvrml::rotation constructor.
+	(js_::SFRotation::multVec(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Use openvrml::make_rotation_mat4f instead of
+	openvrml::mat4f::rotation.
+	(js_::sfvec2_jsobject<SFVec2>::initObject(JSContext *, JSObject *,
+	const jsdouble (&)[2])): Use aggregate initializer instead of
+	constructor.
+	(js_::sfvec3_jsobject<SFVec3>::initObject(JSContext *, JSObject *,
+	const jsdouble (&)[3])): Use aggregate initializer instead of
+	constructor.
+	(js_::VrmlMatrix::initObject(JSContext *, JSObject *, const
+	jsdouble (&)[16])): Use openvrml::make_mat4f instead of
+	openvrml::mat4f constructor.
+	(js_::VrmlMatrix::setTransform(JSContext *, JSObject *, uintN,
+	jsval *, jsval *)): Use openvrml::make_rotation and
+	openvrml::make_vec3f instead of openvrml::rotation and
+	openvrml::vec3f constructors; use
+	openvrml::make_transformation_mat4f instead of
+	openvrml::mat4f::transformation.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(abstract_light_node<Derived>::abstract_light_node(const
+	openvrml::node_type &, const boost::shared_ptr<openvrml::scope> &
+	scope)): Use openvrml::make_color instead of openvrml::color
+	constructor.
+	(grouping_node_base<Derived>::grouping_node_base(const
+	openvrml::node_type &, const boost::shared_ptr<openvrml::scope>
+	&)): Use openvrml::make_vec3f instead of openvrml::vec3f
+	constructor.
+	(set_unlit_material(openvrml::viewer &)): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	(appearance_node::do_render_appearance(openvrml::viewer &,
+	rendering_context)): Use openvrml::make_color and
+	openvrml::make_vec2f instead of openvrml::color and
+	openvrml::vec2f constructors.
+	(background_node::background_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_color instead of openvrml::color constructor.
+	(billboard_node::billboard_to_matrix(const billboard_node &, const
+	openvrml::mat4f &)): Use openvrml::make_vec3f instead of
+	openvrml::vec3f constructor; use openvrml::make_rotation_mat4f
+	instead of openvrml::mat4f::rotation.
+	(billboard_node::billboard_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(cylinder_sensor_node::do_activate(double, bool, bool, const
+	double (&)[3])): Use openvrml::make_vec3f and
+	openvrml::make_rotation instead of openvrml::vec3f and
+	openvrml::rotation constructors.
+	(directional_light_node::directional_light_node(const
+	openvrml::node_type &, const boost::shared_ptr<openvrml::scope>
+	&)): Use openvrml::make_vec3f instead of openvrml::vec3f
+	constructor.
+	(extrusionDefaultCrossSection_): Use openvrml::make_vec2f instead
+	of openvrml::vec2f constructor.
+	(extrusionDefaultScale_): Use openvrml::make_vec2f instead of
+	openvrml::vec2f constructor.
+	(extrusionDefaultOrientation_): Use openvrml::make_rotation
+	instead of openvrml::rotation constructor.
+	(extrusionDefaultSpine_): Use openvrml::make_vec3f instead of
+	openvrml::vec3f constructor.
+	(fog_node::fog_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	(material_node::material_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	(orientation_interpolator_node::set_fraction_listener::do_process_event(const
+	sffloat &, double)): Use openvrml::make_rotation instead of
+	openvrml::rotation constructor.
+	(plane_sensor_node::plane_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec2f and openvrml::make_vec3f instead of
+	openvrml::vec2f and openvrml::vec3f constructors.
+	(plane_sensor_node::do_activate(double, bool, bool, const
+	double (&)[3])): Use openvrml::make_vec3f instead of
+	openvrml::vec3f constructor.
+	(point_light_node::point_light_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(proximity_sensor_node::proximity_sensor_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(proximity_sensor_node::do_render_child(openvrml::viewer &,
+	rendering_context)): Use openvrml::make_vec3f instead of
+	openvrml::vec3f constructor.
+	(shape_node::shape_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(shape_node::do_render_child(openvrml::viewer &,
+	rendering_context)): Use openvrml::make_color instead of
+	openvrml::color constructor.
+	(sound_node::sound_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(sphere_sensor_node::sphere_sensor_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Use openvrml::make_rotation instead of openvrml::rotation
+	constructor.
+	(sphere_sensor_node::do_activate(double, bool, bool, const
+	double (&p)[3])): Use openvrml::make_vec3f and
+	openvrml::make_rotation instead of openvrml::vec3f and
+	openvrml::rotation constructors.
+	(spot_light_node::spot_light_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope>&)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(moveTo_(FT_Vector *, void *)): Use openvrml::make_vec2f instead
+	of openvrml::vec2f constructor.
+	(lineTo_(FT_Vector *, void *)): Use openvrml::make_vec2f instead
+	of openvrml::vec2f constructor.
+	(conic_(FT_Vector *, FT_Vector *, void *)): Use
+	openvrml::make_vec2f instead of openvrml::vec2f constructor.
+	(cubic_(FT_Vector *, FT_Vector *, FT_Vector *, void *)): Use
+	openvrml::make_vec2f instead of openvrml::vec2f constructor.
+	(text_node::update_geometry()): Use openvrml::make_vec2f and
+	openvrml::make_vec3f instead of openvrml::vec2f and
+	openvrml::vec3f constructors.
+	(texture_transform_node::texture_transform_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec2f
+	instead of openvrml::vec2f constructor.
+	(transform_node::scale_exposedfield::scale_exposedfield(transform_node&)):
+	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(transform_node::update_transform()): Use
+	openvrml::make_transformation_mat4f instead of
+	openvrml::mat4f::transformation.
+	(viewpoint_node::position_exposedfield::position_exposedfield(viewpoint_node&)):
+	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(viewpoint_node::update_final_transformation() const): Use
+	openvrml::make_vec3f and openvrml::make_rotation instead of
+	openvrml::vec3f and openvrml::rotation constructors; use
+	openvrml::make_transformation_mat4f instead of
+	openvrml::mat4f::transformation.
+	(visibility_sensor_node::visibility_sensor_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	(espdu_transform_node::espdu_transform_node(const
+	openvrml::node_type &, const boost::shared_ptr<openvrml::scope&)):
+	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(receiver_pdu_node::receiver_pdu_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(signal_pdu_node::signal_pdu_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(transmitter_pdu_node::transmitter_pdu_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	(rectangle2d_node::rectangle2d_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec2f instead of openvrml::vec2f constructor.
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	(geo_location_node::geo_location_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(geo_lod_node::geo_lod_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(geo_viewpoint_node::geo_viewpoint_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Use openvrml::make_vec3d instead of openvrml::vec3d constructor.
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	(static_group_node::static_group_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	(hanim_humanoid_node::hanim_humanoid_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(hanim_joint_node::hanim_joint_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(hanim_segment_node::hanim_segment_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	(hanim_site_node::hanim_site_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	(nurbs_set_node::nurbs_set_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Use
+	openvrml::make_vec3f instead of openvrml::vec3f constructor.
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	(fill_properties_node::fill_properties_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	(multi_texture_node::multi_texture_properties_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_color
+	instead of openvrml::color constructor.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(trackball(float, float, float, float)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+	(openvrml::gl::viewer::insert_elevation_grid(unsigned int, const
+	std::vector<float> &, int32, int32, float, float, const
+	std::vector<color> &, const std::vector<vec3f> &, const
+	std::vector<vec2f> &)): Use openvrml::make_vec3f instead of
+	openvrml::vec3f constructor.
+	(computeExtrusion_(const std::vector<openvrml::rotation> &, const
+	std::vector<openvrml::vec2f> &, const
+	std::vector<openvrml::vec2f>&, const
+	std::vector<openvrml::vec3f>&, std::vector<openvrml::vec3f> &,
+	std::vector<openvrml::vec2f> &)): Use openvrml::make_rotation and
+	openvrml::make_vec3f instead of openvrml::rotation and
+	openvrml::vec3f constructors; use openvrml::make_rotation_mat4f
+	instead of openvrml::mat4f::rotation.
+	(openvrml::gl::viewer::rotate(const openvrml::rotation &)): Use
+	openvrml::make_rotation_mat4f instead of
+	openvrml::mat4f::rotation; use openvrml::make_translation_mat4f
+	instead of openvrml::mat4f::translation.
+	(openvrml::gl::viewer::step(float, float, float)): Use
+	openvrml::make_translation_mat4f instead of
+	openvrml::mat4f::translation.
+	(openvrml::gl::viewer::zoom(float)): Use openvrml::make_vec3f
+	instead of openvrml::vec3f constructor.
+
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Explicitly qualify
 	definitions from the global scope rather than enclose them in
 	namespace blocks, consistent with the rest of OpenVRML.

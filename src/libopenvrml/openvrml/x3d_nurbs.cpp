@@ -3986,7 +3986,7 @@ namespace {
         remove_geometry_listener_(*this),
         geometry_(*this),
         tessellation_scale_(*this, 1),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**

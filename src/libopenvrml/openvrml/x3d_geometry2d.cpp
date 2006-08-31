@@ -1734,7 +1734,7 @@ namespace {
         abstract_node<self_t>(type, scope),
         geometry_node(type, scope),
         child_node(type, scope),
-        size_(vec2f(2,2))
+        size_(make_vec2f(2.0, 2.0))
     {}
 
     /**

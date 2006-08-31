@@ -324,7 +324,7 @@ namespace {
         node(type, scope),
         abstract_node<self_t>(type, scope),
         filled_(*this, true),
-        hatch_color_(*this, color(1,1,1)),
+        hatch_color_(*this, make_color(1.0, 1.0, 1.0)),
         hatched_(*this, true),
         hatch_style_(*this, 1)
     {}

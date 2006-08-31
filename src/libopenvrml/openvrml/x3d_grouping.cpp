@@ -411,7 +411,7 @@ namespace {
         child_node(type, scope),
         abstract_node<self_t>(type, scope),
         grouping_node(type, scope),
-        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f)),
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f)),
         viewerObject(0)
     {}
 
