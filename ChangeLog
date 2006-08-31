@@ -1,5 +1,17 @@
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(trackball(float, float, float, float): Added missing "using
+	openvrml::make_vec3f".
+	(computeExtrusion_(const std::vector<openvrml::rotation> &, const
+	std::vector<openvrml::vec2f> &, const
+	std::vector<openvrml::vec2f>&, const
+	std::vector<openvrml::vec3f>&, std::vector<openvrml::vec3f> &,
+	std::vector<openvrml::vec2f> &)): Added missing "using
+	openvrml::make_vec3f".
+
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
 	Made openvrml::color, openvrml::color_rgba, openvrml::vec2f,
 	openvrml::vec2d, openvrml::vec3f, openvrml::vec3d,
 	openvrml::rotation, openvrml::mat4f, and openvrml::quatf

@@ -855,6 +855,7 @@ namespace {
     {
         using openvrml::rotation;
         using openvrml::vec3f;
+        using openvrml::make_vec3f;
 
         //
         // This size should really be based on the distance from the center of
@@ -2161,6 +2162,7 @@ namespace {
         using openvrml::rotation;
         using openvrml::vec2f;
         using openvrml::vec3f;
+        using openvrml::make_vec3f;
         using openvrml::mat4f;
 
         size_t i, j, ci;
