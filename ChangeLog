@@ -1,5 +1,10 @@
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp (main(int, char **)): Allocate a console
+	and direct stdout and stderr to it on Windows.
+
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
 	Updated test programs to use make_* functions to create
 	fundamental types.
 
