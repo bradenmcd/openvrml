@@ -342,15 +342,14 @@ extern "C" void OPENVRML_GL_CALLBACK_ tess_error(const GLenum error_code)
 }
 
 
-namespace openvrml {
-
 /**
+ * @namespace openvrml::gl
+ *
  * @brief OpenGL geometry renderer.
  */
-namespace gl {
 
 /**
- * @class viewer
+ * @class openvrml::gl::viewer
  *
  * @brief Abstract class for display of VRML models using OpenGL/Mesa.
  *
@@ -359,139 +358,139 @@ namespace gl {
  */
 
 /**
- * @var viewer::max_lights
+ * @var openvrml::gl::viewer::max_lights
  *
  * @brief Maximum number of lights in a scene.
  */
 
 /**
- * @enum viewer::light_type
+ * @enum openvrml::gl::viewer::light_type
  *
  * @brief Light type.
  */
 
 /**
- * @var viewer::light_type viewer::light_unused
+ * @var openvrml::gl::viewer::light_type openvrml::gl::viewer::light_unused
  *
  * @brief Unused.
  */
 
 /**
- * @var viewer::light_type viewer::light_directional
+ * @var openvrml::gl::viewer::light_type openvrml::gl::viewer::light_directional
  *
  * @brief Directional.
  */
 
 /**
- * @var viewer::light_type viewer::light_positional
+ * @var openvrml::gl::viewer::light_type openvrml::gl::viewer::light_positional
  *
  * @brief Positional.
  */
 
 /**
- * @enum viewer::event_type
+ * @enum openvrml::gl::viewer::event_type
  *
  * @brief Event type.
  */
 
 /**
- * @var viewer::event_type viewer::event_key_down
+ * @var viewer::event_type openvrml::gl::viewer::event_key_down
  *
  * @brief Key down.
  */
 
 /**
- * @var viewer::event_type viewer::event_mouse_move
+ * @var openvrml::gl::viewer::event_type openvrml::gl::viewer::event_mouse_move
  *
  * @brief Mouse movement.
  */
 
 /**
- * @var viewer::event_type viewer::event_mouse_click
+ * @var openvrml::gl::viewer::event_type openvrml::gl::viewer::event_mouse_click
  *
  * @brief Mouse button click.
  */
 
 /**
- * @var viewer::event_type viewer::event_mouse_drag
+ * @var openvrml::gl::viewer::event_type openvrml::gl::viewer::event_mouse_drag
  *
  * @brief Mouse drag.
  */
 
 /**
- * @var viewer::event_type viewer::event_mouse_release
+ * @var openvrml::gl::viewer::event_type openvrml::gl::viewer::event_mouse_release
  *
  * @brief Mouse button release.
  */
 
 /**
- * @struct viewer::event_info
+ * @struct openvrml::gl::viewer::event_info
  *
  * @brief Input event.
  */
 
 /**
- * @var viewer::event_type viewer::event_info::event
+ * @var openvrml::gl::viewer::event_type openvrml::gl::viewer::event_info::event
  *
  * @brief Event type.
  */
 
 /**
- * @var int viewer::event_info::what
+ * @var int openvrml::gl::viewer::event_info::what
  *
  * @brief Key or button number.
  */
 
 /**
- * @var int viewer::event_info::x
+ * @var int openvrml::gl::viewer::event_info::x
  *
  * @brief x-coordinate (for mouse events).
  */
 
 /**
- * @var int viewer::event_info::y
+ * @var int openvrml::gl::viewer::event_info::y
  *
  * @brief y-coordinate (for mouse events).
  */
 
 /**
- * @enum viewer::cursor_style
+ * @enum openvrml::gl::viewer::cursor_style
  *
  * @brief Cursor style.
  */
 
 /**
- * @var viewer::cursor_style viewer::cursor_inherit
+ * @var openvrml::gl::viewer::cursor_style openvrml::gl::viewer::cursor_inherit
  *
  * @brief Inherit the parent's cursor style.
  */
 
 /**
- * @var viewer::cursor_style viewer::cursor_info
+ * @var openvrml::gl::viewer::cursor_style openvrml::gl::viewer::cursor_info
  *
  * @brief Pointing hand.
  */
 
 /**
- * @var viewer::cursor_style viewer::cursor_cycle
+ * @var openvrml::gl::viewer::cursor_style openvrml::gl::viewer::cursor_cycle
  *
  * @brief Arrows rotating in a circle.
  */
 
 /**
- * @var viewer::cursor_style viewer::cursor_up_down
+ * @var openvrml::gl::viewer::cursor_style openvrml::gl::viewer::cursor_up_down
  *
  * @brief Bidirectional pointing up and down.
  */
 
 /**
- * @var viewer::cursor_style viewer::cursor_crosshair
+ * @var openvrml::gl::viewer::cursor_style openvrml::gl::viewer::cursor_crosshair
  *
  * @brief Crosshair.
  */
 
 /**
- * @class viewer::modelview_matrix_stack
+ * @class openvrml::gl::viewer::modelview_matrix_stack
  *
  * @brief Encapsulates an extended modelview matrix stack.
  *
@@ -506,13 +505,13 @@ namespace gl {
  */
 
 /**
- * @var size_t viewer::modelview_matrix_stack::size
+ * @var size_t openvrml::gl::viewer::modelview_matrix_stack::size
  *
  * @brief The current stack depth.
  */
 
 /**
- * @var std::stack<mat4f> viewer::modelview_matrix_stack::spillover
+ * @var std::stack<openvrml::mat4f> openvrml::gl::viewer::modelview_matrix_stack::spillover
  *
  * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get
  *      pushed onto this stack.
@@ -521,7 +520,7 @@ namespace gl {
 /**
  * @brief Construct.
  */
-viewer::modelview_matrix_stack::modelview_matrix_stack():
+openvrml::gl::viewer::modelview_matrix_stack::modelview_matrix_stack():
     size(0)
 {}
 
@@ -530,7 +529,7 @@ viewer::modelview_matrix_stack::modelview_matrix_stack():
  *
  * @pre The current matrix is the modelview matrix.
  */
-void viewer::modelview_matrix_stack::push()
+void openvrml::gl::viewer::modelview_matrix_stack::push()
 {
 # ifndef NDEBUG
     GLint matrixMode;
@@ -554,7 +553,7 @@ void viewer::modelview_matrix_stack::push()
  *
  * @pre The current matrix is the modelview matrix.
  */
-void viewer::modelview_matrix_stack::pop()
+void openvrml::gl::viewer::modelview_matrix_stack::pop()
 {
 # ifndef NDEBUG
     GLint matrixMode;
@@ -571,200 +570,200 @@ void viewer::modelview_matrix_stack::pop()
 }
 
 /**
- * @struct viewer::light_info
+ * @struct openvrml::gl::viewer::light_info
  *
  * @brief Light information.
  */
 
 /**
- * @var viewer::light_type viewer::light_info::type
+ * @var openvrml::gl::viewer::light_type openvrml::gl::viewer::light_info::type
  *
  * @brief Light type.
  */
 
 /**
- * @var int viewer::light_info::nesting_level
+ * @var int openvrml::gl::viewer::light_info::nesting_level
  *
  * @brief Nesting level.
  */
 
 /**
- * @var float viewer::light_info::radius_squared
+ * @var float openvrml::gl::viewer::light_info::radius_squared
  *
  * @brief The light's radius squared.
  */
 
 /**
- * @var vec3f viewer::light_info::location
+ * @var openvrml::vec3f openvrml::gl::viewer::light_info::location
  *
  * @brief The light's location.
  */
 
 /**
- * @var viewer::modelview_matrix_stack viewer::modelview_matrix_stack_
+ * @var openvrml::gl::viewer::modelview_matrix_stack openvrml::gl::viewer::modelview_matrix_stack_
  *
  * @brief Modelview matrix stack.
  */
 
 /**
- * @var bool viewer::gl_initialized
+ * @var bool openvrml::gl::viewer::gl_initialized
  *
  * @brief Indicate whether OpenGL has been initialized for rendering.
  */
 
 /**
- * @var bool viewer::blend
+ * @var bool openvrml::gl::viewer::blend
  *
  * @brief Indicate whether alpha blending is enabled.
  */
 
 /**
- * @var bool viewer::lit
+ * @var bool openvrml::gl::viewer::lit
  *
  * @brief Indicate whether lighting is enabled.
  */
 
 /**
- * @var bool viewer::texture
+ * @var bool openvrml::gl::viewer::texture
  *
  * @brief Indicate whether texture mapping is enabled.
  */
 
 /**
- * @var bool viewer::wireframe
+ * @var bool openvrml::gl::viewer::wireframe
  *
  * @brief Indicate whether wireframe mode is enabled.
  */
 
 /**
- * @var size_t viewer::win_width
+ * @var size_t openvrml::gl::viewer::win_width
  *
  * @brief Window width.
  */
 
 /**
- * @var size_t viewer::win_height
+ * @var size_t openvrml::gl::viewer::win_height
  *
  * @brief Window height.
  */
 
 /**
- * @var color viewer::background
+ * @var color openvrml::gl::viewer::background
  *
  * @brief Background color.
  */
 
 /**
- * @var size_t viewer::objects
+ * @var size_t openvrml::gl::viewer::objects
  *
  * @brief Number of objects.
  */
 
 /**
- * @var size_t viewer::nested_objects
+ * @var size_t openvrml::gl::viewer::nested_objects
  *
  * @brief Number of nested objects.
  */
 
 /**
- * @var GLUtesselator * viewer::tesselator
+ * @var GLUtesselator * openvrml::gl::viewer::tesselator
  *
  * @brief GLU tesselation object.
  */
 
 /**
- * @var size_t viewer::sensitive
+ * @var size_t openvrml::gl::viewer::sensitive
  *
  * @brief Count of sensitive @link openvrml::node nodes@endlink.
  */
 
 /**
- * @var size_t viewer::active_sensitive
+ * @var size_t openvrml::gl::viewer::active_sensitive
  *
  * @brief Count of active sensitive @link openvrml::node nodes@endlink.
  */
 
 /**
- * @var size_t viewer::over_sensitive
+ * @var size_t openvrml::gl::viewer::over_sensitive
  *
  * @brief Count of sensitive @link openvrml::node nodes@endlink the mouse is
  *        over.
  */
 
 /**
- * @var viewer::maxsensitive
+ * @var openvrml::gl::viewer::maxsensitive
  *
  * @brief Maximum number of sensitive @link openvrml::node nodes@endlink.
  */
 
 /**
- * @var node * viewer::sensitive_object[viewer::maxsensitive]
+ * @var openvrml::node * openvrml::gl::viewer::sensitive_object[openvrml::gl::viewer::maxsensitive]
  *
  * @brief Sensitive @link openvrml::node nodes@endlink.
  */
 
 /**
- * @var bool viewer::select_mode
+ * @var bool openvrml::gl::viewer::select_mode
  *
  * @brief Indicate whether the renderer is in select mode.
  */
 
 /**
- * @var double viewer::select_z
+ * @var double openvrml::gl::viewer::select_z
  *
  * @brief Window z-coordinate of last selection.
  */
 
 /**
- * @var viewer::light_info viewer::light_info_[viewer::max_lights]
+ * @var openvrml::gl::viewer::light_info openvrml::gl::viewer::light_info_[viewer::max_lights]
  *
  * @brief light_info for the lights in the scene.
  */
 
 /**
- * @var int viewer::beginx
+ * @var int openvrml::gl::viewer::beginx
  *
  * @brief Mouse drag start x-coordinate.
  */
 
 /**
- * @var int viewer::beginy
+ * @var int openvrml::gl::viewer::beginy
  *
  * @brief Mouse drag start y-coordinate.
  */
 
 /**
- * @var bool viewer::rotating
+ * @var bool openvrml::gl::viewer::rotating
  *
  * @brief Whether the viewer is in the process of rotating.
  */
 
 /**
- * @var bool viewer::scaling
+ * @var bool openvrml::gl::viewer::scaling
  *
  * @brief Whether the viewer is in the process of scaling.
  */
 
 /**
- * @var bool viewer::translating
+ * @var bool openvrml::gl::viewer::translating
  *
  * @brief Whether the viewer is in the process of translating.
  */
 
 /**
- * @var bool viewer::draw_bounding_spheres
+ * @var bool openvrml::gl::viewer::draw_bounding_spheres
  *
  * @brief Whether to draw bounding spheres.
  */
 
 /**
- * @var double viewer::render_time
+ * @var double openvrml::gl::viewer::render_time
  *
  * @brief Updated at the end of redraw with the time redraw took to execute.
  */
 
 /**
- * @var double viewer::render_time1
+ * @var double openvrml::gl::viewer::render_time1
  *
  * @brief Rendering time for the previous cycle.
  */
@@ -849,11 +848,14 @@ namespace {
     // It is assumed that the arguments to this routine are in the range
     // (-1.0 ... 1.0)
     //
-    OPENVRML_GL_LOCAL const rotation trackball(float p1x,
-                                               float p1y,
-                                               float p2x,
-                                               float p2y)
+    OPENVRML_GL_LOCAL const openvrml::rotation trackball(float p1x,
+                                                         float p1y,
+                                                         float p2x,
+                                                         float p2y)
     {
+        using openvrml::rotation;
+        using openvrml::vec3f;
+
         //
         // This size should really be based on the distance from the center of
         // rotation to the point on the object underneath the mouse.  That
@@ -900,7 +902,7 @@ namespace {
 /**
  * @brief Construct a viewer for the specified browser.
  */
-viewer::viewer():
+openvrml::gl::viewer::viewer():
     gl_initialized(false),
     blend(true),
     lit(true),
@@ -933,7 +935,7 @@ viewer::viewer():
 /**
  * @brief Destroy.
  */
-viewer::~viewer() OPENVRML_NOTHROW
+openvrml::gl::viewer::~viewer() OPENVRML_NOTHROW
 {
     gluDeleteTess(this->tesselator);
 }
@@ -941,7 +943,7 @@ viewer::~viewer() OPENVRML_NOTHROW
 /**
  * @brief Initialize.
  */
-void viewer::initialize()
+void openvrml::gl::viewer::initialize()
 {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -1027,7 +1029,8 @@ namespace {
  *
  * @return 0.
  */
-viewer::object_t viewer::begin_object(const char *, bool)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::begin_object(const char *, bool)
 {
     // Finish setup stuff before first object
     if (1 == ++this->objects) {
@@ -1051,7 +1054,7 @@ viewer::object_t viewer::begin_object(const char *, bool)
 /**
  * @brief End of group scope.
  */
-void viewer::end_object()
+void openvrml::gl::viewer::end_object()
 {
     // Decrement nesting level for group-scoped lights and get rid
     // of any defined at this level
@@ -1074,7 +1077,7 @@ void viewer::end_object()
  *
  * Called after the appearance/material has been set.
  */
-void viewer::begin_geometry()
+void openvrml::gl::viewer::begin_geometry()
 {
     //
     // Any attribute modified in a geometry function should be reset here.
@@ -1088,7 +1091,7 @@ void viewer::begin_geometry()
 /**
  * @brief Reset attributes changed during geometry insertion.
  */
-void viewer::end_geometry()
+void openvrml::gl::viewer::end_geometry()
 {
     //
     // This should be called BEFORE ending any dlists containing geometry,
@@ -1111,7 +1114,7 @@ void viewer::end_geometry()
  *
  * @return the rendering_mode.
  */
-viewer::rendering_mode viewer::mode()
+openvrml::gl::viewer::rendering_mode openvrml::gl::viewer::mode()
 {
     return this->select_mode
         ? viewer::pick_mode
@@ -1123,7 +1126,7 @@ viewer::rendering_mode viewer::mode()
  *
  * @return the frame rate.
  */
-double viewer::frame_rate()
+double openvrml::gl::viewer::frame_rate()
 {
     return 1.0 / this->render_time;
 }
@@ -1132,7 +1135,7 @@ double viewer::frame_rate()
  * @brief Reset the user view to the position and orientation of the currently
  *        bound Viewpoint node.
  */
-void viewer::reset_user_navigation()
+void openvrml::gl::viewer::reset_user_navigation()
 {
     assert(this->browser());
     this->browser()->active_viewpoint().user_view_transform(mat4f());
@@ -1155,17 +1158,17 @@ void viewer::reset_user_navigation()
  *
  * @return display object identifier.
  */
-viewer::object_t
-viewer::insert_background(const std::vector<float> & groundAngle,
-                          const std::vector<color> & groundColor,
-                          const std::vector<float> & skyAngle,
-                          const std::vector<color> & skyColor,
-                          const image & front,
-                          const image & back,
-                          const image & left,
-                          const image & right,
-                          const image & top,
-                          const image & bottom)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_background(const std::vector<float> & groundAngle,
+                                        const std::vector<color> & groundColor,
+                                        const std::vector<float> & skyAngle,
+                                        const std::vector<color> & skyColor,
+                                        const image & front,
+                                        const image & back,
+                                        const image & left,
+                                        const image & right,
+                                        const image & top,
+                                        const image & bottom)
 {
     using std::vector;
 
@@ -1426,7 +1429,8 @@ viewer::insert_background(const std::vector<float> & groundAngle,
  *
  * @return display object identifier.
  */
-viewer::object_t viewer::insert_box(const vec3f & size)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_box(const vec3f & size)
 {
     GLuint glid = 0;
 
@@ -1568,10 +1572,11 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t viewer::insert_cone(const float height,
-                                     const float radius,
-                                     const bool bottom,
-                                     const bool side)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_cone(const float height,
+                                  const float radius,
+                                  const bool bottom,
+                                  const bool side)
 {
     GLuint glid = 0;
 
@@ -1653,11 +1658,12 @@ viewer::object_t viewer::insert_cone(const float height,
  *
  * @return display object identifier.
  */
-viewer::object_t viewer::insert_cylinder(const float height,
-                                         const float radius,
-                                         const bool bottom,
-                                         const bool side,
-                                         const bool top)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_cylinder(const float height,
+                                      const float radius,
+                                      const bool bottom,
+                                      const bool side,
+                                      const bool top)
 {
     GLuint glid = 0;
 
@@ -1748,13 +1754,13 @@ namespace {
 
     // Compute a normal at vert i,j of an ElevationGrid.
 
-    OPENVRML_GL_LOCAL const vec3f elevationVertexNormal(
+    OPENVRML_GL_LOCAL const openvrml::vec3f elevationVertexNormal(
             const int i, const int j,
             const int nx, const int nz,
             const float dx, const float dz,
             const std::vector<float>::const_iterator height)
     {
-        vec3f Vx, Vz;
+        openvrml::vec3f Vx, Vz;
 
         if (i > 0 && i < nx - 1) {
             Vx.x(float(2.0 * dx));
@@ -1798,16 +1804,16 @@ namespace {
  * @param[in] normal        normals.
  * @param[in] texCoord      texture coordinates.
  */
-viewer::object_t
-viewer::insert_elevation_grid(const unsigned int mask,
-                              const std::vector<float> & height,
-                              const int32 xDimension,
-                              const int32 zDimension,
-                              const float xSpacing,
-                              const float zSpacing,
-                              const std::vector<color> & color,
-                              const std::vector<vec3f> & normal,
-                              const std::vector<vec2f> & texCoord)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_elevation_grid(const unsigned int mask,
+                                            const std::vector<float> & height,
+                                            const int32 xDimension,
+                                            const int32 zDimension,
+                                            const float xSpacing,
+                                            const float zSpacing,
+                                            const std::vector<color> & color,
+                                            const std::vector<vec3f> & normal,
+                                            const std::vector<vec2f> & texCoord)
 {
     int32 i, j;
     float x, z;
@@ -1929,12 +1935,12 @@ namespace {
         float tcDeltaU, tcDeltaV;
         float tcScaleU, tcScaleV;
         size_t vOffset;
-        vec3f N; // Normal
+        openvrml::vec3f N; // Normal
 
         TessExtrusion(const float * c, const float * crossSection,
                       float tcDeltaU, float tcDeltaV,
                       float tcScaleU, float tcScaleV,
-                      size_t vOffset, const vec3f & N);
+                      size_t vOffset, const openvrml::vec3f & N);
     };
 
     TessExtrusion::TessExtrusion(const float * const c,
@@ -1944,7 +1950,7 @@ namespace {
                                  const float tcScaleU,
                                  const float tcScaleV,
                                  const size_t vOffset,
-                                 const vec3f & N):
+                                 const openvrml::vec3f & N):
         c(c),
         crossSection(crossSection),
         tcDeltaU(tcDeltaU),
@@ -1995,13 +2001,17 @@ extern "C" {
 
 namespace {
 
-    OPENVRML_GL_LOCAL void insertExtrusionCaps(GLUtesselator & tesselator,
-                                               const unsigned int mask,
-                                               const size_t nSpine,
-                                               const std::vector<vec3f> & c,
-                                               const std::vector<vec2f> & cs)
+    OPENVRML_GL_LOCAL void
+    insertExtrusionCaps(GLUtesselator & tesselator,
+                        const unsigned int mask,
+                        const size_t nSpine,
+                        const std::vector<openvrml::vec3f> & c,
+                        const std::vector<openvrml::vec2f> & cs)
     {
         using std::vector;
+        using openvrml::vec2f;
+        using openvrml::vec3f;
+        using openvrml::gl::viewer;
 
         // Determine x,z ranges for top & bottom tex coords
         float xz[4] = { cs[0].x(), cs[0].x(), cs[0].y(), cs[0].y() };
@@ -2129,17 +2139,22 @@ namespace {
      * @param[in] scale
      * @param[in] crossSection
      * @param[in] spine
-     * @retval c
-     * @retval tc
+     * @param[out] c
+     * @param[out] tc
      */
     OPENVRML_GL_LOCAL void
-    computeExtrusion_(const std::vector<rotation> & orientation,
-                      const std::vector<vec2f> & scale,
-                      const std::vector<vec2f> & crossSection,
-                      const std::vector<vec3f> & spine,
-                      std::vector<vec3f> & c,
-                      std::vector<vec2f> & tc)
+    computeExtrusion_(const std::vector<openvrml::rotation> & orientation,
+                      const std::vector<openvrml::vec2f> & scale,
+                      const std::vector<openvrml::vec2f> & crossSection,
+                      const std::vector<openvrml::vec3f> & spine,
+                      std::vector<openvrml::vec3f> & c,
+                      std::vector<openvrml::vec2f> & tc)
     {
+        using openvrml::rotation;
+        using openvrml::vec2f;
+        using openvrml::vec3f;
+        using openvrml::mat4f;
+
         size_t i, j, ci;
 
         // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
@@ -2314,18 +2329,18 @@ namespace {
      * @param[in] scale
      * @param[in] crossSection
      * @param[in] spine
-     * @retval c
-     * @retval tc
-     * @retval faces
+     * @param[out] c
+     * @param[out] tc
+     * @param[out] faces
      */
     OPENVRML_GL_LOCAL void
-    computeExtrusion_(const std::vector<rotation> & orientation,
-                      const std::vector<vec2f> & scale,
-                      const std::vector<vec2f> & crossSection,
-                      const std::vector<vec3f> & spine,
-                      std::vector<vec3f> & c,
-                      std::vector<vec2f> & tc,
-                      std::vector<int32> & faces)
+    computeExtrusion_(const std::vector<openvrml::rotation> & orientation,
+                      const std::vector<openvrml::vec2f> & scale,
+                      const std::vector<openvrml::vec2f> & crossSection,
+                      const std::vector<openvrml::vec3f> & spine,
+                      std::vector<openvrml::vec3f> & c,
+                      std::vector<openvrml::vec2f> & tc,
+                      std::vector<openvrml::int32> & faces)
     {
         computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
 
@@ -2359,12 +2374,13 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t
-viewer::insert_extrusion(unsigned int mask,
-                         const std::vector<vec3f> & spine,
-                         const std::vector<vec2f> & crossSection,
-                         const std::vector<openvrml::rotation> & orientation,
-                         const std::vector<vec2f> & scale)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_extrusion(
+    unsigned int mask,
+    const std::vector<vec3f> & spine,
+    const std::vector<vec2f> & crossSection,
+    const std::vector<openvrml::rotation> & orientation,
+    const std::vector<vec2f> & scale)
 {
     using std::vector;
     vector<vec3f> c(crossSection.size() * spine.size());
@@ -2433,12 +2449,12 @@ viewer::insert_extrusion(unsigned int mask,
  *
  * @return display object identifier.
  */
-viewer::object_t
-viewer::insert_line_set(const std::vector<vec3f> & coord,
-                        const std::vector<int32> & coordIndex,
-                        bool colorPerVertex,
-                        const std::vector<color> & color,
-                        const std::vector<int32> & colorIndex)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_line_set(const std::vector<vec3f> & coord,
+                                      const std::vector<int32> & coordIndex,
+                                      bool colorPerVertex,
+                                      const std::vector<color> & color,
+                                      const std::vector<int32> & colorIndex)
 {
     GLuint glid = 0;
 
@@ -2511,9 +2527,9 @@ viewer::insert_line_set(const std::vector<vec3f> & coord,
  *
  * @return display object identifier.
  */
-viewer::object_t
-viewer::insert_point_set(const std::vector<vec3f> & coord,
-                         const std::vector<color> & color)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_point_set(const std::vector<vec3f> & coord,
+                                       const std::vector<color> & color)
 {
     GLuint glid = 0;
 
@@ -2603,6 +2619,9 @@ namespace {
 
     OPENVRML_GL_LOCAL void insertShellConvex(ShellData * const s)
     {
+        using openvrml::vec3f;
+        using openvrml::gl::viewer;
+
         vec3f N;
         size_t i, nf = 0;                        // Number of faces
 
@@ -2704,13 +2723,13 @@ namespace {
     OPENVRML_GL_LOCAL void
     insertShellTess(GLUtesselator & tessobj,
                     const std::vector<vertex_data> & vertices,
-                    const std::vector<int32> & coord_index,
+                    const std::vector<openvrml::int32> & coord_index,
                     const bool color_per_face,
                     const std::vector<openvrml::color> & color,
-                    const std::vector<int32> & color_index,
+                    const std::vector<openvrml::int32> & color_index,
                     const bool normal_per_face,
-                    const std::vector<vec3f> & normal,
-                    const std::vector<int32> & normal_index)
+                    const std::vector<openvrml::vec3f> & normal,
+                    const std::vector<openvrml::int32> & normal_index)
     {
         using std::vector;
         gluTessCallback(&tessobj,
@@ -2748,7 +2767,9 @@ namespace {
 
         gluTessBeginPolygon(&tessobj, &user_data);
         gluTessBeginContour(&tessobj);
-        for (vector<int32>::size_type i = 0; i < coord_index.size(); ++i) {
+        for (vector<openvrml::int32>::size_type i = 0;
+             i < coord_index.size();
+             ++i) {
             if (coord_index[i] != -1) {
                 gluTessVertex(&tessobj,
                               const_cast<GLdouble *>(
@@ -2789,16 +2810,16 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t
-viewer::insert_shell(unsigned int mask,
-                     const std::vector<vec3f> & coord,
-                     const std::vector<int32> & coord_index,
-                     const std::vector<color> & color,
-                     const std::vector<int32> & color_index,
-                     const std::vector<vec3f> & normal,
-                     const std::vector<int32> & normal_index,
-                     const std::vector<vec2f> & tex_coord,
-                     const std::vector<int32> & tex_coord_index)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_shell(unsigned int mask,
+                                   const std::vector<vec3f> & coord,
+                                   const std::vector<int32> & coord_index,
+                                   const std::vector<color> & color,
+                                   const std::vector<int32> & color_index,
+                                   const std::vector<vec3f> & normal,
+                                   const std::vector<int32> & normal_index,
+                                   const std::vector<vec2f> & tex_coord,
+                                   const std::vector<int32> & tex_coord_index)
 {
     using std::vector;
     if (coord_index.size() < 4) { return 0; } // 3 pts and a trailing -1
@@ -2986,7 +3007,8 @@ namespace {
  *
  * @return display object identifier.
  */
-viewer::object_t viewer::insert_sphere(const float radius)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_sphere(const float radius)
 {
     GLuint glid = 0;
 
@@ -3048,10 +3070,11 @@ viewer::object_t viewer::insert_sphere(const float radius)
  *
  * @return display object identifier.
  */
-viewer::object_t viewer::insert_dir_light(const float ambientIntensity,
-                                          const float intensity,
-                                          const color & color,
-                                          const vec3f & direction)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_dir_light(const float ambientIntensity,
+                                       const float intensity,
+                                       const color & color,
+                                       const vec3f & direction)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3107,12 +3130,13 @@ viewer::object_t viewer::insert_dir_light(const float ambientIntensity,
  *      the lights accordingly? Get light and geometry into consistent
  *      coordinates first.
  */
-viewer::object_t viewer::insert_point_light(const float ambientIntensity,
-                                            const vec3f & attenuation,
-                                            const color & color,
-                                            const float intensity,
-                                            const vec3f & location,
-                                            const float radius)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_point_light(const float ambientIntensity,
+                                         const vec3f & attenuation,
+                                         const color & color,
+                                         const float intensity,
+                                         const vec3f & location,
+                                         const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3171,15 +3195,16 @@ viewer::object_t viewer::insert_point_light(const float ambientIntensity,
  *
  * @todo Same comments as for PointLight apply here.
  */
-viewer::object_t viewer::insert_spot_light(const float ambientIntensity,
-                                           const vec3f & attenuation,
-                                           const float beamWidth,
-                                           const color & color,
-                                           const float cutOffAngle,
-                                           const vec3f & direction,
-                                           const float intensity,
-                                           const vec3f & location,
-                                           const float radius)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_spot_light(const float ambientIntensity,
+                                        const vec3f & attenuation,
+                                        const float beamWidth,
+                                        const color & color,
+                                        const float cutOffAngle,
+                                        const vec3f & direction,
+                                        const float intensity,
+                                        const vec3f & location,
+                                        const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3229,7 +3254,8 @@ viewer::object_t viewer::insert_spot_light(const float ambientIntensity,
  *
  * @return 0.
  */
-viewer::object_t viewer::insert_reference(const object_t existing_object)
+openvrml::gl::viewer::object_t
+openvrml::gl::viewer::insert_reference(const object_t existing_object)
 {
     glCallList(GLuint(existing_object));
     return 0;
@@ -3240,7 +3266,7 @@ viewer::object_t viewer::insert_reference(const object_t existing_object)
  *
  * @param[in] ref   object handle.
  */
-void viewer::remove_object(const object_t ref)
+void openvrml::gl::viewer::remove_object(const object_t ref)
 {
     glDeleteLists(GLuint(ref), 1);
 }
@@ -3250,7 +3276,7 @@ void viewer::remove_object(const object_t ref)
  *
  * @param[in] val whether lighting should be enabled.
  */
-void viewer::enable_lighting(const bool val)
+void openvrml::gl::viewer::enable_lighting(const bool val)
 {
     if (val) {
         if (this->lit) {
@@ -3267,24 +3293,22 @@ void viewer::enable_lighting(const bool val)
  * @param[in] rgb   red, green, and blue components.
  * @param[in] a     alpha (transparency) component.
  */
-void viewer::set_color(const color & rgb, const float a)
+void openvrml::gl::viewer::set_color(const color & rgb, const float a)
 {
     glColor4f(rgb.r(), rgb.g(), rgb.b(), a);
 }
 
 /**
- * @fn void viewer::set_fog(const color & color, const float visibilityRange, const char * type)
- *
  * @brief Set the fog.
  *
  * @param[in] color             fog color.
  * @param[in] visibilityRange   the distance at which objects are fully obscured by
- *                          fog.
+ *                              fog.
  * @param[in] type              fog type.
  */
-void viewer::set_fog(const color & color,
-                     const float visibilityRange,
-                     const char * const type)
+void openvrml::gl::viewer::set_fog(const color & color,
+                                   const float visibilityRange,
+                                   const char * const type)
 {
     static const std::string exponential("EXPONENTIAL");
     const GLfloat fogColor[4] = { color.r(), color.g(), color.b(), 1.0 };
@@ -3309,12 +3333,12 @@ void viewer::set_fog(const color & color,
  * @param[in] specularColor     specular color.
  * @param[in] transparency      transparency.
  */
-void viewer::set_material(const float ambientIntensity,
-                          const color & diffuseColor,
-                          const color & emissiveColor,
-                          const float shininess,
-                          const color & specularColor,
-                          const float transparency)
+void openvrml::gl::viewer::set_material(const float ambientIntensity,
+                                        const color & diffuseColor,
+                                        const color & emissiveColor,
+                                        const float shininess,
+                                        const color & specularColor,
+                                        const float transparency)
 {
     const float alpha = 1.0f - transparency;
 
@@ -3363,8 +3387,8 @@ void viewer::set_material(const float ambientIntensity,
  * @param[in] tex_components    texture components.
  * @param[in] geometry_color    geometry color.
  */
-void viewer::set_material_mode(const size_t tex_components,
-                               const bool geometry_color)
+void openvrml::gl::viewer::set_material_mode(const size_t tex_components,
+                                             const bool geometry_color)
 {
     if (tex_components && this->texture && !this->wireframe) {
         glEnable(GL_TEXTURE_2D);
@@ -3393,7 +3417,7 @@ void viewer::set_material_mode(const size_t tex_components,
  *
  * @param[in] object    a node.
  */
-void viewer::set_sensitive(node * object)
+void openvrml::gl::viewer::set_sensitive(node * object)
 {
     if (object) {
         // should make this dynamic...
@@ -3429,10 +3453,11 @@ namespace {
  *
  * @return a handle to the inserted texture.
  */
-viewer::texture_object_t viewer::insert_texture(const image & img,
-                                                bool repeat_s,
-                                                bool repeat_t,
-                                                bool retainHint)
+openvrml::gl::viewer::texture_object_t
+openvrml::gl::viewer::insert_texture(const image & img,
+                                     bool repeat_s,
+                                     bool repeat_t,
+                                     bool retainHint)
 {
     using std::vector;
 
@@ -3539,8 +3564,8 @@ viewer::texture_object_t viewer::insert_texture(const image & img,
  * @param[in] ref           texture handle.
  * @param[in] components    number of components.
  */
-void viewer::insert_texture_reference(const texture_object_t ref,
-                                      const size_t components)
+void openvrml::gl::viewer::insert_texture_reference(const texture_object_t ref,
+                                                    const size_t components)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
     // Enable blending if needed
@@ -3557,7 +3582,7 @@ void viewer::insert_texture_reference(const texture_object_t ref,
  *
  * @param[in] ref   texture handle.
  */
-void viewer::remove_texture_object(const texture_object_t ref)
+void openvrml::gl::viewer::remove_texture_object(const texture_object_t ref)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
     const GLuint glid = GLuint(ref);
@@ -3576,10 +3601,10 @@ void viewer::remove_texture_object(const texture_object_t ref)
  * @param[in] scale         scale.
  * @param[in] translation   translation.
  */
-void viewer::set_texture_transform(const vec2f & center,
-                                   float rotation,
-                                   const vec2f & scale,
-                                   const vec2f & translation)
+void openvrml::gl::viewer::set_texture_transform(const vec2f & center,
+                                                 float rotation,
+                                                 const vec2f & scale,
+                                                 const vec2f & translation)
 {
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -3601,11 +3626,11 @@ namespace {
     /**
      * Compute a target and up vector from position/orientation/distance.
      */
-    OPENVRML_GL_LOCAL void computeView(const vec3f & position,
-                                       const rotation & orientation,
+    OPENVRML_GL_LOCAL void computeView(const openvrml::vec3f & position,
+                                       const openvrml::rotation & orientation,
                                        const float distance,
-                                       vec3f & target,
-                                       vec3f & up)
+                                       openvrml::vec3f & target,
+                                       openvrml::vec3f & up)
     {
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
 
@@ -3641,11 +3666,11 @@ namespace {
  * @param[in] avatarSize        avatar size.
  * @param[in] visibilityLimit   visiblity limit.
  */
-void viewer::set_viewpoint(const vec3f & position,
-                           const openvrml::rotation & orientation,
-                           const float fieldOfView,
-                           const float avatarSize,
-                           const float visibilityLimit)
+void openvrml::gl::viewer::set_viewpoint(const vec3f & position,
+                                         const openvrml::rotation & orientation,
+                                         const float fieldOfView,
+                                         const float avatarSize,
+                                         const float visibilityLimit)
 {
     glMatrixMode( GL_PROJECTION );
     if (!this->select_mode) { glLoadIdentity(); }
@@ -3682,7 +3707,8 @@ void viewer::set_viewpoint(const vec3f & position,
  * @param[in] nPoints   number of points.
  * @param[in] point     pointer to the first point in an array.
  */
-void viewer::transform_points(const size_t nPoints, vec3f * point) const
+void openvrml::gl::viewer::transform_points(const size_t nPoints,
+                                            vec3f * point) const
 {
     mat4f m;
     glGetFloatv(GL_MODELVIEW_MATRIX, &m[0][0]);
@@ -3695,7 +3721,7 @@ void viewer::transform_points(const size_t nPoints, vec3f * point) const
  *
  * @param[in] mat   a matrix.
  */
-void viewer::transform(const mat4f & mat)
+void openvrml::gl::viewer::transform(const mat4f & mat)
 {
     glMultMatrixf(&mat[0][0]);
 }
@@ -3707,7 +3733,7 @@ void viewer::transform(const mat4f & mat)
  *
  * @param[in] time  current time.
  */
-void viewer::update(const double time)
+void openvrml::gl::viewer::update(const double time)
 {
     assert(this->browser());
     if (this->browser()->update(time)) {
@@ -3722,7 +3748,7 @@ void viewer::update(const double time)
 /**
  * @brief Redraw the scene.
  */
-void viewer::redraw()
+void openvrml::gl::viewer::redraw()
 {
     assert(this->browser());
 
@@ -3773,7 +3799,7 @@ void viewer::redraw()
  * @param[in] width     new width.
  * @param[in] height    new height.
  */
-void viewer::resize(size_t width, size_t height)
+void openvrml::gl::viewer::resize(size_t width, size_t height)
 {
     if (width < 2) { width = 2; }
     if (height < 2) { height = 2; }
@@ -3787,7 +3813,7 @@ void viewer::resize(size_t width, size_t height)
  *
  * @param[in] e event data.
  */
-void viewer::input(event_info * e)
+void openvrml::gl::viewer::input(event_info * e)
 {
     switch (e->event) {
     case event_key_down:
@@ -3811,7 +3837,7 @@ void viewer::input(event_info * e)
  *
  * @param[in] rot   rotation.
  */
-void viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
+void openvrml::gl::viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
 {
     assert(this->browser());
 
@@ -3852,7 +3878,7 @@ void viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHROW
  * @param[in] y translation vector y component.
  * @param[in] z translation vector z component.
  */
-void viewer::step(const float x, const float y, const float z)
+void openvrml::gl::viewer::step(const float x, const float y, const float z)
 {
     assert(this->browser());
 
@@ -3868,7 +3894,7 @@ void viewer::step(const float x, const float y, const float z)
  *
  * @param[in] z amount to zoom.
  */
-void viewer::zoom(const float z)
+void openvrml::gl::viewer::zoom(const float z)
 {
     assert(this->browser());
 
@@ -3924,7 +3950,7 @@ void viewer::zoom(const float z)
  *
  * @param[in] key   key identifier.
  */
-void viewer::handleKey(int key)
+void openvrml::gl::viewer::handleKey(int key)
 {
     using std::find;
     using std::list;
@@ -4086,7 +4112,7 @@ void viewer::handleKey(int key)
  *
  * @param[in] e event data.
  */
-void viewer::handleButton(event_info * e)
+void openvrml::gl::viewer::handleButton(event_info * e)
 {
     this->rotating = false;
     this->scaling = false;
@@ -4133,7 +4159,7 @@ void viewer::handleButton(event_info * e)
  * @param[in] x pointer x-coordinate.
  * @param[in] y pointer y-coordinate.
  */
-void viewer::handleMouseDrag(int x, int y)
+void openvrml::gl::viewer::handleMouseDrag(int x, int y)
 {
     if (this->active_sensitive) {
         this->checkSensitive(x, y, event_mouse_drag);
@@ -4166,9 +4192,9 @@ void viewer::handleMouseDrag(int x, int y)
 /**
  * Check for pickable objects.
  */
-bool viewer::checkSensitive(const int x,
-                            const int y,
-                            const event_type mouseEvent)
+bool openvrml::gl::viewer::checkSensitive(const int x,
+                                          const int y,
+                                          const event_type mouseEvent)
 {
     assert(this->browser());
 
@@ -4379,8 +4405,9 @@ bool viewer::checkSensitive(const int x,
  *                      to draw in unique way. (useful for debugging)
  */
 void
-viewer::draw_bounding_sphere(const bounding_sphere & bs,
-                             const bounding_volume::intersection intersection)
+openvrml::gl::viewer::draw_bounding_sphere(
+    const bounding_sphere & bs,
+    const bounding_volume::intersection intersection)
 {
     static const GLfloat green[] = { 0.25f, 1.0f, 0.25f, 1.0f };
     static const GLfloat red[] = { 1.0f, 0.5f, 0.5f, 1.0f };
@@ -4444,14 +4471,14 @@ viewer::draw_bounding_sphere(const bounding_sphere & bs,
 }
 
 /**
- * @fn void viewer::post_redraw()
+ * @fn void openvrml::gl::viewer::post_redraw()
  *
  * @brief Called to indicate to the windowing system that a redraw is
  *        necessary.
  */
 
 /**
- * @fn void viewer::set_cursor(cursor_style c)
+ * @fn void openvrml::gl::viewer::set_cursor(cursor_style c)
  *
  * @brief Called to set the cursor style.
  *
@@ -4459,20 +4486,16 @@ viewer::draw_bounding_sphere(const bounding_sphere & bs,
  */
 
 /**
- * @fn void viewer::swap_buffers()
+ * @fn void openvrml::gl::viewer::swap_buffers()
  *
  * @brief Called to indicate to the windowing system that the front and back
  *        buffers should be swapped.
  */
 
 /**
- * @fn void viewer::set_timer(double interval)
+ * @fn void openvrml::gl::viewer::set_timer(double interval)
  *
  * @brief Set a delay.
  *
  * @param[in] interval  milliseconds to delay.
  */
-
-} // namespace gl
-
-} // namespace openvrml
