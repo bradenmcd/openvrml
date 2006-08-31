@@ -1,5 +1,10 @@
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp (main(int, char **)): Allocate a console
+	and direct stdout and stderr to it on Windows.
+
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Explicitly qualify
 	definitions from the global scope rather than enclose them in
 	namespace blocks, consistent with the rest of OpenVRML.

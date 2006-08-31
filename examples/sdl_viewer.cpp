@@ -30,6 +30,9 @@
 # include <SDL.h>
 # include <openvrml/browser.h>
 # include <openvrml/gl/viewer.h>
+# ifdef _WIN32
+#   include <windows.h>
+# endif
 
 extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
@@ -83,6 +86,13 @@ int main(int argc, char * argv[])
     using std::cerr;
     using std::endl;
 
+# ifdef _WIN32
+    AllocConsole();
+    FILE * out;
+    freopen_s(&out, "conout$", "w", stdout);
+    freopen_s(&out, "conout$", "w", stderr);
+# endif
+
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " URL" << endl;
         return EXIT_FAILURE;
@@ -107,6 +117,11 @@ int main(int argc, char * argv[])
         cerr << ex.what() << endl;
         return EXIT_FAILURE;
     }
+
+# ifdef _WIN32
+    fclose(out);
+    FreeConsole();
+# endif
 
     return EXIT_SUCCESS;
 }
