@@ -1,3 +1,9 @@
+2006-08-31 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Explicitly qualify
+	definitions from the global scope rather than enclose them in
+	namespace blocks, consistent with the rest of OpenVRML.
+
 2006-08-28 Braden McDaniel  <braden@endoframe.com>
 
 	Visual C++ 8.0 project file improvements.
