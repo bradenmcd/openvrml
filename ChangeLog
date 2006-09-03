@@ -1,3 +1,7 @@
+2006-09-02 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp: Doc-comment fixes.
+
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp (main(int, char **)): Allocate a console

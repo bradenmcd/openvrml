@@ -14041,13 +14041,13 @@ namespace {
      */
 
     /**
-     * @var openvrml::scene * inline_node::inlineScene
+     * @var openvrml::scene * inline_node::inline_scene_
      *
      * @brief The contained scene.
      */
 
     /**
-     * @var bool inline_node::hasLoaded
+     * @var bool inline_node::loaded_
      *
      * @brief Flag to indicate whether the scene has been loaded.
      */
@@ -27440,7 +27440,7 @@ namespace {
      */
 
     /**
-     * @var cad_layer_node::CADLayer_metatype
+     * @var cad_layer_node::cad_layer_metatype
      *
      * @brief Class object for CADLayer nodes.
      */
