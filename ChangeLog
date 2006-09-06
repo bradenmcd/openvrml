@@ -1,3 +1,8 @@
+2006-09-06 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h: Added missing applications
+	of OPENVRML_API.
+
 2006-09-02 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp: Doc-comment fixes.
@@ -17,7 +22,6 @@
 	instead of openvrml::color constructor.
 	(stream_extraction_with_commas()): Use openvrml::make_color
 	instead of openvrml::color constructor.
-
 	* tests/mat4f.cpp
 	(stream_insertion()): Use openvrml::make_mat4f instead of
 	openvrml::mat4f constructor.

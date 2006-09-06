@@ -705,25 +705,33 @@ namespace openvrml {
         float det() const OPENVRML_NOTHROW;
     };
 
-    const mat4f make_mat4f() OPENVRML_NOTHROW;
-    const mat4f make_mat4f(float f11, float f12, float f13, float f14,
-                           float f21, float f22, float f23, float f24,
-                           float f31, float f32, float f33, float f34,
-                           float f41, float f42, float f43, float f44)
+    OPENVRML_API const mat4f make_mat4f() OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f
+    make_mat4f(float f11, float f12, float f13, float f14,
+               float f21, float f22, float f23, float f24,
+               float f31, float f32, float f33, float f34,
+               float f41, float f42, float f43, float f44)
         OPENVRML_NOTHROW;
-    const mat4f make_mat4f(const float mat[16]) OPENVRML_NOTHROW;
-    const mat4f make_mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_mat4f(const float mat[16]) OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_mat4f(const float (&mat)[4][4])
+        OPENVRML_NOTHROW;
 
-    const mat4f make_rotation_mat4f(const rotation & rot) OPENVRML_NOTHROW;
-    const mat4f make_rotation_mat4f(const quatf & quat) OPENVRML_NOTHROW;
-    const mat4f make_scale_mat4f(float s) OPENVRML_NOTHROW;
-    const mat4f make_scale_mat4f(const vec3f & s) OPENVRML_NOTHROW;
-    const mat4f make_translation_mat4f(const vec3f & t) OPENVRML_NOTHROW;
-    const mat4f make_transformation_mat4f(const vec3f & t,
-                                          const rotation & r,
-                                          const vec3f & s,
-                                          const rotation & sr,
-                                          const vec3f & c) OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_rotation_mat4f(const rotation & rot)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_rotation_mat4f(const quatf & quat)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_scale_mat4f(float s)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_scale_mat4f(const vec3f & s)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_translation_mat4f(const vec3f & t)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const mat4f make_transformation_mat4f(const vec3f & t,
+                                                       const rotation & r,
+                                                       const vec3f & s,
+                                                       const rotation & sr,
+                                                       const vec3f & c)
+        OPENVRML_NOTHROW;
 
     OPENVRML_API bool operator==(const mat4f & lhs, const mat4f & rhs)
         OPENVRML_NOTHROW;
@@ -781,11 +789,13 @@ namespace openvrml {
         const quatf normalize() const OPENVRML_NOTHROW;
     };
 
-    const quatf make_quatf() OPENVRML_NOTHROW;
-    const quatf make_quatf(float x, float y, float z, float w) OPENVRML_NOTHROW;
-    const quatf make_quatf(const float (&quat)[4]) OPENVRML_NOTHROW;
-    const quatf make_quatf(const rotation & rot) OPENVRML_NOTHROW;
-    const quatf make_quatf(const mat4f & mat) OPENVRML_NOTHROW;
+    OPENVRML_API const quatf make_quatf() OPENVRML_NOTHROW;
+    OPENVRML_API const quatf make_quatf(float x, float y, float z, float w)
+        OPENVRML_NOTHROW;
+    OPENVRML_API const quatf make_quatf(const float (&quat)[4])
+        OPENVRML_NOTHROW;
+    OPENVRML_API const quatf make_quatf(const rotation & rot) OPENVRML_NOTHROW;
+    OPENVRML_API const quatf make_quatf(const mat4f & mat) OPENVRML_NOTHROW;
 
     OPENVRML_API const quatf operator*(const quatf & lhs, const quatf & rhs)
         OPENVRML_NOTHROW;
