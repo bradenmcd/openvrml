@@ -38,16 +38,24 @@
 # include <sstream>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/thread.hpp>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
 #   include FT_GLYPH_H
 #   include FT_OUTLINE_H
-#   include <fontconfig/fontconfig.h>
+#   ifdef _WIN32
+#     include <windows.h>
+#     include <strsafe.h>
+#     include <shlobj.h>
+#     undef interface
+#   else
+#     include <fontconfig/fontconfig.h>
 extern "C" {
-#   include <fontconfig/fcfreetype.h>
+#     include <fontconfig/fcfreetype.h>
 }
+#   endif
 # endif
 # include <private.h>
 # include "vrml97node.h"
@@ -60,6 +68,7 @@ namespace {
 
     using namespace openvrml;
     using namespace openvrml::node_impl_util;
+    using namespace boost::multi_index::detail; // for scope_guard
 
     /**
      * @brief Class object for Anchor nodes.
@@ -3864,6 +3873,14 @@ namespace {
     };
 
 
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+#   ifdef _WIN32
+    typedef __int32 char32_t;
+#   else
+    typedef wchar_t char32_t;
+#   endif
+# endif
+
     class OPENVRML_LOCAL text_node : public abstract_node<text_node>,
                                      public geometry_node {
         friend class text_metatype;
@@ -3952,7 +3969,7 @@ namespace {
         };
 
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-        typedef std::vector<std::vector<FcChar32> > ucs4_string_t;
+        typedef std::vector<std::vector<char32_t> > ucs4_string_t;
         typedef std::map<FT_UInt, glyph_geometry> glyph_geometry_map_t;
 
         ucs4_string_t ucs4_string;
@@ -22148,7 +22165,7 @@ namespace {
                 && !intersects_segment_in_contour(interior_vertex,
                                                   exterior_vertex,
                                                   exterior_contour)) {
-                return i;
+                return long(i);
             }
         }
         return -1;
@@ -22287,7 +22304,7 @@ namespace {
         OPENVRML_NOTHROW
     {
         for (size_t i = 0; i < vertices.size(); ++i) {
-            if (vertices[i] == vertex) { return i; }
+            if (vertices[i] == vertex) { return long(i); }
         }
         return -1;
     }
@@ -22367,13 +22384,13 @@ namespace {
                 } else {
                     this->coord.push_back(exterior_vertex);
                     assert(!this->coord.empty());
-                    exterior_index = this->coord.size() - 1;
+                    exterior_index = long(this->coord.size() - 1);
                     this->coord_index.push_back(exterior_index);
                 }
                 connection_map_t::iterator pos;
                 while ((pos = connection_map.find(&exterior_vertex))
                        != connection_map.end()) {
-                    for (int i = pos->second->size() - 1; i > -1; --i) {
+                    for (int i = int(pos->second->size() - 1); i > -1; --i) {
                         const vec2f & interior_vertex = (*pos->second)[i];
                         const long interior_index =
                             get_vertex_index_(this->coord, interior_vertex);
@@ -22382,7 +22399,8 @@ namespace {
                         } else {
                             this->coord.push_back(interior_vertex);
                             assert(!this->coord.empty());
-                            this->coord_index.push_back(this->coord.size() - 1);
+                            this->coord_index
+                                .push_back(int32(this->coord.size() - 1));
                         }
                     }
                     this->coord_index.push_back(exterior_index);
@@ -22572,6 +22590,92 @@ namespace {
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
+# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+
+    OPENVRML_LOCAL ptrdiff_t utf8_to_ucs4_(const unsigned char * src_orig,
+                                           char32_t & dst,
+                                           size_t len)
+    {
+        const unsigned char *src = src_orig;
+
+        if (len == 0) { return 0; }
+
+        unsigned char s = *src++;
+        len--;
+
+        char32_t result;
+        size_t extra;
+        if (!(s & 0x80)) {
+            result = s;
+            extra = 0;
+        } else if (!(s & 0x40)) {
+            return -1;
+        } else if (!(s & 0x20)) {
+            result = s & 0x1f;
+            extra = 1;
+        } else if (!(s & 0x10)) {
+            result = s & 0xf;
+            extra = 2;
+        } else if (!(s & 0x08)) {
+            result = s & 0x07;
+            extra = 3;
+        } else if (!(s & 0x04)) {
+            result = s & 0x03;
+            extra = 4;
+        } else if ( ! (s & 0x02)) {
+            result = s & 0x01;
+            extra = 5;
+        } else {
+            return -1;
+        }
+        if (extra > len) { return -1; }
+
+        while (extra--) {
+            result <<= 6;
+            s = *src++;
+
+            if ((s & 0xc0) != 0x80) { return -1; }
+
+            result |= s & 0x3f;
+        }
+        dst = result;
+        return src - src_orig;
+    }
+
+    OPENVRML_LOCAL bool utf8_len_(const unsigned char * utf8_str,
+                                  size_t len,
+                                  size_t & chars,
+                                  size_t & max_char_width)
+    {
+
+        int n = 0;
+        char32_t max = 0;
+        while (len) {
+            char32_t c;
+            const ptrdiff_t clen = utf8_to_ucs4_(utf8_str, c, len);
+            if (clen <= 0) {
+                // Malformed UTF8 string.
+                return false;
+            }
+            if (c > max) {
+                max = c;
+            }
+            utf8_str += clen;
+            len -= clen;
+            n++;
+        }
+        chars = n;
+        if (max >= 0x10000) {
+            max_char_width = 4;
+        } else if (max > 0x100) {
+            max_char_width = 2;
+        } else {
+            max_char_width = 1;
+        }
+        return true;
+    }
+# endif // ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+
     /**
      * @brief Called when @a string changes to update the UCS-4 text.
      *
@@ -22589,23 +22693,27 @@ namespace {
 
             const string & element = this->string_.mfstring::value()[i];
 
-            vector<FcChar32> & ucs4Element = this->ucs4_string[i];
+            vector<char32_t> & ucs4Element = this->ucs4_string[i];
 
             //
             // First, we need to convert the characters from UTF-8 to UCS-4.
             //
-            vector<FcChar8> utf8String(element.begin(), element.end());
-            int nchar = 0, wchar = 0;
-            FcBool well_formed =
-                FcUtf8Len(&utf8String[0], utf8String.size(), &nchar, &wchar);
+            vector<unsigned char> utf8String(element.begin(), element.end());
+            size_t chars = 0, max_char_width = 0;
+            const bool well_formed = utf8_len_(&utf8String[0],
+                                               utf8String.size(),
+                                               chars,
+                                               max_char_width);
             if (well_formed) {
-                ucs4Element.resize(nchar);
-                vector<FcChar8>::iterator utf8interface = utf8String.begin();
-                vector<FcChar32>::iterator ucs4interface = ucs4Element.begin();
+                ucs4Element.resize(chars);
+                vector<unsigned char>::iterator utf8interface =
+                    utf8String.begin();
+                vector<char32_t>::iterator ucs4interface = ucs4Element.begin();
                 while (utf8interface != utf8String.end()) {
-                    const int utf8bytes =
-                        FcUtf8ToUcs4(&*utf8interface, &*ucs4interface,
-                                     utf8String.end() - utf8interface);
+                    const ptrdiff_t utf8bytes =
+                        utf8_to_ucs4_(&*utf8interface,
+                                      *ucs4interface,
+                                      utf8String.end() - utf8interface);
                     utf8interface += utf8bytes;
                     ucs4interface++;
                 }
@@ -22617,10 +22725,10 @@ namespace {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     //
-    // FcChar8_traits is a model of the standard library Character Traits
+    // unsigned_char_traits is a model of the standard library Character Traits
     // concept.
     //
-    struct OPENVRML_LOCAL FcChar8_traits {
+    struct OPENVRML_LOCAL unsigned_char_traits {
         typedef unsigned char char_type;
         typedef int int_type;
         typedef std::streampos pos_type;
@@ -22647,24 +22755,27 @@ namespace {
         static bool eq_int_type(const int_type & e1, const int_type & e2);
     };
 
-    inline void FcChar8_traits::assign(char_type & c1, const char_type & c2)
+    inline void unsigned_char_traits::assign(char_type & c1,
+                                             const char_type & c2)
     {
         c1 = c2;
     }
 
-    inline bool FcChar8_traits::eq(const char_type & c1, const char_type & c2)
+    inline bool unsigned_char_traits::eq(const char_type & c1,
+                                         const char_type & c2)
     {
         return c1 == c2;
     }
 
-    inline bool FcChar8_traits::lt(const char_type & c1, const char_type & c2)
+    inline bool unsigned_char_traits::lt(const char_type & c1,
+                                         const char_type & c2)
     {
         return c1 < c2;
     }
 
-    inline int FcChar8_traits::compare(const char_type * s1,
-                                       const char_type * s2,
-                                       size_t n)
+    inline int unsigned_char_traits::compare(const char_type * s1,
+                                             const char_type * s2,
+                                             size_t n)
     {
         for (size_t i = 0; i < n; ++i) {
             if (!eq(s1[i], s2[i])) { return lt(s1[i], s2[i]) ? -1 : 1; }
@@ -22672,22 +22783,24 @@ namespace {
         return 0;
     }
 
-    inline size_t FcChar8_traits::length(const char_type * s)
+    inline size_t unsigned_char_traits::length(const char_type * s)
     {
         const char_type * p = s;
         while (*p) { ++p; }
         return (p - s);
     }
 
-    inline FcChar8_traits::char_type *
-    FcChar8_traits::move(char_type * s1, const char_type * s2, size_t n)
+    inline unsigned_char_traits::char_type *
+    unsigned_char_traits::move(char_type * s1, const char_type * s2, size_t n)
     {
         return reinterpret_cast<char_type *>(
             memmove(s1, s2, n * sizeof(char_type)));
     }
 
-    inline const FcChar8_traits::char_type *
-    FcChar8_traits::find(const char_type * s, size_t n, const char_type & a)
+    inline const unsigned_char_traits::char_type *
+    unsigned_char_traits::find(const char_type * s,
+                               size_t n,
+                               const char_type & a)
     {
         for (const char_type * p = s; size_t(p - s) < n; ++p) {
             if (*p == a) { return p; }
@@ -22695,51 +22808,50 @@ namespace {
         return 0;
     }
 
-    inline FcChar8_traits::char_type *
-    FcChar8_traits::copy(char_type * s1, const char_type * s2, size_t n)
+    inline unsigned_char_traits::char_type *
+    unsigned_char_traits::copy(char_type * s1, const char_type * s2, size_t n)
     {
         return reinterpret_cast<char_type *>(
             memcpy(s1, s2, n * sizeof(char_type)));
     }
 
-    inline FcChar8_traits::char_type *
-    FcChar8_traits::assign(char_type * s, size_t n, char_type a)
+    inline unsigned_char_traits::char_type *
+    unsigned_char_traits::assign(char_type * s, size_t n, char_type a)
     {
         for (char_type * p = s; p < s + n; ++p) { assign(*p, a); }
         return s;
     }
 
-    inline FcChar8_traits::int_type FcChar8_traits::eof()
+    inline unsigned_char_traits::int_type unsigned_char_traits::eof()
     {
         return static_cast<int_type>(-1);
     }
 
-    inline FcChar8_traits::int_type FcChar8_traits::not_eof(const int_type & c)
+    inline unsigned_char_traits::int_type
+    unsigned_char_traits::not_eof(const int_type & c)
     {
         return eq_int_type(c, eof()) ? int_type(0) : c;
     }
 
-    inline FcChar8_traits::char_type
-    FcChar8_traits::to_char_type(const int_type & e)
+    inline unsigned_char_traits::char_type
+    unsigned_char_traits::to_char_type(const int_type & e)
     {
         return char_type(e);
     }
 
-    inline FcChar8_traits::int_type
-    FcChar8_traits::to_int_type(const char_type & c)
+    inline unsigned_char_traits::int_type
+    unsigned_char_traits::to_int_type(const char_type & c)
     {
         return int_type(c);
     }
 
-    inline bool FcChar8_traits::eq_int_type(const int_type & e1,
+    inline bool unsigned_char_traits::eq_int_type(const int_type & e1,
                                             const int_type & e2)
     {
         return e1 == e2;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-
+#   ifndef _WIN32
     const char * const fcResultMessage[] = { "match",
                                              "no match",
                                              "type mismatch",
@@ -22758,6 +22870,7 @@ namespace {
         virtual ~FontconfigError() OPENVRML_NOTHROW
         {}
     };
+#   endif
 
     class OPENVRML_LOCAL FreeTypeError : public std::runtime_error {
     public:
@@ -22786,9 +22899,10 @@ namespace {
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::string;
-        typedef std::basic_string<FcChar8, FcChar8_traits> FcChar8_string;
+        typedef std::basic_string<unsigned char, unsigned_char_traits>
+            unsigned_char_string;
 
-        FcChar8_string language;
+        unsigned_char_string language;
 
         std::vector<string> family;
         family.push_back("SERIF");
@@ -22808,119 +22922,223 @@ namespace {
         }
 
         try {
+#   ifdef _WIN32
+            LOGFONT lf;
+            lf.lfHeight =         0;
+            lf.lfWidth =          0;
+            lf.lfEscapement =     0;
+            lf.lfOrientation =    0;
+            lf.lfWeight =         FW_MEDIUM;
+            lf.lfItalic =         FALSE;
+            lf.lfUnderline =      FALSE;
+            lf.lfStrikeOut =      FALSE;
+            lf.lfCharSet =        DEFAULT_CHARSET;
+            lf.lfOutPrecision =   OUT_TT_ONLY_PRECIS;
+            lf.lfClipPrecision =  CLIP_DEFAULT_PRECIS;
+            lf.lfQuality =        DEFAULT_QUALITY;
+            lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
+
+            HDC hdc = CreateCompatibleDC(0);
+            scope_guard hdc_guard = make_guard(&DeleteDC, hdc);
+            HFONT hfont = CreateFontIndirect(&lf);
+            SelectObject(hdc, hfont);
+            TCHAR faceName[256] = {};
+            GetTextFace(hdc, sizeof faceName / sizeof (TCHAR), faceName);
+            const int faceNameLen = lstrlen(faceName);
+
+            //
+            // Get the fonts folder.
+            //
+            TCHAR fontsPath[MAX_PATH];
+            HRESULT status =
+                SHGetFolderPath(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT,
+                                fontsPath);
+            if (FAILED(status)) { /* bail */ }
+
+            //
+            // Enumerate the fonts in the registry and pick one that matches.
+            //
+            HKEY fontsKey;
+            LONG result =
+                RegOpenKeyEx(
+                    HKEY_LOCAL_MACHINE,
+                    "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts",
+                    0,
+                    KEY_READ,
+                    &fontsKey);
+            if (result != ERROR_SUCCESS) { /* bail */ }
+            scope_guard fontsKey_guard = make_guard(&RegCloseKey, fontsKey);
+
+            DWORD maxValueNameLen, maxValueLen;
+            result = RegQueryInfoKey(fontsKey,
+                                     NULL,  // lpClass
+                                     NULL,  // lpcClass
+                                     NULL,  // lpReserved
+                                     NULL,  // lpcSubKeys
+                                     NULL,  // lpcMaxSubKeyLen
+                                     NULL,  // lpcMaxClassLen
+                                     NULL,  // lpcValues
+                                     &maxValueNameLen,
+                                     &maxValueLen,
+                                     NULL,  // lpcbSecurityDescriptor
+                                     NULL); // lpftLastWriteTime
+
+            DWORD index = 0;
+            std::vector<TCHAR> valueName(maxValueNameLen + 1);
+            DWORD type;
+            std::vector<BYTE> data(maxValueLen);
+            TCHAR fontPath[MAX_PATH] = {};
+            result = ERROR_SUCCESS;
+            while (result != ERROR_NO_MORE_ITEMS) {
+                DWORD dataLength = DWORD(data.size());
+                DWORD valueNameLength = DWORD(valueName.size());
+                result = RegEnumValue(fontsKey,
+                                      index,
+                                      &valueName.front(),
+                                      &valueNameLength,
+                                      NULL,
+                                      &type,
+                                      &data.front(),
+                                      &dataLength);
+                if (result == ERROR_MORE_DATA) {
+                    data.resize(dataLength);
+                    continue;
+                }
+                if (result == ERROR_SUCCESS) {
+                    if (DWORD(faceNameLen + 1) <= valueNameLength
+                        && std::equal(faceName, faceName + faceNameLen,
+                                      valueName.begin())) {
+                        HRESULT strcat_result = StringCchCat(fontPath, 
+                                                             MAX_PATH,
+                                                             fontsPath);
+                        assert(SUCCEEDED(strcat_result));
+                        strcat_result = StringCchCat(fontPath,
+                                                     MAX_PATH,
+                                                     "\\");
+                        assert(SUCCEEDED(strcat_result));
+                        strcat_result =
+                            StringCchCat(fontPath,
+                                         MAX_PATH,
+                                         reinterpret_cast<STRSAFE_LPCSTR>(
+                                             &data.front()));
+                        assert(SUCCEEDED(strcat_result));
+                        break;
+                    }
+                    ++index;
+                }
+            }
+
+            const size_t fontPathLen = lstrlen(fontPath);
+            assert(fontPathLen != 0);
+            const std::vector<char> ftFilename(fontPath,
+                                               fontPath + fontPathLen + 1);
+            const FT_Long face_index = 0;
+#   else // Everybody else use fontconfig.
             FcPattern * initialPattern = 0;
             FcPattern * matchedPattern = 0;
 
-            try {
-                using std::vector;
+            using std::vector;
 
-                string fontName;
-                //
-                // Set the family.
-                //
-                for (size_t i = 0; i < family.size(); ++i) {
-                    const std::string & element = family[i];
-                    if (element == "SERIF") {
-                        fontName += "serif";
-                    } else if (element == "SANS") {
-                        fontName += "sans";
-                    } else if (element == "TYPEWRITER") {
-                        fontName += "monospace";
-                    } else {
-                        fontName += element;
-                    }
-                    if (i + 1 < family.size()) { fontName += ", "; }
+            string fontName;
+            //
+            // Set the family.
+            //
+            for (size_t i = 0; i < family.size(); ++i) {
+                const std::string & element = family[i];
+                if (element == "SERIF") {
+                    fontName += "serif";
+                } else if (element == "SANS") {
+                    fontName += "sans";
+                } else if (element == "TYPEWRITER") {
+                    fontName += "monospace";
+                } else {
+                    fontName += element;
                 }
-
-                //
-                // Set the weight.
-                //
-                if (style.find("BOLD") != string::npos) {
-                    fontName += ":bold";
-                }
-
-                //
-                // Set the slant.
-                //
-                if (style.find("ITALIC") != string::npos) {
-                    fontName += ":italic";
-                }
-
-                //
-                // For now, at least, we only want outline fonts.
-                //
-                fontName += ":outline=True";
-
-                initialPattern =
-                    FcNameParse(FcChar8_string(fontName.begin(),
-                                               fontName.end()).c_str());
-                if (!initialPattern) { throw std::bad_alloc(); }
-
-                //
-                // Set the language.
-                //
-                if (!language.empty()) {
-                    FcPatternAddString(initialPattern,
-                                       FC_LANG,
-                                       language.c_str());
-                }
-
-                FcConfigSubstitute(0, initialPattern, FcMatchPattern);
-                FcDefaultSubstitute(initialPattern);
-
-                FcResult result = FcResultMatch;
-                matchedPattern = FcFontMatch(0, initialPattern, &result);
-                if (result != FcResultMatch) { throw FontconfigError(result); }
-                assert(matchedPattern);
-
-                FcChar8 * filename = 0;
-                result = FcPatternGetString(matchedPattern,
-                                            FC_FILE,
-                                            0,
-                                            &filename);
-                if (result != FcResultMatch) { throw FontconfigError(result); }
-
-                int id = 0;
-                result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0, &id);
-                if (result != FcResultMatch) { throw FontconfigError(result); }
-
-                text_metatype & nodeClass =
-                    const_cast<text_metatype &>(
-                        static_cast<const text_metatype &>(
-                            this->type().metatype()));
-
-                size_t filenameLen = 0;
-                for (; filename[filenameLen]; ++filenameLen) {}
-
-                const vector<char> ftFilename(filename,
-                                              filename + filenameLen + 1);
-
-                FT_Face newFace = 0;
-                FT_Error ftError = FT_Err_Ok;
-                ftError = FT_New_Face(nodeClass.freeTypeLibrary,
-                                      &ftFilename[0], id, &newFace);
-                if (ftError) { throw FreeTypeError(ftError); }
-
-                if (this->face) {
-                    ftError = FT_Done_Face(this->face);
-                    assert(ftError == FT_Err_Ok); // Surely this can't fail.
-                }
-
-                this->face = newFace;
-                this->glyph_geometry_map.clear();
-
-                FcPatternDestroy(initialPattern);
-                FcPatternDestroy(matchedPattern);
-            } catch (std::runtime_error & ex) {
-                FcPatternDestroy(initialPattern);
-                FcPatternDestroy(matchedPattern);
-                throw;
+                if (i + 1 < family.size()) { fontName += ", "; }
             }
-        } catch (std::bad_alloc & ex) {
-            throw;
-        } catch (FontconfigError & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        } catch (FreeTypeError & ex) {
+
+            //
+            // Set the weight.
+            //
+            if (style.find("BOLD") != string::npos) {
+                fontName += ":bold";
+            }
+
+            //
+            // Set the slant.
+            //
+            if (style.find("ITALIC") != string::npos) {
+                fontName += ":italic";
+            }
+
+            //
+            // For now, at least, we only want outline fonts.
+            //
+            fontName += ":outline=True";
+
+            initialPattern =
+                FcNameParse(FcChar8_string(fontName.begin(),
+                                           fontName.end()).c_str());
+            if (!initialPattern) { throw std::bad_alloc(); }
+            scope_guard initialPattern_guard =
+                make_guard(&FcPatternDestroy, initialPattern);
+
+            //
+            // Set the language.
+            //
+            if (!language.empty()) {
+                FcPatternAddString(initialPattern,
+                                   FC_LANG,
+                                   language.c_str());
+            }
+
+            FcConfigSubstitute(0, initialPattern, FcMatchPattern);
+            FcDefaultSubstitute(initialPattern);
+
+            FcResult result = FcResultMatch;
+            matchedPattern = FcFontMatch(0, initialPattern, &result);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+            scope_guard matchedPattern_guard =
+                make_guard(&FcPatternDestroy, matchedPattern);
+            assert(matchedPattern);
+
+            FcChar8 * filename = 0;
+            result = FcPatternGetString(matchedPattern,
+                                        FC_FILE,
+                                        0,
+                                        &filename);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+
+            FT_Long face_index = 0;
+            result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0,
+                                         &face_index);
+            if (result != FcResultMatch) { throw FontconfigError(result); }
+
+            size_t filenameLen = 0;
+            for (; filename[filenameLen]; ++filenameLen) {}
+
+            const vector<char> ftFilename(filename,
+                                          filename + filenameLen + 1);
+#   endif // ifdef _WIN32
+            text_metatype & nodeClass =
+                const_cast<text_metatype &>(
+                    static_cast<const text_metatype &>(
+                        this->type().metatype()));
+
+            FT_Face newFace = 0;
+            FT_Error ftError = FT_Err_Ok;
+            ftError = FT_New_Face(nodeClass.freeTypeLibrary,
+                                  &ftFilename[0], face_index, &newFace);
+            if (ftError) { throw FreeTypeError(ftError); }
+
+            if (this->face) {
+                ftError = FT_Done_Face(this->face);
+                assert(ftError == FT_Err_Ok); // Surely this can't fail.
+            }
+
+            this->face = newFace;
+            this->glyph_geometry_map.clear();
+        } catch (std::runtime_error & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
@@ -22938,10 +23156,9 @@ namespace {
         scale(scale)
     {}
 
-    const float stepSize_ = 0.2;
+    const float stepSize_ = 0.2f;
 
-    OPENVRML_LOCAL int moveTo_(FT_Vector * const to, void * const user)
-        OPENVRML_NOTHROW
+    extern "C" int moveTo_(const FT_Vector * const to, void * const user)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -22958,8 +23175,7 @@ namespace {
         return 0;
     }
 
-    OPENVRML_LOCAL int lineTo_(FT_Vector * const to, void * const user)
-        OPENVRML_NOTHROW
+    extern "C" int lineTo_(const FT_Vector * const to, void * const user)
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
@@ -23022,10 +23238,9 @@ namespace {
         }
     }
 
-    OPENVRML_LOCAL int conicTo_(FT_Vector * const control,
-                                FT_Vector * const to,
-                                void * const user)
-        OPENVRML_NOTHROW
+    extern "C" int conicTo_(const FT_Vector * const control,
+                            const FT_Vector * const to,
+                            void * const user)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -23057,11 +23272,10 @@ namespace {
         return 0;
     }
 
-    OPENVRML_LOCAL int cubicTo_(FT_Vector * const control1,
-                                FT_Vector * const control2,
-                                FT_Vector * const to,
-                                void * const user)
-        OPENVRML_NOTHROW
+    extern "C" int cubicTo_(const FT_Vector * const control1,
+                            const FT_Vector * const control2,
+                            const FT_Vector * const to,
+                            void * const user)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -23168,11 +23382,15 @@ namespace {
             };
 
             LineGeometry lineGeometry;
-            for (vector<FcChar32>::const_iterator character = string->begin();
+            for (vector<char32_t>::const_iterator character = string->begin();
                  character != string->end(); ++character) {
                 assert(this->face);
                 const FT_UInt glyphIndex =
+#   ifdef _WIN32
+                    FT_Get_Char_Index(this->face, *character);
+#   else
                     FcFreeTypeCharIndex(this->face, *character);
+#   endif
 
                 const glyph_geometry * glyphGeometry = 0;
                 const glyph_geometry_map_t::iterator pos =
@@ -23210,11 +23428,11 @@ namespace {
                     const float advanceWidth =
                         FT_HAS_HORIZONTAL(this->face)
                         ? this->face->glyph->metrics.horiAdvance * glyphScale
-                        : 0.0;
+                        : 0.0f;
                     const float advanceHeight =
                         FT_HAS_VERTICAL(this->face)
                         ? this->face->glyph->metrics.vertAdvance * glyphScale
-                        : 0.0;
+                        : 0.0f;
 
                     const glyph_geometry_map_t::value_type
                         value(glyphIndex,
@@ -23253,7 +23471,7 @@ namespace {
                     if (index > -1) {
                         const size_t offset = lineGeometry.coord.size()
                             - glyphGeometry->coord.size();
-                        lineGeometry.coordIndex.push_back(offset + index);
+                        lineGeometry.coordIndex.push_back(int32(offset + index));
                     } else {
                         lineGeometry.coordIndex.push_back(-1);
                         ++npolygons;
@@ -23282,7 +23500,7 @@ namespace {
             const float length =
                 (line < this->length_.mffloat::value().size())
                 ? this->length_.mffloat::value()[line]
-                : 0.0;
+                : 0.0f;
             if (length > 0.0) {
                 const float currentLength =
                     lineGeometry.xMax - lineGeometry.xMin;
@@ -23328,7 +23546,7 @@ namespace {
                                    0.0f);
                     newGeometry.coord.push_back(textVertex);
                     newGeometry.coord_index
-                        .push_back(newGeometry.coord.size() - 1);
+                        .push_back(int32(newGeometry.coord.size() - 1));
                     geometryXMin = (geometryXMin < textVertex.x())
                         ? geometryXMin
                         : textVertex.x();
@@ -23353,7 +23571,7 @@ namespace {
         const float maxExtent =
             (this->max_extent_.sffloat::value() > 0.0)
             ? this->max_extent_.sffloat::value()
-            : 0.0;
+            : 0.0f;
         if (maxExtent > 0.0) {
             const float currentMaxExtent = geometryXMax - geometryXMin;
             if (currentMaxExtent > maxExtent) {

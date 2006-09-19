@@ -1,3 +1,11 @@
+2006-09-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(text_node::update_face()): Initial implementation of font
+	discovery and resolution for Windows.  The current code pays no
+	attention to the FontStyle specification; but it should reliably
+	pick a font such that text is rendered.
+
 2006-09-06 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.h: Added missing applications
