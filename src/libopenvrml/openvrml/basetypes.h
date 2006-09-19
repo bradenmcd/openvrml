@@ -366,7 +366,7 @@ namespace openvrml {
     }
 
 
-    class mat4f;
+    struct mat4f;
 
     struct OPENVRML_API vec3f {
         float vec[3];
@@ -594,7 +594,7 @@ namespace openvrml {
     }
 
 
-    class quatf;
+    struct quatf;
 
     struct OPENVRML_API rotation {
         float rot[4];

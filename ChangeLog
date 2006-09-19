@@ -1,5 +1,11 @@
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.h: Changed declaration of
+	openvrml::mat4f from class to struct for consistency with
+	definition.
+
+2006-09-19 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unnecessary declarations of openvrml::mat4f.
 
 	* src/libopenvrml/openvrml/bounding_volume.h: Removed spurious
