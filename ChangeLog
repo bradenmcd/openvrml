@@ -1,5 +1,14 @@
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unnecessary declarations of openvrml::mat4f.
+
+	* src/libopenvrml/openvrml/bounding_volume.h: Removed spurious
+	declaration of openvrml::mat4f.
+	* src/libopenvrml/openvrml/rendering_context.h: Removed spurious
+	declaration of openvrml::mat4f.
+
+2006-09-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(text_node::update_face()): Initial implementation of font
 	discovery and resolution for Windows.  The current code pays no

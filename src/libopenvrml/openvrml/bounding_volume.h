@@ -29,7 +29,6 @@ namespace openvrml {
     class frustum;
     class axis_aligned_bounding_box;
     class bounding_sphere;
-    class mat4f;
 
     class OPENVRML_API bounding_volume {
     public:
