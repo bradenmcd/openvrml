@@ -1,5 +1,10 @@
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Makefile.am (VISUALC8_0_FILES): Added config
+	headers and resource scripts to the distribution.
+
+2006-09-19 Braden McDaniel  <braden@endoframe.com>
+
 	Removed Visual C++ 7.1 project files.
 
 	* ide-projects/Makefile.am (VISUALC7_1_FILES): Removed.
