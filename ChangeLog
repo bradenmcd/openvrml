@@ -1,5 +1,28 @@
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
+	Removed Visual C++ 7.1 project files.
+
+	* ide-projects/Makefile.am (VISUALC7_1_FILES): Removed.
+	(EXTRA_DIST): Removed reference to VISUALC7_1_FILES.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/OpenVRML.sln: Removed
+	file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/antlr/antlr.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml-config.h:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml/openvrml.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl-config.h:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC7_1/OpenVRML/test-openvrml/test-openvrml.vcproj:
+	Removed file.
+
+2006-09-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.h: Changed declaration of
 	openvrml::mat4f from class to struct for consistency with
 	definition.
