@@ -1,5 +1,9 @@
 2006-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	* m4/ov_cxx_visibility.m4: Cache the test result.
+
+2006-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Clean up of breakage from Windows font support check-in.
 
 	* configure.ac: Check to see whether FreeType function callback
