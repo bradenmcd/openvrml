@@ -1,3 +1,24 @@
+2006-09-21 Braden McDaniel  <braden@endoframe.com>
+
+	Clean up of breakage from Windows font support check-in.
+
+	* configure.ac: Check to see whether FreeType function callback
+	signatures need const.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(text_node::update_face()): Use
+	boost::ignore_unused_variable_warning to quell warnings about
+	scope_guard variables.  Use unsigned_char_string instead of
+	obsoleted FcChar8_string type.  Revert face_index to an int; the
+	fontconfig API doesn't like FT_Long.
+	(moveTo_(const FT_Vector *, void *)): Use OPENVRML_FT_CONST macro
+	in function signature.
+	(lineTo_(const FT_Vector *, void *)): Use OPENVRML_FT_CONST macro
+	in function signature.
+	(conicTo_(const FT_Vector *, const FT_Vector *, void *)): Use
+	OPENVRML_FT_CONST macro in function signature.
+	(cubicTo_(const FT_Vector *, const FT_Vector *, const FT_Vector *,
+	void *)): Use OPENVRML_FT_CONST macro in function signature.
+
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Makefile.am (VISUALC8_0_FILES): Added config

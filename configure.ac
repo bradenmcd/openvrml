@@ -79,6 +79,30 @@ ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
+#
+# FreeType >= 2.2 uses const in callback function signatures.  This
+# doesn't cause an error in C; but it does in C++.
+#
+AS_IF([test -n "${FREETYPE_CONFIG}"],
+      [AC_MSG_CHECKING([if FreeType callback function signatures use const])
+       AC_CACHE_VAL([ov_cv_ft_const],
+[AC_LANG_PUSH([C++])
+save_CXXFLAGS="${CXXFLAGS}"
+CXXFLAGS="${CXXFLAGS} `${FREETYPE_CONFIG} --cflags`"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+                  [#include <ft2build.h>
+#include FT_OUTLINE_H
+int moveTo(const FT_Vector *, void *);],
+                  [FT_Outline_MoveToFunc f = moveTo])],
+                  [ov_cv_ft_const=const],
+                  [ov_cv_ft_const= ])
+CXXFLAGS="${save_CXXFLAGS}"
+AC_LANG_POP])
+       AS_IF([test -n "$ov_cv_ft_const"],
+             [AC_MSG_RESULT([yes])],
+             [AC_MSG_RESULT([no])])
+])
+
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
 
@@ -175,6 +199,8 @@ else
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
   AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
             [Defined if support for rendering Text nodes is enabled.])
+  AC_DEFINE_UNQUOTED([OPENVRML_FT_CONST], [$ov_cv_ft_const],
+                     [const for FreeType callback function signatures.])
 fi
 AC_SUBST([FONTCONFIG_CFLAGS])
 AC_SUBST([FONTCONFIG_LIBS])
