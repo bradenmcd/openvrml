@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="sdl-viewer"
 	ProjectGUID="{2DD5D192-3E85-4E64-854B-DF7A1FF06B76}"
+	RootNamespace="sdl-viewer"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -16,170 +17,6 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
-			ConfigurationType="1"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml;&quot;..\openvrml-gl&quot;;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;OPENVRML_USE_LIB;OPENVRML_GL_USE_LIB"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="0"
-				RuntimeLibrary="2"
-				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="true"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				DisableSpecificWarnings="4250;4290;4355"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib opengl32.lib glu32.lib SDLmain.lib SDL.lib"
-				OutputFile="$(OutDir)/sdl-viewer.exe"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/sdl-viewer.pdb"
-				SubSystem="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="1"
-			CharacterSet="2"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\openvrml;&quot;..\openvrml-gl&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;OPENVRML_USE_LIB;OPENVRML_GL_USE_LIB"
-				RuntimeLibrary="2"
-				TreatWChar_tAsBuiltInType="true"
-				ForceConformanceInForLoopScope="true"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4226;4250;4290;4355;4800"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/sdl-viewer.exe"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug DLL|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
@@ -262,7 +99,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release DLL|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"

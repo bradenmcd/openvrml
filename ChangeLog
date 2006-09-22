@@ -1,3 +1,14 @@
+2006-09-22 Braden McDaniel  <braden@endoframe.com>
+
+	Removed static library configurations from the Visual C++ project
+	files.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
 2006-09-21 Braden McDaniel  <braden@endoframe.com>
 
 	* m4/ov_cxx_visibility.m4: Cache the test result.
