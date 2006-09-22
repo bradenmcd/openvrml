@@ -4,7 +4,7 @@
 //
 // Copyright 1998  Chris Morley
 // Copyright 1999  Kumaran Santhanam
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or
@@ -23034,9 +23034,6 @@ namespace {
                                                fontPath + fontPathLen + 1);
             const FT_Long face_index = 0;
 #   else // Everybody else use fontconfig.
-            FcPattern * initialPattern = 0;
-            FcPattern * matchedPattern = 0;
-
             using std::vector;
 
             string fontName;
@@ -23076,12 +23073,13 @@ namespace {
             //
             fontName += ":outline=True";
 
-            initialPattern =
-                FcNameParse(FcChar8_string(fontName.begin(),
-                                           fontName.end()).c_str());
+            FcPattern * const initialPattern =
+                FcNameParse(unsigned_char_string(fontName.begin(),
+                                                 fontName.end()).c_str());
             if (!initialPattern) { throw std::bad_alloc(); }
             scope_guard initialPattern_guard =
                 make_guard(&FcPatternDestroy, initialPattern);
+            boost::ignore_unused_variable_warning(initialPattern_guard);
 
             //
             // Set the language.
@@ -23096,11 +23094,13 @@ namespace {
             FcDefaultSubstitute(initialPattern);
 
             FcResult result = FcResultMatch;
-            matchedPattern = FcFontMatch(0, initialPattern, &result);
+            FcPattern * const matchedPattern =
+                FcFontMatch(0, initialPattern, &result);
             if (result != FcResultMatch) { throw FontconfigError(result); }
+            assert(matchedPattern);
             scope_guard matchedPattern_guard =
                 make_guard(&FcPatternDestroy, matchedPattern);
-            assert(matchedPattern);
+            boost::ignore_unused_variable_warning(matchedPattern_guard);
 
             FcChar8 * filename = 0;
             result = FcPatternGetString(matchedPattern,
@@ -23109,7 +23109,7 @@ namespace {
                                         &filename);
             if (result != FcResultMatch) { throw FontconfigError(result); }
 
-            FT_Long face_index = 0;
+            int face_index = 0;
             result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0,
                                          &face_index);
             if (result != FcResultMatch) { throw FontconfigError(result); }
@@ -23128,7 +23128,8 @@ namespace {
             FT_Face newFace = 0;
             FT_Error ftError = FT_Err_Ok;
             ftError = FT_New_Face(nodeClass.freeTypeLibrary,
-                                  &ftFilename[0], face_index, &newFace);
+                                  &ftFilename[0], FT_Long(face_index),
+                                  &newFace);
             if (ftError) { throw FreeTypeError(ftError); }
 
             if (this->face) {
@@ -23158,7 +23159,8 @@ namespace {
 
     const float stepSize_ = 0.2f;
 
-    extern "C" int moveTo_(const FT_Vector * const to, void * const user)
+    extern "C" int moveTo_(OPENVRML_FT_CONST FT_Vector * const to,
+                           void * const user)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -23175,7 +23177,8 @@ namespace {
         return 0;
     }
 
-    extern "C" int lineTo_(const FT_Vector * const to, void * const user)
+    extern "C" int lineTo_(OPENVRML_FT_CONST FT_Vector * const to,
+                           void * const user)
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
@@ -23238,8 +23241,8 @@ namespace {
         }
     }
 
-    extern "C" int conicTo_(const FT_Vector * const control,
-                            const FT_Vector * const to,
+    extern "C" int conicTo_(OPENVRML_FT_CONST FT_Vector * const control,
+                            OPENVRML_FT_CONST FT_Vector * const to,
                             void * const user)
     {
         using std::vector;
@@ -23272,9 +23275,9 @@ namespace {
         return 0;
     }
 
-    extern "C" int cubicTo_(const FT_Vector * const control1,
-                            const FT_Vector * const control2,
-                            const FT_Vector * const to,
+    extern "C" int cubicTo_(OPENVRML_FT_CONST FT_Vector * const control1,
+                            OPENVRML_FT_CONST FT_Vector * const control2,
+                            OPENVRML_FT_CONST FT_Vector * const to,
                             void * const user)
     {
         using std::vector;
