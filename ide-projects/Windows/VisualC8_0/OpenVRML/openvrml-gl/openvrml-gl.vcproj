@@ -67,7 +67,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="GlU32.lib OpenGL32.lib"
+				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
 				GenerateDebugInformation="true"
+				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -148,7 +150,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="GlU32.lib OpenGL32.lib"
+				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
 				LinkTimeCodeGeneration="1"
+				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
