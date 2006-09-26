@@ -65,8 +65,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib opengl32.lib glu32.lib SDLmain.lib SDL.lib"
-				OutputFile="$(OutDir)/sdl-viewer.exe"
+				AdditionalDependencies="opengl32.lib glu32.lib SDLmain.lib SDL.lib"
+				OutputFile="$(SolutionDir)..\bin\sdl-viewerd.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/sdl-viewer.pdb"
@@ -147,7 +147,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/sdl-viewer.exe"
+				AdditionalDependencies="opengl32.lib glu32.lib SDLmain.lib SDL.lib"
+				OutputFile="$(SolutionDir)..\bin\sdl-viewer.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
