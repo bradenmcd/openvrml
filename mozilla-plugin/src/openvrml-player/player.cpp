@@ -18,7 +18,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# include <iostream>
 # include <sstream>
+# include <boost/lexical_cast.hpp>
 # include <boost/thread/thread.hpp>
 # include <unistd.h>
 // Must include before X11 headers.
@@ -161,19 +163,19 @@ openvrml_player_command_channel_loop_quit_event(gpointer data);
 
 namespace {
 
-    GdkNativeWindow socket_id;
+    gchar ** args;
 
     GOptionEntry options[] = {
         {
-            "gtk-socket-id",
+            G_OPTION_REMAINING,
+            '\0',
             0,
-            0,
-            G_OPTION_ARG_INT,
-            &socket_id,
-            "GtkSocket id",
-            "GTK_SOCKET_ID"
+            G_OPTION_ARG_STRING_ARRAY,
+            &args,
+            "a GtkSocket id",
+            "GTK-SOCKET-ID"
         },
-        { 0, 0, 0, G_OPTION_ARG_NONE, 0, 0, 0 }
+        { 0, '\0', 0, G_OPTION_ARG_NONE, 0, 0, 0 }
     };
 
     struct initial_stream_reader {
@@ -255,6 +257,8 @@ namespace {
 
 int main(int argc, char * argv[])
 {
+    using std::cerr;
+    using std::endl;
     using std::vector;
     using boost::function0;
     using boost::shared_ptr;
@@ -284,13 +288,25 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;        
     }
 
+    if (!args) {
+        cerr << argv[0] << ": missing required GTK-SOCKET-ID argument" << endl;
+        return EXIT_FAILURE;
+    }
+
+    GdkNativeWindow socket_id;
+    try {
+        socket_id = boost::lexical_cast<GdkNativeWindow>(args[0]);
+    } catch (const boost::bad_lexical_cast & ex) {
+        cerr << argv[0] << ": expected integer value for GTK-SOCKET-ID "
+            "argument" << endl;
+        return EXIT_FAILURE;
+    }
+
     command_istream command_in;
 
     ::request_channel = g_io_channel_unix_new(1); // stdout
 
-    GtkWidget * window = socket_id
-        ? gtk_plug_new(socket_id)
-        : gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    GtkWidget * const window =  gtk_plug_new(socket_id);
 
     GtkWidget * const vrml_browser = gtk_vrml_browser_new(::request_channel);
     gtk_container_add(GTK_CONTAINER(window), vrml_browser);    
@@ -304,52 +320,44 @@ int main(int argc, char * argv[])
     GIOChannel * command_channel = 0;
     GSource * command_watch = 0;
 
-    if (argc > 1) {
-        const gchar * url[] = { argv[1], 0 };
-        const gchar ** parameter = 0;
-        gtk_vrml_browser_load_url(GTK_VRML_BROWSER(vrml_browser),
-                                  url,
-                                  parameter);
-    } else {
-        command_main_context = g_main_context_new();
-        command_main = g_main_loop_new(command_main_context, false);
-        command_channel = g_io_channel_unix_new(0); // stdin
-        GError * error = 0;
-        GIOStatus status = g_io_channel_set_encoding(command_channel,
-                                                     0, // binary (no encoding)
-                                                     &error);
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            return EXIT_FAILURE;
+    command_main_context = g_main_context_new();
+    command_main = g_main_loop_new(command_main_context, false);
+    command_channel = g_io_channel_unix_new(0); // stdin
+    error = 0;
+    GIOStatus status = g_io_channel_set_encoding(command_channel,
+                                                 0, // binary (no encoding)
+                                                 &error);
+    if (status != G_IO_STATUS_NORMAL) {
+        if (error) {
+            g_critical(error->message);
+            g_error_free(error);
         }
-
-        command_watch = g_io_create_watch(command_channel,
-                                          GIOCondition(G_IO_IN | G_IO_HUP));
-        const GDestroyNotify notify = 0;
-        g_source_set_callback(
-            command_watch,
-            reinterpret_cast<GSourceFunc>(::command_data_available),
-            static_cast<command_streambuf *>(command_in.rdbuf()), notify);
-        guint source_id = g_source_attach(command_watch,
-                                          command_main_context);
-        g_return_val_if_fail(source_id != 0, EXIT_FAILURE);
-
-        function0<void> command_channel_loop_func =
-            command_channel_loop(*command_main);
-        threads.create_thread(command_channel_loop_func);
-        
-        shared_ptr<plugin_streambuf> initial_stream(
-            new plugin_streambuf(initial_stream_uri));
-        uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
-                                                   initial_stream);
-        function0<void> initial_stream_reader_func =
-            initial_stream_reader(initial_stream,
-                                  *GTK_VRML_BROWSER(vrml_browser));
-        threads.create_thread(initial_stream_reader_func);
+        return EXIT_FAILURE;
     }
+
+    command_watch = g_io_create_watch(command_channel,
+                                      GIOCondition(G_IO_IN | G_IO_HUP));
+    const GDestroyNotify notify = 0;
+    g_source_set_callback(
+        command_watch,
+        reinterpret_cast<GSourceFunc>(::command_data_available),
+        static_cast<command_streambuf *>(command_in.rdbuf()), notify);
+    guint source_id = g_source_attach(command_watch,
+                                      command_main_context);
+    g_return_val_if_fail(source_id != 0, EXIT_FAILURE);
+
+    function0<void> command_channel_loop_func =
+        command_channel_loop(*command_main);
+    threads.create_thread(command_channel_loop_func);
+        
+    shared_ptr<plugin_streambuf> initial_stream(
+        new plugin_streambuf(initial_stream_uri));
+    uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
+                                               initial_stream);
+    function0<void> initial_stream_reader_func =
+        initial_stream_reader(initial_stream,
+                              *GTK_VRML_BROWSER(vrml_browser));
+    threads.create_thread(initial_stream_reader_func);
 
     function0<void> read_commands = command_istream_reader(command_in);
     threads.create_thread(read_commands);
@@ -360,7 +368,7 @@ int main(int argc, char * argv[])
 
     g_source_unref(command_watch);
 
-    GIOStatus status = g_io_channel_shutdown(command_channel, true, &error);
+    status = g_io_channel_shutdown(command_channel, true, &error);
     if (status != G_IO_STATUS_NORMAL) {
         if (error) {
             g_critical(error->message);
