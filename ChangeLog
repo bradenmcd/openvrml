@@ -1,3 +1,16 @@
+2006-09-26 Braden McDaniel  <braden@endoframe.com>
+
+	Made the GtkSocket id a required argument to openvrml-player
+	rather than an option.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::SetWindow(NPWindow &)): Add the socket id as an
+	argument rather than an option.
+	* mozilla-plugin/src/openvrml-player/player.cpp
+	(main(int, char *[])): No longer expect an optional URL argument;
+	instead, expect a required GtkSocket id argument (i.e., an
+	integer).
+
 2006-09-22 Braden McDaniel  <braden@endoframe.com>
 
 	Removed static library configurations from the Visual C++ project

@@ -1096,8 +1096,7 @@ namespace {
                 }
             }
 
-            string socket_id_arg =
-                "--gtk-socket-id=" + lexical_cast<string>(this->window);
+            string socket_id_arg = lexical_cast<string>(this->window);
             const char * socket_id_arg_c_str = socket_id_arg.c_str();
             vector<char> socket_id_arg_vec(
                 socket_id_arg_c_str,
