@@ -1,3 +1,0 @@
-#!/bin/bash
-
-./$(dirname $0)/configure -C --disable-static CXXFLAGS='-g -O0 -Wall -Wextra -Wno-missing-braces' $*
