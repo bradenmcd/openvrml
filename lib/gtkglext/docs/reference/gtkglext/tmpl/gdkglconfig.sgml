@@ -1,0 +1,216 @@
+<!-- ##### SECTION Title ##### -->
+Frame Buffer Configuration
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL frame buffer configuration object
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM GdkGLConfigMode ##### -->
+<para>
+
+</para>
+
+@GDK_GL_MODE_RGB: 
+@GDK_GL_MODE_RGBA: 
+@GDK_GL_MODE_INDEX: 
+@GDK_GL_MODE_SINGLE: 
+@GDK_GL_MODE_DOUBLE: 
+@GDK_GL_MODE_STEREO: 
+@GDK_GL_MODE_ALPHA: 
+@GDK_GL_MODE_DEPTH: 
+@GDK_GL_MODE_STENCIL: 
+@GDK_GL_MODE_ACCUM: 
+@GDK_GL_MODE_MULTISAMPLE: 
+
+<!-- ##### STRUCT GdkGLConfig ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gdk_gl_config_new ##### -->
+<para>
+
+</para>
+
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_new_for_screen ##### -->
+<para>
+
+</para>
+
+@screen: 
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_new_by_mode ##### -->
+<para>
+
+</para>
+
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_new_by_mode_for_screen ##### -->
+<para>
+
+</para>
+
+@screen: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_screen ##### -->
+<para>
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_attrib ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@attribute: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_colormap ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_visual ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_depth ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_layer_plane ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_n_aux_buffers ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_get_n_sample_buffers ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_is_rgba ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_is_double_buffered ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_is_stereo ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_has_alpha ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_has_depth_buffer ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_has_stencil_buffer ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_config_has_accum_buffer ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+

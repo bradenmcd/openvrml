@@ -1,0 +1,185 @@
+<!-- ##### SECTION Title ##### -->
+X Window System Interaction
+
+<!-- ##### SECTION Short_Description ##### -->
+Internal X-related functions
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gdk_x11_gl_query_glx_extension ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@extension: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_new_from_visualid ##### -->
+<para>
+
+</para>
+
+@xvisualid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_new_from_visualid_for_screen ##### -->
+<para>
+
+</para>
+
+@screen: 
+@xvisualid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_get_xdisplay ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_get_screen_number ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_get_xvinfo ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_config_is_mesa_glx ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_context_foreign_new ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@share_list: 
+@glxcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_context_get_glxcontext ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_pixmap_get_glxpixmap ##### -->
+<para>
+
+</para>
+
+@glpixmap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_x11_gl_window_get_glxwindow ##### -->
+<para>
+
+</para>
+
+@glwindow: 
+@Returns: 
+
+
+<!-- ##### MACRO GDK_GL_CONFIG_XDISPLAY ##### -->
+<para>
+Gets X Display.
+</para>
+
+@glconfig: a #GdkGLConfig.
+@Returns: pointer to the Display.
+
+
+<!-- ##### MACRO GDK_GL_CONFIG_SCREEN_XNUMBER ##### -->
+<para>
+Gets X screen number.
+</para>
+
+@glconfig: a #GdkGLConfig.
+@Returns: the screen number.
+
+
+<!-- ##### MACRO GDK_GL_CONFIG_XVINFO ##### -->
+<para>
+Gets XVisualInfo data.
+</para>
+
+@glconfig: a #GdkGLConfig.
+@Returns: pointer to the XVisualInfo data.
+
+
+<!-- ##### MACRO GDK_GL_CONFIG_XCOLORMAP ##### -->
+<para>
+Gets X Colormap.
+</para>
+
+@glconfig: a #GdkGLConfig.
+@Returns: the Colormap.
+
+
+<!-- ##### MACRO GDK_GL_CONTEXT_GLXCONTEXT ##### -->
+<para>
+Gets GLXContext.
+</para>
+
+@glcontext: a #GdkGLContext.
+@Returns: the GLXContext.
+
+
+<!-- ##### MACRO GDK_GL_PIXMAP_GLXPIXMAP ##### -->
+<para>
+Gets GLXPixmap.
+</para>
+
+@glpixmap: a #GdkGLPixmap.
+@Returns: the GLXPixmap.
+
+
+<!-- ##### MACRO GDK_GL_WINDOW_GLXWINDOW ##### -->
+<para>
+Gets X Window.
+</para>
+
+@glwindow: a #GdkGLWindow.
+@Returns: the Window.
+
+

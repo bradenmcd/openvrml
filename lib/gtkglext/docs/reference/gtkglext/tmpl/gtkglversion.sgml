@@ -1,0 +1,94 @@
+<!-- ##### SECTION Title ##### -->
+Version Information
+
+<!-- ##### SECTION Short_Description ##### -->
+Variables and macros to check the GtkGLExt version
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO GTKGLEXT_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GTKGLEXT_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GTKGLEXT_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GTKGLEXT_INTERFACE_AGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GTKGLEXT_BINARY_AGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GTKGLEXT_CHECK_VERSION ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+
+
+<!-- ##### VARIABLE gtkglext_major_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_minor_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_micro_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_interface_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_binary_age ##### -->
+<para>
+
+</para>
+
+

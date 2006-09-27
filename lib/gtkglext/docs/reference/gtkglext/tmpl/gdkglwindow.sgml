@@ -1,0 +1,100 @@
+<!-- ##### SECTION Title ##### -->
+OpenGL Window
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL window which is located on-screen
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GdkGLWindow ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gdk_gl_window_new ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@window: 
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_window_destroy ##### -->
+<para>
+
+</para>
+
+@glwindow: 
+
+
+<!-- ##### FUNCTION gdk_gl_window_get_window ##### -->
+<para>
+
+</para>
+
+@glwindow: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_window_set_gl_capability ##### -->
+<para>
+
+</para>
+
+@window: 
+@glconfig: 
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_window_unset_gl_capability ##### -->
+<para>
+
+</para>
+
+@window: 
+
+
+<!-- ##### FUNCTION gdk_window_is_gl_capable ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_window_get_gl_window ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### MACRO gdk_window_get_gl_drawable ##### -->
+<para>
+Returns the #GdkGLDrawable held by the @window. In fact, this is macro
+that casts the result of #gdk_window_get_gl_window to #GdkGLDrawable.
+</para>
+
+@window: a #GdkGLWindow.
+@Returns: the #GdkGLDrawable.
+
+

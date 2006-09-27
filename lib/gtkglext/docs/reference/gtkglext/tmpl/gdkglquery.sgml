@@ -1,0 +1,82 @@
+<!-- ##### SECTION Title ##### -->
+Query
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions to query OpenGL support information
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### USER_FUNCTION GdkGLProc ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gdk_gl_query_extension ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_query_extension_for_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_query_version ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_query_version_for_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@major: 
+@minor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_query_gl_extension ##### -->
+<para>
+
+</para>
+
+@extension: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_get_proc_address ##### -->
+<para>
+
+</para>
+
+@proc_name: 
+@Returns: 
+
+
