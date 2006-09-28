@@ -1,3 +1,8 @@
+2006-09-27 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Makefile.am (VISUALC8_0_FILES): Fixed name of
+	libopenvrml-gl resource header.
+
 2006-09-26 Braden McDaniel  <braden@endoframe.com>
 
 	Put DLLs, EXEs in a common directory.
