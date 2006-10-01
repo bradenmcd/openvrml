@@ -1,1 +1,1 @@
-SUBDIRS = antlr
+SUBDIRS = antlr gtkglext

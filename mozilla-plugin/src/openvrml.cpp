@@ -1062,31 +1062,31 @@ namespace {
             this->window = GdkNativeWindow(ptrdiff_t(window.window));
 
             //
-            // The OPENVRML_PLAYER environment variable overrides the default
-            // path to the child process executable.  To allow OPENVRML_PLAYER
+            // The OPENVRML_GTKPLUG environment variable overrides the default
+            // path to the child process executable.  To allow OPENVRML_GTKPLUG
             // to include arguments (rather than just be a path to an
             // executable), it is parsed with g_shell_parse_argv.  This is
             // particularly useful in case we want to run the child process in
             // a harness like valgrind.
             //
-            gint openvrml_player_cmd_argc = 0;
-            gchar ** openvrml_player_cmd_argv = 0;
-            const gchar * const openvrml_player_cmd =
-                g_getenv("OPENVRML_PLAYER");
-            if (!openvrml_player_cmd) {
-                openvrml_player_cmd_argc = 1;
-                openvrml_player_cmd_argv =
+            gint openvrml_gtkplug_cmd_argc = 0;
+            gchar ** openvrml_gtkplug_cmd_argv = 0;
+            const gchar * const openvrml_gtkplug_cmd =
+                g_getenv("OPENVRML_GTKPLUG");
+            if (!openvrml_gtkplug_cmd) {
+                openvrml_gtkplug_cmd_argc = 1;
+                openvrml_gtkplug_cmd_argv =
                     static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-                if (!openvrml_player_cmd_argv) { throw std::bad_alloc(); }
-                openvrml_player_cmd_argv[0] =
-                    g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-player");
-                if (!openvrml_player_cmd_argv[0]) { throw std::bad_alloc(); }
+                if (!openvrml_gtkplug_cmd_argv) { throw std::bad_alloc(); }
+                openvrml_gtkplug_cmd_argv[0] =
+                    g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-gtkplug");
+                if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
             } else {
                 GError * error = 0;
                 gboolean succeeded =
-                    g_shell_parse_argv(openvrml_player_cmd,
-                                       &openvrml_player_cmd_argc,
-                                       &openvrml_player_cmd_argv,
+                    g_shell_parse_argv(openvrml_gtkplug_cmd,
+                                       &openvrml_gtkplug_cmd_argc,
+                                       &openvrml_gtkplug_cmd_argv,
                                        &error);
                 if (!succeeded) {
                     if (error) {
@@ -1102,13 +1102,13 @@ namespace {
                 socket_id_arg_c_str,
                 socket_id_arg_c_str + socket_id_arg.length() + 1);
 
-            const gint argv_size = openvrml_player_cmd_argc + 2;
+            const gint argv_size = openvrml_gtkplug_cmd_argc + 2;
             gchar ** const argv =
                 static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
             if (!argv) { throw std::bad_alloc(); }
             gint i;
-            for (i = 0; i < openvrml_player_cmd_argc; ++i) {
-                argv[i] = openvrml_player_cmd_argv[i];
+            for (i = 0; i < openvrml_gtkplug_cmd_argc; ++i) {
+                argv[i] = openvrml_gtkplug_cmd_argv[i];
             }
             argv[i++] = &socket_id_arg_vec.front();
             argv[i]   = 0;
@@ -1144,7 +1144,7 @@ namespace {
             // XXX
             g_free(working_directory);
             g_free(argv);
-            g_strfreev(openvrml_player_cmd_argv);
+            g_strfreev(openvrml_gtkplug_cmd_argv);
 
             if (succeeded) {
                 this->command_channel = g_io_channel_unix_new(standard_input);

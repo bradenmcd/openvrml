@@ -1,1 +1,1 @@
-SUBDIRS = libopenvrml libopenvrml-gl
+SUBDIRS = libopenvrml libopenvrml-gl openvrml-gtkplug

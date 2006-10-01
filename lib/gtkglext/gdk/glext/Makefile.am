@@ -21,5 +21,5 @@ gdkglext_glext_public_h_sources = \
 	wglext-extra.h
 
 gdkglextglextincludedir = $(includedir)/gtkglext-@GTKGLEXT_API_VERSION@/gdk/glext
-gdkglextglextinclude_HEADERS = $(gdkglext_glext_public_h_sources)
+noinst_HEADERS = $(gdkglext_glext_public_h_sources)
 

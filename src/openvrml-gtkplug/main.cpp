@@ -37,7 +37,7 @@ using namespace openvrml_player;
 
 namespace {
 
-    const char application_name[] = "OpenVRML Player";
+    const char application_name[] = "OpenVRML GtkPlug";
 
     //
     // We don't already know what the URI of the initial stream is until we

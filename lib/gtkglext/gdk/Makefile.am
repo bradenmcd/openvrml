@@ -62,11 +62,11 @@ common_libadd = \
 #
 # setup source file variables
 #
+gdkglext_configure_generated_public_h_source = gdkglversion.h
 
 gdkglext_public_h_sources = \
 	gdkgl.h			\
 	gdkgldefs.h		\
-	gdkglversion.h		\
 	gdkgltokens.h		\
 	gdkgltypes.h		\
 	gdkglinit.h		\
@@ -102,8 +102,9 @@ gdkglext_built_c_sources = \
 	gdkglenumtypes.c
 
 gdkglext_headers = \
-	$(gdkglext_public_h_sources)		\
-	$(gdkglext_built_public_h_sources)	\
+	$(gdkglext_public_h_sources)			\
+	$(gdkglext_built_public_h_sources)		\
+	$(gdkglext_configure_generated_public_h_source)	\
 	gdkgldebug.h
 
 gdkglext_sources = \
@@ -123,11 +124,11 @@ stamp_files = \
 #
 
 gdkglextincludedir = $(includedir)/gtkglext-@GTKGLEXT_API_VERSION@/gdk
-gdkglextinclude_HEADERS = $(gdkglext_headers)
+noinst_HEADERS = $(gdkglext_headers)
 
 INCLUDES = $(common_includes)
 
-lib_LTLIBRARIES = $(gdkglext_targetlib)
+noinst_LTLIBRARIES = $(gdkglext_targetlib)
 
 EXTRA_LTLIBRARIES = \
 	libgdkglext-x11-@API_MJ@.@API_MI@.la	\
@@ -146,35 +147,32 @@ BUILT_SOURCES = \
 	@REBUILD@			\
 	$(gdkglext_built_sources)
 
-DISTCLEANFILES = $(stamp_files)
-
-MAINTAINERCLEANFILES = \
-	$(gdkglext_built_sources)
+DISTCLEANFILES = $(stamp_files) $(gdkglext_built_sources)
 
 # Generate built header without using automake BUILT_SOURCES
 $(libgdkglext_x11_@API_MJ@_@API_MI@_la_OBJECTS) $(libgdkglext_win32_@API_MJ@_@API_MI@_la_OBJECTS): $(gdkglext_built_public_h_sources)
 
-$(srcdir)/gdkglenumtypes.h: stamp-gdkglenumtypes-h
+gdkglenumtypes.h: stamp-gdkglenumtypes-h
 	@true
 stamp-gdkglenumtypes-h: @REBUILD@ $(gdkglext_public_h_sources) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	builddir=`pwd`; ( cd $(srcdir) && glib-mkenums \
 			--fhead "#ifndef __GDK_GL_ENUM_TYPES_H__\n#define __GDK_GL_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void);\n#define GDK_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" \
 			--ftail "G_END_DECLS\n\n#endif /* __GDK_GL_ENUM_TYPES_H__ */" \
-		$(gdkglext_public_h_sources) ) >> xgen-geth \
-	&& (cmp -s xgen-geth $(srcdir)/gdkglenumtypes.h || cp xgen-geth $(srcdir)/gdkglenumtypes.h ) \
+		$(gdkglext_public_h_sources) $${builddir}/$(gdkglext_configure_generated_public_h_source) ) >> xgen-geth \
+	&& (cmp -s xgen-geth gdkglenumtypes.h || cp xgen-geth gdkglenumtypes.h ) \
 	&& rm -f xgen-geth \
 	&& echo timestamp > $(@F)
-$(srcdir)/gdkglenumtypes.c: @REBUILD@ $(gdkglext_public_h_sources) Makefile
-	( cd $(srcdir) && glib-mkenums \
+gdkglenumtypes.c: @REBUILD@ $(gdkglext_public_h_sources) Makefile
+	builddir=`pwd`; ( cd $(srcdir) && glib-mkenums \
 			--fhead "#include \"gdkgl.h\"" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" \
 			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
-		$(gdkglext_public_h_sources) ) > xgen-getc \
-	&& cp xgen-getc $(srcdir)/gdkglenumtypes.c  \
+		$(gdkglext_public_h_sources) $${builddir}/$(gdkglext_configure_generated_public_h_source) ) > xgen-getc \
+	&& cp xgen-getc $@  \
 	&& rm -f xgen-getc
 
 #
@@ -182,12 +180,6 @@ $(srcdir)/gdkglenumtypes.c: @REBUILD@ $(gdkglext_public_h_sources) Makefile
 #
 configexecincludedir = $(libdir)/gtkglext-@GTKGLEXT_API_VERSION@/include
 #configexecinclude_DATA = gdkglext-config.h
-
-install-exec-local: gdkglext-config.h
-	$(mkinstalldirs) $(DESTDIR)$(configexecincludedir)
-	file=$(DESTDIR)$(configexecincludedir)/gdkglext-config.h; \
-	if test -r $$file && cmp -s gdkglext-config.h $$file; then :; \
-	else $(INSTALL_DATA) gdkglext-config.h $$file; fi
 
 gdkglext-config.h: stamp-gdkglext-config-h
 	@if test -f gdkglext-config.h; then :; \
@@ -198,12 +190,3 @@ stamp-gdkglext-config-h: $(top_builddir)/config.status
 	echo timestamp > stamp-gdkglext-config-h
 
 DISTCLEANFILES += gdkglext-config.h stamp-gdkglext-config-h
-
-#
-# Extra rules
-#
-
-install-data-local: install-ms-lib
-
-uninstall-local: uninstall-ms-lib
-

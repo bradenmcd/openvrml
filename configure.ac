@@ -19,6 +19,7 @@ AC_CONFIG_FILES([Makefile]
                 [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/Makefile]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
+                [src/openvrml-gtkplug/Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
@@ -105,7 +106,8 @@ AC_LANG_POP])
 
 
 PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
-
+PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
+AC_PATH_XTRA
 AX_CHECK_GLU
 
 AC_PATH_PROG([SDL_CONFIG], [sdl-config])
@@ -271,14 +273,31 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
                [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
 
 #
+# build the GtkPlug
+#
+AC_ARG_ENABLE([gtkplug],
+              [AC_HELP_STRING([--disable-gtkplug],
+                              [do not build the GtkPlug application])])
+if test X$enable_gtkplug != Xno; then
+  if test X$have_gtk = Xno; then
+    AC_MSG_FAILURE([GTK+ is required to build the GtkPlug])
+  fi
+  if test X$enable_gl_renderer = Xno; then
+    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GL renderer])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_GTKPLUG],
+               [test X$enable_gtkplug != Xno -a X$have_gtk != Xno])
+
+#
 # build Mozilla plug-in
 #
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
 if test X$enable_mozilla_plugin != Xno; then
-  if test X$enable_gl_renderer = Xno; then
-    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GL renderer])
+  if test X$enable_gtkplug = Xno; then
+    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GtkPlug application])
   fi
 fi
 
@@ -315,7 +334,7 @@ AC_SUBST([OPENVRML_RPATH])
 
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
-AC_CONFIG_SUBDIRS([mozilla-plugin])
+AC_CONFIG_SUBDIRS([lib/gtkglext mozilla-plugin])
 
 AC_CONFIG_TESTDIR([tests])
 
