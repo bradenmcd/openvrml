@@ -1,5 +1,3 @@
-SUBDIRS = openvrml-player
-
 AM_CPPFLAGS = \
         -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED \

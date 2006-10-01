@@ -1,3 +1,546 @@
+2006-10-01 Braden McDaniel  <braden@endoframe.com>
+
+	Build/package the GtkPlug application separately from the Mozilla
+	plug-in.  The Mozilla plug-in is just one possible client for this
+	application.
+
+	* README: Changed OPENVRML_PLAYER variable to OPENVRML_GTKPLUG.
+	* configure.ac: Output makefile for openvrml-gtkplug; check for
+	GTK+; added --disable-gtkplug option; added lib/gtkglext
+	subpackage.
+	* openvrml.spec.in: Added openvrml-gtkplug package.
+	* lib/Makefile.am (SUBDIRS): Added gtkglext.
+	* lib/gtkglext/AUTHORS: Added file.
+	* lib/gtkglext/COPYING: Added file.
+	* lib/gtkglext/COPYING.LIB: Added file.
+	* lib/gtkglext/ChangeLog: Added file.
+	* lib/gtkglext/ChangeLog.pre-1-0: Added file.
+	* lib/gtkglext/INSTALL: Added file.
+	* lib/gtkglext/Makefile.am: Added file.
+	* lib/gtkglext/NEWS: Added file.
+	* lib/gtkglext/README: Added file.
+	* lib/gtkglext/README.win32: Added file.
+	* lib/gtkglext/TODO: Added file.
+	* lib/gtkglext/configure.in: Added file.
+	* lib/gtkglext/gdkglext-uninstalled.pc.in: Added file.
+	* lib/gtkglext/gdkglext.pc.in: Added file.
+	* lib/gtkglext/gtkglext-uninstalled.pc.in: Added file.
+	* lib/gtkglext/gtkglext.nsi.in: Added file.
+	* lib/gtkglext/gtkglext.pc.in: Added file.
+	* lib/gtkglext/gtkglext.spec.in: Added file.
+	* lib/gtkglext/setup-gtkglext.sh: Added file.
+	* lib/gtkglext/docs/Makefile.am: Added file.
+	* lib/gtkglext/docs/reference/Makefile.am: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/Makefile.am: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/building.sgml: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/gtkglext-docs.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/gtkglext-overrides.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/gtkglext-sections.txt:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/gtkglext.types: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/running.sgml: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/version.xml.in: Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgl.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglconfig.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglcontext.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgldefs.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgldrawable.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglfont.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglinit.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglpixmap.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglquery.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglshapes.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgltokens.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglversion.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglwindow.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglx.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkgl.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkgldefs.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglext-unused.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglinit.sgml: Added
+	file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglversion.sgml:
+	Added file.
+	* lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglwidget.sgml:
+	Added file.
+	* lib/gtkglext/examples/Makefile.am: Added file.
+	* lib/gtkglext/examples/Makefile.mingw: Added file.
+	* lib/gtkglext/examples/Makefile.msc: Added file.
+	* lib/gtkglext/examples/alien.lwo: Added file.
+	* lib/gtkglext/examples/button.c: Added file.
+	* lib/gtkglext/examples/color.c: Added file.
+	* lib/gtkglext/examples/coolwave.c: Added file.
+	* lib/gtkglext/examples/coolwave2.c: Added file.
+	* lib/gtkglext/examples/font-pangoft2-tex.c: Added file.
+	* lib/gtkglext/examples/font-pangoft2.c: Added file.
+	* lib/gtkglext/examples/font.c: Added file.
+	* lib/gtkglext/examples/gears.c: Added file.
+	* lib/gtkglext/examples/girl.rgb: Added file.
+	* lib/gtkglext/examples/glxinfo.c: Added file.
+	* lib/gtkglext/examples/logo-g.c: Added file.
+	* lib/gtkglext/examples/logo-k.c: Added file.
+	* lib/gtkglext/examples/logo-model.c: Added file.
+	* lib/gtkglext/examples/logo-model.h: Added file.
+	* lib/gtkglext/examples/logo-t.c: Added file.
+	* lib/gtkglext/examples/logo.c: Added file.
+	* lib/gtkglext/examples/low-level.c: Added file.
+	* lib/gtkglext/examples/lw.c: Added file.
+	* lib/gtkglext/examples/lw.h: Added file.
+	* lib/gtkglext/examples/multiarb.c: Added file.
+	* lib/gtkglext/examples/penguin.lwo: Added file.
+	* lib/gtkglext/examples/pixmap-mixed.c: Added file.
+	* lib/gtkglext/examples/pixmap.c: Added file.
+	* lib/gtkglext/examples/readtex.c: Added file.
+	* lib/gtkglext/examples/readtex.h: Added file.
+	* lib/gtkglext/examples/reflect.rgb: Added file.
+	* lib/gtkglext/examples/rotating-square.c: Added file.
+	* lib/gtkglext/examples/scribble-gl.c: Added file.
+	* lib/gtkglext/examples/shapes.c: Added file.
+	* lib/gtkglext/examples/share-lists.c: Added file.
+	* lib/gtkglext/examples/simple-mixed.c: Added file.
+	* lib/gtkglext/examples/simple-pbuffer-sgix.c: Added file.
+	* lib/gtkglext/examples/simple.c: Added file.
+	* lib/gtkglext/examples/template.c: Added file.
+	* lib/gtkglext/examples/trackball.c: Added file.
+	* lib/gtkglext/examples/trackball.h: Added file.
+	* lib/gtkglext/examples/viewlw.c: Added file.
+	* lib/gtkglext/examples/wglinfo.c: Added file.
+	* lib/gtkglext/examples/glade/Makefile.am: Added file.
+	* lib/gtkglext/examples/glade/README: Added file.
+	* lib/gtkglext/examples/glade/share-lists.c: Added file.
+	* lib/gtkglext/examples/glade/share-lists.glade: Added file.
+	* lib/gtkglext/examples/glade/simple.c: Added file.
+	* lib/gtkglext/examples/glade/simple.glade: Added file.
+	* lib/gtkglext/gdk/Makefile.am: Added file.
+	* lib/gtkglext/gdk/gdkgl.h: Added file.
+	* lib/gtkglext/gdk/gdkglconfig.c: Added file.
+	* lib/gtkglext/gdk/gdkglconfig.h: Added file.
+	* lib/gtkglext/gdk/gdkglcontext.c: Added file.
+	* lib/gtkglext/gdk/gdkglcontext.h: Added file.
+	* lib/gtkglext/gdk/gdkgldebug.h: Added file.
+	* lib/gtkglext/gdk/gdkgldefs.h: Added file.
+	* lib/gtkglext/gdk/gdkgldrawable.c: Added file.
+	* lib/gtkglext/gdk/gdkgldrawable.h: Added file.
+	* lib/gtkglext/gdk/gdkglenumtypes.c: Added file.
+	* lib/gtkglext/gdk/gdkglenumtypes.h: Added file.
+	* lib/gtkglext/gdk/gdkglext-gtk20.def: Added file.
+	* lib/gtkglext/gdk/gdkglext.def: Added file.
+	* lib/gtkglext/gdk/gdkglfont.h: Added file.
+	* lib/gtkglext/gdk/gdkglglext.c: Added file.
+	* lib/gtkglext/gdk/gdkglglext.h: Added file.
+	* lib/gtkglext/gdk/gdkglinit.c: Added file.
+	* lib/gtkglext/gdk/gdkglinit.h: Added file.
+	* lib/gtkglext/gdk/gdkglpixmap.c: Added file.
+	* lib/gtkglext/gdk/gdkglpixmap.h: Added file.
+	* lib/gtkglext/gdk/gdkglprivate.h: Added file.
+	* lib/gtkglext/gdk/gdkglquery.c: Added file.
+	* lib/gtkglext/gdk/gdkglquery.h: Added file.
+	* lib/gtkglext/gdk/gdkglshapes.c: Added file.
+	* lib/gtkglext/gdk/gdkglshapes.h: Added file.
+	* lib/gtkglext/gdk/gdkgltokens.h: Added file.
+	* lib/gtkglext/gdk/gdkgltypes.h: Added file.
+	* lib/gtkglext/gdk/gdkglversion.c: Added file.
+	* lib/gtkglext/gdk/gdkglversion.h.in: Added file.
+	* lib/gtkglext/gdk/gdkglwindow.c: Added file.
+	* lib/gtkglext/gdk/gdkglwindow.h: Added file.
+	* lib/gtkglext/gdk/glext/Makefile.am: Added file.
+	* lib/gtkglext/gdk/glext/README: Added file.
+	* lib/gtkglext/gdk/glext/common-header.h: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglglext-c.pl: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglglext-h.pl: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglglxext-c.pl: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglglxext-h.pl: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglwglext-c.pl: Added file.
+	* lib/gtkglext/gdk/glext/gen-gdkglwglext-h.pl: Added file.
+	* lib/gtkglext/gdk/glext/glext-extra.h: Added file.
+	* lib/gtkglext/gdk/glext/glext.h: Added file.
+	* lib/gtkglext/gdk/glext/glxext-extra.h: Added file.
+	* lib/gtkglext/gdk/glext/glxext.h: Added file.
+	* lib/gtkglext/gdk/glext/list-ext.pl: Added file.
+	* lib/gtkglext/gdk/glext/wglext-extra.h: Added file.
+	* lib/gtkglext/gdk/glext/wglext.h: Added file.
+	* lib/gtkglext/gdk/win32/Makefile.am: Added file.
+	* lib/gtkglext/gdk/win32/gdkglconfig-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglconfig-win32.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkglcontext-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglcontext-win32.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkgldrawable-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglfont-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglpixmap-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglpixmap-win32.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkglprivate-win32.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkglquery-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglwglext.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglwglext.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkglwin32.h: Added file.
+	* lib/gtkglext/gdk/win32/gdkglwindow-win32.c: Added file.
+	* lib/gtkglext/gdk/win32/gdkglwindow-win32.h: Added file.
+	* lib/gtkglext/gdk/x11/Makefile.am: Added file.
+	* lib/gtkglext/gdk/x11/gdkglconfig-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglconfig-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkglcontext-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglcontext-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkgldrawable-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglfont-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglglxext.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglglxext.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkgloverlay-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkgloverlay-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkglpixmap-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglpixmap-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkglprivate-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkglquery-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglwindow-x11.c: Added file.
+	* lib/gtkglext/gdk/x11/gdkglwindow-x11.h: Added file.
+	* lib/gtkglext/gdk/x11/gdkglx.h: Added file.
+	* lib/gtkglext/gtk/Makefile.am: Added file.
+	* lib/gtkglext/gtk/gtkgl.h: Added file.
+	* lib/gtkglext/gtk/gtkgldebug.h: Added file.
+	* lib/gtkglext/gtk/gtkgldefs.h: Added file.
+	* lib/gtkglext/gtk/gtkglext.def: Added file.
+	* lib/gtkglext/gtk/gtkglinit.c: Added file.
+	* lib/gtkglext/gtk/gtkglinit.h: Added file.
+	* lib/gtkglext/gtk/gtkglprivate.h: Added file.
+	* lib/gtkglext/gtk/gtkglversion.c: Added file.
+	* lib/gtkglext/gtk/gtkglversion.h.in: Added file.
+	* lib/gtkglext/gtk/gtkglwidget.c: Added file.
+	* lib/gtkglext/gtk/gtkglwidget.h: Added file.
+	* lib/gtkglext/m4macros/Makefile.am: Added file.
+	* lib/gtkglext/m4macros/gtkglext.m4: Added file.
+	* mozilla-plugin/Makefile.am (SUBDIRS): Removed reference to lib
+	subdirectory.
+	* mozilla-plugin/configure.ac: Removed references to lib/gtkglext
+	subpackage; removed references to openvrml-player.
+	* mozilla-plugin/lib/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/AUTHORS: Removed file.
+	* mozilla-plugin/lib/gtkglext/COPYING: Removed file.
+	* mozilla-plugin/lib/gtkglext/COPYING.LIB: Removed file.
+	* mozilla-plugin/lib/gtkglext/ChangeLog: Removed file.
+	* mozilla-plugin/lib/gtkglext/ChangeLog.pre-1-0: Removed file.
+	* mozilla-plugin/lib/gtkglext/INSTALL: Removed file.
+	* mozilla-plugin/lib/gtkglext/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/NEWS: Removed file.
+	* mozilla-plugin/lib/gtkglext/README: Removed file.
+	* mozilla-plugin/lib/gtkglext/README.win32: Removed file.
+	* mozilla-plugin/lib/gtkglext/TODO: Removed file.
+	* mozilla-plugin/lib/gtkglext/autogen.sh: Removed file.
+	* mozilla-plugin/lib/gtkglext/configure.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdkglext-uninstalled.pc.in: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdkglext.pc.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtkglext-uninstalled.pc.in: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gtkglext.nsi.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtkglext.pc.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtkglext.spec.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/make-copyright.sh: Removed file.
+	* mozilla-plugin/lib/gtkglext/setup-gtkglext.sh: Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/Makefile.am: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/Makefile.am:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/building.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext-decl-list.txt:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext-decl.txt:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext-docs.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext-sections.txt:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext-undocumented.txt:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/gtkglext.types:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/running.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/version.xml.in:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgl.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglconfig.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglcontext.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgldefs.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgldrawable.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglfont.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglinit.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglpixmap.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglquery.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglshapes.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkgltokens.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglversion.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglwindow.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gdkglx.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkgl.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkgldefs.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglext-unused.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglinit.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglversion.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/docs/reference/gtkglext/tmpl/gtkglwidget.sgml:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/Makefile.mingw: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/Makefile.msc: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/alien.lwo: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/button.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/color.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/coolwave.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/coolwave2.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/font-pangoft2-tex.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/font-pangoft2.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/font.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/gears.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/girl.rgb: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/glxinfo.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo-g.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo-k.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo-model.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo-model.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo-t.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/logo.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/low-level.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/lw.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/lw.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/multiarb.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/penguin.lwo: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/pixmap-mixed.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/pixmap.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/readtex.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/readtex.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/reflect.rgb: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/rotating-square.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/scribble-gl.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/shapes.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/share-lists.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/simple-mixed.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/simple-pbuffer-sgix.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/simple.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/template.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/trackball.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/trackball.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/viewlw.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/wglinfo.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/Makefile.am: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/README: Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/share-lists.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/share-lists.glade:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/simple.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/examples/glade/simple.glade: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgl.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglconfig.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglcontext.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglcontext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgldebug.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgldefs.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgldrawable.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgldrawable.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglext-gtk20.def: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglext.def: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglfont.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglglext.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglglext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglinit.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglinit.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglpixmap.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglpixmap.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglprivate.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglquery.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglquery.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglshapes.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglshapes.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgltokens.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkgltypes.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglversion.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglversion.h.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglwindow.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gdkglwindow.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/gen-def-file.sh: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/README: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/common-header.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglglext-c.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglglext-h.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglglxext-c.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglglxext-h.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglwglext-c.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/gen-gdkglwglext-h.pl:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/glext-extra.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/glext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/glxext-extra.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/glxext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/list-ext.pl: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/wglext-extra.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/glext/wglext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglconfig-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglconfig-win32.h:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglcontext-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglcontext-win32.h:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkgldrawable-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglfont-win32.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglpixmap-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglpixmap-win32.h:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglprivate-win32.h:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglquery-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglwglext.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglwglext.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglwin32.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglwindow-win32.c:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/win32/gdkglwindow-win32.h:
+	Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglconfig-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglconfig-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglcontext-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglcontext-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkgldrawable-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglfont-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglglxext.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglglxext.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkgloverlay-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkgloverlay-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglpixmap-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglpixmap-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglprivate-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglquery-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglwindow-x11.c: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglwindow-x11.h: Removed
+	file.
+	* mozilla-plugin/lib/gtkglext/gdk/x11/gdkglx.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gen-def-file.sh: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkgl.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkgldebug.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkgldefs.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglext.def: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglinit.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglinit.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglprivate.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglversion.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglversion.h.in: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglwidget.c: Removed file.
+	* mozilla-plugin/lib/gtkglext/gtk/gtkglwidget.h: Removed file.
+	* mozilla-plugin/lib/gtkglext/m4macros/Makefile.am: Removed file.
+	* mozilla-plugin/lib/gtkglext/m4macros/gtkglext.m4: Removed file.
+	* mozilla-plugin/src/Makefile.am (SUBDIRS): Removed
+	openvrml-player.
+	* mozilla-plugin/src/openvrml.cpp
+	(PluginInstance::SetWindow(NPWindow &)): Changed use of
+	OPENVRML_PLAYER environment variable to OPENVRML_GTKPLUG; call
+	openvrml-gtkplug instead of openvrml-player.
+	* mozilla-plugin/src/openvrml-player/Makefile.am: Removed file.
+	* mozilla-plugin/src/openvrml-player/bounded_buffer.h: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/command_istream.cpp: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/command_istream.h: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/flag.cpp: Removed file.
+	* mozilla-plugin/src/openvrml-player/flag.h: Removed file.
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.cpp: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/gtkvrmlbrowser.h: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/player.cpp: Removed file.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.cpp: Removed
+	file.
+	* mozilla-plugin/src/openvrml-player/plugin_streambuf.h: Removed
+	file.
+	* src/Makefile.am (SUBDIRS): Added openvrml-gtkplug.
+
 2006-09-27 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Makefile.am (VISUALC8_0_FILES): Fixed name of

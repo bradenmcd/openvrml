@@ -58,13 +58,21 @@ Requires:       mesa-libGLU-devel
 Headers and static library that programmers will need to develop C++ programs
 using the OpenVRML OpenGL renderer.
 
-%package mozilla-plugin
-Summary:        VRML browser plug-in for Mozilla-based browsers.
+%package gtkplug
+Summary:        VRML browser GtkPlug component for embedding in GTK+ applications.
 Group:          Applications/Internet
 License:        GPL
 Requires:       %{name}-gl = %{version}
 Requires:       gtk2
 Requires:       libXmu
+%description gtkplug
+VRML browser GtkPlug component for embedding in GTK+ applications.
+
+%package mozilla-plugin
+Summary:        VRML browser plug-in for Mozilla-based browsers.
+Group:          Applications/Internet
+License:        GPL
+Requires:       %{name}-gtkplug = %{version}
 Requires:       mozilla >= 1.6
 %description mozilla-plugin
 VRML browser plug-in for Mozilla-based browsers.
@@ -112,15 +120,21 @@ VRML browser plug-in for Mozilla-based browsers.
 %{_libdir}/libopenvrml-gl.so
 %{_libdir}/pkgconfig/openvrml-gl.pc
 
+%files gtkplug
+%doc AUTHORS COPYING ChangeLog NEWS README THANKS
+%{_libexecdir}/openvrml-gtkplug
+
 %files mozilla-plugin
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_libdir}/mozilla/plugins/openvrml.so
 %{_libdir}/mozilla/plugins/openvrml.xpt
-%{_libexecdir}/openvrml-player
 %{_datadir}/idl/%{name}-%{version}/openvrml.idl
 
 
 %changelog
+* Thu Sep 28 2006  Braden McDaniel  <braden@endoframe.com>
+- Added openvrml-gtkplug package.
+
 * Mon Aug 14 2006  Braden McDaniel  <braden@endoframe.com>
 - Added libXmu-devel to BuildRequires.
 - Made mozilla-plugin package Require libXmu.
