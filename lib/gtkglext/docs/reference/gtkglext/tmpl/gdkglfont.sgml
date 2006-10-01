@@ -1,0 +1,44 @@
+<!-- ##### SECTION Title ##### -->
+Font Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for font rendering in OpenGL
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gdk_gl_font_use_pango_font ##### -->
+<para>
+
+</para>
+
+@font_desc: 
+@first: 
+@count: 
+@list_base: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_font_use_pango_font_for_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@font_desc: 
+@first: 
+@count: 
+@list_base: 
+@Returns: 
+
+

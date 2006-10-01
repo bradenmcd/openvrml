@@ -1,0 +1,98 @@
+<!-- ##### SECTION Title ##### -->
+OpenGL-Capable Widget
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL extension to GtkWidget API
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+GtkGLExt is an extension to GTK which adds OpenGL capabilities to
+GtkWidget. Its use is quite simple: use #gtk_widget_set_gl_capability
+to add OpenGL support to a widget, it will create a OpenGL drawable
+(#GdkGLDrawable) for the widget, which can be obtained via
+#gtk_widget_get_gl_drawable. OpenGL rendering context (#GdkGLContext)
+can also be obtained via #gtk_widget_get_gl_context.
+With #GdkGLDrawable and #GdkGLContext, #gdk_gl_drawable_gl_begin and
+#gdk_gl_drawable_gl_end can be called, and OpenGL function calls can
+be made between those two functions.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gtk_widget_set_gl_capability ##### -->
+<para>
+
+</para>
+
+@widget: 
+@glconfig: 
+@share_list: 
+@direct: 
+@render_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_is_gl_capable ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_gl_config ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_create_gl_context ##### -->
+<para>
+
+</para>
+
+@widget: 
+@share_list: 
+@direct: 
+@render_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_gl_context ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_get_gl_window ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
+<!-- ##### MACRO gtk_widget_get_gl_drawable ##### -->
+<para>
+Returns the #GdkGLDrawable owned by the @widget. In fact, this is
+macro that casts the result of #gtk_widget_get_gl_window to #GdkGLDrawable.
+</para>
+
+@widget: a #GtkWidget.
+@Returns: the #GdkGLDrawable.
+
+

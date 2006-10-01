@@ -1,0 +1,203 @@
+# -*- Makefile -*-
+#
+# Sample makefile for GtkGLExt example programs
+#   Naofumi Yasufuku <naofumi@users.sourceforge.net>
+#
+
+SHELL = /bin/sh
+
+INCLUDES := $(shell pkg-config --cflags gtkglext-1.0 pangoft2)
+LIBS := $(shell pkg-config --libs gtkglext-1.0)
+LIBS_WITH_PANGOFT2 := $(shell pkg-config --libs gtkglext-1.0 pangoft2)
+DEFINES = 
+
+CC = gcc
+OPTIMIZE = -march=pentium -O2
+DEBUG = -g -Wall
+MS_BITFIELDS = -mms-bitfields
+#MS_BITFIELDS = -fnative-struct
+CFLAGS = $(OPTIMIZE) $(DEBUG) $(MS_BITFIELDS)
+CPPFLAGS = $(INCLUDES) $(DEFINES)
+LDFLAGS = 
+
+COMPILE = $(CC) $(CFLAGS) $(CPPFLAGS)
+LINK = $(CC) $(LDFLAGS)
+
+EXEEXT = .exe
+
+HEADERS = \
+	trackball.h		\
+	logo-model.h		\
+	readtex.h		\
+	lw.h
+
+SOURCES = \
+	low-level.c		\
+	simple.c		\
+	simple-mixed.c		\
+	pixmap.c		\
+	pixmap-mixed.c		\
+	share-lists.c		\
+	color.c			\
+	font.c			\
+	button.c		\
+	trackball.c		\
+	shapes.c		\
+	logo-model.c		\
+	logo.c			\
+	gears.c			\
+	readtex.c		\
+	multiarb.c		\
+	viewlw.c		\
+	lw.c			\
+	rotating-square.c	\
+	coolwave.c		\
+	coolwave2.c		\
+	template.c		\
+	scribble-gl.c		\
+	font-pangoft2.c		\
+	font-pangoft2-tex.c	\
+	wglinfo.c
+
+EXTRA_SOURCES = \
+	logo-g.c		\
+	logo-t.c		\
+	logo-k.c
+
+OBJECTS = $(SOURCES:.c=.o)
+
+PROGRAMS = \
+	low-level$(EXEEXT)		\
+	simple$(EXEEXT)			\
+	simple-mixed$(EXEEXT)		\
+	pixmap$(EXEEXT)			\
+	pixmap-mixed$(EXEEXT)		\
+	share-lists$(EXEEXT)		\
+	color$(EXEEXT)			\
+	font$(EXEEXT)			\
+	button$(EXEEXT)			\
+	shapes$(EXEEXT)			\
+	logo$(EXEEXT)			\
+	gears$(EXEEXT)			\
+	multiarb$(EXEEXT)		\
+	viewlw$(EXEEXT)			\
+	rotating-square$(EXEEXT)	\
+	coolwave$(EXEEXT)		\
+	coolwave2$(EXEEXT)		\
+	template$(EXEEXT)		\
+	scribble-gl$(EXEEXT)		\
+	wglinfo$(EXEEXT)
+
+.PHONY: all clean-deps clean-obj clean distclean
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+all: $(PROGRAMS)
+
+#
+# Include dependencies
+#
+
+DEPS_MAGIC := $(shell if test ! -d .deps; then mkdir .deps; fi)
+DEPS = $(addprefix .deps/, $(SOURCES:.c=.Po))
+-include $(DEPS)
+
+#
+# Compile command
+#
+
+.c.o:
+	$(COMPILE) -Wp,-MD,.deps/$(*F).TPo -c $<
+	@-cp .deps/$(*F).TPo .deps/$(*F).Po; \
+	tr ' ' '\012' < .deps/$(*F).TPo \
+		| sed -e 's/^\\$$//' -e '/^$$/d' -e '/:$$/d' \
+		| sed -e 's/$$/ :/' \
+		>> .deps/$(*F).Po; \
+	rm .deps/$(*F).TPo
+
+#
+# Building executables
+#
+
+low-level$(EXEEXT): low-level.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+simple$(EXEEXT): simple.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+simple-mixed$(EXEEXT): simple-mixed.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+pixmap$(EXEEXT): pixmap.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+pixmap-mixed$(EXEEXT): pixmap-mixed.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+share-lists$(EXEEXT): share-lists.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+color$(EXEEXT): color.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+font$(EXEEXT): font.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+button$(EXEEXT): button.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+shapes$(EXEEXT): trackball.o shapes.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+logo$(EXEEXT): trackball.o logo-model.o logo.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+gears$(EXEEXT): gears.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+multiarb$(EXEEXT): readtex.o multiarb.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+viewlw$(EXEEXT): trackball.o lw.o viewlw.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+rotating-square$(EXEEXT): rotating-square.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+coolwave$(EXEEXT): coolwave.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+coolwave2$(EXEEXT): coolwave2.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+template$(EXEEXT): template.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+scribble-gl$(EXEEXT): scribble-gl.o
+	$(LINK) -o $@ $^ $(LIBS)
+
+font-pangoft2$(EXEEXT): font-pangoft2.o
+	$(LINK) -o $@ $^ $(LIBS_WITH_PANGOFT2)
+
+font-pangoft2-tex$(EXEEXT): font-pangoft2-tex.o
+	$(LINK) -o $@ $^ $(LIBS_WITH_PANGOFT2)
+
+wglinfo$(EXEEXT): wglinfo.o
+	$(LINK) -o $@ $^ -lopengl32 -lgdi32
+
+#
+# Clean up
+#
+
+clean-deps:
+	-rm -rf .deps
+
+clean-obj: clean-deps
+	-rm -f *.o
+
+clean: clean-obj
+	-rm -f $(PROGRAMS)
+
+distclean: clean
+	-rm -f *~

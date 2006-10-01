@@ -1,0 +1,109 @@
+<!-- ##### SECTION Title ##### -->
+Rendering Context
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL rendering context object
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GdkGLContext ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gdk_gl_context_new ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@share_list: 
+@direct: 
+@render_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_destroy ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_copy ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@src: 
+@Param3: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_get_gl_drawable ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_get_gl_config ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_get_share_list ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_is_direct ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_get_render_type ##### -->
+<para>
+
+</para>
+
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_context_get_current ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,138 @@
+<!-- ##### MACRO GDKGLEXT_BINARY_AGE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GDKGLEXT_CHECK_VERSION ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+
+<!-- ##### MACRO GDKGLEXT_INTERFACE_AGE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GDKGLEXT_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GDKGLEXT_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GDKGLEXT_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTKGLEXT_BINARY_AGE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTKGLEXT_CHECK_VERSION ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+
+<!-- ##### MACRO GTKGLEXT_INTERFACE_AGE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTKGLEXT_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTKGLEXT_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTKGLEXT_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gdkglext_binary_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gdkglext_interface_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gdkglext_major_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gdkglext_micro_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gdkglext_minor_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_binary_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_interface_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_major_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_micro_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gtkglext_minor_version ##### -->
+<para>
+
+</para>
+
+

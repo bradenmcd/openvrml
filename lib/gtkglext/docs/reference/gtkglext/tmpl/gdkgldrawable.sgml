@@ -1,0 +1,113 @@
+<!-- ##### SECTION Title ##### -->
+Rendering Surface
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL rendering surface interface
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GdkGLDrawable ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_make_current ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_is_double_buffered ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_swap_buffers ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_wait_gl ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_wait_gdk ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_gl_begin ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@glcontext: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_gl_end ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_get_gl_config ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_get_size ##### -->
+<para>
+
+</para>
+
+@gldrawable: 
+@width: 
+@height: 
+
+
+<!-- ##### FUNCTION gdk_gl_drawable_get_current ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

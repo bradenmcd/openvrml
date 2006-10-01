@@ -1,0 +1,100 @@
+<!-- ##### SECTION Title ##### -->
+OpenGL Pixmap
+
+<!-- ##### SECTION Short_Description ##### -->
+OpenGL pixmap which is maintained off-screen
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GdkGLPixmap ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gdk_gl_pixmap_new ##### -->
+<para>
+
+</para>
+
+@glconfig: 
+@pixmap: 
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_gl_pixmap_destroy ##### -->
+<para>
+
+</para>
+
+@glpixmap: 
+
+
+<!-- ##### FUNCTION gdk_gl_pixmap_get_pixmap ##### -->
+<para>
+
+</para>
+
+@glpixmap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_pixmap_set_gl_capability ##### -->
+<para>
+
+</para>
+
+@pixmap: 
+@glconfig: 
+@attrib_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_pixmap_unset_gl_capability ##### -->
+<para>
+
+</para>
+
+@pixmap: 
+
+
+<!-- ##### FUNCTION gdk_pixmap_is_gl_capable ##### -->
+<para>
+
+</para>
+
+@pixmap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_pixmap_get_gl_pixmap ##### -->
+<para>
+
+</para>
+
+@pixmap: 
+@Returns: 
+
+
+<!-- ##### MACRO gdk_pixmap_get_gl_drawable ##### -->
+<para>
+Returns the #GdkGLDrawable held by the @pixmap. In fact, this is macro
+that casts the result of #gdk_pixmap_get_gl_pixmap to #GdkGLDrawable.
+</para>
+
+@pixmap: a #GdkGLPixmap.
+@Returns: the #GdkGLDrawable.
+
+

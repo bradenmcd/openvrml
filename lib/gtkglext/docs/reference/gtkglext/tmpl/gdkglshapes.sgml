@@ -1,0 +1,104 @@
+<!-- ##### SECTION Title ##### -->
+Geometric Object Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for generating easily recognizable 3D geometric objects
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gdk_gl_draw_cube ##### -->
+<para>
+
+</para>
+
+@solid: 
+@size: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_sphere ##### -->
+<para>
+
+</para>
+
+@solid: 
+@radius: 
+@slices: 
+@stacks: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_cone ##### -->
+<para>
+
+</para>
+
+@solid: 
+@base: 
+@height: 
+@slices: 
+@stacks: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_torus ##### -->
+<para>
+
+</para>
+
+@solid: 
+@inner_radius: 
+@outer_radius: 
+@nsides: 
+@rings: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_tetrahedron ##### -->
+<para>
+
+</para>
+
+@solid: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_octahedron ##### -->
+<para>
+
+</para>
+
+@solid: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_dodecahedron ##### -->
+<para>
+
+</para>
+
+@solid: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_icosahedron ##### -->
+<para>
+
+</para>
+
+@solid: 
+
+
+<!-- ##### FUNCTION gdk_gl_draw_teapot ##### -->
+<para>
+
+</para>
+
+@solid: 
+@scale: 
+
+
