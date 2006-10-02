@@ -9,6 +9,18 @@ AM_CPPFLAGS = \
         -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED
 AM_CXXFLAGS = @PTHREAD_CFLAGS@ @GTK_CFLAGS@ @GL_CFLAGS@
+AM_LDFLAGS = \
+        @OPENVRML_RPATH@ \
+        @JNI_LIBS@ \
+        @GTK_LIBS@ \
+        @GL_LIBS@ \
+        -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ \
+        -lboost_thread \
+        @PTHREAD_LIBS@
+LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
+        $(top_builddir)/src/libopenvrml/libopenvrml.la \
+        $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
+        $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
 
 if ENABLE_GTKPLUG
 libexec_PROGRAMS = openvrml-gtkplug
@@ -25,16 +37,5 @@ openvrml_gtkplug_SOURCES = \
         plugin_streambuf.cpp \
         gtkvrmlbrowser.cpp \
         flag.cpp
-openvrml_gtkplug_LDADD = \
-        $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
-        $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
-        $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
-openvrml_gtkplug_LDFLAGS = \
-        @GTK_LIBS@ \
-        @GL_LIBS@ \
-        -lXmu -lXt @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ \
-        -lboost_thread \
-        @PTHREAD_LIBS@
 
 EXTRA_DIST = $(openvrml_gtkplug_SOURCES)

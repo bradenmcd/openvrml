@@ -1,5 +1,15 @@
 2006-10-01 Braden McDaniel  <braden@endoframe.com>
 
+	Link openvrml-gtkplug using OPENVRML_RPATH (that is, an rpath to
+	the directory where libmozjs resides).
+
+	* src/openvrml-gtkplug/Makefile.am
+	(AM_LDFLAGS): Use instead of openvrml_gtkplug_LDFLAGS; added
+	OPENVRML_RPATH.
+	(LDADD): Use instead of openvrml_gtkplug_LDADD.
+
+2006-10-01 Braden McDaniel  <braden@endoframe.com>
+
 	Build/package the GtkPlug application separately from the Mozilla
 	plug-in.  The Mozilla plug-in is just one possible client for this
 	application.
