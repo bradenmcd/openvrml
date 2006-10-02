@@ -1,5 +1,10 @@
 2006-10-02 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/main.cpp
+	(main(int, char *[])): Added --version option.
+
+2006-10-02 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Added documentation for --disable-gtkplug configure
 	option.
 
