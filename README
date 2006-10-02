@@ -182,9 +182,16 @@ depends on.
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
      OpenGL/Mesa.
 
+ --disable-gtkplug
+     Do not build the GtkPlug application.  This is an out-of-process
+     component that provides a VRML/X3D browser that can be used in a
+     GTK+ application.  This depends on GTK+.  It also requires that the
+     GL renderer be built.
+
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
-     GTK+ and, of course, Mozilla.
+     GTK+ and, of course, Mozilla.  It also requires that the GtkPlug
+     application be built.
 
  --disable-examples
      Do not build the example programs.  The example programs depend on
