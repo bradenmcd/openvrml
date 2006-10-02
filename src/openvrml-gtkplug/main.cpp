@@ -28,6 +28,10 @@
 # include <gtk/gtk.h>
 # include <openvrml/browser.h>
 
+# ifdef HAVE_CONFIG_H
+#   include "config.h"
+# endif
+
 # include "gtkvrmlbrowser.h"
 # include "command_istream.h"
 # include "plugin_streambuf.h"
@@ -163,9 +167,19 @@ openvrml_player_command_channel_loop_quit_event(gpointer data);
 
 namespace {
 
+    gboolean version;
     gchar ** args;
 
     GOptionEntry options[] = {
+        {
+            "version",
+            'v',
+            0,
+            G_OPTION_ARG_NONE,
+            &version,
+            "Print the version information and exit",
+            0
+        },
         {
             G_OPTION_REMAINING,
             '\0',
@@ -257,6 +271,7 @@ namespace {
 
 int main(int argc, char * argv[])
 {
+    using std::cout;
     using std::cerr;
     using std::endl;
     using std::vector;
@@ -286,6 +301,11 @@ int main(int argc, char * argv[])
             g_error_free(error);
         }
         return EXIT_FAILURE;        
+    }
+
+    if (version) {
+        cout << "OpenVRML GtkPlug " PACKAGE_VERSION << endl;
+        return EXIT_SUCCESS;
     }
 
     if (!args) {
