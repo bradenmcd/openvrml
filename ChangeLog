@@ -1,3 +1,12 @@
+2006-10-04 Braden McDaniel  <braden@endoframe.com>
+
+	Added info documentation for openvrml-gtkplug.
+
+	* doc/Makefile.am: Added openvrml-gtkplug.texi.
+	* doc/fdl.texi: GNU Free Documentation license.
+	* doc/openvrml-gtkplug.texi: Texinfo documentation for
+	openvrml-gtkplug.
+
 2006-10-03 Braden McDaniel  <braden@endoframe.com>
 
 	* lib/gtkglext/configure.in: Don't die if we don't find all of
