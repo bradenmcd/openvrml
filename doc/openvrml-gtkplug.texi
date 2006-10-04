@@ -1,0 +1,449 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename openvrml-gtkplug.info
+@include version.texi
+@settitle openvrml-gtkplug @value{VERSION}
+@c %**end of header
+
+@copying
+This manual is for openvrml-gtkplug (version @value{VERSION},
+@value{UPDATED}), which provides a VRML/X3D browser as a GtkPlug
+component that can be used in any GTK+ application.
+
+Copyright @copyright{} 2006 Braden McDaniel
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation.  A copy
+of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end quotation
+@end copying
+
+@c Define a new index for options.
+@defcodeindex op
+@c Combine everything into one index (arbitrarily chosen to be the
+@c concept index).
+@syncodeindex op cp
+
+@dircategory Miscellaneous
+@direntry
+* openvrml-gtkplug: A VRML/X3D browser component for GTK+ applications.
+@end direntry
+
+@titlepage
+@title openvrml-gtkplug
+@subtitle for version @value{VERSION}, @value{UPDATED}
+@author Braden McDaniel (@email{braden@@endoframe.com})
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+
+@ifnottex
+@node Top
+@top openvrml-gtkplug
+
+This manual is for openvrml-gtkplug (version @value{VERSION}, @value{UPDATED}).
+@end ifnottex
+
+@menu
+* Overview::                    General purpose and information.
+* Invoking openvrml-gtkplug::   How to run @code{openvrml-gtkplug}.
+* Servicing Requests::          How to respond to requests from the component.
+* Problems::		        Getting help and reporting bugs.
+* Copying This Manual::         Copying and sharing this documentation.
+* Concept Index::	        Index of concepts.
+@end menu
+
+
+@node Overview
+@chapter Overview
+
+@cindex overview
+
+@code{openvrml-gtkplug} provides a VRML/X3D browser as a GtkPlug
+component that can be used in any GTK+ application.
+@code{openvrml-gtkplug} communicates with the host application via
+pipes from its @code{stdout} and to its @code{stdin}.  The host
+application is responsible for fetching network resources and sending
+these to the component.
+
+@code{openvrml-gtkplug} uses the OpenVRML VRML/X3D runtime.  For the
+latest updates and other information, please visit OpenVRML on the
+World Wide Web at @url{http://openvrml.org}.
+
+@cindex authors
+@cindex McDaniel, Braden
+@code{openvrml-gtkplug} was written by Braden McDaniel.
+
+
+@node Invoking openvrml-gtkplug
+@chapter Invoking @code{openvrml-gtkplug}
+
+@cindex invoking
+@cindex options
+@cindex usage
+@cindex help
+
+The format for running the @code{openvrml-gtkplug} program is:
+
+@example
+openvrml-gtkplug [@var{options}] @var{gtk-socket-id}
+@end example
+
+@var{gtk-socket-id} is the XID of a GtkSocket.
+
+@section Options
+
+@code{openvrml-gtkplug} supports the following options:
+
+@subsection Help Options
+
+@table @option
+@item --help
+@itemx -?
+@opindex --help
+@opindex -?
+Show help options.
+
+@item --help-all
+@opindex --help-all
+Show all help options.
+
+@item --help-gtk
+@opindex --help-gtk
+Show GTK+ options.
+@end table
+
+@subsection GTK+ Options
+
+@table @option
+@item --class=@var{class}
+@opindex --class
+Program class as used by the window manager.
+
+@item --name=@var{name}
+@opindex --name
+Program name as used by the window manager.
+
+@item --screen=@var{screen}
+@opindex --screen
+X screen to use.
+
+@item --sync
+@opindex --sync
+Make X calls synchronous.
+
+@item --gtk-module=@var{modules}
+@opindex --gtk-module
+Load additional GTK+ modules.
+
+@item --g-fatal-warnings
+@opindex --g-fatal-warnings
+Make all warnings fatal.
+@end table
+
+@subsection Application Options
+
+@table @option
+@item --version
+@opindex --version
+Print the version information and exit.
+
+@item --display=@var{display}
+@opindex --display
+X display to use.
+@end table
+
+@section Invoking From Another Program
+
+In general @code{openvrml-gtkplug} is invoked from another program
+which establishes pipes to @code{openvrml-gtkplug}'s @code{stdin} and
+from its @code{stdout}.  This can be done using the typical
+@code{fork}-@code{exec} mechanism.  If you are using GLib, the
+function @code{g_spawn_async_with_pipes} nicely encapsulates the
+required logic:
+
+@example
+gchar * working_directory;
+gchar ** argv;
+gchar ** envp = 0;
+GPid * child_pid = 0;
+gint standard_input, standard_output;
+gint * standard_error = 0;
+GError * error = 0;
+gboolean succeeded;
+
+working_directory = g_get_current_dir();
+argv = g_malloc(sizeof (gchar *) * 3)
+argv[0] = g_strdup("/usr/libexec/openvrml-gtkplug");
+argv[1] = g_strdup_printf("%d", gtk_socket_id);
+argv[2] = 0;
+
+succeeded = g_spawn_async_with_pipes(working_directory,
+                                     argv,
+                                     envp,
+                                     0,
+                                     0,
+                                     0,
+                                     child_pid,
+                                     &standard_input,
+                                     &standard_output,
+                                     standard_error,
+                                     &error);
+@end example
+
+
+@node Servicing Requests
+@chapter Servicing Requests
+
+@cindex request
+@cindex request channel
+@cindex command
+@cindex command channel
+
+@section Requests and Commands
+
+@code{openvrml-gtkplug} relies on the host application for fetching
+network resources.  @code{openvrml-gtkplug} will send a @dfn{request}
+for a network resource via its @code{stdout}.  As such, the pipe from
+@code{openvrml-gtkplug}'s @code{stdout} to the host application is
+referred to as the @dfn{request channel}.
+
+In general (and as the name implies), requests elicit some response
+from the host application.  The pipe to @code{openvrml-gtkplug}'s
+@code{stdin} is used for such responses as well other @dfn{commands}.
+This pipe is referred to as the @dfn{command channel}.
+
+Requests and commands are terminated by an end-of-line.  They take the
+general form:
+
+@example
+@var{command-name} [@var{param1} [@var{param2} ... ]]
+@end example
+
+@cindex get-url
+@section The @code{get-url} Request
+
+@code{openvrml-gtkplug} sends a @code{get-url} request to indicate to
+the host application that it needs a particular network resource.
+This request takes the following form:
+
+@example
+get-url @var{url} [@var{target}]
+@end example
+
+@table @var
+@item url
+The URL being requested.
+
+@item target
+The name of a window.
+@end table
+
+The @var{url} parameter is the URL being requested.  The optional
+@var{target} parameter is the name of a window of the host
+application.  If @var{target} is not meaningful to the host
+application, it can be ignored.
+
+The @code{get-url} request expects a response in the form of a
+@code{get-url-result} command.  @code{openvrml-gtkplug} is unable to
+process the availability of the resource until it receives this
+command; so it should be issued as soon as possible.
+
+@section Commands
+
+@cindex get-url-result
+@subsection @code{get-url-result}
+
+The @code{get-url-result} command should be sent immediately in
+response to a @code{get-url} request.  This command should indicate
+the basic success or failure of initiating the resource request.
+@strong{It is not intended to indicate a response from a server}.
+Rather, it should be used to indicate whether the @var{URL} can be
+processed at all.  A URL might not be usable if it is syntactically
+invalid or its scheme is unsupported.
+
+This command takes the following form:
+
+@example
+get-url-result @var{url} @var{result}
+@end example
+
+@table @var
+@item url
+The URL from the @code{get-url} request.
+@item result
+An integer value.
+@end table
+
+The @var{url} parameter should match the URL received in the
+corresponding @code{get-url} request.  The @var{result} is an integer
+value; 0 indicates success, while nonzero indicates failure.
+
+@cindex new-stream
+@subsection @code{new-stream}
+
+The @code{new-stream} command indicates to @code{openvrml-gtkplug}
+that the host application intends to begin writing data associated
+with a requested resource.  @code{new-stream} should be sent after
+@code{get-url-result} has been sent for a stream and before
+@code{write} is sent for any of the stream data.
+
+This command takes the following form:
+
+@example
+new-stream @var{stream-id} @var{type} @var{url}
+@end example
+
+@table @var
+@item stream-id
+An integer identifier for the stream.
+@item type
+The MIME media type of the stream.
+@item url
+The URL associated with the stream.
+@end table
+
+The @var{stream-id} is an integer identifier for the stream.  This
+identifier will be used subsequently by the @code{write} and
+@code{destroy-stream} commands to refer to the stream.
+
+The @var{type} parameter is the MIME media type of the stream.  The
+@var{url} parameter should match the @var{url} parameter of a
+previously issued @code{get-url-result} command.
+
+@cindex write
+@subsection @code{write}
+
+The @code{write} command writes data to a stream for which
+@code{new-stream} has already been issued.  This command takes the
+following form:
+
+@example
+write @var{stream_id} @var{offset} @var{length}
+@var{data}
+@end example
+
+@table @var
+@item stream-id
+An integer identifier for the stream.
+@item offset
+The offset from the beginning of the stream to the beginning of
+@var{data}.
+@item length
+The number of bytes in @var{data}
+@item data
+The stream data.
+@end table
+
+The @var{stream-id} parameter is an integer identifier corresponding
+to a stream for which @code{new-stream} has already been called (and
+for which @code{destroy-stream} has @emph{not} been called.
+
+@code{write} is unique among commands in that the end-of-line
+character does not terminate the command; rather, it marks the
+beginning of the @var{data} parameter.  The command ends at the end of
+the @var{data} parameter, which is indicated by the @var{length}
+parameter.
+
+@code{write} may be called multiple times for the same stream.  The
+@var{offset} parameter indicates the offset of the beginning of
+@var{data} with respect to the beginning of the stream (in bytes).
+
+@cindex destroy-stream
+@subsection @code{destroy-stream}
+
+@code{destroy-stream} should be sent for a @var{stream-id} after no
+more @code{write} commands will be issued for it.  This command takes
+the following form:
+
+@example
+destroy-stream @var{stream-id}
+@end example
+
+@table @var
+@item stream-id
+An integer identifier for a stream.
+@end table
+
+@var{stream-id} should identify a stream for which @code{new-stream}
+has been sent, but for which @code{destroy-stream} has @emph{not}
+already been sent.
+
+@node Problems
+@chapter Getting Help and Reporting Bugs
+
+@cindex bug reporting
+@cindex problems
+@cindex reporting bugs
+
+@section Mailing List
+
+As part of the OpenVRML package, @code{openvrml-gtkplug} is discussed
+on the OpenVRML development mailing list,
+@email{openvrml-develop@@lists.sourceforge.net}.  Questions about usage
+of any part of the OpenVRML package are welcome here.  This mailing
+list permits posting only by subscribers in order to curb spam.
+Subscription information can be found at
+@url{http://lists.sourceforge.net/lists/listinfo/openvrml-develop}.
+
+@section Reporting Bugs
+
+Please report any bugs you encounter using
+@url{http://sourceforge.net/tracker/?func=add&group_id=7151&atid=107151,
+OpenVRML's SourceForge bug tracker}.
+
+@cindex checklist for bug reports
+Please include enough information for the maintainers to reproduce the
+problem.  Generally speaking, that means:
+
+@itemize @bullet
+@item The version number of openvrml-gtkplug (which you can find by
+running @w{@samp{openvrml-gtkplug --version}}) and any other
+program(s) or manual(s) involved.
+@item Hardware and operating system names and versions.
+@item The contents of any input files necessary to reproduce the bug.
+@item The expected behavior and/or output.
+@item A description of the problem and samples of any erroneous output.
+@item Any unusual options you gave to @command{configure}.
+@item Anything else that you think would be helpful.
+@end itemize
+
+When in doubt whether something is needed or not, include it.  It's
+better to include too much than to leave out something important.
+
+@section Submitting Patches
+
+@cindex patches, contributing
+Patches are welcome; if possible, please make them with @samp{@w{diff
+-u}} (@pxref{Top,, Overview, diff, Comparing and Merging Files}) and
+include @file{ChangeLog} entries (@pxref{Change Log,,, emacs, The GNU
+Emacs Manual}).  Please follow the existing coding style.
+
+The preferred means of submitting a patch is using @url{OpenVRML's
+SourceForge Patch Manager,
+http://sourceforge.net/tracker/?func=add&group_id=7151&atid=307151}.
+
+
+@node Copying This Manual
+@appendix Copying This Manual
+
+@menu
+* GNU Free Documentation License::  License for copying this manual.
+@end menu
+
+@include fdl.texi
+
+
+@node Concept Index
+@unnumbered Concept Index
+
+@printindex cp
+
+@bye
