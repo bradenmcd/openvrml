@@ -1,3 +1,9 @@
+2006-10-03 Braden McDaniel  <braden@endoframe.com>
+
+	* lib/gtkglext/configure.in: Don't die if we don't find all of
+	GtkGLExt's dependencies; we might not care (i.e., if the user
+	isn't building openvrml-gtkplug).
+
 2006-10-02 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gtkplug/main.cpp
