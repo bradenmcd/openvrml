@@ -1,3 +1,6 @@
+info_TEXINFOS = openvrml-gtkplug.texi
+openvrml_gtkplug_TEXINFOS = fdl.texi
+
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 DOCUMENTATION_FILES = \
