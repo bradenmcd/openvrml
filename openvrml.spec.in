@@ -122,6 +122,7 @@ VRML browser plug-in for Mozilla-based browsers.
 
 %files gtkplug
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
+%{_infodir}/openvrml-gtkplug.info
 %{_libexecdir}/openvrml-gtkplug
 
 %files mozilla-plugin
@@ -132,6 +133,9 @@ VRML browser plug-in for Mozilla-based browsers.
 
 
 %changelog
+* Thu Oct 05 2006  Braden McDaniel  <braden@endoframe.com>
+- Added openvrml-gtkplug info.
+
 * Thu Sep 28 2006  Braden McDaniel  <braden@endoframe.com>
 - Added openvrml-gtkplug package.
 
