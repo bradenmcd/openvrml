@@ -1,5 +1,14 @@
 2006-10-04 Braden McDaniel  <braden@endoframe.com>
 
+	Only recurse into lib/gtkglext if building openvrml-gtkplug.
+
+	* configure.ac: Added gtkglext_subdir substitution.
+	* lib/Makefile.am: Add gtkglext to SUBDIRS as a configure
+	substitution.  We don't want to recurse there if we aren't
+	building openvrml-gtkplug.
+
+2006-10-04 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Updated package layout description to reflect
 	openvrml-gtkplug.
 
