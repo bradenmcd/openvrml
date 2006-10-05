@@ -334,6 +334,12 @@ AC_SUBST([OPENVRML_RPATH])
 
 AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
 AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
+
+if test X$enable_gtkplug != Xno; then
+  gtkglext_subdir=gtkglext
+fi
+AC_SUBST([gtkglext_subdir])
+
 AC_CONFIG_SUBDIRS([lib/gtkglext mozilla-plugin])
 
 AC_CONFIG_TESTDIR([tests])

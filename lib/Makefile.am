@@ -1,1 +1,2 @@
-SUBDIRS = antlr gtkglext
+SUBDIRS = antlr @gtkglext_subdir@
+DIST_SUBDIRS = antlr gtkglext
