@@ -88,7 +88,10 @@ Package directory layout
    /m4                  :  m4 macros used by the GNU build system.
    /models              :  Sample VRML models.
    /mozilla-plugin      :  Mozilla plug-in sources.
-   /src                 :  Library sources.
+   /src
+     /libopenvrml       :  Runtime library sources.
+     /libopenvrml-gl    :  OpenGL renderer library sources.
+     /openvrml-gtkplug  :  GtkPlug component application sources.
    /test                :  Test programs.
 
 
