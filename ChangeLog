@@ -1,5 +1,9 @@
 2006-10-04 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fixed usage of AC_PATH_PROG when checking for Rez.
+
+2006-10-04 Braden McDaniel  <braden@endoframe.com>
+
 	Only recurse into lib/gtkglext if building openvrml-gtkplug.
 
 	* configure.ac: Added gtkglext_subdir substitution.

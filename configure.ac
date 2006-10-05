@@ -58,7 +58,7 @@ AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
 
 AC_ARG_VAR([REZ], [Mac OS X resource fork compiler])
-AC_PATH_PROG([REZ], [Rez], [$PATH:/Developer/Tools])
+AC_PATH_PROG([REZ], [Rez], , [$PATH:/Developer/Tools])
 
 #
 # Checks for compiler features
