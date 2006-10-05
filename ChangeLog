@@ -1,5 +1,10 @@
 2006-10-04 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Updated package layout description to reflect
+	openvrml-gtkplug.
+
+2006-10-04 Braden McDaniel  <braden@endoframe.com>
+
 	Added info documentation for openvrml-gtkplug.
 
 	* doc/Makefile.am: Added openvrml-gtkplug.texi.
