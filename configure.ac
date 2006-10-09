@@ -332,9 +332,6 @@ if test -n "${openvrml_run_path}"; then
 fi
 AC_SUBST([OPENVRML_RPATH])
 
-AC_ARG_VAR([XPIDL], [Mozilla XPCOM IDL compiler])
-AC_ARG_VAR([XPIDLFLAGS], [Mozilla XPCOM IDL compiler flags])
-
 if test X$enable_gtkplug != Xno; then
   gtkglext_subdir=gtkglext
 fi

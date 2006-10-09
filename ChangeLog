@@ -1,3 +1,7 @@
+2006-10-09 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Removed XPIDL, XPIDLFLAGS precious variables.
+
 2006-10-08 Braden McDaniel  <braden@endoframe.com>
 
 	Use the npruntime extensions to NPAPI to make the plug-in
