@@ -18,8 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include <cerrno>
-# include <list>
+# include <map>
 # include <memory>
 # include <sstream>
 # include <stdexcept>
@@ -28,33 +27,46 @@
 # include <sys/wait.h>
 # include <boost/lexical_cast.hpp>
 # include <boost/noncopyable.hpp>
+# include <boost/scoped_ptr.hpp>
 # include <mozilla-config.h>
 # include <npupp.h>
-# include <nsCOMPtr.h>
-# include <nsIServiceManagerUtils.h>
-# include <nsMemory.h>
-# include <nsString.h>
-# include <nsIConsoleService.h>
 # if defined MOZ_X11
 #   include <fcntl.h>
 #   include <gdk/gdkx.h>
 # else
 #   error Unsupported toolkit.
 # endif
-# include "openvrml.h"
 
 namespace {
 
     void printerr(const char * str);
 
-    class ScriptablePeer;
-
     extern "C" gboolean request_data_available(GIOChannel * source,
                                                GIOCondition condition,
                                                gpointer data);
+    class plugin_instance;
 
-    class PluginInstance : boost::noncopyable {
-        friend class ScriptablePeer;
+    typedef bool (plugin_instance::*script_callback_t)(const NPVariant *,
+                                                       uint32_t,
+                                                       NPVariant *);
+
+    //
+    // Mozilla doesn't like us to use NPN_GetStringIdentifier during static
+    // initialization; so this is a singleton.
+    //
+    class script_callback_map : public std::map<NPIdentifier,
+                                                script_callback_t>,
+                                boost::noncopyable {
+        static boost::scoped_ptr<const script_callback_map> instance_;
+
+        script_callback_map();
+
+    public:
+        static const script_callback_map & instance();
+    };
+
+
+    class plugin_instance : boost::noncopyable {
         friend gboolean request_data_available(GIOChannel * source,
                                                GIOCondition condition,
                                                gpointer data);
@@ -67,28 +79,24 @@ namespace {
         GIOChannel * request_channel;
         guint request_channel_watch_id;
         std::stringstream request_line;
-        nsCOMPtr<VrmlBrowser> scriptablePeer;
 
     public:
-        explicit PluginInstance(NPP npp) throw (std::bad_alloc);
-        ~PluginInstance() throw ();
+        NPObject * const npobj;
 
-        nsISupports * GetScriptablePeer() throw ();
-        void SetWindow(NPWindow & window) throw (std::bad_alloc);
+        explicit plugin_instance(NPP npp) throw (std::bad_alloc);
+        ~plugin_instance() throw ();
+
+        void set_window(NPWindow & window) throw (std::bad_alloc);
         void HandleEvent(void * event) throw ();
-        ssize_t WriteCommand(const std::string & command);
-    };
+        ssize_t write_command(const std::string & command);
 
-    class ScriptablePeer : public nsIClassInfo, public VrmlBrowser {
-        PluginInstance & pluginInstance;
-
-    public:
-        explicit ScriptablePeer(PluginInstance & pluginInstance);
-        ~ScriptablePeer();
-
-        NS_DECL_ISUPPORTS
-        NS_DECL_NSICLASSINFO
-        NS_DECL_VRMLBROWSER
+        //
+        // Scripting API method implementations.
+        //
+        bool get_name(const NPVariant * args, uint32_t argCount,
+                      NPVariant * result);
+        bool get_version(const NPVariant * args, uint32_t argCount,
+                         NPVariant * result);
     };
 } // namespace
 
@@ -99,7 +107,6 @@ char * NP_GetMIMEDescription()
 
 namespace {
     NPNetscapeFuncs mozillaFuncs;
-    nsCOMPtr<nsIConsoleService> console_service;
 }
 
 /**
@@ -150,24 +157,43 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     // by one rather than assign the whole struct because the Mozilla function
     // table could be bigger than what we expect.
     //
-    mozillaFuncs.version       = mozTable->version;
-    mozillaFuncs.size          = mozTable->size;
-    mozillaFuncs.posturl       = mozTable->posturl;
-    mozillaFuncs.geturl        = mozTable->geturl;
-    mozillaFuncs.geturlnotify  = mozTable->geturlnotify;
-    mozillaFuncs.requestread   = mozTable->requestread;
-    mozillaFuncs.newstream     = mozTable->newstream;
-    mozillaFuncs.write         = mozTable->write;
-    mozillaFuncs.destroystream = mozTable->destroystream;
-    mozillaFuncs.status        = mozTable->status;
-    mozillaFuncs.uagent        = mozTable->uagent;
-    mozillaFuncs.memalloc      = mozTable->memalloc;
-    mozillaFuncs.memfree       = mozTable->memfree;
-    mozillaFuncs.memflush      = mozTable->memflush;
-    mozillaFuncs.reloadplugins = mozTable->reloadplugins;
-    mozillaFuncs.getJavaEnv    = mozTable->getJavaEnv;
-    mozillaFuncs.getJavaPeer   = mozTable->getJavaPeer;
-    mozillaFuncs.getvalue      = mozTable->getvalue;
+    mozillaFuncs.version              = mozTable->version;
+    mozillaFuncs.size                 = mozTable->size;
+    mozillaFuncs.posturl              = mozTable->posturl;
+    mozillaFuncs.geturl               = mozTable->geturl;
+    mozillaFuncs.geturlnotify         = mozTable->geturlnotify;
+    mozillaFuncs.requestread          = mozTable->requestread;
+    mozillaFuncs.newstream            = mozTable->newstream;
+    mozillaFuncs.write                = mozTable->write;
+    mozillaFuncs.destroystream        = mozTable->destroystream;
+    mozillaFuncs.status               = mozTable->status;
+    mozillaFuncs.uagent               = mozTable->uagent;
+    mozillaFuncs.memalloc             = mozTable->memalloc;
+    mozillaFuncs.memfree              = mozTable->memfree;
+    mozillaFuncs.memflush             = mozTable->memflush;
+    mozillaFuncs.reloadplugins        = mozTable->reloadplugins;
+    mozillaFuncs.getJavaEnv           = mozTable->getJavaEnv;
+    mozillaFuncs.getJavaPeer          = mozTable->getJavaPeer;
+    mozillaFuncs.getvalue             = mozTable->getvalue;
+    mozillaFuncs.getstringidentifier  = mozTable->getstringidentifier;
+    mozillaFuncs.getstringidentifiers = mozTable->getstringidentifiers;
+    mozillaFuncs.getintidentifier     = mozTable->getintidentifier;
+    mozillaFuncs.identifierisstring   = mozTable->identifierisstring;
+    mozillaFuncs.utf8fromidentifier   = mozTable->utf8fromidentifier;
+    mozillaFuncs.intfromidentifier    = mozTable->intfromidentifier;
+    mozillaFuncs.createobject         = mozTable->createobject;
+    mozillaFuncs.retainobject         = mozTable->retainobject;
+    mozillaFuncs.releaseobject        = mozTable->releaseobject;
+    mozillaFuncs.invoke               = mozTable->invoke;
+    mozillaFuncs.invokeDefault        = mozTable->invokeDefault;
+    mozillaFuncs.evaluate             = mozTable->evaluate;
+    mozillaFuncs.getproperty          = mozTable->getproperty;
+    mozillaFuncs.setproperty          = mozTable->setproperty;
+    mozillaFuncs.removeproperty       = mozTable->removeproperty;
+    mozillaFuncs.hasproperty          = mozTable->hasproperty;
+    mozillaFuncs.hasmethod            = mozTable->hasmethod;
+    mozillaFuncs.releasevariantvalue  = mozTable->releasevariantvalue;
+    mozillaFuncs.setexception         = mozTable->setexception;
 
     //
     // Set up the plug-in function table that Mozilla will use to call us.
@@ -220,10 +246,6 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
     }
 # endif // defined MOZ_X11
-
-    nsresult rv;
-    console_service = do_GetService(NS_CONSOLESERVICE_CONTRACTID, &rv);
-    if (NS_FAILED(rv)) { return NPERR_GENERIC_ERROR; }
 
     return NPP_Initialize();
 }
@@ -319,7 +341,7 @@ NPError NPP_New(const NPMIMEType,
     if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
 
     try {
-        instance->pdata = new PluginInstance(instance);
+        instance->pdata = new plugin_instance(instance);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
     }
@@ -375,7 +397,7 @@ NPError NPP_Destroy(const NPP instance, NPSavedData **)
      *    recreated.
      */
 
-    delete static_cast<PluginInstance *>(instance->pdata);
+    delete static_cast<plugin_instance *>(instance->pdata);
     instance->pdata = 0;
 
     return NPERR_NO_ERROR;
@@ -386,8 +408,8 @@ NPError NPP_SetWindow(const NPP instance, NPWindow * const window)
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
     try {
         assert(window);
-        static_cast<PluginInstance *>(instance->pdata)
-            ->SetWindow(*window);
+        static_cast<plugin_instance *>(instance->pdata)
+            ->set_window(*window);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
     }
@@ -404,13 +426,13 @@ NPError NPP_NewStream(const NPP instance,
     *stype = NP_NORMAL;
 
     assert(instance->pdata);
-    PluginInstance & pluginInstance =
-        *static_cast<PluginInstance *>(instance->pdata);
+    plugin_instance & pluginInstance =
+        *static_cast<plugin_instance *>(instance->pdata);
 
     std::ostringstream command;
     command << "new-stream " << ptrdiff_t(stream) << ' ' << type << ' '
             << stream->url << '\n';
-    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
+    const ssize_t bytes_written = pluginInstance.write_command(command.str());
     return (bytes_written < 0)
         ? NPERR_GENERIC_ERROR
         : NPERR_NO_ERROR;
@@ -422,12 +444,12 @@ NPError NPP_DestroyStream(const NPP instance,
 {
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
 
-    PluginInstance & pluginInstance =
-        *static_cast<PluginInstance *>(instance->pdata);
+    plugin_instance & pluginInstance =
+        *static_cast<plugin_instance *>(instance->pdata);
 
     std::ostringstream command;
     command << "destroy-stream " << ptrdiff_t(stream) << '\n';
-    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
+    const ssize_t bytes_written = pluginInstance.write_command(command.str());
     return (bytes_written < 0)
         ? NPERR_GENERIC_ERROR
         : NPERR_NO_ERROR;
@@ -465,8 +487,8 @@ int32 NPP_Write(const NPP instance,
 {
     if (!instance || !instance->pdata) { return 0; }
 
-    PluginInstance & pluginInstance =
-        *static_cast<PluginInstance *>(instance->pdata);
+    plugin_instance & pluginInstance =
+        *static_cast<plugin_instance *>(instance->pdata);
 
     std::ostringstream command;
     command << "write " << ptrdiff_t(stream) << ' ' << offset << ' ' << len
@@ -474,7 +496,7 @@ int32 NPP_Write(const NPP instance,
     for (int32 i = 0; i < len; ++i) {
         command.put(static_cast<char *>(buffer)[i]);
     }
-    const ssize_t bytes_written = pluginInstance.WriteCommand(command.str());
+    const ssize_t bytes_written = pluginInstance.write_command(command.str());
 
     return bytes_written; // The number of bytes accepted.
 }
@@ -550,44 +572,24 @@ jref NPP_GetJavaClass()
     return 0;
 }
 
-NPError NPP_GetValue(const NPP instance,
+NPError NPP_GetValue(const NPP npp,
                      const NPPVariable variable,
                      void * const value)
 {
-    if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
+    if (!npp) { return NPERR_INVALID_INSTANCE_ERROR; }
 
     NPError err = NPERR_NO_ERROR;
-    static const nsIID scriptableIID = VRMLBROWSER_IID;
-    nsISupports * scriptablePeer = 0;
-    nsIID * scriptableIID_ptr = 0;
-    PluginInstance * pluginInstance = 0;
+    plugin_instance * instance = 0;
 
     switch (variable) {
-    case NPPVpluginScriptableInstance:
-        assert(instance->pdata);
-        pluginInstance =
-            static_cast<PluginInstance *>(instance->pdata);
-        scriptablePeer = pluginInstance->GetScriptablePeer();
-        assert(scriptablePeer);
-        //
-        // Add reference for the caller requesting the object.
-        //
-        NS_ADDREF(scriptablePeer);
-        *static_cast<nsISupports **>(value) = scriptablePeer;
-        break;
-    case NPPVpluginScriptableIID:
-        try {
-            scriptableIID_ptr =
-                static_cast<nsIID *>(NPN_MemAlloc(sizeof (nsIID)));
-            if (!scriptableIID_ptr) { throw std::bad_alloc(); }
-            *scriptableIID_ptr = scriptableIID;
-            *static_cast<nsIID **>(value) = scriptableIID_ptr;
-        } catch (std::bad_alloc &) {
-            err = NPERR_OUT_OF_MEMORY_ERROR;
-        }
-        break;
     case NPPVpluginNeedsXEmbed:
         *static_cast<PRBool *>(value) = PR_TRUE;
+        break;
+    case NPPVpluginScriptableNPObject:
+        assert(npp->pdata);
+        instance = static_cast<plugin_instance *>(npp->pdata);
+        NPN_RetainObject(instance->npobj);
+        *static_cast<NPObject **>(value) = instance->npobj;
         break;
     default:
         err = NP_GetValue(instance, variable, value);
@@ -784,210 +786,249 @@ void NPN_ForceRedraw(NPP instance)
     CallNPN_ForceRedrawProc(mozillaFuncs.forceredraw, instance);
 }
 
+void NPN_ReleaseVariantValue(NPVariant * variant)
+{
+    CallNPN_ReleaseVariantValueProc(mozillaFuncs.releasevariantvalue, variant);
+}
+
+NPIdentifier NPN_GetStringIdentifier(const NPUTF8 * name)
+{
+    return CallNPN_GetStringIdentifierProc(mozillaFuncs.getstringidentifier,
+                                           name);
+}
+
+void NPN_GetStringIdentifiers(const NPUTF8 ** names,
+                              int32_t nameCount,
+                              NPIdentifier * identifiers)
+{
+    CallNPN_GetStringIdentifiersProc(mozillaFuncs.getstringidentifiers,
+                                     names,
+                                     nameCount,
+                                     identifiers);
+}
+
+NPIdentifier NPN_GetIntIdentifier(int32_t intid)
+{
+    return CallNPN_GetIntIdentifierProc(mozillaFuncs.getintidentifier, intid);
+}
+
+bool NPN_IdentifierIsString(NPIdentifier * identifier)
+{
+    return CallNPN_IdentifierIsStringProc(mozillaFuncs.identifierisstring,
+                                          identifier);
+}
+
+NPUTF8 * NPN_UTF8FromIdentifier(NPIdentifier identifier)
+{
+    return CallNPN_UTF8FromIdentifierProc(mozillaFuncs.utf8fromidentifier,
+                                          identifier);
+}
+
+int32_t NPN_IntFromIdentifier(NPIdentifier identifier)
+{
+    return CallNPN_IntFromIdentifierProc(mozillaFuncs.intfromidentifier,
+                                         identifier);
+}
+
+NPObject * NPN_CreateObject(NPP npp, NPClass * aClass)
+{
+    return CallNPN_CreateObjectProc(mozillaFuncs.createobject, npp, aClass);
+}
+
+NPObject * NPN_RetainObject(NPObject * npobj)
+{
+    return CallNPN_RetainObjectProc(mozillaFuncs.retainobject, npobj);
+}
+
+void NPN_ReleaseObject(NPObject * npobj)
+{
+    CallNPN_ReleaseObjectProc(mozillaFuncs.releaseobject, npobj);
+}
+
+bool NPN_Invoke(NPP npp, NPObject * npobj, NPIdentifier methodName,
+                const NPVariant * args, uint32_t argCount, NPVariant * result)
+{
+    return CallNPN_InvokeProc(mozillaFuncs.invoke,
+                              npp, npobj, methodName, args, argCount, result);
+}
+
+bool NPN_InvokeDefault(NPP npp, NPObject * npobj, const NPVariant * args,
+                       uint32_t argCount, NPVariant * result)
+{
+    return CallNPN_InvokeDefaultProc(mozillaFuncs.invokeDefault,
+                                     npp, npobj, args, argCount, result);
+}
+
+bool NPN_Evaluate(NPP npp, NPObject * npobj, NPString * script,
+                  NPVariant * result)
+{
+    return CallNPN_EvaluateProc(mozillaFuncs.evaluate, npp, npobj, script,
+                                result);
+}
+
+bool NPN_GetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
+                     NPVariant * result)
+{
+    return CallNPN_GetPropertyProc(mozillaFuncs.getproperty,
+                                   npp, npobj, propertyName, result);
+}
+
+bool NPN_SetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
+                     const NPVariant * result)
+{
+    return CallNPN_SetPropertyProc(mozillaFuncs.setproperty,
+                                   npp, npobj, propertyName, result);
+}
+
+bool NPN_RemoveProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
+{
+    return CallNPN_RemovePropertyProc(mozillaFuncs.removeproperty,
+                                      npp, npobj, propertyName);
+}
+
+bool NPN_HasProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
+{
+    return CallNPN_HasPropertyProc(mozillaFuncs.hasproperty,
+                                   npp, npobj, propertyName);
+}
+
+bool NPN_HasMethod(NPP npp, NPObject * npobj, NPIdentifier methodName)
+{
+    return CallNPN_HasMethodProc(mozillaFuncs.hasmethod,
+                                 npp, npobj, methodName);
+}
+
+void NPN_SetException(NPObject * npobj, const NPUTF8 * message)
+{
+    return CallNPN_SetExceptionProc(mozillaFuncs.setexception, npobj, message);
+}
+
 namespace {
+
+    boost::scoped_ptr<const script_callback_map> script_callback_map::instance_;
+
+    script_callback_map::script_callback_map()
+    {
+        using std::make_pair;
+        this->insert(make_pair(NPN_GetStringIdentifier("getName"),
+                               &plugin_instance::get_name));
+        this->insert(make_pair(NPN_GetStringIdentifier("getVersion"),
+                               &plugin_instance::get_version));
+    }
+
+    const script_callback_map & script_callback_map::instance()
+    {
+        if (!script_callback_map::instance_) {
+            script_callback_map::instance_.reset(new script_callback_map);
+        }
+        return *script_callback_map::instance_;
+    }
 
     void printerr(const char * str)
     {
-        console_service->LogStringMessage(NS_ConvertUTF8toUTF16(str).get());
+        fprintf(stderr, "%s\n", str);
     }
 
-    ScriptablePeer::ScriptablePeer(PluginInstance & pluginInstance):
-        pluginInstance(pluginInstance)
+
+    struct OpenVRMLNPObject {
+        NPObject npobj;
+        NPP npp;
+    };
+
+    NPObject * openvrmlnpobject_allocate(NPP npp, NPClass *)
     {
-        NS_INIT_ISUPPORTS();
+        OpenVRMLNPObject * const npobj =
+            static_cast<OpenVRMLNPObject *>(
+                NPN_MemAlloc(sizeof (OpenVRMLNPObject)));
+
+        npobj->npp = npp;
+
+        return static_cast<NPObject *>(static_cast<void *>(npobj));
     }
 
-    ScriptablePeer::~ScriptablePeer()
+    void openvrmlnpobject_deallocate(NPObject * const npobj)
+    {
+        NPN_MemFree(npobj);
+    }
+
+    void openvrmlnpobject_invalidate(NPObject * /* npobj */)
     {}
 
-    NS_IMPL_ISUPPORTS2(ScriptablePeer, nsIClassInfo, VrmlBrowser)
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // nsIClassInfo implementation
-    //
-
-    NS_IMETHODIMP ScriptablePeer::GetFlags(PRUint32 * aFlags)
+    bool openvrmlnpobject_hasMethod(NPObject *, const NPIdentifier name)
     {
-        *aFlags = nsIClassInfo::PLUGIN_OBJECT | nsIClassInfo::DOM_OBJECT;
-        return NS_OK;
+        const script_callback_map::const_iterator pos =
+            script_callback_map::instance().find(name);
+        return pos != script_callback_map::instance().end();
     }
 
-    NS_IMETHODIMP
-    ScriptablePeer::
-    GetImplementationLanguage(PRUint32 * aImplementationLanguage)
+    bool openvrmlnpobject_invoke(NPObject * const npobj,
+                                 const NPIdentifier name,
+                                 const NPVariant * const args,
+                                 const uint32_t argCount,
+                                 NPVariant * const result)
     {
-        *aImplementationLanguage = nsIProgrammingLanguage::CPLUSPLUS;
-        return NS_OK;
+        const script_callback_map::const_iterator pos =
+            script_callback_map::instance().find(name);
+        assert(pos != script_callback_map::instance().end());
+
+        OpenVRMLNPObject * const openvrml_npobj =
+            static_cast<OpenVRMLNPObject *>(static_cast<void *>(npobj));
+
+        plugin_instance * const instance =
+            static_cast<plugin_instance *>(openvrml_npobj->npp->pdata);
+
+        return (instance->*(pos->second))(args, argCount, result);
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetInterfaces(PRUint32 * /* count */,
-                                                nsIID *** /* array */)
+    bool openvrmlnpobject_invokeDefault(NPObject * /* npobj */,
+                                        const NPVariant * /* args */,
+                                        uint32_t /* argCount */,
+                                        NPVariant * /* result */)
     {
-        return NS_ERROR_NOT_IMPLEMENTED;
+        return false;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetHelperForLanguage(PRUint32 /* language */,
-                                                       nsISupports ** /* _retval */)
+    bool openvrmlnpobject_hasProperty(NPObject * /* npobj */,
+                                      NPIdentifier /* name */)
     {
-        return NS_ERROR_NOT_IMPLEMENTED;
+        return false;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetContractID(char ** /* aContractID */)
+    bool openvrmlnpobject_getProperty(NPObject * /* npobj */,
+                                      NPIdentifier /* name */,
+                                      NPVariant * /* result */)
     {
-        return NS_ERROR_NOT_IMPLEMENTED;
+        return false;
     }
 
-    NS_IMETHODIMP
-    ScriptablePeer::GetClassDescription(char ** /* aClassDescription */)
+    bool openvrmlnpobject_setProperty(NPObject * /* npobj */,
+                                      NPIdentifier /* name */,
+                                      const NPVariant * /* value */)
     {
-        return NS_ERROR_NOT_IMPLEMENTED;
+        return false;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetClassID(nsCID ** /* aClassID */)
+    bool openvrmlnpobject_removeProperty(NPObject * /* npobj */,
+                                         NPIdentifier /* name */)
     {
-        return NS_ERROR_NOT_IMPLEMENTED;
+        return false;
     }
 
-    NS_IMETHODIMP ScriptablePeer::GetClassIDNoAlloc(nsCID * /* aClassIDNoAlloc */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
+    NPClass npclass = {
+        NP_CLASS_STRUCT_VERSION,
+        openvrmlnpobject_allocate,
+        openvrmlnpobject_deallocate,
+        openvrmlnpobject_invalidate,
+        openvrmlnpobject_hasMethod,
+        openvrmlnpobject_invoke,
+        openvrmlnpobject_invokeDefault,
+        openvrmlnpobject_hasProperty,
+        openvrmlnpobject_getProperty,
+        openvrmlnpobject_setProperty,
+        openvrmlnpobject_removeProperty
+    };
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // VrmlBrowser implementation
-    //
-
-    NS_IMETHODIMP ScriptablePeer::GetName(char ** _retval)
-    {
-        if (!_retval) { return NS_ERROR_NULL_POINTER; }
-
-        const std::string name;
-        const size_t bufferSize = sizeof (char) * (name.length() + 1);
-
-        *_retval = static_cast<char *>(nsMemory::Clone(name.c_str(),
-                                                       bufferSize));
-        if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
-
-        return NS_OK;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::GetVersion(char ** _retval)
-    {
-        if (!_retval) { return NS_ERROR_NULL_POINTER; }
-
-        const std::string version;
-        const size_t bufferSize = sizeof (char) * (version.length() + 1);
-
-        *_retval = static_cast<char *>(nsMemory::Clone(version.c_str(),
-                                                       bufferSize));
-        if (!*_retval) { return NS_ERROR_OUT_OF_MEMORY; }
-
-        return NS_OK;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::GetCurrentSpeed(float * /* _retval */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::GetCurrentFrameRate(float * /* _retval */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::GetWorldURL(char ** /* _retval */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::ReplaceWorld(PRUint32 /* nodeArraySize */,
-                                               VrmlNode ** /* nodeArray */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::LoadURL(PRUint32 /* urlArraySize */,
-                                          const char ** /* url */,
-                                          PRUint32 /* paramArraySize */,
-                                          const char ** /* parameter */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::SetDescription(const char * /* description */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP
-    ScriptablePeer::CreateVrmlFromString(const char * /* vrmlSyntax */,
-                                         PRUint32 * /* nodeArraySize */,
-                                         VrmlNode *** /* nodeArray */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::CreateVrmlFromURL(PRUint32 /* urlArraySize */,
-                                                    const char ** /* url */,
-                                                    VrmlNode * /* node */,
-                                                    const char * /* event */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::GetNode(const char * /* name */,
-                                          VrmlNode ** /* _retval */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::AddRoute(VrmlNode * /* fromNode */,
-                                           const char * /* fromEventOut */,
-                                           VrmlNode * /* toNode */,
-                                           const char * /* toEventIn */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::DeleteRoute(VrmlNode * /* fromNode */,
-                                              const char * /* fromEventOut */,
-                                              VrmlNode * /* toNode */,
-                                              const char * /* toEvent */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::BeginUpdate()
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::EndUpdate()
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP ScriptablePeer::Dispose()
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP
-    ScriptablePeer::AddBrowserListener(VrmlBrowserListener * /* listener */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    NS_IMETHODIMP
-    ScriptablePeer::RemoveBrowserListener(VrmlBrowserListener * /* listener */)
-    {
-        return NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-
-    PluginInstance::PluginInstance(const NPP npp) throw (std::bad_alloc):
+    plugin_instance::plugin_instance(const NPP npp) throw (std::bad_alloc):
         npp(npp),
         window(0),
         x(0),
@@ -997,10 +1038,12 @@ namespace {
         command_channel(0),
         request_channel(0),
         request_channel_watch_id(0),
-        scriptablePeer(new ScriptablePeer(*this))
-    {}
+        npobj(NPN_CreateObject(this->npp, &npclass))
+    {
+        if (!this->npobj) { throw std::bad_alloc(); }
+    }
 
-    PluginInstance::~PluginInstance() throw ()
+    plugin_instance::~plugin_instance() throw ()
     {
         if (this->request_channel_watch_id) {
             const gboolean succeeded =
@@ -1039,14 +1082,11 @@ namespace {
 
             g_io_channel_unref(this->command_channel);
         }
+
+        NPN_ReleaseObject(this->npobj);
     }
 
-    nsISupports * PluginInstance::GetScriptablePeer() throw ()
-    {
-        return this->scriptablePeer;
-    }
-
-    void PluginInstance::SetWindow(NPWindow & window)
+    void plugin_instance::set_window(NPWindow & window)
         throw (std::bad_alloc)
     {
         assert(window.window);
@@ -1175,10 +1215,10 @@ namespace {
         }
     }
 
-    void PluginInstance::HandleEvent(void *) throw ()
+    void plugin_instance::HandleEvent(void *) throw ()
     {}
 
-    ssize_t PluginInstance::WriteCommand(const std::string & command)
+    ssize_t plugin_instance::write_command(const std::string & command)
     {
         if (!this->command_channel) { return 0; }
 
@@ -1212,13 +1252,37 @@ namespace {
         return bytes_written;
     }
 
+    bool plugin_instance::get_name(const NPVariant * const args,
+                                   const uint32_t argCount,
+                                   NPVariant * const result)
+    {
+        static const std::string name = PACKAGE_NAME;
+        NPUTF8 * const name_str =
+            static_cast<NPUTF8 *>(NPN_MemAlloc(sizeof (NPUTF8) * name.length()));
+        std::copy(name.begin(), name.end(), name_str);
+        STRINGN_TO_NPVARIANT(name_str, name.length(), *result);
+        return true;
+    }
+
+    bool plugin_instance::get_version(const NPVariant * const args,
+                                      const uint32_t argCount,
+                                      NPVariant * const result)
+    {
+        static const std::string ver = PACKAGE_VERSION;
+        NPUTF8 * const ver_str =
+            static_cast<NPUTF8 *>(NPN_MemAlloc(sizeof (NPUTF8) * ver.length()));
+        std::copy(ver.begin(), ver.end(), ver_str);
+        STRINGN_TO_NPVARIANT(ver_str, ver.length(), *result);
+        return true;
+    }
+
     gboolean request_data_available(GIOChannel * const source,
                                     GIOCondition,
                                     const gpointer data)
     {
         using std::string;
 
-        PluginInstance & pluginInstance = *static_cast<PluginInstance *>(data);
+        plugin_instance & pluginInstance = *static_cast<plugin_instance *>(data);
 
         gchar c;
         do {
@@ -1256,8 +1320,8 @@ namespace {
                 std::ostringstream command;
                 command << "get-url-result " << url << ' ' << result << '\n';
                 const ssize_t bytes_written =
-                    pluginInstance.WriteCommand(command.str());
-                if (bytes_written != command.str().length()) {
+                    pluginInstance.write_command(command.str());
+                if (bytes_written != ssize_t(command.str().length())) {
                     // XXX
                     // XXX Do what here? Console message?
                     // XXX
