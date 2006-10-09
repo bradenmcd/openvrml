@@ -1,3 +1,101 @@
+2006-10-08 Braden McDaniel  <braden@endoframe.com>
+
+	Use the npruntime extensions to NPAPI to make the plug-in
+	scriptable instead of XPCOM.
+
+	* mozilla-plugin/configure.ac: Removed XPCOM-related checks.
+	* mozilla-plugin/src/Makefile.am: Removed references to
+	openvrml.idl and files generated from it.
+	* mozilla-plugin/src/openvrml.cpp
+	(script_callback_map): A singleton to map NPIdentifiers to
+	functions.
+	(plugin_instance::scriptablePeer): Removed member.
+	(plugin_instance::npobj): Added member; the NPObject associated
+	with the plug-in instance.
+	(plugin_instance::get_name(const NPVariant *, uint32_t,
+	NPVariant*)): Browser.getName() implementation.
+	(plugin_instance::get_version(const NPVariant *, uint32_t,
+	NPVariant*)): Browser.getVersion() implementation.
+	(ScriptablePeer): Removed class.
+	(NP_Initialize(NPNetscapeFuncs *, NPPluginFuncs *)): Initialize
+	mozillaFuncs with the npruntime API function pointers.  Removed
+	initialization of the console_service pointer to the Mozilla XPCOM
+	console service.
+	(NPP_GetValue(NPP, NPPVariable, void *)): Removed support for
+	NPPVpluginScriptableInstance and NPPVpluginScriptableIID.  Added
+	support for NPPVpluginScriptableNPObject.
+	(printerr(const char *)): Write to stderr rather than the
+	JavaScript console.
+	(NPN_ReleaseVariantValue(NPVariant *)): Added npruntime function.
+	(NPN_GetStringIdentifier(const NPUTF8 *)): Added npruntime
+	function.
+	(NPN_GetStringIdentifiers(const NPUTF8 **, int32_t,
+	NPIdentifier*)): Added npruntime function.
+	(NPN_GetIntIdentifier(int32_t)): Added npruntime function.
+	(NPN_IdentifierIsString(NPIdentifier *)): Added npruntime
+	function.
+	(NPN_UTF8FromIdentifier(NPIdentifier)): Added npruntime function.
+	(NPN_IntFromIdentifier(NPIdentifier)): Added npruntime function.
+	(NPN_CreateObject(NPP, NPClass *)): Added npruntime function.
+	(NPN_RetainObject(NPObject *)): Added npruntime function.
+	(NPN_ReleaseObject(NPObject *)): Added npruntime function.
+	(NPN_Invoke(NPP, NPObject *, NPIdentifier, const NPVariant *,
+	uint32_t, NPVariant *)): Added npruntime function.
+	(NPN_InvokeDefault(NPP, NPObject *, const NPVariant *, uint32_t,
+	NPVariant *)): Added npruntime function.
+	(NPN_Evaluate(NPP, NPObject *, NPString *, NPVariant *)): Added
+	npruntime function.
+	(NPN_GetProperty(NPP, NPObject *, NPIdentifier, NPVariant *)):
+	Added npruntime function.
+	(NPN_SetProperty(NPP, NPObject *, NPIdentifier, const
+	NPVariant*)): Added npruntime function.
+	(NPN_RemoveProperty(NPP, NPObject *, NPIdentifier)): Added
+	npruntime function.
+	(NPN_HasProperty(NPP, NPObject *, NPIdentifier)): Added npruntime
+	function.
+	(NPN_HasMethod(NPP, NPObject *, NPIdentifier)): Added npruntime
+	function.
+	(NPN_SetException(NPObject *, const NPUTF8 *)): Added npruntime
+	function.
+	(script_callback_map::instance_): Singleton instance.
+	(script_callback_map::script_callback_map()): Initialize the map
+	with pointers to the script method implementations.
+	(script_callback_map::instance()): Get the instance.
+	(OpenVRMLNPObject): NPObject corresponding to the plug-in
+	instance.
+	(openvrmlnpobject_allocate(NPP, NPClass *)): "allocate" callback
+	function for the plug-in's NPObject.
+	(openvrmlnpobject_deallocate(NPObject *)): "deallocate" callback
+	function for the plug-in's NPObject.
+	(openvrmlnpobject_invalidate(NPObject *)): "invalidate" callback
+	function for the plug-in's NPObject.
+	(openvrmlnpobject_hasMethod(NPObject *, NPIdentifier)):
+	"hasMethod" callback function for the plug-in's NPObject.
+	(openvrmlnpobject_invoke(NPObject *, NPIdentifier, const
+	NPVariant*, uint32_t, NPVariant *)): "invoke" callback function
+	for the plug-in's NPObject.
+	(openvrmlnpobject_invokeDefault(NPObject *, const NPVariant *,
+	uint32_t, NPVariant *)): "invokeDefault" callback function for the
+	plug-in's NPObject.
+	(openvrmlnpobject_getProperty(NPObject *, NPIdentifier,
+	NPVariant*)): "getProperty" callback function for the plug-in's
+	NPObject.
+	(openvrmlnpobject_setProperty(NPObject *, NPIdentifier, const
+	NPVariant *)): "setProperty" callback function for the plug-in's
+	NPObject.
+	(openvrmlnpobject_removeProperty(NPObject *, NPIdentifier)):
+	"removeProperty" callback function for the plug-in's NPObject.
+	(npclass): NPClass object for the plug-in's NPObject.
+	(plugin_instance::plugin_instance(NPP)): Initialize the plug-in
+	instance's NPObject pointer.
+	(plugin_instance::~plugin_instance()): Call NPN_ReleaseObject on
+	the plug-in instance's NPObject.
+	(plugin_instance::get_name(const NPVariant *, uint32_t,
+	NPVariant*)): Return the VRML browser name.
+	(plugin_instance::get_version(const NPVariant *, uint32_t,
+	NPVariant *)): Return the VRML browser version.
+	* mozilla-plugin/src/openvrml.idl: Removed file.
+
 2006-10-05 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.spec.in: Added openvrml-gtkplug info.
