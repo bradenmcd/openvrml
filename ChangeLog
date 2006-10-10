@@ -1,5 +1,10 @@
 2006-10-10 Braden McDaniel  <braden@endoframe.com>
 
+	* lib/gtkglext/configure.in: Build against X11 if we are building
+	under Cygwin with Cygwin X11.
+
+2006-10-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(OPENVRML_GL_CALLBACK_): Don't apply __stdcall__ attribute if
 	we're building with Cygwin X11's glu.h.
