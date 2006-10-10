@@ -171,7 +171,9 @@ if test "x$os_win32" = "xyes"; then
 fi
 AM_CONDITIONAL([MS_LIB_AVAILABLE], [test "x$ms_librarian" = "xyes"])
 
-if test "x$platform_win32" = "xyes"; then
+AC_PATH_XTRA
+
+if test "x$platform_win32" = "xyes" -a "x$no_x" = "xyes"; then
   gdktarget=win32
 else
   gdktarget=x11
@@ -438,8 +440,6 @@ GDKGLEXT_WIN_LIBS=""
 GDKGLEXT_WIN_EXTRA_DEFS=""
 
 if test "x$gdktarget" = "xx11"; then
-  AC_PATH_XTRA
-
   save_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $X_CFLAGS"
   save_LIBS="$LIBS"
