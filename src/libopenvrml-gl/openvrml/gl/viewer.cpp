@@ -72,7 +72,7 @@
             } while (false)
 #   endif
 
-# if defined(__CYGWIN__) || defined(__MINGW32__)
+# if (defined(__CYGWIN__) && defined(X_DISPLAY_MISSING)) || defined(__MINGW32__)
 #   define OPENVRML_GL_CALLBACK_ __attribute__ ((__stdcall__))
 # elif defined (_WIN32)
 #   define OPENVRML_GL_CALLBACK_ APIENTRY
