@@ -1,6 +1,13 @@
 2006-10-12 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
+	(NPP_SetWindow(NPP, NPWindow *)): Catch std::runtime_error.
+	(plugin_instance::set_window(NPWindow &)): Throw
+	std::runtime_error in response to failures from GLib functions.
+
+2006-10-12 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp
 	(plugin_instance::set_window(NPWindow &)): Improved exception
 	safety with ScopeGuard.
 
