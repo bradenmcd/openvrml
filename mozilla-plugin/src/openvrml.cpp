@@ -25,7 +25,9 @@
 # include <vector>
 # include <sys/socket.h>
 # include <sys/wait.h>
+# include <boost/concept_check.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/noncopyable.hpp>
 # include <boost/scoped_ptr.hpp>
 # include <mozilla-config.h>
@@ -36,6 +38,8 @@
 # else
 #   error Unsupported toolkit.
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
@@ -1094,125 +1098,124 @@ namespace {
             //
             // The plug-in window is unchanged. Resize the window and exit.
             //
+            return;
+        }
+
+        using std::string;
+        using std::vector;
+        using boost::lexical_cast;
+
+        this->window = GdkNativeWindow(ptrdiff_t(window.window));
+
+        //
+        // The OPENVRML_GTKPLUG environment variable overrides the default
+        // path to the child process executable.  To allow OPENVRML_GTKPLUG
+        // to include arguments (rather than just be a path to an
+        // executable), it is parsed with g_shell_parse_argv.  This is
+        // particularly useful in case we want to run the child process in
+        // a harness like valgrind.
+        //
+        gint openvrml_gtkplug_cmd_argc = 0;
+        gchar ** openvrml_gtkplug_cmd_argv = 0;
+        scope_guard openvrml_gtkplug_cmd_argv_guard =
+            make_guard(g_strfreev, openvrml_gtkplug_cmd_argv);
+        const gchar * const openvrml_gtkplug_cmd =
+            g_getenv("OPENVRML_GTKPLUG");
+        if (!openvrml_gtkplug_cmd) {
+            openvrml_gtkplug_cmd_argc = 1;
+            openvrml_gtkplug_cmd_argv =
+                static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
+            if (!openvrml_gtkplug_cmd_argv) { throw std::bad_alloc(); }
+            openvrml_gtkplug_cmd_argv[0] =
+                g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-gtkplug");
+            if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
         } else {
-            using std::string;
-            using std::vector;
-            using boost::lexical_cast;
-
-            this->window = GdkNativeWindow(ptrdiff_t(window.window));
-
-            //
-            // The OPENVRML_GTKPLUG environment variable overrides the default
-            // path to the child process executable.  To allow OPENVRML_GTKPLUG
-            // to include arguments (rather than just be a path to an
-            // executable), it is parsed with g_shell_parse_argv.  This is
-            // particularly useful in case we want to run the child process in
-            // a harness like valgrind.
-            //
-            gint openvrml_gtkplug_cmd_argc = 0;
-            gchar ** openvrml_gtkplug_cmd_argv = 0;
-            const gchar * const openvrml_gtkplug_cmd =
-                g_getenv("OPENVRML_GTKPLUG");
-            if (!openvrml_gtkplug_cmd) {
-                openvrml_gtkplug_cmd_argc = 1;
-                openvrml_gtkplug_cmd_argv =
-                    static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-                if (!openvrml_gtkplug_cmd_argv) { throw std::bad_alloc(); }
-                openvrml_gtkplug_cmd_argv[0] =
-                    g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-gtkplug");
-                if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
-            } else {
-                GError * error = 0;
-                gboolean succeeded =
-                    g_shell_parse_argv(openvrml_gtkplug_cmd,
-                                       &openvrml_gtkplug_cmd_argc,
-                                       &openvrml_gtkplug_cmd_argv,
-                                       &error);
-                if (!succeeded) {
-                    if (error) {
-                        g_critical(error->message);
-                        g_error_free(error);
-                    }
-                }
-            }
-
-            string socket_id_arg = lexical_cast<string>(this->window);
-            const char * socket_id_arg_c_str = socket_id_arg.c_str();
-            vector<char> socket_id_arg_vec(
-                socket_id_arg_c_str,
-                socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-            const gint argv_size = openvrml_gtkplug_cmd_argc + 2;
-            gchar ** const argv =
-                static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
-            if (!argv) { throw std::bad_alloc(); }
-            gint i;
-            for (i = 0; i < openvrml_gtkplug_cmd_argc; ++i) {
-                argv[i] = openvrml_gtkplug_cmd_argv[i];
-            }
-            argv[i++] = &socket_id_arg_vec.front();
-            argv[i]   = 0;
-
-            gchar * const working_directory = g_get_current_dir();
-            if (!working_directory) { throw std::bad_alloc(); };
-            gchar ** envp = 0;
-            GPid * const child_pid = 0;
-            gint standard_input, standard_output;
-            gint * const standard_error = 0;
             GError * error = 0;
-            gboolean succeeded = g_spawn_async_with_pipes(working_directory,
-                                                          argv,
-                                                          envp,
-                                                          GSpawnFlags(0),
-                                                          0,
-                                                          0,
-                                                          child_pid,
-                                                          &standard_input,
-                                                          &standard_output,
-                                                          standard_error,
-                                                          &error);
+            gboolean succeeded =
+                g_shell_parse_argv(openvrml_gtkplug_cmd,
+                                   &openvrml_gtkplug_cmd_argc,
+                                   &openvrml_gtkplug_cmd_argv,
+                                   &error);
             if (!succeeded) {
                 if (error) {
                     g_critical(error->message);
                     g_error_free(error);
                 }
             }
-
-            // XXX
-            // XXX Not the least bit exception-safe.  This needs some
-            // XXX ScopeGuard love.
-            // XXX
-            g_free(working_directory);
-            g_free(argv);
-            g_strfreev(openvrml_gtkplug_cmd_argv);
-
-            if (succeeded) {
-                this->command_channel = g_io_channel_unix_new(standard_input);
-                if (!this->command_channel) { throw std::bad_alloc(); }
-                const GIOStatus status =
-                    g_io_channel_set_encoding(this->command_channel,
-                                              0, // binary (no encoding)
-                                              &error);
-                if (status != G_IO_STATUS_NORMAL) {
-                    if (error) {
-                        g_critical(error->message);
-                        g_error_free(error);
-                    }
-                    // XXX
-                    // XXX Should probably throw here instead.
-                    // XXX
-                    return;
-                }
-
-                this->request_channel = g_io_channel_unix_new(standard_output);
-                if (!this->command_channel) { throw std::bad_alloc(); }
-                this->request_channel_watch_id =
-                    g_io_add_watch(this->request_channel,
-                                   G_IO_IN,
-                                   request_data_available,
-                                   this);
-            }
         }
+
+        string socket_id_arg = lexical_cast<string>(this->window);
+        const char * socket_id_arg_c_str = socket_id_arg.c_str();
+        vector<char> socket_id_arg_vec(
+            socket_id_arg_c_str,
+            socket_id_arg_c_str + socket_id_arg.length() + 1);
+
+        const gint argv_size = openvrml_gtkplug_cmd_argc + 2;
+        gchar ** const argv =
+            static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
+        if (!argv) { throw std::bad_alloc(); }
+        scope_guard argv_guard = make_guard(g_free, argv);
+        boost::ignore_unused_variable_warning(argv_guard);
+        gint i;
+        for (i = 0; i < openvrml_gtkplug_cmd_argc; ++i) {
+            argv[i] = openvrml_gtkplug_cmd_argv[i];
+        }
+        argv[i++] = &socket_id_arg_vec.front();
+        argv[i]   = 0;
+
+        gchar * const working_dir = g_get_current_dir();
+        if (!working_dir) { throw std::bad_alloc(); };
+        scope_guard working_dir_guard = make_guard(g_free, working_dir);
+        boost::ignore_unused_variable_warning(working_dir_guard);
+
+        gchar ** envp = 0;
+        GPid * const child_pid = 0;
+        gint standard_input, standard_output;
+        gint * const standard_error = 0;
+        GError * error = 0;
+        gboolean succeeded = g_spawn_async_with_pipes(working_dir,
+                                                      argv,
+                                                      envp,
+                                                      GSpawnFlags(0),
+                                                      0,
+                                                      0,
+                                                      child_pid,
+                                                      &standard_input,
+                                                      &standard_output,
+                                                      standard_error,
+                                                      &error);
+        if (!succeeded) {
+            if (error) {
+                g_critical(error->message);
+                g_error_free(error);
+            }
+            return;
+        }
+
+        this->command_channel = g_io_channel_unix_new(standard_input);
+        if (!this->command_channel) { throw std::bad_alloc(); }
+        const GIOStatus status =
+            g_io_channel_set_encoding(this->command_channel,
+                                      0, // binary (no encoding)
+                                      &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) {
+                g_critical(error->message);
+                g_error_free(error);
+            }
+            // XXX
+            // XXX Should probably throw here instead.
+            // XXX
+            return;
+        }
+
+        this->request_channel = g_io_channel_unix_new(standard_output);
+        if (!this->command_channel) { throw std::bad_alloc(); }
+        this->request_channel_watch_id =
+            g_io_add_watch(this->request_channel,
+                           G_IO_IN,
+                           request_data_available,
+                           this);
     }
 
     void plugin_instance::HandleEvent(void *) throw ()
