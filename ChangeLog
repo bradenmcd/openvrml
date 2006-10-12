@@ -1,3 +1,9 @@
+2006-10-12 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Improved exception
+	safety with ScopeGuard.
+
 2006-10-10 Braden McDaniel  <braden@endoframe.com>
 
 	* lib/gtkglext/configure.in: Build against X11 if we are building
