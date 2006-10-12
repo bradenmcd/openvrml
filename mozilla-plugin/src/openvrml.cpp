@@ -90,7 +90,8 @@ namespace {
         explicit plugin_instance(NPP npp) throw (std::bad_alloc);
         ~plugin_instance() throw ();
 
-        void set_window(NPWindow & window) throw (std::bad_alloc);
+        void set_window(NPWindow & window)
+            throw (std::bad_alloc, std::runtime_error);
         void HandleEvent(void * event) throw ();
         ssize_t write_command(const std::string & command);
 
@@ -416,6 +417,9 @@ NPError NPP_SetWindow(const NPP instance, NPWindow * const window)
             ->set_window(*window);
     } catch (std::bad_alloc &) {
         return NPERR_OUT_OF_MEMORY_ERROR;
+    } catch (std::runtime_error & ex) {
+        g_critical(ex.what());
+        return NPERR_GENERIC_ERROR;
     }
     return NPERR_NO_ERROR;
 }
@@ -1091,7 +1095,7 @@ namespace {
     }
 
     void plugin_instance::set_window(NPWindow & window)
-        throw (std::bad_alloc)
+        throw (std::bad_alloc, std::runtime_error)
     {
         assert(window.window);
         if (this->window) {
@@ -1131,17 +1135,18 @@ namespace {
             if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
         } else {
             GError * error = 0;
+            scope_guard error_guard = make_guard(g_error_free, error);
             gboolean succeeded =
                 g_shell_parse_argv(openvrml_gtkplug_cmd,
                                    &openvrml_gtkplug_cmd_argc,
                                    &openvrml_gtkplug_cmd_argv,
                                    &error);
             if (!succeeded) {
-                if (error) {
-                    g_critical(error->message);
-                    g_error_free(error);
-                }
+                throw std::runtime_error(error
+                                         ? error->message
+                                         : "g_shell_parse_argv failure");
             }
+            error_guard.dismiss();
         }
 
         string socket_id_arg = lexical_cast<string>(this->window);
@@ -1173,6 +1178,7 @@ namespace {
         gint standard_input, standard_output;
         gint * const standard_error = 0;
         GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, error);
         gboolean succeeded = g_spawn_async_with_pipes(working_dir,
                                                       argv,
                                                       envp,
@@ -1185,12 +1191,14 @@ namespace {
                                                       standard_error,
                                                       &error);
         if (!succeeded) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            return;
+            throw std::runtime_error(error
+                                     ? error->message
+                                     : "g_spawn_async_with_pipes failure");
         }
+
+        //
+        // Don't dismiss "error_guard" yet; we reuse "error" below.
+        //
 
         this->command_channel = g_io_channel_unix_new(standard_input);
         if (!this->command_channel) { throw std::bad_alloc(); }
@@ -1199,15 +1207,12 @@ namespace {
                                       0, // binary (no encoding)
                                       &error);
         if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            // XXX
-            // XXX Should probably throw here instead.
-            // XXX
+            throw std::runtime_error(error
+                                     ? error->message
+                                     : "g_io_channel_set_encoding failure");
             return;
         }
+        error_guard.dismiss();
 
         this->request_channel = g_io_channel_unix_new(standard_output);
         if (!this->command_channel) { throw std::bad_alloc(); }
