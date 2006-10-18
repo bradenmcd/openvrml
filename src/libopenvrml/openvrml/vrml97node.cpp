@@ -26881,7 +26881,7 @@ namespace {
         assert(this->scene());
         const node_path path = this->scene()->browser().find_node(*this);
         assert(!path.empty());
-        this->parent_transform = mat4f();
+        this->parent_transform = make_mat4f();
         std::for_each(path.begin(), path.end(),
                       accumulate_transform_(this->parent_transform));
         this->final_transformation_dirty = true;

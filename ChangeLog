@@ -1,3 +1,14 @@
+2006-10-18 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed some residual uses of the openvrml::mat4f constructor.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(viewpoint_node::do_relocate()): Use make_mat4f instead of mat4f's
+	default constructor.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::reset_user_navigation()): Use make_mat4f
+	instead of mat4f's default constructor.
+
 2006-10-12 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp

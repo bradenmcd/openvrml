@@ -1145,7 +1145,7 @@ double openvrml::gl::viewer::frame_rate()
 void openvrml::gl::viewer::reset_user_navigation()
 {
     assert(this->browser());
-    this->browser()->active_viewpoint().user_view_transform(mat4f());
+    this->browser()->active_viewpoint().user_view_transform(make_mat4f());
     this->post_redraw();
 }
 
