@@ -1,3 +1,15 @@
+2006-10-23 Braden McDaniel  <braden@endoframe.com>
+
+	Moved the URI grammar to private.h so that it can be used by
+	multiple implementation files.
+
+	* src/libopenvrml/private.h: Moved URI grammar to here.
+	* src/libopenvrml/openvrml/browser.cpp: Removed URI grammar (moved
+	to private.h).  Removed openvrml::node_metatype_id
+	implementation (moved to node.cpp).
+	* src/libopenvrml/openvrml/node.cpp: Moved
+	openvrml::node_metatype_id implementation to here.
+
 2006-10-18 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed some residual uses of the openvrml::mat4f constructor.
