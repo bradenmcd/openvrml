@@ -540,6 +540,171 @@ openvrml::find_interface(const node_interface_set & interfaces,
 
 
 /**
+ * @class openvrml::node_metatype_id
+ *
+ * @brief Identifier for @c node_metatype%s.
+ *
+ * @c node_metatype identifiers take the following form:
+ *
+ * <pre>
+ * absolute-uri ['#' proto-id ['#' proto-id [...]]]
+ * </pre>
+ *
+ * A @c node_metatype identifier is basically like an absolute URI;
+ * except the fragment identifier syntax has been extended to support referring
+ * to nested @c PROTO%s.
+ *
+ * For example, supposing the following VRML world resides at
+ * <code>%http://example.com/example.wrl</code>:
+ *
+ * <pre>
+ * \#VRML V2.0 utf8
+ *
+ * PROTO Outer [] {
+ *   PROTO Inner [] { Group {} }
+ *   Group {}
+ * }
+ * </pre>
+ *
+ * The @c node_metatype_id string for @c Outer would be
+ * <code>%http://example.com/example.wrl\#Outer</code>; and for @c Inner,
+ * <code>%http://example.com/example.wrl\#Outer\#Inner</code>.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::string openvrml::node_metatype_id::id_
+ *
+ * @brief The identifier string.
+ */
+
+namespace {
+
+    struct OPENVRML_LOCAL node_metatype_id_grammar :
+        public boost::spirit::grammar<node_metatype_id_grammar> {
+
+        template <typename ScannerT>
+        struct definition {
+            typedef boost::spirit::rule<ScannerT> rule_type;
+
+            rule_type node_metatype_id;
+            openvrml_::absolute_uri_grammar<> absolute_uri;
+            openvrml_::uric_grammar uric;
+
+            definition(const node_metatype_id_grammar & self);
+
+            const boost::spirit::rule<ScannerT> & start() const;
+        };
+    };
+
+    template <typename ScannerT>
+    node_metatype_id_grammar::definition<ScannerT>::
+    definition(const node_metatype_id_grammar &)
+    {
+        node_metatype_id
+            =   absolute_uri >> *('#' >> *uric)
+            ;
+    }
+
+    template <typename ScannerT>
+    const boost::spirit::rule<ScannerT> &
+    node_metatype_id_grammar::definition<ScannerT>::start() const
+    {
+        return this->node_metatype_id;
+    }
+}
+
+/**
+ * @brief Construct from a <code>const&nbsp;char&nbsp;*</code>.
+ *
+ * @param[in] id    the identifier.
+ *
+ * @exception std::invalid_argument if @p id is not a valid
+ *                                  @c node_metatype identifier.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @todo Need to make sure the fragment part is valid.
+ */
+openvrml::node_metatype_id::node_metatype_id(const char * id)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
+    id_(id)
+{
+    using namespace boost::spirit;
+
+    node_metatype_id_grammar g;
+    if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {
+        throw std::invalid_argument('<' + this->id_ + "> is not a valid "
+                                    "node_metatype identifier");
+    }
+}
+
+/**
+ * @brief Construct from a @c std::string.
+ *
+ * @param[in] id    the identifier.
+ *
+ * @exception std::invalid_argument if @p id is not a valid
+ *                                  @c node_metatype identifier.
+ * @exception std::bad_alloc        if memory allocation fails.
+ *
+ * @todo Need to make sure the fragment part is valid.
+ */
+openvrml::node_metatype_id::node_metatype_id(const std::string & id)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
+    id_(id)
+{
+    using namespace boost::spirit;
+
+    node_metatype_id_grammar g;
+    if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {
+        throw std::invalid_argument('<' + this->id_ + "> is not a valid "
+                                    "node_metatype identifier");
+    }
+}
+
+/**
+ * @brief Convert to a @c std::string.
+ *
+ * @return the @c node_metatype identifier as a @c std::string.
+ */
+openvrml::node_metatype_id::operator std::string() const
+{
+    return this->id_;
+}
+
+/**
+ * @relates openvrml::node_metatype_id
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are equal, @c false otherwise.
+ */
+bool openvrml::operator==(const node_metatype_id & lhs,
+                          const node_metatype_id & rhs)
+    OPENVRML_NOTHROW
+{
+    return lhs.id_ == rhs.id_;
+}
+
+/**
+ * @relates openvrml::node_metatype_id
+ *
+ * @param[in] lhs
+ * @param[in] rhs
+ *
+ * @return @c true if @p lhs and @p rhs are not equal, @c false otherwise.
+ */
+bool openvrml::operator!=(const node_metatype_id & lhs,
+                          const node_metatype_id & rhs)
+    OPENVRML_NOTHROW
+{
+    return !(lhs == rhs);
+}
+
+
+/**
  * @class openvrml::node_metatype
  *
  * @brief A class object for node instances.
