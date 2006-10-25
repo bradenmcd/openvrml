@@ -1,5 +1,9 @@
 2006-10-25 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/index.doc: Documentation improvements.
+
+2006-10-25 Braden McDaniel  <braden@endoframe.com>
+
 	Quelled warnings from gcc.
 
 	* mozilla-plugin/src/openvrml.cpp
