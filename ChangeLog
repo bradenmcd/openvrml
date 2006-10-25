@@ -1,5 +1,17 @@
 2006-10-25 Braden McDaniel  <braden@endoframe.com>
 
+	Quelled warnings from gcc.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Suppress unused
+	variable warning.
+	(plugin_instance::get_name(const NPVariant *, uint32_t,
+	NPVariant*)): Quelled unused variable warnings.
+	(plugin_instance::get_version(const NPVariant *, uint32_t,
+	NPVariant*)): Quelled unused variable warnings.
+
+2006-10-25 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/openvrml-gtkplug.texi: Fixed URL reference to the patch
 	manager.
 

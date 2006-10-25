@@ -1123,6 +1123,7 @@ namespace {
         gchar ** openvrml_gtkplug_cmd_argv = 0;
         scope_guard openvrml_gtkplug_cmd_argv_guard =
             make_guard(g_strfreev, openvrml_gtkplug_cmd_argv);
+        boost::ignore_unused_variable_warning(openvrml_gtkplug_cmd_argv_guard);
         const gchar * const openvrml_gtkplug_cmd =
             g_getenv("OPENVRML_GTKPLUG");
         if (!openvrml_gtkplug_cmd) {
@@ -1260,8 +1261,8 @@ namespace {
         return bytes_written;
     }
 
-    bool plugin_instance::get_name(const NPVariant * const args,
-                                   const uint32_t argCount,
+    bool plugin_instance::get_name(const NPVariant * const /* args */,
+                                   const uint32_t /* argCount */,
                                    NPVariant * const result)
     {
         static const std::string name = PACKAGE_NAME;
@@ -1272,8 +1273,8 @@ namespace {
         return true;
     }
 
-    bool plugin_instance::get_version(const NPVariant * const args,
-                                      const uint32_t argCount,
+    bool plugin_instance::get_version(const NPVariant * const /* args */,
+                                      const uint32_t /* argCount */,
                                       NPVariant * const result)
     {
         static const std::string ver = PACKAGE_VERSION;
