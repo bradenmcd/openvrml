@@ -426,9 +426,9 @@ Patches are welcome; if possible, please make them with @samp{@w{diff
 include @file{ChangeLog} entries (@pxref{Change Log,,, emacs, The GNU
 Emacs Manual}).  Please follow the existing coding style.
 
-The preferred means of submitting a patch is using @url{OpenVRML's
-SourceForge Patch Manager,
-http://sourceforge.net/tracker/?func=add&group_id=7151&atid=307151}.
+The preferred means of submitting a patch is using
+@url{http://sourceforge.net/tracker/?func=add&group_id=7151&atid=307151,
+OpenVRML's SourceForge Patch Manager}.
 
 
 @node Copying This Manual
