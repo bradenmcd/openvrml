@@ -51,20 +51,20 @@
  * user-supplied resource fetching mechanism.
  *
  * The resource fetching mechanism can be as full-featured or as spartan as
- * the user application requires.  A minimal facility might only handle @c
- * file: URLs.  But in general it is desirable to support at least the schemes
- * supported by modern Web browsers (significantly, @c ftp: and @c http:).
+ * the user application requires.  A minimal facility might only handle
+ * @c file URLs.  But in general it is desirable to support at least the schemes
+ * supported by modern Web browsers (significantly, @c ftp and @c http).
  *
  * @subsubsection introducing_resource_istream 2.1.2 Introducing resource_istream
  *
- * OpenVRML accomplishes this extensibility by extending the C++ IOstreams
+ * OpenVRML accomplishes this extensibility by extending the C++ IOStreams
  * framework.  @c openvrml::resource_istream inherits @c std::istream and adds
  * a few member functions particular to network resource fetching:
  *
  * @code
- * const std::string url() const throw (std::bad_alloc)
- * const std::string type() const throw (std::bad_alloc)
- * bool data_available() const throw ()
+ * const std::string url() const throw (std::bad_alloc);
+ * const std::string type() const throw (std::bad_alloc);
+ * bool data_available() const throw ();
  * @endcode
  *
  * @c resource_istream is an abstract class.  It is an interface through which
@@ -75,8 +75,8 @@
  *
  * The centerpiece of the OpenVRML library is @c openvrml::browser.  This
  * class provides the interface for loading VRML/X3D worlds.  Most management
- * of the runtime will be handled through its member functions.  Like @c
- * resource_istream, @c browser is an abstract class that users must inherit.
+ * of the runtime will be handled through its member functions.  Like
+ * @c resource_istream, @c browser is an abstract class that users must inherit.
  * However, @c browser has only one pure virtual function you must implement:
  * the one responsible for creating @c resource_istream%s.
  *
@@ -89,32 +89,37 @@
  * Briefly, your implementation will return a @c std::auto_ptr to an instance
  * of your class that implements @c openvrml::resource_istream.
  *
+ * @note Most &ldquo;factory functions&rdquo; (i.e., functions that return an
+ * instance of an object allocated with @c new) in OpenVRML return an
+ * @c auto_ptr.  @c std::auto_ptr is used for ownership transfer; its use for
+ * a return value signals that the caller is taking ownership of the resource.
+ *
  * @subsubsection resource_istream_impl_considerations 2.1.4 resource_istream implementation considerations
  *
  * OpenVRML supports a notion of data streaming.  In general, network
  * resources are read asynchronously with respect to the rendering thread.
- * User code that does not support data streaming (as in the example using @c
- * std::filebuf in the documentation for @c
- * openvrml::browser::do_get_resource) can remain largely oblivious
+ * User code that does not support data streaming (as in the example using
+ * @c std::filebuf in the documentation for
+ * @c openvrml::browser::do_get_resource) can remain largely oblivious to
  * synchronization issues.  However, user code that supports data streaming
  * must be mindful of the fact that OpenVRML uses separate threads to read the
  * data streams.  Care must be taken not to write to a buffer at the same time
  * OpenVRML's stream reading thread is reading the buffer.
  *
- * The IOstreams framework is typically extended by inheriting @c
- * std::streambuf to implement new sources and sinks for data.  (Full
+ * The IOstreams framework is typically extended by inheriting
+ * @c std::streambuf to implement new sources and sinks for data.  (Full
  * treatment of this topic is beyond the scope of this document; see <a
  * href="http://www.josuttis.com/libbook/"><i>The C++ Standard Library</i> by
  * Nicolai M. Josuttis</a> and <a
  * href="http://www.angelikalanger.com/iostreams.html"><i>Standard C++
  * IOStreams and Locales</i> by Angelika Langer and Klaus Kreft</a>.)
  * However, <code>std::streambuf</code>'s interface is not thread-safe.  Since
- * OpenVRML's stream-reading thread can be expected to be using the @c
- * streambuf interface (by way of the @c std::istream member functions
+ * OpenVRML's stream-reading thread can be expected to be using the
+ * @c streambuf interface (by way of the @c std::istream member functions
  * inherited by @c openvrml::resource_istream), it is only safe for user code
  * to use the @c streambuf interface in that same thread; i.e., in code called
  * by OpenVRML.
-
+ *
  * If user code needs to feed data into a buffer in a separate thread, that
  * buffer should not be the one managed by the @c streambuf interface (i.e.,
  * the buffer to which @c eback, @c gptr, and @c egptr point).  In general it
