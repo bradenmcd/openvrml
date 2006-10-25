@@ -1,3 +1,13 @@
+2006-10-25 Braden McDaniel  <braden@endoframe.com>
+
+	Accommodate building against Firefox development headers.
+
+	* configure.ac: First look for firefox-js; fall back to
+	mozilla-js.
+	* openvrml.spec.in: Depend on firefox instead of mozilla.
+	* mozilla-plugin/configure.ac: First look for firefox-plugin; fall
+	back to mozilla-plugin.
+
 2006-10-23 Braden McDaniel  <braden@endoframe.com>
 
 	Moved the URI grammar to private.h so that it can be used by
