@@ -15,11 +15,16 @@ AC_PROG_LIBTOOL
 
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
-PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
-                  , [have_mozilla_plugin=no])
-mozversion=`$PKG_CONFIG --modversion mozilla-plugin`
-mozprefix=`$PKG_CONFIG --variable=prefix mozilla-plugin`
-mozlibdir=`$PKG_CONFIG --variable=libdir mozilla-plugin`
+PKG_CHECK_MODULES([MOZILLA_PLUGIN],
+                  [firefox-plugin],
+                  [mozilla_plugin_pkg=firefox-plugin],
+                  [PKG_CHECK_MODULES([MOZILLA_PLUGIN],
+                                     [mozilla-plugin >= 1.6],
+                                     [mozilla_plugin_pkg=mozilla-plugin],
+                                     [have_mozilla_plugin=no])])
+mozversion=`$PKG_CONFIG --modversion $mozilla_plugin_pkg`
+mozprefix=`$PKG_CONFIG --variable=prefix $mozilla_plugin_pkg`
+mozlibdir=`$PKG_CONFIG --variable=libdir $mozilla_plugin_pkg`
 AC_SUBST([mozlibdir])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 

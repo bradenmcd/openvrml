@@ -16,7 +16,7 @@ BuildRequires:  libpng-devel >= 1.0.12
 BuildRequires:  libjpeg-devel >= 6b
 BuildRequires:  fontconfig-devel >= 2.0
 BuildRequires:  freetype-devel >= 2.1.2
-BuildRequires:  mozilla-devel >= 1.6
+BuildRequires:  firefox-devel
 BuildRequires:  mesa-libGLU-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  gtk2-devel
@@ -25,7 +25,7 @@ Requires:       libpng >= 1.0.12
 Requires:       libjpeg >= 6b
 Requires:       fontconfig >= 2.0
 Requires:       freetype >= 2.1.2
-Requires:       mozilla >= 1.6
+Requires:       firefox
 
 %description
 OpenVRML is a VRML support library, including a runtime and facilities for
@@ -73,7 +73,7 @@ Summary:        VRML browser plug-in for Mozilla-based browsers.
 Group:          Applications/Internet
 License:        GPL
 Requires:       %{name}-gtkplug = %{version}
-Requires:       mozilla >= 1.6
+Requires:       firefox
 %description mozilla-plugin
 VRML browser plug-in for Mozilla-based browsers.
 
@@ -133,6 +133,9 @@ VRML browser plug-in for Mozilla-based browsers.
 
 
 %changelog
+* Wed Oct 25 2006  Braden McDaniel  <braden@endoframe.com>
+- Require firefox instead of mozilla.
+
 * Thu Oct 05 2006  Braden McDaniel  <braden@endoframe.com>
 - Added openvrml-gtkplug info.
 

@@ -36,6 +36,7 @@ AM_CONFIG_HEADER([config.h])
 # output by configure.
 #
 REQUIRE_FONTCONFIG="fontconfig"
+REQUIRE_FIREFOX_JS="firefox-js"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
 #
@@ -105,7 +106,11 @@ AC_LANG_POP])
 ])
 
 
-PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS], , [have_js=no])
+PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
+                  [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
+                  [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
+                                     [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
+                                     [have_js=no])])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 AC_PATH_XTRA
 AX_CHECK_GLU
@@ -225,10 +230,10 @@ else
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
   fi
-  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_MOZILLA_JS}"
+  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
   AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
-  GRE_PATH=`$PKG_CONFIG --libs-only-L mozilla-js | sed -e 's/^-L//' -e 's/ *$//'`
+  GRE_PATH=`$PKG_CONFIG --libs-only-L ${mozilla_js_pkg%% *} | sed -e 's/^-L//' -e 's/ *$//'`
   if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
     openvrml_run_path=":${openvrml_run_path}"
   fi
