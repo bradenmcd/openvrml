@@ -177,9 +177,9 @@ depends on.
      and LDFLAGS, respectively.  See the file INSTALL for general
      information on using these variables.
 
-     NOTE:  The code supporting Script node Java is not 64-bit-clean in
-     this release of OpenVRML.  Users of 64-bit platforms will not be
-     able to use this option.
+     NOTE: This option is not supported in this release of OpenVRML.
+     (Don't even bother trying; the code simply does not build.) Java
+     scripting support will reappear in a future release of OpenVRML.
 
  --disable-gl-renderer
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
@@ -259,12 +259,13 @@ Usage
 documentation in the "doc/manual" subdirectory of the distribution and
 the example programs in the "examples" subdirectory.
 
-   If OpenVRML is configured to be installed to the same prefix as
-Mozilla is installed on the system, "make install" will install the
-Mozilla plug-in to the browser's plug-in directory.  This should be
-sufficient to enable support for the "model/vrml" media type in the
-browser.  Entering "about:plugins" in the URL entry bar of a Mozilla-
-based browser will show a listing of successfully installed plug-ins.
+   If OpenVRML is configured to be installed to the same prefix as a
+Mozilla-based browser is installed on the system, "make install" will
+install the Mozilla plug-in to the browser's plug-in directory.  This
+should be sufficient to enable support for the "model/vrml" media type
+in the browser.  Entering "about:plugins" in the URL entry bar of a
+Mozilla-based browser will show a listing of successfully installed
+plug-ins.
 
    It is possible, for testing or other convenience, to run the
 plug-in from the build directories.  A symbolic link to the plug-in
