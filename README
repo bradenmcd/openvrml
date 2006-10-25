@@ -82,7 +82,7 @@ Package directory layout
    /examples            :  Example programs.
    /ide-projects
      /Windows
-       /VisualC7_1      :  Microsoft Visual C++ 7.1 project files.
+       /VisualC8_0      :  Microsoft Visual C++ 8.0 project files.
    /java                :  Java sources.
    /lib                 :  3rd party library sources.
    /m4                  :  m4 macros used by the GNU build system.

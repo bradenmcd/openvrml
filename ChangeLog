@@ -1,5 +1,10 @@
 2006-10-25 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Updated package directory layout to reflect update to
+	Visual C++ 8.0 project files.
+
+2006-10-25 Braden McDaniel  <braden@endoframe.com>
+
 	Accommodate building against Firefox development headers.
 
 	* configure.ac: First look for firefox-js; fall back to
