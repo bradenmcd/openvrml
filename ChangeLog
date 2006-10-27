@@ -1,5 +1,9 @@
 2006-10-27 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.spec.in: Fixed file name for openvrml-gtkplug texinfo.
+
+2006-10-27 Braden McDaniel  <braden@endoframe.com>
+
 	* lib/gtkglext/docs/reference/gtkglext/Makefile.am: Suppress
 	installation of the GtkGLExt documentation.
 
