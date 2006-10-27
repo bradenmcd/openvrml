@@ -128,11 +128,13 @@ VRML browser plug-in for Mozilla-based browsers.
 %files mozilla-plugin
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_libdir}/mozilla/plugins/openvrml.so
-%{_libdir}/mozilla/plugins/openvrml.xpt
-%{_datadir}/idl/%{name}-%{version}/openvrml.idl
 
 
 %changelog
+* Fri Oct 27 2006  Braden McDaniel  <braden@endoframe.com>
+- Removed obsolete references to openvrml.xpt and openvrml.idl by the
+  mozilla-plugin package.
+
 * Wed Oct 25 2006  Braden McDaniel  <braden@endoframe.com>
 - Require firefox instead of mozilla.
 
