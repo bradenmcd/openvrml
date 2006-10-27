@@ -122,7 +122,7 @@ VRML browser plug-in for Mozilla-based browsers.
 
 %files gtkplug
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
-%{_infodir}/openvrml-gtkplug.info
+%{_infodir}/openvrml-gtkplug.info.gz
 %{_libexecdir}/openvrml-gtkplug
 
 %files mozilla-plugin
@@ -134,6 +134,7 @@ VRML browser plug-in for Mozilla-based browsers.
 * Fri Oct 27 2006  Braden McDaniel  <braden@endoframe.com>
 - Removed obsolete references to openvrml.xpt and openvrml.idl by the
   mozilla-plugin package.
+- Fixed file name for openvrml-gtkplug texinfo.
 
 * Wed Oct 25 2006  Braden McDaniel  <braden@endoframe.com>
 - Require firefox instead of mozilla.
