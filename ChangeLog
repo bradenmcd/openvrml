@@ -1,5 +1,10 @@
 2006-10-27 Braden McDaniel  <braden@endoframe.com>
 
+	* lib/gtkglext/docs/reference/gtkglext/Makefile.am: Suppress
+	installation of the GtkGLExt documentation.
+
+2006-10-27 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in: Removed obsolete references to openvrml.xpt
 	and openvrml.idl by the mozilla-plugin package.
 

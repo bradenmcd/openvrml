@@ -78,3 +78,10 @@ $(top_srcdir)/docs/reference/gtkglext/version.xml:
 	cp $(top_builddir)/docs/reference/gtkglext/version.xml $@
 
 include $(top_srcdir)/gtk-doc.make
+
+#
+# We don't want to install anything here; so override install-data-am to
+# keep the automake-generated one from pulling in install-data-local
+# (defined in gtk-doc.make).
+#
+install-data-am:
