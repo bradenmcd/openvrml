@@ -1,5 +1,25 @@
 2006-10-28 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for the 0.16.1 release.
+
+	* NEWS: Updated for 0.16.1 release.
+	* README: Updated for 0.16.1 release.
+	* configure.ac: Updated for 0.16.1 release.
+	* doc/Doxyfile: Updated for 0.16.1 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Updated for 0.16.1 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Updated for 0.16.1 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Updated for 0.16.1 release.
+	* mozilla-plugin/configure.ac: Updated for 0.16.1 release.
+	* src/libopenvrml/Makefile.am: Updated libtool library version to
+	7:0:1.
+	* src/libopenvrml-gl/Makefile.am: Updated libtool library version
+	to 6:3:0.
+
+2006-10-28 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.spec.in: Improvements for conformance to Fedora Extras
 	packaging guidelines.
 
