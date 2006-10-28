@@ -1,3 +1,27 @@
+Changes new in version 0.16.1, 12 October, 2006
+========================================================================
+
+- Replaced the Mozilla plug-in's openvrml-player helper program with
+  openvrml-gtkplug, a reusable out-of-process GTK+ VRML browser
+  component.
+
+- Removed use of XPCOM from the Mozilla plug-in.  This should allow
+  the plug-in to work in any browser that supports NPAPI and XEmbed
+  plug-ins.
+
+- Added basic rendering of Text nodes on Windows.  Font selection
+  remains unimplemented.
+
+- Fixed problem where GtkGLExt was built even when not needed.
+
+- Fixed problem locating the Rez resource compiler when building on
+  Mac OS X.
+
+- Fixed problems building with Cygwin X11 OpenGL.
+
+- Support building with FreeType 2.2.
+
+
 Changes new in version 0.16.0, 12 August, 2006
 ========================================================================
 
