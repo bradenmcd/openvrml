@@ -16,3 +16,5 @@ pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
 
 dist-hook: openvrml.spec
 	cp openvrml.spec $(distdir)
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
