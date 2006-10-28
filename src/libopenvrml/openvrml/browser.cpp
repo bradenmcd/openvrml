@@ -2750,19 +2750,17 @@ namespace {
     {
         using openvrml::mat4f;
         using openvrml::rotation;
-        using openvrml::make_rotation;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
-        static const vec3f position = make_vec3f(0.0, 0.0, 10.0);
-        static const rotation orientation = make_rotation();
-        static const vec3f scale = make_vec3f(1.0, 1.0, 1.0);
-        static const rotation scaleOrientation = make_rotation();
-        static const vec3f center = make_vec3f();
-        static const mat4f t(make_transformation_mat4f(position,
-                                                       orientation,
-                                                       scale,
-                                                       scaleOrientation,
-                                                       center));
+        static const vec3f position(0.0, 0.0, 10.0);
+        static const rotation orientation;
+        static const vec3f scale(1.0, 1.0, 1.0);
+        static const rotation scaleOrientation;
+        static const vec3f center;
+        static const mat4f t(mat4f::transformation(position,
+                                                   orientation,
+                                                   scale,
+                                                   scaleOrientation,
+                                                   center));
         return t;
     }
 
@@ -6420,8 +6418,8 @@ void openvrml::browser::render()
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
     if (this->headlight_on()) {
-        static const color color = make_color(1.0, 1.0, 1.0);
-        static const vec3f direction = make_vec3f(0.0, 0.0, -1.0);
+        static const color color(1.0, 1.0, 1.0);
+        static const vec3f direction(0.0, 0.0, -1.0);
         static const float ambientIntensity = 0.3f;
         static const float intensity = 1.0;
 

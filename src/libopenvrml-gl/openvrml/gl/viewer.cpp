@@ -855,7 +855,6 @@ namespace {
     {
         using openvrml::rotation;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
 
         //
         // This size should really be based on the distance from the center of
@@ -877,14 +876,8 @@ namespace {
         // First, figure out z-coordinates for projection of P1 and P2 to
         // deformed sphere
         //
-        const vec3f p1 =
-            make_vec3f(p1x,
-                       p1y,
-                       tb_project_to_sphere(trackballSize, p1x, p1y));
-        const vec3f p2 =
-            make_vec3f(p2x,
-                       p2y,
-                       tb_project_to_sphere(trackballSize, p2x, p2y));
+        vec3f p1(p1x, p1y, tb_project_to_sphere(trackballSize, p1x, p1y));
+        vec3f p2(p2x, p2y, tb_project_to_sphere(trackballSize, p2x, p2y));
 
         result.axis((p2 * p1).normalize());
 
@@ -1145,7 +1138,7 @@ double openvrml::gl::viewer::frame_rate()
 void openvrml::gl::viewer::reset_user_navigation()
 {
     assert(this->browser());
-    this->browser()->active_viewpoint().user_view_transform(make_mat4f());
+    this->browser()->active_viewpoint().user_view_transform(mat4f());
     this->post_redraw();
 }
 
@@ -1878,10 +1871,8 @@ openvrml::gl::viewer::insert_elevation_grid(const unsigned int mask,
                     //
                     // Normal per face.
                     //
-                    const vec3f vx = make_vec3f(xSpacing, *(h + 1) - *h, 0.0);
-                    const vec3f vz = make_vec3f(0.0,
-                                                *(h + xDimension) - *h,
-                                                zSpacing);
+                    const vec3f vx(xSpacing, *(h + 1) - *h, 0.0);
+                    const vec3f vz(0.0, *(h + xDimension) - *h, zSpacing);
                     glNormal3fv(&(vx * vz)[0]);
                 }
             }
@@ -2162,16 +2153,15 @@ namespace {
         using openvrml::rotation;
         using openvrml::vec2f;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
         using openvrml::mat4f;
 
         size_t i, j, ci;
 
         // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
         // with spine segments.
-        vec3f Xscp = make_vec3f(1.0, 0.0, 0.0);
-        vec3f Yscp = make_vec3f(0.0, 1.0, 0.0);
-        vec3f Zscp = make_vec3f(0.0, 0.0, 1.0);
+        vec3f Xscp(1.0, 0.0, 0.0);
+        vec3f Yscp(0.0, 1.0, 0.0);
+        vec3f Zscp(0.0, 0.0, 1.0);
         vec3f lastZ;
 
         // Is the spine a closed curve (last pt == first pt)?
@@ -2191,7 +2181,7 @@ namespace {
 
         // If the spine is a straight line, compute a constant SCP xform
         if (spineStraight) {
-            const vec3f v1 = make_vec3f(0.0, 1.0, 0.0);
+            const vec3f v1(0.0, 1.0, 0.0);
             const vec3f v2 = spine.back() - spine.front();
             vec3f v3 = v2 * v1;
             float len = v3.length();
@@ -2201,12 +2191,11 @@ namespace {
                 //
                 v3 *= float(1.0 / len);
 
-                const rotation orient =
-                    make_rotation(v3, float(acos(v1.dot(v2)))); // Axis/angle
-                const mat4f scp = make_rotation_mat4f(orient); // xform matrix
-                Xscp = make_vec3f(scp[0][0], scp[0][1], scp[0][2]);
-                Yscp = make_vec3f(scp[1][0], scp[1][1], scp[1][2]);
-                Zscp = make_vec3f(scp[2][0], scp[2][1], scp[2][2]);
+                const rotation orient(v3, float(acos(v1.dot(v2)))); // Axis/angle
+                const mat4f scp = mat4f::rotation(orient); // xform matrix
+                Xscp = vec3f(scp[0][0], scp[0][1], scp[0][2]);
+                Yscp = vec3f(scp[1][0], scp[1][1], scp[1][2]);
+                Zscp = vec3f(scp[2][0], scp[2][1], scp[2][2]);
             }
         }
 
@@ -2214,7 +2203,7 @@ namespace {
         mat4f om;
         if (orientation.size() == 1
                 && !fequal<float>()(orientation.front().angle(), 0.0f)) {
-            om = make_rotation_mat4f(orientation.front());
+            om = mat4f::rotation(orientation.front());
         }
 
         using std::vector;
@@ -2298,7 +2287,7 @@ namespace {
             // Apply orientation.
             //
             if (!fequal<float>()(r->angle(), 0.0f)) {
-                if (orientation.size() > 1) { om = make_rotation_mat4f(*r); }
+                if (orientation.size() > 1) { om = mat4f::rotation(*r); }
 
                 for (j = 0; j < crossSection.size(); ++j) {
                     float cx, cy, cz;
@@ -3868,11 +3857,11 @@ void openvrml::gl::viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHR
                                       currentRotation,
                                       currentScale);
 
-    const mat4f r = make_rotation_mat4f(rot);
+    const mat4f r = mat4f::rotation(rot);
 
-    const mat4f prevOrientation = make_rotation_mat4f(currentRotation);
+    const mat4f prevOrientation = mat4f::rotation(currentRotation);
 
-    const mat4f t = make_translation_mat4f(currentTranslation);
+    const mat4f t = mat4f::translation(currentTranslation);
 
     const mat4f newCameraTransform =
             prevOrientation * (t * (r * viewpointTransformation.inverse()));
@@ -3893,7 +3882,7 @@ void openvrml::gl::viewer::step(const float x, const float y, const float z)
 {
     assert(this->browser());
 
-    mat4f t = make_translation_mat4f(make_vec3f(x, y, z));
+    mat4f t = mat4f::translation(vec3f(x, y, z));
     viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     activeViewpoint
         .user_view_transform(t * activeViewpoint.user_view_transform());
@@ -3946,10 +3935,10 @@ void openvrml::gl::viewer::zoom(const float z)
     dx *= dist;
     dy *= dist;
     dz *= dist;
-    const vec3f translation = make_vec3f(static_cast<float>(dx),
-                                         static_cast<float>(dy),
-                                         static_cast<float>(dz));
-    mat4f t = make_translation_mat4f(translation);
+    const vec3f translation(static_cast<float>(dx),
+                            static_cast<float>(dy),
+                            static_cast<float>(dz));
+    mat4f t = mat4f::translation(translation);
     viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
     activeViewpoint.user_view_transform(t * userViewTransform);
