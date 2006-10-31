@@ -132,13 +132,6 @@ namespace openvrml {
             double render_time;
             double render_time1;
 
-            // Window system specific methods
-
-            virtual void post_redraw() = 0;
-            virtual void set_cursor(cursor_style c) = 0;
-            virtual void swap_buffers() = 0;
-            virtual void set_timer(double interval) = 0;
-
             // Initialize OpenGL state
             void initialize();
 
@@ -160,151 +153,6 @@ namespace openvrml {
             viewer();
             virtual ~viewer() OPENVRML_NOTHROW;
 
-            virtual rendering_mode mode();
-            virtual double frame_rate();
-
-            virtual void reset_user_navigation();
-
-            // Scope dirlights, open/close display lists
-            virtual object_t begin_object(const char * id, bool retain);
-            virtual void end_object();
-
-            // Insert objects into the display list
-            virtual object_t
-            insert_background(const std::vector<float> & groundAngle,
-                              const std::vector<color> & groundColor,
-                              const std::vector<float> & skyAngle,
-                              const std::vector<color> & skyColor,
-                              const image & front,
-                              const image & back,
-                              const image & left,
-                              const image & right,
-                              const image & top,
-                              const image & bottom);
-
-
-            virtual object_t insert_box(const vec3f & size);
-            virtual object_t insert_cone(float height, float radius,
-                                         bool bottom, bool side);
-            virtual object_t insert_cylinder(float height, float radius,
-                                             bool bottom, bool side, bool top);
-
-            virtual object_t
-            insert_elevation_grid(unsigned int mask,
-                                  const std::vector<float> & height,
-                                  int32 xDimension,
-                                  int32 zDimension,
-                                  float xSpacing,
-                                  float zSpacing,
-                                  const std::vector<color> & color,
-                                  const std::vector<vec3f> & normal,
-                                  const std::vector<vec2f> & texCoord);
-            virtual object_t
-            insert_extrusion(
-                unsigned int mask,
-                const std::vector<vec3f> & spine,
-                const std::vector<vec2f> & crossSection,
-                const std::vector<openvrml::rotation> & orientation,
-                const std::vector<vec2f> & scale);
-            virtual object_t
-            insert_line_set(const std::vector<vec3f> & coord,
-                            const std::vector<int32> & coordIndex,
-                            bool colorPerVertex,
-                            const std::vector<color> & color,
-                            const std::vector<int32> & colorIndex);
-            virtual object_t
-            insert_point_set(const std::vector<vec3f> & coord,
-                             const std::vector<color> & color);
-            virtual object_t
-            insert_shell(unsigned int mask,
-                         const std::vector<vec3f> & coord,
-                         const std::vector<int32> & coordIndex,
-                         const std::vector<color> & color,
-                         const std::vector<int32> & colorIndex,
-                         const std::vector<vec3f> & normal,
-                         const std::vector<int32> & normalIndex,
-                         const std::vector<vec2f> & texCoord,
-                         const std::vector<int32> & texCoordIndex);
-            virtual object_t insert_sphere(float radius);
-
-            // Lights
-            virtual object_t insert_dir_light(float ambientIntensity,
-                                              float intensity,
-                                              const color & color,
-                                              const vec3f & direction);
-            virtual object_t insert_point_light(float ambientIntensity,
-                                                const vec3f & attenuation,
-                                                const color & color,
-                                                float intensity,
-                                                const vec3f & location,
-                                                float radius);
-            virtual object_t insert_spot_light(float ambientIntensity,
-                                               const vec3f & attenuation,
-                                               float beamWidth,
-                                               const color & color,
-                                               float cutOffAngle,
-                                               const vec3f & direction,
-                                               float intensity,
-                                               const vec3f & location,
-                                               float radius);
-
-
-            virtual object_t insert_reference(object_t existing_object);
-
-            virtual void remove_object(object_t ref);
-
-            virtual void enable_lighting(bool);
-
-            // Set attributes
-            virtual void set_color(const color & rgb, float a = 1.0);
-
-            virtual void set_fog(const color & color,
-                                 float visibilityRange,
-                                 const char * type);
-
-            virtual void set_material(float ambientIntensity,
-                                      const color & diffuseColor,
-                                      const color & emissiveColor,
-                                      float shininess,
-                                      const color & specularColor,
-                                      float transparency);
-
-            virtual void set_material_mode(size_t tex_components,
-                                           bool geometry_color);
-
-            virtual void set_sensitive(node * object);
-
-            virtual texture_object_t insert_texture(const image & img,
-                                                    bool repeat_s,
-                                                    bool repeat_t,
-                                                    bool retainHint = false);
-
-            // Reference/remove a texture object
-            virtual void insert_texture_reference(texture_object_t ref,
-                                                  size_t components);
-            virtual void remove_texture_object(texture_object_t);
-
-            virtual void set_texture_transform(const vec2f & center,
-                                               float rotation,
-                                               const vec2f & scale,
-                                               const vec2f & translation);
-
-            virtual void set_viewpoint(const vec3f & position,
-                                       const openvrml::rotation & orientation,
-                                       float fieldOfView,
-                                       float avatarSize,
-                                       float visibilityLimit);
-
-            virtual void transform(const mat4f & mat);
-
-            virtual void transform_points(size_t nPoints, vec3f * point) const;
-
-            virtual void
-            draw_bounding_sphere(const bounding_sphere & bs,
-                                 bounding_volume::intersection intersection);
-
-
-
             //
             // Viewer callbacks (not for public consumption)
 
@@ -318,6 +166,161 @@ namespace openvrml {
             // user interaction
 
             void input(event_info * e);
+
+        private:
+            virtual rendering_mode do_mode();
+            virtual double do_frame_rate();
+
+            virtual void do_reset_user_navigation();
+
+            // Scope dirlights, open/close display lists
+            virtual object_t do_begin_object(const char * id, bool retain);
+            virtual void do_end_object();
+
+            // Insert objects into the display list
+            virtual object_t
+                do_insert_background(const std::vector<float> & groundAngle,
+                                     const std::vector<color> & groundColor,
+                                     const std::vector<float> & skyAngle,
+                                     const std::vector<color> & skyColor,
+                                     const image & front,
+                                     const image & back,
+                                     const image & left,
+                                     const image & right,
+                                     const image & top,
+                                     const image & bottom);
+
+
+            virtual object_t do_insert_box(const vec3f & size);
+            virtual object_t do_insert_cone(float height, float radius,
+                                            bool bottom, bool side);
+            virtual object_t do_insert_cylinder(float height, float radius,
+                                                bool bottom, bool side,
+                                                bool top);
+
+            virtual object_t
+                do_insert_elevation_grid(unsigned int mask,
+                                         const std::vector<float> & height,
+                                         int32 xDimension,
+                                         int32 zDimension,
+                                         float xSpacing,
+                                         float zSpacing,
+                                         const std::vector<color> & color,
+                                         const std::vector<vec3f> & normal,
+                                         const std::vector<vec2f> & texCoord);
+            virtual object_t
+                do_insert_extrusion(
+                    unsigned int mask,
+                    const std::vector<vec3f> & spine,
+                    const std::vector<vec2f> & crossSection,
+                    const std::vector<openvrml::rotation> & orientation,
+                    const std::vector<vec2f> & scale);
+            virtual object_t
+                do_insert_line_set(const std::vector<vec3f> & coord,
+                                   const std::vector<int32> & coordIndex,
+                                   bool colorPerVertex,
+                                   const std::vector<color> & color,
+                                   const std::vector<int32> & colorIndex);
+            virtual object_t
+                do_insert_point_set(const std::vector<vec3f> & coord,
+                                    const std::vector<color> & color);
+            virtual object_t
+                do_insert_shell(unsigned int mask,
+                                const std::vector<vec3f> & coord,
+                                const std::vector<int32> & coordIndex,
+                                const std::vector<color> & color,
+                                const std::vector<int32> & colorIndex,
+                                const std::vector<vec3f> & normal,
+                                const std::vector<int32> & normalIndex,
+                                const std::vector<vec2f> & texCoord,
+                                const std::vector<int32> & texCoordIndex);
+            virtual object_t do_insert_sphere(float radius);
+
+            // Lights
+            virtual object_t do_insert_dir_light(float ambientIntensity,
+                                                 float intensity,
+                                                 const color & color,
+                                                 const vec3f & direction);
+            virtual object_t do_insert_point_light(float ambientIntensity,
+                                                   const vec3f & attenuation,
+                                                   const color & color,
+                                                   float intensity,
+                                                   const vec3f & location,
+                                                   float radius);
+            virtual object_t do_insert_spot_light(float ambientIntensity,
+                                                  const vec3f & attenuation,
+                                                  float beamWidth,
+                                                  const color & color,
+                                                  float cutOffAngle,
+                                                  const vec3f & direction,
+                                                  float intensity,
+                                                  const vec3f & location,
+                                                  float radius);
+
+
+            virtual object_t do_insert_reference(object_t existing_object);
+
+            virtual void do_remove_object(object_t ref);
+
+            virtual void do_enable_lighting(bool);
+
+            // Set attributes
+            virtual void do_set_color(const color & rgb, float a = 1.0);
+
+            virtual void do_set_fog(const color & color,
+                                    float visibilityRange,
+                                    const char * type);
+
+            virtual void do_set_material(float ambientIntensity,
+                                         const color & diffuseColor,
+                                         const color & emissiveColor,
+                                         float shininess,
+                                         const color & specularColor,
+                                         float transparency);
+
+            virtual void do_set_material_mode(size_t tex_components,
+                                              bool geometry_color);
+
+            virtual void do_set_sensitive(node * object);
+
+            virtual texture_object_t
+                do_insert_texture(const image & img,
+                                  bool repeat_s,
+                                  bool repeat_t,
+                                  bool retainHint = false);
+
+            // Reference/remove a texture object
+            virtual void do_insert_texture_reference(texture_object_t ref,
+                                                     size_t components);
+            virtual void do_remove_texture_object(texture_object_t);
+
+            virtual void do_set_texture_transform(const vec2f & center,
+                                                  float rotation,
+                                                  const vec2f & scale,
+                                                  const vec2f & translation);
+
+            virtual void do_set_viewpoint(const vec3f & position,
+                                          const openvrml::rotation & orientation,
+                                          float fieldOfView,
+                                          float avatarSize,
+                                          float visibilityLimit);
+
+            virtual void do_transform(const mat4f & mat);
+
+            virtual void do_transform_points(size_t nPoints,
+                                             vec3f * point) const;
+
+            virtual void
+                do_draw_bounding_sphere(
+                    const bounding_sphere & bs,
+                    bounding_volume::intersection intersection);
+
+            // Window system specific methods
+
+            virtual void post_redraw() = 0;
+            virtual void set_cursor(cursor_style c) = 0;
+            virtual void swap_buffers() = 0;
+            virtual void set_timer(double interval) = 0;
         };
     }
 }

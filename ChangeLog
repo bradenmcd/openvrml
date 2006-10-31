@@ -1,3 +1,12 @@
+2006-10-30 Braden McDaniel  <braden@endoframe.com>
+
+	Applied nonvirtual interface pattern to openvrml::viewer.
+
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
 2006-10-28 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for the 0.16.1 release.
