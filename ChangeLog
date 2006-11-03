@@ -1,3 +1,11 @@
+2006-11-03 Braden McDaniel  <braden@endoframe.com>
+
+	Updated Antlr support library to 2.7.6.
+
+	* configure.ac: Require Antlr 2.7.6 to build the parser.
+	* lib/antlr/GNUmakefile.am (libantlr_la_SOURCES): Added
+	TokenRefCount.cpp.
+
 2006-10-30 Braden McDaniel  <braden@endoframe.com>
 
 	Applied nonvirtual interface pattern to openvrml::viewer.
