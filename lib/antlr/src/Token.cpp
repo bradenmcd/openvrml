@@ -12,27 +12,6 @@
 namespace antlr {
 #endif
 
-// The below initialization ICED AIX Visualage CC
-//ANTLR_API RefToken Token::badToken(new Token(Token::INVALID_TYPE, "<no text>"));
-// this seemed to work
-// RK: maybe the above one is necessary for MSVC DLL build.
-// leaving it unchanged untill after testing..
-ANTLR_API RefToken Token::badToken = RefToken(new Token(Token::INVALID_TYPE, "<no text>"));
-
-Token::Token() : type(INVALID_TYPE)
-{
-}
-
-Token::Token(int t) : type(t)
-{
-}
-
-Token::Token(int t, const ANTLR_USE_NAMESPACE(std)string& txt)
-: type(t)
-{
-	setText(txt);
-}
-
 int Token::getColumn() const
 {
 	return 0;
@@ -54,26 +33,37 @@ int Token::getType() const
 }
 
 void Token::setColumn(int)
-{}
+{
+}
 
 void Token::setLine(int)
-{}
+{
+}
 
 void Token::setText(const ANTLR_USE_NAMESPACE(std)string&)
-{}
+{
+}
 
 void Token::setType(int t)
 {
 	type = t;
 }
 
+void Token::setFilename(const ANTLR_USE_NAMESPACE(std)string&)
+{
+}
+
+ANTLR_USE_NAMESPACE(std)string emptyString("");
+
+const ANTLR_USE_NAMESPACE(std)string& Token::getFilename() const
+{
+	return emptyString;
+}
+
 ANTLR_USE_NAMESPACE(std)string Token::toString() const
 {
 	return "[\""+getText()+"\",<"+type+">]";
 }
-
-Token::~Token()
-{}
 
 ANTLR_API RefToken nullToken;
 

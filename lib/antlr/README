@@ -1,28 +1,6 @@
-ANTLR C++ Support Libraries
+ANTLR C++ Support Libraries Additional Notes
 
-1. HOW TO INSTALL
-
-1.1 On a Unix-ish system the build can be started as follows:
-
-./configure --prefix=<basedirectory where you want it installed>
-make
-make install
-
-After the above libantlr.a should reside under <basedir>/lib/libantlr.a and
-the includes should be at <basedir>/include/antlr. In <basedir>/bin two
-scripts are installed one called antlr that takes care of running java with
-the right classpath. A script called antlr-config that can be used to get
-the right compiler options for building a C++ project with antlr (based
-upon the compiler used during building)
-
-NOTE: next to the configure build you can of course use the instructions
-      from the toplevel install.html. This one does not handle the C++
-      build though.
-
-In general this support library needs runtime typing information (RTTI)
-make sure you enable this in whatever compiler you are using.
-
-1.2 Using Microsoft Visual C++
+1.1 Using Microsoft Visual C++
 
 Currently this is still (or again) somewhat experimental. MSVC is not the
 development platform and I don't have access to the compiler currently.
@@ -81,6 +59,8 @@ way. It was not designed for a multithreaded environment.
 
 1.3 Building with GCJ
 
+NOTE: outdated the new Makefiles do not support this anymore.
+
 It is also possible to build a native binary of ANTLR. This is somewhat
 experimental and can be enabled by giving the --enable-gcj option to
 configure. You need a recent GCC to do this and even then the constructed
@@ -91,6 +71,8 @@ binary crashes on some platforms.
 Don't get worried if your favourite compiler is not mentioned here. Any
 somewhat recent ISO compliant C++ compiler should have little trouble with
 the runtime library.
+
+*NOTE* this section was not updated for the new configure script/Makefiles some of the things listed here to pass different flags to configure may not work anymore. Check INSTALL.txt or handedit generated scripts after configure.
 
 2.1 Solaris
 

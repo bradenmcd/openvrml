@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ASTFactory.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
+ * $Id: ASTFactory.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -13,6 +13,7 @@
 #include <antlr/ASTArray.hpp>
 #include <antlr/ASTPair.hpp>
 
+#include <istream>
 #include <utility>
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
