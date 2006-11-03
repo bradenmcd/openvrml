@@ -5,11 +5,13 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: BaseAST.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
+ * $Id: BaseAST.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
  */
 
 #include <antlr/config.hpp>
 #include <antlr/AST.hpp>
+
+#include <iostream>
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 namespace antlr {
@@ -20,16 +22,29 @@ typedef ASTRefCount<BaseAST> RefBaseAST;
 
 class ANTLR_API BaseAST : public AST {
 public:
-	BaseAST();
-	BaseAST(const BaseAST& other);
-
-	virtual ~BaseAST();
+	BaseAST() : AST()
+	{
+	}
+	BaseAST(const BaseAST& other)
+	: AST(other)
+	{
+	}
+	virtual ~BaseAST()
+	{
+	}
 
 	/// Return the class name
-	virtual const char* typeName( void ) const;
+	const char* typeName( void ) const
+	{
+		return BaseAST::TYPE_NAME;
+	}
 
 	/// Clone this AST node.
-	virtual RefAST clone( void ) const;
+	RefAST clone( void ) const
+	{
+		ANTLR_USE_NAMESPACE(std)cerr << "BaseAST::clone()" << ANTLR_USE_NAMESPACE(std)endl;
+		return nullAST;
+	}
 
    /// Is node t equal to this in terms of token type and text?
 	virtual bool equals(RefAST t) const;
@@ -66,7 +81,23 @@ public:
 	virtual ANTLR_USE_NAMESPACE(std)vector<RefAST> findAllPartial(RefAST t);
 
    /// Add a node to the end of the child list for this node
-	virtual void addChild(RefAST c);
+	virtual void addChild(RefAST c)
+	{
+		if( !c )
+			return;
+
+		RefBaseAST tmp = down;
+
+		if (tmp)
+		{
+			while (tmp->right)
+				tmp = tmp->right;
+			tmp->right = c;
+		}
+		else
+			down = c;
+	}
+
 	/** Get the number of child nodes of this node (shallow e.g. not of the
 	 * whole tree it spans).
 	 */
@@ -113,10 +144,14 @@ public:
 	}
 
 	/// Set the token text for this node
-	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt);
+	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt)
+	{
+	}
 
 	/// Set the token type for this node
-	virtual void setType(int type);
+	virtual void setType(int type)
+	{
+	}
 
 #ifdef ANTLR_SUPPORT_XML
 	/** print attributes of this node to 'out'. Override to customize XML
@@ -132,7 +167,10 @@ public:
 #endif
 
 	/// Return string representation for the AST
-	virtual ANTLR_USE_NAMESPACE(std)string toString() const;
+	virtual ANTLR_USE_NAMESPACE(std)string toString() const
+	{
+		return getText();
+	}
 
 	/// Print out a child sibling tree in LISP notation
 	virtual ANTLR_USE_NAMESPACE(std)string toStringList() const;

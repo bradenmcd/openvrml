@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: TokenStreamException.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
+ * $Id: TokenStreamException.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -15,6 +15,10 @@
 namespace antlr {
 #endif
 
+/** Baseclass for exceptions thrown by classes implementing the TokenStream
+ * interface.
+ * @see TokenStream
+ */
 class ANTLR_API TokenStreamException : public ANTLRException {
 public:
 	TokenStreamException() 
