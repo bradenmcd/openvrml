@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: BaseAST.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
+ * $Id: BaseAST.hpp,v 1.2 2006-11-03 09:31:14 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -144,12 +144,12 @@ public:
 	}
 
 	/// Set the token text for this node
-	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt)
+	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& /* txt */)
 	{
 	}
 
 	/// Set the token type for this node
-	virtual void setType(int type)
+	virtual void setType(int /* type */)
 	{
 	}
 

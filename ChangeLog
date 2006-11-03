@@ -1,5 +1,24 @@
 2006-11-03 Braden McDaniel  <braden@endoframe.com>
 
+	Quell warnings from libantlr.
+
+	* lib/antlr/antlr/BaseAST.hpp
+	(antlr::BaseAST::setText(const std::string &)): Commented out
+	unused argument declaration.
+	(antlr::BaseAST::setType(int)): Commented out argument unused
+	declaration.
+	* lib/antlr/antlr/CharScanner.hpp
+	(antlr::CharScanner::recover(const RecognitionException &, const
+	BitSet &)): Commented out unused argument declaration.
+	* lib/antlr/antlr/Parser.hpp
+	(antlr::Parser::recover(const RecognitionException &, const
+	BitSet&)): Commented out unused argument declaration.
+	* lib/antlr/src/String.cpp
+	(antlr::operator+(const std::string &, size_t)): Use %ul when
+	printing size_t.
+
+2006-11-03 Braden McDaniel  <braden@endoframe.com>
+
 	Updated Antlr support library to 2.7.6.
 
 	* configure.ac: Require Antlr 2.7.6 to build the parser.
