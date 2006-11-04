@@ -1,5 +1,18 @@
 2006-11-04 Braden McDaniel  <braden@endoframe.com>
 
+	Quelled warnings from gtkglext.
+
+	* lib/gtkglext/gdk/x11/gdkglcontext-x11.c
+	(_gdk_gl_context_destroy): Quelled type-punning warnings triggered
+	by strict aliasing rules.
+	(_gdk_gl_context_set_gl_drawable): Quelled type-punning warnings
+	triggered by strict aliasing rules.
+	(gdk_gl_context_hash): Delegate to g_direct_hash to avoid warning
+	about converting a pointer to an unsigned int (likely to be
+	triggered on 64-bit platforms).
+
+2006-11-04 Braden McDaniel  <braden@endoframe.com>
+
 	* lib/antlr/src/String.cpp
 	(antlr::operator+(const std::string &, size_t)): %lu, not %ul.
 
