@@ -793,7 +793,7 @@ openvrml::viewer::insert_reference(const object_t existing_object)
  */
 void openvrml::viewer::remove_object(const object_t ref)
 {
-    this->remove_object(ref);
+    this->do_remove_object(ref);
 }
 
 /**
