@@ -1,5 +1,11 @@
 2006-11-16 Braden McDaniel  <braden@endoframe.com>
 
+	* m4/antlr.m4: Use AC_CHECK_PROG instead of AC_PATH_PROG so that
+	ANTLR can be set to an invocation of the java runtime including
+	arguments.
+
+2006-11-16 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/openvrml-gtkplug.texi: Fixed direntry.
 
 2006-11-16 Braden McDaniel  <braden@endoframe.com>
