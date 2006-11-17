@@ -1,5 +1,10 @@
 2006-11-17 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/testsuite.at: Added tests to ensure PROTOs in default
+	field values of PROTOs are parsed correctly.
+
+2006-11-17 Braden McDaniel  <braden@endoframe.com>
+
 	Write parser error and warning messages using
 	openvrml::browser::err rather than use the libantlr default (which
 	writes directly to std::cerr).

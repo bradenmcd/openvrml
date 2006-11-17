@@ -73,6 +73,38 @@ DEF G2 Group {
 AT_CHECK([parse-vrml97 < route-referencing-current-node.wrl])
 AT_CLEANUP
 
+AT_SETUP([DEF/USE in a PROTO field default value])
+AT_DATA([def-use-in-proto-default-value.wrl],
+[[#VRML V2.0 utf8
+PROTO Node [
+  field MFNode val [ Group { children [ DEF G Group {} ] },
+                     Group { children [ USE G ] } ]
+] {
+  Group {}
+}
+Node {}
+]])
+AT_CHECK([parse-vrml97 < def-use-in-proto-default-value.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO in a PROTO field default value])
+AT_DATA([proto-in-proto-default-value.wrl],
+[[#VRML V2.0 utf8
+PROTO Node [
+  field MFNode val [
+    Group {
+      PROTO Local [] { Group {} }
+      children [ Local {} ]
+    }
+  ]
+] {
+  Group { children IS val }
+}
+Node {}
+]])
+AT_CHECK([parse-vrml97 < proto-in-proto-default-value.wrl])
+AT_CLEANUP
+
 AT_SETUP([Self-referential Script node])
 AT_DATA([self-referential-script.wrl],
 [[#VRML V2.0 utf8
@@ -164,6 +196,22 @@ Node {}
 ]])
 AT_CHECK([parse-vrml97 < proto-eventout-conflict.wrl], [1], [],
 [urn:X-openvrml:stream:1:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
+])
+AT_CLEANUP
+
+AT_SETUP([USE a node DEFined in a different PROTO field default value])
+AT_DATA([use-def-in-different-proto-default-value.wrl],
+[[#VRML V2.0 utf8
+PROTO Node [
+  field SFNode val0 Group { children [ DEF G Group {} ] }
+  field SFNode val1 Group { children [ USE G ] }
+] {
+  Group {}
+}
+Node {}
+]])
+AT_CHECK([parse-vrml97 < use-def-in-different-proto-default-value.wrl], [1], [],
+[urn:X-openvrml:stream:1:4:45: error: node "G" has not been defined in this scope
 ])
 AT_CLEANUP
 
