@@ -2,7 +2,7 @@ dnl -*- mode: autoconf -*-
 AC_DEFUN([OV_PROG_ANTLR],
 [AC_REQUIRE([OV_PROG_JAVA])
 AC_ARG_VAR([ANTLR], [antlr parser generator])
-AC_PATH_PROG([ANTLR], [antlr])
+AC_CHECK_PROG([ANTLR], [antlr])
 if test -z "$ANTLR"; then
   AC_MSG_CHECKING([if antlr is available to the Java runtime])
   cat <<EOF > conftest.g
