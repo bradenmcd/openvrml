@@ -3601,11 +3601,11 @@ namespace {
             if (iequals(type, vrml_media_type)
                 || iequals(type, x_vrml_media_type)) {
                 Vrml97Scanner scanner(in);
-                Vrml97Parser parser(scanner, uri);
+                Vrml97Parser parser(scene.browser(), scanner, uri);
                 parser.vrmlScene(scene, nodes, meta);
             } else if (iequals(type, x3d_vrml_media_type)) {
                 X3DVrmlScanner scanner(in);
-                X3DVrmlParser parser(scanner, uri);
+                X3DVrmlParser parser(scene.browser(), scanner, uri);
                 parser.vrmlScene(scene, nodes, meta);
             } else {
                 throw bad_media_type(type);
@@ -6095,6 +6095,11 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
             browser.set_world(*in);
         } catch (antlr::ANTLRException & ex) {
             browser.err(ex.getMessage());
+        } catch (invalid_vrml & ex) {
+            std::ostringstream out;
+            out << ex.url << ':' << ex.line << ':' << ex.column << ": error: "
+                << ex.what();
+            browser.err(out.str());
         } catch (unreachable_url &) {
             throw;
         } catch (std::exception & ex) {

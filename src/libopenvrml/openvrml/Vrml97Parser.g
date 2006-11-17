@@ -610,13 +610,32 @@ options {
 
 {
 public:
-    Vrml97Parser(antlr::TokenStream & lexer, const std::string & uri):
+    Vrml97Parser(openvrml::browser & b,
+                 antlr::TokenStream & lexer,
+                 const std::string & uri):
         antlr::LLkParser(lexer, 1),
-        uri(uri)
-    {}
+        browser_(&b)
+    {
+        this->Parser::setFilename(uri);
+    }
+
+    virtual void reportError(const antlr::RecognitionException & ex)
+    {
+        this->browser_->err(this->getFilename() + ": " + ex.toString());
+    }
+
+    virtual void reportError(const std::string & s)
+    {
+        this->browser_->err(this->getFilename() + ": error: " + s);
+    }
+
+    virtual void reportWarning(const std::string & s)
+    {
+        this->browser_->err(this->getFilename() + ": warning: " + s);
+    }
 
 private:
-    const std::string uri;
+    openvrml::browser * browser_;
 }
 
 vrmlScene[const openvrml::scene & scene,
@@ -628,7 +647,7 @@ options { defaultErrorHandler=false; }
 
     const profile & p = ::profile_registry_.at(vrml97_profile::id);
     std::auto_ptr<scope> root_scope_auto_ptr =
-        p.create_root_scope(scene.browser(), this->uri);
+        p.create_root_scope(scene.browser(), this->getFilename());
     const boost::shared_ptr<scope> root_scope(root_scope_auto_ptr);
 }
     :   (statement[scene, nodes, root_scope])*
@@ -672,7 +691,7 @@ options { defaultErrorHandler=false; }
                     throw SemanticException("node \"" + id1->getText()
                                             + "\" has not been defined in "
                                             + "this scope",
-                                            this->uri,
+                                            this->getFilename(),
                                             id1->getLine(),
                                             id1->getColumn());
                 }
@@ -738,9 +757,11 @@ options { defaultErrorHandler=false; }
             scene.browser().add_node_metatype(node_metatype->id(), node_metatype);
 
             if (!dynamic_pointer_cast<proto_node_metatype>(
-                    scene.browser().node_metatype(node_metatype_id(this->uri)))) {
-                scene.browser().add_node_metatype(node_metatype_id(this->uri),
-                                               node_metatype);
+                    scene.browser().node_metatype(
+                        node_metatype_id(this->getFilename())))) {
+                scene.browser()
+                    .add_node_metatype(node_metatype_id(this->getFilename()),
+                                       node_metatype);
             }
 
             //
@@ -754,7 +775,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "
                                         "this scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -785,7 +806,7 @@ options { defaultErrorHandler=false; }
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
-                                        this->uri,
+                                        this->getFilename(),
                                         id0->getLine(),
                                         id0->getColumn());
             }
@@ -811,7 +832,7 @@ options { defaultErrorHandler=false; }
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
-                                        this->uri,
+                                        this->getFilename(),
                                         id1->getLine(),
                                         id1->getColumn());
             }
@@ -923,7 +944,7 @@ options { defaultErrorHandler=false; }
                     throw SemanticException("node \"" + id1->getText()
                                             + "\" has not been defined in "
                                             + "this scope",
-                                            this->uri,
+                                            this->getFilename(),
                                             id1->getLine(),
                                             id1->getColumn());
                 }
@@ -956,11 +977,11 @@ options { defaultErrorHandler=false; }
     // base URI from browser::world_url.  If browser::world_url is an empty
     // string, we call create_file_url with an empty (relative) uri.
     //
-    const ::uri base_uri = anonymous_stream_id(::uri(uri))
+    const ::uri base_uri = anonymous_stream_id(::uri(this->getFilename()))
         ? scene.browser().world_url().empty()
             ? create_file_url(::uri())
             : ::uri(scene.browser().world_url())
-        : ::uri(this->uri);
+        : ::uri(this->getFilename());
 }
     :   KEYWORD_EXTERNPROTO id:ID LBRACKET
         (externInterfaceDeclaration[interfaces])* RBRACKET
@@ -1014,7 +1035,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node type \"" + node_type->id()
                                         + "\" has already been defined in "
                                         + "this scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1040,7 +1061,7 @@ options { defaultErrorHandler=false; }
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1084,7 +1105,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node \"" + from_node_id->getText()
                                         + "\" has not been defined in this "
                                         "scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         from_node_id->getLine(),
                                         from_node_id->getColumn());
             }
@@ -1095,7 +1116,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node \"" + to_node_id->getText()
                                         + "\" has not been defined in this "
                                         "scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         to_node_id->getLine(),
                                         to_node_id->getColumn());
             }
@@ -1109,7 +1130,7 @@ options { defaultErrorHandler=false; }
                           *to_node, eventin_id->getText());
             } catch (runtime_error & ex) {
                 throw SemanticException(ex.what(),
-                                        this->uri,
+                                        this->getFilename(),
                                         from_node_id->getLine(),
                                         from_node_id->getColumn());
             }
@@ -1131,7 +1152,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node \"" + from_node_id->getText()
                                         + "\" has not been defined in this "
                                         "scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         from_node_id->getLine(),
                                         from_node_id->getColumn());
             }
@@ -1142,7 +1163,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("node \"" + to_node_id->getText()
                                         + "\" has not been defined in this "
                                         "scope",
-                                        this->uri,
+                                        this->getFilename(),
                                         to_node_id->getLine(),
                                         to_node_id->getColumn());
             }
@@ -1165,7 +1186,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException(from_node->type().id() + " node has "
                                         "no eventOut \""
                                         + eventout_id->getText() + "\"",
-                                        this->uri,
+                                        this->getFilename(),
                                         eventout_id->getLine(),
                                         eventout_id->getColumn());
             }
@@ -1180,7 +1201,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException(to_node->type().id() + " node has no "
                                         "eventIn \"" + eventin_id->getText()
                                         + "\"",
-                                        this->uri,
+                                        this->getFilename(),
                                         eventin_id->getLine(),
                                         eventin_id->getColumn());
             }
@@ -1188,7 +1209,7 @@ options { defaultErrorHandler=false; }
             if (to_interface->field_type != from_interface->field_type) {
                 throw SemanticException("mismatch between eventOut and "
                                         "eventIn types",
-                                        this->uri,
+                                        this->getFilename(),
                                         eventin_id->getLine(),
                                         eventin_id->getColumn());
             }
@@ -1235,7 +1256,7 @@ options { defaultErrorHandler = false; }
             if (!node_type) {
                 throw SemanticException("unknown node type \""
                                         + nodeTypeId->getText() + "\"",
-                                        this->uri,
+                                        this->getFilename(),
                                         nodeTypeId->getLine(),
                                         nodeTypeId->getColumn());
             }
@@ -1253,20 +1274,20 @@ options { defaultErrorHandler = false; }
     exception
     catch [std::invalid_argument & ex] {
         throw SemanticException(ex.what(),
-                                this->uri,
+                                this->getFilename(),
                                 LT(1)->getLine(),
                                 LT(1)->getColumn());
     }
     catch [unsupported_interface & ex] {
         throw SemanticException(ex.what(),
-                                this->uri,
+                                this->getFilename(),
                                 LT(1)->getLine(),
                                 LT(1)->getColumn());
     }
     catch [std::bad_cast &] {
         throw SemanticException("incorrect value type for field or "
                                 "exposedField",
-                                this->uri,
+                                this->getFilename(),
                                 LT(1)->getLine(),
                                 LT(1)->getColumn());
     }
@@ -1297,7 +1318,7 @@ options { defaultErrorHandler=false; }
             if (interface == interfaces.end()) {
                 throw SemanticException("Node has no field or exposedField \""
                                         + id->getText() + "\"",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1309,7 +1330,7 @@ options { defaultErrorHandler=false; }
             if (!succeeded) {
                 throw SemanticException("value for " + id->getText()
                                         + " already declared",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1339,7 +1360,7 @@ options { defaultErrorHandler=false; }
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1379,7 +1400,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("interface \"" + id->getText()
                                         + "\" already declared for Script "
                                         "node",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1437,7 +1458,7 @@ options { defaultErrorHandler=false; }
                 if (!node_type) {
                     throw SemanticException("unknown node type \""
                                             + nodeTypeId->getText() + "\"",
-                                            this->uri,
+                                            this->getFilename(),
                                             nodeTypeId->getLine(),
                                             nodeTypeId->getColumn());
                 }
@@ -1485,7 +1506,7 @@ options { defaultErrorHandler=false; }
             if (impl_node_interface == node_interfaces.end()) {
                 throw SemanticException("node has no interface \""
                                         + interface_id->getText() + "\"",
-                                        this->uri,
+                                        this->getFilename(),
                                         interface_id->getLine(),
                                         interface_id->getColumn());
             }
@@ -1547,7 +1568,7 @@ options { defaultErrorHandler=false; }
                                         + lexical_cast<string>(interface)
                                         + "\" conflicts with previous "
                                         "declaration",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }
@@ -1590,7 +1611,7 @@ options { defaultErrorHandler=false; }
                 throw SemanticException("interface \"" + id->getText()
                                         + "\" already declared for Script "
                                         "node",
-                                        this->uri,
+                                        this->getFilename(),
                                         id->getLine(),
                                         id->getColumn());
             }

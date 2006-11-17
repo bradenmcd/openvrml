@@ -1,3 +1,67 @@
+2006-11-17 Braden McDaniel  <braden@endoframe.com>
+
+	Write parser error and warning messages using
+	openvrml::browser::err rather than use the libantlr default (which
+	writes directly to std::cerr).
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Parser::Vrml97Parser(openvrml::browser &,
+	antlr::TokenStream &, const std::string &)): Construct with an
+	openvrml::browser; call antlr::Parser::setFilename instead of
+	adding a member variable for the uri.
+	(Vrml97Parser::reportError(const antlr::RecognitionException &)):
+	Overridden from antlr::Parser; send the error message to
+	openvrml::browser::err.
+	(Vrml97Parser::reportError(const std::string &)):
+	Overridden from antlr::Parser; send the error message to
+	openvrml::browser::err.
+	(Vrml97Parser::reportWarning(const std::string &)):
+	Overridden from antlr::Parser; send the warning message to
+	openvrml::browser::err.
+	(Vrml97Parser::browser_): Added a pointer to the browser.
+	(vrmlScene): Use getFilename.
+	(nodeStatement): Use getFilename.
+	(proto): Use getFilename.
+	(protoInterfaceDeclaration): Use getFilename.
+	(protoNodeStatement): Use getFilename.
+	(externproto): Use getFilename.
+	(externInterfaceDeclaration): Use getFilename.
+	(routeStatement): Use getFilename.
+	(protoRouteStatement): Use getFilename.
+	(node): Use getFilename.
+	(nodeBodyElement): Use getFilename.
+	(scriptInterfaceDeclaration): Use getFilename.
+	(scriptFieldInterfaceDeclaration): Use getFilename.
+	(protoNode): Use getFilename.
+	(protoNodeBodyElement): Use getFilename.
+	(protoScriptInterfaceDeclaration): Use getFilename.
+	(protoScriptFieldInterfaceDeclaration): Use getFilename.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlParser::X3DVrmlParser(openvrml::browser &,
+	antlr::TokenStream &, const std::string &)): Construct with an
+	openvrml::browser; call antlr::Parser::setFilename instead of
+	adding a member variable for the uri.
+	(X3DVrmlParser::reportError(const antlr::RecognitionException &)):
+	Overridden from antlr::Parser; send the error message to
+	openvrml::browser::err.
+	(X3DVrmlParser::reportError(const std::string &)):
+	Overridden from antlr::Parser; send the error message to
+	openvrml::browser::err.
+	(X3DVrmlParser::reportWarning(const std::string &)):
+	Overridden from antlr::Parser; send the warning message to
+	openvrml::browser::err.
+	(X3DVrmlParser::browser_): Added a pointer to the browser.
+	(vrmlScene): Use getFilename.
+	(componentStatement): Use getFilename.
+	* src/libopenvrml/openvrml/browser.cpp
+	(parse_vrml(std::istream &, const std::string &, const
+	std::string&, const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &,
+	std::map<std::string, std::string> &)): Pass the browser to the
+	parser constructor.
+	(openvrml::browser::root_scene_loader::operator()() const): Catch
+	openvrml::invalid_vrml and print an error message.
+
 2006-11-16 Braden McDaniel  <braden@endoframe.com>
 
 	* m4/antlr.m4: Use AC_CHECK_PROG instead of AC_PATH_PROG so that
