@@ -1,5 +1,9 @@
 2006-11-16 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/openvrml-gtkplug.texi: Fixed direntry.
+
+2006-11-16 Braden McDaniel  <braden@endoframe.com>
+
 	* lib/gtkglext/configure.in: Don't fail configure if
 	BASE_DEPENDENCIES aren't found. Seriously.
 
