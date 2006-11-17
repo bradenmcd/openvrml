@@ -29,7 +29,7 @@ Documentation License.''
 
 @dircategory Miscellaneous
 @direntry
-* openvrml-gtkplug: A VRML/X3D browser component for GTK+ applications.
+* openvrml-gtkplug: (openvrml-gtkplug). A VRML/X3D browser component for GTK+ applications.
 @end direntry
 
 @titlepage
