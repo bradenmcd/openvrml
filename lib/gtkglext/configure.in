@@ -348,7 +348,7 @@ gdk_pkg >= gdk_required_version \
 pango_pkg >= pango_required_version \
 pangox_pkg >= pangox_required_version \
 gmodule_pkg >= gmodule_required_version \
-], , )
+], , [have_base_dependences=no])
 
 # Check for GLib
 AM_PATH_GLIB_2_0([glib_required_version], , )
