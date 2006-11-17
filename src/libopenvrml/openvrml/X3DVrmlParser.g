@@ -216,13 +216,32 @@ options {
 
 {
 public:
-    X3DVrmlParser(antlr::TokenStream & lexer, const std::string & uri):
+    X3DVrmlParser(openvrml::browser & b,
+                  antlr::TokenStream & lexer,
+                  const std::string & uri):
         antlr::LLkParser(lexer, 1),
-        uri(uri)
-    {}
+        browser_(&b)
+    {
+        this->Parser::setFilename(uri);
+    }
+
+    virtual void reportError(const antlr::RecognitionException & ex)
+    {
+        this->browser_->err(this->getFilename() + ": " + ex.toString());
+    }
+
+    virtual void reportError(const std::string & s)
+    {
+        this->browser_->err(this->getFilename() + ": error: " + s);
+    }
+
+    virtual void reportWarning(const std::string & s)
+    {
+        this->browser_->err(this->getFilename() + ": warning: " + s);
+    }
 
 private:
-    const std::string uri;
+    openvrml::browser * browser_;
 }
 
 vrmlScene[const openvrml::scene & scene,
@@ -235,7 +254,7 @@ options { defaultErrorHandler=false; }
     :   profile_id=profileStatement {
             const profile & p = ::profile_registry_.at(profile_id);
             std::auto_ptr<scope> root_scope_auto_ptr =
-                p.create_root_scope(scene.browser(), this->uri);
+                p.create_root_scope(scene.browser(), this->getFilename());
             const boost::shared_ptr<scope> root_scope(root_scope_auto_ptr);
         }
         (componentStatement[scene.browser(), *root_scope])* 
@@ -246,7 +265,7 @@ options { defaultErrorHandler=false; }
     catch [boost::bad_ptr_container_operation &] {
         throw antlr::SemanticException("unrecognized profile \""
                                        + profile_id + "\"",
-                                       this->uri,
+                                       this->getFilename(),
                                        LT(1)->getLine(),
                                        LT(1)->getColumn());
     }
@@ -270,13 +289,13 @@ options { defaultErrorHandler=false; }
     catch [boost::bad_ptr_container_operation &] {
         throw antlr::SemanticException("unrecognized component \""
                                        + id->getText() + "\"",
-                                       this->uri,
+                                       this->getFilename(),
                                        id->getLine(),
                                        id->getColumn());
     }
     catch [std::invalid_argument & ex] {
         throw antlr::SemanticException(ex.what(),
-                                       this->uri,
+                                       this->getFilename(),
                                        id->getLine(),
                                        id->getColumn());
     }
