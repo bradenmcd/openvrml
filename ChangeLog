@@ -1,3 +1,49 @@
+2006-11-18 Braden McDaniel  <braden@endoframe.com>
+
+	Report accurate line and column number information in parser error
+	messages.
+
+	* src/libopenvrml/openvrml/Vrml97Parser.g
+	(Vrml97Scanner::col_): Use int instead of size_t; col_ should be
+	initialized to -1.
+	(Vrml97Scanner::Vrml97Scanner(std::istream &)): Initialize col_ to
+	-1 instead of 0; it will get incremented to 0 when we get the
+	first character of a line.
+	(Vrml97Scanner::nextToken()): Set the line and column information
+	before scanning the rest of the token; that way this information
+	points to the beginning of the token instead of past the end of
+	it.
+	(Vrml97Scanner::getNextChar()): Reset the column count to -1
+	instead of 0.
+	(Vrml97Parser::consume()): Overridden from antlr::Parser; store
+	the previous token so that reportError and reportWarning can
+	report accurate line and column information.
+	(Vrml97Parser::reportError(const antlr::RecognitionException &)):
+	Report error information in a consistent format rather than rely
+	on antlr::Exception::toString.
+	(Vrml97Parser::reportError(const std::string & s)): Use
+	last_token_ to report line and column information.
+	(Vrml97Parser::reportWarning(const std::string & s)): Use
+	last_token_ to report line and column information.
+	(Vrml97Parser::last_token_): Used to record the previously matched
+	token for the purpose of reporting line and column information.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g
+	(X3DVrmlParser::consume()): Overridden from antlr::Parser; store
+	the previous token so that reportError and reportWarning can
+	report accurate line and column information.
+	(X3DVrmlParser::reportError(const antlr::RecognitionException &)):
+	Report error information in a consistent format rather than rely
+	on antlr::Exception::toString.
+	(X3DVrmlParser::reportError(const std::string & s)): Use
+	last_token_ to report line and column information.
+	(X3DVrmlParser::reportWarning(const std::string & s)): Use
+	last_token_ to report line and column information.
+	(X3DVrmlParser::last_token_): Used to record the previously
+	matched token for the purpose of reporting line and column
+	information.
+	* tests/testsuite.at: Updated test expected results to reflect
+	accurate line and column number information.
+
 2006-11-17 Braden McDaniel  <braden@endoframe.com>
 
 	* tests/testsuite.at: Added tests to ensure PROTOs in default

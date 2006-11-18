@@ -225,22 +225,38 @@ public:
         this->Parser::setFilename(uri);
     }
 
+    virtual void consume()
+    {
+        this->last_token_ = this->LT(1);
+        this->LLkParser::consume();
+    }
+
     virtual void reportError(const antlr::RecognitionException & ex)
     {
-        this->browser_->err(this->getFilename() + ": " + ex.toString());
+        std::ostringstream out;
+        out << ex.getFilename() << ':' << ex.getLine() << ':' << ex.getColumn()
+            << ": error: " << ex.getMessage();
+        this->browser_->err(out.str());
     }
 
     virtual void reportError(const std::string & s)
     {
-        this->browser_->err(this->getFilename() + ": error: " + s);
+        std::ostringstream out;
+        out << this->getFilename() << ':' << this->last_token_->getLine()
+            << ':' << this->last_token_->getColumn() << ": error: " << s;
+        this->browser_->err(out.str());
     }
 
     virtual void reportWarning(const std::string & s)
     {
-        this->browser_->err(this->getFilename() + ": warning: " + s);
+        std::ostringstream out;
+        out << this->getFilename() << ':' << this->last_token_->getLine()
+            << ':' << this->last_token_->getColumn() << ": warning: " << s;
+        this->browser_->err(out.str());
     }
 
 private:
+    antlr::RefToken last_token_;
     openvrml::browser * browser_;
 }
 
