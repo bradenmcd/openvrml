@@ -107,7 +107,7 @@ namespace {
 
         std::istream & in_;
         size_t      line_;
-        size_t      col_;
+        int         col_;
         int         c_;
         int         prev_char_;
         int         prev_token_type_;
@@ -194,7 +194,7 @@ const int Vrml97Scanner::FIELDTYPE_MFVEC3F      (47);
 Vrml97Scanner::Vrml97Scanner(std::istream & in):
     in_(in),
     line_(1),
-    col_(0),
+    col_(-1),
     c_(' '),
     prev_char_('\0'),
     prev_token_type_(0),
@@ -229,6 +229,9 @@ antlr::RefToken Vrml97Scanner::nextToken()
             getNextChar();
         }
     }
+
+    token->setLine(int(this->line_));
+    token->setColumn(int(this->col_));
 
     if (this->c_ == EOF) {
         token->setType(EOF_);
@@ -434,8 +437,6 @@ antlr::RefToken Vrml97Scanner::nextToken()
         this->identifyTerminalSymbol(*token);
     }
 
-    token->setLine(int(this->line_));
-    token->setColumn(int(this->col_));
     this->prev_token_type_ = token->getType();
 
     return token;
@@ -448,14 +449,14 @@ inline void Vrml97Scanner::getNextChar()
     ++this->col_; // Increment the column count;
 
     //
-    // Increment the line count (and reset the column count to zero) if the
+    // Increment the line count (and reset the column count to -1) if the
     // current character is a newline character EXCEPT if the current character
     // is a linefeed AND the previous character is a carriage return.
     //
     if (this->isNewlineChar(this->c_)) {
         if (!((this->c_ == 0x0a) && (this->prev_char_ == 0x0d))) {
             ++this->line_;
-            this->col_ = 0;
+            this->col_ = -1;
         }
     }
 }
@@ -619,22 +620,38 @@ public:
         this->Parser::setFilename(uri);
     }
 
+    virtual void consume()
+    {
+        this->last_token_ = this->LT(1);
+        this->LLkParser::consume();
+    }
+
     virtual void reportError(const antlr::RecognitionException & ex)
     {
-        this->browser_->err(this->getFilename() + ": " + ex.toString());
+        std::ostringstream out;
+        out << ex.getFilename() << ':' << ex.getLine() << ':' << ex.getColumn()
+            << ": error: " << ex.getMessage();
+        this->browser_->err(out.str());
     }
 
     virtual void reportError(const std::string & s)
     {
-        this->browser_->err(this->getFilename() + ": error: " + s);
+        std::ostringstream out;
+        out << this->getFilename() << ':' << this->last_token_->getLine()
+            << ':' << this->last_token_->getColumn() << ": error: " << s;
+        this->browser_->err(out.str());
     }
 
     virtual void reportWarning(const std::string & s)
     {
-        this->browser_->err(this->getFilename() + ": warning: " + s);
+        std::ostringstream out;
+        out << this->getFilename() << ':' << this->last_token_->getLine()
+            << ':' << this->last_token_->getColumn() << ": warning: " << s;
+        this->browser_->err(out.str());
     }
 
 private:
+    antlr::RefToken last_token_;
     openvrml::browser * browser_;
 }
 

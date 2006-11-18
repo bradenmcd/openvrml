@@ -2,6 +2,18 @@ AT_INIT
 
 AT_BANNER([VRML97 parse tests: code that should be accepted])
 
+AT_SETUP([Ensure the line number is reported correctly for the last token on a line])
+AT_DATA([line-number.wrl],
+[[#VRML V2.0 utf8
+Transform {
+  rotation 0 0 0 0
+}
+]])
+AT_CHECK([parse-vrml97 < line-number.wrl], [0], [],
+[urn:X-openvrml:stream:1:3:17: warning: axis component of a rotation must be a normalized vector
+])
+AT_CLEANUP
+
 AT_SETUP([Trivial PROTO containment])
 AT_DATA([proto-containment-trivial.wrl],
 [[#VRML V2.0 utf8
@@ -163,7 +175,7 @@ AT_DATA([unrecognized-node.wrl],
 UnrecognizedNode {}
 ]])
 AT_CHECK([parse-vrml97 < unrecognized-node.wrl], [1], [],
-[urn:X-openvrml:stream:1:2:17: error: unknown node type "UnrecognizedNode"
+[urn:X-openvrml:stream:1:2:0: error: unknown node type "UnrecognizedNode"
 ])
 AT_CLEANUP
 
@@ -179,7 +191,7 @@ PROTO Node [
 Node {}
 ]])
 AT_CHECK([parse-vrml97 < proto-eventin-conflict.wrl], [1], [],
-[urn:X-openvrml:stream:1:4:26: error: Interface "exposedField MFNode foo" conflicts with previous declaration
+[urn:X-openvrml:stream:1:4:22: error: Interface "exposedField MFNode foo" conflicts with previous declaration
 ])
 AT_CLEANUP
 
@@ -195,7 +207,7 @@ PROTO Node [
 Node {}
 ]])
 AT_CHECK([parse-vrml97 < proto-eventout-conflict.wrl], [1], [],
-[urn:X-openvrml:stream:1:5:0: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
+[urn:X-openvrml:stream:1:4:19: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
 ])
 AT_CLEANUP
 
@@ -211,7 +223,7 @@ PROTO Node [
 Node {}
 ]])
 AT_CHECK([parse-vrml97 < use-def-in-different-proto-default-value.wrl], [1], [],
-[urn:X-openvrml:stream:1:4:45: error: node "G" has not been defined in this scope
+[urn:X-openvrml:stream:1:4:43: error: node "G" has not been defined in this scope
 ])
 AT_CLEANUP
 
@@ -292,6 +304,6 @@ PROFILE Core
 COMPONENT Grouping:100
 ]])
 AT_CHECK([parse-x3dvrml < unsupported-component-level.x3dv], [1], [],
-[urn:X-openvrml:stream:1:3:19: error: unsupported component level
+[urn:X-openvrml:stream:1:3:10: error: unsupported component level
 ])
 AT_CLEANUP
