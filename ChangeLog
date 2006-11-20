@@ -1,3 +1,7 @@
+2006-11-19 Braden McDaniel  <braden@endoframe.com>
+
+	* m4/antlr.m4: Use AC_CHECK_PROGS to check for antlr-java as well.
+
 2006-11-18 Braden McDaniel  <braden@endoframe.com>
 
 	Report accurate line and column number information in parser error
