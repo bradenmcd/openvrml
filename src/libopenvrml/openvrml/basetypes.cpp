@@ -2577,8 +2577,7 @@ openvrml::rotation::rotation() OPENVRML_NOTHROW
  */
 openvrml::rotation::rotation(const float (&rot)[4]) OPENVRML_NOTHROW
 {
-    assert(vec3f(rot[0], rot[1], rot[2])
-           == vec3f(rot[0], rot[1], rot[2]).normalize());
+    assert(openvrml_::fequal(1.0f, vec3f(rot[0], rot[1], rot[2]).length()));
     std::copy(rot, rot + 4, this->rot);
 }
 
@@ -2598,7 +2597,7 @@ openvrml::rotation::rotation(const float x,
                              const float angle)
     OPENVRML_NOTHROW
 {
-    assert(vec3f(x, y, z) == vec3f(x, y, z).normalize());
+    assert(openvrml_::fequal(1.0f, vec3f(x, y, z).length()));
     this->rot[0] = x;
     this->rot[1] = y;
     this->rot[2] = z;
@@ -2616,7 +2615,7 @@ openvrml::rotation::rotation(const float x,
 openvrml::rotation::rotation(const vec3f & axis, const float angle)
     OPENVRML_NOTHROW
 {
-    assert(axis == axis.normalize());
+    assert(openvrml_::fequal(1.0f, axis.length()));
     this->axis(axis);
     this->rot[3] = angle;
 }
@@ -2813,7 +2812,7 @@ void openvrml::rotation::z(const float value) OPENVRML_NOTHROW
  */
 void openvrml::rotation::axis(const vec3f & axis) OPENVRML_NOTHROW
 {
-    assert(axis == axis.normalize());
+    assert(openvrml_::fequal(1.0f, axis.length()));
     this->rot[0] = axis.x();
     this->rot[1] = axis.y();
     this->rot[2] = axis.z();
