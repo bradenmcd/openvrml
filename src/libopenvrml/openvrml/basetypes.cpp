@@ -2673,8 +2673,8 @@ const openvrml::rotation openvrml::make_rotation() OPENVRML_NOTHROW
 const openvrml::rotation openvrml::make_rotation(const float (&rot)[4])
     OPENVRML_NOTHROW
 {
-    assert(make_vec3f(rot[0], rot[1], rot[2])
-           == make_vec3f(rot[0], rot[1], rot[2]).normalize());
+    assert(openvrml_::fequal(1.0f,
+                             make_vec3f(rot[0], rot[1], rot[2]).length()));
     const rotation r = { { rot[0], rot[1], rot[2], rot[3] } };
     return r;
 }
@@ -2701,7 +2701,7 @@ const openvrml::rotation openvrml::make_rotation(const float x,
                                                  const float angle)
     OPENVRML_NOTHROW
 {
-    assert(make_vec3f(x, y, z) == make_vec3f(x, y, z).normalize());
+    assert(openvrml_::fequal(1.0f, make_vec3f(x, y, z).length()));
     const rotation r = { { x, y, z, angle } };
     return r;
 }
@@ -2724,7 +2724,7 @@ const openvrml::rotation openvrml::make_rotation(const vec3f & axis,
                                                  const float angle)
     OPENVRML_NOTHROW
 {
-    assert(axis == axis.normalize());
+    assert(openvrml_::fequal(1.0f, axis.length()));
     const rotation r = { { axis.x(), axis.y(), axis.z(), angle } };
     return r;
 }
@@ -2934,7 +2934,7 @@ void openvrml::rotation::z(const float value) OPENVRML_NOTHROW
  */
 void openvrml::rotation::axis(const vec3f & axis) OPENVRML_NOTHROW
 {
-    assert(axis == axis.normalize());
+    assert(openvrml_::fequal(1.0f, axis.length()));
     this->rot[0] = axis.x();
     this->rot[1] = axis.y();
     this->rot[2] = axis.z();

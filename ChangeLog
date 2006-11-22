@@ -1,5 +1,22 @@
 2006-11-21 Braden McDaniel  <braden@endoframe.com>
 
+	Assert normalization of vectors by directly checking that the
+	length is 1.0, rather than asserting that the vector is equal to
+	the normalized version of itself.  The latter mechanism introduces
+	too much error.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::make_rotation(const float (&)[4])): Assert that
+	the length of the vector is 1.0.
+	(openvrml::make_rotation(float, float, float, float)): Assert
+	that the length of the vector is 1.0.
+	(openvrml::make_rotation(const vec3f &, float)): Assert that
+	the length of the vector is 1.0.
+	(openvrml::rotation::axis(const vec3f &)): Assert that the length
+	of the vector is 1.0.
+
+2006-11-21 Braden McDaniel  <braden@endoframe.com>
+
 	Factored creation of openvrml::resource_istreams to a dedicated
 	abstract factory, openvrml::resource_fetcher.  This allows the
 	code associated with resource fetching to live at least as long as
