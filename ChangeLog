@@ -1,3 +1,9 @@
+2006-11-22 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Check that the
+	request_channel is nonzero after creating a new one.
+
 2006-11-21 Braden McDaniel  <braden@endoframe.com>
 
 	Assert normalization of vectors by directly checking that the
