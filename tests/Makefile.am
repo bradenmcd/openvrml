@@ -16,9 +16,9 @@ TESTS = color \
 
 check_LTLIBRARIES = libtest-openvrml.la
 check_PROGRAMS = $(TESTS) parse-vrml97 parse-x3dvrml
-noinst_HEADERS = test_browser.h
+noinst_HEADERS = test_resource_fetcher.h
 
-libtest_openvrml_la_SOURCES = test_browser.cpp
+libtest_openvrml_la_SOURCES = test_resource_fetcher.cpp
 libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 color_SOURCES = color.cpp

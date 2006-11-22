@@ -18,7 +18,7 @@
 //
 
 # include <iostream>
-# include "test_browser.h"
+# include "test_resource_fetcher.h"
 
 using namespace std;
 using namespace openvrml;
@@ -26,7 +26,8 @@ using namespace openvrml;
 int main()
 {
     try {
-        test_browser b;
+        test_resource_fetcher fetcher;
+        browser b(fetcher, std::cout, std::cerr);
         b.create_vrml_from_stream(cin, x3d_vrml_media_type);
     } catch (invalid_vrml & ex) {
         cerr << ex.url << ':' << ex.line << ':' << ex.column << ": error: "

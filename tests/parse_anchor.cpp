@@ -20,7 +20,7 @@
 # include <cstdlib>
 # include <iostream>
 # include <sstream>
-# include "test_browser.h"
+# include "test_resource_fetcher.h"
 
 int main()
 {
@@ -28,7 +28,8 @@ int main()
     using namespace openvrml;
 
     try {
-        test_browser b;
+        test_resource_fetcher fetcher;
+        browser b(fetcher, std::cout, std::cerr);
 
         const char vrmlstring[] =
             "Anchor {"

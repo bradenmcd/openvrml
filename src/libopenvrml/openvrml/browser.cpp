@@ -4590,6 +4590,160 @@ bool openvrml::resource_istream::data_available() const OPENVRML_NOTHROW
 
 
 /**
+ * @class openvrml::resource_fetcher
+ *
+ * @brief An abstract factory for @c resource_istream%s.
+ *
+ * A concrete implementation of this interface must be passed to
+ * <code>browser</code>'s constructor.
+ *
+ * @sa openvrml::browser
+ */
+
+/**
+ * @brief Destroy.
+ */
+openvrml::resource_fetcher::~resource_fetcher() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief Fetch a network resource.
+ *
+ * @param[in] uri   a Uniform Resource Identifier.
+ *
+ * This function delegates to @c resource_fetcher::do_get_resource.
+ *
+ * @return the requested resource as a stream.
+ */
+std::auto_ptr<openvrml::resource_istream>
+openvrml::resource_fetcher::get_resource(const std::string & uri)
+{
+    return this->do_get_resource(uri);
+}
+
+/**
+ * @fn std::auto_ptr<openvrml::resource_istream> openvrml::resource_fetcher::do_get_resource(const std::string & uri)
+ *
+ * @brief Fetch a network resource.
+ *
+ * Called by @c resource_fetcher::get_resource, clients of OpenVRML are
+ * required to provide an implementation for this function.  OpenVRML depends
+ * on the implementation of this function for all of its input needs.  As
+ * such, what kind of resources OpenVRML is capable of resolving is entirely
+ * dependent on code provided by the application.  A trivial implementation
+ * designed to handle only @c file resources can use @c std::filebuf:
+ *
+ * @code
+ * std::auto_ptr<openvrml::resource_istream>
+ * my_resource_fetcher::do_get_resource(const std::string & uri)
+ * {
+ *     using std::auto_ptr;
+ *     using std::invalid_argument;
+ *     using std::string;
+ *     using openvrml::resource_istream;
+ *
+ *     class file_resource_istream : public resource_istream {
+ *         std::string url_;
+ *         std::filebuf buf_;
+ *
+ *     public:
+ *         explicit file_resource_istream(const std::string & path):
+ *             resource_istream(&this->buf_)
+ *         {
+ *             //
+ *             // Note that the failbit is set in the constructor if no data
+ *             // can be read from the stream.  This is important.  If the
+ *             // failbit is not set on such a stream, OpenVRML will attempt
+ *             // to read data from a stream that cannot provide it.
+ *             //
+ *             if (!this->buf_.open(path.c_str(), ios_base::in)) {
+ *                 this->setstate(ios_base::failbit);
+ *             }
+ *         }
+ *
+ *         void url(const std::string & str)
+ *         {
+ *             this->url_ = str;
+ *         }
+ *
+ *     private:
+ *         virtual const std::string url() const
+ *         {
+ *             return this->url_;
+ *         }
+ *
+ *         virtual const std::string type() const
+ *         {
+ *             //
+ *             // A real application should use OS facilities for this;
+ *             // however, that is beyond the scope of this example (which
+ *             // is intended to be portable and stupid).
+ *             //
+ *             using std::find;
+ *             using std::string;
+ *             using boost::algorithm::iequals;
+ *             using boost::next;
+ *             string media_type = "application/octet-stream";
+ *             const string::const_reverse_iterator dot_pos =
+ *                 find(this->url_.rbegin(), this->url_.rend(), '.');
+ *             if (dot_pos == this->url_.rend()
+ *                 || next(dot_pos.base()) == this->url_.end()) {
+ *                 return media_type;
+ *             }
+ *             const string::const_iterator hash_pos =
+ *                 find(next(dot_pos.base()), this->url_.end(), '#');
+ *             const string ext(dot_pos.base(), hash_pos);
+ *             if (iequals(ext, "wrl")) {
+ *                 media_type = "model/vrml";
+ *             } else if (iequals(ext, "png")) {
+ *                 media_type = "image/png";
+ *             } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
+ *                 media_type = "image/jpeg";
+ *             }
+ *             return media_type;
+ *         }
+ *
+ *         virtual bool data_available() const
+ *         {
+ *             return !!(*this);
+ *         }
+ *     };
+ *
+ *     const string scheme = uri.substr(0, uri.find_first_of(':'));
+ *     if (scheme != "file") {
+ *         throw invalid_argument('\"' + scheme + "\" URI scheme not "
+ *                                "supported");
+ *     }
+ *     //
+ *     // file://
+ *     //        ^
+ *     // 01234567
+ *     //
+ *     string path = uri.substr(uri.find_first_of('/', 7));
+ *
+ *     auto_ptr<resource_istream> in(new file_resource_istream(path));
+ *     static_cast<file_resource_istream *>(in.get())->url(uri);
+ *
+ *     return in;
+ * }
+ * @endcode
+ *
+ * The @p uri parameter is provided by OpenVRML and can be assumed to be an
+ * absolute URI.  As such, it will always have a scheme through which the
+ * client code can choose a resolution mechanism.  For more information on URI
+ * syntax, see <a
+ * href="ftp://ftp.rfc-editor.org/in-notes/std/std66.txt">Internet
+ * STD&nbsp;66</a>.
+ *
+ * @param[in] uri   an absolute Uniform Resource Identifier.
+ *
+ * @return the requested resource as a stream.
+ *
+ * @sa ftp://ftp.rfc-editor.org/in-notes/std/std66.txt
+ */
+
+
+/**
  * @class openvrml::stream_listener
  *
  * @brief An interface to simplify asynchronously reading a @c
@@ -4908,9 +5062,17 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  *
  * @brief Encapsulates a VRML browser.
  *
- * @c browser is the foundation of the OpenVRML runtime.  Users need to
- * inherit this class and override @c browser::do_get_resource and provide an
- * implementation of @c resource_istream.
+ * @c browser is the foundation of the OpenVRML runtime.  @c browser is
+ * instantiated with an implementation of @c resource_fetcher, which is
+ * provided by application code.  The @c resource_fetcher instance must have a
+ * longer lifetime than the @c browser instance, since the @c resource_fetcher
+ * instance could be used during destruction of the @c browser.  Note,
+ * however, that <code>browser</code>'s destructor will block until all
+ * threads that may use the @c resource_fetcher have completed.  So it is
+ * sufficient to have the @c browser and the @c resource_fetcher destroyed
+ * sequentially in the same thread.
+ *
+ * @sa openvrml::resource_fetcher
  */
 
 /**
@@ -5463,12 +5625,15 @@ namespace {
 /**
  * @brief Constructor.
  *
- * @param[in] out   output stream for console output.
- * @param[in] err   output stream for error console output.
+ * @param[in] fetcher   a @c resource_fetcher implementation.
+ * @param[in] out       output stream for console output.
+ * @param[in] err       output stream for error console output.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::browser::browser(std::ostream & out, std::ostream & err)
+openvrml::browser::browser(resource_fetcher & fetcher,
+                           std::ostream & out,
+                           std::ostream & err)
     OPENVRML_THROW1(std::bad_alloc):
     null_node_metatype_(new null_node_metatype(*this)),
     null_node_type_(new null_node_type(*null_node_metatype_)),
@@ -5483,6 +5648,7 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
     delta_time(DEFAULT_DELTA),
     viewer_(0),
     modified_(false),
+    fetcher_(fetcher),
     out_(&out),
     err_(&err),
     frame_rate_(0.0),
@@ -5777,140 +5943,6 @@ openvrml::viewer * openvrml::browser::viewer() const OPENVRML_NOTHROW
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     return this->viewer_;
 }
-
-/**
- * @brief Fetch a network resource.
- *
- * @param[in] uri   a Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- */
-std::auto_ptr<openvrml::resource_istream>
-openvrml::browser::get_resource(const std::string & uri)
-{
-    return this->do_get_resource(uri);
-}
-
-/**
- * @fn std::auto_ptr<openvrml::resource_istream> openvrml::browser::do_get_resource(const std::string & uri)
- *
- * @brief Fetch a network resource.
- *
- * Called by @c browser::get_resource, clients of OpenVRML are required to
- * provide an implementation for this function.  OpenVRML depends on the
- * implementation of this function for all of its input needs.  As such, what
- * kind of resources OpenVRML is capable of resolving is entirely dependent on
- * code provided by the application.  A trivial implementation designed to
- * handle only @c file resources can use @c std::filebuf:
- *
- * @code
- * std::auto_ptr<openvrml::resource_istream>
- * my_browser::do_get_resource(const std::string & uri)
- * {
- *     using std::auto_ptr;
- *     using std::invalid_argument;
- *     using std::string;
- *     using openvrml::resource_istream;
- *
- *     class file_resource_istream : public resource_istream {
- *         std::string url_;
- *         std::filebuf buf_;
- *
- *     public:
- *         explicit file_resource_istream(const std::string & path):
- *             resource_istream(&this->buf_)
- *         {
- *             //
- *             // Note that the failbit is set in the constructor if no data
- *             // can be read from the stream.  This is important.  If the
- *             // failbit is not set on such a stream, OpenVRML will attempt
- *             // to read data from a stream that cannot provide it.
- *             //
- *             if (!this->buf_.open(path.c_str(), ios_base::in)) {
- *                 this->setstate(ios_base::failbit);
- *             }
- *         }
- *
- *         void url(const std::string & str)
- *         {
- *             this->url_ = str;
- *         }
- *
- *     private:
- *         virtual const std::string url() const
- *         {
- *             return this->url_;
- *         }
- *
- *         virtual const std::string type() const
- *         {
- *             //
- *             // A real application should use OS facilities for this;
- *             // however, that is beyond the scope of this example (which
- *             // is intended to be portable and stupid).
- *             //
- *             using std::find;
- *             using std::string;
- *             using boost::algorithm::iequals;
- *             using boost::next;
- *             string media_type = "application/octet-stream";
- *             const string::const_reverse_iterator dot_pos =
- *                 find(this->url_.rbegin(), this->url_.rend(), '.');
- *             if (dot_pos == this->url_.rend()
- *                 || next(dot_pos.base()) == this->url_.end()) {
- *                 return media_type;
- *             }
- *             const string::const_iterator hash_pos =
- *                 find(next(dot_pos.base()), this->url_.end(), '#');
- *             const string ext(dot_pos.base(), hash_pos);
- *             if (iequals(ext, "wrl")) {
- *                 media_type = "model/vrml";
- *             } else if (iequals(ext, "png")) {
- *                 media_type = "image/png";
- *             } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
- *                 media_type = "image/jpeg";
- *             }
- *             return media_type;
- *         }
- *
- *         virtual bool data_available() const
- *         {
- *             return !!(*this);
- *         }
- *     };
- *
- *     const string scheme = uri.substr(0, uri.find_first_of(':'));
- *     if (scheme != "file") {
- *         throw invalid_argument('\"' + scheme + "\" URI scheme not "
- *                                "supported");
- *     }
- *     //
- *     // file://
- *     //        ^
- *     // 01234567
- *     //
- *     string path = uri.substr(uri.find_first_of('/', 7));
- *
- *     auto_ptr<resource_istream> in(new file_resource_istream(path));
- *     static_cast<file_resource_istream *>(in.get())->url(uri);
- *
- *     return in;
- * }
- * @endcode
- *
- * The @p uri parameter is provided by OpenVRML and can be assumed to be an
- * absolute URI.  As such, it will always have a scheme through which the
- * client code can choose a resolution mechanism.  For more information on URI
- * syntax, see <a
- * href="ftp://ftp.rfc-editor.org/in-notes/std/std66.txt">Internet
- * STD&nbsp;66</a>.
- *
- * @param[in] uri   an absolute Uniform Resource Identifier.
- *
- * @return the requested resource as a stream.
- *
- * @sa ftp://ftp.rfc-editor.org/in-notes/std/std66.txt
- */
 
 /**
  * @brief Get the browser name.
@@ -7199,7 +7231,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
                                             .resolve_against(uri(this->url()));
 
             try {
-                in = this->browser().get_resource(absolute_uri);
+                in = this->browser().fetcher_.get_resource(absolute_uri);
             } catch (...) {
                 throw unreachable_url();
             }

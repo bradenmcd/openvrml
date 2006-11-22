@@ -1,3 +1,59 @@
+2006-11-21 Braden McDaniel  <braden@endoframe.com>
+
+	Factored creation of openvrml::resource_istreams to a dedicated
+	abstract factory, openvrml::resource_fetcher.  This allows the
+	code associated with resource fetching to live at least as long as
+	the browser instance, which it needs to do if there are any
+	outstanding fetches happening when the browser instance is
+	destroyed.
+
+	* doc/index.doc: Updates to reflect addition of
+	openvrml::resource_fetcher.
+	* examples/sdl_viewer.cpp: Inherit openvrml::resource_fetcher to
+	implement do_get_resource instead of openvrml::browser.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::resource_fetcher::~resource_fetcher()): Destructor.
+	(openvrml::resource_fetcher::get_resource(const std::string &)):
+	Delegate to do_get_resource.
+	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
+	std::ostream &)): Initialize openvrml::browser::fetcher_.
+	(openvrml::browser::get_resource(const std::string &)): Removed
+	function.
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Delegate instead to browser::fetcher_.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::resource_fetcher): Added class.
+	(openvrml::browser): Granted friendship to openvrml::scene so that
+	it can access browser::fetcher_; added browser::fetcher_ member;
+	changed constructor to take an openvrml::resource_fetcher
+	reference; removed browser::get_resource and
+	browser::do_get_resource members.
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(browser): Removed class.
+	(resource_fetcher): Added class.
+	(GtkGLViewer): Added concrete resource_fetcher member; changed
+	browser_ member to be an openvrml::browser.
+	(GtkGLViewer::GtkGLViewer(GIOChannel &, GtkVrmlBrowser &)):
+	Initialize fetcher_ with the GIOChannel; initialize browser_ with
+	fetcher_.
+	* tests/Makefile.am
+	(noinst_HEADERS): Changed test_browser.h to
+	test_resource_fetcher.h.
+	(libtest_openvrml_la_SOURCES): Changed test_browser.cpp to
+	test_resource_fetcher.cpp.
+	* tests/browser.cpp: Use test_resource_fetcher instead of
+	test_browser.
+	* tests/parse_anchor.cpp: Use test_resource_fetcher instead of
+	test_browser.
+	* tests/parse_vrml97.cpp: Use test_resource_fetcher instead of
+	test_browser.
+	* tests/parse_x3dvrml.cpp: Use test_resource_fetcher instead of
+	test_browser.
+	* tests/test_browser.cpp: Removed file.
+	* tests/test_browser.h: Removed file.
+	* tests/test_resource_fetcher.cpp: Added file.
+	* tests/test_resource_fetcher.h: Added file.
+
 2006-11-19 Braden McDaniel  <braden@endoframe.com>
 
 	* m4/antlr.m4: Use AC_CHECK_PROGS to check for antlr-java as well.

@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
-// Copyright 2005  Braden McDaniel
+// Copyright 2006  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,15 +17,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef TEST_BROWSER
-#   define TEST_BROWSER
+# ifndef TEST_RESOURCE_FETCHER
+#   define TEST_RESOURCE_FETCHER
 
 #   include <openvrml/browser.h>
 
-class test_browser : public openvrml::browser {
-public:
-    test_browser();
-
+class test_resource_fetcher : public openvrml::resource_fetcher {
 private:
     virtual std::auto_ptr<openvrml::resource_istream>
     do_get_resource(const std::string & uri);

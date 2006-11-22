@@ -52,6 +52,18 @@ namespace openvrml {
     };
 
 
+    class OPENVRML_API resource_fetcher {
+    public:
+        virtual ~resource_fetcher() OPENVRML_NOTHROW = 0;
+
+        std::auto_ptr<resource_istream> get_resource(const std::string & uri);
+
+    private:
+        virtual std::auto_ptr<resource_istream>
+        do_get_resource(const std::string & uri) = 0;
+    };
+
+
     class OPENVRML_API stream_listener {
     public:
         virtual ~stream_listener() OPENVRML_NOTHROW = 0;
@@ -170,6 +182,7 @@ namespace openvrml {
     class null_node_type;
 
     class OPENVRML_API browser : boost::noncopyable {
+        friend class scene;
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
         friend bool OPENVRML_API operator==(const node_type &, const node_type &)
@@ -240,6 +253,8 @@ namespace openvrml {
         bool modified_;
         mutable boost::mutex modified_mutex_;
 
+        resource_fetcher & fetcher_;
+
         mutable boost::mutex out_mutex_;
         std::ostream * const out_;
 
@@ -254,7 +269,9 @@ namespace openvrml {
 
         bool flags_need_updating;
 
-        browser(std::ostream & out, std::ostream & err)
+        browser(resource_fetcher & fetcher,
+                std::ostream & out,
+                std::ostream & err)
             OPENVRML_THROW1(std::bad_alloc);
         virtual ~browser() OPENVRML_NOTHROW;
 
@@ -283,7 +300,6 @@ namespace openvrml {
             OPENVRML_NOTHROW;
         void viewer(openvrml::viewer * v) OPENVRML_THROW1(viewer_in_use);
         openvrml::viewer * viewer() const OPENVRML_NOTHROW;
-        std::auto_ptr<resource_istream> get_resource(const std::string & uri);
 
         virtual const char * name() const OPENVRML_NOTHROW;
         virtual const char * version() const OPENVRML_NOTHROW;
@@ -340,10 +356,6 @@ namespace openvrml {
 
     protected:
         bool headlight_on();
-
-    private:
-        virtual std::auto_ptr<resource_istream>
-        do_get_resource(const std::string & uri) = 0;
     };
 
 

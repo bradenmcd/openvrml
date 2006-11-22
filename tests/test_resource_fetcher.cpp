@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
-// Copyright 2005  Braden McDaniel
+// Copyright 2006  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,14 +20,10 @@
 # include <iostream>
 # include <fstream>
 # include <boost/algorithm/string/predicate.hpp>
-# include "test_browser.h"
-
-test_browser::test_browser():
-    openvrml::browser(std::cout, std::cerr)
-{}
+# include "test_resource_fetcher.h"
 
 std::auto_ptr<openvrml::resource_istream>
-test_browser::do_get_resource(const std::string & uri)
+test_resource_fetcher::do_get_resource(const std::string & uri)
 {
     using std::auto_ptr;
     using std::invalid_argument;
