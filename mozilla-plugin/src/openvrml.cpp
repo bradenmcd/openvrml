@@ -1216,7 +1216,7 @@ namespace {
         error_guard.dismiss();
 
         this->request_channel = g_io_channel_unix_new(standard_output);
-        if (!this->command_channel) { throw std::bad_alloc(); }
+        if (!this->request_channel) { throw std::bad_alloc(); }
         this->request_channel_watch_id =
             g_io_add_watch(this->request_channel,
                            G_IO_IN,
