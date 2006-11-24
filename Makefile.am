@@ -4,8 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
         openvrml.pc.in \
-        openvrml-gl.pc.in \
-        openvrml.spec.in
+        openvrml-gl.pc.in
 
 if ENABLE_GL_RENDERER
 OPENVRML_GL_PC = openvrml-gl.pc
@@ -13,8 +12,5 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
-
-dist-hook: openvrml.spec
-	cp openvrml.spec $(distdir)
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
