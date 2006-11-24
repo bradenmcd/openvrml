@@ -1,5 +1,11 @@
 2006-11-24 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Removed unreachable
+	return statement.
+
+2006-11-24 Braden McDaniel  <braden@endoframe.com>
+
 	Removed RPM spec file.  This file is now maintained as part of
 	Fedora Extras.
 

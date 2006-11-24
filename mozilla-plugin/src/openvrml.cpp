@@ -1211,7 +1211,6 @@ namespace {
             throw std::runtime_error(error
                                      ? error->message
                                      : "g_io_channel_set_encoding failure");
-            return;
         }
         error_guard.dismiss();
 
