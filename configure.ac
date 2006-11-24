@@ -23,8 +23,7 @@ AC_CONFIG_FILES([Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
-                [openvrml.pc]
-                [openvrml.spec])
+                [openvrml.pc])
 
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.9 foreign subdir-objects check-news tar-pax])
