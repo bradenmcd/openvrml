@@ -127,8 +127,8 @@ namespace openvrml_player {
                     pos->second->buf_.set_eof();
                     plugin_streambuf_map.erase(pos);
                 } else if (command == "write") {
-                    size_t stream_id, offset, length;
-                    command_line_stream >> stream_id >> offset >> length;
+                    size_t stream_id, length;
+                    command_line_stream >> stream_id >> length;
                     plugin_streambuf_map_t::const_iterator pos =
                         plugin_streambuf_map.find(stream_id);
                     if (pos == plugin_streambuf_map.end()) {

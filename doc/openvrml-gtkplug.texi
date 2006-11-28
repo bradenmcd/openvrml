@@ -326,16 +326,13 @@ The @code{write} command writes data to a stream for which
 following form:
 
 @example
-write @var{stream_id} @var{offset} @var{length}
+write @var{stream_id} @var{length}
 @var{data}
 @end example
 
 @table @var
 @item stream-id
 An integer identifier for the stream.
-@item offset
-The offset from the beginning of the stream to the beginning of
-@var{data}.
 @item length
 The number of bytes in @var{data}
 @item data
@@ -352,9 +349,8 @@ beginning of the @var{data} parameter.  The command ends at the end of
 the @var{data} parameter, which is indicated by the @var{length}
 parameter.
 
-@code{write} may be called multiple times for the same stream.  The
-@var{offset} parameter indicates the offset of the beginning of
-@var{data} with respect to the beginning of the stream (in bytes).
+@code{write} may be called multiple times for the same stream with
+consecutive blocks of data for the stream.
 
 @cindex destroy-stream
 @subsection @code{destroy-stream}
