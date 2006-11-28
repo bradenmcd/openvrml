@@ -12,15 +12,15 @@ See the "NEWS" file for a list of changes in this release.
 About
 =====
 
-   OpenVRML is a portable VRML97 toolkit including a C++ library for
-reading and displaying VRML97 files, an OpenGL renderer, and a Mozilla
-Web browser plug-in for viewing VRML97 content on the Internet.
+   OpenVRML is a portable toolkit including a C++ library for reading
+and displaying VRML and X3D files, an OpenGL renderer, and a Mozilla
+Web browser plug-in for viewing VRML and X3D content on the Internet.
 
 
 License terms
 =============
 
-   The OpenVRML libraries comprising the VRML97 runtime ("libopenvrml")
+   The OpenVRML libraries comprising the VRML/X3D runtime ("libopenvrml")
 and the OpenGL renderer ("libopenvrml-gl") are available under the terms
 of the GNU Lesser General Public License (LGPL), version 2.1.  These
 libraries incorporate some code that is available under "LGPL-
