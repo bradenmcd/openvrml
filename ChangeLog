@@ -1,5 +1,10 @@
 2006-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Removed zlib from dependencies list; as of 0.16 OpenVRML
+	does not directly require zlib.
+
+2006-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	Removed "offset" argument from openvrml-gtkplug's "write" command.
 
 	* doc/openvrml-gtkplug.texi: Removed "offset" argument from the

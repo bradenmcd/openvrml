@@ -122,7 +122,6 @@ missing any of these dependencies, first check to see if they are
 provided by your operating system vendor.  If not, consult the URIs
 below.
 
-     zlib                   <http://www.gzip.org/zlib/index.html>
      libpng                 <http://www.libpng.org/pub/png/libpng.html>
      libjpeg                <http://www.ijg.org>
      FreeType               <http://freetype.org>
