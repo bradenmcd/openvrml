@@ -1,5 +1,9 @@
 2006-11-28 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Updated description to note X3D functionality.
+
+2006-11-28 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Removed zlib from dependencies list; as of 0.16 OpenVRML
 	does not directly require zlib.
 
