@@ -489,7 +489,7 @@ int32 NPP_WriteReady(NPP, NPStream *)
 
 int32 NPP_Write(const NPP instance,
                 NPStream * const stream,
-                const int32 offset,
+                int32 /* offset */,
                 const int32 len,
                 void * const buffer)
 {
@@ -499,8 +499,7 @@ int32 NPP_Write(const NPP instance,
         *static_cast<plugin_instance *>(instance->pdata);
 
     std::ostringstream command;
-    command << "write " << ptrdiff_t(stream) << ' ' << offset << ' ' << len
-            << '\n';
+    command << "write " << ptrdiff_t(stream) << ' ' << ' ' << len << '\n';
     for (int32 i = 0; i < len; ++i) {
         command.put(static_cast<char *>(buffer)[i]);
     }

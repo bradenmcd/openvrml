@@ -1,3 +1,16 @@
+2006-11-28 Braden McDaniel  <braden@endoframe.com>
+
+	Removed "offset" argument from openvrml-gtkplug's "write" command.
+
+	* doc/openvrml-gtkplug.texi: Removed "offset" argument from the
+	"write" command.
+	* mozilla-plugin/src/openvrml.cpp
+	(NPP_Write(NPP, NPStream *, int32, int32, int32, void *)): Don't
+	write the offset to the command stream.
+	* src/openvrml-gtkplug/main.cpp
+	(openvrml_player::command_istream_reader::operator() const): Don't
+	read the offset from the command stream.
+
 2006-11-24 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
