@@ -1,3 +1,19 @@
+Changes new in version 0.16.2, 29 November, 2006
+========================================================================
+
+- Fixed the parsers to use the user-supplied std::ostream consistently
+  for error and warning output.
+
+- Fixed the parser error and warning output to report line and column
+  number information more consistently and accurately.
+
+- Fixed the build system such that a failure to find all of GtkGLExt's
+  prerequisites will not cause configure to fail.
+
+- Fixed the build system to better accommodate a user-supplied antlr
+  executable.
+
+
 Changes new in version 0.16.1, 28 October, 2006
 ========================================================================
 

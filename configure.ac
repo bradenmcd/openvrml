@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.16.1], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.16.2], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -48,11 +48,11 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-OV_PROG_ANTLR([2.7.6])
+OV_PROG_ANTLR([2.7.4])
 AS_IF([test -z "$ANTLR"],
       [AS_IF([test ! -f $srcdir/src/libopenvrml/openvrml/Vrml97Parser.cpp],
-             [AC_MSG_FAILURE([antlr 2.7.6 not found])],
-             [AC_MSG_WARN([antlr 2.7.6 not found; but generated files already exist])])])
+             [AC_MSG_FAILURE([antlr 2.7.4 not found])],
+             [AC_MSG_WARN([antlr 2.7.4 not found; but generated files already exist])])])
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
@@ -304,6 +304,14 @@ if test X$enable_mozilla_plugin != Xno; then
     AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GtkPlug application])
   fi
 fi
+
+if test X$enable_gtkplug != Xno; then
+  if test X$have_gtk = Xno; then
+    AC_MSG_FAILURE([GTK+ is required to build the GtkPlug])
+  fi
+fi
+AM_CONDITIONAL([ENABLE_GTKPLUG],
+               [test X$enable_gtkplug != Xno -a X$have_gtk != Xno])
 
 #
 # build examples

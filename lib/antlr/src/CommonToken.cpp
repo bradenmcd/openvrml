@@ -16,22 +16,16 @@ CommonToken::CommonToken() : Token(), line(1), col(1), text("")
 {}
 
 CommonToken::CommonToken(int t, const ANTLR_USE_NAMESPACE(std)string& txt)
-: Token(t)
-, line(1)
-, col(1)
-, text(txt)
+	: Token(t), line(1), col(1), text(txt)
 {}
 
 CommonToken::CommonToken(const ANTLR_USE_NAMESPACE(std)string& s)
-: Token()
-, line(1)
-, col(1)
-, text(s)
+	: Token(), line(1), col(1), text(s)
 {}
 
 ANTLR_USE_NAMESPACE(std)string CommonToken::toString() const
 {
-	return "[\""+getText()+"\",<"+getType()+">,line="+getLine()+",column="+getColumn()+"]";
+	return "[\""+getText()+"\",<"+type+">,line="+line+",column="+col+"]";
 }
 
 RefToken CommonToken::factory()
