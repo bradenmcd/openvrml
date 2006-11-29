@@ -1,3 +1,20 @@
+2006-11-29 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for the 0.16.2 release.
+
+	* NEWS: Updated for 0.16.2 release.
+	* README: Updated for 0.16.2 release.
+	* configure.ac: Updated for 0.16.2 release.
+	* doc/Doxyfile: Updated for 0.16.2 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Updated for 0.16.2 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Updated for 0.16.2 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Updated for 0.16.2 release.
+	* mozilla-plugin/configure.ac: Updated for 0.16.2 release.
+	* src/libopenvrml/Makefile.am: Updated libtool library version number.
+
 2006-11-28 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Updated description to note X3D functionality.
