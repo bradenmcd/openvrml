@@ -167,7 +167,7 @@ openvrml_player_command_channel_loop_quit_event(gpointer data);
 
 namespace {
 
-    gboolean version;
+    gboolean version, initial_stream;
     gchar ** args;
 
     GOptionEntry options[] = {
@@ -178,6 +178,15 @@ namespace {
             G_OPTION_ARG_NONE,
             &version,
             "Print the version information and exit",
+            0
+        },
+        {
+            "initial-stream",
+            'i',
+            0,
+            G_OPTION_ARG_NONE,
+            &initial_stream,
+            "Expect an initial stream",
             0
         },
         {
@@ -369,15 +378,17 @@ int main(int argc, char * argv[])
     function0<void> command_channel_loop_func =
         command_channel_loop(*command_main);
     threads.create_thread(command_channel_loop_func);
-        
-    shared_ptr<plugin_streambuf> initial_stream(
-        new plugin_streambuf(initial_stream_uri));
-    uninitialized_plugin_streambuf_map_.insert(initial_stream_uri,
-                                               initial_stream);
-    function0<void> initial_stream_reader_func =
-        initial_stream_reader(initial_stream,
-                              *GTK_VRML_BROWSER(vrml_browser));
-    threads.create_thread(initial_stream_reader_func);
+
+    if (::initial_stream) {
+        const shared_ptr<plugin_streambuf> initial_stream(
+            new plugin_streambuf(::initial_stream_uri));
+        uninitialized_plugin_streambuf_map_.insert(::initial_stream_uri,
+                                                   initial_stream);
+        const function0<void> initial_stream_reader_func =
+            initial_stream_reader(initial_stream,
+                                  *GTK_VRML_BROWSER(vrml_browser));
+        threads.create_thread(initial_stream_reader_func);
+    }
 
     function0<void> read_commands = command_istream_reader(command_in);
     threads.create_thread(read_commands);

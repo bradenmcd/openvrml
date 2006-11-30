@@ -1,3 +1,20 @@
+2006-11-30 Braden McDaniel  <braden@endoframe.com>
+
+	While the Mozilla plug-in needs to be able to send an initial
+	stream to openvrml-gtkplug, it seems likely that most clients will
+	want to start openvrml-gtkplug without having it expect an initial
+	stream.  Added --initial-stream argument to openvrml-gtkplug to
+	enable the old default behavior.
+
+	* doc/openvrml-gtkplug.texi: Documented --initial-stream option.
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Pass --initial-stream
+	when starting the openvrml-gtkplug child process.
+	* src/openvrml-gtkplug/main.cpp:
+	(options): Added entry for --initial-stream.
+	(main(int, char *[])): Only start the thread to read the initial
+	stream if --initial-stream was passed.
+
 2006-11-29 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for the 0.16.2 release.
