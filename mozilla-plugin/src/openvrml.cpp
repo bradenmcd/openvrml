@@ -1149,13 +1149,20 @@ namespace {
             error_guard.dismiss();
         }
 
-        string socket_id_arg = lexical_cast<string>(this->window);
-        const char * socket_id_arg_c_str = socket_id_arg.c_str();
-        vector<char> socket_id_arg_vec(
+        static const char initial_stream_arg_c_str[] = "--initial-stream";
+        static const size_t initial_stream_arg_c_str_size =
+            sizeof initial_stream_arg_c_str / sizeof (gchar);
+        vector<gchar> initial_stream_arg_vec(
+            initial_stream_arg_c_str,
+            initial_stream_arg_c_str + initial_stream_arg_c_str_size);
+
+        const string socket_id_arg = lexical_cast<string>(this->window);
+        const char * const socket_id_arg_c_str = socket_id_arg.c_str();
+        vector<gchar> socket_id_arg_vec(
             socket_id_arg_c_str,
             socket_id_arg_c_str + socket_id_arg.length() + 1);
 
-        const gint argv_size = openvrml_gtkplug_cmd_argc + 2;
+        const gint argv_size = openvrml_gtkplug_cmd_argc + 3;
         gchar ** const argv =
             static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
         if (!argv) { throw std::bad_alloc(); }
@@ -1165,6 +1172,7 @@ namespace {
         for (i = 0; i < openvrml_gtkplug_cmd_argc; ++i) {
             argv[i] = openvrml_gtkplug_cmd_argv[i];
         }
+        argv[i++] = &initial_stream_arg_vec.front();
         argv[i++] = &socket_id_arg_vec.front();
         argv[i]   = 0;
 

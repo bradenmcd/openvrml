@@ -155,6 +155,11 @@ Make all warnings fatal.
 @opindex --version
 Print the version information and exit.
 
+@item --initial-stream
+@opindex --initial-stream
+Expect an initial stream.  @code{new-stream} must be the first command
+received.
+
 @item --display=@var{display}
 @opindex --display
 X display to use.
