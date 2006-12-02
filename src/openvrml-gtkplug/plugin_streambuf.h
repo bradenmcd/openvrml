@@ -42,7 +42,7 @@ namespace openvrml_player {
         int get_url_result_;
         mutable boost::condition received_get_url_result_;
         bool initialized_;
-        mutable boost::condition streambuf_initialized_;
+        mutable boost::condition streambuf_initialized_or_failed_;
         std::string url_;
         std::string type_;
         bounded_buffer<char_type, 16384> buf_;
@@ -59,6 +59,7 @@ namespace openvrml_player {
         void init(size_t stream_id,
                   const std::string & received_url,
                   const std::string & type);
+        void fail();
         const std::string & url() const;
         const std::string & type() const;
         bool data_available() const;
@@ -77,6 +78,7 @@ namespace openvrml_player {
                     const boost::shared_ptr<plugin_streambuf> & streambuf);
         bool erase(const std::string & url);
         size_t size() const;
+        bool empty() const;
         const boost::shared_ptr<plugin_streambuf> front() const;
     } uninitialized_plugin_streambuf_map_;
 

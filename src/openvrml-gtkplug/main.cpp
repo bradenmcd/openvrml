@@ -144,6 +144,16 @@ namespace openvrml_player {
             //
             // Got EOF from the command stream. Time to shut down.
             //
+            // First, mark any outstanding uninitialized streams as failed so
+            // that another thread doesn't block waiting for them.
+            //
+            while (!uninitialized_plugin_streambuf_map_.empty()) {
+                uninitialized_plugin_streambuf_map_.front()->fail();
+            }
+
+            //
+            // Set the quit flag.
+            //
             ::quit_flag.value(true);
 
             //

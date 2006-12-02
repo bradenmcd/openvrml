@@ -483,8 +483,8 @@ namespace {
         using openvrml_player::plugin_streambuf;
 
         class plugin_resource_istream : public openvrml::resource_istream {
-            boost::shared_ptr<plugin_streambuf> streambuf_;
-            GIOChannel * request_channel_;
+            const boost::shared_ptr<plugin_streambuf> streambuf_;
+            GIOChannel * const request_channel_;
 
         public:
             plugin_resource_istream(const std::string & uri,
@@ -511,7 +511,7 @@ namespace {
                 g_io_channel_flush(this->request_channel_, 0);
 
                 //
-                // This blocks until we know the result of NPN_GetURL.
+                // This blocks until we receive a get-url-result command.
                 //
                 const int get_url_result = this->streambuf_->get_url_result();
                 if (get_url_result != 0) {
