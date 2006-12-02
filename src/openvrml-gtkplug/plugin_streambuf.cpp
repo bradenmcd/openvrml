@@ -61,6 +61,9 @@ void openvrml_player::plugin_streambuf::init(const size_t stream_id,
                                              const std::string & received_url,
                                              const std::string & type)
 {
+    g_assert(stream_id);
+    g_assert(!received_url.empty());
+    g_assert(!type.empty());
     boost::mutex::scoped_lock lock(this->mutex_);
     bool succeeded = uninitialized_plugin_streambuf_map_.erase(this->url_);
     g_assert(succeeded);
@@ -71,14 +74,24 @@ void openvrml_player::plugin_streambuf::init(const size_t stream_id,
     succeeded = plugin_streambuf_map.insert(make_pair(stream_id, this_))
         .second;
     g_assert(succeeded);
-    this->streambuf_initialized_.notify_all();
+    this->streambuf_initialized_or_failed_.notify_all();
+}
+
+void openvrml_player::plugin_streambuf::fail()
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    const bool succeeded =
+        uninitialized_plugin_streambuf_map_.erase(this->url_);
+    g_assert(succeeded);
+    this->buf_.set_eof();
+    this->streambuf_initialized_or_failed_.notify_all();
 }
 
 const std::string & openvrml_player::plugin_streambuf::url() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     while (!this->initialized_) {
-        this->streambuf_initialized_.wait(lock);
+        this->streambuf_initialized_or_failed_.wait(lock);
     }
     return this->url_;
 }
@@ -87,7 +100,7 @@ const std::string & openvrml_player::plugin_streambuf::type() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     while (!this->initialized_) {
-        this->streambuf_initialized_.wait(lock);
+        this->streambuf_initialized_or_failed_.wait(lock);
     }
     return this->type_;
 }
@@ -107,7 +120,7 @@ openvrml_player::plugin_streambuf::underflow()
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     while (!this->initialized_) {
-        this->streambuf_initialized_.wait(lock);
+        this->streambuf_initialized_or_failed_.wait(lock);
     }
 
     if (traits_type::eq_int_type(this->i_, traits_type::eof())) {
@@ -173,6 +186,12 @@ size_t openvrml_player::uninitialized_plugin_streambuf_map::size() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     return this->map_.size();
+}
+
+bool openvrml_player::uninitialized_plugin_streambuf_map::empty() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->map_.empty();
 }
 
 const boost::shared_ptr<openvrml_player::plugin_streambuf>

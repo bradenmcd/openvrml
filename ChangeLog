@@ -1,3 +1,37 @@
+2006-12-02 Braden McDaniel  <braden@endoframe.com>
+
+	Mark any uninitialized plugin_streambufs as failed when quitting
+	openvrml-gtkplug so that reader threads will not continue to block
+	on them (creating a deadlock).
+
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(resource_fetcher::do_get_resource(const std::string &)): Fixed
+	comment to be more host-agnostic (i.e., removed reference to
+	NPN_GetURL).
+	* src/openvrml-gtkplug/main.cpp
+	(openvrml_player::command_istream_reader::operator()() const):
+	Mark any remaining uninitialized plugin_streambufs as failed.
+	* src/openvrml-gtkplug/plugin_streambuf.cpp
+	(openvrml_player::plugin_streambuf::init(size_t, const
+	std::string&, const std::string &)): Assert validity of arguments;
+	changed name of condition variable.
+	(openvrml_player::plugin_streambuf::fail()): Added function; used
+	to indicate that a stream will not be initialized.
+	(openvrml_player::plugin_streambuf::url() const): Changed name of
+	condition variable.
+	(openvrml_player::plugin_streambuf::type() const): Changed name of
+	condition variable.
+	(openvrml_player::plugin_streambuf::underflow()): Changed name of
+	condition variable.
+	(openvrml_player::uninitialized_plugin_streambuf_map::empty()
+	const): Added function.
+	* src/openvrml-gtkplug/plugin_streambuf.h
+	(openvrml_player::plugin_streambuf): Changed
+	streambuf_initialized_ condition variable to
+	streambuf_initialized_or_failed_; added fail member function.
+	(openvrml_player::uninitialized_plugin_streambuf_map): Added empty
+	member function.
+
 2006-11-30 Braden McDaniel  <braden@endoframe.com>
 
 	While the Mozilla plug-in needs to be able to send an initial
