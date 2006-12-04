@@ -21,6 +21,7 @@
 # include <iostream>
 # include <sstream>
 # include <boost/lexical_cast.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/thread/thread.hpp>
 # include <unistd.h>
 // Must include before X11 headers.
@@ -38,6 +39,7 @@
 # include "flag.h"
 
 using namespace openvrml_player;
+using namespace boost::multi_index::detail; // for scope_guard
 
 namespace {
 
@@ -262,29 +264,52 @@ namespace {
     GIOChannel * request_channel;
 
     struct command_channel_loop {
-        explicit command_channel_loop(GMainLoop & main_loop):
-            main_loop_(&main_loop)
+        command_channel_loop(GIOChannel & command_channel,
+                             command_istream & command_in):
+            command_channel_(&command_channel),
+            command_in_(&command_in)
         {}
 
         void operator()() const throw ()
         {
+            GMainContext * const main_context = g_main_context_new();
+            scope_guard main_context_guard = make_guard(g_main_context_unref,
+                                                        main_context);
+            GMainLoop * const main_loop = g_main_loop_new(main_context, false);
+            scope_guard main_loop_guard = make_guard(g_main_loop_unref,
+                                                     main_loop);
+
+            GSource * const command_watch =
+                g_io_create_watch(this->command_channel_,
+                                  GIOCondition(G_IO_IN | G_IO_HUP));
+            scope_guard command_watch_guard = make_guard(g_source_unref,
+                                                         command_watch);
+
+            static const GDestroyNotify notify = 0;
+            g_source_set_callback(
+                command_watch,
+                reinterpret_cast<GSourceFunc>(::command_data_available),
+                static_cast<command_streambuf *>(this->command_in_->rdbuf()), notify);
+            const guint command_watch_id = g_source_attach(command_watch,
+                                                           main_context);
+            g_assert(command_watch_id != 0);
+
             GSource * const quit = g_idle_source_new();
-            const GDestroyNotify notify = 0;
+            scope_guard quit_guard = make_guard(g_source_unref, quit);
             g_source_set_callback(
                 quit,
                 ::openvrml_player_command_channel_loop_quit_event,
-                this->main_loop_,
+                main_loop,
                 notify);
-            guint source_id =
-                g_source_attach(quit,
-                                g_main_loop_get_context(this->main_loop_));
-            g_return_if_fail(source_id != 0);
+            const guint quit_source_id = g_source_attach(quit, main_context);
+            g_assert(quit_source_id != 0);
 
-            g_main_loop_run(this->main_loop_);
+            g_main_loop_run(main_loop);
         }
 
     private:
-        GMainLoop * main_loop_;
+        GIOChannel * const command_channel_;
+        command_istream * const command_in_;
     };
 }
 
@@ -300,6 +325,8 @@ int main(int argc, char * argv[])
     using boost::thread_group;
 
     using namespace openvrml_player;
+
+    g_thread_init(0);
 
     g_set_application_name(application_name);
 
@@ -354,13 +381,7 @@ int main(int argc, char * argv[])
 
     thread_group threads;
 
-    GMainContext * command_main_context = 0;
-    GMainLoop * command_main = 0;
     GIOChannel * command_channel = 0;
-    GSource * command_watch = 0;
-
-    command_main_context = g_main_context_new();
-    command_main = g_main_loop_new(command_main_context, false);
     command_channel = g_io_channel_unix_new(0); // stdin
     error = 0;
     GIOStatus status = g_io_channel_set_encoding(command_channel,
@@ -374,19 +395,8 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    command_watch = g_io_create_watch(command_channel,
-                                      GIOCondition(G_IO_IN | G_IO_HUP));
-    const GDestroyNotify notify = 0;
-    g_source_set_callback(
-        command_watch,
-        reinterpret_cast<GSourceFunc>(::command_data_available),
-        static_cast<command_streambuf *>(command_in.rdbuf()), notify);
-    guint source_id = g_source_attach(command_watch,
-                                      command_main_context);
-    g_return_val_if_fail(source_id != 0, EXIT_FAILURE);
-
     function0<void> command_channel_loop_func =
-        command_channel_loop(*command_main);
+        command_channel_loop(*command_channel, command_in);
     threads.create_thread(command_channel_loop_func);
 
     if (::initial_stream) {
@@ -407,8 +417,6 @@ int main(int argc, char * argv[])
 
     threads.join_all();
 
-    g_source_unref(command_watch);
-
     status = g_io_channel_shutdown(command_channel, true, &error);
     if (status != G_IO_STATUS_NORMAL) {
         if (error) {
@@ -417,9 +425,6 @@ int main(int argc, char * argv[])
         }
     }
     g_io_channel_unref(command_channel);
-
-    g_main_loop_unref(command_main);
-    g_main_context_unref(command_main_context);
 
     if (::request_channel) {
         GError * error = 0;

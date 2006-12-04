@@ -1,3 +1,24 @@
+2006-12-04 Braden McDaniel  <braden@endoframe.com>
+
+	Call g_thread_init to initialize GLib's thread support for
+	openvrml-gtkplug.  Create the GMainLoop for the command reader
+	loop in the command reader thread instead of the main thread.
+
+	* configure.ac: Incorporate gthread-2.0 flags into GTK_*
+	variables.
+	* src/openvrml-gtkplug/main.cpp
+	(command_channel_loop::command_channel_loop(GIOChannel &,
+	command_istream &)): Construct with a GIOChannel and a
+	command_istream.
+	(command_channel_loop::operator()() const): Create the GMainLoop
+	and its GMainContext here.
+	(command_channel_loop::main_loop_): Removed.
+	(command_channel_loop::command_channel_): Added.
+	(command_channel_loop::command_in_): Added.
+	(main(int, char *[])): Call g_thread_init.  Moved creation of the
+	command reader GMainLoop and GMainContext to the command reader
+	thread.
+
 2006-12-02 Braden McDaniel  <braden@endoframe.com>
 
 	Mark any uninitialized plugin_streambufs as failed when quitting
