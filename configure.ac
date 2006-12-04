@@ -110,7 +110,7 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                   [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
                                      [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
                                      [have_js=no])])
-PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0], , [have_gtk=no])
 AC_PATH_XTRA
 AX_CHECK_GLU
 
