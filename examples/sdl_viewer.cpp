@@ -202,12 +202,28 @@ namespace {
             throw invalid_argument('\"' + scheme + "\" URI scheme not "
                                    "supported");
         }
+
         //
         // file://
         //        ^
         // 01234567
+        static const string::size_type authority_start_index = 7;
+
         //
-        string path = uri.substr(uri.find_first_of('/', 7));
+        // On Windows we want to start at the drive letter, which is after the
+        // first slash in the path.
+        //
+        // We ignore the content of the authority; a smarter implementation
+        // should confirm that it is localhost, the machine name, or zero
+        // length.
+        //
+        string::size_type path_start_index =
+# ifdef _WIN32
+            uri.find_first_of('/', authority_start_index) + 1;
+# else
+            uri.find_first_of('/', authority_start_index);
+# endif
+        string path = uri.substr(path_start_index);
 
         auto_ptr<resource_istream> in(new file_resource_istream(path));
         static_cast<file_resource_istream *>(in.get())->url(uri);

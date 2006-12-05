@@ -3536,10 +3536,16 @@ namespace {
 
 # ifdef _WIN32
         std::vector<char> cwd_buf(_MAX_PATH);
-        while (!_getcwd(&cwd_buf.front(), cwd_buf.size()) && errno == ERANGE) {
+        //
+        // Path must begin with a slash.  _getcwd returns something that
+        // begins with a drive letter.
+        //
+        cwd_buf[0] = '/';
+        while (!_getcwd(&cwd_buf.front() + 1, cwd_buf.size())
+               && errno == ERANGE) {
             cwd_buf.resize(cwd_buf.size() * 2);
         }
-        std::replace_if(cwd_buf.begin(),
+        std::replace_if(cwd_buf.begin() + 1,
                         cwd_buf.begin() + strlen(&cwd_buf.front()) + 1,
                         std::bind2nd(std::equal_to<char>(), '\\'), '/');
 # else
@@ -3558,7 +3564,8 @@ namespace {
             base_uri << '/';
         }
 
-        return relative_uri.resolve_against(uri(base_uri.str()));
+        const uri result = relative_uri.resolve_against(uri(base_uri.str()));
+        return result;
     }
 } // namespace
 
