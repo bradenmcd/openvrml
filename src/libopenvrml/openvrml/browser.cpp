@@ -5831,7 +5831,8 @@ openvrml::browser::get_resource(const std::string & uri)
  *             // failbit is not set on such a stream, OpenVRML will attempt
  *             // to read data from a stream that cannot provide it.
  *             //
- *             if (!this->buf_.open(path.c_str(), ios_base::in)) {
+ *             if (!this->buf_.open(path.c_str(),
+ *                                  ios_base::in | ios_base::binary)) {
  *                 this->setstate(ios_base::failbit);
  *             }
  *         }
