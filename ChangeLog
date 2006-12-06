@@ -1,5 +1,11 @@
 2006-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp
+	(NPP_GetMIMEDescription()): Include MIME description for
+	model/x3d+vrml.
+
+2006-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	Set ios_base::badbit (instead of failbit) when stream construction
 	does not produce a readable stream.
 
