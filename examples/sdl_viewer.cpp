@@ -144,7 +144,7 @@ namespace {
             {
                 if (!this->buf_.open(path.c_str(),
                                      ios_base::in | ios_base::binary)) {
-                    this->setstate(ios_base::failbit);
+                    this->setstate(ios_base::badbit);
                 }
             }
 
