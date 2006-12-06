@@ -1,5 +1,18 @@
 2006-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	Pass ios_base::binary when opening arbitrary (i.e., possibly not
+	text) files.  Windows requires this.
+
+	* examples/sdl_viewer.cpp
+	(resource_fetcher::do_get_resource(const std::string &): Pass the
+	ios_base::binary flag when opening the filebuf.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::resource_fetcher::do_get_resource(const std::string &):
+	In the example in the doc-comment, pass the ios_base::binary flag
+	when opening the filebuf.
+
+2006-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed relative URI resolution on Windows.
 
 	* examples/sdl_viewer.cpp
