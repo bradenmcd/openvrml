@@ -279,7 +279,8 @@ NPError NP_GetValue(void *, NPPVariable variable, void * value)
 
 char * NPP_GetMIMEDescription()
 {
-    return "model/vrml:wrl:VRML world;"
+    return "model/x3d+vrml:x3dv:X3D world;"
+           "model/vrml:wrl:VRML world;"
            "x-world/x-vrml:wrl:VRML world";
 }
 
