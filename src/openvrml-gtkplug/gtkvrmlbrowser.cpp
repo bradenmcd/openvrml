@@ -515,7 +515,7 @@ namespace {
                 //
                 const int get_url_result = this->streambuf_->get_url_result();
                 if (get_url_result != 0) {
-                    this->setstate(std::ios_base::failbit);
+                    this->setstate(std::ios_base::badbit);
                 }
             }
 
