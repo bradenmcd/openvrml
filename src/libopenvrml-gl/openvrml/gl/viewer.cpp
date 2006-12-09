@@ -44,7 +44,6 @@
 #   include <iostream>
 # endif
 # include <openvrml/browser.h>
-# include <openvrml/vrml97node.h>
 # include "viewer.h"
 
 // Textures are now done using OGL1.1 bindTexture API rather than
