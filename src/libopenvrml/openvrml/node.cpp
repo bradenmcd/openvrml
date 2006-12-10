@@ -1682,43 +1682,43 @@ namespace {
         return val;
     }
 
+    class OPENVRML_LOCAL dummy_listener : public openvrml::sfbool_listener {
+    public:
+        virtual ~dummy_listener() OPENVRML_NOTHROW
+        {}
+
+    private:
+        virtual void do_process_event(const openvrml::sfbool &, double)
+            OPENVRML_THROW1(std::bad_alloc)
+        {}
+    };
+
     openvrml::event_listener &
     self_ref_node::do_event_listener(const std::string &)
         OPENVRML_THROW1(openvrml::unsupported_interface)
     {
-        class dummy_listener : public openvrml::sfbool_listener {
-        public:
-            virtual ~dummy_listener() OPENVRML_NOTHROW
-            {}
-
-        private:
-            virtual void do_process_event(const openvrml::sfbool &, double)
-                OPENVRML_THROW1(std::bad_alloc)
-            {}
-        };
-
         static dummy_listener listener;
         return listener;
     }
+
+    class OPENVRML_LOCAL dummy_emitter : public openvrml::sfbool_emitter {
+    public:
+        explicit dummy_emitter(const openvrml::sfbool & value):
+            openvrml::event_emitter(value),
+            openvrml::sfbool_emitter(value)
+        {}
+
+    private:
+        virtual const std::string do_eventout_id() const OPENVRML_NOTHROW
+        {
+            return std::string();
+        }            
+    };
 
     openvrml::event_emitter &
     self_ref_node::do_event_emitter(const std::string &)
         OPENVRML_THROW1(openvrml::unsupported_interface)
     {
-        class dummy_emitter : public openvrml::sfbool_emitter {
-        public:
-            explicit dummy_emitter(const openvrml::sfbool & value):
-                openvrml::event_emitter(value),
-                openvrml::sfbool_emitter(value)
-            {}
-
-        private:
-            virtual const std::string do_eventout_id() const OPENVRML_NOTHROW
-            {
-                return std::string();
-            }            
-        };
-
         openvrml::sfbool val;
         static dummy_emitter emitter(val);
         return emitter;
