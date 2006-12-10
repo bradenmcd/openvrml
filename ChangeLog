@@ -1,5 +1,18 @@
 2006-12-10 Braden McDaniel  <braden@endoframe.com>
 
+	The Apple OpenGL framework seems to deviate from the GLU spec with
+	respect to the type signature of the GLU tesselator callback
+	function.  Even though Apple's glu.h header appears consistent
+	with the specification, the compiler is quite insistent that the
+	type signature of this callback is something other than what is
+	reflected there.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(TessCB): Made declaration conditional based on
+	HAVE_APPLE_OPENGL_FRAMEWORK.
+
+2006-12-10 Braden McDaniel  <braden@endoframe.com>
+
 	Apple's gcc 4.0.1 on PPC seems to have some problem with classes
 	defined inside a function definition.
 

@@ -1981,7 +1981,11 @@ extern "C" {
      * As the type of callback functions given to OpenGL, this type must have
      * C linkage.
      */
-    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
+# if HAVE_APPLE_OPENGL_FRAMEWORK
+    typedef GLvoid (*OPENVRML_GL_CALLBACK_ TessCB)(...);
+# else
+    typedef GLvoid (*OPENVRML_GL_CALLBACK_ TessCB)(GLvoid);
+# endif
 
     /**
      * @internal
@@ -2053,7 +2057,8 @@ namespace {
                             reinterpret_cast<TessCB>(tessExtrusionBegin));
             gluTessCallback(&tesselator, GLU_TESS_VERTEX_DATA,
                             reinterpret_cast<TessCB>(tessExtrusionVertex));
-            gluTessCallback(&tesselator, GLU_TESS_END, glEnd);
+            gluTessCallback(&tesselator, GLU_TESS_END,
+                            reinterpret_cast<TessCB>(glEnd));
 
             if (mask & viewer::mask_bottom) {
                 TessExtrusion bottom(&c[0][0],
