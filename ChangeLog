@@ -1,3 +1,9 @@
+2006-12-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-gtkplug/gtkvrmlbrowser.h
+	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
+	gchar **)): Fixed use of char that should be gchar.
+
 2006-12-10 Braden McDaniel  <braden@endoframe.com>
 
 	The Apple OpenGL framework seems to deviate from the GLU spec with
