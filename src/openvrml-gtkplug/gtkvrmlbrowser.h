@@ -50,7 +50,7 @@ GType gtk_vrml_browser_get_type(void) G_GNUC_CONST;
 GtkWidget *gtk_vrml_browser_new(GIOChannel *request_channel);
 void gtk_vrml_browser_load_url(GtkVrmlBrowser *vrml_browser,
                                const gchar **url,
-                               const char **parameter);
+                               const gchar **parameter);
 
 G_END_DECLS
 
