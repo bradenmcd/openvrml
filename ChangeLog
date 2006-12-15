@@ -1,5 +1,45 @@
 2006-12-15 Braden McDaniel  <braden@endoframe.com>
 
+	Removed quit_flag silliness in openvrml-gtkplug.  Made the
+	"producer" thread--command_channel_loop--spawn (and join) the
+	"consumer" thread, command_istream_reader.  "quit" is propagated
+	up from the consumer, to the producer, to the main thread.
+
+	* src/openvrml-gtkplug/Makefile.am
+	(noinst_HEADERS): Removed reference to flag.h.
+	(openvrml_gtkplug_SOURCES): Removed reference to flag.cpp.
+	* src/openvrml-gtkplug/main.cpp
+	(quit_flag): Removed.
+	(openvrml_player::command_istream_reader::command_istream_reader(command_istream&,
+	GtkVrmlBrowser &, GMainLoop &)): Construct using a reference to
+	the command_channel_loop's GMainLoop.
+	(openvrml_player::command_istream_reader::operator()() const):
+	Instead of setting the quit_flag, call g_main_loop_quit on the
+	command_channel_loop.
+	(openvrml_player::command_istream_reader::command_channel_loop_):
+	Added member.
+	(openvrml_player_command_channel_loop_quit(gpointer)): Removed
+	function.
+	(request_channel): Removed; we don't need this to be global
+	anymore.  Replaced with a local variable in main.
+	(command_channel_loop::command_channel_loop(GIOChannel &,
+	command_istream &, GtkVrmlBrowser &)): Construct using a reference
+	to the GtkVrmlBrowser widget; we need to propagate this to the
+	consumer thread, command_istream_reader.
+	(command_channel_loop::operator()() const): Removed idle source
+	for quit event; instead, spawn the command_istream_reader thread
+	here and join it with the main loop completes.  Then, call
+	gtk_main_quit from here.
+	(command_channel_loop::vrml_browser_): Added member.
+	(main(int, char *[])): Made request_channel a local variable; pass
+	vrml_browser to the command_channel_loop; don't create the
+	command_istream_reader thread here (it's now spawned from the
+	command_channel_loop thread);
+	* src/openvrml-gtkplug/flag.cpp: Removed file.
+	* src/openvrml-gtkplug/flag.h: Removed file.
+
+2006-12-15 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-gtkplug/gtkvrmlbrowser.h
 	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
 	gchar **)): Fixed use of char that should be gchar.

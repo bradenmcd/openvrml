@@ -36,7 +36,6 @@
 # include "gtkvrmlbrowser.h"
 # include "command_istream.h"
 # include "plugin_streambuf.h"
-# include "flag.h"
 
 using namespace openvrml_player;
 using namespace boost::multi_index::detail; // for scope_guard
@@ -52,22 +51,17 @@ namespace {
     // the initial stream data.
     //
     const char initial_stream_uri[] = "x-openvrml-initial:";
-
-    //
-    // Used to signal the various threads that we're done.  "quit" is
-    // initiated when the command_istream gets EOF.  At that point, the
-    // command_istream_reader thread sets quit_flag to true.  This flag is
-    // checked by the command_channel_loop thread and the main (rendering)
-    // thread, signaling them to terminate.
-    //
-    flag quit_flag;
 }
 
 namespace openvrml_player {
 
     struct command_istream_reader {
-        explicit command_istream_reader(command_istream & in):
-            in_(&in)
+        command_istream_reader(command_istream & in,
+                               GtkVrmlBrowser & vrml_browser,
+                               GMainLoop & command_channel_loop):
+            in_(&in),
+            vrml_browser_(&vrml_browser),
+            command_channel_loop_(&command_channel_loop)
         {}
 
         void operator()() const throw ()
@@ -154,28 +148,18 @@ namespace openvrml_player {
             }
 
             //
-            // Set the quit flag.
+            // Tell the command_channel_loop thread to quit.  (This is our
+            // "producer" thread; it's also the thread that spawned us.)
             //
-            ::quit_flag.value(true);
-
-            //
-            // We can safely shut down the Gtk main loop from here.
-            //
-            // (However, trying to shut down the command_main loop results in
-            // it deadlocking in g_main_context_check's call to poll. So we
-            // still use the annoying quit_flag condition variable (see above)
-            // to end that thread).
-            //
-            gtk_main_quit();
+            g_main_loop_quit(this->command_channel_loop_);
         }
 
     private:
-        command_istream * in_;
+        command_istream * const in_;
+        GtkVrmlBrowser * const vrml_browser_;
+        GMainLoop * const command_channel_loop_;
     };
 }
-
-extern "C" gboolean
-openvrml_player_command_channel_loop_quit_event(gpointer data);
 
 namespace {
 
@@ -261,55 +245,72 @@ namespace {
         GtkVrmlBrowser * vrml_browser_;
     };
 
-    GIOChannel * request_channel;
-
     struct command_channel_loop {
         command_channel_loop(GIOChannel & command_channel,
-                             command_istream & command_in):
+                             command_istream & command_in,
+                             GtkVrmlBrowser & vrml_browser):
             command_channel_(&command_channel),
-            command_in_(&command_in)
+            command_in_(&command_in),
+            vrml_browser_(&vrml_browser)
         {}
 
         void operator()() const throw ()
         {
+            using boost::function0;
+            using boost::scoped_ptr;
+            using boost::thread;
+
             GMainContext * const main_context = g_main_context_new();
             scope_guard main_context_guard = make_guard(g_main_context_unref,
                                                         main_context);
+            boost::ignore_unused_variable_warning(main_context_guard);
             GMainLoop * const main_loop = g_main_loop_new(main_context, false);
             scope_guard main_loop_guard = make_guard(g_main_loop_unref,
                                                      main_loop);
+            boost::ignore_unused_variable_warning(main_loop_guard);
 
             GSource * const command_watch =
                 g_io_create_watch(this->command_channel_,
                                   GIOCondition(G_IO_IN | G_IO_HUP));
             scope_guard command_watch_guard = make_guard(g_source_unref,
                                                          command_watch);
+            boost::ignore_unused_variable_warning(command_watch_guard);
 
             static const GDestroyNotify notify = 0;
             g_source_set_callback(
                 command_watch,
                 reinterpret_cast<GSourceFunc>(::command_data_available),
-                static_cast<command_streambuf *>(this->command_in_->rdbuf()), notify);
+                static_cast<command_streambuf *>(this->command_in_->rdbuf()),
+                notify);
             const guint command_watch_id = g_source_attach(command_watch,
                                                            main_context);
             g_assert(command_watch_id != 0);
 
-            GSource * const quit = g_idle_source_new();
-            scope_guard quit_guard = make_guard(g_source_unref, quit);
-            g_source_set_callback(
-                quit,
-                ::openvrml_player_command_channel_loop_quit_event,
-                main_loop,
-                notify);
-            const guint quit_source_id = g_source_attach(quit, main_context);
-            g_assert(quit_source_id != 0);
+            //
+            // The command_istream_reader thread is our "consumer" thread.
+            //
+            function0<void> read_commands =
+                command_istream_reader(*this->command_in_,
+                                       *this->vrml_browser_,
+                                       *main_loop);
+            const scoped_ptr<thread>
+                command_reader_thread(new thread(read_commands));
 
             g_main_loop_run(main_loop);
+
+            //
+            // If we're here, our consumer thread is done.  Join it and tell
+            // the GTK+ main loop to quit.
+            //
+            command_reader_thread->join();
+
+            gtk_main_quit();
         }
 
     private:
         GIOChannel * const command_channel_;
         command_istream * const command_in_;
+        GtkVrmlBrowser * const vrml_browser_;
     };
 }
 
@@ -370,19 +371,18 @@ int main(int argc, char * argv[])
 
     command_istream command_in;
 
-    ::request_channel = g_io_channel_unix_new(1); // stdout
+    GIOChannel * const request_channel = g_io_channel_unix_new(1); // stdout
 
     GtkWidget * const window =  gtk_plug_new(socket_id);
 
-    GtkWidget * const vrml_browser = gtk_vrml_browser_new(::request_channel);
+    GtkWidget * const vrml_browser = gtk_vrml_browser_new(request_channel);
     gtk_container_add(GTK_CONTAINER(window), vrml_browser);    
 
     gtk_widget_show_all(window);
 
     thread_group threads;
 
-    GIOChannel * command_channel = 0;
-    command_channel = g_io_channel_unix_new(0); // stdin
+    GIOChannel * const command_channel = g_io_channel_unix_new(0); // stdin
     error = 0;
     GIOStatus status = g_io_channel_set_encoding(command_channel,
                                                  0, // binary (no encoding)
@@ -396,7 +396,9 @@ int main(int argc, char * argv[])
     }
 
     function0<void> command_channel_loop_func =
-        command_channel_loop(*command_channel, command_in);
+        command_channel_loop(*command_channel,
+                             command_in,
+                             *GTK_VRML_BROWSER(vrml_browser));
     threads.create_thread(command_channel_loop_func);
 
     if (::initial_stream) {
@@ -409,9 +411,6 @@ int main(int argc, char * argv[])
                                   *GTK_VRML_BROWSER(vrml_browser));
         threads.create_thread(initial_stream_reader_func);
     }
-
-    function0<void> read_commands = command_istream_reader(command_in);
-    threads.create_thread(read_commands);
 
     gtk_main();
 
@@ -426,10 +425,10 @@ int main(int argc, char * argv[])
     }
     g_io_channel_unref(command_channel);
 
-    if (::request_channel) {
+    if (request_channel) {
         GError * error = 0;
         const gboolean flush = false;
-        GIOStatus status = g_io_channel_shutdown(::request_channel,
+        GIOStatus status = g_io_channel_shutdown(request_channel,
                                                  flush,
                                                  &error);
         if (status != G_IO_STATUS_NORMAL) {
@@ -439,16 +438,5 @@ int main(int argc, char * argv[])
             }
         }
     }
-    g_io_channel_unref(::request_channel);
-}
-
-gboolean openvrml_player_command_channel_loop_quit_event(const gpointer data)
-{
-    GMainLoop * const main_loop = static_cast<GMainLoop *>(data);
-
-    if (::quit_flag.value()) {
-        g_main_loop_quit(main_loop);
-        return false;
-    }
-    return true;
+    g_io_channel_unref(request_channel);
 }

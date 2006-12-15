@@ -29,13 +29,11 @@ noinst_HEADERS = \
         bounded_buffer.h \
         command_istream.h \
         plugin_streambuf.h \
-        gtkvrmlbrowser.h \
-        flag.h
+        gtkvrmlbrowser.h
 openvrml_gtkplug_SOURCES = \
         main.cpp \
         command_istream.cpp \
         plugin_streambuf.cpp \
-        gtkvrmlbrowser.cpp \
-        flag.cpp
+        gtkvrmlbrowser.cpp
 
 EXTRA_DIST = $(openvrml_gtkplug_SOURCES)
