@@ -1,3 +1,11 @@
+2006-12-28 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed position of attribute applied to OpenGL callback functions.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(OPENVRML_GL_CALLBACK_): Define as CALLBACK for _WIN32.
+	(TessCB): Fixed position of attribute.
+
 2006-12-15 Braden McDaniel  <braden@endoframe.com>
 
 	Removed quit_flag silliness in openvrml-gtkplug.  Made the
