@@ -3888,7 +3888,8 @@ namespace {
         class string_exposedfield : public exposedfield<mfstring> {
         public:
             explicit string_exposedfield(text_node & node);
-            string_exposedfield(const string_exposedfield & obj) OPENVRML_NOTHROW;
+            string_exposedfield(const string_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~string_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -14141,35 +14142,37 @@ namespace {
         {}
 
         void operator()() const OPENVRML_NOTHROW
-        try {
-            using std::endl;
-            using std::string;
-            using std::vector;
-
-            openvrml::scene & inline_scene = *this->inline_scene_;
-            const vector<string> & url = *this->url_;
-
-            assert(inline_scene.url().empty());
-
-            vector<boost::intrusive_ptr<node> > nodes;
+        {
             try {
-                //
-                // Any relative URLs passed here will be relative to the
-                // *parent* scene; so we call get_resource on the parent.
-                //
-                assert(inline_scene.parent());
-                std::auto_ptr<resource_istream> in =
-                    inline_scene.parent()->get_resource(url);
-                if (!(*in)) { throw unreachable_url(); }
-                inline_scene.load(*in);
+                using std::endl;
+                using std::string;
+                using std::vector;
+
+                openvrml::scene & inline_scene = *this->inline_scene_;
+                const vector<string> & url = *this->url_;
+
+                assert(inline_scene.url().empty());
+
+                vector<boost::intrusive_ptr<node> > nodes;
+                try {
+                    //
+                    // Any relative URLs passed here will be relative to the
+                    // *parent* scene; so we call get_resource on the parent.
+                    //
+                    assert(inline_scene.parent());
+                    std::auto_ptr<resource_istream> in =
+                        inline_scene.parent()->get_resource(url);
+                    if (!(*in)) { throw unreachable_url(); }
+                    inline_scene.load(*in);
+                } catch (std::exception & ex) {
+                    inline_scene.browser().err(ex.what());
+                    throw unreachable_url();
+                } catch (...) {
+                    throw unreachable_url();
+                }
             } catch (std::exception & ex) {
-                inline_scene.browser().err(ex.what());
-                throw unreachable_url();
-            } catch (...) {
-                throw unreachable_url();
+                this->inline_scene_->browser().err(ex.what());
             }
-        } catch (std::exception & ex) {
-            this->inline_scene_->browser().err(ex.what());
         }
 
     private:
@@ -23008,7 +23011,7 @@ namespace {
                     if (DWORD(faceNameLen + 1) <= valueNameLength
                         && std::equal(faceName, faceName + faceNameLen,
                                       valueName.begin())) {
-                        HRESULT strcat_result = StringCchCat(fontPath, 
+                        HRESULT strcat_result = StringCchCat(fontPath,
                                                              MAX_PATH,
                                                              fontsPath);
                         assert(SUCCEEDED(strcat_result));

@@ -1,5 +1,23 @@
 2006-12-28 Braden McDaniel  <braden@endoframe.com>
 
+	Microsoft cl 14.00.50727.762 (Visual C++ 8.0 SP1) is consistent in
+	its lack of support for function try blocks.  The previous
+	release (14.00.50727.42) was hit-or-miss.  This changes code that
+	the newer compiler complains about.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(externproto_node_metatype::load_proto::operator()() const):
+	Removed function try block.
+	(openvrml::browser::root_scene_loader::operator()() const):
+	Removed function try block.
+	(openvrml::browser::vrml_from_url_creator::operator()() const):
+	Removed function try block.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(inline_node::load_inline_scene::operator()() const): Removed
+	function try block.
+
+2006-12-28 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed position of attribute applied to OpenGL callback functions.
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp

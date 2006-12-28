@@ -3637,83 +3637,89 @@ namespace {
         {}
 
         void operator()() const OPENVRML_NOTHROW
-        try {
-            using openvrml::unreachable_url;
+        {
             try {
-                using namespace openvrml;
-                using std::auto_ptr;
-                using std::ostringstream;
-                using std::string;
-                using std::vector;
-                using boost::dynamic_pointer_cast;
-                using boost::shared_ptr;
-                using openvrml_::scope_guard;
-                using openvrml_::make_obj_guard;
+                using openvrml::unreachable_url;
+                try {
+                    using namespace openvrml;
+                    using std::auto_ptr;
+                    using std::ostringstream;
+                    using std::string;
+                    using std::vector;
+                    using boost::dynamic_pointer_cast;
+                    using boost::shared_ptr;
+                    using openvrml_::scope_guard;
+                    using openvrml_::make_obj_guard;
 
-                scope_guard guard =
-                    make_obj_guard(
-                        *this->externproto_node_metatype_,
-                        &externproto_node_metatype::clear_externproto_node_types);
-                boost::ignore_unused_variable_warning(guard);
+                    scope_guard guard =
+                        make_obj_guard(
+                            *this->externproto_node_metatype_,
+                            &externproto_node_metatype::clear_externproto_node_types);
+                    boost::ignore_unused_variable_warning(guard);
 
-                auto_ptr<resource_istream> in =
-                    this->scene_->get_resource(this->alt_uris_);
-                if (!(*in)) { throw unreachable_url(); }
+                    auto_ptr<resource_istream> in =
+                        this->scene_->get_resource(this->alt_uris_);
+                    if (!(*in)) { throw unreachable_url(); }
 
-                //
-                // We don't actually do anything with these; but the parser
-                // wants them.
-                //
-                vector<boost::intrusive_ptr<node> > nodes;
-                std::map<string, string> meta;
+                    //
+                    // We don't actually do anything with these; but the parser
+                    // wants them.
+                    //
+                    vector<boost::intrusive_ptr<node> > nodes;
+                    std::map<string, string> meta;
 
-                parse_vrml(*in, in->url(), in->type(),
-                           *this->scene_, nodes, meta);
+                    parse_vrml(*in, in->url(), in->type(),
+                               *this->scene_, nodes, meta);
 
-                shared_ptr<openvrml::proto_node_metatype> proto_node_metatype;
-                for (vector<string>::const_iterator alt_uri =
-                         this->alt_uris_.begin();
-                     alt_uri != this->alt_uris_.end() && !proto_node_metatype;
-                     ++alt_uri) {
-                    const uri absolute_uri = !relative(uri(*alt_uri))
-                        ? uri(*alt_uri)
-                        : this->scene_->url().empty()
-                            ? create_file_url(uri(*alt_uri))
-                            : uri(*alt_uri).resolve_against(
-                                uri(this->scene_->url()));
+                    shared_ptr<openvrml::proto_node_metatype>
+                        proto_node_metatype;
+                    for (vector<string>::const_iterator alt_uri =
+                             this->alt_uris_.begin();
+                         (alt_uri != this->alt_uris_.end())
+                             && !proto_node_metatype;
+                         ++alt_uri) {
+                        const uri absolute_uri = !relative(uri(*alt_uri))
+                            ? uri(*alt_uri)
+                            : this->scene_->url().empty()
+                                ? create_file_url(uri(*alt_uri))
+                                : uri(*alt_uri).resolve_against(
+                                    uri(this->scene_->url()));
 
-                    const shared_ptr<openvrml::node_metatype> node_metatype =
-                        this->scene_->browser()
-                        .node_metatype(node_metatype_id(absolute_uri));
+                        const shared_ptr<openvrml::node_metatype>
+                            node_metatype =
+                            this->scene_->browser()
+                            .node_metatype(node_metatype_id(absolute_uri));
 
-                    proto_node_metatype =
-                        dynamic_pointer_cast<openvrml::proto_node_metatype>(
-                            node_metatype);
+                        proto_node_metatype =
+                            dynamic_pointer_cast<openvrml::proto_node_metatype>(
+                                node_metatype);
+                    }
+
+                    if (!proto_node_metatype) {
+                        ostringstream err_msg;
+                        err_msg << "no PROTO definition at <" << in->url()
+                                << ">";
+                        this->scene_->browser().err(err_msg.str());
+                        return;
+                    }
+
+                    this->externproto_node_metatype_
+                        ->set_proto_node_metatype(proto_node_metatype);
+
+                } catch (std::exception & ex) {
+                    this->scene_->browser().err(ex.what());
+                    throw unreachable_url();
+                } catch (...) {
+                    //
+                    // The implementation of resource_istream is provided by
+                    // the user; and unfortunately, operations on it could
+                    // throw anything.
+                    //
+                    throw unreachable_url();
                 }
-
-                if (!proto_node_metatype) {
-                    ostringstream err_msg;
-                    err_msg << "no PROTO definition at <" << in->url() << ">";
-                    this->scene_->browser().err(err_msg.str());
-                    return;
-                }
-
-                this->externproto_node_metatype_
-                    ->set_proto_node_metatype(proto_node_metatype);
-
             } catch (std::exception & ex) {
                 this->scene_->browser().err(ex.what());
-                throw unreachable_url();
-            } catch (...) {
-                //
-                // The implementation of resource_istream is provided by
-                // the user; and unfortunately, operations on it could
-                // throw anything.
-                //
-                throw unreachable_url();
             }
-        } catch (std::exception & ex) {
-            this->scene_->browser().err(ex.what());
         }
 
     private:
@@ -6121,34 +6127,36 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
     {}
 
     void operator()() const OPENVRML_NOTHROW
-    try {
-        boost::recursive_mutex::scoped_lock lock(this->browser_->mutex_);
-
-        using std::endl;
-
-        openvrml::browser & browser = *this->browser_;
-
+    {
         try {
-            std::auto_ptr<resource_istream> in =
-                browser.scene_->get_resource(this->url_);
-            if (!(*in)) { throw unreachable_url(); }
-            browser.set_world(*in);
-        } catch (antlr::ANTLRException & ex) {
-            browser.err(ex.getMessage());
-        } catch (invalid_vrml & ex) {
-            std::ostringstream out;
-            out << ex.url << ':' << ex.line << ':' << ex.column << ": error: "
-                << ex.what();
-            browser.err(out.str());
-        } catch (unreachable_url &) {
-            throw;
-        } catch (std::exception & ex) {
-            browser.err(ex.what());
-        } catch (...) {
-            throw unreachable_url();
+            boost::recursive_mutex::scoped_lock lock(this->browser_->mutex_);
+
+            using std::endl;
+
+            openvrml::browser & browser = *this->browser_;
+
+            try {
+                std::auto_ptr<resource_istream> in =
+                    browser.scene_->get_resource(this->url_);
+                if (!(*in)) { throw unreachable_url(); }
+                browser.set_world(*in);
+            } catch (antlr::ANTLRException & ex) {
+                browser.err(ex.getMessage());
+            } catch (invalid_vrml & ex) {
+                std::ostringstream out;
+                out << ex.url << ':' << ex.line << ':' << ex.column
+                    << ": error: " << ex.what();
+                browser.err(out.str());
+            } catch (unreachable_url &) {
+                throw;
+            } catch (std::exception & ex) {
+                browser.err(ex.what());
+            } catch (...) {
+                throw unreachable_url();
+            }
+        } catch (unreachable_url & ex) {
+            this->browser_->err(ex.what());
         }
-    } catch (unreachable_url & ex) {
-        this->browser_->err(ex.what());
     }
 
 private:
@@ -6259,26 +6267,30 @@ struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
     {}
 
     void operator()() const OPENVRML_NOTHROW
-    try {
+    {
         try {
-            std::auto_ptr<resource_istream> in =
-                this->browser_->scene_->get_resource(*this->url_);
-            if (!(*in)) { throw unreachable_url(); }
-            mfnode nodes;
-            nodes.value(this->browser_->create_vrml_from_stream(*in, in->type()));
-            this->listener_->process_event(nodes, browser::current_time());
+            try {
+                std::auto_ptr<resource_istream> in =
+                    this->browser_->scene_->get_resource(*this->url_);
+                if (!(*in)) { throw unreachable_url(); }
+                mfnode nodes;
+                nodes.value(
+                    this->browser_->create_vrml_from_stream(*in, in->type()));
+                this->listener_->process_event(nodes, browser::current_time());
+            } catch (std::exception & ex) {
+                this->browser_->err(ex.what());
+                throw unreachable_url();
+            } catch (...) {
+                //
+                // The implementation of resource_istream is provided by the
+                // user; and unfortunately, operations on it could throw
+                // anything.
+                //
+                throw unreachable_url();
+            }
         } catch (std::exception & ex) {
             this->browser_->err(ex.what());
-            throw unreachable_url();
-        } catch (...) {
-            //
-            // The implementation of resource_istream is provided by the user;
-            // and unfortunately, operations on it could throw anything.
-            //
-            throw unreachable_url();
         }
-    } catch (std::exception & ex) {
-        this->browser_->err(ex.what());
     }
 
 private:
