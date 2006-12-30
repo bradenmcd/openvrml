@@ -1,3 +1,22 @@
+2006-12-30 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for the 0.16.3 release.
+
+	* NEWS: Updated for 0.16.3 release.
+	* README: Updated for 0.16.3 release.
+	* configure.ac: Updated for 0.16.3 release.
+	* doc/Doxyfile: Updated for 0.16.3 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Updated for 0.16.3 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Updated for 0.16.3 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Updated for 0.16.3 release.
+	* mozilla-plugin/configure.ac: Updated for 0.16.3 release.
+	* src/libopenvrml/Makefile.am: Updated libtool library version number.
+	* src/libopenvrml-gl/Makefile.am: Updated libtool library version
+	number.
+
 2006-12-28 Braden McDaniel  <braden@endoframe.com>
 
 	Microsoft cl 14.00.50727.762 (Visual C++ 8.0 SP1) is consistent in

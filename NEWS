@@ -1,3 +1,26 @@
+Changes new in version 0.16.3, 30 December, 2006
+========================================================================
+
+- Changed openvrml-gtkplug only to expect an initial stream when
+  passed the --initial-stream argument.
+
+- Fixed deadlocks in openvrml-gtkplug.
+
+- Fixed a bug in openvrml-gtkplug that caused it to consume 100% of
+  the CPU.
+
+- Fixed relative URI resolution on Windows.
+
+- Mozilla plug-in now registers itself as a handler for
+  model/x3d+vrml.
+
+- Fixes for compiling on Mac OS X PPC.
+
+- Fixes for compiling with Apple's OpenGL framework.
+
+- Fixes for compiling with Microsoft Visual C++ 8.0 Service Pack 1.
+
+
 Changes new in version 0.16.2, 29 November, 2006
 ========================================================================
 
