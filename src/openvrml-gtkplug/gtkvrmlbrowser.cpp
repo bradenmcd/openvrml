@@ -96,11 +96,11 @@ GType gtk_vrml_browser_get_type()
 namespace {
     G_GNUC_INTERNAL GdkGLConfig * gl_config;
 
-    class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
+    class G_GNUC_INTERNAL browser : public openvrml::browser {
         GIOChannel * request_channel_;
 
     public:
-        explicit resource_fetcher(GIOChannel & request_channel);
+        explicit browser(GIOChannel & request_channel);
 
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
@@ -120,8 +120,7 @@ namespace {
                                                           GdkEventExpose *,
                                                           gpointer);
 
-        ::resource_fetcher fetcher_;
-        openvrml::browser browser_;
+        ::browser browser_;
         GtkVrmlBrowser & vrml_browser_;
         guint timer;
 
@@ -473,12 +472,13 @@ gint gtk_vrml_browser_timeout_callback(const gpointer ptr)
 
 namespace {
 
-    resource_fetcher::resource_fetcher(GIOChannel & request_channel):
+    browser::browser(GIOChannel & request_channel):
+        openvrml::browser(std::cout, std::cerr),
         request_channel_(&request_channel)
     {}
 
     std::auto_ptr<openvrml::resource_istream>
-    resource_fetcher::do_get_resource(const std::string & uri)
+    browser::do_get_resource(const std::string & uri)
     {
         using openvrml_player::plugin_streambuf;
 
@@ -541,8 +541,7 @@ namespace {
 
     GtkGLViewer::GtkGLViewer(GIOChannel & request_channel,
                              GtkVrmlBrowser & vrml_browser):
-        fetcher_(request_channel),
-        browser_(this->fetcher_, std::cout, std::cerr),
+        browser_(request_channel),
         vrml_browser_(vrml_browser),
         timer(0),
         redrawNeeded(false)
