@@ -5620,13 +5620,18 @@ JSBool SFRotation::construct(JSContext * const cx,
     return initObject(cx, obj, rot);
 }
 
+OPENVRML_LOCAL bool normalized(const openvrml::vec3f & v)
+{
+    return openvrml_::fequal(v.length(), 1.0f);
+}
+
 JSBool SFRotation::initObject(JSContext * const cx,
                               JSObject * const obj,
                               const jsdouble (&rot)[4])
     OPENVRML_NOTHROW
 {
     const openvrml::vec3f axis = openvrml::make_vec3f(rot[0], rot[1], rot[2]);
-    if (axis != axis.normalize()) {
+    if (!normalized(axis)) {
         JS_ReportError(cx, "axis component of rotation is not normalized");
     }
 
@@ -5709,7 +5714,7 @@ JSBool SFRotation::setProperty(JSContext * const cx,
             assert(false);
         }
 
-        if (axis != axis.normalize()) {
+        if (!normalized(axis)) {
             JS_ReportError(cx, "axis component of rotation is not normalized");
             return JS_FALSE;
         }
@@ -5912,7 +5917,7 @@ JSBool SFRotation::setAxis(JSContext * const cx,
         *boost::polymorphic_downcast<openvrml::sfvec3f *>(
             &arg_sfdata.field_value());
 
-    if (argVec.value() != argVec.value().normalize()) {
+    if (!normalized(argVec.value())) {
         JS_ReportError(cx, "axis component of rotation is not normalized");
         return JS_FALSE;
     }
