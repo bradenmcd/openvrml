@@ -1,5 +1,19 @@
 2007-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed SFRotation axis normalization checks in the Script node
+	JavaScript binding.
+
+	* src/libopenvrml/openvrml/script.cpp
+	(normalized(const openvrml::vec3f &)): Added convenience function.
+	(SFRotation::initObject(JSContext *, JSObject *, const
+	jsdouble (&)[4])): Fixed check to see if axis is normalized.
+	(SFRotation::setProperty(JSContext *, JSObject *, jsval, jsval*)):
+	Fixed check to see if axis is normalized.
+	(SFRotation::setAxis(JSContext *, JSObject *, uintN, jsval *,
+	jsval *)): Fixed check to see if axis is normalized.
+
+2007-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-footer: Added Google Analytics tracking scripts.
 
 2006-12-30 Braden McDaniel  <braden@endoframe.com>
