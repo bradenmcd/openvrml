@@ -1,5 +1,18 @@
 2007-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	Factored platform-specific code in text_node::update_face into its
+	own function.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(get_font_filename(const std::vector<std::string> &, const
+	std::string &, const unsigned_char_string &, std::vector<char> &,
+	FT_Long &)): Get the font file name and face index.  This code was
+	factored out of text_node::update_face.
+	(text_node::update_face()): Factored platform-specifc code to get
+	the font filename to get_font_filaname.
+
+2007-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	ScopeGuard as initially described by Alexandrescu and Marginean
 	copies the callback function parameters to the guard
 	implementation.  This means that the callback is called with the
