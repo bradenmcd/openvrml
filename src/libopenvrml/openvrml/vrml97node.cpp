@@ -22889,6 +22889,214 @@ namespace {
         {}
     };
 
+    typedef std::basic_string<unsigned char, unsigned_char_traits>
+        unsigned_char_string;
+
+    OPENVRML_LOCAL void
+    get_font_filename(const std::vector<std::string> & family,
+                      const std::string & style,
+                      const unsigned_char_string & language,
+                      std::vector<char> & filename,
+                      FT_Long & face_index)
+    {
+        using std::vector;
+# ifdef _WIN32
+        LOGFONT lf;
+        lf.lfHeight =         0;
+        lf.lfWidth =          0;
+        lf.lfEscapement =     0;
+        lf.lfOrientation =    0;
+        lf.lfWeight =         FW_MEDIUM;
+        lf.lfItalic =         FALSE;
+        lf.lfUnderline =      FALSE;
+        lf.lfStrikeOut =      FALSE;
+        lf.lfCharSet =        DEFAULT_CHARSET;
+        lf.lfOutPrecision =   OUT_TT_ONLY_PRECIS;
+        lf.lfClipPrecision =  CLIP_DEFAULT_PRECIS;
+        lf.lfQuality =        DEFAULT_QUALITY;
+        lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
+
+        HDC hdc = CreateCompatibleDC(0);
+        scope_guard hdc_guard = make_guard(&DeleteDC, hdc);
+        HFONT hfont = CreateFontIndirect(&lf);
+        SelectObject(hdc, hfont);
+        TCHAR faceName[256] = {};
+        GetTextFace(hdc, sizeof faceName / sizeof (TCHAR), faceName);
+        const int faceNameLen = lstrlen(faceName);
+
+        //
+        // Get the fonts folder.
+        //
+        TCHAR fontsPath[MAX_PATH];
+        HRESULT status =
+            SHGetFolderPath(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT,
+                            fontsPath);
+        if (FAILED(status)) { /* bail */ }
+
+        //
+        // Enumerate the fonts in the registry and pick one that matches.
+        //
+        HKEY fontsKey;
+        LONG result =
+            RegOpenKeyEx(
+                HKEY_LOCAL_MACHINE,
+                "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts",
+                0,
+                KEY_READ,
+                &fontsKey);
+        if (result != ERROR_SUCCESS) { /* bail */ }
+        scope_guard fontsKey_guard = make_guard(&RegCloseKey, fontsKey);
+
+        DWORD maxValueNameLen, maxValueLen;
+        result = RegQueryInfoKey(fontsKey,
+                                 NULL,  // lpClass
+                                 NULL,  // lpcClass
+                                 NULL,  // lpReserved
+                                 NULL,  // lpcSubKeys
+                                 NULL,  // lpcMaxSubKeyLen
+                                 NULL,  // lpcMaxClassLen
+                                 NULL,  // lpcValues
+                                 &maxValueNameLen,
+                                 &maxValueLen,
+                                 NULL,  // lpcbSecurityDescriptor
+                                 NULL); // lpftLastWriteTime
+
+        DWORD index = 0;
+        vector<TCHAR> valueName(maxValueNameLen + 1);
+        DWORD type;
+        vector<BYTE> data(maxValueLen);
+        TCHAR fontPath[MAX_PATH] = {};
+        result = ERROR_SUCCESS;
+        while (result != ERROR_NO_MORE_ITEMS) {
+            DWORD dataLength = DWORD(data.size());
+            DWORD valueNameLength = DWORD(valueName.size());
+            result = RegEnumValue(fontsKey,
+                                  index,
+                                  &valueName.front(),
+                                  &valueNameLength,
+                                  NULL,
+                                  &type,
+                                  &data.front(),
+                                  &dataLength);
+            if (result == ERROR_MORE_DATA) {
+                data.resize(dataLength);
+                continue;
+            }
+            if (result == ERROR_SUCCESS) {
+                if (DWORD(faceNameLen + 1) <= valueNameLength
+                    && std::equal(faceName, faceName + faceNameLen,
+                                  valueName.begin())) {
+                    HRESULT strcat_result = StringCchCat(fontPath,
+                                                         MAX_PATH,
+                                                         fontsPath);
+                    assert(SUCCEEDED(strcat_result));
+                    strcat_result = StringCchCat(fontPath, MAX_PATH, "\\");
+                    assert(SUCCEEDED(strcat_result));
+                    strcat_result =
+                        StringCchCat(fontPath,
+                                     MAX_PATH,
+                                     reinterpret_cast<STRSAFE_LPCSTR>(
+                                         &data.front()));
+                    assert(SUCCEEDED(strcat_result));
+                    break;
+                }
+                ++index;
+            }
+        }
+
+        const size_t fontPathLen = lstrlen(fontPath);
+        assert(fontPathLen != 0);
+        filename.assign(fontPath, fontPath + fontPathLen + 1);
+        face_index = 0;
+# else
+        using std::string;
+
+        string fontName;
+        //
+        // Set the family.
+        //
+        for (size_t i = 0; i < family.size(); ++i) {
+            const string & element = family[i];
+            if (element == "SERIF") {
+                fontName += "serif";
+            } else if (element == "SANS") {
+                fontName += "sans";
+            } else if (element == "TYPEWRITER") {
+                fontName += "monospace";
+            } else {
+                fontName += element;
+            }
+            if (i + 1 < family.size()) { fontName += ", "; }
+        }
+
+        //
+        // Set the weight.
+        //
+        if (style.find("BOLD") != string::npos) {
+            fontName += ":bold";
+        }
+
+        //
+        // Set the slant.
+        //
+        if (style.find("ITALIC") != string::npos) {
+            fontName += ":italic";
+        }
+
+        //
+        // For now, at least, we only want outline fonts.
+        //
+        fontName += ":outline=True";
+
+        FcPattern * const initialPattern =
+            FcNameParse(unsigned_char_string(fontName.begin(),
+                                             fontName.end()).c_str());
+        if (!initialPattern) { throw std::bad_alloc(); }
+        scope_guard initialPattern_guard =
+            make_guard(&FcPatternDestroy, initialPattern);
+        boost::ignore_unused_variable_warning(initialPattern_guard);
+
+        //
+        // Set the language.
+        //
+        if (!language.empty()) {
+            FcPatternAddString(initialPattern,
+                               FC_LANG,
+                               language.c_str());
+        }
+
+        FcConfigSubstitute(0, initialPattern, FcMatchPattern);
+        FcDefaultSubstitute(initialPattern);
+
+        FcResult result = FcResultMatch;
+        FcPattern * const matchedPattern =
+            FcFontMatch(0, initialPattern, &result);
+        if (result != FcResultMatch) { throw FontconfigError(result); }
+        assert(matchedPattern);
+        scope_guard matchedPattern_guard =
+            make_guard(&FcPatternDestroy, matchedPattern);
+        boost::ignore_unused_variable_warning(matchedPattern_guard);
+
+        FcChar8 * filename_c_str = 0;
+        result = FcPatternGetString(matchedPattern,
+                                    FC_FILE,
+                                    0,
+                                    &filename_c_str);
+        if (result != FcResultMatch) { throw FontconfigError(result); }
+
+        size_t filenameLen = 0;
+        for (; filename_c_str[filenameLen]; ++filenameLen) {}
+
+        filename.assign(filename_c_str, filename_c_str + filenameLen + 1);
+
+        int face_index_int = 0;
+        result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0,
+                                     &face_index_int);
+        if (result != FcResultMatch) { throw FontconfigError(result); }
+        face_index = FT_Long(face_index_int);
+# endif
+    }
+
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
@@ -22900,8 +23108,6 @@ namespace {
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::string;
-        typedef std::basic_string<unsigned char, unsigned_char_traits>
-            unsigned_char_string;
 
         unsigned_char_string language;
 
@@ -22923,204 +23129,10 @@ namespace {
         }
 
         try {
-#   ifdef _WIN32
-            LOGFONT lf;
-            lf.lfHeight =         0;
-            lf.lfWidth =          0;
-            lf.lfEscapement =     0;
-            lf.lfOrientation =    0;
-            lf.lfWeight =         FW_MEDIUM;
-            lf.lfItalic =         FALSE;
-            lf.lfUnderline =      FALSE;
-            lf.lfStrikeOut =      FALSE;
-            lf.lfCharSet =        DEFAULT_CHARSET;
-            lf.lfOutPrecision =   OUT_TT_ONLY_PRECIS;
-            lf.lfClipPrecision =  CLIP_DEFAULT_PRECIS;
-            lf.lfQuality =        DEFAULT_QUALITY;
-            lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
+            std::vector<char> ftFilename;
+            FT_Long face_index;
+            get_font_filename(family, style, language, ftFilename, face_index);
 
-            HDC hdc = CreateCompatibleDC(0);
-            scope_guard hdc_guard = make_guard(&DeleteDC, hdc);
-            HFONT hfont = CreateFontIndirect(&lf);
-            SelectObject(hdc, hfont);
-            TCHAR faceName[256] = {};
-            GetTextFace(hdc, sizeof faceName / sizeof (TCHAR), faceName);
-            const int faceNameLen = lstrlen(faceName);
-
-            //
-            // Get the fonts folder.
-            //
-            TCHAR fontsPath[MAX_PATH];
-            HRESULT status =
-                SHGetFolderPath(NULL, CSIDL_FONTS, NULL, SHGFP_TYPE_CURRENT,
-                                fontsPath);
-            if (FAILED(status)) { /* bail */ }
-
-            //
-            // Enumerate the fonts in the registry and pick one that matches.
-            //
-            HKEY fontsKey;
-            LONG result =
-                RegOpenKeyEx(
-                    HKEY_LOCAL_MACHINE,
-                    "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts",
-                    0,
-                    KEY_READ,
-                    &fontsKey);
-            if (result != ERROR_SUCCESS) { /* bail */ }
-            scope_guard fontsKey_guard = make_guard(&RegCloseKey, fontsKey);
-
-            DWORD maxValueNameLen, maxValueLen;
-            result = RegQueryInfoKey(fontsKey,
-                                     NULL,  // lpClass
-                                     NULL,  // lpcClass
-                                     NULL,  // lpReserved
-                                     NULL,  // lpcSubKeys
-                                     NULL,  // lpcMaxSubKeyLen
-                                     NULL,  // lpcMaxClassLen
-                                     NULL,  // lpcValues
-                                     &maxValueNameLen,
-                                     &maxValueLen,
-                                     NULL,  // lpcbSecurityDescriptor
-                                     NULL); // lpftLastWriteTime
-
-            DWORD index = 0;
-            std::vector<TCHAR> valueName(maxValueNameLen + 1);
-            DWORD type;
-            std::vector<BYTE> data(maxValueLen);
-            TCHAR fontPath[MAX_PATH] = {};
-            result = ERROR_SUCCESS;
-            while (result != ERROR_NO_MORE_ITEMS) {
-                DWORD dataLength = DWORD(data.size());
-                DWORD valueNameLength = DWORD(valueName.size());
-                result = RegEnumValue(fontsKey,
-                                      index,
-                                      &valueName.front(),
-                                      &valueNameLength,
-                                      NULL,
-                                      &type,
-                                      &data.front(),
-                                      &dataLength);
-                if (result == ERROR_MORE_DATA) {
-                    data.resize(dataLength);
-                    continue;
-                }
-                if (result == ERROR_SUCCESS) {
-                    if (DWORD(faceNameLen + 1) <= valueNameLength
-                        && std::equal(faceName, faceName + faceNameLen,
-                                      valueName.begin())) {
-                        HRESULT strcat_result = StringCchCat(fontPath,
-                                                             MAX_PATH,
-                                                             fontsPath);
-                        assert(SUCCEEDED(strcat_result));
-                        strcat_result = StringCchCat(fontPath,
-                                                     MAX_PATH,
-                                                     "\\");
-                        assert(SUCCEEDED(strcat_result));
-                        strcat_result =
-                            StringCchCat(fontPath,
-                                         MAX_PATH,
-                                         reinterpret_cast<STRSAFE_LPCSTR>(
-                                             &data.front()));
-                        assert(SUCCEEDED(strcat_result));
-                        break;
-                    }
-                    ++index;
-                }
-            }
-
-            const size_t fontPathLen = lstrlen(fontPath);
-            assert(fontPathLen != 0);
-            const std::vector<char> ftFilename(fontPath,
-                                               fontPath + fontPathLen + 1);
-            const FT_Long face_index = 0;
-#   else // Everybody else use fontconfig.
-            using std::vector;
-
-            string fontName;
-            //
-            // Set the family.
-            //
-            for (size_t i = 0; i < family.size(); ++i) {
-                const std::string & element = family[i];
-                if (element == "SERIF") {
-                    fontName += "serif";
-                } else if (element == "SANS") {
-                    fontName += "sans";
-                } else if (element == "TYPEWRITER") {
-                    fontName += "monospace";
-                } else {
-                    fontName += element;
-                }
-                if (i + 1 < family.size()) { fontName += ", "; }
-            }
-
-            //
-            // Set the weight.
-            //
-            if (style.find("BOLD") != string::npos) {
-                fontName += ":bold";
-            }
-
-            //
-            // Set the slant.
-            //
-            if (style.find("ITALIC") != string::npos) {
-                fontName += ":italic";
-            }
-
-            //
-            // For now, at least, we only want outline fonts.
-            //
-            fontName += ":outline=True";
-
-            FcPattern * const initialPattern =
-                FcNameParse(unsigned_char_string(fontName.begin(),
-                                                 fontName.end()).c_str());
-            if (!initialPattern) { throw std::bad_alloc(); }
-            scope_guard initialPattern_guard =
-                make_guard(&FcPatternDestroy, initialPattern);
-            boost::ignore_unused_variable_warning(initialPattern_guard);
-
-            //
-            // Set the language.
-            //
-            if (!language.empty()) {
-                FcPatternAddString(initialPattern,
-                                   FC_LANG,
-                                   language.c_str());
-            }
-
-            FcConfigSubstitute(0, initialPattern, FcMatchPattern);
-            FcDefaultSubstitute(initialPattern);
-
-            FcResult result = FcResultMatch;
-            FcPattern * const matchedPattern =
-                FcFontMatch(0, initialPattern, &result);
-            if (result != FcResultMatch) { throw FontconfigError(result); }
-            assert(matchedPattern);
-            scope_guard matchedPattern_guard =
-                make_guard(&FcPatternDestroy, matchedPattern);
-            boost::ignore_unused_variable_warning(matchedPattern_guard);
-
-            FcChar8 * filename = 0;
-            result = FcPatternGetString(matchedPattern,
-                                        FC_FILE,
-                                        0,
-                                        &filename);
-            if (result != FcResultMatch) { throw FontconfigError(result); }
-
-            int face_index = 0;
-            result = FcPatternGetInteger(matchedPattern, FC_INDEX, 0,
-                                         &face_index);
-            if (result != FcResultMatch) { throw FontconfigError(result); }
-
-            size_t filenameLen = 0;
-            for (; filename[filenameLen]; ++filenameLen) {}
-
-            const vector<char> ftFilename(filename,
-                                          filename + filenameLen + 1);
-#   endif // ifdef _WIN32
             text_metatype & nodeClass =
                 const_cast<text_metatype &>(
                     static_cast<const text_metatype &>(
