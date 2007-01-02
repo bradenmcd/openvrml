@@ -1122,7 +1122,8 @@ namespace {
         gint openvrml_gtkplug_cmd_argc = 0;
         gchar ** openvrml_gtkplug_cmd_argv = 0;
         scope_guard openvrml_gtkplug_cmd_argv_guard =
-            make_guard(g_strfreev, openvrml_gtkplug_cmd_argv);
+            make_guard<void (*)(gchar **), gchar ** &>(
+                g_strfreev, openvrml_gtkplug_cmd_argv);
         boost::ignore_unused_variable_warning(openvrml_gtkplug_cmd_argv_guard);
         const gchar * const openvrml_gtkplug_cmd =
             g_getenv("OPENVRML_GTKPLUG");
@@ -1136,7 +1137,9 @@ namespace {
             if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
         } else {
             GError * error = 0;
-            scope_guard error_guard = make_guard(g_error_free, error);
+            scope_guard error_guard =
+                make_guard<void (*)(GError *), GError * &>(g_error_free,
+                                                           error);
             gboolean succeeded =
                 g_shell_parse_argv(openvrml_gtkplug_cmd,
                                    &openvrml_gtkplug_cmd_argc,
@@ -1187,7 +1190,8 @@ namespace {
         gint standard_input, standard_output;
         gint * const standard_error = 0;
         GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, error);
+        scope_guard error_guard =
+            make_guard<void (*)(GError *), GError * &>(g_error_free, error);
         gboolean succeeded = g_spawn_async_with_pipes(working_dir,
                                                       argv,
                                                       envp,

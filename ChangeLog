@@ -1,5 +1,36 @@
 2007-01-01 Braden McDaniel  <braden@endoframe.com>
 
+	ScopeGuard as initially described by Alexandrescu and Marginean
+	copies the callback function parameters to the guard
+	implementation.  This means that the callback is called with the
+	values given when make_guard gets called--not whatever the values
+	might be when execution in the scope completes.
+
+	This changes OpenVRML's implementation of ScopeGuard to keep const
+	references to the parameters in the guard implementation. Also,
+	use of boost::multi_index::detail::scope_guard (where use of
+	OpenVRML's ScopeGuard implementation is inconvenient) now
+	explicitly gives a reference template parameter to the
+	instantiation of make_guard to circumvent this problem.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Explicitly give a
+	reference template parameter to make_guard so that the guard
+	implementation stores a reference to the callback parameter
+	argument.
+	* src/libopenvrml/private.h
+	(openvrml_::scope_guard_impl1): Store a reference to the callback
+	function parameter.
+	(openvrml_::scope_guard_impl3): Store a reference to the callback
+	function parameter.
+	(openvrml_::obj_scope_guard_impl1): Store a reference to the
+	callback function parameter.
+	* src/libopenvrml/openvrml/vrml97node.cpp: Removed references to
+	boost::multi_index::detail; that ScopeGuard implementation is not
+	used here.
+
+2007-01-01 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed SFRotation axis normalization checks in the Script node
 	JavaScript binding.
 
