@@ -38,7 +38,6 @@
 # include <sstream>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/thread.hpp>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
@@ -68,7 +67,6 @@ namespace {
 
     using namespace openvrml;
     using namespace openvrml::node_impl_util;
-    using namespace boost::multi_index::detail; // for scope_guard
 
     /**
      * @brief Class object for Anchor nodes.

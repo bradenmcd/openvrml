@@ -190,7 +190,7 @@ namespace {
         template <typename Function, typename Param>
         class OPENVRML_LOCAL scope_guard_impl1 : public scope_guard_impl_base {
             Function function;
-            const Param param;
+            const Param & param;
 
         public:
             scope_guard_impl1(const Function & function, const Param & param);
@@ -223,9 +223,9 @@ namespace {
                   typename Param3>
         class OPENVRML_LOCAL scope_guard_impl3 : public scope_guard_impl_base {
             Function function;
-            const Param1 param1;
-            const Param2 param2;
-            const Param3 param3;
+            const Param1 & param1;
+            const Param2 & param2;
+            const Param3 & param3;
 
         public:
             scope_guard_impl3(const Function & function,
@@ -314,7 +314,7 @@ namespace {
             public scope_guard_impl_base {
             Object & obj;
             MemberFunction mem_fun;
-            const Param param;
+            const Param & param;
 
         public:
             obj_scope_guard_impl1(Object & obj,
