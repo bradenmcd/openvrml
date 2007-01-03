@@ -87,8 +87,3 @@ if test -z "$JAR"; then
   AC_CHECK_PROG([JAR], [jar], [jar])
 fi
 ])
-
-dnl AC_DEFUN([OV_PROG_JAVADOC],
-dnl [AC_REQUIRE([OV_WITH_JDK])dnl
-dnl AC_ARG_VAR([JAVADOC], [Java API documentation generator])dnl
-dnl ])
