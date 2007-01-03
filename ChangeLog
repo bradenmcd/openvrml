@@ -1,3 +1,7 @@
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
+	* m4/jdk.m4: Removed obsolete commented-out macro.
+
 2007-01-01 Braden McDaniel  <braden@endoframe.com>
 
 	Factored platform-specific code in text_node::update_face into its
