@@ -1,5 +1,11 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::root_scene_loader::operator()() const): Don't
+	lock the browser-wide mutex here.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	On second thought, retaining copies in the guard_impl is really
 	the only safe thing to do (in the event someone wants to invoke
 	make_guard with temporaries). The case where this is not desirable

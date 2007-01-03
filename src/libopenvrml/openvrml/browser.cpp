@@ -6129,8 +6129,6 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
     void operator()() const OPENVRML_NOTHROW
     {
         try {
-            boost::recursive_mutex::scoped_lock lock(this->browser_->mutex_);
-
             using std::endl;
 
             openvrml::browser & browser = *this->browser_;
