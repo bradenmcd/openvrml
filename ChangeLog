@@ -1,5 +1,23 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	On second thought, retaining copies in the guard_impl is really
+	the only safe thing to do (in the event someone wants to invoke
+	make_guard with temporaries). The case where this is not desirable
+	can be solved by using boost::ref in the call to make_guard.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(plugin_instance::set_window(NPWindow &)): Use boost::ref instead
+	of explicitly giving a reference template parameter to make_guard.
+	* src/libopenvrml/private.h
+	(openvrml_::scope_guard_impl1): Store a copy to the callback
+	function parameter.
+	(openvrml_::scope_guard_impl3): Store a copy to the callback
+	function parameter.
+	(openvrml_::obj_scope_guard_impl1): Store a copy to the callback
+	function parameter.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	* m4/jdk.m4: Removed obsolete commented-out macro.
 
 2007-01-01 Braden McDaniel  <braden@endoframe.com>
