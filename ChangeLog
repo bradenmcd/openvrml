@@ -1,5 +1,12 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(browser::do_get_resource(const std::string &)): Check the return
+	status given by g_io_channel_write_chars and g_io_channel_flush;
+	set badbit and bail if there's a problem.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	Factored command and request channel shutdown into separate
 	functions.
 

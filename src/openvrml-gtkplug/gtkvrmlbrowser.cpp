@@ -503,12 +503,26 @@ namespace {
                 ostringstream request;
                 request << "get-url " << uri << '\n';
                 gsize bytes_written;
-                g_io_channel_write_chars(this->request_channel_,
-                                         request.str().data(),
-                                         request.str().length(),
-                                         &bytes_written,
-                                         0);
-                g_io_channel_flush(this->request_channel_, 0);
+                GError * error = 0;
+                scope_guard error_guard = make_guard(g_error_free, ref(error));
+                GIOStatus io_status =
+                    g_io_channel_write_chars(this->request_channel_,
+                                             request.str().data(),
+                                             request.str().length(),
+                                             &bytes_written,
+                                             &error);
+                if (io_status != G_IO_STATUS_NORMAL) {
+                    g_warning(error->message);
+                    this->setstate(ios_base::badbit);
+                    return;
+                }
+
+                io_status = g_io_channel_flush(this->request_channel_, &error);
+                if (io_status != G_IO_STATUS_NORMAL) {
+                    g_warning(error->message);
+                    this->setstate(ios_base::badbit);
+                    return;
+                }
 
                 //
                 // This blocks until we receive a get-url-result command.
