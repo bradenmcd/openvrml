@@ -1,5 +1,19 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	Factored command and request channel shutdown into separate
+	functions.
+
+	* src/openvrml-gtkplug/main.cpp
+	(command_channel_shutdown(GIOChannel *)): Added function to shut
+	down the command channel.
+	(request_channel_shutdown(GIOChannel *)): Added function to shut
+	down the request channel.
+	(main(int, char *[])): Use scope_guard to remove any returned
+	GError; use scope_guard to call shutdown functions for the command
+	and request channels.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::root_scene_loader::operator()() const): Don't
 	lock the browser-wide mutex here.

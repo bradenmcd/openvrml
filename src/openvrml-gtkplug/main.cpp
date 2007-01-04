@@ -312,6 +312,12 @@ namespace {
         command_istream * const command_in_;
         GtkVrmlBrowser * const vrml_browser_;
     };
+
+    G_GNUC_INTERNAL void
+    command_channel_shutdown(GIOChannel * command_channel);
+
+    G_GNUC_INTERNAL void
+    request_channel_shutdown(GIOChannel * request_channel);
 }
 
 int main(int argc, char * argv[])
@@ -321,6 +327,7 @@ int main(int argc, char * argv[])
     using std::endl;
     using std::vector;
     using boost::function0;
+    using boost::ref;
     using boost::shared_ptr;
     using boost::thread;
     using boost::thread_group;
@@ -335,6 +342,7 @@ int main(int argc, char * argv[])
     gtk_gl_init(&argc, &argv);
 
     GError * error = 0;
+    scope_guard error_guard = make_guard(g_error_free, ref(error));
 
     GOptionContext * const context =
         g_option_context_new("- render VRML worlds");
@@ -343,10 +351,7 @@ int main(int argc, char * argv[])
     g_option_context_add_group(context, gtk_get_option_group(true));
     gboolean succeeded = g_option_context_parse(context, &argc, &argv, &error);
     if (!succeeded) {
-        if (error) {
-            g_critical(error->message);
-            g_error_free(error);
-        }
+        if (error) { g_critical(error->message); }
         return EXIT_FAILURE;        
     }
 
@@ -369,13 +374,24 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    command_istream command_in;
-
     GIOChannel * const request_channel = g_io_channel_unix_new(1); // stdout
+    g_return_val_if_fail(request_channel, EXIT_FAILURE);
+    scope_guard request_channel_guard = make_guard(request_channel_shutdown,
+                                                   request_channel);
+    boost::ignore_unused_variable_warning(request_channel_guard);
+    GIOStatus status = g_io_channel_set_encoding(request_channel,
+                                                 0, // binary (no encoding)
+                                                 &error);
+    if (status != G_IO_STATUS_NORMAL) {
+        if (error) { g_critical(error->message); }
+        return EXIT_FAILURE;
+    }
 
     GtkWidget * const window =  gtk_plug_new(socket_id);
+    g_return_val_if_fail(window, EXIT_FAILURE);
 
     GtkWidget * const vrml_browser = gtk_vrml_browser_new(request_channel);
+    g_return_val_if_fail(vrml_browser, EXIT_FAILURE);
     gtk_container_add(GTK_CONTAINER(window), vrml_browser);    
 
     gtk_widget_show_all(window);
@@ -383,17 +399,21 @@ int main(int argc, char * argv[])
     thread_group threads;
 
     GIOChannel * const command_channel = g_io_channel_unix_new(0); // stdin
+    g_return_val_if_fail(command_channel, EXIT_FAILURE);
+    scope_guard command_channel_guard = make_guard(command_channel_shutdown,
+                                                   command_channel);
+    boost::ignore_unused_variable_warning(command_channel_guard);
+    
     error = 0;
-    GIOStatus status = g_io_channel_set_encoding(command_channel,
-                                                 0, // binary (no encoding)
-                                                 &error);
+    status = g_io_channel_set_encoding(command_channel,
+                                       0, // binary (no encoding)
+                                       &error);
     if (status != G_IO_STATUS_NORMAL) {
-        if (error) {
-            g_critical(error->message);
-            g_error_free(error);
-        }
+        if (error) { g_critical(error->message); }
         return EXIT_FAILURE;
     }
+
+    command_istream command_in;
 
     function0<void> command_channel_loop_func =
         command_channel_loop(*command_channel,
@@ -416,27 +436,42 @@ int main(int argc, char * argv[])
 
     threads.join_all();
 
-    status = g_io_channel_shutdown(command_channel, true, &error);
-    if (status != G_IO_STATUS_NORMAL) {
-        if (error) {
-            g_critical(error->message);
-            g_error_free(error);
-        }
-    }
-    g_io_channel_unref(command_channel);
+    error_guard.dismiss();
+}
 
-    if (request_channel) {
+namespace {
+
+    void command_channel_shutdown(GIOChannel * const command_channel)
+    {
+        using boost::ref;
+
+        static const gboolean flush = true;
         GError * error = 0;
-        const gboolean flush = false;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
+        const GIOStatus status = g_io_channel_shutdown(command_channel,
+                                                       flush,
+                                                       &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            if (error) { g_critical(error->message); }
+        }
+        g_io_channel_unref(command_channel);
+        error_guard.dismiss();
+    }
+
+    void request_channel_shutdown(GIOChannel * const request_channel)
+    {
+        using boost::ref;
+
+        static const gboolean flush = false;
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
         GIOStatus status = g_io_channel_shutdown(request_channel,
                                                  flush,
                                                  &error);
         if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
+            if (error) { g_critical(error->message); }
         }
+        g_io_channel_unref(request_channel);
+        error_guard.dismiss();
     }
-    g_io_channel_unref(request_channel);
 }
