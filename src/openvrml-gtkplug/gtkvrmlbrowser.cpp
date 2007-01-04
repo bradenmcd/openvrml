@@ -536,6 +536,8 @@ namespace {
                 if (get_url_result != 0) {
                     this->setstate(std::ios_base::badbit);
                 }
+
+                error_guard.dismiss();
             }
 
         private:

@@ -1,5 +1,11 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(resource_fetcher::do_get_resource(const std::string &)): Dismiss
+	the error_guard.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp: Use scope_guard from
 	boost::multi_index.
 
