@@ -553,10 +553,14 @@ namespace {
             new plugin_resource_istream(uri, this->request_channel_));
     }
 
+    //
+    // We use stdout for communication with the host process; so send
+    // all browser output to stderr.
+    //
     GtkGLViewer::GtkGLViewer(GIOChannel & request_channel,
                              GtkVrmlBrowser & vrml_browser):
         fetcher_(request_channel),
-        browser_(this->fetcher_, std::cout, std::cerr),
+        browser_(this->fetcher_, std::cerr, std::cerr),
         vrml_browser_(vrml_browser),
         timer(0),
         redrawNeeded(false)
