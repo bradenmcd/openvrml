@@ -20,6 +20,7 @@
 
 # include <iostream>
 # include <sstream>
+# include <boost/multi_index/detail/scope_guard.hpp>
 // Must include before X11 headers.
 # include <boost/numeric/conversion/converter.hpp>
 # include <X11/keysym.h>
@@ -28,6 +29,8 @@
 # include <openvrml/gl/viewer.h>
 # include "gtkvrmlbrowser.h"
 # include "plugin_streambuf.h"
+
+using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
     void gtk_vrml_browser_class_init(GtkVrmlBrowserClass * klass);
@@ -494,6 +497,7 @@ namespace {
                 request_channel_(request_channel)
             {
                 using std::ostringstream;
+                using boost::ref;
                 using openvrml_player::uninitialized_plugin_streambuf_map_;
 
                 this->rdbuf(this->streambuf_.get());
@@ -505,6 +509,7 @@ namespace {
                 gsize bytes_written;
                 GError * error = 0;
                 scope_guard error_guard = make_guard(g_error_free, ref(error));
+                boost::ignore_unused_variable_warning(error_guard);
                 GIOStatus io_status =
                     g_io_channel_write_chars(this->request_channel_,
                                              request.str().data(),

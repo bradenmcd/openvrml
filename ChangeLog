@@ -1,5 +1,10 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp: Use scope_guard from
+	boost::multi_index.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
 	(GtkGLViewer::GtkGLViewer(GIOChannel &, GtkVrmlBrowser &)): Since
 	stdout is used to communicate with the host process, send all
