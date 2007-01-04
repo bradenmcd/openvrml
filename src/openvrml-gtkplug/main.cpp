@@ -335,6 +335,7 @@ int main(int argc, char * argv[])
     using namespace openvrml_player;
 
     g_thread_init(0);
+    gdk_threads_init();
 
     g_set_application_name(application_name);
 
