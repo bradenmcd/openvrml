@@ -472,8 +472,12 @@ gint gtk_vrml_browser_timeout_callback(const gpointer ptr)
 
 namespace {
 
+    //
+    // We use stdout for communication with the host process; so send
+    // all browser output to stderr.
+    //
     browser::browser(GIOChannel & request_channel):
-        openvrml::browser(std::cout, std::cerr),
+        openvrml::browser(std::cerr, std::cerr),
         request_channel_(&request_channel)
     {}
 
