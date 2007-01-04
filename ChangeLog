@@ -1,5 +1,10 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/main.cpp
+	(main(int, char *[])): Call gdk_threads_init.
+
+2007-01-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
 	(resource_fetcher::do_get_resource(const std::string &)): Dismiss
 	the error_guard.
