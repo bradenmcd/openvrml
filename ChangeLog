@@ -1,5 +1,11 @@
 2007-01-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Updated
+	floating-point "near equal" comparison for parity with
+	libopenvrml.
+
+2007-01-09 Braden McDaniel  <braden@endoframe.com>
+
 	Assert that rotation components are not NaN.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
