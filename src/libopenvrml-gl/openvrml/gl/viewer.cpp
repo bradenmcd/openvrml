@@ -2342,46 +2342,6 @@ namespace {
             if (orientation.size() > 1) { ++r; }
         }
     }
-
-    /**
-     * @brief Build an extrusion.
-     *
-     * @param[in] orientation
-     * @param[in] scale
-     * @param[in] crossSection
-     * @param[in] spine
-     * @param[out] c
-     * @param[out] tc
-     * @param[out] faces
-     */
-    OPENVRML_GL_LOCAL void
-    computeExtrusion_(const std::vector<openvrml::rotation> & orientation,
-                      const std::vector<openvrml::vec2f> & scale,
-                      const std::vector<openvrml::vec2f> & crossSection,
-                      const std::vector<openvrml::vec3f> & spine,
-                      std::vector<openvrml::vec3f> & c,
-                      std::vector<openvrml::vec2f> & tc,
-                      std::vector<openvrml::int32> & faces)
-    {
-        computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
-
-        //
-        // Compute face indices.
-        //
-        size_t polyIndex = 0;
-        for (size_t i = 0, ci = 0; i < spine.size() - 1;
-                ++i, ci += crossSection.size()) {
-            for (size_t j = 0; j < crossSection.size() - 1; ++j) {
-                using openvrml::int32;
-                faces[polyIndex + 0] = int32(ci + j);
-                faces[polyIndex + 1] = int32(ci + j + 1);
-                faces[polyIndex + 2] = int32(ci + j + 1 + crossSection.size());
-                faces[polyIndex + 3] = int32(ci + j + crossSection.size());
-                faces[polyIndex + 4] = -1;
-                polyIndex += 5;
-            }
-        }
-    }
 }
 
 /**

@@ -1,5 +1,16 @@
 2007-01-09 Braden McDaniel  <braden@endoframe.com>
 
+	Removed dead code.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(computeExtrusion(const std::vector<openvrml::rotation> &, const
+	std::vector<openvrml::vec2f> &, const std::vector<openvrml::vec2f>
+	&, const std::vector<openvrml::vec3f> &,
+	std::vector<openvrml::vec3f> &, std::vector<openvrml::vec2f> &,
+	std::vector<openvrml::int32> &)): Removed unused function.
+
+2007-01-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Updated
 	floating-point "near equal" comparison for parity with
 	libopenvrml.
