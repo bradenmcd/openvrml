@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -92,17 +92,21 @@ namespace {
         return f < 0.0 ? -f : f;
     }
 
-    template <typename Float>
-    struct OPENVRML_GL_LOCAL fequal :
-        std::binary_function<Float, Float, bool> {
+    struct OPENVRML_GL_LOCAL fequal_t {
+        template <typename Float>
         bool operator()(Float a, Float b) const
         {
             const Float diff = fabs(a - b);
             if (diff == 0.0) { return true; }
-            const Float e = std::numeric_limits<Float>::epsilon();
-            return diff / fabs(a) <= e && diff / fabs(b) <= e;
+            static const int rounding_errors = 10;
+            static const Float e = std::numeric_limits<Float>::epsilon();
+            static const Float tolerance = e * rounding_errors / 2;
+            return diff / fabs(a) <= tolerance
+                && diff / fabs(b) <= tolerance;
         }
     };
+
+    OPENVRML_GL_LOCAL const fequal_t fequal = fequal_t();
 
     class OPENVRML_GL_LOCAL gl_capabilities {
     public:
@@ -2045,8 +2049,8 @@ namespace {
 
         float dx = xz[1] - xz[0];
         float dz = xz[3] - xz[2];
-        if (!fequal<float>()(dx, 0.0f)) { dx = float(1.0 / dx); }
-        if (!fequal<float>()(dz, 0.0f)) { dz = float(1.0 / dz); }
+        if (!fequal(dx, 0.0f)) { dx = float(1.0 / dx); }
+        if (!fequal(dz, 0.0f)) { dz = float(1.0 / dz); }
 
         // If geometry is in dlists, should just always use the tesselator...
 
@@ -2188,7 +2192,7 @@ namespace {
         for (i = 1; i < spine.size() - 1; ++i) {
             const vec3f v = (spine[i - 1] - spine[i])
                             * (spine[i + 1] - spine[i]);
-            if (!fequal<float>()(v.length(), 0.0f)) {
+            if (!fequal(v.length(), 0.0f)) {
                 spineStraight = false;
                 lastZ = v.normalize();
                 break;
@@ -2201,7 +2205,7 @@ namespace {
             const vec3f v2 = spine.back() - spine.front();
             vec3f v3 = v2 * v1;
             float len = v3.length();
-            if (!fequal<float>()(len, 0.0f)) {
+            if (!fequal(len, 0.0f)) {
                 //
                 // Not aligned with Y axis.
                 //
@@ -2219,7 +2223,7 @@ namespace {
         // Orientation matrix
         mat4f om;
         if (orientation.size() == 1
-                && !fequal<float>()(orientation.front().angle(), 0.0f)) {
+                && !fequal(orientation.front().angle(), 0.0f)) {
             om = make_rotation_mat4f(orientation.front());
         }
 
@@ -2272,7 +2276,7 @@ namespace {
                 Zscp = (spine[s1i2] - spine[si1]) * (spine[s2i2] - spine[si1]);
 
                 float VlenZ = Zscp.length();
-                if (fequal<float>()(VlenZ, 0.0f)) {
+                if (fequal(VlenZ, 0.0f)) {
                     Zscp = lastZ;
                 } else {
                     Zscp *= float(1.0 / VlenZ);
@@ -2303,7 +2307,7 @@ namespace {
             //
             // Apply orientation.
             //
-            if (!fequal<float>()(r->angle(), 0.0f)) {
+            if (!fequal(r->angle(), 0.0f)) {
                 if (orientation.size() > 1) { om = make_rotation_mat4f(*r); }
 
                 for (j = 0; j < crossSection.size(); ++j) {
@@ -2625,10 +2629,7 @@ namespace {
         }
 
         // If two of the dimensions are zero, give up.
-        if (fequal<float>()(params[1], 0.0f)
-                || fequal<float>()(params[3], 0.0f)) {
-            return;
-        }
+        if (fequal(params[1], 0.0f) || fequal(params[3], 0.0f)) { return; }
 
         params[1] = float(1.0 / params[1]);
         params[3] = float(1.0 / params[3]);
@@ -2853,8 +2854,7 @@ do_insert_shell(unsigned int mask,
 
         // do the bounds intersect the radius of any active positional lights.
         texGenParams(bounds, texAxes, texParams);
-        if (fequal<float>()(texParams[1], 0.0f)
-                || fequal<float>()(texParams[3], 0.0f)) {
+        if (fequal(texParams[1], 0.0f) || fequal(texParams[3], 0.0f)) {
             return 0;
         }
     }
@@ -3378,7 +3378,7 @@ void openvrml::gl::viewer::do_set_material(const float ambientIntensity,
                                 alpha };
 
     // XXX doesn't work right yet (need alpha render pass...)
-    if (this->blend && !fequal<float>()(transparency, 0.0f)) {
+    if (this->blend && !fequal(transparency, 0.0f)) {
         glEnable(GL_BLEND);
     }
 
@@ -3630,7 +3630,7 @@ void openvrml::gl::viewer::do_set_texture_transform(const vec2f & center,
 
     glTranslatef(-center.x(), -center.y(), 0.0);
     glScalef(scale.x(), scale.y(), 1.0);
-    if (!fequal<float>()(rotation, 0.0f)) {
+    if (!fequal(rotation, 0.0f)) {
         glRotatef(GLfloat(rotation * 180.0 / pi), 0.0, 0.0, 1.0);
     }
 
@@ -3861,7 +3861,7 @@ void openvrml::gl::viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHR
 {
     assert(this->browser());
 
-    if (fequal<float>()(rot.angle(), 0.0f)) { return; }
+    if (fequal(rot.angle(), 0.0f)) { return; }
 
     viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     const mat4f & viewpointTransformation = activeViewpoint.transformation();
@@ -3929,7 +3929,7 @@ void openvrml::gl::viewer::zoom(const float z)
     GLdouble y_c = this->win_height / 2;
     GLdouble z_c = 0.5;
     float visibilityLimit = nav_info.visibility_limit();
-    if (fequal<float>()(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
+    if (fequal(visibilityLimit, 0.0f)) { visibilityLimit = 30000.0; }
     GLdouble ox, oy, oz;
     gluUnProject(x_c, y_c, z_c,
                  modelview,
@@ -3951,7 +3951,7 @@ void openvrml::gl::viewer::zoom(const float z)
     dist = sqrt(dist);
     float speed = nav_info.speed();
     dist = speed / dist;
-    if (fequal<float>()(float(dist), 0.0f)) { return; }
+    if (fequal(float(dist), 0.0f)) { return; }
     dx *= dist;
     dy *= dist;
     dz *= dist;
