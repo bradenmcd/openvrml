@@ -2673,6 +2673,14 @@ const openvrml::rotation openvrml::make_rotation() OPENVRML_NOTHROW
 const openvrml::rotation openvrml::make_rotation(const float (&rot)[4])
     OPENVRML_NOTHROW
 {
+    //
+    // Ensure the elements of rot are not NaN.
+    //
+    assert(rot[0] == rot[0]);
+    assert(rot[1] == rot[1]);
+    assert(rot[2] == rot[2]);
+    assert(rot[3] == rot[3]);
+
     assert(openvrml_::fequal(1.0f,
                              make_vec3f(rot[0], rot[1], rot[2]).length()));
     const rotation r = { { rot[0], rot[1], rot[2], rot[3] } };
@@ -2701,6 +2709,14 @@ const openvrml::rotation openvrml::make_rotation(const float x,
                                                  const float angle)
     OPENVRML_NOTHROW
 {
+    //
+    // Ensure x, y, z, and angle are not NaN.
+    //
+    assert(x == x);
+    assert(y == y);
+    assert(z == z);
+    assert(angle == angle);
+
     assert(openvrml_::fequal(1.0f, make_vec3f(x, y, z).length()));
     const rotation r = { { x, y, z, angle } };
     return r;
@@ -2724,6 +2740,11 @@ const openvrml::rotation openvrml::make_rotation(const vec3f & axis,
                                                  const float angle)
     OPENVRML_NOTHROW
 {
+    //
+    // Ensure angle is not NaN.
+    //
+    assert(angle == angle);
+
     assert(openvrml_::fequal(1.0f, axis.length()));
     const rotation r = { { axis.x(), axis.y(), axis.z(), angle } };
     return r;
