@@ -1,3 +1,15 @@
+2007-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Assert that rotation components are not NaN.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::rotation::rotation(const float (&)[4])): Assert that
+	rotation components are not NaN.
+	(openvrml::rotation::rotation(float, float, float, float)): Assert
+	that rotation components are not NaN.
+	(openvrml::rotation::rotation(const vec3f &, float)): Assert
+	that rotation components are not NaN.
+
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gtkplug/main.cpp
