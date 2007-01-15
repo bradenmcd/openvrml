@@ -1,5 +1,37 @@
 2007-01-15 Braden McDaniel  <braden@endoframe.com>
 
+	Rewrote/refactored Extrusion coordinate generation for correctness
+	and readability.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(get_spine_length(const std::vector<openvrml::vec3f> &)): Added
+	function; get the length of an extrusion spine.
+	(get_cross_section_length(const std::vector<openvrml::vec2f> &)):
+	Added function; get the length of an extrusion cross-section.
+	(compute_scp_y_axis(const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	openvrml::vec3f &)): Added function; compute the y-axis of an
+	extrusion spine-aligned cross-section plane at a given point.
+	(compute_scp_z_axis(const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	openvrml::vec3f &)): Added function; compute the z-axis of an
+	extrusion spine-aligned cross-section plane at a given point.
+	(check_spine_points_collinear(const std::vector<openvrml::vec3f &,
+	openvrml::vec3f &, openvrml::vec3f &, openvrml::vec3f &)): Added
+	function; determine if extrusion spine points are collinear.
+	(compute_extrusion_coords_(const std::vector<openvrml::vec2f> &,
+	const std::vector<openvrml::vec3f> &, const
+	std::vector<openvrml::vec2f> &, const
+	std::vector<openvrml::rotation> &, std::vector<openvrml::vec3f> &,
+	std::vector<openvrml::vec2f> &)): Refactored for correctness and
+	readability.
+
+2007-01-15 Braden McDaniel  <braden@endoframe.com>
+
 	Initialize mat4f instances with make_mat4f.
 
 	* src/libopenvrml/openvrml/browser.cpp

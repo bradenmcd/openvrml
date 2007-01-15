@@ -2151,195 +2151,339 @@ namespace {
         }
     }
 
+    OPENVRML_LOCAL
+    float get_spine_length(const std::vector<openvrml::vec3f> & spine)
+    {
+        using std::vector;
+        using openvrml::vec3f;
+
+        float result = 0.0;
+        for (vector<vec3f>::const_iterator point = spine.begin();
+             point < spine.end() - 1;
+             ++point) {
+            result += (*(point + 1) - *point).length();
+        }
+        return result == 0.0 ? 1.0 : result;
+    }
+
+    OPENVRML_LOCAL
+    float
+    get_cross_section_length(const std::vector<openvrml::vec2f> & cross_section)
+    {
+        using std::vector;
+        using openvrml::vec2f;
+
+        float result = 0.0;
+        for (vector<vec2f>::const_iterator point = cross_section.begin();
+             point != cross_section.end() - 1;
+             ++point) {
+            result += (*(point + 1) - *point).length();
+        }
+        return result == 0.0 ? 1.0 : result;
+    }
+
     /**
-     * @brief Build an extrusion.
+     * @brief Compute the <var>y</var>-axis of the spine-aligned cross-section
+     *        plane.
      *
-     * @param[in] orientation
-     * @param[in] scale
-     * @param[in] crossSection
+     * @param[in] point an arbitrary point in the extrusion spine.
+     * @param[in] first the first point in the extrusion spine.
+     * @param[in] last  the last point in the extrusion spine.
+     *
+     * @return the <var>y</var>axis of the spine-aligned cross-section plane
+     *         at @p point.
+     */
+    OPENVRML_GL_LOCAL
+    const openvrml::vec3f
+    compute_scp_y_axis(
+        const std::vector<openvrml::vec3f>::const_iterator & point,
+        const std::vector<openvrml::vec3f>::const_iterator & first,
+        const std::vector<openvrml::vec3f>::const_iterator & last,
+        const openvrml::vec3f & prev)
+    {
+        if (point != first && point != last) {
+            if (*point == *(point - 1)) { return prev; }
+            return (*(point + 1) - *(point - 1)).normalize();
+        }
+
+        //
+        // From here on, we're dealing with the first or last point.
+        //
+        const bool spine_closed = (*first == *last);
+
+        if (spine_closed) {
+            return (*(point + 1) - *(last - 1)).normalize();
+        }
+
+        //
+        // The spine is not closed.
+        //
+        if (point == first) {
+            return (*(first + 1) - *first).normalize();
+        }
+
+        assert(point == last);
+        assert(last - first > 0);
+        return (*last - *(last - 1)).normalize();
+    }
+
+    /**
+     * @brief Compute the <var>z</var>-axis of the spine-aligned cross-section
+     *        plane.
+     *
+     * @param[in] point an arbitrary point in the extrusion spine.
+     * @param[in] first the first point in the extrusion spine.
+     * @param[in] last  the last point in the extrusion spine.
+     * @param[in] prev  the <var>z</var>-axis of the spine-aligned
+     *                  cross-section plane for the previous spine point.
+     *
+     * @return the <var>z</var>axis of the spine-aligned cross-section plane
+     *         at @p point.
+     */
+    OPENVRML_GL_LOCAL
+    const openvrml::vec3f
+    compute_scp_z_axis(
+        const std::vector<openvrml::vec3f>::const_iterator & point,
+        const std::vector<openvrml::vec3f>::const_iterator & first,
+        const std::vector<openvrml::vec3f>::const_iterator & last,
+        const openvrml::vec3f & prev)
+    {
+        using openvrml::vec3f;
+        using openvrml::make_vec3f;
+
+        vec3f z0, z1;
+
+        if (point != first && point != last) {
+            if (*point == *(point - 1)) { return prev; }
+            z0 = *(point + 1) - *point;
+            z1 = *(point - 1) - *point;
+        } else {
+
+            //
+            // From here on, we're dealing with the first or last point.
+            //
+            const bool spine_closed = (*first == *last);
+
+            if (spine_closed) {
+                z0 = *(first + 1) - *first;
+                z1 = *(last - 1) - *first;
+            } else {
+                if (last - first == 1) { return prev; }
+                if (point == first) {
+                    //
+                    // The spine is not closed.
+                    //
+                    z0 = *(first + 2) - *(first + 1);
+                    z1 = *first - *(first + 1);
+                } else {
+                    assert(point == last);
+                    assert(last - first > 0);
+                    z0 = *(last - 2) - *(last - 1);
+                    z1 = *last - *(last - 1);
+                }
+            }
+        }
+
+        if (fequal(z0.dot(z1), 1.0f)) { return prev; }
+
+        const vec3f z = (z0 * z1).normalize();
+        if (z == make_vec3f(0.0, 0.0, 0.0)) { return prev; }
+
+        return (z.dot(prev) < 0) ? -z : z;
+    }
+
+    /**
+     * @brief Determine if the extrusion spine points are collinear.
+     *
+     * Incidentally this function determines the axes for the initial
+     * spine-aligned cross-section plane (which are consistent for the extent
+     * of the extrusion if the spine points are collinear).
+     *
+     * @param[in] spine     the extrusion spine.
+     * @param[out] scp_x    the initial spine-aligned cross-section plane
+     *                      <var>x</var>-axis.
+     * @param[out] scp_y    the initial spine-aligned cross-section plane
+     *                      <var>y</var>-axis.
+     * @param[out] scp_z    the initial spine-aligned cross-section plane
+     *                      <var>z</var>-axis.
+     *
+     * @return @c true if the points in @p spine are collinear; @c false
+     *         otherwise.
+     */
+    OPENVRML_GL_LOCAL
+    bool
+    check_spine_points_collinear(const std::vector<openvrml::vec3f> & spine,
+                                 openvrml::vec3f & scp_x,
+                                 openvrml::vec3f & scp_y,
+                                 openvrml::vec3f & scp_z)
+    {
+        using std::vector;
+        using openvrml::mat4f;
+        using openvrml::make_rotation_mat4f;
+        using openvrml::make_scale_mat4f;
+        using openvrml::rotation;
+        using openvrml::make_rotation;
+        using openvrml::vec3f;
+        using openvrml::make_vec3f;
+
+        static const vec3f zero = make_vec3f();
+
+        scp_y = zero;
+        scp_z = zero;
+
+        vec3f prev_scp_y = zero, prev_scp_z = zero;
+        for (vector<vec3f>::const_iterator point = spine.begin();
+             point < spine.end() && (prev_scp_y == zero || prev_scp_z == zero);
+             ++point) {
+            if (prev_scp_y == zero) {
+                scp_y = compute_scp_y_axis(point, spine.begin(), spine.end() - 1,
+                                           prev_scp_y);
+                if (scp_y != zero) { prev_scp_y = scp_y; }
+            }
+            if (prev_scp_z == zero) {
+                scp_z = compute_scp_z_axis(point, spine.begin(), spine.end() - 1,
+                                           prev_scp_z);
+                if (scp_z != zero) { prev_scp_z = scp_z; }
+            }
+        }
+
+        bool spine_points_collinear = false;
+
+        if (prev_scp_y == zero) { prev_scp_y = make_vec3f(0.0, 1.0, 0.0); }
+        if (prev_scp_z == zero) {
+            prev_scp_z = make_vec3f(0.0, 0.0, 1.0);
+            if (prev_scp_y != make_vec3f(0.0, 1.0, 0.0)) {
+                const mat4f rot_mat =
+                    make_rotation_mat4f(
+                        make_rotation(make_vec3f(0.0, 1.0, 0.0),
+                                      prev_scp_y));
+                prev_scp_z *= rot_mat;
+            }
+            spine_points_collinear = true;
+        }
+
+        if (spine_points_collinear) {
+            scp_y = prev_scp_y;
+            scp_z = prev_scp_z;
+            scp_x = (scp_y * scp_z).normalize();
+        }
+
+        return spine_points_collinear;
+    }
+
+    /**
+     * @brief Compute the coordinates and texture coordinates for an extrusion.
+     *
+     * @param[in] cross_section
      * @param[in] spine
-     * @param[out] c
-     * @param[out] tc
+     * @param[in] scale
+     * @param[in] orientation
+     * @param[out] coord
+     * @param[out] texcoord
      */
     OPENVRML_GL_LOCAL void
-    computeExtrusion_(const std::vector<openvrml::rotation> & orientation,
-                      const std::vector<openvrml::vec2f> & scale,
-                      const std::vector<openvrml::vec2f> & crossSection,
-                      const std::vector<openvrml::vec3f> & spine,
-                      std::vector<openvrml::vec3f> & c,
-                      std::vector<openvrml::vec2f> & tc)
+    compute_extrusion_coords_(
+        const std::vector<openvrml::vec2f> & cross_section,
+        const std::vector<openvrml::vec3f> & spine,
+        const std::vector<openvrml::vec2f> & scale,
+        const std::vector<openvrml::rotation> & orientation,
+        std::vector<openvrml::vec3f> & coord,
+        std::vector<openvrml::vec2f> & texcoord)
     {
+        using std::vector;
         using openvrml::rotation;
         using openvrml::vec2f;
+        using openvrml::make_vec2f;
         using openvrml::vec3f;
         using openvrml::make_vec3f;
         using openvrml::mat4f;
+        using openvrml::make_mat4f;
 
-        size_t i, j, ci;
+        coord.resize(spine.size() * cross_section.size());
+        texcoord.resize(spine.size() * cross_section.size());
 
-        // Xscp, Yscp, Zscp- columns of xform matrix to align cross section
-        // with spine segments.
-        vec3f Xscp = make_vec3f(1.0, 0.0, 0.0);
-        vec3f Yscp = make_vec3f(0.0, 1.0, 0.0);
-        vec3f Zscp = make_vec3f(0.0, 0.0, 1.0);
-        vec3f lastZ;
+        //
+        // Check if the spine points are collinear.  If they are collinear,
+        // the spine-aligned cross-section plane computed for the first point
+        // will be used for the entire extrusion.
+        //
+        vec3f scp_x = make_vec3f(), scp_y = make_vec3f(), scp_z = make_vec3f();
+        const bool spine_points_collinear =
+            check_spine_points_collinear(spine, scp_x, scp_y, scp_z);
 
-        // Is the spine a closed curve (last pt == first pt)?
-        bool spineClosed = spine.back() == spine.front();
-
-        // Is the spine a straight line?
-        bool spineStraight = true;
-        for (i = 1; i < spine.size() - 1; ++i) {
-            const vec3f v = (spine[i - 1] - spine[i])
-                            * (spine[i + 1] - spine[i]);
-            if (!fequal(v.length(), 0.0f)) {
-                spineStraight = false;
-                lastZ = v.normalize();
-                break;
-            }
-        }
-
-        // If the spine is a straight line, compute a constant SCP xform
-        if (spineStraight) {
-            const vec3f v1 = make_vec3f(0.0, 1.0, 0.0);
-            const vec3f v2 = spine.back() - spine.front();
-            vec3f v3 = v2 * v1;
-            float len = v3.length();
-            if (!fequal(len, 0.0f)) {
-                //
-                // Not aligned with Y axis.
-                //
-                v3 *= float(1.0 / len);
-
-                const rotation orient =
-                    make_rotation(v3, float(acos(v1.dot(v2)))); // Axis/angle
-                const mat4f scp = make_rotation_mat4f(orient); // xform matrix
-                Xscp = make_vec3f(scp[0][0], scp[0][1], scp[0][2]);
-                Yscp = make_vec3f(scp[1][0], scp[1][1], scp[1][2]);
-                Zscp = make_vec3f(scp[2][0], scp[2][1], scp[2][2]);
-            }
-        }
-
-        // Orientation matrix
-        mat4f om;
-        if (orientation.size() == 1
-                && !fequal(orientation.front().angle(), 0.0f)) {
-            om = make_rotation_mat4f(orientation.front());
-        }
-
-        using std::vector;
-        vector<vec2f>::const_iterator s = scale.begin();
-        vector<rotation>::const_iterator r = orientation.begin();
-        // Compute coordinates, texture coordinates:
-        for (i = 0, ci = 0; i < spine.size(); ++i, ci += crossSection.size()) {
-
-            // Scale cross section
-            for (j = 0; j < crossSection.size(); ++j) {
-                c[ci + j].x(s->x() * crossSection[j].x());
-                c[ci + j].y(0.0);
-                c[ci + j].z(s->y() * crossSection[j].y());
+        const float spine_length = get_spine_length(spine);
+        const float cross_section_length =
+            get_cross_section_length(cross_section);
+        float current_spine_length = 0.0;
+        for (vector<vec3f>::const_iterator spine_point = spine.begin();
+             spine_point != spine.end();
+             ++spine_point) {
+            if (!spine_points_collinear) {
+                scp_y = compute_scp_y_axis(spine_point,
+                                           spine.begin(),
+                                           spine.end() - 1,
+                                           scp_y);
+                scp_z = compute_scp_z_axis(spine_point,
+                                           spine.begin(),
+                                           spine.end() - 1,
+                                           scp_z);
+                scp_x = (scp_y * scp_z).normalize();
             }
 
-            // Compute Spine-aligned Cross-section Plane (SCP)
-            if (!spineStraight) {
-                size_t yi1, yi2, si1, s1i2, s2i2;
+            mat4f mat =
+                make_mat4f(
+                    scp_x.x(),        scp_x.y(),        scp_x.z(),        0.0,
+                    scp_y.x(),        scp_y.y(),        scp_y.z(),        0.0,
+                    scp_z.x(),        scp_z.y(),        scp_z.z(),        0.0,
+                    spine_point->x(), spine_point->y(), spine_point->z(), 1.0);
 
-                if (spineClosed && (i == 0 || i == spine.size() - 1)) {
-                    yi1 = spine.size() - 2;
-                    yi2 = 1;
-                    si1 = 0;
-                    s1i2 = spine.size() - 2;
-                    s2i2 = 1;
-                } else if (i == 0) {
-                    yi1 = 0;
-                    yi2 = 1;
-                    si1 = 1;
-                    s1i2 = 0;
-                    s2i2 = 2;
-                } else if (i == spine.size() - 1) {
-                    yi1 = spine.size() - 2;
-                    yi2 = spine.size() - 1;
-                    si1 = spine.size() - 2;
-                    s1i2 = spine.size() - 3;
-                    s2i2 = spine.size() - 1;
-                } else {
-                    yi1 = i - 1;
-                    yi2 = i + 1;
-                    si1 = i;
-                    s1i2 = i - 1;
-                    s2i2 = i + 1;
-                }
+            const vector<vec3f>::size_type spine_index =
+                std::distance(spine.begin(), spine_point);
 
-                Yscp = (spine[yi2] - spine[yi1]).normalize();
-
-                lastZ = Zscp; // Save last Zscp.
-                Zscp = (spine[s1i2] - spine[si1]) * (spine[s2i2] - spine[si1]);
-
-                float VlenZ = Zscp.length();
-                if (fequal(VlenZ, 0.0f)) {
-                    Zscp = lastZ;
-                } else {
-                    Zscp *= float(1.0 / VlenZ);
-                }
-
-                if (i > 0 && Zscp.dot(lastZ) < 0.0) { Zscp *= -1.0; }
-
-                Xscp = Yscp * Zscp;
+            if (!orientation.empty()) {
+                const vector<rotation>::size_type index =
+                    spine_index < orientation.size()
+                    ? spine_index
+                    : orientation.size() - 1;
+                mat = make_rotation_mat4f(orientation[index]) * mat;
             }
 
-            // Rotate cross section into SCP
-            for (j = 0; j < crossSection.size(); ++j) {
-                float cx, cy, cz;
-                cx = c[ci + j].x() * Xscp.x()
-                   + c[ci + j].y() * Yscp.x()
-                   + c[ci + j].z() * Zscp.x();
-                cy = c[ci + j].x() * Xscp.y()
-                   + c[ci + j].y() * Yscp.y()
-                   + c[ci + j].z() * Zscp.y();
-                cz = c[ci + j].x() * Xscp.z()
-                   + c[ci + j].y() * Yscp.z()
-                   + c[ci + j].z() * Zscp.z();
-                c[ci + j].x(cx);
-                c[ci + j].y(cy);
-                c[ci + j].z(cz);
+            if (!scale.empty()) {
+                const vector<vec2f>::size_type index =
+                    spine_index < scale.size()
+                    ? spine_index
+                    : scale.size() - 1;
+                mat = (make_scale_mat4f(make_vec3f(scale[index].x(),
+                                                   1.0,
+                                                   scale[index].y()))
+                       * mat);
             }
 
-            //
-            // Apply orientation.
-            //
-            if (!fequal(r->angle(), 0.0f)) {
-                if (orientation.size() > 1) { om = make_rotation_mat4f(*r); }
+            float current_cross_section_length = 0.0;
+            for (vector<vec2f>::size_type i = 0;
+                 i < cross_section.size();
+                 ++i) {
+                vec3f cross_section_point = make_vec3f(cross_section[i].x(),
+                                                       0.0,
+                                                       cross_section[i].y());
+                cross_section_point *= mat;
+                const size_t coord_index =
+                    spine_index * cross_section.size() + i;
+                coord[coord_index] = cross_section_point;
+                texcoord[coord_index] =
+                    make_vec2f(
+                        current_cross_section_length / cross_section_length,
+                        current_spine_length / spine_length);
 
-                for (j = 0; j < crossSection.size(); ++j) {
-                    float cx, cy, cz;
-                    cx = c[ci + j].x() * om[0][0]
-                       + c[ci + j].y() * om[1][0]
-                       + c[ci + j].z() * om[2][0];
-                    cy = c[ci + j].x() * om[0][1]
-                       + c[ci + j].y() * om[1][1]
-                       + c[ci + j].z() * om[2][1];
-                    cz = c[ci + j].x() * om[0][2]
-                       + c[ci + j].y() * om[1][2]
-                       + c[ci + j].z() * om[2][2];
-                    c[ci + j].x(cx);
-                    c[ci + j].y(cy);
-                    c[ci + j].z(cz);
+                if (i < cross_section.size() - 1) {
+                    current_cross_section_length +=
+                        (cross_section[i + 1] - cross_section[i]).length();
                 }
             }
-
-            //
-            // Translate cross section.
-            //
-            for (j = 0; j < crossSection.size(); ++j) {
-                c[ci + j] += spine[i];
-
-                // Texture coords
-                tc[ci + j].x(float(j) / (crossSection.size() - 1));
-                tc[ci + j].y(float(i) / (spine.size() - 1));
+            if (spine_point < spine.end() - 1) {
+                current_spine_length +=
+                    (*(spine_point + 1) - *spine_point).length();
             }
-
-            if (scale.size() > 1) { ++s; }
-            if (orientation.size() > 1) { ++r; }
         }
     }
 }
@@ -2367,7 +2511,7 @@ do_insert_extrusion(unsigned int mask,
     vector<vec3f> c(crossSection.size() * spine.size());
     vector<vec2f> tc(crossSection.size() * spine.size());
 
-    computeExtrusion_(orientation, scale, crossSection, spine, c, tc);
+    compute_extrusion_coords_(crossSection, spine, scale, orientation, c, tc);
 
     GLuint glid = 0;
 
