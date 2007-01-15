@@ -10108,7 +10108,9 @@ namespace {
         track_point_changed_emitter_(*this, this->track_point_changed_),
         is_over_emitter_(*this, this->is_over_),
         rotation_val(0.0f),
-        disk(false)
+        disk(false),
+        activationMatrix(make_mat4f()),
+        modelview(make_mat4f())
     {
         this->node::modified(true);
     }
@@ -17576,7 +17578,9 @@ namespace {
         is_active_emitter_(*this, this->is_active_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
         translation_changed_emitter_(*this, this->translation_changed_),
-        is_over_emitter_(*this, this->is_over_)
+        is_over_emitter_(*this, this->is_over_),
+        activationMatrix(make_mat4f()),
+        modelview(make_mat4f())
     {
         this->node::modified(true);
     }
@@ -20505,7 +20509,8 @@ namespace {
         is_active_emitter_(*this, this->is_active_),
         rotation_changed_emitter_(*this, this->rotation_changed_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
-        is_over_emitter_(*this, this->is_over_)
+        is_over_emitter_(*this, this->is_over_),
+        modelview(make_mat4f())
     {
         this->node::modified(true);
     }
@@ -25918,6 +25923,7 @@ namespace {
         scale_(*this),
         scale_orientation_(*this),
         translation_(*this),
+        transform_(make_mat4f()),
         transform_dirty(true),
         xformObject(0)
     {
@@ -26738,6 +26744,9 @@ namespace {
         center_of_rotation_(*this),
         is_bound_emitter_(*this, this->is_bound_),
         bind_time_emitter_(*this, this->bind_time_),
+        parent_transform(make_mat4f()),
+        final_transformation(make_mat4f()),
+        user_view_transform_(make_mat4f()),
         final_transformation_dirty(true)
     {}
 

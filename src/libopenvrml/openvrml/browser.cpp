@@ -2736,7 +2736,8 @@ namespace {
         openvrml::node(type, null_scope_ptr),
         openvrml::bounded_volume_node(type, null_scope_ptr),
         openvrml::child_node(type, null_scope_ptr),
-        openvrml::viewpoint_node(type, null_scope_ptr)
+        openvrml::viewpoint_node(type, null_scope_ptr),
+        userViewTransform(openvrml::make_mat4f())
     {}
 
     /**

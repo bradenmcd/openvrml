@@ -1,3 +1,30 @@
+2007-01-15 Braden McDaniel  <braden@endoframe.com>
+
+	Initialize mat4f instances with make_mat4f.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(default_viewpoint::default_viewpoint(const
+	openvrml::null_node_type &)): Initialize userViewTransform using
+	openvrml::make_mat4f.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(cylinder_sensor_node::cylinder_sensor_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Initialize activationMatrix
+	and modelview with make_mat4f.
+	(plane_sensor_node::plane_sensor_node(const openvrml::node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Initialize
+	activationMatrix and modelview with make_mat4f.
+	(sphere_sensor_node::sphere_sensor_node(const
+	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
+	Initialize modelview with make_mat4f.
+	(transform_node::transform_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize transform_ with
+	make_mat4f.
+	(viewpoint_node::viewpoint_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Initialize
+	parent_transform, final_transformation, and user_view_transform_
+	with make_mat4f.
+
 2007-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Removed dead code.
