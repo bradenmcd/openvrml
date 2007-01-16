@@ -2768,7 +2768,7 @@ const openvrml::rotation openvrml::make_rotation(const vec3f & from_vec,
                                                  const vec3f & to_vec)
     OPENVRML_NOTHROW
 {
-    const vec3f axis = from_vec * to_vec;
+    const vec3f axis = (from_vec * to_vec).normalize();
     const float angle = float(acos(from_vec.dot(to_vec)
                                    / (from_vec.length() * to_vec.length())));
     const rotation r = { { axis.x(), axis.y(), axis.z(), angle } };
