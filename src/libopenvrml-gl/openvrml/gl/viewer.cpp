@@ -2212,7 +2212,7 @@ namespace {
         const bool spine_closed = (*first == *last);
 
         if (spine_closed) {
-            return (*(point + 1) - *(last - 1)).normalize();
+            return (*(first + 1) - *(last - 1)).normalize();
         }
 
         //
