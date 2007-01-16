@@ -2652,7 +2652,7 @@ openvrml::rotation::rotation(const vec3f & axis, const float angle)
 openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
     OPENVRML_NOTHROW
 {
-    this->axis(from_vec * to_vec);
+    this->axis((from_vec * to_vec).normalize());
     this->rot[3] = float(acos(from_vec.dot(to_vec)
                               / (from_vec.length() * to_vec.length())));
 }
