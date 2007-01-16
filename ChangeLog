@@ -1,3 +1,12 @@
+2007-01-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(compute_scp_y_axis(const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	std::vector<openvrml::vec3f>::const_iterator &, const
+	openvrml::vec3f &)): Fixed for the last point of a closed spine.
+
 2007-01-15 Braden McDaniel  <braden@endoframe.com>
 
 	Rewrote/refactored Extrusion coordinate generation for correctness
