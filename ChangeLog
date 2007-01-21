@@ -1,8 +1,12 @@
+2007-01-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Improved comments.
+
 2007-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp
-	(openvrml::rotation::rotation(const vec3f &, const vec3f &)):
-	Normalize the rotation axis.
+	(openvrml::make_rotation(const vec3f &, const vec3f &)): Normalize
+	the rotation axis.
 
 2007-01-16 Braden McDaniel  <braden@endoframe.com>
 

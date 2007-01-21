@@ -2151,7 +2151,22 @@ namespace {
         }
     }
 
-    OPENVRML_LOCAL
+    /**
+     * @brief Get the length of an Extrusion spine.
+     *
+     * The length of the spine is used in computing texture coordinates for an
+     * Extrusion.  In order to determine the texture coordinates at a given
+     * point on the Extrusion cross-section, the distance from the start of
+     * the spine is divided by its total length.  As such, this function
+     * returns 1.0 if the length of the spine is 0 (to avoid dividing by
+     * zero).
+     *
+     * @param[in] spine Extrusion spine.
+     *
+     * @return the length of the Extrusion spine described by @p spine; or 1.0
+     *         if the length is 0.
+     */
+    OPENVRML_GL_LOCAL
     float get_spine_length(const std::vector<openvrml::vec3f> & spine)
     {
         using std::vector;
@@ -2166,9 +2181,25 @@ namespace {
         return result == 0.0 ? 1.0 : result;
     }
 
-    OPENVRML_LOCAL
+    /**
+     * @brief Get the length of an Extrusion cross-section.
+     *
+     * The length of the cross-section is used in computing texture
+     * coordinates for an Extrusion.  In order to determine the texture
+     * coordinates at a given point on the Extrusion cross-section, the
+     * distance from the start of the cross-section is divided by its total
+     * length.  As such, this function returns 1.0 if the length of the
+     * cross-section is 0 (to avoid dividing by zero).
+     *
+     * @param[in] cross_section Extrusion cross-section.
+     *
+     * @return the length of the Extrusion cross-section described by
+     *         @p cross_section; or 1.0 if the length is 0.
+     */
+    OPENVRML_GL_LOCAL
     float
-    get_cross_section_length(const std::vector<openvrml::vec2f> & cross_section)
+    get_cross_section_length(
+        const std::vector<openvrml::vec2f> & cross_section)
     {
         using std::vector;
         using openvrml::vec2f;
@@ -2295,9 +2326,9 @@ namespace {
     /**
      * @brief Determine if the extrusion spine points are collinear.
      *
-     * Incidentally this function determines the axes for the initial
-     * spine-aligned cross-section plane (which are consistent for the extent
-     * of the extrusion if the spine points are collinear).
+     * If this function returns @c true, @p scp_x, @p scp_y, and @p scp_z are
+     * the axes of the spine-aligned cross-section plane that should be used
+     * for the extent of the extrusion.
      *
      * @param[in] spine     the extrusion spine.
      * @param[out] scp_x    the initial spine-aligned cross-section plane
@@ -2326,31 +2357,55 @@ namespace {
         using openvrml::vec3f;
         using openvrml::make_vec3f;
 
+        //
+        // First, iterate over the spine points until either the y- or z-axis
+        // for the spine-aligned cross-section plane (SCP) is valid (i.e.,
+        // nonzero).  We bail out of the loop as soon as we get a valid y- or
+        // z-axis; because that means we've hit the first noncollinear point.
+        // If the points are all collinear, we won't have a valid z-axis (or
+        // y-axis) when we're done.
+        //
         static const vec3f zero = make_vec3f();
-
         scp_y = zero;
         scp_z = zero;
-
         vec3f prev_scp_y = zero, prev_scp_z = zero;
         for (vector<vec3f>::const_iterator point = spine.begin();
              point < spine.end() && (prev_scp_y == zero || prev_scp_z == zero);
              ++point) {
             if (prev_scp_y == zero) {
-                scp_y = compute_scp_y_axis(point, spine.begin(), spine.end() - 1,
+                scp_y = compute_scp_y_axis(point,
+                                           spine.begin(),
+                                           spine.end() - 1,
                                            prev_scp_y);
                 if (scp_y != zero) { prev_scp_y = scp_y; }
             }
             if (prev_scp_z == zero) {
-                scp_z = compute_scp_z_axis(point, spine.begin(), spine.end() - 1,
+                scp_z = compute_scp_z_axis(point,
+                                           spine.begin(),
+                                           spine.end() - 1,
                                            prev_scp_z);
                 if (scp_z != zero) { prev_scp_z = scp_z; }
             }
         }
 
-        bool spine_points_collinear = false;
-
+        //
+        // If all the points are coincident, prev_scp_y will be invalid
+        // (zero).  Set it to (0 1 0).
+        //
         if (prev_scp_y == zero) { prev_scp_y = make_vec3f(0.0, 1.0, 0.0); }
+
+        //
+        // If all the points are collinear, prev_scp_z will be invalid (zero).
+        // Default it to (0 0 1); then, per 6.18.3 of VRML97:
+        //
+        //   If the entire spine is collinear, the SCP is computed by finding
+        //   the rotation of a vector along the positive Y-axis (v1) to the
+        //   vector formed by the spine points (v2).  The Y=0 plane is then
+        //   rotated by this value.
+        //
+        bool spine_points_collinear = false;
         if (prev_scp_z == zero) {
+            spine_points_collinear = true;
             prev_scp_z = make_vec3f(0.0, 0.0, 1.0);
             if (prev_scp_y != make_vec3f(0.0, 1.0, 0.0)) {
                 const mat4f rot_mat =
@@ -2359,7 +2414,6 @@ namespace {
                                       prev_scp_y));
                 prev_scp_z *= rot_mat;
             }
-            spine_points_collinear = true;
         }
 
         if (spine_points_collinear) {
