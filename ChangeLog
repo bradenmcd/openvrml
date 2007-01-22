@@ -1,5 +1,12 @@
 2007-01-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved definition of USE_STENCIL_SHAPE out of the header.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+
+2007-01-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Improved comments.
 
 2007-01-16 Braden McDaniel  <braden@endoframe.com>

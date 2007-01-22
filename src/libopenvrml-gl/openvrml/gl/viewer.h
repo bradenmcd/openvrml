@@ -26,9 +26,6 @@
 #   include <stack>
 #   include <openvrml/viewer.h>
 
-// Use the stencil buffer to set the SHAPE mask.
-#   define USE_STENCIL_SHAPE 0
-
 extern "C" struct GLUtesselator;
 
 namespace openvrml {

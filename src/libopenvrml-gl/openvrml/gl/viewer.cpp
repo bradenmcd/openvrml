@@ -46,6 +46,9 @@
 # include <openvrml/browser.h>
 # include "viewer.h"
 
+// Use the stencil buffer to set the SHAPE mask.
+#   define USE_STENCIL_SHAPE 0
+
 // Textures are now done using OGL1.1 bindTexture API rather than
 // display lists when this flag is set. Don't define this if you
 // are still at OpenGL 1.0 (or get a newer OpenGL).
