@@ -1,3 +1,13 @@
+2007-01-22 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::insert_background(const
+	std::vector<float>&, const std::vector<color> &, const
+	std::vector<float> &, const std::vector<color> &, const image &,
+	const image &, const image &, const image &, const image &, const
+	image &)): Enabled #if 0'd code to put the background in a display
+	list.  So far, it seems harmless.
+
 2007-01-21 Braden McDaniel  <braden@endoframe.com>
 
 	Moved definition of USE_STENCIL_SHAPE out of the header.
