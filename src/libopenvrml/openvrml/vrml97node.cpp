@@ -26746,8 +26746,8 @@ namespace {
         bind_time_emitter_(*this, this->bind_time_),
         parent_transform(make_mat4f()),
         final_transformation(make_mat4f()),
-        user_view_transform_(make_mat4f()),
-        final_transformation_dirty(true)
+        final_transformation_dirty(true),
+        user_view_transform_(make_mat4f())
     {}
 
     /**

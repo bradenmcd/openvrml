@@ -1,3 +1,10 @@
+2007-01-22 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(viewpoint_node::viewpoint_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Reordered
+	user_view_transform_ initialization to match declaration order.
+
 2007-01-21 Braden McDaniel  <braden@endoframe.com>
 
 	Moved definition of USE_STENCIL_SHAPE out of the header.
