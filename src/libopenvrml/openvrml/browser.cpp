@@ -6456,13 +6456,6 @@ void openvrml::browser::render()
     boost::recursive_mutex::scoped_lock lock(this->mutex_);
     if (!this->viewer_) { return; }
 
-    //
-    // Per-node_metatype rendering happens before viewer::set_viewpoint is called
-    // This is important for things like background rendering, since
-    // viewer::insert_background must be called before viewer::set_viewpoint.
-    //
-    this->node_metatype_map_.render(*this->viewer_);
-
     if (this->new_view) {
         this->viewer_->reset_user_navigation();
         this->new_view = false;
@@ -6472,6 +6465,17 @@ void openvrml::browser::render()
         ? 0.25f
         : nav_info.avatar_size()[0];
     const float visibilityLimit = nav_info.visibility_limit();
+
+    this->viewer_->set_frustum(this->active_viewpoint_->field_of_view(),
+                               avatarSize,
+                               visibilityLimit);
+
+    //
+    // Per-node_metatype rendering happens before viewer::set_viewpoint is called
+    // This is important for things like background rendering, since
+    // viewer::insert_background must be called before viewer::set_viewpoint.
+    //
+    this->node_metatype_map_.render(*this->viewer_);
 
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...
@@ -6496,7 +6500,6 @@ void openvrml::browser::render()
     t.transformation(position, orientation, scale);
     this->viewer_->set_viewpoint(position,
                                  orientation,
-                                 this->active_viewpoint_->field_of_view(),
                                  avatarSize,
                                  visibilityLimit);
 

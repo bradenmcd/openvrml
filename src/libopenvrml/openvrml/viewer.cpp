@@ -1064,37 +1064,59 @@ void openvrml::viewer::set_texture_transform(const vec2f & center,
  */
 
 /**
+ * @brief Set the frustum.
+ *
+ * This function delegates to @c viewer::do_set_frustum.
+ *
+ * @param[in] field_of_view     field of view.
+ * @param[in] avatar_size       avatar size.
+ * @param[in] visibility_limit  visibility limit.
+ */
+void openvrml::viewer::set_frustum(const float field_of_view,
+                                   const float avatar_size,
+                                   const float visibility_limit)
+{
+    this->do_set_frustum(field_of_view, avatar_size, visibility_limit);
+}
+
+/**
+ * @fn void openvrml::viewer::set_frustum(float field_of_view, float avatar_size, float visibility_limit)
+ *
+ * @brief Set the frustum.
+ *
+ * @param[in] field_of_view     field of view.
+ * @param[in] avatar_size       avatar size.
+ * @param[in] visibility_limit  visibility limit.
+ */
+
+/**
  * @brief Set the viewpoint.
  *
  * This function delegates to @c viewer::do_set_viewpoint.
  *
  * @param[in] position          position.
  * @param[in] orientation       orientation.
- * @param[in] field_of_view     field of view.
  * @param[in] avatar_size       avatar size.
  * @param[in] visibility_limit  visiblity limit.
  */
 void openvrml::viewer::set_viewpoint(const vec3f & position,
                                      const rotation & orientation,
-                                     const float field_of_view,
                                      const float avatar_size,
                                      const float visibility_limit)
 {
     this->do_set_viewpoint(position,
                            orientation,
-                           field_of_view,
                            avatar_size,
                            visibility_limit);
 }
 
 /**
- * @fn void openvrml::viewer::do_set_viewpoint(const vec3f & position, const rotation & orientation, float field_of_view, float avatar_size, float visibility_limit)
+ * @fn void openvrml::viewer::do_set_viewpoint(const vec3f & position, const rotation & orientation, float avatar_size, float visibility_limit)
  *
  * @brief Set the viewpoint.
  *
  * @param[in] position          position.
  * @param[in] orientation       orientation.
- * @param[in] field_of_view     field of view.
  * @param[in] avatar_size       avatar size.
  * @param[in] visibility_limit  visiblity limit.
  */

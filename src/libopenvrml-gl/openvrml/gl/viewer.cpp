@@ -3805,6 +3805,27 @@ void openvrml::gl::viewer::do_set_texture_transform(const vec2f & center,
     glMatrixMode(GL_MODELVIEW);
 }
 
+void openvrml::gl::viewer::do_set_frustum(float field_of_view,
+                                          const float avatar_size,
+                                          const float visibility_limit)
+{
+    glMatrixMode(GL_PROJECTION);
+    if (!this->select_mode) { glLoadIdentity(); }
+
+    (field_of_view *= 180.0) /= pi;
+    const float aspect = float(this->win_width) / this->win_height;
+    const float znear = (avatar_size > 0.0)
+                      ? float(0.5 * avatar_size)
+                      : 0.01f;
+    const float zfar = (visibility_limit > 0.0)
+                     ? visibility_limit
+                     : 30000.0f;
+    gluPerspective(field_of_view, aspect, znear, zfar);
+
+    this->frustum(openvrml::frustum(field_of_view, aspect, znear, zfar));
+    glMatrixMode(GL_MODELVIEW);
+}
+
 namespace {
 
     /**
@@ -3846,31 +3867,21 @@ namespace {
  *
  * @param[in] position          position.
  * @param[in] orientation       orientation.
- * @param[in] fieldOfView       field of view.
  * @param[in] avatarSize        avatar size.
  * @param[in] visibilityLimit   visiblity limit.
  */
 void
 openvrml::gl::viewer::do_set_viewpoint(const vec3f & position,
                                        const openvrml::rotation & orientation,
-                                       const float fieldOfView,
                                        const float avatarSize,
                                        const float visibilityLimit)
 {
-    glMatrixMode( GL_PROJECTION );
-    if (!this->select_mode) { glLoadIdentity(); }
-
-    float field_of_view = float(fieldOfView * 180.0 / pi);
-    float aspect = float(this->win_width) / this->win_height;
-    float znear = (avatarSize > 0.0)
-                ? float(0.5 * avatarSize)
-                : 0.01f;
-    float zfar = (visibilityLimit > 0.0)
-               ? visibilityLimit
-               : 30000.0f;
-    gluPerspective(field_of_view, aspect, znear, zfar);
-
-    this->frustum(openvrml::frustum(field_of_view, aspect, znear, zfar));
+    const float znear = (avatarSize > 0.0)
+                      ? float(0.5 * avatarSize)
+                      : 0.01f;
+    const float zfar = (visibilityLimit > 0.0)
+                     ? visibilityLimit
+                     : 30000.0f;
 
     glMatrixMode(GL_MODELVIEW);
 

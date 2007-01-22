@@ -1,5 +1,34 @@
 2007-01-22 Braden McDaniel  <braden@endoframe.com>
 
+	Separated specification of the view frustum from specification of
+	the viewpoint.  The former needs to happen before the background
+	is rendered; the latter needs to happen after it.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::render()): Render the node_metatypes after
+	setting the view frustum.
+	* src/libopenvrml/openvrml/viewer.cpp
+	(openvrml::viewer::set_frustum(float, float, float)): Added
+	function definition.
+	(openvrml::viewer::set_viewpoint(const vec3f &, const rotation &
+	orientation, float, float)): Removed field_of_view parameter.
+	* src/libopenvrml/openvrml/viewer.h
+	(openvrml::viewer): Added member functions set_frustum and
+	do_set_frustum.  Removed field_of_view parameter from set_viewpoint
+	and do_set_viewpoint.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_set_frustum(float, float, float)): Added
+	function.
+	(openvrml::gl::viewer::do_set_viewpoint(const vec3f &, const
+	openvrml::rotation &, float, float)): Removed fieldOfView
+	parameter; moved specification of the view frustum to
+	do_set_frustum.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer): Added member function do_set_frustum;
+	removed fieldOfView parameter from do_set_viewpoint.
+
+2007-01-22 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(openvrml::gl::viewer::insert_background(const
 	std::vector<float>&, const std::vector<color> &, const

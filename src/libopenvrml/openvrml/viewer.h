@@ -174,9 +174,11 @@ namespace openvrml {
                                    const vec2f & scale,
                                    const vec2f & translation);
 
+        void set_frustum(float field_of_view,
+                         float avatar_size,
+                         float visibility_limit);
         void set_viewpoint(const vec3f & position,
                            const rotation & orientation,
-                           float field_of_view,
                            float avatar_size,
                            float visibility_limit);
 
@@ -323,9 +325,11 @@ namespace openvrml {
                                               const vec2f & scale,
                                               const vec2f & translation) = 0;
 
+        virtual void do_set_frustum(float field_of_view,
+                                    float avatar_size,
+                                    float visibility_limit) = 0;
         virtual void do_set_viewpoint(const vec3f & position,
                                       const rotation & orientation,
-                                      float field_of_view,
                                       float avatar_size,
                                       float visibility_limit) = 0;
 
