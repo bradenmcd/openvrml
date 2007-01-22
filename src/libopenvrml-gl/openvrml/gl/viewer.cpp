@@ -1199,14 +1199,18 @@ do_insert_background(const std::vector<float> & groundAngle,
 
     // Need to separate the geometry from the transformation so the
     // dlist doesn't have to get rebuilt for every mouse movement...
-# if 0
     // Don't bother with a dlist if we aren't drawing anything
-    if (!this->select_mode
-            && (!skyAngle.empty() || !groundAngle.empty() || pixels)) {
+    if (!this->select_mode && (!skyAngle.empty()
+                               || !groundAngle.empty()
+                               || !front.array().empty()
+                               || !back.array().empty()
+                               || !left.array().empty()
+                               || !right.array().empty()
+                               || !top.array().empty()
+                               || !bottom.array().empty())) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
-# endif
 
     glClearColor(r, g, b, a);
     GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
