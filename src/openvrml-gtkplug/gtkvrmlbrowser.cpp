@@ -110,7 +110,23 @@ namespace {
         do_get_resource(const std::string & uri);
     };
 
+
+    class GtkGLViewer;
+
+    class G_GNUC_INTERNAL browser_listener :
+        public openvrml::browser_listener {
+
+        GtkGLViewer & viewer_;
+
+    public:
+        explicit browser_listener(GtkGLViewer & viewer);
+
+    private:
+        virtual void do_browser_changed(const openvrml::browser_event & event);
+    };
+
     class G_GNUC_INTERNAL GtkGLViewer : public openvrml::gl::viewer {
+        friend class browser_listener;
         friend void
         (::gtk_vrml_browser_load_url)(GtkVrmlBrowser * vrml_browser,
                                       const gchar ** url,
@@ -122,8 +138,15 @@ namespace {
         friend gboolean (::gtk_vrml_browser_expose_event)(GtkWidget *,
                                                           GdkEventExpose *,
                                                           gpointer);
+        friend gboolean
+            (::gtk_vrml_browser_motion_notify_event)(GtkWidget *,
+                                                     GdkEventMotion *,
+                                                     gpointer);
 
         ::browser browser_;
+        ::browser_listener browser_listener_;
+        bool browser_initialized_;
+        boost::mutex browser_initialized_mutex_;
         GtkVrmlBrowser & vrml_browser_;
         guint timer;
 
@@ -175,6 +198,11 @@ void gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
     vector<string> url_vec, param_vec;
     while (url && *url) { url_vec.push_back(*(url++)); }
     while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
+
+    {
+        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+        viewer.browser_initialized_ = false;
+    }
     viewer.browser_.load_url(url_vec, param_vec);
 }
 
@@ -182,6 +210,10 @@ void gtk_vrml_browser_set_world(GtkVrmlBrowser * vrml_browser,
                                 openvrml::resource_istream & in)
 {
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(vrml_browser->viewer);
+    {
+        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+        viewer.browser_initialized_ = false;
+    }
     viewer.browser_.set_world(in);
 }
 
@@ -273,6 +305,9 @@ gboolean gtk_vrml_browser_expose_event(GtkWidget * const widget,
     g_assert(gl_context);
     GtkGLViewer & viewer =
         *static_cast<GtkGLViewer *>(GTK_VRML_BROWSER(widget)->viewer);
+    boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+    if (!viewer.browser_initialized_) { return true; }
+
     if (event->count == 0
         && gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
         viewer.redraw();
@@ -455,11 +490,14 @@ gboolean gtk_vrml_browser_motion_notify_event(GtkWidget * const widget,
     g_assert(gl_drawable);
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
+
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        GtkGLViewer * const viewer =
-            static_cast<GtkGLViewer *>(GTK_VRML_BROWSER(widget)->viewer);
-        g_assert(viewer);
-        viewer->input(&info);
+        g_assert(GTK_VRML_BROWSER(widget)->viewer);
+        GtkGLViewer & viewer =
+            *static_cast<GtkGLViewer *>(GTK_VRML_BROWSER(widget)->viewer);
+        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+        if (!viewer.browser_initialized_) { return true; }
+        viewer.input(&info);
     }
     return true;
 }
@@ -538,7 +576,7 @@ namespace {
                 //
                 const int get_url_result = this->streambuf_->get_url_result();
                 if (get_url_result != 0) {
-                    this->setstate(std::ios_base::badbit);
+                    this->setstate(ios_base::badbit);
                 }
 
                 error_guard.dismiss();
@@ -564,19 +602,40 @@ namespace {
             new plugin_resource_istream(uri, this->request_channel_));
     }
 
+    browser_listener::browser_listener(GtkGLViewer & viewer):
+        viewer_(viewer)
+    {}
+
+    void
+    browser_listener::do_browser_changed(const openvrml::browser_event & event)
+    {
+        if (event.id() == openvrml::browser_event::initialized) {
+            using boost::mutex;
+            mutex::scoped_lock lock(this->viewer_.browser_initialized_mutex_);
+            this->viewer_.browser_initialized_ = true;
+            gdk_threads_enter();
+            this->viewer_.post_redraw();
+            gdk_threads_leave();
+        }
+    }
+
     GtkGLViewer::GtkGLViewer(GIOChannel & request_channel,
                              GtkVrmlBrowser & vrml_browser):
         browser_(request_channel),
+        browser_listener_(*this),
+        browser_initialized_(true),
         vrml_browser_(vrml_browser),
         timer(0),
         redrawNeeded(false)
     {
+        this->browser_.add_listener(this->browser_listener_);
         this->browser_.viewer(this);
     }
 
     GtkGLViewer::~GtkGLViewer() throw ()
     {
         if (this->timer) { g_source_remove(timer); }
+        this->browser_.remove_listener(this->browser_listener_);
     }
 
     void GtkGLViewer::post_redraw()
