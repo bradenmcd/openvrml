@@ -134,6 +134,18 @@ namespace openvrml_player {
                     for (size_t i = 0; i < length; ++i) {
                         pos->second->buf_.put(this->in_->get());
                     }
+                } else if (command == "load-url") {
+                    string url;
+                    command_line_stream >> url;
+
+                    const gchar * urls[] = { g_strdup(url.c_str()), 0 };
+                    scope_guard urls_guard =
+                        make_guard(g_free,
+                                   const_cast<void *>(
+                                       static_cast<const void *>(urls[0])));
+                    boost::ignore_unused_variable_warning(urls_guard);
+
+                    gtk_vrml_browser_load_url(this->vrml_browser_, urls, 0);
                 }
             }
 

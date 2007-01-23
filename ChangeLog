@@ -1,3 +1,14 @@
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
+	Added load-url command to openvrml-gtkplug; this facilitates
+	loading a new world into an existing component instance.
+
+	* doc/openvrml-gtkplug.texi: Added description of load-url
+	command.
+	* src/openvrml-gtkplug/main.cpp
+	(command_istream_reader::operator()() const): Call
+	gtk_vrml_browser_load_url in response to a 'load-url' command.
+
 2007-01-22 Braden McDaniel  <braden@endoframe.com>
 
 	Because of the way rendering is currently intertwined with the
