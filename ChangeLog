@@ -1,5 +1,40 @@
 2007-01-22 Braden McDaniel  <braden@endoframe.com>
 
+	Because of the way rendering is currently intertwined with the
+	core runtime, we can't safely do much while the browser is loading
+	a new world.  So, use an openvrml::browser_event::initialized
+	event to trigger making the widget usable again.
+
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(browser_listener): Added implementation of
+	openvrml::browser_listener to respond to browser events.
+	(GtkGLViewer): Granted friendship to browser_listener; granted
+	friendship to gtk_vrml_browser_motion_notify_event.  Added members
+	browser_listener_, browser_initialized_, and
+	browser_initialized_mutex_.
+	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
+	gchar **)): Set browser_initialized_ to false before loading a new
+	world.
+	(gtk_vrml_browser_set_world(GtkVrmlBrowser *,
+	openvrml::resource_istream &)): Set browser_initialized_ to false
+	before loading a new world.
+	(gtk_vrml_browser_expose_event(GtkWidget *, GdkEventExpose *,
+	gpointer)): Don't redraw if browser_initialized_ is false.
+	(gtk_vrml_browser_motion_notify_event(GtkWidget *,
+	GdkEventMotion*, gpointer)): If browser_initialized_ is false,
+	bail.
+	(browser_listener::browser_listener(GtkGLViewer &)): Added
+	constructor definition.
+	(browser_listener::do_browser_changed(const
+	openvrml::browser_event &)): Added function definition.
+	(GtkGLViewer::GtkGLViewer(GIOChannel &, GtkVrmlBrowser &)):
+	Initialize browser_listener_ and browser_initialized_. Add
+	browser_listener_ to the browser.
+	(GtkGLViewer::~GtkGLViewer()): Remove browser_listener_ from the
+	browser.
+
+2007-01-22 Braden McDaniel  <braden@endoframe.com>
+
 	Separated specification of the view frustum from specification of
 	the viewpoint.  The former needs to happen before the background
 	is rendered; the latter needs to happen after it.
