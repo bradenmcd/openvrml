@@ -1,5 +1,19 @@
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Added openvrml-player, a stand-alone container for
+	openvrml-gtkplug; libcurl is used for resource fetching.
+
+	* configure.ac: Output src/openvrml-player/Makefile; check for
+	libglade, libgnome, and libcurl; allow building openvrml-player to
+	be disabled.
+	* src/Makefile.am (SUBDIRS): Added openvrml-player.
+	* src/openvrml-player/Makefile.am: Makefile for openvrml-player.
+	* src/openvrml-player/openvrml-player.glade: libglade XML input.
+	* src/openvrml-player/player.cpp: Stand-alone container for
+	openvrml-gtkplug; libcurl is used for resource fetching.
+
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Added load-url command to openvrml-gtkplug; this facilitates
 	loading a new world into an existing component instance.
 

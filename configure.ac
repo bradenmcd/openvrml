@@ -20,6 +20,7 @@ AC_CONFIG_FILES([Makefile]
                 [src/libopenvrml-gl/Makefile]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
                 [src/openvrml-gtkplug/Makefile]
+                [src/openvrml-player/Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
@@ -111,6 +112,9 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                                      [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
                                      [have_js=no])])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0], , [have_gtk=no])
+PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
+PKG_CHECK_MODULES([GNOME], [libgnome-2.0], , [have_gnome=no])
+PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
 AC_PATH_XTRA
 AX_CHECK_GLU
 
@@ -292,6 +296,17 @@ if test X$enable_gtkplug != Xno; then
 fi
 AM_CONDITIONAL([ENABLE_GTKPLUG],
                [test X$enable_gtkplug != Xno -a X$have_gtk != Xno])
+
+#
+# build openvrml-player
+#
+AC_ARG_ENABLE([player],
+              [AC_HELP_STRING([--disable-player],
+                              [do not build OpenVRML Player])])
+AS_IF([test X$enable_player != Xno],
+      [AS_IF([test X$enable_gtkplug = Xno],
+             [AC_MSG_FAILURE([OpenVRML Player cannot be built without the GtkPlug application])])])
+AM_CONDITIONAL([ENABLE_PLAYER], [test X$enable_player != Xno])
 
 #
 # build Mozilla plug-in
