@@ -305,14 +305,6 @@ if test X$enable_mozilla_plugin != Xno; then
   fi
 fi
 
-if test X$enable_gtkplug != Xno; then
-  if test X$have_gtk = Xno; then
-    AC_MSG_FAILURE([GTK+ is required to build the GtkPlug])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_GTKPLUG],
-               [test X$enable_gtkplug != Xno -a X$have_gtk != Xno])
-
 #
 # build examples
 #

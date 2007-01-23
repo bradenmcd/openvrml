@@ -1,5 +1,10 @@
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Removed redundant checks to see whether
+	openvrml-gtkplug should be built (apparent cruft).
+
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Added load-url command to openvrml-gtkplug; this facilitates
 	loading a new world into an existing component instance.
 
