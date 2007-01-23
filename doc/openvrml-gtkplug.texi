@@ -263,6 +263,22 @@ command; so it should be issued as soon as possible.
 
 @section Commands
 
+@cindex load-url
+@subsection @code{load-url}
+
+The @code{load-url} command initiates loading of a VRML or X3D world.
+
+This command takes the following form:
+
+@example
+load-url @var{url}
+@end example
+
+@table @var
+@item url
+A URL for a VRML or X3D world.
+@end table
+
 @cindex get-url-result
 @subsection @code{get-url-result}
 
