@@ -1,5 +1,18 @@
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	openvrml-player needs libgnomeui; not just libgnome.
+
+	* configure.ac: Check for libgnomeui; export GNOMEUI_CFLAGS and
+	GNOMEUI_LIBS.
+	* src/openvrml-player/Makefile.am
+	(AM_CXXFLAGS): Use GNOMEUI_CFLAGS.
+	(AM_LDFLAGS): Use GNOMEUI_LIBS.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Call gnome_program_init with
+	LIBGNOMEUI_MODULE.
+
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Added openvrml-player, a stand-alone container for
 	openvrml-gtkplug; libcurl is used for resource fetching.
 
