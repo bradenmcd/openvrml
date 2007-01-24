@@ -113,7 +113,7 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                                      [have_js=no])])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0], , [have_gtk=no])
 PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
-PKG_CHECK_MODULES([GNOME], [libgnome-2.0], , [have_gnome=no])
+PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0], , [have_gnomeui=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
 AC_PATH_XTRA
 AX_CHECK_GLU

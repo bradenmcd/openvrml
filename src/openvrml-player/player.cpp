@@ -29,8 +29,7 @@
 # include <boost/ref.hpp>
 # include <curl/curl.h>
 # include <libgnomevfs/gnome-vfs.h>
-# include <libgnome/libgnome.h>
-# include <gtk/gtk.h>
+# include <libgnomeui/libgnomeui.h>
 # include <glade/glade.h>
 
 # ifdef HAVE_CONFIG_H
@@ -140,7 +139,7 @@ int main(int argc, char * argv[])
     GnomeProgram * const program =
         gnome_program_init(app_id,
                            PACKAGE_VERSION,
-                           LIBGNOME_MODULE,
+                           LIBGNOMEUI_MODULE,
                            argc,
                            argv,
                            GNOME_PARAM_GOPTION_CONTEXT, option_context,
