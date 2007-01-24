@@ -1,5 +1,11 @@
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fail if pkg-config doesn't fine libglade-2.0,
+	libgnomeui-2.0, or libcurl openvrml-player is configured to be
+	built.
+
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	openvrml-player needs libgnomeui; not just libgnome.
 
 	* configure.ac: Check for libgnomeui; export GNOMEUI_CFLAGS and
