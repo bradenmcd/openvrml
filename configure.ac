@@ -305,7 +305,14 @@ AC_ARG_ENABLE([player],
                               [do not build OpenVRML Player])])
 AS_IF([test X$enable_player != Xno],
       [AS_IF([test X$enable_gtkplug = Xno],
-             [AC_MSG_FAILURE([OpenVRML Player cannot be built without the GtkPlug application])])])
+             [AC_MSG_FAILURE([OpenVRML Player cannot be built without the GtkPlug application])])
+       AS_IF([test X$have_libglade = Xno],
+             [AC_MSG_FAILURE([libglade is required to build OpenVRML Player])])
+       AS_IF([test X$have_gnomeui = Xno],
+             [AC_MSG_FAILURE([libgnomeui is required to build OpenVRML Player])])
+       AS_IF([test X$have_libcurl = Xno],
+             [AC_MSG_FAILURE([libcurl is required to build OpenVRML Player])])
+])
 AM_CONDITIONAL([ENABLE_PLAYER], [test X$enable_player != Xno])
 
 #
