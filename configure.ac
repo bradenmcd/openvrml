@@ -111,7 +111,12 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                   [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
                                      [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
                                      [have_js=no])])
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0], , [have_gtk=no])
+#
+# openvrml-gtkplug and openvrml-player both use GOption, which was
+# introduced in GLib 2.6.
+#
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
+                  [have_gtk=no])
 PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
 PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0], , [have_gnomeui=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
