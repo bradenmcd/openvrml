@@ -1892,6 +1892,9 @@ namespace openvrml {
     {
         eventin_map_t::iterator pos = this->eventin_map.find(id);
         if (pos == this->eventin_map.end()) {
+            pos = this->eventin_map.find("set_" + id);
+        }
+        if (pos == this->eventin_map.end()) {
             throw unsupported_interface(this->type(),
                                         node_interface::eventin_id,
                                         id);
@@ -1912,6 +1915,9 @@ namespace openvrml {
         OPENVRML_THROW1(unsupported_interface)
     {
         eventout_map_t::iterator pos = this->eventout_map.find(id);
+        if (pos == this->eventout_map.end()) {
+            pos = this->eventout_map.find(id + "_changed");
+        }
         if (pos == this->eventout_map.end()) {
             throw unsupported_interface(this->type(),
                                         node_interface::eventout_id,

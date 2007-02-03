@@ -1,5 +1,19 @@
 2007-02-03 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed PROTO eventIn and eventOut lookup functions to try the
+	"set_" prefix and "_changed" suffix (respectively) when looking up
+	event_listener and event_emitter objects.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(proto_node::do_event_listener(const std::string &)): Prepend
+	"set_" to the eventIn name if the passed value is not found in the
+	eventIn map.
+	(proto_node::do_event_emitter(const std::string &)): Append
+	"_changed" to the eventOut name if the passed value is not found
+	in the eventOut map.
+
+2007-02-03 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Require GLib >= 2.6 since openvrml-gtkplug and
 	openvrml-player use GOption.
 
