@@ -69,6 +69,7 @@ namespace {
 
     G_GNUC_INTERNAL ssize_t write_command(const std::string & command);
     G_GNUC_INTERNAL GSource * curl_source_new(CURLM * multi_handle);
+    G_GNUC_INTERNAL GladeXML * xml_new(GnomeProgram & program);
 
 
     class G_GNUC_INTERNAL curl_stream_data {
@@ -145,26 +146,7 @@ int main(int argc, char * argv[])
                            GNOME_PARAM_GOPTION_CONTEXT, option_context,
                            GNOME_PARAM_NONE);
 
-    const gchar * const gladedir = g_getenv("OPENVRML_PLAYER_GLADEDIR");
-    string glade_file_str;
-    const gchar * glade_file = 0;
-    if (gladedir) {
-        glade_file_str = string(gladedir) + "/openvrml-player.glade";
-        glade_file = glade_file_str.c_str();
-    }
-
-    if (!glade_file) {
-        static const gboolean only_if_exists = true;
-        glade_file = gnome_program_locate_file(program,
-                                               GNOME_FILE_DOMAIN_APP_DATADIR,
-                                               "/glade/openvrml-player.glade",
-                                               only_if_exists,
-                                               0);
-    }
-
-    g_return_val_if_fail(glade_file, EXIT_FAILURE);
-
-    GladeXML * const xml = glade_xml_new(glade_file, 0, 0);
+    GladeXML * const xml = xml_new(*program);
     glade_xml_signal_autoconnect(xml);
 
     //
@@ -308,6 +290,33 @@ int main(int argc, char * argv[])
 }
 
 namespace {
+
+    GladeXML * xml_new(GnomeProgram & program)
+    {
+        using std::string;
+
+        const gchar * const gladedir = g_getenv("OPENVRML_PLAYER_GLADEDIR");
+        string glade_file_str;
+        const gchar * glade_file = 0;
+        if (gladedir) {
+            glade_file_str = string(gladedir) + "/openvrml-player.glade";
+            glade_file = glade_file_str.c_str();
+        }
+
+        if (!glade_file) {
+            static const gboolean only_if_exists = true;
+            glade_file =
+                gnome_program_locate_file(&program,
+                                          GNOME_FILE_DOMAIN_APP_DATADIR,
+                                          "/glade/openvrml-player.glade",
+                                          only_if_exists,
+                                          0);
+        }
+
+        g_return_val_if_fail(glade_file, 0);
+
+        return glade_xml_new(glade_file, 0, 0);
+    }
 
     typedef std::list<GPollFD> poll_fds_t;
 
