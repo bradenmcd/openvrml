@@ -248,10 +248,15 @@ void gtk_vrml_browser_init(GtkVrmlBrowser * const vrml_browser)
 
     gtk_widget_add_events(GTK_WIDGET(vrml_browser),
                           GDK_EXPOSURE_MASK
+                          | GDK_POINTER_MOTION_MASK
                           | GDK_BUTTON_PRESS_MASK
                           | GDK_BUTTON_RELEASE_MASK
                           | GDK_KEY_PRESS_MASK
-                          | GDK_POINTER_MOTION_MASK);
+                          | GDK_FOCUS_CHANGE_MASK);
+
+    g_object_set(G_OBJECT(vrml_browser),
+                 "can-focus", true,
+                 NULL);
 
     g_signal_connect(G_OBJECT(vrml_browser),
                      "destroy_event",
@@ -395,6 +400,8 @@ gboolean gtk_vrml_browser_button_press_event(GtkWidget * const widget,
                                              gpointer)
 {
     using openvrml::gl::viewer;
+
+    gtk_widget_grab_focus(widget);
 
     viewer::event_info info;
     info.event = viewer::event_mouse_click;
