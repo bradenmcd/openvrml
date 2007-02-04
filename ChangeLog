@@ -1,5 +1,11 @@
 2007-02-04 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(gtk_vrml_browser_init(GtkVrmlBrowser *)): Use g_object_connect to
+	set up GtkVrmlBrowser event handlers.
+
+2007-02-04 Braden McDaniel  <braden@endoframe.com>
+
 	Allow the GtkVrmlBrowser widget to take focus.
 
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
