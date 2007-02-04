@@ -258,34 +258,37 @@ void gtk_vrml_browser_init(GtkVrmlBrowser * const vrml_browser)
                  "can-focus", true,
                  NULL);
 
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "destroy_event",
-                     G_CALLBACK(gtk_vrml_browser_destroy),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "expose_event",
-                     G_CALLBACK(gtk_vrml_browser_expose_event),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "configure_event",
-                     G_CALLBACK(gtk_vrml_browser_configure_event),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "key_press_event",
-                     G_CALLBACK(gtk_vrml_browser_key_press_event),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "button_press_event",
-                     G_CALLBACK(gtk_vrml_browser_button_press_event),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "button_release_event",
-                     G_CALLBACK(gtk_vrml_browser_button_release_event),
-                     0);
-    g_signal_connect(G_OBJECT(vrml_browser),
-                     "motion_notify_event",
-                     G_CALLBACK(gtk_vrml_browser_motion_notify_event),
-                     0);
+    g_object_connect(
+        G_OBJECT(vrml_browser),
+
+        "signal::destroy_event",
+        G_CALLBACK(gtk_vrml_browser_destroy),
+        0,
+
+        "signal::expose_event",
+        G_CALLBACK(gtk_vrml_browser_expose_event),
+        0,
+
+        "signal::configure_event",
+        G_CALLBACK(gtk_vrml_browser_configure_event),
+        0,
+
+        "signal::key_press_event",
+        G_CALLBACK(gtk_vrml_browser_key_press_event),
+        0,
+
+        "signal::button_press_event",
+        G_CALLBACK(gtk_vrml_browser_button_press_event),
+        0,
+
+        "signal::button_release_event",
+        G_CALLBACK(gtk_vrml_browser_button_release_event),
+        0,
+
+        "signal::motion_notify_event",
+        G_CALLBACK(gtk_vrml_browser_motion_notify_event),
+        0,
+        NULL);
 }
 
 gboolean gtk_vrml_browser_destroy(GtkWidget * const widget,
