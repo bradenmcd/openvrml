@@ -99,11 +99,11 @@ GType gtk_vrml_browser_get_type()
 namespace {
     G_GNUC_INTERNAL GdkGLConfig * gl_config;
 
-    class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
+    class G_GNUC_INTERNAL browser : public openvrml::browser {
         GIOChannel * request_channel_;
 
     public:
-        explicit resource_fetcher(GIOChannel & request_channel);
+        explicit browser(GIOChannel & request_channel);
 
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
@@ -143,8 +143,7 @@ namespace {
                                                      GdkEventMotion *,
                                                      gpointer);
 
-        ::resource_fetcher fetcher_;
-        openvrml::browser browser_;
+        ::browser browser_;
         ::browser_listener browser_listener_;
         bool browser_initialized_;
         boost::mutex browser_initialized_mutex_;
@@ -524,12 +523,17 @@ gint gtk_vrml_browser_timeout_callback(const gpointer ptr)
 
 namespace {
 
-    resource_fetcher::resource_fetcher(GIOChannel & request_channel):
+    //
+    // We use stdout for communication with the host process; so send
+    // all browser output to stderr.
+    //
+    browser::browser(GIOChannel & request_channel):
+        openvrml::browser(std::cerr, std::cerr),
         request_channel_(&request_channel)
     {}
 
     std::auto_ptr<openvrml::resource_istream>
-    resource_fetcher::do_get_resource(const std::string & uri)
+    browser::do_get_resource(const std::string & uri)
     {
         using openvrml_player::plugin_streambuf;
 
@@ -625,14 +629,9 @@ namespace {
         }
     }
 
-    //
-    // We use stdout for communication with the host process; so send
-    // all browser output to stderr.
-    //
     GtkGLViewer::GtkGLViewer(GIOChannel & request_channel,
                              GtkVrmlBrowser & vrml_browser):
-        fetcher_(request_channel),
-        browser_(this->fetcher_, std::cerr, std::cerr),
+        browser_(request_channel),
         browser_listener_(*this),
         browser_initialized_(true),
         vrml_browser_(vrml_browser),

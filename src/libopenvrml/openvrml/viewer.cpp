@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
 //
 // OpenVRML
 //
@@ -39,8 +39,8 @@
 /**
  * @var openvrml::browser * openvrml::viewer::browser_
  *
- * @brief A pointer to the <code>browser</code> with which the @c viewer is
- *        currently associated.
+ * @brief A pointer to the <code>browser</code> with which the
+ * <code>viewer</code> is currently associated.
  */
 
 /**
@@ -142,19 +142,7 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Get the rendering mode.
- *
- * This function delegates to @c viewer::do_mode.
- *
- * @return the rendering mode.
- */
-openvrml::viewer::rendering_mode openvrml::viewer::mode()
-{
-    return this->do_mode();
-}
-
-/**
- * @fn openvrml::viewer::rendering_mode openvrml::viewer::do_mode()
+ * @fn openvrml::viewer::rendering_mode openvrml::viewer::mode()
  *
  * @brief Get the rendering mode.
  *
@@ -162,19 +150,7 @@ openvrml::viewer::rendering_mode openvrml::viewer::mode()
  */
 
 /**
- * @brief Get the frame rate.
- *
- * This function delegates to @c viewer::do_frame_rate.
- *
- * @return the frame rate.
- */
-double openvrml::viewer::frame_rate()
-{
-    return this->do_frame_rate();
-}
-
-/**
- * @fn double openvrml::viewer::do_frame_rate()
+ * @fn double openvrml::viewer::frame_rate()
  *
  * @brief Get the frame rate.
  *
@@ -182,39 +158,13 @@ double openvrml::viewer::frame_rate()
  */
 
 /**
- * @brief Return view to the last bound Viewpoint.
- *
- * This function delegates to @c viewer::do_reset_user_navigation.
- */
-void openvrml::viewer::reset_user_navigation()
-{
-    this->do_reset_user_navigation();
-}
-
-/**
- * @fn void openvrml::viewer::do_reset_user_navigation()
+ * @fn void openvrml::viewer::reset_user_navigation()
  *
  * @brief Return view to the last bound Viewpoint.
  */
 
 /**
- * @brief Begin a display list.
- *
- * @param[in] id        object identifier.
- * @param[in] retain    whether the object should be retained for reuse.
- *
- * This function delegates to @c viewer::do_begin_object.
- *
- * @return the display object identifier.
- */
-openvrml::viewer::object_t openvrml::viewer::begin_object(const char * id,
-                                                          bool retain)
-{
-    return this->do_begin_object(id, retain);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_begin_object(const char * id, bool retain)
+ * @fn openvrml::viewer::object_t openvrml::viewer::begin_object(const char * id, bool retain)
  *
  * @brief Begin a display list.
  *
@@ -225,58 +175,13 @@ openvrml::viewer::object_t openvrml::viewer::begin_object(const char * id,
  */
 
 /**
- * @brief End a display list.
- *
- * This function delegates to @c viewer::do_end_object.
- */
-void openvrml::viewer::end_object()
-{
-    this->do_end_object();
-}
-
-/**
- * @fn void openvrml::viewer::do_end_object()
+ * @fn void openvrml::viewer::end_object()
  *
  * @brief End a display list.
  */
 
 /**
- * @brief Insert a background into a display list.
- *
- * This function delegates to @c viewer::do_insert_background.
- *
- * @param[in] ground_angle  ground angles.
- * @param[in] ground_color  ground colors.
- * @param[in] sky_angle     sky angles.
- * @param[in] sky_color     sky colors.
- * @param[in] front         front texture.
- * @param[in] back          back texture.
- * @param[in] left          left texture.
- * @param[in] right         right texture.
- * @param[in] top           top texture.
- * @param[in] bottom        bottom texture.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
-                                    const std::vector<color> & ground_color,
-                                    const std::vector<float> & sky_angle,
-                                    const std::vector<color> & sky_color,
-                                    const image & front,
-                                    const image & back,
-                                    const image & left,
-                                    const image & right,
-                                    const image & top,
-                                    const image & bottom)
-{
-    return this->do_insert_background(ground_angle, ground_color,
-                                      sky_angle, sky_color,
-                                      front, back, left, right, top, bottom);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const image & front, const image & back, const image & left, const image & right, const image & top, const image & bottom)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const image & front, const image & back, const image & left, const image & right, const image & top, const image & bottom)
  *
  * @brief Insert a background into a display list.
  *
@@ -295,21 +200,7 @@ openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
  */
 
 /**
- * @brief Insert a box into a display list.
- *
- * This function delegates to @c viewer::do_insert_box.
- *
- * @param[in] size  box dimensions.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t openvrml::viewer::insert_box(const vec3f & size)
-{
-    return this->do_insert_box(size);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_box(const vec3f & size)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_box(const vec3f & size)
  *
  * @brief Insert a box into a display list.
  *
@@ -319,27 +210,7 @@ openvrml::viewer::object_t openvrml::viewer::insert_box(const vec3f & size)
  */
 
 /**
- * @brief Insert a cone into a display list.
- *
- * This function delegates to @c viewer::do_insert_cone.
- *
- * @param[in] height    height.
- * @param[in] radius    radius at base.
- * @param[in] bottom    show the bottom.
- * @param[in] side      show the side.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t openvrml::viewer::insert_cone(const float height,
-                                                         const float radius,
-                                                         const bool bottom,
-                                                         const bool side)
-{
-    return this->do_insert_cone(height, radius, bottom, side);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_cone(float height, float radius, bool bottom, bool side)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_cone(float height, float radius, bool bottom, bool side)
  *
  * @brief Insert a cone into a display list.
  *
@@ -352,30 +223,7 @@ openvrml::viewer::object_t openvrml::viewer::insert_cone(const float height,
  */
 
 /**
- * @brief Insert a cylinder into a display list.
- *
- * This function delegates to @c viewer::do_insert_cylinder.
- *
- * @param[in] height    height.
- * @param[in] radius    radius.
- * @param[in] bottom    show the bottom.
- * @param[in] side      show the side.
- * @param[in] top       show the top.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_cylinder(const float height,
-                                  const float radius,
-                                  const bool bottom,
-                                  const bool side,
-                                  const bool top)
-{
-    return this->do_insert_cylinder(height, radius, bottom, side, top);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_cylinder(float height, float radius, bool bottom, bool side, bool top)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_cylinder(float height, float radius, bool bottom, bool side, bool top)
  *
  * @brief Insert a cylinder into a display list.
  *
@@ -389,41 +237,7 @@ openvrml::viewer::insert_cylinder(const float height,
  */
 
 /**
- * @brief Insert an elevation grid into a display list.
- *
- * This function delegates to @c viewer::do_insert_elevation_grid.
- *
- * @param[in] mask
- * @param[in] height        height field.
- * @param[in] x_dimension   vertices in the x direction.
- * @param[in] z_dimension   vertices in the z direction.
- * @param[in] x_spacing     distance between vertices in the x direction.
- * @param[in] z_spacing     distance between vertices in the z direction.
- * @param[in] color         colors.
- * @param[in] normal        normals.
- * @param[in] tex_coord     texture coordinates.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_elevation_grid(const unsigned int mask,
-                                        const std::vector<float> & height,
-                                        int32 x_dimension,
-                                        int32 z_dimension,
-                                        float x_spacing,
-                                        float z_spacing,
-                                        const std::vector<color> & color,
-                                        const std::vector<vec3f> & normal,
-                                        const std::vector<vec2f> & tex_coord)
-{
-    return this->do_insert_elevation_grid(mask, height,
-                                          x_dimension, z_dimension,
-                                          x_spacing, z_spacing,
-                                          color, normal, tex_coord);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_elevation_grid(unsigned int mask, const std::vector<float> & height, int32 x_dimension, int32 z_dimension, float x_spacing, float z_spacing, const std::vector<color> & color, const std::vector<vec3f> & normal, const std::vector<vec2f> & tex_coord)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_elevation_grid(unsigned int mask, const std::vector<float> & height, int32 x_dimension, int32 z_dimension, float x_spacing, float z_spacing, const std::vector<color> & color, const std::vector<vec3f> & normal, const std::vector<vec2f> & tex_coord)
  *
  * @brief Insert an elevation grid into a display list.
  *
@@ -441,34 +255,7 @@ openvrml::viewer::insert_elevation_grid(const unsigned int mask,
  */
 
 /**
- * @brief Insert an extrusion into a display list.
- *
- * This function delegates to @c viewer::do_insert_extrusion.
- *
- * @param[in] mask
- * @param[in] spine         spine points.
- * @param[in] cross_section cross-sections.
- * @param[in] orientation   cross-section orientations.
- * @param[in] scale         cross-section scales.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_extrusion(unsigned int mask,
-                                   const std::vector<vec3f> & spine,
-                                   const std::vector<vec2f> & cross_section,
-                                   const std::vector<rotation> & orientation,
-                                   const std::vector<vec2f> & scale)
-{
-    return this->do_insert_extrusion(mask,
-                                     spine,
-                                     cross_section,
-                                     orientation,
-                                     scale);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_extrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & cross_section, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_extrusion(unsigned int mask, const std::vector<vec3f> & spine, const std::vector<vec2f> & cross_section, const std::vector<rotation> & orientation, const std::vector<vec2f> & scale)
  *
  * @brief Insert an extrusion into a display list.
  *
@@ -482,31 +269,7 @@ openvrml::viewer::insert_extrusion(unsigned int mask,
  */
 
 /**
- * @brief Insert a line set into a display list.
- *
- * This function delegates to @c viewer::do_insert_line_set.
- *
- * @param[in] coord             coordinates.
- * @param[in] coord_index       coordinate indices.
- * @param[in] color_per_vertex  whether colors are applied per-vertex or per-face.
- * @param[in] color             colors.
- * @param[in] color_index       color indices.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_line_set(const std::vector<vec3f> & coord,
-                                  const std::vector<int32> & coord_index,
-                                  const bool color_per_vertex,
-                                  const std::vector<color> & color,
-                                  const std::vector<int32> & color_index)
-{
-    return this->do_insert_line_set(coord, coord_index,
-                                    color_per_vertex, color, color_index);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_line_set(const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, bool color_per_vertex, const std::vector<color> & color, const std::vector<int32> & color_index)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_line_set(const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, bool color_per_vertex, const std::vector<color> & color, const std::vector<int32> & color_index)
  *
  * @brief Insert a line set into a display list.
  *
@@ -520,24 +283,7 @@ openvrml::viewer::insert_line_set(const std::vector<vec3f> & coord,
  */
 
 /**
- * @brief Insert a point set into a display list.
- *
- * This function delegates to @c viewer::insert_point_set.
- *
- * @param[in] coord     points.
- * @param[in] color     colors.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_point_set(const std::vector<vec3f> & coord,
-                                   const std::vector<color> & color)
-{
-    return this->do_insert_point_set(coord, color);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_point_set(const std::vector<vec3f> & coord, const std::vector<color> & color)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_point_set(const std::vector<vec3f> & coord, const std::vector<color> & color)
  *
  * @brief Insert a point set into a display list.
  *
@@ -548,42 +294,7 @@ openvrml::viewer::insert_point_set(const std::vector<vec3f> & coord,
  */
 
 /**
- * @brief Insert a shell into a display list.
- *
- * This function delegates to @c viewer::do_insert_shell.
- *
- * @param[in] mask
- * @param[in] coord           coordinates.
- * @param[in] coord_index     coordinate indices.
- * @param[in] color           colors.
- * @param[in] color_index     color indices.
- * @param[in] normal          normals.
- * @param[in] normal_index    normal indices.
- * @param[in] tex_coord       texture coordinates.
- * @param[in] tex_coord_index texture coordinate indices.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_shell(unsigned int mask,
-                               const std::vector<vec3f> & coord,
-                               const std::vector<int32> & coord_index,
-                               const std::vector<color> & color,
-                               const std::vector<int32> & color_index,
-                               const std::vector<vec3f> & normal,
-                               const std::vector<int32> & normal_index,
-                               const std::vector<vec2f> & tex_coord,
-                               const std::vector<int32> & tex_coord_index)
-{
-    return this->do_insert_shell(mask,
-                                 coord, coord_index,
-                                 color, color_index,
-                                 normal, normal_index,
-                                 tex_coord, tex_coord_index);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_shell(unsigned int mask, const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, const std::vector<color> & color, const std::vector<int32> & color_index, const std::vector<vec3f> & normal, const std::vector<int32> & normal_index, const std::vector<vec2f> & tex_coord, const std::vector<int32> & tex_coord_index)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_shell(unsigned int mask, const std::vector<vec3f> & coord, const std::vector<int32> & coord_index, const std::vector<color> & color, const std::vector<int32> & color_index, const std::vector<vec3f> & normal, const std::vector<int32> & normal_index, const std::vector<vec2f> & tex_coord, const std::vector<int32> & tex_coord_index)
  *
  * @brief Insert a shell into a display list.
  *
@@ -601,21 +312,7 @@ openvrml::viewer::insert_shell(unsigned int mask,
  */
 
 /**
- * @brief Insert a sphere into a display list.
- *
- * This function delegates to @c viewer::do_insert_sphere.
- *
- * @param[in] radius    sphere radius.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t openvrml::viewer::insert_sphere(const float radius)
-{
-    return this->do_insert_sphere(radius);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_sphere(float radius)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_sphere(float radius)
  *
  * @brief Insert a sphere into a display list.
  *
@@ -625,31 +322,7 @@ openvrml::viewer::object_t openvrml::viewer::insert_sphere(const float radius)
  */
 
 /**
- * @brief Insert a directional light into a display list.
- *
- * This function delegates to @c viewer::do_insert_dir_light.
- *
- * @param[in] ambient_intensity ambient intensity.
- * @param[in] intensity         intensity.
- * @param[in] color             color.
- * @param[in] direction         direction.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_dir_light(const float ambient_intensity,
-                                   const float intensity,
-                                   const color & color,
-                                   const vec3f & direction)
-{
-    return this->do_insert_dir_light(ambient_intensity,
-                                     intensity,
-                                     color,
-                                     direction);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_dir_light(float ambient_intensity, float intensity , const color & color, const vec3f & direction)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_dir_light(float ambient_intensity, float intensity , const color & color, const vec3f & direction)
  *
  * @brief Insert a directional light into a display list.
  *
@@ -662,37 +335,7 @@ openvrml::viewer::insert_dir_light(const float ambient_intensity,
  */
 
 /**
- * @brief Insert a point light into a display list.
- *
- * This function delegates to @c viewer::do_insert_point_light.
- *
- * @param[in] ambient_intensity ambient intensity.
- * @param[in] attenuation       attenuation.
- * @param[in] color             color.
- * @param[in] intensity         intensity.
- * @param[in] location          location.
- * @param[in] radius            radius.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_point_light(const float ambient_intensity,
-                                     const vec3f & attenuation,
-                                     const color & color,
-                                     const float intensity,
-                                     const vec3f & location,
-                                     const float radius)
-{
-    return this->do_insert_point_light(ambient_intensity,
-                                       attenuation,
-                                       color,
-                                       intensity,
-                                       location,
-                                       radius);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_point_light(float ambient_intensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_point_light(float ambient_intensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
@@ -707,46 +350,7 @@ openvrml::viewer::insert_point_light(const float ambient_intensity,
  */
 
 /**
- * @brief Insert a point light into a display list.
- *
- * This function delegates to @c viewer::do_insert_spot_light.
- *
- * @param[in] ambient_intensity ambient intensity.
- * @param[in] attenuation       attenuation.
- * @param[in] beam_width        beam width.
- * @param[in] color             color.
- * @param[in] cut_off_angle     cut-off angle.
- * @param[in] direction         direction.
- * @param[in] intensity         intensity.
- * @param[in] location          location.
- * @param[in] radius            radius.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_spot_light(const float ambient_intensity,
-                                    const vec3f & attenuation,
-                                    const float beam_width,
-                                    const color & color,
-                                    const float cut_off_angle,
-                                    const vec3f & direction,
-                                    const float intensity,
-                                    const vec3f & location,
-                                    const float radius)
-{
-    return this->do_insert_spot_light(ambient_intensity,
-                                      attenuation,
-                                      beam_width,
-                                      color,
-                                      cut_off_angle,
-                                      direction,
-                                      intensity,
-                                      location,
-                                      radius);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_spot_light(float ambient_intensity, const vec3f & attenuation, float beam_width, const color & color, float cut_off_angle, const vec3f & direction, float intensity, const vec3f & location, float radius)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_spot_light(float ambient_intensity, const vec3f & attenuation, float beam_width, const color & color, float cut_off_angle, const vec3f & direction, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
@@ -764,20 +368,7 @@ openvrml::viewer::insert_spot_light(const float ambient_intensity,
  */
 
 /**
- * @brief Insert a reference to an existing object into a display list.
- *
- * This function delegates to @c viewer::do_insert_reference.
- *
- * @return display object identifier.
- */
-openvrml::viewer::object_t
-openvrml::viewer::insert_reference(const object_t existing_object)
-{
-    return this->do_insert_reference(existing_object);
-}
-
-/**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_reference(object_t existing_object)
+ * @fn openvrml::viewer::object_t openvrml::viewer::insert_reference(object_t existing_object)
  *
  * @brief Insert a reference to an existing object into a display list.
  *
@@ -785,19 +376,7 @@ openvrml::viewer::insert_reference(const object_t existing_object)
  */
 
 /**
- * @brief Remove an object from the display list.
- *
- * This function delegates to @c viewer::do_remove_object.
- *
- * @param[in] ref   object handle.
- */
-void openvrml::viewer::remove_object(const object_t ref)
-{
-    this->do_remove_object(ref);
-}
-
-/**
- * @fn void openvrml::viewer::do_remove_object(object_t ref)
+ * @fn void openvrml::viewer::remove_object(object_t ref)
  *
  * @brief Remove an object from the display list.
  *
@@ -805,19 +384,7 @@ void openvrml::viewer::remove_object(const object_t ref)
  */
 
 /**
- * @brief Enable/disable lighting.
- *
- * This function delegates to @c viewer::do_enable_lighting.
- *
- * @param[in] val whether lighting should be enabled.
- */
-void openvrml::viewer::enable_lighting(const bool val)
-{
-    this->do_enable_lighting(val);
-}
-
-/**
- * @fn void openvrml::viewer::do_enable_lighting(bool val)
+ * @fn void openvrml::viewer::enable_lighting(bool val)
  *
  * @brief Enable/disable lighting.
  *
@@ -825,48 +392,18 @@ void openvrml::viewer::enable_lighting(const bool val)
  */
 
 /**
- * @brief Set the fog.
- *
- * This function delegates to @c viewer::do_set_fog.
- *
- * @param[in] color             fog color.
- * @param[in] visibility_range  the distance at which objects are fully obscured by
- *                              fog.
- * @param[in] type              fog type.
- */
-void openvrml::viewer::set_fog(const color & color,
-                               const float visibility_range,
-                               const char * const type)
-{
-    this->do_set_fog(color, visibility_range, type);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_fog(const color & color, float visibility_range, const char * type)
+ * @fn void openvrml::viewer::set_fog(const color & color, float visibility_range, const char * type)
  *
  * @brief Set the fog.
  *
  * @param[in] color             fog color.
  * @param[in] visibility_range  the distance at which objects are fully obscured by
- *                              fog.
+ *                          fog.
  * @param[in] type              fog type.
  */
 
 /**
- * @brief Set the color.
- *
- * This function delegates to @c viewer::do_set_color.
- *
- * @param[in] rgb   red, green, and blue components.
- * @param[in] a     alpha (transparency) component.
- */
-void openvrml::viewer::set_color(const color & rgb, float a)
-{
-    this->do_set_color(rgb, a);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_color(const color & rgb, float a)
+ * @fn void openvrml::viewer::set_color(const color & rgb, float a)
  *
  * @brief Set the color.
  *
@@ -875,34 +412,7 @@ void openvrml::viewer::set_color(const color & rgb, float a)
  */
 
 /**
- * @brief Set the material.
- *
- * This function delegates to @c viewer::do_set_material.
- *
- * @param[in] ambient_intensity ambient intensity.
- * @param[in] diffuse_color     diffuse color.
- * @param[in] emissive_color    emissive color.
- * @param[in] shininess         shininess.
- * @param[in] specular_color    specular color.
- * @param[in] transparency      transparency.
- */
-void openvrml::viewer::set_material(const float ambient_intensity,
-                                    const color & diffuse_color,
-                                    const color & emissive_color,
-                                    const float shininess,
-                                    const color & specular_color,
-                                    const float transparency)
-{
-    this->do_set_material(ambient_intensity,
-                          diffuse_color,
-                          emissive_color,
-                          shininess,
-                          specular_color,
-                          transparency);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_material(float ambient_intensity, const color & diffuse_color, const color & emissive_color, float shininess, const color & specular_color, float transparency)
+ * @fn void openvrml::viewer::set_material(float ambient_intensity, const color & diffuse_color, const color & emissive_color, float shininess, const color & specular_color, float transparency)
  *
  * @brief Set the material.
  *
@@ -915,21 +425,7 @@ void openvrml::viewer::set_material(const float ambient_intensity,
  */
 
 /**
- * @brief Set the material mode.
- *
- * This function delegates to @c viewer::do_set_material_mode.
- *
- * @param[in] tex_components    texture components.
- * @param[in] geometry_color    geometry color.
- */
-void openvrml::viewer::set_material_mode(const size_t tex_components,
-                                         const bool geometry_color)
-{
-    this->do_set_material_mode(tex_components, geometry_color);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_material_mode(size_t tex_components, bool geometry_color)
+ * @fn void openvrml::viewer::set_material_mode(size_t tex_components, bool geometry_color)
  *
  * @brief Set the material mode.
  *
@@ -938,19 +434,7 @@ void openvrml::viewer::set_material_mode(const size_t tex_components,
  */
 
 /**
- * @brief Indicate that a node should be sensitive to the pointing device.
- *
- * This function delegates to @c viewer::do_set_sensitive.
- *
- * @param[in] object    a node.
- */
-void openvrml::viewer::set_sensitive(node * const object)
-{
-    this->do_set_sensitive(object);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_sensitive(node * object)
+ * @fn void openvrml::viewer::set_sensitive(node * object)
  *
  * @brief Indicate that a node should be sensitive to the pointing device.
  *
@@ -958,28 +442,7 @@ void openvrml::viewer::set_sensitive(node * const object)
  */
 
 /**
- * @brief Create a texture object.
- *
- * This function delegates to @c viewer::do_insert_texture.
- *
- * @param[in] img           image.
- * @param[in] repeat_s      repeat in the S direction.
- * @param[in] repeat_t      repeat in the T direction.
- * @param[in] retainHint    whether the texture is likely to be reused.
- *
- * @return a handle to the inserted texture.
- */
-openvrml::viewer::texture_object_t
-openvrml::viewer::insert_texture(const image & img,
-                                 const bool repeat_s,
-                                 const bool repeat_t,
-                                 const bool retainHint)
-{
-    return this->do_insert_texture(img, repeat_s, repeat_t, retainHint);
-}
-
-/**
- * @fn openvrml::viewer::texture_object_t openvrml::viewer::do_insert_texture(const image & img, bool repeat_s, bool repeat_t, bool retainHint)
+ * @fn openvrml::viewer::texture_object_t openvrml::viewer::insert_texture(const image & img, bool repeat_s, bool repeat_t, bool retainHint)
  *
  * @brief Create a texture object.
  *
@@ -992,21 +455,7 @@ openvrml::viewer::insert_texture(const image & img,
  */
 
 /**
- * @brief Insert a texture into the display list from an existing handle.
- *
- * This function delegates to @c viewer::do_insert_texture_reference.
- *
- * @param[in] ref           texture handle.
- * @param[in] components    number of components.
- */
-void openvrml::viewer::insert_texture_reference(const texture_object_t ref,
-                                                const size_t components)
-{
-    this->do_insert_texture_reference(ref, components);
-}
-
-/**
- * @fn void openvrml::viewer::do_insert_texture_reference(texture_object_t ref, size_t components)
+ * @fn void openvrml::viewer::insert_texture_reference(texture_object_t ref, size_t components)
  *
  * @brief Insert a texture into the display list from an existing handle.
  *
@@ -1015,19 +464,7 @@ void openvrml::viewer::insert_texture_reference(const texture_object_t ref,
  */
 
 /**
- * @brief Remove a texture from the display list.
- *
- * This function delegates to @c viewer::do_remove_texture_object.
- *
- * @param[in] ref   texture handle.
- */
-void openvrml::viewer::remove_texture_object(const texture_object_t ref)
-{
-    this->do_remove_texture_object(ref);
-}
-
-/**
- * @fn void openvrml::viewer::do_remove_texture_object(texture_object_t ref)
+ * @fn void openvrml::viewer::remove_texture_object(texture_object_t ref)
  *
  * @brief Remove a texture from the display list.
  *
@@ -1035,25 +472,7 @@ void openvrml::viewer::remove_texture_object(const texture_object_t ref)
  */
 
 /**
- * @brief Set the texture transform.
- *
- * This function delegates to @c viewer::do_set_texture_transform.
- *
- * @param[in] center        center.
- * @param[in] rotation      rotation.
- * @param[in] scale         scale.
- * @param[in] translation   translation.
- */
-void openvrml::viewer::set_texture_transform(const vec2f & center,
-                                             const float rotation,
-                                             const vec2f & scale,
-                                             const vec2f & translation)
-{
-    this->do_set_texture_transform(center, rotation, scale, translation);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_texture_transform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
+ * @fn void openvrml::viewer::set_texture_transform(const vec2f & center, float rotation, const vec2f & scale, const vec2f & translation)
  *
  * @brief Set the texture transform.
  *
@@ -1064,80 +483,19 @@ void openvrml::viewer::set_texture_transform(const vec2f & center,
  */
 
 /**
- * @brief Set the frustum.
- *
- * This function delegates to @c viewer::do_set_frustum.
- *
- * @param[in] field_of_view     field of view.
- * @param[in] avatar_size       avatar size.
- * @param[in] visibility_limit  visibility limit.
- */
-void openvrml::viewer::set_frustum(const float field_of_view,
-                                   const float avatar_size,
-                                   const float visibility_limit)
-{
-    this->do_set_frustum(field_of_view, avatar_size, visibility_limit);
-}
-
-/**
- * @fn void openvrml::viewer::set_frustum(float field_of_view, float avatar_size, float visibility_limit)
- *
- * @brief Set the frustum.
- *
- * @param[in] field_of_view     field of view.
- * @param[in] avatar_size       avatar size.
- * @param[in] visibility_limit  visibility limit.
- */
-
-/**
- * @brief Set the viewpoint.
- *
- * This function delegates to @c viewer::do_set_viewpoint.
- *
- * @param[in] position          position.
- * @param[in] orientation       orientation.
- * @param[in] avatar_size       avatar size.
- * @param[in] visibility_limit  visiblity limit.
- */
-void openvrml::viewer::set_viewpoint(const vec3f & position,
-                                     const rotation & orientation,
-                                     const float avatar_size,
-                                     const float visibility_limit)
-{
-    this->do_set_viewpoint(position,
-                           orientation,
-                           avatar_size,
-                           visibility_limit);
-}
-
-/**
- * @fn void openvrml::viewer::do_set_viewpoint(const vec3f & position, const rotation & orientation, float avatar_size, float visibility_limit)
+ * @fn void openvrml::viewer::set_viewpoint(const vec3f & position, const rotation & orientation, float field_of_view, float avatar_size, float visibility_limit)
  *
  * @brief Set the viewpoint.
  *
  * @param[in] position          position.
  * @param[in] orientation       orientation.
+ * @param[in] field_of_view     field of view.
  * @param[in] avatar_size       avatar size.
  * @param[in] visibility_limit  visiblity limit.
  */
 
 /**
- * @brief Transform the modelview.
- *
- * Make the modelview matrix the result of multiplying @p mat by the current
- * modelview matrix.
- *
- * This function delegates to @c viewer::do_transform.
- *
- * @param[in] mat   transformation matrix.
- */
-void openvrml::viewer::transform(const mat4f & mat)
-{
-    this->do_transform(mat);
-}
-
-/**
- * @fn void openvrml::viewer::do_transform(const mat4f & mat)
+ * @fn void openvrml::viewer::transform(const mat4f & mat)
  *
  * @brief Transform the modelview.
  *
@@ -1148,21 +506,7 @@ void openvrml::viewer::transform(const mat4f & mat)
  */
 
 /**
- * @brief Transform @p points by the current modelview matrix.
- *
- * This function delegates to @c viewer::do_transform_points.
- *
- * @param[in] nPoints   number of points.
- * @param[in] point     pointer to the first point in an array.
- */
-void openvrml::viewer::transform_points(const size_t nPoints,
-                                        vec3f * const point) const
-{
-    this->do_transform_points(nPoints, point);
-}
-
-/**
- * @fn void openvrml::viewer::do_transform_points(size_t nPoints, vec3f * point) const
+ * @fn void openvrml::viewer::transform_points(size_t nPoints, vec3f * point) const
  *
  * @brief Transform @p points by the current modelview matrix.
  *
@@ -1171,9 +515,12 @@ void openvrml::viewer::transform_points(const size_t nPoints,
  */
 
 /**
- * @brief Intersect the given bounding volume with the view volume.
- *
- * This function delegates to @c viewer::do_intersect_view_volume.
+ * Intersect the given bounding volume with the view volume. This
+ * goes into the viewer to provide a hook for systems that use
+ * non-standard view volumes. Most subclasses should be able to use
+ * the default implementation provided here. If your view volume is
+ * so strange that there's no way to cull to is, then reimplement to
+ * always return bounding_volume::inside.
  *
  * @param[in] bvolume   the bounding volume to intersect with the view volume.
  *
@@ -1182,26 +529,6 @@ void openvrml::viewer::transform_points(const size_t nPoints,
  */
 openvrml::bounding_volume::intersection
 openvrml::viewer::intersect_view_volume(const bounding_volume & bvolume) const
-{
-    return this->do_intersect_view_volume(bvolume);
-}
-
-/**
- * @brief Intersect the given bounding volume with the view volume.
- *
- * This goes into the viewer to provide a hook for systems that use
- * nonstandard view volumes.  Most subclasses should be able to use the
- * default implementation provided here.  If your view volume is so strange
- * that there's no way to cull to it, then reimplement to return
- * @c bounding_volume::inside always.
- *
- * @param[in] bvolume   the bounding volume to intersect with the view volume.
- *
- * @return @c bounding_volume::inside, @c bounding_volume::outside, or
- *         @c bounding_volume::partial.
- */
-openvrml::bounding_volume::intersection
-openvrml::viewer::do_intersect_view_volume(const bounding_volume & bvolume) const
 {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
@@ -1216,27 +543,7 @@ openvrml::viewer::do_intersect_view_volume(const bounding_volume & bvolume) cons
 }
 
 /**
- * @brief Draw a bounding sphere.
- *
- * Used for debugging view culling. Probably should be draw_bounding_volume and
- * handle axis_aligned_bounding_boxes as well.
- *
- * This function delegates to @c viewer::do_draw_bounding_sphere.
- *
- * @param[in] bs            a bounding sphere; if max, will not be drawn
- * @param[in] intersection  one of the bvolume intersection test constants, or 4
- *                          to draw in unique way. (useful for debugging)
- */
-void
-openvrml::viewer::
-draw_bounding_sphere(const bounding_sphere & bs,
-                     const bounding_volume::intersection intersection)
-{
-    this->do_draw_bounding_sphere(bs, intersection);
-}
-
-/**
- * @fn void openvrml::viewer::do_draw_bounding_sphere(const bounding_sphere & bs, bounding_volume::intersection intersection)
+ * @fn void openvrml::viewer::draw_bounding_sphere(const bounding_sphere & bs, bounding_volume::intersection intersection)
  *
  * @brief Draw a bounding sphere.
  *
@@ -1245,14 +552,10 @@ draw_bounding_sphere(const bounding_sphere & bs,
  *
  * @param[in] bs            a bounding sphere; if max, will not be drawn
  * @param[in] intersection  one of the bvolume intersection test constants, or 4
- *                          to draw in unique way. (useful for debugging)
+ *                      to draw in unique way. (useful for debugging)
  */
 
 /**
- * @brief The frustum.
- *
- * This function delegates to @c viewer::do_frustum.
- *
  * @todo We're forcing everybody to carry around a frustum
  *       whether they want it or not. It shouldn't be used except
  *       for debugging and stuff since it might not be valid in some
@@ -1262,41 +565,15 @@ draw_bounding_sphere(const bounding_sphere & bs,
  */
 const openvrml::frustum & openvrml::viewer::frustum() const
 {
-    return this->do_frustum();
-}
-
-/**
- * @todo We're forcing everybody to carry around a frustum
- *       whether they want it or not. It shouldn't be used except
- *       for debugging and stuff since it might not be valid in some
- *       implementations
- *
- * @return the frustum.
- */
-const openvrml::frustum & openvrml::viewer::do_frustum() const
-{
     return this->frustum_;
 }
 
 /**
  * @brief Set the frustum.
  *
- * This function delegates to
- * <code>viewer::do_frustum(const openvrml::frustum &)<code>.
- *
  * @param[in] f new frustum value.
  */
 void openvrml::viewer::frustum(const openvrml::frustum & f)
-{
-    this->do_frustum(f);
-}
-
-/**
- * @brief Set the frustum.
- *
- * @param[in] f new frustum value.
- */
-void openvrml::viewer::do_frustum(const openvrml::frustum & f)
 {
     this->frustum_ = f;
 }

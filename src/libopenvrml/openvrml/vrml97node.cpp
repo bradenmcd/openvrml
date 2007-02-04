@@ -1633,7 +1633,7 @@ namespace {
         light_node(type, scope),
         abstract_node<Derived>(type, scope),
         ambient_intensity_(*this, 0.0),
-        color_(*this, openvrml::make_color(1.0, 1.0, 1.0)),
+        color_(*this, openvrml::color(1.0, 1.0, 1.0)),
         intensity_(*this, 1.0),
         on_(*this, true)
     {}
@@ -2177,7 +2177,7 @@ namespace {
         child_node(type, scope),
         grouping_node(type, scope),
         abstract_node<Derived>(type, scope),
-        bbox_size_(make_vec3f(-1.0, -1.0, -1.0)),
+        bbox_size_(vec3f(-1.0, -1.0, -1.0)),
         add_children_listener_(*this),
         remove_children_listener_(*this),
         children_(*this),
@@ -4976,10 +4976,10 @@ namespace {
     {
         using openvrml::color;
         static const float unlit_ambient_intensity(1);
-        static const color unlit_diffuse_color = make_color(1, 1, 1);
-        static const color unlit_emissive_color = make_color(1, 1, 1);
+        static const color unlit_diffuse_color(1, 1, 1);
+        static const color unlit_emissive_color(1, 1, 1);
         static const float unlit_shininess(0);
-        static const color unlit_specular_color = make_color(1, 1, 1);
+        static const color unlit_specular_color(1, 1, 1);
         static const float unlit_transparency(0);
         v.set_material(unlit_ambient_intensity,
                        unlit_diffuse_color,
@@ -5010,7 +5010,7 @@ namespace {
             color diffuse = material->diffuse_color();
             size_t nTexComponents = texture ? texture->image().comp() : 0;
             if (nTexComponents == 2 || nTexComponents == 4) { trans = 0.0; }
-            if (nTexComponents >= 3) { diffuse = make_color(1.0, 1.0, 1.0); }
+            if (nTexComponents >= 3) { diffuse = color(1.0, 1.0, 1.0); }
 
             v.enable_lighting(true);   // turn lighting on for this object
             v.set_material(material->ambient_intensity(),
@@ -5033,10 +5033,10 @@ namespace {
             if (texture_transform) {
                 texture_transform->render_texture_transform(v);
             } else {
-                static const vec2f center = make_vec2f(0.0, 0.0);
+                static const vec2f center(0.0, 0.0);
                 static const float rotation = 0.0;
-                static const vec2f scale = make_vec2f(1.0, 1.0);
-                static const vec2f translation = make_vec2f(0.0, 0.0);
+                static const vec2f scale(1.0, 1.0);
+                static const vec2f translation(0.0, 0.0);
                 v.set_texture_transform(center, rotation, scale, translation);
             }
             texture->render_texture(v);
@@ -6660,7 +6660,7 @@ namespace {
         right_url_(*this),
         top_url_(*this),
         sky_angle_(*this),
-        sky_color_(*this, std::vector<color>(1, make_color(0.0, 0.0, 0.0))),
+        sky_color_(*this, std::vector<color>(1, color(0.0, 0.0, 0.0))),
         is_bound_emitter_(*this, this->is_bound_),
         bind_time_emitter_(*this, this->bind_time_),
         front_needs_update(true),
@@ -7737,9 +7737,9 @@ namespace {
         mat4f result;
 
         // Viewer position in local coordinate system
-        const vec3f position = make_vec3f(inverse_modelview[3][0],
-                                          inverse_modelview[3][1],
-                                          inverse_modelview[3][2]).normalize();
+        const vec3f position = vec3f(inverse_modelview[3][0],
+                                     inverse_modelview[3][1],
+                                     inverse_modelview[3][2]).normalize();
 
         // Viewer-alignment
         if ((node.axis_of_rotation_.sfvec3f::value()[0] == 0)
@@ -7748,9 +7748,9 @@ namespace {
             //
             // Viewer's up vector
             //
-            const vec3f up = make_vec3f(inverse_modelview[1][0],
-                                        inverse_modelview[1][1],
-                                        inverse_modelview[1][2]).normalize();
+            const vec3f up = vec3f(inverse_modelview[1][0],
+                                   inverse_modelview[1][1],
+                                   inverse_modelview[1][2]).normalize();
 
             // get x-vector from the cross product of Viewer's
             // up vector and billboard-to-viewer vector.
@@ -7793,7 +7793,7 @@ namespace {
             // system has to be rotated around the Y axis to new coordinate system.
             float angle = float(acos(nz[2]));
             if(nz[0] > 0) { angle = -angle; }
-            result = make_rotation_mat4f(make_rotation(Y, angle));
+            result = mat4f::rotation(rotation(Y, angle));
         }
         return result;
     }
@@ -7812,7 +7812,7 @@ namespace {
         child_node(type, scope),
         grouping_node(type, scope),
         grouping_node_base<billboard_node>(type, scope),
-        axis_of_rotation_(*this, make_vec3f(0.0, 1.0, 0.0)),
+        axis_of_rotation_(*this, vec3f(0.0, 1.0, 0.0)),
         xformObject(0)
     {}
 
@@ -7996,7 +7996,7 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<box_node>(type, scope),
         geometry_node(type, scope),
-        size(make_vec3f(2.0, 2.0, 2.0)),
+        size(vec3f(2.0, 2.0, 2.0)),
         solid_(true)
     {
         this->bounding_volume_dirty(true); // lazy calc of bvolume
@@ -10108,9 +10108,7 @@ namespace {
         track_point_changed_emitter_(*this, this->track_point_changed_),
         is_over_emitter_(*this, this->is_over_),
         rotation_val(0.0f),
-        disk(false),
-        activationMatrix(make_mat4f()),
-        modelview(make_mat4f())
+        disk(false)
     {
         this->node::modified(true);
     }
@@ -10157,9 +10155,9 @@ namespace {
                 this->is_active_.value(active);
 
                 // set activation point in local coords
-                vec3f v = make_vec3f(static_cast<float>(p[0]),
-                                     static_cast<float>(p[1]),
-                                     static_cast<float>(p[2]));
+                vec3f v(static_cast<float>(p[0]),
+                        static_cast<float>(p[1]),
+                        static_cast<float>(p[2]));
                 this->activationMatrix = this->modelview.inverse();
                 v *= this->activationMatrix;
                 this->activationPoint = v;
@@ -10168,7 +10166,7 @@ namespace {
                 v.y(this->activationMatrix[2][1]);
                 v.z(this->activationMatrix[2][2]);
                 const vec3f bearing = v.normalize();
-                const vec3f up = make_vec3f(0.0, 1.0, 0.0);
+                const vec3f up(0.0, 1.0, 0.0);
                 double ang = acos(bearing.dot(up));
                 if (ang > pi_2) { ang = pi - ang; }
                 this->disk = (ang < this->disk_angle_.sffloat::value());
@@ -10193,23 +10191,23 @@ namespace {
                 using openvrml_::fequal;
 
                 // get local coord for touch point
-                vec3f Vec = make_vec3f(static_cast<float>(p[0]),
-                                       static_cast<float>(p[1]),
-                                       static_cast<float>(p[2]));
+                vec3f Vec(static_cast<float>(p[0]),
+                          static_cast<float>(p[1]),
+                          static_cast<float>(p[2]));
                 Vec = Vec * this->activationMatrix;
                 this->track_point_changed_.value(Vec);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
                 vec3f tempv;
                 float rot, radius;
-                vec3f dir1 = make_vec3f(Vec[0], 0, Vec[2]);
+                vec3f dir1(Vec[0], 0, Vec[2]);
                 radius = this->disk
                     ? 1.0f
                     : dir1.length();
                 dir1 = dir1.normalize();
-                vec3f dir2 = make_vec3f(this->activationPoint.x(),
-                                        0,
-                                        this->activationPoint.z());
+                vec3f dir2(this->activationPoint.x(),
+                           0,
+                           this->activationPoint.z());
                 dir2 = dir2.normalize();
                 tempv = dir2 * dir1;
                 vec3f cx(tempv);
@@ -10230,7 +10228,7 @@ namespace {
                 }
                 this->rotation_val = rot;
                 this->rotation_changed_.sfrotation::value(
-                    make_rotation(0, 1, 0, rot));
+                    openvrml::rotation(0, 1, 0, rot));
 
                 node::emit_event(this->rotation_changed_emitter_, timestamp);
             }
@@ -10459,7 +10457,7 @@ namespace {
         child_node(type, scope),
         light_node(type, scope),
         abstract_light_node<directional_light_node>(type, scope),
-        direction_(*this, make_vec3f(0.0, 0.0, -1.0))
+        direction_(*this, vec3f(0.0, 0.0, -1.0))
     {}
 
     /**
@@ -11531,27 +11529,27 @@ namespace {
 
     const openvrml::vec2f extrusionDefaultCrossSection_[] =
     {
-        openvrml::make_vec2f(1.0, 1.0),
-        openvrml::make_vec2f(1.0, -1.0),
-        openvrml::make_vec2f(-1.0, -1.0),
-        openvrml::make_vec2f(-1.0, 1.0),
-        openvrml::make_vec2f(1.0, 1.0)
+        openvrml::vec2f(1.0, 1.0),
+        openvrml::vec2f(1.0, -1.0),
+        openvrml::vec2f(-1.0, -1.0),
+        openvrml::vec2f(-1.0, 1.0),
+        openvrml::vec2f(1.0, 1.0)
     };
 
     const openvrml::vec2f extrusionDefaultScale_[] =
     {
-        openvrml::make_vec2f(1.0, 1.0)
+        openvrml::vec2f(1.0, 1.0)
     };
 
     const openvrml::rotation extrusionDefaultOrientation_[] =
     {
-        openvrml::make_rotation(0.0, 0.0, 1.0, 0.0)
+        openvrml::rotation(0.0, 0.0, 1.0, 0.0)
     };
 
     const openvrml::vec3f extrusionDefaultSpine_[] =
     {
-        openvrml::make_vec3f(0.0, 0.0, 0.0),
-        openvrml::make_vec3f(0.0, 1.0, 0.0)
+        openvrml::vec3f(0.0, 0.0, 0.0),
+        openvrml::vec3f(0.0, 1.0, 0.0)
     };
 
     /**
@@ -12027,7 +12025,7 @@ namespace {
         abstract_node<fog_node>(type, scope),
         child_node(type, scope),
         set_bind_listener_(*this),
-        color_(*this, openvrml::make_color(1.0, 1.0, 1.0)),
+        color_(*this, openvrml::color(1.0, 1.0, 1.0)),
         fog_type_(*this, "LINEAR"),
         visibility_range_(*this, 0.0),
         is_bound_emitter_(*this, this->is_bound_),
@@ -14832,10 +14830,10 @@ namespace {
         abstract_node<material_node>(type, scope),
         openvrml::material_node(type, scope),
         ambient_intensity_(*this, 0.2f),
-        diffuse_color_(*this, make_color(0.8f, 0.8f, 0.8f)),
-        emissive_color_(*this, make_color(0.0, 0.0, 0.0)),
+        diffuse_color_(*this, color(0.8f, 0.8f, 0.8f)),
+        emissive_color_(*this, color(0.0, 0.0, 0.0)),
         shininess_(*this, 0.2f),
-        specular_color_(*this, make_color(0.0, 0.0, 0.0)),
+        specular_color_(*this, color(0.0, 0.0, 0.0)),
         transparency_(*this, 0.0)
     {}
 
@@ -16956,9 +16954,8 @@ namespace {
                         } else if (angle < 0.0) {
                             angle += float(2.0 * pi);
                         }
-                        const rotation value =
-                            make_rotation(make_vec3f(x, y, z).normalize(),
-                                          angle);
+                        const rotation value(vec3f(x, y, z).normalize(),
+                                             angle);
                         node.value_changed_.value(value);
                         break;
                     }
@@ -17570,17 +17567,15 @@ namespace {
         pointing_device_sensor_node(type, scope),
         auto_offset_(*this, true),
         enabled_(*this, true),
-        max_position_(*this, make_vec2f(-1.0, -1.0)),
-        min_position_(*this, make_vec2f(0.0, 0.0)),
-        offset_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        max_position_(*this, vec2f(-1.0, -1.0)),
+        min_position_(*this, vec2f(0.0, 0.0)),
+        offset_(*this, vec3f(0.0, 0.0, 0.0)),
         description_(*this),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
         translation_changed_emitter_(*this, this->translation_changed_),
-        is_over_emitter_(*this, this->is_over_),
-        activationMatrix(make_mat4f()),
-        modelview(make_mat4f())
+        is_over_emitter_(*this, this->is_over_)
     {
         this->node::modified(true);
     }
@@ -17634,9 +17629,9 @@ namespace {
                 // Become active
                 this->is_active_.value(active);
 
-                vec3f V = make_vec3f(static_cast<float>(p[0]),
-                                     static_cast<float>(p[1]),
-                                     static_cast<float>(p[2]));
+                vec3f V(static_cast<float>(p[0]),
+                        static_cast<float>(p[1]),
+                        static_cast<float>(p[2]));
                 this->activationMatrix = this->modelview.inverse();
                 V *= this->activationMatrix;
                 this->activationPoint.value(V);
@@ -17654,19 +17649,19 @@ namespace {
                 }
             } else if (active) {
                 // Tracking
-                vec3f V = make_vec3f(static_cast<float>(p[0]),
-                                     static_cast<float>(p[1]),
-                                     static_cast<float>(p[2]));
+                vec3f V(static_cast<float>(p[0]),
+                        static_cast<float>(p[1]),
+                        static_cast<float>(p[2]));
                 V *= this->activationMatrix;
                 this->track_point_changed_.value(V);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
 
-                vec3f t = make_vec3f(V[0] - this->activationPoint.value().x()
-                                     + this->offset_.sfvec3f::value().x(),
-                                     V[1] - this->activationPoint.value().y()
-                                     + this->offset_.sfvec3f::value().y(),
-                                     0.0);
+                vec3f t(V[0] - this->activationPoint.value().x()
+                        + this->offset_.sfvec3f::value().x(),
+                        V[1] - this->activationPoint.value().y()
+                        + this->offset_.sfvec3f::value().y(),
+                        0.0);
 
                 const vec2f & min_pos = this->min_position_.sfvec2f::value();
                 const vec2f & max_pos = this->max_position_.sfvec2f::value();
@@ -17957,8 +17952,8 @@ namespace {
         light_node(type, scope),
         abstract_light_node<point_light_node>(type, scope),
         scoped_light_node(type, scope),
-        attenuation_(*this, make_vec3f(1.0, 0.0, 0.0)),
-        location_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
+        location_(*this, vec3f(0.0, 0.0, 0.0)),
         radius_(*this, 100)
     {}
 
@@ -18913,9 +18908,9 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<proximity_sensor_node>(type, scope),
         child_node(type, scope),
-        center_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        center_(*this, vec3f(0.0, 0.0, 0.0)),
         enabled_(*this, true),
-        size_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        size_(*this, vec3f(0.0, 0.0, 0.0)),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         position_changed_emitter_(*this, this->position_changed_),
@@ -19006,8 +19001,8 @@ namespace {
 
             // Check for movement within the box
             if (wasIn || inside) {
-                if (this->position_changed_.value() != make_vec3f(x, y, z)) {
-                    this->position_changed_.value(make_vec3f(x, y, z));
+                if (this->position_changed_.value() != vec3f(x, y, z)) {
+                    this->position_changed_.value(vec3f(x, y, z));
                     node::emit_event(this->position_changed_emitter_,
                                      timeNow.value());
                 }
@@ -19505,7 +19500,7 @@ namespace {
         child_node(type, scope),
         appearance_(*this),
         geometry_(*this),
-        bbox_size_(make_vec3f(-1,-1,-1)),
+        bbox_size_(vec3f(-1,-1,-1)),
         viewerObject(0)
     {}
 
@@ -19601,7 +19596,7 @@ namespace {
                 // (notably point and line sets) are drawn with the emissive
                 // color.
                 //
-                color c = make_color(1.0, 1.0, 1.0);
+                color c(1.0, 1.0, 1.0);
                 float transparency = 0.0;
                 if (material) {
                     if (geometry && geometry->emissive()) {
@@ -19986,7 +19981,7 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<sound_node>(type, scope),
         child_node(type, scope),
-        direction_(*this, make_vec3f(0, 0, 1)),
+        direction_(*this, vec3f(0, 0, 1)),
         intensity_(*this, 1.0f),
         location_(*this),
         max_back_(*this, 10.0f),
@@ -20503,14 +20498,13 @@ namespace {
         pointing_device_sensor_node(type, scope),
         auto_offset_(*this, true),
         enabled_(*this, true),
-        offset_(*this, openvrml::make_rotation(0.0, 1.0, 0.0, 0.0)),
+        offset_(*this, openvrml::rotation(0.0, 1.0, 0.0, 0.0)),
         description_(*this),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         rotation_changed_emitter_(*this, this->rotation_changed_),
         track_point_changed_emitter_(*this, this->track_point_changed_),
-        is_over_emitter_(*this, this->is_over_),
-        modelview(make_mat4f())
+        is_over_emitter_(*this, this->is_over_)
     {
         this->node::modified(true);
     }
@@ -20565,9 +20559,9 @@ namespace {
                 this->is_active_.value(active);
 
                 // set activation point in world coords
-                const vec3f floatVec = make_vec3f(static_cast<float>(p[0]),
-                                                  static_cast<float>(p[1]),
-                                                  static_cast<float>(p[2]));
+                const vec3f floatVec(static_cast<float>(p[0]),
+                                     static_cast<float>(p[1]),
+                                     static_cast<float>(p[2]));
                 this->activationPoint.value(floatVec);
 
                 if (this->auto_offset_.sfbool::value()) {
@@ -20598,18 +20592,18 @@ namespace {
             // Tracking
             else if (active) {
                 // get local coord for touch point
-                vec3f V = make_vec3f(static_cast<float>(p[0]),
-                                     static_cast<float>(p[1]),
-                                     static_cast<float>(p[2]));
+                vec3f V(static_cast<float>(p[0]),
+                        static_cast<float>(p[1]),
+                        static_cast<float>(p[2]));
                 mat4f M = this->modelview.inverse();
                 V = V * M;
                 this->track_point_changed_.value(V);
                 node::emit_event(this->track_point_changed_emitter_,
                                  timestamp);
 
-                vec3f V2 = make_vec3f(static_cast<float>(p[0]),
-                                      static_cast<float>(p[1]),
-                                      static_cast<float>(p[2]));
+                vec3f V2(static_cast<float>(p[0]),
+                         static_cast<float>(p[1]),
+                         static_cast<float>(p[2]));
                 vec3f tempv = V2 - this->centerPoint.value();
                 vec3f dir1(tempv);
 
@@ -20628,8 +20622,8 @@ namespace {
                 vec3f cx(tempv);
                 cx = cx.normalize();
 
-                openvrml::rotation newRot =
-                    make_rotation(cx, dist * float(acos(dir1.dot(dir2))));
+                openvrml::rotation newRot(cx,
+                                          dist * float(acos(dir1.dot(dir2))));
                 if (this->auto_offset_.sfbool::value()) {
                     newRot = newRot * this->offset_.sfrotation::value();
                 }
@@ -20973,11 +20967,11 @@ namespace {
         light_node(type, scope),
         abstract_light_node<spot_light_node>(type, scope),
         scoped_light_node(type, scope),
-        attenuation_(*this, make_vec3f(1.0, 0.0, 0.0)),
+        attenuation_(*this, vec3f(1.0, 0.0, 0.0)),
         beam_width_(*this, 1.570796f),
         cut_off_angle_(*this, 0.785398f),
-        direction_(*this, make_vec3f(0.0, 0.0, -1.0)),
-        location_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        direction_(*this, vec3f(0.0, 0.0, -1.0)),
+        location_(*this, vec3f(0.0, 0.0, 0.0)),
         radius_(*this, 100)
     {}
 
@@ -23190,7 +23184,7 @@ namespace {
             OPENVRML_PRINT_EXCEPTION_(ex);
             return FT_Err_Out_Of_Memory;
         }
-        const vec2f vertex = make_vec2f(to->x * c.scale, to->y * c.scale);
+        const vec2f vertex(to->x * c.scale, to->y * c.scale);
         c.contours.back().front() = vertex;
         return 0;
     }
@@ -23200,8 +23194,7 @@ namespace {
     {
         assert(user);
         GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        const openvrml::vec2f vertex = make_vec2f(to->x * c.scale,
-                                                  to->y * c.scale);
+        const openvrml::vec2f vertex(to->x * c.scale, to->y * c.scale);
         try {
             c.contours.back().push_back(vertex);
         } catch (std::bad_alloc & ex) {
@@ -23279,9 +23272,9 @@ namespace {
         assert(!contour.empty());
         const size_t npoints = 3;
         vec2f buffer[npoints * npoints] = {
-            make_vec2f(lastVertex[0], lastVertex[1]),
-            make_vec2f(control->x * c.scale, control->y * c.scale),
-            make_vec2f(to->x * c.scale, to->y * c.scale)
+            vec2f(lastVertex[0], lastVertex[1]),
+            vec2f(control->x * c.scale, control->y * c.scale),
+            vec2f(to->x * c.scale, to->y * c.scale)
         };
 
         try {
@@ -23315,10 +23308,10 @@ namespace {
 
         static const size_t npoints = 4;
         vec2f buffer[npoints * npoints] = {
-            make_vec2f(lastVertex[0], lastVertex[1]),
-            make_vec2f(control1->x * c.scale, control1->y * c.scale),
-            make_vec2f(control2->x * c.scale, control2->y * c.scale),
-            make_vec2f(to->x * c.scale, to->y * c.scale)
+            vec2f(lastVertex[0], lastVertex[1]),
+            vec2f(control1->x * c.scale, control1->y * c.scale),
+            vec2f(control2->x * c.scale, control2->y * c.scale),
+            vec2f(to->x * c.scale, to->y * c.scale)
         };
 
         try {
@@ -23468,9 +23461,8 @@ namespace {
 
                 for (size_t i = 0; i < glyphGeometry->coord.size(); ++i) {
                     const vec2f & glyphVertex = glyphGeometry->coord[i];
-                    const vec2f textVertex =
-                        make_vec2f(glyphVertex[0] + penPos[0],
-                                   glyphVertex[1] + penPos[1]);
+                    const vec2f textVertex(glyphVertex[0] + penPos[0],
+                                           glyphVertex[1] + penPos[1]);
                     lineGeometry.coord.push_back(textVertex);
                     lineGeometry.xMin = (lineGeometry.xMin < textVertex[0])
                         ? lineGeometry.xMin
@@ -23527,9 +23519,8 @@ namespace {
                     lineGeometry.xMax - lineGeometry.xMin;
                 for (size_t i = 0; i < lineGeometry.coord.size(); ++i) {
                     const vec2f & vertex = lineGeometry.coord[i];
-                    const vec2f scaledVertex =
-                        make_vec2f(vertex[0] / currentLength * length,
-                                   vertex[1]);
+                    const vec2f scaledVertex(vertex[0] / currentLength * length,
+                                             vertex[1]);
                     lineGeometry.coord[i] = scaledVertex;
                 }
             }
@@ -23561,10 +23552,9 @@ namespace {
                 const long index = lineGeometry.coordIndex[i];
                 if (index > -1) {
                     const vec2f & lineVertex = lineGeometry.coord[index];
-                    const vec3f textVertex =
-                        make_vec3f(lineVertex.x() + xOffset,
-                                   lineVertex.y() + yOffset,
-                                   0.0f);
+                    const vec3f textVertex(lineVertex.x() + xOffset,
+                                           lineVertex.y() + yOffset,
+                                           0.0f);
                     newGeometry.coord.push_back(textVertex);
                     newGeometry.coord_index
                         .push_back(int32(newGeometry.coord.size() - 1));
@@ -23598,10 +23588,11 @@ namespace {
             if (currentMaxExtent > maxExtent) {
                 for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
                     const vec3f & vertex = newGeometry.coord[i];
-                    const vec3f scaledVertex =
-                        make_vec3f(vertex.x() / currentMaxExtent * maxExtent,
-                                   vertex.y(),
-                                   vertex.z());
+                    const vec3f scaledVertex(
+                        vertex.x() / currentMaxExtent * maxExtent,
+                        vertex.y(),
+                        vertex.z()
+                        );
                     newGeometry.coord[i] = scaledVertex;
                 }
             }
@@ -23639,9 +23630,9 @@ namespace {
         }
         for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
             const vec3f & vertex = newGeometry.coord[i];
-            const vec3f adjustedVertex = make_vec3f(vertex.x() + xOffset,
-                                                    vertex.y() + yOffset,
-                                                    vertex.z());
+            const vec3f adjustedVertex(vertex.x() + xOffset,
+                                       vertex.y() + yOffset,
+                                       vertex.z());
             newGeometry.coord[i] = adjustedVertex;
         }
 
@@ -23650,7 +23641,7 @@ namespace {
         //
         newGeometry.normal.resize(npolygons); // Throws std::bad_alloc.
         for (size_t i = 0; i < newGeometry.normal.size(); ++i) {
-            static const vec3f normal = make_vec3f(0.0, 0.0, 1.0);
+            static const vec3f normal(0.0, 0.0, 1.0);
             newGeometry.normal[i] = normal;
         }
 
@@ -23660,8 +23651,7 @@ namespace {
         newGeometry.tex_coord.resize(newGeometry.coord.size()); // std::bad_alloc
         for (size_t i = 0; i < newGeometry.tex_coord.size(); ++i) {
             const vec3f & vertex = newGeometry.coord[i];
-            newGeometry.tex_coord[i] = make_vec2f(vertex.x() / size,
-                                                  vertex.y() / size);
+            newGeometry.tex_coord[i] = vec2f(vertex.x() / size, vertex.y() / size);
         }
 
         this->text_geometry_ = newGeometry;
@@ -24045,10 +24035,10 @@ namespace {
         node(type, scope),
         abstract_node<texture_transform_node>(type, scope),
         openvrml::texture_transform_node(type, scope),
-        center_(*this, make_vec2f(0.0, 0.0)),
+        center_(*this, vec2f(0.0, 0.0)),
         rotation_(*this, 0.0),
-        scale_(*this, make_vec2f(1.0, 1.0)),
-        translation_(*this, make_vec2f(0.0, 0.0))
+        scale_(*this, vec2f(1.0, 1.0)),
+        translation_(*this, vec2f(0.0, 0.0))
     {}
 
     /**
@@ -25633,7 +25623,7 @@ namespace {
         node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
         sfvec3f_listener(node),
-        exposedfield<openvrml::sfvec3f>(node, make_vec3f(1.0f, 1.0f, 1.0f))
+        exposedfield<openvrml::sfvec3f>(node, vec3f(1.0f, 1.0f, 1.0f))
     {}
 
     /**
@@ -25923,7 +25913,6 @@ namespace {
         scale_(*this),
         scale_orientation_(*this),
         translation_(*this),
-        transform_(make_mat4f()),
         transform_dirty(true),
         xformObject(0)
     {
@@ -26026,7 +26015,7 @@ namespace {
     {
         if (this->transform_dirty) {
             this->transform_ =
-                make_transformation_mat4f(
+                mat4f::transformation(
                     this->translation_.sfvec3f::value(),
                     this->rotation_.sfrotation::value(),
                     this->scale_.sfvec3f::value(),
@@ -26570,7 +26559,7 @@ namespace {
         node_event_listener(node),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
         sfvec3f_listener(node),
-        exposedfield<openvrml::sfvec3f>(node, make_vec3f(0.0f, 0.0f, 10.0f))
+        exposedfield<openvrml::sfvec3f>(node, vec3f(0.0f, 0.0f, 10.0f))
     {}
 
     /**
@@ -26744,10 +26733,7 @@ namespace {
         center_of_rotation_(*this),
         is_bound_emitter_(*this, this->is_bound_),
         bind_time_emitter_(*this, this->bind_time_),
-        parent_transform(make_mat4f()),
-        final_transformation(make_mat4f()),
-        final_transformation_dirty(true),
-        user_view_transform_(make_mat4f())
+        final_transformation_dirty(true)
     {}
 
     /**
@@ -26903,7 +26889,7 @@ namespace {
         assert(this->scene());
         const node_path path = this->scene()->browser().find_node(*this);
         assert(!path.empty());
-        this->parent_transform = make_mat4f();
+        this->parent_transform = mat4f();
         std::for_each(path.begin(), path.end(),
                       accumulate_transform_(this->parent_transform));
         this->final_transformation_dirty = true;
@@ -26937,15 +26923,15 @@ namespace {
     void viewpoint_node::update_final_transformation() const OPENVRML_NOTHROW
     {
         if (this->final_transformation_dirty) {
-            static const vec3f scale = make_vec3f(1.0, 1.0, 1.0);
-            static const rotation scaleOrientation = make_rotation();
-            static const vec3f center = make_vec3f();
+            static const vec3f scale(1.0, 1.0, 1.0);
+            static const rotation scaleOrientation;
+            static const vec3f center;
             const mat4f & t =
-                make_transformation_mat4f(this->position_.sfvec3f::value(),
-                                          this->orientation_.sfrotation::value(),
-                                          scale,
-                                          scaleOrientation,
-                                          center);
+                mat4f::transformation(this->position_.sfvec3f::value(),
+                                      this->orientation_.sfrotation::value(),
+                                      scale,
+                                      scaleOrientation,
+                                      center);
             this->final_transformation = t * this->parent_transform;
             this->final_transformation_dirty = false;
         }
@@ -27212,9 +27198,9 @@ namespace {
         bounded_volume_node(type, scope),
         abstract_node<visibility_sensor_node>(type, scope),
         child_node(type, scope),
-        center_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        center_(*this, vec3f(0.0, 0.0, 0.0)),
         enabled_(*this, true),
-        size_(*this, make_vec3f(0.0, 0.0, 0.0)),
+        size_(*this, vec3f(0.0, 0.0, 0.0)),
         is_active_(false),
         is_active_emitter_(*this, this->is_active_),
         enter_time_(0.0),

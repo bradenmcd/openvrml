@@ -37,8 +37,6 @@ void CommonASTWithHiddenTokens::initialize(int t,const ANTLR_USE_NAMESPACE(std)s
 void CommonASTWithHiddenTokens::initialize(RefAST t)
 {
 	CommonAST::initialize(t);
-	hiddenBefore = RefCommonASTWithHiddenTokens(t)->getHiddenBefore();
-	hiddenAfter = RefCommonASTWithHiddenTokens(t)->getHiddenAfter();
 }
 
 void CommonASTWithHiddenTokens::initialize(RefToken t)

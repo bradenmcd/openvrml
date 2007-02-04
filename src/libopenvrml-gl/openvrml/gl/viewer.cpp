@@ -861,7 +861,6 @@ namespace {
     {
         using openvrml::rotation;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
 
         //
         // This size should really be based on the distance from the center of
@@ -883,14 +882,8 @@ namespace {
         // First, figure out z-coordinates for projection of P1 and P2 to
         // deformed sphere
         //
-        const vec3f p1 =
-            make_vec3f(p1x,
-                       p1y,
-                       tb_project_to_sphere(trackballSize, p1x, p1y));
-        const vec3f p2 =
-            make_vec3f(p2x,
-                       p2y,
-                       tb_project_to_sphere(trackballSize, p2x, p2y));
+        vec3f p1(p1x, p1y, tb_project_to_sphere(trackballSize, p1x, p1y));
+        vec3f p2(p2x, p2y, tb_project_to_sphere(trackballSize, p2x, p2y));
 
         result.axis((p2 * p1).normalize());
 
@@ -1043,7 +1036,7 @@ namespace {
  * @return 0.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_begin_object(const char *, bool)
+openvrml::gl::viewer::begin_object(const char *, bool)
 {
     // Finish setup stuff before first object
     if (1 == ++this->objects) {
@@ -1067,7 +1060,7 @@ openvrml::gl::viewer::do_begin_object(const char *, bool)
 /**
  * @brief End of group scope.
  */
-void openvrml::gl::viewer::do_end_object()
+void openvrml::gl::viewer::end_object()
 {
     // Decrement nesting level for group-scoped lights and get rid
     // of any defined at this level
@@ -1127,7 +1120,7 @@ void openvrml::gl::viewer::end_geometry()
  *
  * @return the rendering_mode.
  */
-openvrml::gl::viewer::rendering_mode openvrml::gl::viewer::do_mode()
+openvrml::gl::viewer::rendering_mode openvrml::gl::viewer::mode()
 {
     return this->select_mode
         ? viewer::pick_mode
@@ -1139,7 +1132,7 @@ openvrml::gl::viewer::rendering_mode openvrml::gl::viewer::do_mode()
  *
  * @return the frame rate.
  */
-double openvrml::gl::viewer::do_frame_rate()
+double openvrml::gl::viewer::frame_rate()
 {
     return 1.0 / this->render_time;
 }
@@ -1148,10 +1141,10 @@ double openvrml::gl::viewer::do_frame_rate()
  * @brief Reset the user view to the position and orientation of the currently
  *        bound Viewpoint node.
  */
-void openvrml::gl::viewer::do_reset_user_navigation()
+void openvrml::gl::viewer::reset_user_navigation()
 {
     assert(this->browser());
-    this->browser()->active_viewpoint().user_view_transform(make_mat4f());
+    this->browser()->active_viewpoint().user_view_transform(mat4f());
     this->post_redraw();
 }
 
@@ -1172,17 +1165,16 @@ void openvrml::gl::viewer::do_reset_user_navigation()
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::
-do_insert_background(const std::vector<float> & groundAngle,
-                     const std::vector<color> & groundColor,
-                     const std::vector<float> & skyAngle,
-                     const std::vector<color> & skyColor,
-                     const image & front,
-                     const image & back,
-                     const image & left,
-                     const image & right,
-                     const image & top,
-                     const image & bottom)
+openvrml::gl::viewer::insert_background(const std::vector<float> & groundAngle,
+                                        const std::vector<color> & groundColor,
+                                        const std::vector<float> & skyAngle,
+                                        const std::vector<color> & skyColor,
+                                        const image & front,
+                                        const image & back,
+                                        const image & left,
+                                        const image & right,
+                                        const image & top,
+                                        const image & bottom)
 {
     using std::vector;
 
@@ -1448,7 +1440,7 @@ do_insert_background(const std::vector<float> & groundAngle,
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_box(const vec3f & size)
+openvrml::gl::viewer::insert_box(const vec3f & size)
 {
     GLuint glid = 0;
 
@@ -1591,10 +1583,10 @@ namespace {
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_cone(const float height,
-                                     const float radius,
-                                     const bool bottom,
-                                     const bool side)
+openvrml::gl::viewer::insert_cone(const float height,
+                                  const float radius,
+                                  const bool bottom,
+                                  const bool side)
 {
     GLuint glid = 0;
 
@@ -1677,11 +1669,11 @@ openvrml::gl::viewer::do_insert_cone(const float height,
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_cylinder(const float height,
-                                         const float radius,
-                                         const bool bottom,
-                                         const bool side,
-                                         const bool top)
+openvrml::gl::viewer::insert_cylinder(const float height,
+                                      const float radius,
+                                      const bool bottom,
+                                      const bool side,
+                                      const bool top)
 {
     GLuint glid = 0;
 
@@ -1823,16 +1815,15 @@ namespace {
  * @param[in] texCoord      texture coordinates.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::
-do_insert_elevation_grid(const unsigned int mask,
-                         const std::vector<float> & height,
-                         const int32 xDimension,
-                         const int32 zDimension,
-                         const float xSpacing,
-                         const float zSpacing,
-                         const std::vector<color> & color,
-                         const std::vector<vec3f> & normal,
-                         const std::vector<vec2f> & texCoord)
+openvrml::gl::viewer::insert_elevation_grid(const unsigned int mask,
+                                            const std::vector<float> & height,
+                                            const int32 xDimension,
+                                            const int32 zDimension,
+                                            const float xSpacing,
+                                            const float zSpacing,
+                                            const std::vector<color> & color,
+                                            const std::vector<vec3f> & normal,
+                                            const std::vector<vec2f> & texCoord)
 {
     int32 i, j;
     float x, z;
@@ -1890,10 +1881,8 @@ do_insert_elevation_grid(const unsigned int mask,
                     //
                     // Normal per face.
                     //
-                    const vec3f vx = make_vec3f(xSpacing, *(h + 1) - *h, 0.0);
-                    const vec3f vz = make_vec3f(0.0,
-                                                *(h + xDimension) - *h,
-                                                zSpacing);
+                    const vec3f vx(xSpacing, *(h + 1) - *h, 0.0);
+                    const vec3f vz(0.0, *(h + xDimension) - *h, zSpacing);
                     glNormal3fv(&(vx * vz)[0]);
                 }
             }
@@ -2287,7 +2276,6 @@ namespace {
         const openvrml::vec3f & prev)
     {
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
 
         vec3f z0, z1;
 
@@ -2325,7 +2313,7 @@ namespace {
         if (fequal(z0.dot(z1), 1.0f)) { return prev; }
 
         const vec3f z = (z0 * z1).normalize();
-        if (z == make_vec3f(0.0, 0.0, 0.0)) { return prev; }
+        if (z == vec3f(0.0, 0.0, 0.0)) { return prev; }
 
         return (z.dot(prev) < 0) ? -z : z;
     }
@@ -2357,12 +2345,8 @@ namespace {
     {
         using std::vector;
         using openvrml::mat4f;
-        using openvrml::make_rotation_mat4f;
-        using openvrml::make_scale_mat4f;
         using openvrml::rotation;
-        using openvrml::make_rotation;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
 
         //
         // First, iterate over the spine points until either the y- or z-axis
@@ -2372,10 +2356,10 @@ namespace {
         // If the points are all collinear, we won't have a valid z-axis (or
         // y-axis) when we're done.
         //
-        static const vec3f zero = make_vec3f();
+        static const vec3f zero;
         scp_y = zero;
         scp_z = zero;
-        vec3f prev_scp_y = zero, prev_scp_z = zero;
+        vec3f prev_scp_y, prev_scp_z;
         for (vector<vec3f>::const_iterator point = spine.begin();
              point < spine.end() && (prev_scp_y == zero || prev_scp_z == zero);
              ++point) {
@@ -2399,7 +2383,7 @@ namespace {
         // If all the points are coincident, prev_scp_y will be invalid
         // (zero).  Set it to (0 1 0).
         //
-        if (prev_scp_y == zero) { prev_scp_y = make_vec3f(0.0, 1.0, 0.0); }
+        if (prev_scp_y == zero) { prev_scp_y = vec3f(0.0, 1.0, 0.0); }
 
         //
         // If all the points are collinear, prev_scp_z will be invalid (zero).
@@ -2413,12 +2397,11 @@ namespace {
         bool spine_points_collinear = false;
         if (prev_scp_z == zero) {
             spine_points_collinear = true;
-            prev_scp_z = make_vec3f(0.0, 0.0, 1.0);
-            if (prev_scp_y != make_vec3f(0.0, 1.0, 0.0)) {
+            prev_scp_z = vec3f(0.0, 0.0, 1.0);
+            if (prev_scp_y != vec3f(0.0, 1.0, 0.0)) {
                 const mat4f rot_mat =
-                    make_rotation_mat4f(
-                        make_rotation(make_vec3f(0.0, 1.0, 0.0),
-                                      prev_scp_y));
+                    mat4f::rotation(rotation(vec3f(0.0, 1.0, 0.0),
+                                             prev_scp_y));
                 prev_scp_z *= rot_mat;
             }
         }
@@ -2454,11 +2437,8 @@ namespace {
         using std::vector;
         using openvrml::rotation;
         using openvrml::vec2f;
-        using openvrml::make_vec2f;
         using openvrml::vec3f;
-        using openvrml::make_vec3f;
         using openvrml::mat4f;
-        using openvrml::make_mat4f;
 
         coord.resize(spine.size() * cross_section.size());
         texcoord.resize(spine.size() * cross_section.size());
@@ -2468,7 +2448,7 @@ namespace {
         // the spine-aligned cross-section plane computed for the first point
         // will be used for the entire extrusion.
         //
-        vec3f scp_x = make_vec3f(), scp_y = make_vec3f(), scp_z = make_vec3f();
+        vec3f scp_x, scp_y, scp_z;
         const bool spine_points_collinear =
             check_spine_points_collinear(spine, scp_x, scp_y, scp_z);
 
@@ -2491,12 +2471,11 @@ namespace {
                 scp_x = (scp_y * scp_z).normalize();
             }
 
-            mat4f mat =
-                make_mat4f(
-                    scp_x.x(),        scp_x.y(),        scp_x.z(),        0.0,
-                    scp_y.x(),        scp_y.y(),        scp_y.z(),        0.0,
-                    scp_z.x(),        scp_z.y(),        scp_z.z(),        0.0,
-                    spine_point->x(), spine_point->y(), spine_point->z(), 1.0);
+            mat4f mat(
+                scp_x.x(),        scp_x.y(),        scp_x.z(),        0.0,
+                scp_y.x(),        scp_y.y(),        scp_y.z(),        0.0,
+                scp_z.x(),        scp_z.y(),        scp_z.z(),        0.0,
+                spine_point->x(), spine_point->y(), spine_point->z(), 1.0);
 
             const vector<vec3f>::size_type spine_index =
                 std::distance(spine.begin(), spine_point);
@@ -2506,7 +2485,7 @@ namespace {
                     spine_index < orientation.size()
                     ? spine_index
                     : orientation.size() - 1;
-                mat = make_rotation_mat4f(orientation[index]) * mat;
+                mat = mat4f::rotation(orientation[index]) * mat;
             }
 
             if (!scale.empty()) {
@@ -2514,9 +2493,9 @@ namespace {
                     spine_index < scale.size()
                     ? spine_index
                     : scale.size() - 1;
-                mat = (make_scale_mat4f(make_vec3f(scale[index].x(),
-                                                   1.0,
-                                                   scale[index].y()))
+                mat = (mat4f::scale(vec3f(scale[index].x(),
+                                          1.0,
+                                          scale[index].y()))
                        * mat);
             }
 
@@ -2524,17 +2503,16 @@ namespace {
             for (vector<vec2f>::size_type i = 0;
                  i < cross_section.size();
                  ++i) {
-                vec3f cross_section_point = make_vec3f(cross_section[i].x(),
-                                                       0.0,
-                                                       cross_section[i].y());
+                vec3f cross_section_point(cross_section[i].x(),
+                                          0.0,
+                                          cross_section[i].y());
                 cross_section_point *= mat;
                 const size_t coord_index =
                     spine_index * cross_section.size() + i;
                 coord[coord_index] = cross_section_point;
                 texcoord[coord_index] =
-                    make_vec2f(
-                        current_cross_section_length / cross_section_length,
-                        current_spine_length / spine_length);
+                    vec2f(current_cross_section_length / cross_section_length,
+                          current_spine_length / spine_length);
 
                 if (i < cross_section.size() - 1) {
                     current_cross_section_length +=
@@ -2561,12 +2539,12 @@ namespace {
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::
-do_insert_extrusion(unsigned int mask,
-                    const std::vector<vec3f> & spine,
-                    const std::vector<vec2f> & crossSection,
-                    const std::vector<openvrml::rotation> & orientation,
-                    const std::vector<vec2f> & scale)
+openvrml::gl::viewer::insert_extrusion(
+    unsigned int mask,
+    const std::vector<vec3f> & spine,
+    const std::vector<vec2f> & crossSection,
+    const std::vector<openvrml::rotation> & orientation,
+    const std::vector<vec2f> & scale)
 {
     using std::vector;
     vector<vec3f> c(crossSection.size() * spine.size());
@@ -2636,11 +2614,11 @@ do_insert_extrusion(unsigned int mask,
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_line_set(const std::vector<vec3f> & coord,
-                                         const std::vector<int32> & coordIndex,
-                                         bool colorPerVertex,
-                                         const std::vector<color> & color,
-                                         const std::vector<int32> & colorIndex)
+openvrml::gl::viewer::insert_line_set(const std::vector<vec3f> & coord,
+                                      const std::vector<int32> & coordIndex,
+                                      bool colorPerVertex,
+                                      const std::vector<color> & color,
+                                      const std::vector<int32> & colorIndex)
 {
     GLuint glid = 0;
 
@@ -2714,8 +2692,8 @@ openvrml::gl::viewer::do_insert_line_set(const std::vector<vec3f> & coord,
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_point_set(const std::vector<vec3f> & coord,
-                                          const std::vector<color> & color)
+openvrml::gl::viewer::insert_point_set(const std::vector<vec3f> & coord,
+                                       const std::vector<color> & color)
 {
     GLuint glid = 0;
 
@@ -2994,16 +2972,15 @@ namespace {
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::
-do_insert_shell(unsigned int mask,
-                const std::vector<vec3f> & coord,
-                const std::vector<int32> & coord_index,
-                const std::vector<color> & color,
-                const std::vector<int32> & color_index,
-                const std::vector<vec3f> & normal,
-                const std::vector<int32> & normal_index,
-                const std::vector<vec2f> & tex_coord,
-                const std::vector<int32> & tex_coord_index)
+openvrml::gl::viewer::insert_shell(unsigned int mask,
+                                   const std::vector<vec3f> & coord,
+                                   const std::vector<int32> & coord_index,
+                                   const std::vector<color> & color,
+                                   const std::vector<int32> & color_index,
+                                   const std::vector<vec3f> & normal,
+                                   const std::vector<int32> & normal_index,
+                                   const std::vector<vec2f> & tex_coord,
+                                   const std::vector<int32> & tex_coord_index)
 {
     using std::vector;
     if (coord_index.size() < 4) { return 0; } // 3 pts and a trailing -1
@@ -3191,7 +3168,7 @@ namespace {
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_sphere(const float radius)
+openvrml::gl::viewer::insert_sphere(const float radius)
 {
     GLuint glid = 0;
 
@@ -3254,10 +3231,10 @@ openvrml::gl::viewer::do_insert_sphere(const float radius)
  * @return display object identifier.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
-                                          const float intensity,
-                                          const color & color,
-                                          const vec3f & direction)
+openvrml::gl::viewer::insert_dir_light(const float ambientIntensity,
+                                       const float intensity,
+                                       const color & color,
+                                       const vec3f & direction)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3314,12 +3291,12 @@ openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
  *      coordinates first.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
-                                            const vec3f & attenuation,
-                                            const color & color,
-                                            const float intensity,
-                                            const vec3f & location,
-                                            const float radius)
+openvrml::gl::viewer::insert_point_light(const float ambientIntensity,
+                                         const vec3f & attenuation,
+                                         const color & color,
+                                         const float intensity,
+                                         const vec3f & location,
+                                         const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3379,15 +3356,15 @@ openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
  * @todo Same comments as for PointLight apply here.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
-                                           const vec3f & attenuation,
-                                           const float beamWidth,
-                                           const color & color,
-                                           const float cutOffAngle,
-                                           const vec3f & direction,
-                                           const float intensity,
-                                           const vec3f & location,
-                                           const float radius)
+openvrml::gl::viewer::insert_spot_light(const float ambientIntensity,
+                                        const vec3f & attenuation,
+                                        const float beamWidth,
+                                        const color & color,
+                                        const float cutOffAngle,
+                                        const vec3f & direction,
+                                        const float intensity,
+                                        const vec3f & location,
+                                        const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3438,7 +3415,7 @@ openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
  * @return 0.
  */
 openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_reference(const object_t existing_object)
+openvrml::gl::viewer::insert_reference(const object_t existing_object)
 {
     glCallList(GLuint(existing_object));
     return 0;
@@ -3449,7 +3426,7 @@ openvrml::gl::viewer::do_insert_reference(const object_t existing_object)
  *
  * @param[in] ref   object handle.
  */
-void openvrml::gl::viewer::do_remove_object(const object_t ref)
+void openvrml::gl::viewer::remove_object(const object_t ref)
 {
     glDeleteLists(GLuint(ref), 1);
 }
@@ -3459,7 +3436,7 @@ void openvrml::gl::viewer::do_remove_object(const object_t ref)
  *
  * @param[in] val whether lighting should be enabled.
  */
-void openvrml::gl::viewer::do_enable_lighting(const bool val)
+void openvrml::gl::viewer::enable_lighting(const bool val)
 {
     if (val) {
         if (this->lit) {
@@ -3476,7 +3453,7 @@ void openvrml::gl::viewer::do_enable_lighting(const bool val)
  * @param[in] rgb   red, green, and blue components.
  * @param[in] a     alpha (transparency) component.
  */
-void openvrml::gl::viewer::do_set_color(const color & rgb, const float a)
+void openvrml::gl::viewer::set_color(const color & rgb, const float a)
 {
     glColor4f(rgb.r(), rgb.g(), rgb.b(), a);
 }
@@ -3489,9 +3466,9 @@ void openvrml::gl::viewer::do_set_color(const color & rgb, const float a)
  *                              fog.
  * @param[in] type              fog type.
  */
-void openvrml::gl::viewer::do_set_fog(const color & color,
-                                      const float visibilityRange,
-                                      const char * const type)
+void openvrml::gl::viewer::set_fog(const color & color,
+                                   const float visibilityRange,
+                                   const char * const type)
 {
     static const std::string exponential("EXPONENTIAL");
     const GLfloat fogColor[4] = { color.r(), color.g(), color.b(), 1.0 };
@@ -3516,12 +3493,12 @@ void openvrml::gl::viewer::do_set_fog(const color & color,
  * @param[in] specularColor     specular color.
  * @param[in] transparency      transparency.
  */
-void openvrml::gl::viewer::do_set_material(const float ambientIntensity,
-                                           const color & diffuseColor,
-                                           const color & emissiveColor,
-                                           const float shininess,
-                                           const color & specularColor,
-                                           const float transparency)
+void openvrml::gl::viewer::set_material(const float ambientIntensity,
+                                        const color & diffuseColor,
+                                        const color & emissiveColor,
+                                        const float shininess,
+                                        const color & specularColor,
+                                        const float transparency)
 {
     const float alpha = 1.0f - transparency;
 
@@ -3570,8 +3547,8 @@ void openvrml::gl::viewer::do_set_material(const float ambientIntensity,
  * @param[in] tex_components    texture components.
  * @param[in] geometry_color    geometry color.
  */
-void openvrml::gl::viewer::do_set_material_mode(const size_t tex_components,
-                                                const bool geometry_color)
+void openvrml::gl::viewer::set_material_mode(const size_t tex_components,
+                                             const bool geometry_color)
 {
     if (tex_components && this->texture && !this->wireframe) {
         glEnable(GL_TEXTURE_2D);
@@ -3600,7 +3577,7 @@ void openvrml::gl::viewer::do_set_material_mode(const size_t tex_components,
  *
  * @param[in] object    a node.
  */
-void openvrml::gl::viewer::do_set_sensitive(node * object)
+void openvrml::gl::viewer::set_sensitive(node * object)
 {
     if (object) {
         // should make this dynamic...
@@ -3637,10 +3614,10 @@ namespace {
  * @return a handle to the inserted texture.
  */
 openvrml::gl::viewer::texture_object_t
-openvrml::gl::viewer::do_insert_texture(const image & img,
-                                        bool repeat_s,
-                                        bool repeat_t,
-                                        bool retainHint)
+openvrml::gl::viewer::insert_texture(const image & img,
+                                     bool repeat_s,
+                                     bool repeat_t,
+                                     bool retainHint)
 {
     using std::vector;
 
@@ -3747,9 +3724,8 @@ openvrml::gl::viewer::do_insert_texture(const image & img,
  * @param[in] ref           texture handle.
  * @param[in] components    number of components.
  */
-void
-openvrml::gl::viewer::do_insert_texture_reference(const texture_object_t ref,
-                                                  const size_t components)
+void openvrml::gl::viewer::insert_texture_reference(const texture_object_t ref,
+                                                    const size_t components)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
     // Enable blending if needed
@@ -3766,7 +3742,7 @@ openvrml::gl::viewer::do_insert_texture_reference(const texture_object_t ref,
  *
  * @param[in] ref   texture handle.
  */
-void openvrml::gl::viewer::do_remove_texture_object(const texture_object_t ref)
+void openvrml::gl::viewer::remove_texture_object(const texture_object_t ref)
 {
 #if USE_TEXTURE_DISPLAY_LISTS
     const GLuint glid = GLuint(ref);
@@ -3785,10 +3761,10 @@ void openvrml::gl::viewer::do_remove_texture_object(const texture_object_t ref)
  * @param[in] scale         scale.
  * @param[in] translation   translation.
  */
-void openvrml::gl::viewer::do_set_texture_transform(const vec2f & center,
-                                                    float rotation,
-                                                    const vec2f & scale,
-                                                    const vec2f & translation)
+void openvrml::gl::viewer::set_texture_transform(const vec2f & center,
+                                                 float rotation,
+                                                 const vec2f & scale,
+                                                 const vec2f & translation)
 {
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -3802,27 +3778,6 @@ void openvrml::gl::viewer::do_set_texture_transform(const vec2f & center,
     glTranslatef(center.x(), center.y(), 0.0);
     glTranslatef(translation.x(), translation.y(), 0.0);
 
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void openvrml::gl::viewer::do_set_frustum(float field_of_view,
-                                          const float avatar_size,
-                                          const float visibility_limit)
-{
-    glMatrixMode(GL_PROJECTION);
-    if (!this->select_mode) { glLoadIdentity(); }
-
-    (field_of_view *= 180.0) /= pi;
-    const float aspect = float(this->win_width) / this->win_height;
-    const float znear = (avatar_size > 0.0)
-                      ? float(0.5 * avatar_size)
-                      : 0.01f;
-    const float zfar = (visibility_limit > 0.0)
-                     ? visibility_limit
-                     : 30000.0f;
-    gluPerspective(field_of_view, aspect, znear, zfar);
-
-    this->frustum(openvrml::frustum(field_of_view, aspect, znear, zfar));
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -3867,21 +3822,30 @@ namespace {
  *
  * @param[in] position          position.
  * @param[in] orientation       orientation.
+ * @param[in] fieldOfView       field of view.
  * @param[in] avatarSize        avatar size.
  * @param[in] visibilityLimit   visiblity limit.
  */
-void
-openvrml::gl::viewer::do_set_viewpoint(const vec3f & position,
-                                       const openvrml::rotation & orientation,
-                                       const float avatarSize,
-                                       const float visibilityLimit)
+void openvrml::gl::viewer::set_viewpoint(const vec3f & position,
+                                         const openvrml::rotation & orientation,
+                                         const float fieldOfView,
+                                         const float avatarSize,
+                                         const float visibilityLimit)
 {
-    const float znear = (avatarSize > 0.0)
-                      ? float(0.5 * avatarSize)
-                      : 0.01f;
-    const float zfar = (visibilityLimit > 0.0)
-                     ? visibilityLimit
-                     : 30000.0f;
+    glMatrixMode( GL_PROJECTION );
+    if (!this->select_mode) { glLoadIdentity(); }
+
+    float field_of_view = float(fieldOfView * 180.0 / pi);
+    float aspect = float(this->win_width) / this->win_height;
+    float znear = (avatarSize > 0.0)
+                ? float(0.5 * avatarSize)
+                : 0.01f;
+    float zfar = (visibilityLimit > 0.0)
+               ? visibilityLimit
+               : 30000.0f;
+    gluPerspective(field_of_view, aspect, znear, zfar);
+
+    this->frustum(openvrml::frustum(field_of_view, aspect, znear, zfar));
 
     glMatrixMode(GL_MODELVIEW);
 
@@ -3903,8 +3867,8 @@ openvrml::gl::viewer::do_set_viewpoint(const vec3f & position,
  * @param[in] nPoints   number of points.
  * @param[in] point     pointer to the first point in an array.
  */
-void openvrml::gl::viewer::do_transform_points(const size_t nPoints,
-                                               vec3f * point) const
+void openvrml::gl::viewer::transform_points(const size_t nPoints,
+                                            vec3f * point) const
 {
     mat4f m;
     glGetFloatv(GL_MODELVIEW_MATRIX, &m[0][0]);
@@ -3917,7 +3881,7 @@ void openvrml::gl::viewer::do_transform_points(const size_t nPoints,
  *
  * @param[in] mat   a matrix.
  */
-void openvrml::gl::viewer::do_transform(const mat4f & mat)
+void openvrml::gl::viewer::transform(const mat4f & mat)
 {
     glMultMatrixf(&mat[0][0]);
 }
@@ -4053,11 +4017,11 @@ void openvrml::gl::viewer::rotate(const openvrml::rotation & rot) OPENVRML_NOTHR
                                       currentRotation,
                                       currentScale);
 
-    const mat4f r = make_rotation_mat4f(rot);
+    const mat4f r = mat4f::rotation(rot);
 
-    const mat4f prevOrientation = make_rotation_mat4f(currentRotation);
+    const mat4f prevOrientation = mat4f::rotation(currentRotation);
 
-    const mat4f t = make_translation_mat4f(currentTranslation);
+    const mat4f t = mat4f::translation(currentTranslation);
 
     const mat4f newCameraTransform =
             prevOrientation * (t * (r * viewpointTransformation.inverse()));
@@ -4078,7 +4042,7 @@ void openvrml::gl::viewer::step(const float x, const float y, const float z)
 {
     assert(this->browser());
 
-    mat4f t = make_translation_mat4f(make_vec3f(x, y, z));
+    mat4f t = mat4f::translation(vec3f(x, y, z));
     viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     activeViewpoint
         .user_view_transform(t * activeViewpoint.user_view_transform());
@@ -4131,10 +4095,10 @@ void openvrml::gl::viewer::zoom(const float z)
     dx *= dist;
     dy *= dist;
     dz *= dist;
-    const vec3f translation = make_vec3f(static_cast<float>(dx),
-                                         static_cast<float>(dy),
-                                         static_cast<float>(dz));
-    mat4f t = make_translation_mat4f(translation);
+    const vec3f translation(static_cast<float>(dx),
+                            static_cast<float>(dy),
+                            static_cast<float>(dz));
+    mat4f t = mat4f::translation(translation);
     viewpoint_node & activeViewpoint = this->browser()->active_viewpoint();
     const mat4f & userViewTransform = activeViewpoint.user_view_transform();
     activeViewpoint.user_view_transform(t * userViewTransform);
@@ -4601,7 +4565,7 @@ bool openvrml::gl::viewer::checkSensitive(const int x,
  *                      to draw in unique way. (useful for debugging)
  */
 void
-openvrml::gl::viewer::do_draw_bounding_sphere(
+openvrml::gl::viewer::draw_bounding_sphere(
     const bounding_sphere & bs,
     const bounding_volume::intersection intersection)
 {
