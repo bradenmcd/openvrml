@@ -36,6 +36,7 @@ AM_CONFIG_HEADER([config.h])
 # output by configure.
 #
 REQUIRE_FONTCONFIG="fontconfig"
+REQUIRE_FREETYPE="freetype2"
 REQUIRE_FIREFOX_JS="firefox-js"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
@@ -80,12 +81,12 @@ AC_SUBST([OPENVRML_GL_LOCAL])
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
-AC_PATH_PROG([FREETYPE_CONFIG], [freetype-config])
+PKG_CHECK_MODULES([FREETYPE], [$REQUIRE_FREETYPE], , [have_freetype=no])
 #
 # FreeType >= 2.2 uses const in callback function signatures.  This
 # doesn't cause an error in C; but it does in C++.
 #
-AS_IF([test -n "${FREETYPE_CONFIG}"],
+AS_IF([test X$have_freetype != Xno],
       [AC_MSG_CHECKING([if FreeType callback function signatures use const])
        AC_CACHE_VAL([ov_cv_ft_const],
 [AC_LANG_PUSH([C++])
@@ -197,30 +198,19 @@ AC_SUBST([JPEG_LIBS])
 AC_ARG_ENABLE([render-text-node],
               [AC_HELP_STRING([--disable-render-text-node],
                               [disable support for rendering Text nodes])])
-if test "X$enable_render_text_node" = "Xno"; then
-  FONTCONFIG_CFLAGS=""
-  FONTCONFIG_LIBS=""
-  FREETYPE_CFLAGS=""
-  FREETYPE_LIBS=""
-else
-  if test "X$have_fontconfig" = "Xno" -o -z "$FREETYPE_CONFIG"; then
+if test X$enable_render_text_node != Xno; then
+  if test X$have_fontconfig = Xno -o X$have_freetype = Xno; then
     AC_MSG_FAILURE([fontconfig and FreeType are required for rendering Text nodes.])
   fi
   if test -n "${OPENVRML_PKG_REQUIRES}"; then
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
   fi
-  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG}"
-  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
-  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
+  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG} ${REQUIRE_FREETYPE}"
   AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
             [Defined if support for rendering Text nodes is enabled.])
   AC_DEFINE_UNQUOTED([OPENVRML_FT_CONST], [$ov_cv_ft_const],
                      [const for FreeType callback function signatures.])
 fi
-AC_SUBST([FONTCONFIG_CFLAGS])
-AC_SUBST([FONTCONFIG_LIBS])
-AC_SUBST([FREETYPE_CFLAGS])
-AC_SUBST([FREETYPE_LIBS])
 
 #
 # Script node JavaScript support

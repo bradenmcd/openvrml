@@ -7,5 +7,5 @@ Name: @PACKAGE_NAME@
 Description: VRML97 run-time library.
 Version: @PACKAGE_VERSION@
 Requires: @OPENVRML_PKG_REQUIRES@
-Libs: -L${libdir} -lopenvrml @FREETYPE_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @JNI_LIBS@ -lboost_thread
+Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @JNI_LIBS@ -lboost_thread
 Cflags: -I${includedir}
