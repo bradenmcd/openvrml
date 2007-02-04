@@ -1,5 +1,16 @@
 2007-02-04 Braden McDaniel  <braden@endoframe.com>
 
+	Allow the GtkVrmlBrowser widget to take focus.
+
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
+	(gtk_vrml_browser_init(GtkVrmlBrowser *)): Added
+	GDK_FOCUS_CHANGE_MASK to the event mask; set the widget's
+	can-focus property to "true".
+	(gtk_vrml_browser_button_press_event(GtkWidget *, GdkEventButton*,
+	gpointer)): Grab the focus.
+
+2007-02-04 Braden McDaniel  <braden@endoframe.com>
+
 	Factored GladeXML creation out of main.
 
 	* src/openvrml-player/player.cpp
