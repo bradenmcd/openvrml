@@ -175,40 +175,6 @@ namespace openvrml_player {
 
 namespace {
 
-    gboolean version, initial_stream;
-    gchar ** args;
-
-    GOptionEntry options[] = {
-        {
-            "version",
-            'v',
-            0,
-            G_OPTION_ARG_NONE,
-            &version,
-            "Print the version information and exit",
-            0
-        },
-        {
-            "initial-stream",
-            'i',
-            0,
-            G_OPTION_ARG_NONE,
-            &initial_stream,
-            "Expect an initial stream",
-            0
-        },
-        {
-            G_OPTION_REMAINING,
-            '\0',
-            0,
-            G_OPTION_ARG_STRING_ARRAY,
-            &args,
-            "the embedder's window ID",
-            "XID"
-        },
-        { 0, '\0', 0, G_OPTION_ARG_NONE, 0, 0, 0 }
-    };
-
     struct initial_stream_reader {
         initial_stream_reader(
             const boost::shared_ptr<plugin_streambuf> & streambuf,
@@ -354,6 +320,39 @@ int main(int argc, char * argv[])
     gtk_init(&argc, &argv);
     gtk_gl_init(&argc, &argv);
 
+    gboolean version = false, initial_stream = false;
+    gchar ** args = 0;
+    GOptionEntry options[] = {
+        {
+            "version",
+            'v',
+            0,
+            G_OPTION_ARG_NONE,
+            &version,
+            "Print the version information and exit",
+            0
+        },
+        {
+            "initial-stream",
+            'i',
+            0,
+            G_OPTION_ARG_NONE,
+            &initial_stream,
+            "Expect an initial stream",
+            0
+        },
+        {
+            G_OPTION_REMAINING,
+            '\0',
+            0,
+            G_OPTION_ARG_STRING_ARRAY,
+            &args,
+            "the embedder's window ID",
+            "XID"
+        },
+        { 0, '\0', 0, G_OPTION_ARG_NONE, 0, 0, 0 }
+    };
+
     GError * error = 0;
     scope_guard error_guard = make_guard(g_error_free, ref(error));
 
@@ -374,7 +373,7 @@ int main(int argc, char * argv[])
         return EXIT_SUCCESS;
     }
 
-    if (!::args) {
+    if (!args) {
         cerr << argv[0] << ": missing required XID argument" << endl;
         error_guard.dismiss();
         return EXIT_FAILURE;
@@ -382,7 +381,7 @@ int main(int argc, char * argv[])
 
     GdkNativeWindow socket_id;
     try {
-        socket_id = boost::lexical_cast<GdkNativeWindow>(::args[0]);
+        socket_id = boost::lexical_cast<GdkNativeWindow>(args[0]);
     } catch (const boost::bad_lexical_cast & ex) {
         cerr << argv[0] << ": expected integer value for XID argument" << endl;
         error_guard.dismiss();
@@ -436,7 +435,7 @@ int main(int argc, char * argv[])
                              *GTK_VRML_BROWSER(vrml_browser));
     threads.create_thread(command_channel_loop_func);
 
-    if (::initial_stream) {
+    if (initial_stream) {
         const shared_ptr<plugin_streambuf> initial_stream(
             new plugin_streambuf(::initial_stream_uri));
         uninitialized_plugin_streambuf_map_.insert(::initial_stream_uri,
