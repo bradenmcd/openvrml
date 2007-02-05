@@ -370,11 +370,13 @@ int main(int argc, char * argv[])
 
     if (version) {
         cout << application_name << ' ' << PACKAGE_VERSION << endl;
+        error_guard.dismiss();
         return EXIT_SUCCESS;
     }
 
     if (!::args) {
         cerr << argv[0] << ": missing required XID argument" << endl;
+        error_guard.dismiss();
         return EXIT_FAILURE;
     }
 
@@ -383,6 +385,7 @@ int main(int argc, char * argv[])
         socket_id = boost::lexical_cast<GdkNativeWindow>(::args[0]);
     } catch (const boost::bad_lexical_cast & ex) {
         cerr << argv[0] << ": expected integer value for XID argument" << endl;
+        error_guard.dismiss();
         return EXIT_FAILURE;
     }
 
