@@ -19,7 +19,7 @@ AC_CONFIG_FILES([Makefile]
                 [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/Makefile]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
-                [src/openvrml-gtkplug/Makefile]
+                [src/openvrml-xembed/Makefile]
                 [src/openvrml-player/Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
@@ -113,7 +113,7 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                                      [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
                                      [have_js=no])])
 #
-# openvrml-gtkplug and openvrml-player both use GOption, which was
+# openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
@@ -276,21 +276,17 @@ AM_CONDITIONAL([ENABLE_GL_RENDERER],
                [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
 
 #
-# build the GtkPlug
+# build the XEmbed control
 #
-AC_ARG_ENABLE([gtkplug],
-              [AC_HELP_STRING([--disable-gtkplug],
-                              [do not build the GtkPlug application])])
-if test X$enable_gtkplug != Xno; then
-  if test X$have_gtk = Xno; then
-    AC_MSG_FAILURE([GTK+ is required to build the GtkPlug])
-  fi
-  if test X$enable_gl_renderer = Xno; then
-    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GL renderer])
-  fi
-fi
-AM_CONDITIONAL([ENABLE_GTKPLUG],
-               [test X$enable_gtkplug != Xno -a X$have_gtk != Xno])
+AC_ARG_ENABLE([xembed],
+              [AC_HELP_STRING([--disable-xembed],
+                              [do not build the XEmbed control])])
+AS_IF([test X$enable_xembed != Xno],
+      [AS_IF([test X$have_gtk = Xno],
+             [AC_MSG_FAILURE([GTK+ is required to build the XEmbed control])])
+       AS_IF([test X$enable_gl_renderer = Xno],
+             [AC_MSG_FAILURE([the XEmbed control cannot be built without the GL renderer])])])
+AM_CONDITIONAL([ENABLE_XEMBED], [test X$enable_xembed != Xno])
 
 #
 # build openvrml-player
@@ -299,8 +295,8 @@ AC_ARG_ENABLE([player],
               [AC_HELP_STRING([--disable-player],
                               [do not build OpenVRML Player])])
 AS_IF([test X$enable_player != Xno],
-      [AS_IF([test X$enable_gtkplug = Xno],
-             [AC_MSG_FAILURE([OpenVRML Player cannot be built without the GtkPlug application])])
+      [AS_IF([test X$enable_xembed = Xno],
+             [AC_MSG_FAILURE([OpenVRML Player cannot be built without the XEmbed control])])
        AS_IF([test X$have_libglade = Xno],
              [AC_MSG_FAILURE([libglade is required to build OpenVRML Player])])
        AS_IF([test X$have_gnomeui = Xno],
@@ -316,11 +312,9 @@ AM_CONDITIONAL([ENABLE_PLAYER], [test X$enable_player != Xno])
 AC_ARG_ENABLE([mozilla-plugin],
               [AC_HELP_STRING([--disable-mozilla-plugin],
                               [do not build the Mozilla plug-in])])
-if test X$enable_mozilla_plugin != Xno; then
-  if test X$enable_gtkplug = Xno; then
-    AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the GtkPlug application])
-  fi
-fi
+AS_IF([test X$enable_mozilla_plugin != Xno],
+      [AS_IF([test X$enable_xembed = Xno],
+             [AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the XEmbed control])])])
 
 #
 # build examples
@@ -353,7 +347,7 @@ if test -n "${openvrml_run_path}"; then
 fi
 AC_SUBST([OPENVRML_RPATH])
 
-if test X$enable_gtkplug != Xno; then
+if test X$enable_xembed != Xno; then
   gtkglext_subdir=gtkglext
 fi
 AC_SUBST([gtkglext_subdir])

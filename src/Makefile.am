@@ -1,1 +1,1 @@
-SUBDIRS = libopenvrml libopenvrml-gl openvrml-gtkplug openvrml-player
+SUBDIRS = libopenvrml libopenvrml-gl openvrml-xembed openvrml-player
