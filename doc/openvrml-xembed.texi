@@ -1,14 +1,14 @@
 \input texinfo @c -*-texinfo-*-
 @c %**start of header
-@setfilename openvrml-gtkplug.info
+@setfilename openvrml-xembed.info
 @include version.texi
-@settitle openvrml-gtkplug @value{VERSION}
+@settitle openvrml-xembed @value{VERSION}
 @c %**end of header
 
 @copying
-This manual is for openvrml-gtkplug (version @value{VERSION},
-@value{UPDATED}), which provides a VRML/X3D browser as a GtkPlug
-component that can be used in any GTK+ application.
+This manual is for openvrml-xembed (version @value{VERSION},
+@value{UPDATED}), which provides a VRML/X3D browser component that can
+be used in any XEmbed container.
 
 Copyright @copyright{} 2006 Braden McDaniel
 
@@ -29,11 +29,11 @@ Documentation License.''
 
 @dircategory Miscellaneous
 @direntry
-* openvrml-gtkplug: (openvrml-gtkplug). A VRML/X3D browser component for GTK+ applications.
+* openvrml-xembed: (openvrml-xembed). A VRML/X3D browser component for XEmbed containers.
 @end direntry
 
 @titlepage
-@title openvrml-gtkplug
+@title openvrml-xembed
 @subtitle for version @value{VERSION}, @value{UPDATED}
 @author Braden McDaniel (@email{braden@@endoframe.com})
 @page
@@ -46,14 +46,14 @@ Documentation License.''
 
 @ifnottex
 @node Top
-@top openvrml-gtkplug
+@top openvrml-xembed
 
-This manual is for openvrml-gtkplug (version @value{VERSION}, @value{UPDATED}).
+This manual is for openvrml-xembed (version @value{VERSION}, @value{UPDATED}).
 @end ifnottex
 
 @menu
 * Overview::                    General purpose and information.
-* Invoking openvrml-gtkplug::   How to run @code{openvrml-gtkplug}.
+* Invoking openvrml-xembed::    How to run @code{openvrml-xembed}.
 * Servicing Requests::          How to respond to requests from the component.
 * Problems::		        Getting help and reporting bugs.
 * Copying This Manual::         Copying and sharing this documentation.
@@ -66,41 +66,41 @@ This manual is for openvrml-gtkplug (version @value{VERSION}, @value{UPDATED}).
 
 @cindex overview
 
-@code{openvrml-gtkplug} provides a VRML/X3D browser as a GtkPlug
-component that can be used in any GTK+ application.
-@code{openvrml-gtkplug} communicates with the host application via
+@code{openvrml-xembed} provides a VRML/X3D browser that can be used in any
+XEmbed container.
+@code{openvrml-xembed} communicates with the host application via
 pipes from its @code{stdout} and to its @code{stdin}.  The host
 application is responsible for fetching network resources and sending
 these to the component.
 
-@code{openvrml-gtkplug} uses the OpenVRML VRML/X3D runtime.  For the
+@code{openvrml-xembed} uses the OpenVRML VRML/X3D runtime.  For the
 latest updates and other information, please visit OpenVRML on the
 World Wide Web at @url{http://openvrml.org}.
 
 @cindex authors
 @cindex McDaniel, Braden
-@code{openvrml-gtkplug} was written by Braden McDaniel.
+@code{openvrml-xembed} was written by Braden McDaniel.
 
 
-@node Invoking openvrml-gtkplug
-@chapter Invoking @code{openvrml-gtkplug}
+@node Invoking openvrml-xembed
+@chapter Invoking @code{openvrml-xembed}
 
 @cindex invoking
 @cindex options
 @cindex usage
 @cindex help
 
-The format for running the @code{openvrml-gtkplug} program is:
+The format for running the @code{openvrml-xembed} program is:
 
 @example
-openvrml-gtkplug [@var{options}] @var{gtk-socket-id}
+openvrml-xembed [@var{options}] @var{gtk-socket-id}
 @end example
 
 @var{gtk-socket-id} is the XID of a GtkSocket.
 
 @section Options
 
-@code{openvrml-gtkplug} supports the following options:
+@code{openvrml-xembed} supports the following options:
 
 @subsection Help Options
 
@@ -167,8 +167,8 @@ X display to use.
 
 @section Invoking From Another Program
 
-In general @code{openvrml-gtkplug} is invoked from another program
-which establishes pipes to @code{openvrml-gtkplug}'s @code{stdin} and
+In general @code{openvrml-xembed} is invoked from another program
+which establishes pipes to @code{openvrml-xembed}'s @code{stdin} and
 from its @code{stdout}.  This can be done using the typical
 @code{fork}-@code{exec} mechanism.  If you are using GLib, the
 function @code{g_spawn_async_with_pipes} nicely encapsulates the
@@ -186,7 +186,7 @@ gboolean succeeded;
 
 working_directory = g_get_current_dir();
 argv = g_malloc(sizeof (gchar *) * 3)
-argv[0] = g_strdup("/usr/libexec/openvrml-gtkplug");
+argv[0] = g_strdup("/usr/libexec/openvrml-xembed");
 argv[1] = g_strdup_printf("%d", gtk_socket_id);
 argv[2] = 0;
 
@@ -214,14 +214,14 @@ succeeded = g_spawn_async_with_pipes(working_directory,
 
 @section Requests and Commands
 
-@code{openvrml-gtkplug} relies on the host application for fetching
-network resources.  @code{openvrml-gtkplug} will send a @dfn{request}
+@code{openvrml-xembed} relies on the host application for fetching
+network resources.  @code{openvrml-xembed} will send a @dfn{request}
 for a network resource via its @code{stdout}.  As such, the pipe from
-@code{openvrml-gtkplug}'s @code{stdout} to the host application is
+@code{openvrml-xembed}'s @code{stdout} to the host application is
 referred to as the @dfn{request channel}.
 
 In general (and as the name implies), requests elicit some response
-from the host application.  The pipe to @code{openvrml-gtkplug}'s
+from the host application.  The pipe to @code{openvrml-xembed}'s
 @code{stdin} is used for such responses as well other @dfn{commands}.
 This pipe is referred to as the @dfn{command channel}.
 
@@ -235,7 +235,7 @@ general form:
 @cindex get-url
 @section The @code{get-url} Request
 
-@code{openvrml-gtkplug} sends a @code{get-url} request to indicate to
+@code{openvrml-xembed} sends a @code{get-url} request to indicate to
 the host application that it needs a particular network resource.
 This request takes the following form:
 
@@ -257,7 +257,7 @@ application.  If @var{target} is not meaningful to the host
 application, it can be ignored.
 
 The @code{get-url} request expects a response in the form of a
-@code{get-url-result} command.  @code{openvrml-gtkplug} is unable to
+@code{get-url-result} command.  @code{openvrml-xembed} is unable to
 process the availability of the resource until it receives this
 command; so it should be issued as soon as possible.
 
@@ -310,7 +310,7 @@ value; 0 indicates success, while nonzero indicates failure.
 @cindex new-stream
 @subsection @code{new-stream}
 
-The @code{new-stream} command indicates to @code{openvrml-gtkplug}
+The @code{new-stream} command indicates to @code{openvrml-xembed}
 that the host application intends to begin writing data associated
 with a requested resource.  @code{new-stream} should be sent after
 @code{get-url-result} has been sent for a stream and before
@@ -402,7 +402,7 @@ already been sent.
 
 @section Mailing List
 
-As part of the OpenVRML package, @code{openvrml-gtkplug} is discussed
+As part of the OpenVRML package, @code{openvrml-xembed} is discussed
 on the OpenVRML development mailing list,
 @email{openvrml-develop@@lists.sourceforge.net}.  Questions about usage
 of any part of the OpenVRML package are welcome here.  This mailing
@@ -421,8 +421,8 @@ Please include enough information for the maintainers to reproduce the
 problem.  Generally speaking, that means:
 
 @itemize @bullet
-@item The version number of openvrml-gtkplug (which you can find by
-running @w{@samp{openvrml-gtkplug --version}}) and any other
+@item The version number of openvrml-xembed (which you can find by
+running @w{@samp{openvrml-xembed --version}}) and any other
 program(s) or manual(s) involved.
 @item Hardware and operating system names and versions.
 @item The contents of any input files necessary to reproduce the bug.

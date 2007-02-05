@@ -5,13 +5,12 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CircularQueue.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
+ * $Id: CircularQueue.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>
 #include <antlr/Token.hpp>
 #include <vector>
-#include <cassert>
 
 #ifdef ANTLR_CXX_SUPPORTS_NAMESPACE
 namespace antlr {
@@ -40,7 +39,7 @@ public:
 	}
 
 	/// @todo this should use at or should have a check
-	inline T elementAt( size_t idx ) const
+	inline T elementAt( unsigned int idx ) const
 	{
 		return storage[idx+m_offset];
 	}
@@ -54,9 +53,8 @@ public:
 		else
 			++m_offset;
 	}
-	inline void removeItems( size_t nb )
+	inline void removeItems( unsigned int nb )
 	{
-		assert(nb <= entries());
 		if (m_offset >= OFFSET_MAX_RESIZE)
 		{
 			storage.erase( storage.begin(), storage.begin() + m_offset + nb );
@@ -69,14 +67,14 @@ public:
 	{
 		storage.push_back(t);
 	}
-	inline size_t entries() const
+	inline unsigned int entries() const
 	{
 		return storage.size() - m_offset;
 	}
 
 private:
-	ANTLR_USE_NAMESPACE(std)vector<T> storage;
-	size_t m_offset;
+	typename ANTLR_USE_NAMESPACE(std)vector<T> storage;
+	unsigned int m_offset;
 
 	CircularQueue(const CircularQueue&);
 	const CircularQueue& operator=(const CircularQueue&);

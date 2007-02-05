@@ -150,34 +150,34 @@ int main(int argc, char * argv[])
     glade_xml_signal_autoconnect(xml);
 
     //
-    // The OPENVRML_GTKPLUG environment variable overrides the default
-    // path to the child process executable.  To allow OPENVRML_GTKPLUG
+    // The OPENVRML_XEMBED environment variable overrides the default
+    // path to the child process executable.  To allow OPENVRML_XEMBED
     // to include arguments (rather than just be a path to an
     // executable), it is parsed with g_shell_parse_argv.  This is
     // particularly useful in case we want to run the child process in
     // a harness like valgrind.
     //
-    gint openvrml_gtkplug_cmd_argc = 0;
-    gchar ** openvrml_gtkplug_cmd_argv = 0;
-    scope_guard openvrml_gtkplug_cmd_argv_guard =
-        make_guard(g_strfreev, ref(openvrml_gtkplug_cmd_argv));
-    boost::ignore_unused_variable_warning(openvrml_gtkplug_cmd_argv_guard);
-    const gchar * const openvrml_gtkplug_cmd = g_getenv("OPENVRML_GTKPLUG");
-    if (!openvrml_gtkplug_cmd) {
-        openvrml_gtkplug_cmd_argc = 1;
-        openvrml_gtkplug_cmd_argv =
+    gint openvrml_xembed_cmd_argc = 0;
+    gchar ** openvrml_xembed_cmd_argv = 0;
+    scope_guard openvrml_xembed_cmd_argv_guard =
+        make_guard(g_strfreev, ref(openvrml_xembed_cmd_argv));
+    boost::ignore_unused_variable_warning(openvrml_xembed_cmd_argv_guard);
+    const gchar * const openvrml_xembed_cmd = g_getenv("OPENVRML_XEMBED");
+    if (!openvrml_xembed_cmd) {
+        openvrml_xembed_cmd_argc = 1;
+        openvrml_xembed_cmd_argv =
             static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-        if (!openvrml_gtkplug_cmd_argv) { throw std::bad_alloc(); }
-        openvrml_gtkplug_cmd_argv[0] =
-            g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-gtkplug");
-        if (!openvrml_gtkplug_cmd_argv[0]) { throw std::bad_alloc(); }
+        if (!openvrml_xembed_cmd_argv) { throw std::bad_alloc(); }
+        openvrml_xembed_cmd_argv[0] =
+            g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-xembed");
+        if (!openvrml_xembed_cmd_argv[0]) { throw std::bad_alloc(); }
     } else {
         GError * error = 0;
         scope_guard error_guard = make_guard(g_error_free, ref(error));
         gboolean succeeded =
-            g_shell_parse_argv(openvrml_gtkplug_cmd,
-                               &openvrml_gtkplug_cmd_argc,
-                               &openvrml_gtkplug_cmd_argv,
+            g_shell_parse_argv(openvrml_xembed_cmd,
+                               &openvrml_xembed_cmd_argc,
+                               &openvrml_xembed_cmd_argv,
                                &error);
         if (!succeeded) {
             throw std::runtime_error(error
@@ -195,15 +195,15 @@ int main(int argc, char * argv[])
         socket_id_arg_c_str,
         socket_id_arg_c_str + socket_id_arg.length() + 1);
 
-    const gint child_argv_size = openvrml_gtkplug_cmd_argc + 2;
+    const gint child_argv_size = openvrml_xembed_cmd_argc + 2;
     gchar ** const child_argv =
         static_cast<gchar **>(g_malloc(sizeof (gchar *) * child_argv_size));
     if (!argv) { throw std::bad_alloc(); }
     scope_guard child_argv_guard = make_guard(g_free, child_argv);
     boost::ignore_unused_variable_warning(child_argv_guard);
     gint i;
-    for (i = 0; i < openvrml_gtkplug_cmd_argc; ++i) {
-        child_argv[i] = openvrml_gtkplug_cmd_argv[i];
+    for (i = 0; i < openvrml_xembed_cmd_argc; ++i) {
+        child_argv[i] = openvrml_xembed_cmd_argv[i];
     }
     child_argv[i++] = &socket_id_arg_vec.front();
     child_argv[i]   = 0;

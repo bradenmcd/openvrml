@@ -1,19 +1,17 @@
 ###############################################################################
-# $Id: Makefile.in,v 1.1.1.1 2006-11-03 05:28:18 braden Exp $
+# $Id$
 ###############################################################################
-## do not change this value 
-subdir=lib/cpp
-
-## get configured autoconf variables
-@stdvars@
-
-## Your own variables shall go here ..
 
 # Docs
 DOXY_TARGET=doxygen.cfg
 DOXY_GENDIR=gendoc/html
 
-@stdmake@
+SUB_DIRS = src antlr
+ALL_SUB_DIRS := $(SUB_DIRS)
 
+ifndef TOPDIR
+TOPDIR  = $(shell pwd)/../..
+endif
 
-@stddeps@
+include $(TOPDIR)/scripts/Config.make
+include $(TOPDIR)/scripts/Rules.make

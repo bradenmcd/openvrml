@@ -1,5 +1,5 @@
-info_TEXINFOS = openvrml-gtkplug.texi
-openvrml_gtkplug_TEXINFOS = fdl.texi
+info_TEXINFOS = openvrml-xembed.texi
+openvrml_xembed_TEXINFOS = fdl.texi
 
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
