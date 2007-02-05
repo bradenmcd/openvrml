@@ -42,7 +42,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 namespace {
 
-    const char application_name[] = "OpenVRML GtkPlug";
+    const char application_name[] = "OpenVRML XEmbed Control";
 
     //
     // We don't already know what the URI of the initial stream is until we
@@ -203,8 +203,8 @@ namespace {
             0,
             G_OPTION_ARG_STRING_ARRAY,
             &args,
-            "a GtkSocket id",
-            "GTK-SOCKET-ID"
+            "the embedder's window ID",
+            "XID"
         },
         { 0, '\0', 0, G_OPTION_ARG_NONE, 0, 0, 0 }
     };
@@ -369,21 +369,20 @@ int main(int argc, char * argv[])
     }
 
     if (version) {
-        cout << "OpenVRML GtkPlug " PACKAGE_VERSION << endl;
+        cout << application_name << ' ' << PACKAGE_VERSION << endl;
         return EXIT_SUCCESS;
     }
 
-    if (!args) {
-        cerr << argv[0] << ": missing required GTK-SOCKET-ID argument" << endl;
+    if (!::args) {
+        cerr << argv[0] << ": missing required XID argument" << endl;
         return EXIT_FAILURE;
     }
 
     GdkNativeWindow socket_id;
     try {
-        socket_id = boost::lexical_cast<GdkNativeWindow>(args[0]);
+        socket_id = boost::lexical_cast<GdkNativeWindow>(::args[0]);
     } catch (const boost::bad_lexical_cast & ex) {
-        cerr << argv[0] << ": expected integer value for GTK-SOCKET-ID "
-            "argument" << endl;
+        cerr << argv[0] << ": expected integer value for XID argument" << endl;
         return EXIT_FAILURE;
     }
 

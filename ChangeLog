@@ -1,5 +1,42 @@
 2007-02-04 Braden McDaniel  <braden@endoframe.com>
 
+	Changed the name of openvrml-gtkplug to openvrml-xembed.
+
+	* README: Changed references to openvrml-gtkplug to
+	openvrml-xembed.
+	* configure.ac: Changed references to openvrml-gtkplug to
+	openvrml-xembed.
+	* doc/Makefile.am: Refer to openvrml-xembed.texi instead of
+	openvrml-gtkplug.texi.
+	* doc/openvrml-gtkplug.texi: Removed file.
+	* doc/openvrml-xembed.texi: Added file.
+	* mozilla-plugin/src/openvrml.cpp: Changed references to
+	openvrml-gtkplug to openvrml-xembed.
+	* src/Makefile.am (SUBDIRS): Added openvrml-xembed; removed
+	openvrml-gtkplug.
+	* src/openvrml-gtkplug/Makefile.am: Removed file.
+	* src/openvrml-gtkplug/bounded_buffer.h: Removed file.
+	* src/openvrml-gtkplug/command_istream.cpp: Removed file.
+	* src/openvrml-gtkplug/command_istream.h: Removed file.
+	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp: Removed file.
+	* src/openvrml-gtkplug/gtkvrmlbrowser.h: Removed file.
+	* src/openvrml-gtkplug/main.cpp: Removed file.
+	* src/openvrml-gtkplug/plugin_streambuf.cpp: Removed file.
+	* src/openvrml-gtkplug/plugin_streambuf.h: Removed file.
+	* src/openvrml-player/player.cpp: Changed references to
+	openvrml-gtkplug to openvrml-xembed.
+	* src/openvrml-xembed/Makefile.am: Added file.
+	* src/openvrml-xembed/bounded_buffer.h: Added file.
+	* src/openvrml-xembed/command_istream.cpp: Added file.
+	* src/openvrml-xembed/command_istream.h: Added file.
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp: Added file.
+	* src/openvrml-xembed/gtkvrmlbrowser.h: Added file.
+	* src/openvrml-xembed/main.cpp: Added file.
+	* src/openvrml-xembed/plugin_streambuf.cpp: Added file.
+	* src/openvrml-xembed/plugin_streambuf.h: Added file.
+
+2007-02-04 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
 	(gtk_vrml_browser_init(GtkVrmlBrowser *)): Use g_object_connect to
 	set up GtkVrmlBrowser event handlers.

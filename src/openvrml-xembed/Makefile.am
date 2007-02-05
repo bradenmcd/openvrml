@@ -22,18 +22,18 @@ LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
         $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
 
-if ENABLE_GTKPLUG
-libexec_PROGRAMS = openvrml-gtkplug
+if ENABLE_XEMBED
+libexec_PROGRAMS = openvrml-xembed
 endif
 noinst_HEADERS = \
         bounded_buffer.h \
         command_istream.h \
         plugin_streambuf.h \
         gtkvrmlbrowser.h
-openvrml_gtkplug_SOURCES = \
+openvrml_xembed_SOURCES = \
         main.cpp \
         command_istream.cpp \
         plugin_streambuf.cpp \
         gtkvrmlbrowser.cpp
 
-EXTRA_DIST = $(openvrml_gtkplug_SOURCES)
+EXTRA_DIST = $(openvrml_xembed_SOURCES)
