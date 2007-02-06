@@ -43,9 +43,7 @@ namespace openvrml_player {
 
         bounded_buffer();
         void put(const char_type & c);
-        size_t write(const char_type * buf, size_t size);
         int_type get();
-        size_t read(char_type * buf, size_t size);
         size_t buffered() const;
         void set_eof();
         bool eof() const;
@@ -70,46 +68,6 @@ namespace openvrml_player {
         this->end_ = (this->end_ + 1) % BufferSize;
         ++this->buffered_;
         this->buffer_not_empty_or_eof_.notify_one();
-    }
-
-    template <typename CharT, size_t BufferSize>
-    size_t
-    bounded_buffer<CharT, BufferSize>::write(const char_type * const buf,
-                                             const size_t size)
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
-
-        using std::copy;
-
-        while (this->buffered_ == BufferSize) {
-            this->buffer_not_full_.wait(lock);
-        }
-        const size_t space_at_back = BufferSize - this->end_;
-        size_t num_written;
-        if (size < space_at_back) {
-            copy(buf, buf + size, &this->buf_[this->end_]);
-            num_written = size;
-        } else {
-            using std::min;
-            copy(buf, buf + space_at_back, &this->buf_[this->end_]);
-            const size_t space_at_front = this->begin_;
-            const size_t remaining_to_write = min(space_at_front,
-                                                  size - space_at_back);
-            copy(buf + space_at_back, buf + space_at_back + remaining_to_write,
-                 this->buf_);
-            num_written = space_at_back + remaining_to_write;
-        }
-        this->end_ = (this->end_ + num_written) % BufferSize;
-        this->buffered_ += num_written;
-        this->buffer_not_empty_or_eof_.notify_one();
-        return num_written;
-    }
-
-    template <typename CharT, size_t BufferSize>
-    size_t
-    bounded_buffer<CharT, BufferSize>::read(char_type * const buf,
-                                            const size_t size)
-    {
     }
 
     template <typename CharT, size_t BufferSize>
