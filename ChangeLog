@@ -1,5 +1,12 @@
 2007-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp
+	(reset_fds(CURLSource &)): Don't bail early if curl_multi_fdset
+	returns -1; we need to call g_source_remove_poll on outstanding
+	file descriptors in this case.
+
+2007-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/main.cpp
 	(main(int, char *[])): Moved global variables used for option
 	parsing inside main.
