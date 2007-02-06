@@ -374,21 +374,23 @@ namespace {
             g_critical("%s", curl_multi_strerror(result));
         }
 
-        if (curl_source.max_fd < 0) { return; }
-
-        //
-        // Resize the list of fds to be polled; initialize any new entries.
-        //
-        const poll_fds_t::size_type prev_size = curl_source.poll_fds->size();
-        curl_source.poll_fds->resize(curl_source.max_fd + 1);
-        if (curl_source.poll_fds->size() > prev_size) {
-            poll_fds_t::iterator pos = curl_source.poll_fds->begin();
-            std::advance(pos, prev_size);
-            for (gint fd = prev_size; pos != curl_source.poll_fds->end();
-                 ++pos, ++fd) {
-                pos->fd      = fd;
-                pos->events  = 0;
-                pos->revents = 0;
+        if (curl_source.max_fd >= 0) {
+            //
+            // Resize the list of fds to be polled; initialize any new
+            // entries.
+            //
+            const poll_fds_t::size_type prev_size =
+                curl_source.poll_fds->size();
+            curl_source.poll_fds->resize(curl_source.max_fd + 1);
+            if (curl_source.poll_fds->size() > prev_size) {
+                poll_fds_t::iterator pos = curl_source.poll_fds->begin();
+                std::advance(pos, prev_size);
+                for (gint fd = prev_size; pos != curl_source.poll_fds->end();
+                     ++pos, ++fd) {
+                    pos->fd      = fd;
+                    pos->events  = 0;
+                    pos->revents = 0;
+                }
             }
         }
 
