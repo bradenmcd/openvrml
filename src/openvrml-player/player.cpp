@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// Copyright 2006  Braden McDaniel
+// Copyright 2006, 2007  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ extern "C" {
     size_t openvrml_player_curl_write(void * ptr, size_t size, size_t nmemb,
                                       void * stream);
     void openvrml_player_on_about_activated(GtkWindow * window);
+    void openvrml_player_on_locationentry_activated(GtkEntry * entry);
     void openvrml_player_on_filechooserdialog_file_activated(
         GtkFileChooser * chooser,
         gpointer user_data);
@@ -107,12 +108,12 @@ int main(int argc, char * argv[])
     using boost::ref;
 
     if (!gnome_vfs_init()) {
-        g_printerr("GnomeVFS initialization failed");
+        g_critical("GnomeVFS initialization failed");
         return EXIT_FAILURE;
     }
 
     if (curl_global_init(CURL_GLOBAL_ALL) != 0) {
-        g_printerr("libcurl initialization failed");
+        g_critical("libcurl initialization failed");
         return EXIT_FAILURE;
     }
 
@@ -747,6 +748,14 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
                           NULL);
 }
 
+void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
+{
+    const gchar * const uri = gtk_entry_get_text(entry);
+    std::ostringstream command;
+    command << "load-url " << uri << std::endl;
+    ::write_command(command.str());
+}
+
 void
 openvrml_player_on_filechooserdialog_file_activated(
     GtkFileChooser * const chooser,
@@ -770,7 +779,7 @@ void openvrml_player_quit()
     GIOStatus status = g_io_channel_shutdown(::request_channel, flush, &error);
     if (status != G_IO_STATUS_NORMAL) {
         if (error) {
-            g_printerr(error->message);
+            g_critical(error->message);
             g_error_free(error);
         }
     }
@@ -780,7 +789,7 @@ void openvrml_player_quit()
     status = g_io_channel_shutdown(::command_channel, flush, &error);
     if (status != G_IO_STATUS_NORMAL) {
         if (error) {
-            g_printerr(error->message);
+            g_critical(error->message);
             g_error_free(error);
         }
     }
@@ -810,7 +819,7 @@ namespace {
                                                     &error);
         if (status != G_IO_STATUS_NORMAL) {
             if (error) {
-                g_printerr(error->message);
+                g_critical(error->message);
                 g_error_free(error);
             }
             return -1;
@@ -822,7 +831,7 @@ namespace {
 
         if (status != G_IO_STATUS_NORMAL) {
             if (error) {
-                g_printerr(error->message);
+                g_critical(error->message);
                 g_error_free(error);
             }
             return -1;

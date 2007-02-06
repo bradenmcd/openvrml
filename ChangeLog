@@ -1,3 +1,15 @@
+2007-02-06 Braden McDaniel  <braden@endoframe.com>
+
+	Load worlds from the location bar.
+
+	* src/openvrml-player/openvrml-player.glade
+	(locationentry): Added "activate" signal handler
+	openvrml_player_on_locationentry_activate.
+	(socket): Set "can-focus" and "has-focus" properties to "True".
+	* src/openvrml-player/player.cpp
+	(openvrml_player_on_locationentry_activated(GtkEntry *)): Added
+	function; send "load-url" with the given text.
+
 2007-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp
