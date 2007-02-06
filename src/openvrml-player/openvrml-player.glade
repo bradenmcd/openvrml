@@ -76,8 +76,9 @@
           <widget class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkEntry" id="entry1">
+              <widget class="GtkEntry" id="locationentry">
                 <property name="visible">True</property>
+                <signal name="activate" handler="openvrml_player_on_locationentry_activated"/>
               </widget>
             </child>
           </widget>
@@ -89,6 +90,8 @@
         <child>
           <widget class="GtkSocket" id="socket">
             <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="has-focus">True</property>
           </widget>
         </child>
         <child>
