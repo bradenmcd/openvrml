@@ -1,3 +1,18 @@
+2007-02-08 Braden McDaniel  <braden@endoframe.com>
+
+	Don't bother with Glade XML for creating the GtkFileChooserDialog;
+	doing this entirely in C++ is less code and easier to get right.
+
+	* src/openvrml-player/openvrml-player.glade
+	(filechooserdialog): Removed.
+	* src/openvrml-player/player.cpp
+	(load_url(const gchar *)): Added helper function to send a
+	load-url command.
+	(openvrml_player_on_file_open_activated(GtkWindow *)): Added
+	callback to open a file chooser dialog.
+	(openvrml_player_on_locationentry_activated(GtkEntry *)): Delegate
+	to load_url.
+
 2007-02-06 Braden McDaniel  <braden@endoframe.com>
 
 	Load worlds from the location bar.
