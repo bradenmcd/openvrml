@@ -53,10 +53,8 @@ extern "C" {
     size_t openvrml_player_curl_write(void * ptr, size_t size, size_t nmemb,
                                       void * stream);
     void openvrml_player_on_about_activated(GtkWindow * window);
+    void openvrml_player_on_file_open_activated(GtkWindow * window);
     void openvrml_player_on_locationentry_activated(GtkEntry * entry);
-    void openvrml_player_on_filechooserdialog_file_activated(
-        GtkFileChooser * chooser,
-        gpointer user_data);
     void openvrml_player_quit();
 }
 
@@ -71,6 +69,7 @@ namespace {
     G_GNUC_INTERNAL ssize_t write_command(const std::string & command);
     G_GNUC_INTERNAL GSource * curl_source_new(CURLM * multi_handle);
     G_GNUC_INTERNAL GladeXML * xml_new(GnomeProgram & program);
+    G_GNUC_INTERNAL void load_url(const gchar * url);
 
 
     class G_GNUC_INTERNAL curl_stream_data {
@@ -317,6 +316,13 @@ namespace {
         g_return_val_if_fail(glade_file, 0);
 
         return glade_xml_new(glade_file, 0, 0);
+    }
+
+    G_GNUC_INTERNAL void load_url(const gchar * url)
+    {
+        std::ostringstream command;
+        command << "load-url " << url << std::endl;
+        ::write_command(command.str());
     }
 
     typedef std::list<GPollFD> poll_fds_t;
@@ -748,25 +754,58 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
                           NULL);
 }
 
+void openvrml_player_on_file_open_activated(GtkWindow * const parent)
+{
+    static GtkWidget * file_chooser_dialog = 0;
+
+    if (!file_chooser_dialog) {
+        file_chooser_dialog =
+            gtk_file_chooser_dialog_new("Open File",
+                                        parent,
+                                        GTK_FILE_CHOOSER_ACTION_OPEN,
+                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                        NULL);
+
+        gtk_dialog_set_default_response(GTK_DIALOG(file_chooser_dialog),
+                                        GTK_RESPONSE_ACCEPT);
+
+        GtkFileFilter * const world_filter = gtk_file_filter_new();
+        g_return_if_fail(world_filter);
+        gtk_file_filter_set_name(world_filter, "VRML/X3D worlds");
+        gtk_file_filter_add_mime_type(world_filter, "x-world/x-vrml");
+        gtk_file_filter_add_mime_type(world_filter, "model/vrml");
+        gtk_file_filter_add_mime_type(world_filter, "model/x3d+vrml");
+
+        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser_dialog),
+                                    world_filter);
+
+        GtkFileFilter * const all_filter = gtk_file_filter_new();
+        g_return_if_fail(all_filter);
+        gtk_file_filter_set_name(all_filter, "All files");
+        gtk_file_filter_add_pattern(all_filter, "*");
+
+        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser_dialog),
+                                    all_filter);
+    }
+
+    const gint response = gtk_dialog_run(GTK_DIALOG(file_chooser_dialog));
+    if (response == GTK_RESPONSE_ACCEPT) {
+        gchar * uri = 0;
+        uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(file_chooser_dialog));
+        g_return_if_fail(uri);
+        scope_guard uri_guard = make_guard(g_free, uri);
+        boost::ignore_unused_variable_warning(uri_guard);
+        ::load_url(uri);
+    }
+
+    gtk_widget_hide(file_chooser_dialog);
+}
+
 void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
 {
     const gchar * const uri = gtk_entry_get_text(entry);
-    std::ostringstream command;
-    command << "load-url " << uri << std::endl;
-    ::write_command(command.str());
-}
-
-void
-openvrml_player_on_filechooserdialog_file_activated(
-    GtkFileChooser * const chooser,
-    gpointer)
-{
-    gtk_widget_hide(GTK_WIDGET(chooser));
-
-    const gchar * const uri = gtk_file_chooser_get_uri(chooser);
-    std::ostringstream command;
-    command << "load-url " << uri << std::endl;
-    ::write_command(command.str());
+    ::load_url(uri);
 }
 
 void openvrml_player_quit()
