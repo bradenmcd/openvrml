@@ -31,6 +31,7 @@
 # include <libgnomevfs/gnome-vfs.h>
 # include <libgnomeui/libgnomeui.h>
 # include <glade/glade.h>
+# include <glade/glade-build.h>
 
 # include "filechooserdialog.h"
 
@@ -41,7 +42,6 @@
 using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
-    void openvrml_player_watch_child(GPid pid, gint status, gpointer data);
     gboolean openvrml_player_request_data_available(GIOChannel * source,
                                                     GIOCondition condition,
                                                     gpointer data);
@@ -55,9 +55,19 @@ extern "C" {
     size_t openvrml_player_curl_write(void * ptr, size_t size, size_t nmemb,
                                       void * stream);
     void openvrml_player_on_about_activated(GtkWindow * window);
-    void openvrml_player_on_file_open_activated(GtkWindow * window);
+    void openvrml_player_on_file_open_activated(
+        OpenvrmlPlayerFileChooserDialog * dialog);
     void openvrml_player_on_locationentry_activated(GtkEntry * entry);
     void openvrml_player_quit();
+
+    G_GNUC_INTERNAL void openvrml_player_watch_child(GPid pid,
+                                                     gint status,
+                                                     gpointer data);
+    G_GNUC_INTERNAL
+    GtkWidget *
+    openvrml_player_build_file_chooser_dialog(GladeXML * xml,
+                                              GType widget_type,
+                                              GladeWidgetInfo * info);
 }
 
 namespace {
@@ -148,8 +158,20 @@ int main(int argc, char * argv[])
                            GNOME_PARAM_GOPTION_CONTEXT, option_context,
                            GNOME_PARAM_NONE);
 
+    glade_init();
+    glade_register_widget(OPENVRML_PLAYER_TYPE_FILE_CHOOSER_DIALOG,
+                          openvrml_player_build_file_chooser_dialog,
+                          0,
+                          0);
+
     GladeXML * const xml = xml_new(*program);
     glade_xml_signal_autoconnect(xml);
+
+    GtkWidget * const app_window = glade_xml_get_widget(xml, "window");
+    GtkWidget * const file_chooser_dialog =
+        glade_xml_get_widget(xml, "filechooserdialog");
+    gtk_window_set_transient_for(GTK_WINDOW(file_chooser_dialog),
+                                 GTK_WINDOW(app_window));
 
     //
     // The OPENVRML_XEMBED environment variable overrides the default
@@ -756,26 +778,21 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
                           NULL);
 }
 
-void openvrml_player_on_file_open_activated(GtkWindow * const parent)
+void
+openvrml_player_on_file_open_activated(
+    OpenvrmlPlayerFileChooserDialog * const dialog)
 {
-    static GtkWidget * file_chooser_dialog = 0;
-
-    if (!file_chooser_dialog) {
-        file_chooser_dialog =
-            openvrml_player_file_chooser_dialog_new(parent);
-    }
-
-    const gint response = gtk_dialog_run(GTK_DIALOG(file_chooser_dialog));
+    const gint response = gtk_dialog_run(GTK_DIALOG(dialog));
     if (response == GTK_RESPONSE_ACCEPT) {
         gchar * uri = 0;
-        uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(file_chooser_dialog));
+        uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
         g_return_if_fail(uri);
         scope_guard uri_guard = make_guard(g_free, uri);
         boost::ignore_unused_variable_warning(uri_guard);
         ::load_url(uri);
     }
 
-    gtk_widget_hide(file_chooser_dialog);
+    gtk_widget_hide(GTK_WIDGET(dialog));
 }
 
 void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
@@ -817,6 +834,15 @@ void openvrml_player_watch_child(const GPid pid,
 {
     g_spawn_close_pid(pid);
     gtk_main_quit();
+}
+
+GtkWidget *
+openvrml_player_build_file_chooser_dialog(GladeXML * /* xml */,
+                                          GType /* widget_type */,
+                                          GladeWidgetInfo * /* info */)
+{
+    GtkWidget * widget = openvrml_player_file_chooser_dialog_new(0);
+    return widget;
 }
 
 namespace {

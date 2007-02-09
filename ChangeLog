@@ -1,5 +1,23 @@
 2007-02-09 Braden McDaniel  <braden@endoframe.com>
 
+	Use Glade XML to manage the OpenvrmlPlayerFileChooserDialog.
+
+	* src/openvrml-player/openvrml-player.glade
+	(imagemenuitemopen): openvrml_player_file_open_activated now takes
+	the dialog as its argument.
+	(filechooserdialog): Added OpenvrmlPlayerFileChooserDialog.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Register OpenvrmlPlayerFileChooserDialog
+	with libglade; set the file chooser dialog's parent window.
+	(openvrml_player_on_file_open_activated(OpenvrmlPlayerFileChooserDialog*)):
+	Now takes the dialog as its argument; just run the dialog (rather
+	than creating it).
+	(openvrml_player_build_file_chooser_dialog(GladeXML *, GType,
+	GladeWidgetInfo *)): Added function; function to create an
+	OpenvrmlPlayerFileChooserDialog for libglade.
+
+2007-02-09 Braden McDaniel  <braden@endoframe.com>
+
 	Moved file chooser dialog into its own widget implementation.
 
 	* src/openvrml-player/Makefile.am
