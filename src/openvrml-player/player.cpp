@@ -42,24 +42,38 @@
 using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
-    gboolean openvrml_player_request_data_available(GIOChannel * source,
-                                                    GIOCondition condition,
-                                                    gpointer data);
-    gboolean openvrml_player_curl_prepare(GSource * source, gint * timeout);
-    gboolean openvrml_player_curl_check(GSource * source);
-    gboolean openvrml_player_curl_dispatch(GSource * source,
-                                           GSourceFunc callback,
-                                           gpointer user_data);
-    void openvrml_player_curl_finalize(GSource * source);
-    gboolean openvrml_player_curl_source_callback(gpointer data);
-    size_t openvrml_player_curl_write(void * ptr, size_t size, size_t nmemb,
-                                      void * stream);
+    //
+    // GTK+ signal handlers; libglade needs them to have external linkage in
+    // order to connect them.
+    //
     void openvrml_player_on_about_activated(GtkWindow * window);
     void openvrml_player_on_file_open_activated(
         OpenvrmlPlayerFileChooserDialog * dialog);
     void openvrml_player_on_locationentry_activated(GtkEntry * entry);
     void openvrml_player_quit();
 
+    //
+    // The following functions are 'extern "C"' because they get passed as
+    // callbacks to C APIs; however, their symbols don't need to be exposed.
+    //
+    G_GNUC_INTERNAL
+    gboolean openvrml_player_request_data_available(GIOChannel * source,
+                                                    GIOCondition condition,
+                                                    gpointer data);
+    G_GNUC_INTERNAL gboolean openvrml_player_curl_prepare(GSource * source,
+                                                          gint * timeout);
+    G_GNUC_INTERNAL gboolean openvrml_player_curl_check(GSource * source);
+    G_GNUC_INTERNAL
+    gboolean openvrml_player_curl_dispatch(GSource * source,
+                                           GSourceFunc callback,
+                                           gpointer user_data);
+    G_GNUC_INTERNAL void openvrml_player_curl_finalize(GSource * source);
+    G_GNUC_INTERNAL
+    gboolean openvrml_player_curl_source_callback(gpointer data);
+    G_GNUC_INTERNAL size_t openvrml_player_curl_write(void * ptr,
+                                                      size_t size,
+                                                      size_t nmemb,
+                                                      void * stream);
     G_GNUC_INTERNAL void openvrml_player_watch_child(GPid pid,
                                                      gint status,
                                                      gpointer data);
@@ -561,7 +575,8 @@ gboolean openvrml_player_curl_source_callback(const gpointer data)
             g_assert(curl_source->outstanding_handles > 0);
             --curl_source->outstanding_handles;
             std::ostringstream command;
-            command << "destroy-stream " << ptrdiff_t(msg->easy_handle) << '\n';
+            command << "destroy-stream " << ptrdiff_t(msg->easy_handle)
+                    << '\n';
             const ssize_t bytes_written = ::write_command(command.str());
             g_return_val_if_fail(
                 bytes_written == ssize_t(command.str().length()),
@@ -574,7 +589,8 @@ gboolean openvrml_player_curl_source_callback(const gpointer data)
             //
             CURL * const easy_handle = msg->easy_handle;
             const CURLMcode multi_remove_result =
-                curl_multi_remove_handle(curl_source->multi_handle, easy_handle);
+                curl_multi_remove_handle(curl_source->multi_handle,
+                                         easy_handle);
             if (multi_remove_result != CURLM_OK) {
                 g_critical("%s", curl_multi_strerror(multi_remove_result));
             }
@@ -630,7 +646,8 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
                     std::make_pair(handle,
                                    curl_stream_data(handle, url.c_str())))
                 .first;
-            g_assert(pos != req_data.source_callback_data->stream_data_map.end());
+            g_assert(
+                pos != req_data.source_callback_data->stream_data_map.end());
             curl_stream_data & stream_data = pos->second;
             CURLcode setopt_result;
             setopt_result = curl_easy_setopt(handle,
@@ -674,8 +691,9 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
                 int running_handles;
                 CURLMcode perform_result;
                 do {
-                    perform_result = curl_multi_perform(curl_source->multi_handle,
-                                                        &running_handles);
+                    perform_result =
+                        curl_multi_perform(curl_source->multi_handle,
+                                           &running_handles);
                 } while (perform_result == CURLM_CALL_MULTI_PERFORM);
             }
         }
@@ -753,19 +771,20 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
     };
     const gchar copyright[] = "Copyright 2006";
     const gchar license[] =
-        "This program is free software; you can redistribute it and/or modify it under "
-        "the terms of the GNU General Public License as published by the Free Software "
-        "Foundation; either version 2 of the License, or (at your option) any later "
-        "version.\n\n"
+        "This program is free software; you can redistribute it and/or modify "
+        "it under the terms of the GNU General Public License as published by "
+        "the Free Software Foundation; either version 2 of the License, or "
+        "(at your option) any later version.\n\n"
 
-        "This program is distributed in the hope that it will be useful, but WITHOUT "
-        "ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
-        "FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more "
-        "details.\n\n"
+        "This program is distributed in the hope that it will be useful, but "
+        "WITHOUT ANY WARRANTY; without even the implied warranty of "
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU "
+        "General Public License for more details.\n\n"
 
-        "You should have received a copy of the GNU General Public License along with "
-        "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
-        "Place, Suite 330, Boston, MA 02111-1307 USA";
+        "You should have received a copy of the GNU General Public License "
+        "along with this program; if not, write to the Free Software "
+        "Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 "
+        "USA";
 
     gtk_show_about_dialog(parent,
                           "name", app_name,
@@ -801,6 +820,12 @@ void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
     ::load_url(uri);
 }
 
+//
+// Start the quit dance.  We just shut down the I/O channels here.  When the
+// child process gets EOF on the request_channel, it will shut down.  The
+// openvrml-player process (us) ultimately shuts down in the watch_child
+// callback.
+//
 void openvrml_player_quit()
 {
     gboolean succeeded = g_source_remove(::request_channel_watch_id);
@@ -828,6 +853,9 @@ void openvrml_player_quit()
     g_io_channel_unref(::command_channel);
 }
 
+//
+// Once the child process has terminated, it's time for us to go.
+//
 void openvrml_player_watch_child(const GPid pid,
                                  gint /* status */,
                                  gpointer /* data */)
