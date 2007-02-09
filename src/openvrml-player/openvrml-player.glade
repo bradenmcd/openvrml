@@ -25,7 +25,7 @@
                         <property name="label" translatable="yes">gtk-open</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="openvrml_player_on_file_open_activated" object="window"/>
+                        <signal name="activate" handler="openvrml_player_on_file_open_activated" object="filechooserdialog"/>
                       </widget>
                     </child>
                     <child>
@@ -105,5 +105,7 @@
         </child>
       </widget>
     </child>
+  </widget>
+  <widget class="OpenvrmlPlayerFileChooserDialog" id="filechooserdialog">
   </widget>
 </glade-interface>
