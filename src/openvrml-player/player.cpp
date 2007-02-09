@@ -32,6 +32,8 @@
 # include <libgnomeui/libgnomeui.h>
 # include <glade/glade.h>
 
+# include "filechooserdialog.h"
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
@@ -760,33 +762,7 @@ void openvrml_player_on_file_open_activated(GtkWindow * const parent)
 
     if (!file_chooser_dialog) {
         file_chooser_dialog =
-            gtk_file_chooser_dialog_new("Open File",
-                                        parent,
-                                        GTK_FILE_CHOOSER_ACTION_OPEN,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                        GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                                        NULL);
-
-        gtk_dialog_set_default_response(GTK_DIALOG(file_chooser_dialog),
-                                        GTK_RESPONSE_ACCEPT);
-
-        GtkFileFilter * const world_filter = gtk_file_filter_new();
-        g_return_if_fail(world_filter);
-        gtk_file_filter_set_name(world_filter, "VRML/X3D worlds");
-        gtk_file_filter_add_mime_type(world_filter, "x-world/x-vrml");
-        gtk_file_filter_add_mime_type(world_filter, "model/vrml");
-        gtk_file_filter_add_mime_type(world_filter, "model/x3d+vrml");
-
-        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser_dialog),
-                                    world_filter);
-
-        GtkFileFilter * const all_filter = gtk_file_filter_new();
-        g_return_if_fail(all_filter);
-        gtk_file_filter_set_name(all_filter, "All files");
-        gtk_file_filter_add_pattern(all_filter, "*");
-
-        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(file_chooser_dialog),
-                                    all_filter);
+            openvrml_player_file_chooser_dialog_new(parent);
     }
 
     const gint response = gtk_dialog_run(GTK_DIALOG(file_chooser_dialog));

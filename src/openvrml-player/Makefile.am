@@ -14,7 +14,9 @@ bin_PROGRAMS = openvrml-player
 glade_DATA = openvrml-player.glade
 endif
 
-openvrml_player_SOURCES = player.cpp
+openvrml_player_SOURCES = filechooserdialog.cpp player.cpp
+
+noinst_HEADERS = filechooserdialog.h
 
 EXTRA_DIST = \
         $(openvrml_player_SOURCES) \
