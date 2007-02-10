@@ -1,5 +1,17 @@
 2007-02-09 Braden McDaniel  <braden@endoframe.com>
 
+	Set the location entry text once a file has been selected.
+
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Connect
+	openvrml_player_on_filechooserdialog_response to the file chooser
+	dialog's "response" signal.
+	(openvrml_player_on_filechooserdialog_response(GtkDialog *, gint,
+	gpointer)): Added function; set the location entry text once a
+	file has been selected.
+
+2007-02-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-player/player.cpp
 	(main(int, char *[])): Use ScopeGuard to manage libcurl clean up.
 
