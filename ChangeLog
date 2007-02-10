@@ -1,5 +1,10 @@
 2007-02-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Use ScopeGuard to manage libcurl clean up.
+
+2007-02-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-player/player.cpp: Added comments; applied
 	G_GNUC_INTERNAL to 'extern "C"' functions that libglade doesn't
 	need to be visible.
