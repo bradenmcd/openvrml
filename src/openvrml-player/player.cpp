@@ -327,9 +327,6 @@ int main(int argc, char * argv[])
     gtk_widget_show(window);
 
     gtk_main();
-
-    curl_multi_cleanup(multi_handle);
-    curl_global_cleanup();
 }
 
 namespace {
