@@ -50,6 +50,9 @@ extern "C" {
     void openvrml_player_on_file_open_activated(
         OpenvrmlPlayerFileChooserDialog * dialog);
     void openvrml_player_on_locationentry_activated(GtkEntry * entry);
+    void openvrml_player_on_filechooserdialog_response(GtkDialog * dialog,
+                                                       gint arg1,
+                                                       gpointer user_data);
     void openvrml_player_quit();
 
     //
@@ -189,6 +192,13 @@ int main(int argc, char * argv[])
     gtk_window_set_transient_for(GTK_WINDOW(file_chooser_dialog),
                                  GTK_WINDOW(app_window));
 
+    GtkWidget * const location_entry =
+        glade_xml_get_widget(xml, "locationentry");
+    g_signal_connect(file_chooser_dialog,
+                     "response",
+                     G_CALLBACK(openvrml_player_on_filechooserdialog_response),
+                     location_entry);
+
     //
     // The OPENVRML_XEMBED environment variable overrides the default
     // path to the child process executable.  To allow OPENVRML_XEMBED
@@ -323,8 +333,7 @@ int main(int argc, char * argv[])
                        openvrml_player_request_data_available,
                        &req_data);
 
-    GtkWidget * const window = glade_xml_get_widget(xml, "window");
-    gtk_widget_show(window);
+    gtk_widget_show(app_window);
 
     gtk_main();
 }
@@ -820,6 +829,21 @@ void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
 {
     const gchar * const uri = gtk_entry_get_text(entry);
     ::load_url(uri);
+}
+
+void openvrml_player_on_filechooserdialog_response(GtkDialog * const dialog,
+                                                   const gint arg1,
+                                                   const gpointer user_data)
+{
+    if (arg1 == GTK_RESPONSE_ACCEPT) {
+        GtkEntry * const location_entry = static_cast<GtkEntry *>(user_data);
+        gchar * uri = 0;
+        uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
+        g_return_if_fail(uri);
+        scope_guard uri_guard = make_guard(g_free, uri);
+        boost::ignore_unused_variable_warning(uri_guard);
+        gtk_entry_set_text(location_entry, uri);
+    }
 }
 
 //
