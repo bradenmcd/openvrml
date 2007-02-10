@@ -141,6 +141,8 @@ int main(int argc, char * argv[])
         g_critical("libcurl initialization failed");
         return EXIT_FAILURE;
     }
+    scope_guard curl_global_guard = make_guard(curl_global_cleanup);
+    boost::ignore_unused_variable_warning(curl_global_guard);
 
     gchar ** remaining_args = 0;
     GOptionEntry option_entries[] = {
@@ -297,6 +299,9 @@ int main(int argc, char * argv[])
 
     CURLM * const multi_handle = curl_multi_init();
     g_return_val_if_fail(multi_handle, EXIT_FAILURE);
+    scope_guard multi_handle_guard = make_guard(curl_multi_cleanup,
+                                                multi_handle);
+    boost::ignore_unused_variable_warning(multi_handle_guard);
 
     GSource * const curl_source = curl_source_new(multi_handle);
     scope_guard curl_source_guard = make_guard(g_source_unref, curl_source);
