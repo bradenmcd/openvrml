@@ -620,8 +620,14 @@ namespace {
             mutex::scoped_lock lock(this->viewer_.browser_initialized_mutex_);
             this->viewer_.browser_initialized_ = true;
             gdk_threads_enter();
+            scope_guard gdk_threads_guard = make_guard(gdk_threads_leave);
+            boost::ignore_unused_variable_warning(gdk_threads_guard);
+            //
+            // Set redrawNeeded to false to ensure that this particular call to
+            // post_redraw results in a redraw.
+            //
+            this->viewer_.redrawNeeded = false;
             this->viewer_.post_redraw();
-            gdk_threads_leave();
         }
     }
 

@@ -1,3 +1,10 @@
+2007-02-11 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(browser_listener::do_browser_changed(const
+	openvrml::browser_event &)): Set redrawNeeded to false to ensure
+	that the call to post_redraw triggers a redraw.
+
 2007-02-09 Braden McDaniel  <braden@endoframe.com>
 
 	Set the location entry text once a file has been selected.
