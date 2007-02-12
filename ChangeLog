@@ -1,5 +1,18 @@
 2007-02-11 Braden McDaniel  <braden@endoframe.com>
 
+	openvrml-xembed isn't openvrml-player anymore.  Renamed namespace
+	accordingly.
+
+	* src/openvrml-xembed/bounded_buffer.h
+	* src/openvrml-xembed/command_istream.cpp
+	* src/openvrml-xembed/command_istream.h
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	* src/openvrml-xembed/main.cpp
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	* src/openvrml-xembed/plugin_streambuf.h
+
+2007-02-11 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
 	(browser_listener::do_browser_changed(const
 	openvrml::browser_event &)): Set redrawNeeded to false to ensure

@@ -22,14 +22,14 @@
 # include <cerrno>
 # include "command_istream.h"
 
-openvrml_player::command_streambuf::command_streambuf():
+openvrml_xembed::command_streambuf::command_streambuf():
     c_('\0')
 {
     this->setg(&this->c_, &this->c_, &this->c_);
 }
 
-openvrml_player::command_streambuf::int_type
-openvrml_player::command_streambuf::underflow()
+openvrml_xembed::command_streambuf::int_type
+openvrml_xembed::command_streambuf::underflow()
 {
     const int_type i = this->source_buffer_.get();
     if (traits_type::eq_int_type(i, traits_type::eof())) {
@@ -41,7 +41,7 @@ openvrml_player::command_streambuf::underflow()
 }
 
 
-openvrml_player::command_istream::command_istream():
+openvrml_xembed::command_istream::command_istream():
     std::istream(&this->buf_)
 {}
 
@@ -49,7 +49,7 @@ gboolean command_data_available(GIOChannel * source,
                                 GIOCondition,
                                 gpointer data)
 {
-    using namespace openvrml_player;
+    using namespace openvrml_xembed;
 
     typedef command_istream::traits_type traits_type;
 

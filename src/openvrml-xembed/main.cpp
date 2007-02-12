@@ -37,7 +37,7 @@
 # include "command_istream.h"
 # include "plugin_streambuf.h"
 
-using namespace openvrml_player;
+using namespace openvrml_xembed;
 using namespace boost::multi_index::detail; // for scope_guard
 
 namespace {
@@ -53,7 +53,7 @@ namespace {
     const char initial_stream_uri[] = "x-openvrml-initial:";
 }
 
-namespace openvrml_player {
+namespace openvrml_xembed {
 
     struct command_istream_reader {
         command_istream_reader(command_istream & in,
@@ -310,7 +310,7 @@ int main(int argc, char * argv[])
     using boost::thread;
     using boost::thread_group;
 
-    using namespace openvrml_player;
+    using namespace openvrml_xembed;
 
     g_thread_init(0);
     gdk_threads_init();
