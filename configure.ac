@@ -91,7 +91,7 @@ AS_IF([test X$have_freetype != Xno],
        AC_CACHE_VAL([ov_cv_ft_const],
 [AC_LANG_PUSH([C++])
 save_CXXFLAGS="${CXXFLAGS}"
-CXXFLAGS="${CXXFLAGS} `${FREETYPE_CONFIG} --cflags`"
+CXXFLAGS="${CXXFLAGS} `${PKG_CONFIG} --cflags ${REQUIRE_FREETYPE}`"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
                   [#include <ft2build.h>
 #include FT_OUTLINE_H
