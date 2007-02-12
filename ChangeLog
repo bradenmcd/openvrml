@@ -1,3 +1,8 @@
+2007-02-12 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fixed FreeType const test to use pkg-config to get
+	the compiler flags.
+
 2007-02-11 Braden McDaniel  <braden@endoframe.com>
 
 	openvrml-xembed isn't openvrml-player anymore.  Renamed namespace
