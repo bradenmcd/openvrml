@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef OPENVRML_PLAYER_COMMAND_ISTREAM_H
-#   define OPENVRML_PLAYER_COMMAND_ISTREAM_H
+# ifndef OPENVRML_XEMBED_COMMAND_ISTREAM_H
+#   define OPENVRML_XEMBED_COMMAND_ISTREAM_H
 
 #   include <streambuf>
 #   include <glib.h>
@@ -30,7 +30,7 @@ extern "C" gboolean command_data_available(GIOChannel * source,
                                            GIOCondition condition,
                                            gpointer data);
 
-namespace openvrml_player {
+namespace openvrml_xembed {
 
     class command_streambuf : boost::noncopyable, public std::streambuf {
         friend gboolean (::command_data_available)(GIOChannel * source,
@@ -56,4 +56,4 @@ namespace openvrml_player {
     };
 }
 
-# endif // ifndef OPENVRML_PLAYER_COMMAND_ISTREAM_H
+# endif // ifndef OPENVRML_XEMBED_COMMAND_ISTREAM_H

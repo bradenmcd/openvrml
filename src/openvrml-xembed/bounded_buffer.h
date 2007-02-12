@@ -18,14 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef OPENVRML_PLAYER_BOUNDED_BUFFER_H
-#   define OPENVRML_PLAYER_BOUNDED_BUFFER_H
+# ifndef OPENVRML_XEMBED_BOUNDED_BUFFER_H
+#   define OPENVRML_XEMBED_BOUNDED_BUFFER_H
 
 #   include <string>
 #   include <boost/thread/mutex.hpp>
 #   include <boost/thread/condition.hpp>
 
-namespace openvrml_player {
+namespace openvrml_xembed {
 
     template <typename CharT, size_t BufferSize>
     class bounded_buffer {
@@ -112,4 +112,4 @@ namespace openvrml_player {
     }
 }
 
-# endif // ifndef OPENVRML_PLAYER_BOUNDED_BUFFER_H
+# endif // ifndef OPENVRML_XEMBED_BOUNDED_BUFFER_H

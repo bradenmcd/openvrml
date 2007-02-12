@@ -531,7 +531,7 @@ namespace {
     std::auto_ptr<openvrml::resource_istream>
     resource_fetcher::do_get_resource(const std::string & uri)
     {
-        using openvrml_player::plugin_streambuf;
+        using openvrml_xembed::plugin_streambuf;
 
         class plugin_resource_istream : public openvrml::resource_istream {
             const boost::shared_ptr<plugin_streambuf> streambuf_;
@@ -546,7 +546,7 @@ namespace {
             {
                 using std::ostringstream;
                 using boost::ref;
-                using openvrml_player::uninitialized_plugin_streambuf_map_;
+                using openvrml_xembed::uninitialized_plugin_streambuf_map_;
 
                 this->rdbuf(this->streambuf_.get());
                 uninitialized_plugin_streambuf_map_.insert(uri,

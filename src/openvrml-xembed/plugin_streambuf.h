@@ -18,8 +18,8 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# ifndef OPENVRML_PLAYER_PLUGIN_STREAMBUF_H
-#   define OPENVRML_PLAYER_PLUGIN_STREAMBUF_H
+# ifndef OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
+#   define OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
 
 #   include <map>
 #   include <set>
@@ -28,7 +28,7 @@
 #   include <boost/enable_shared_from_this.hpp>
 #   include "bounded_buffer.h"
 
-namespace openvrml_player {
+namespace openvrml_xembed {
 
     class command_istream_reader;
 
@@ -89,4 +89,4 @@ namespace openvrml_player {
     extern plugin_streambuf_map_t plugin_streambuf_map;
 }
 
-# endif // ifndef OPENVRML_PLAYER_PLUGIN_STREAMBUF_H
+# endif // ifndef OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
