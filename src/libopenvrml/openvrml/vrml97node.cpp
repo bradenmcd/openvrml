@@ -7244,6 +7244,9 @@ namespace {
     image_stream_listener::jpeg_reader::
     do_read(const std::vector<unsigned char> & data)
     {
+        boost::recursive_mutex::scoped_lock
+            lock(this->stream_listener.node_mutex_);
+
         if (data.size() > this->buffer.size()) {
             this->buffer.resize(data.size());
         }
@@ -7255,9 +7258,6 @@ namespace {
         switch (this->decoder_state) {
         case jpeg_reader::header:
         {
-            boost::recursive_mutex::scoped_lock
-                lock(this->stream_listener.node_mutex_);
-
             static const bool require_image = true;
             const int read_header_result = jpeg_read_header(&this->cinfo_,
                                                             require_image);
