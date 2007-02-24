@@ -3538,6 +3538,13 @@ namespace {
         base_uri.unsetf(ostringstream::skipws);
         base_uri << "file://";
 
+        const string relative_path = relative_uri.path();
+
+        if (!relative_path.empty() && relative_path[0] == '/') {
+            base_uri << relative_path;
+            return uri(base_uri.str());
+        }
+
 # ifdef _WIN32
         std::vector<char> cwd_buf(_MAX_PATH);
         //
@@ -7219,7 +7226,6 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
                                         ? create_file_url(test_uri)
                                         : test_uri
                                             .resolve_against(uri(this->url()));
-
             try {
                 in = this->browser().get_resource(absolute_uri);
             } catch (...) {
