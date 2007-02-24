@@ -1,3 +1,10 @@
+2007-02-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(create_file_url(const uri &)): If the relative URI begins with
+	"/", it is a relative URI that consists of an absolute path;
+	prepend "file://" and return.
+
 2007-02-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
