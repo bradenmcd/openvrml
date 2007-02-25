@@ -6829,13 +6829,12 @@ namespace {
 
         public:
             image_stream_listener & stream_listener;
-            enum read_state_t {
-                reading_back = 0,
-                reading_new
-            } read_state;
-            size_t bytes_to_skip;
-            size_t backtrack_buffer_bytes_unread;
+            bool reading;
+            std::vector<JOCTET>::size_type bytes_to_skip;
+            std::vector<JOCTET>::size_type backtrack_buffer_bytes_unread;
             std::vector<JOCTET> buffer, backtrack_buffer;
+            std::vector<JOCTET>::size_type bytes_in_buffer,
+                bytes_in_backtrack_buffer;
             enum decoder_state_t {
                 header,
                 start_decompress,
@@ -7095,73 +7094,75 @@ namespace {
 
     boolean openvrml_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
     {
+        using std::vector;
         typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
         source_mgr_t & src =
-            *reinterpret_cast<source_mgr_t *>(cinfo->src);
+            *static_cast<source_mgr_t *>(static_cast<void *>(cinfo->src));
 
         jpeg_source_mgr & source_mgr = src.pub;
         image_stream_listener::jpeg_reader & reader = *src.reader;
 
-        switch (reader.read_state) {
-        case image_stream_listener::jpeg_reader::reading_back:
-            if (reader.buffer.empty()) {
-                return false; // Suspend.
-            }
-            if (reader.bytes_to_skip > reader.buffer.size()) {
-                reader.bytes_to_skip -= reader.buffer.size();
-                reader.buffer.clear();
-                return false; // Suspend.
+        if (reader.reading) {
+            if (reader.buffer.empty()) { return false; /* Suspend. */ }
+
+            vector<JOCTET>::const_iterator resume_pos = reader.buffer.begin();
+
+            vector<JOCTET>::size_type bytes_now_in_buffer =
+                reader.bytes_in_buffer;
+            reader.bytes_in_buffer = 0;
+
+            if (reader.bytes_to_skip > 0) {
+                if (reader.bytes_to_skip < bytes_now_in_buffer) {
+                    resume_pos          += reader.bytes_to_skip;
+                    bytes_now_in_buffer -= reader.bytes_to_skip;
+                    reader.bytes_to_skip = 0;
+                } else {
+                    reader.bytes_to_skip -= bytes_now_in_buffer;
+                    return false; // Suspend; we'll need to skip some more.
+                }
             }
 
             reader.backtrack_buffer_bytes_unread = source_mgr.bytes_in_buffer;
-            {
-                std::vector<JOCTET>::iterator pos = reader.buffer.begin();
-                advance(pos, reader.bytes_to_skip);
-                source_mgr.next_input_byte = &*pos;
-            }
-            source_mgr.bytes_in_buffer -= reader.bytes_to_skip;
-            reader.bytes_to_skip = 0;
-            reader.read_state =
-                image_stream_listener::jpeg_reader::reading_new;
 
+            source_mgr.next_input_byte = &*resume_pos;
+            source_mgr.bytes_in_buffer = bytes_now_in_buffer;
+            reader.reading = false;
             return true;
-
-        case image_stream_listener::jpeg_reader::reading_new:
-            if (source_mgr.next_input_byte != (reader.buffer.empty()
-                                               ? 0 : &reader.buffer[0])) {
-                reader.backtrack_buffer_bytes_unread = 0;
-                reader.backtrack_buffer.resize(0);
-            }
-
-            {
-                const size_t old_backtrack_buffer_size =
-                    reader.backtrack_buffer.size();
-
-                reader.backtrack_buffer.resize(source_mgr.bytes_in_buffer
-                                               + old_backtrack_buffer_size);
-
-                copy(source_mgr.next_input_byte,
-                     source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
-                     reader.backtrack_buffer.begin()
-                     + old_backtrack_buffer_size);
-
-                source_mgr.next_input_byte =
-                    &*(reader.backtrack_buffer.begin()
-                       + old_backtrack_buffer_size
-                       - reader.backtrack_buffer_bytes_unread);
-            }
-            source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
-            reader.read_state =
-                image_stream_listener::jpeg_reader::reading_back;
         }
+
+        if (reader.buffer.empty()
+            || source_mgr.next_input_byte != &reader.buffer.front()) {
+            reader.bytes_in_backtrack_buffer = 0;
+            reader.backtrack_buffer_bytes_unread = 0;
+        }
+
+        const vector<JOCTET>::size_type bytes_now_in_backtrack_buffer =
+            source_mgr.bytes_in_buffer + reader.bytes_in_backtrack_buffer;
+
+        reader.backtrack_buffer.resize(bytes_now_in_backtrack_buffer);
+
+        reader.backtrack_buffer.resize(bytes_now_in_backtrack_buffer);
+
+        std::copy(source_mgr.next_input_byte,
+                  source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
+                  reader.backtrack_buffer.begin()
+                  + reader.bytes_in_backtrack_buffer);
+
+        source_mgr.next_input_byte = &*(reader.backtrack_buffer.begin()
+                                        + reader.bytes_in_backtrack_buffer
+                                        - reader.backtrack_buffer_bytes_unread);
+        source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
+        reader.bytes_in_backtrack_buffer = bytes_now_in_backtrack_buffer;
+        reader.reading = true;
         return false;
     }
 
-    void openvrml_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
+    void openvrml_jpeg_skip_input_data(const j_decompress_ptr cinfo,
+                                       const long num_bytes)
     {
         typedef image_stream_listener::jpeg_reader::source_mgr source_mgr_t;
         source_mgr_t & src =
-            *reinterpret_cast<source_mgr_t *>(cinfo->src);
+            *static_cast<source_mgr_t *>(static_cast<void *>(cinfo->src));
 
         jpeg_source_mgr & source_mgr = src.pub;
         image_stream_listener::jpeg_reader & reader = *src.reader;
@@ -7182,7 +7183,8 @@ namespace {
     void openvrml_jpeg_error_exit(j_common_ptr cinfo)
     {
         typedef image_stream_listener::jpeg_reader::error_mgr error_mgr;
-        error_mgr * const err = reinterpret_cast<error_mgr *>(cinfo->err);
+        error_mgr * const err =
+            static_cast<error_mgr *>(static_cast<void *>(cinfo->err));
         (*cinfo->err->output_message)(cinfo);
         longjmp(err->jmpbuf, 1);
     }
@@ -7204,15 +7206,17 @@ namespace {
     image_stream_listener::jpeg_reader::
     jpeg_reader(image_stream_listener & stream_listener):
         stream_listener(stream_listener),
-        read_state(reading_back),
+        reading(true),
         bytes_to_skip(0),
         backtrack_buffer_bytes_unread(0),
+        bytes_in_buffer(0),
+        bytes_in_backtrack_buffer(0),
         decoder_state(header),
         scanlines(0),
         progressive_scan_started(false)
     {
-        //std::memset(&this->cinfo, 0, sizeof this->cinfo_);
-        //std::memset(&this->source_mgr_, 0, sizeof this->source_mgr_);
+        std::memset(&this->cinfo_, 0, sizeof this->cinfo_);
+        std::memset(&this->source_mgr_, 0, sizeof this->source_mgr_);
 
         this->cinfo_.err = jpeg_std_error(&this->error_mgr_.pub);
         this->error_mgr_.pub.error_exit = openvrml_jpeg_error_exit;
@@ -7232,7 +7236,8 @@ namespace {
         this->source_mgr_.reader = this;
 
         this->cinfo_.src =
-            reinterpret_cast<jpeg_source_mgr *>(&this->source_mgr_);
+            static_cast<jpeg_source_mgr *>(
+                static_cast<void *>(&this->source_mgr_));
     }
 
     image_stream_listener::jpeg_reader::~jpeg_reader() OPENVRML_NOTHROW
@@ -7251,6 +7256,7 @@ namespace {
             this->buffer.resize(data.size());
         }
         copy(data.begin(), data.end(), this->buffer.begin());
+        this->bytes_in_buffer = data.size();
 
         int jmpval = setjmp(this->error_mgr_.jmpbuf);
         if (jmpval != 0) { return; }
