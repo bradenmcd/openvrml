@@ -1,5 +1,18 @@
 2007-02-24 Braden McDaniel  <braden@endoframe.com>
 
+	Fixed problem reading JPEG images when input is suspended.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(jpeg_reader): Replaced read_state enumeration with a bool--there
+	are only two possible states.  Added members bytes_in_buffer and
+	bytes_in_backtrack_buffer to track the number of unread bytes in
+	the respective buffers.
+	(openvrml_jpeg_fill_input_buffer(j_decompress_ptr)): Reimplemented
+	in terms of the boolean "reading" state; fixed reading from the
+	backtrack buffer for I/O suspension.
+
+2007-02-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(create_file_url(const uri &)): If the relative URI begins with
 	"/", it is a relative URI that consists of an absolute path;
