@@ -1,3 +1,11 @@
+2007-03-05 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/configure.ac: Added back mozincludedir
+	substitution, which apparently got stomped on at some point.  Its
+	loss was disguised by mozilla-xpcom.pc adding flags for this
+	directory; but as of firefox 1.5.0.10, mozilla-plugin.pc no longer
+	depends on mozilla-xpcom.pc.
+
 2007-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed problem reading JPEG images when input is suspended.

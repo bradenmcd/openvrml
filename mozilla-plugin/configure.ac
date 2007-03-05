@@ -1,7 +1,7 @@
 AC_PREREQ([2.53])
 AC_INIT([OpenVRML Mozilla Plugin], [0.16.3],
         [openvrml-develop@lists.sourceforge.net])
-AC_COPYRIGHT([Portions copyright 2004, 2005, 2006 Braden McDaniel])
+AC_COPYRIGHT([Portions copyright 2004, 2005, 2006, 2007 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
                 [src/Makefile])
 AM_INIT_AUTOMAKE([1.7 foreign])
@@ -22,10 +22,10 @@ PKG_CHECK_MODULES([MOZILLA_PLUGIN],
                                      [mozilla-plugin >= 1.6],
                                      [mozilla_plugin_pkg=mozilla-plugin],
                                      [have_mozilla_plugin=no])])
-mozversion=`$PKG_CONFIG --modversion $mozilla_plugin_pkg`
-mozprefix=`$PKG_CONFIG --variable=prefix $mozilla_plugin_pkg`
 mozlibdir=`$PKG_CONFIG --variable=libdir $mozilla_plugin_pkg`
 AC_SUBST([mozlibdir])
+mozincludedir=`$PKG_CONFIG --variable=includedir $mozilla_plugin_pkg`
+AC_SUBST([mozincludedir])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 
 if test "X$enable_mozilla_plugin" != "Xno"; then
