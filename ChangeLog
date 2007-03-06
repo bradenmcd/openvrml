@@ -1,5 +1,10 @@
 2007-03-06 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile: Set SHOW_INCLUDE_FILES to YES; required to show
+	what header file a class is defined in.
+
+2007-03-06 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
