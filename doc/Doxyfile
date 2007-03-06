@@ -45,7 +45,7 @@ HIDE_IN_BODY_DOCS      = YES
 INTERNAL_DOCS          = YES
 CASE_SENSE_NAMES       = YES
 HIDE_SCOPE_NAMES       = NO
-SHOW_INCLUDE_FILES     = NO
+SHOW_INCLUDE_FILES     = YES
 INLINE_INFO            = YES
 SORT_MEMBER_DOCS       = NO
 SORT_BRIEF_DOCS        = NO
@@ -189,6 +189,7 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = 
 PREDEFINED             = BOOST_CLASS_REQUIRE(a,b,c)= \
+                         OPENVRML_ENABLE_RENDER_TEXT_NODE= \
                          OPENVRML_API= \
                          OPENVRML_LOCAL= \
                          OPENVRML_GL_CALLBACK_= \
