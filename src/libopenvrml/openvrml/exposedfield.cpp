@@ -26,6 +26,12 @@
 # include "exposedfield.h"
 
 /**
+ * @file openvrml/exposedfield.h
+ *
+ * @brief Definition of @c openvrml::exposedfield.
+ */
+
+/**
  * @class openvrml::exposedfield
  *
  * @brief Class template to simplify implementation of @c exposedField%s.

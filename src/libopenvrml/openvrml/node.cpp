@@ -34,7 +34,13 @@
 # include "browser.h"
 
 /**
- * @class openvrml::unsupported_interface
+ * @file openvrml/node.h
+ *
+ * @brief Abstract node types and supporting types.
+ */
+
+/**
+ * @class openvrml::unsupported_interface openvrml/node.h
  *
  * @brief Exception to indicate that a @c node interface is not supported.
  *
@@ -96,7 +102,7 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
 
 
 /**
- * @class openvrml::node_interface
+ * @class openvrml::node_interface openvrml/node.h
  *
  * @brief Type information for an interface of a @c node.
  */
@@ -308,7 +314,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @struct openvrml::node_interface_matches_eventin
+ * @struct openvrml::node_interface_matches_eventin openvrml/node.h
  *
  * @brief Determine if a @c node_interface matches an @c eventIn identifier.
  *
@@ -347,7 +353,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @struct openvrml::node_interface_matches_eventout
+ * @struct openvrml::node_interface_matches_eventout openvrml/node.h
  *
  * @brief Determine if a @c node_interface matches an @c eventOut identifier.
  *
@@ -387,7 +393,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @struct openvrml::node_interface_matches_exposedfield
+ * @struct openvrml::node_interface_matches_exposedfield openvrml/node.h
  *
  * @brief Determine if a @c node_interface matches an @c exposedField
  * identifier.
@@ -406,9 +412,9 @@ std::istream & openvrml::operator>>(std::istream & in,
  *        identifier.
  *
  * A @c node_interface matches an @c exposedField identifier if the
- * @c node_interface%'s @a type is @c node_interface::exposedfield_id and the
- * @c node_interface%'s @a id is lexicographically equal to the @c exposedField
- * identifier.
+ * <code>node_interface</code>'s @a type is @c node_interface::exposedfield_id
+ * and the <code>node_interface</code>'s @a id is lexicographically equal to
+ * the @c exposedField identifier.
  *
  * @param[in] interface         @c node_interface.
  * @param[in] exposedfield_id   @c exposedField identifier.
@@ -419,7 +425,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @struct openvrml::node_interface_matches_field
+ * @struct openvrml::node_interface_matches_field openvrml/node.h
  *
  * @brief Determine if a @c node_interface matches an field
  *        identifier.
@@ -449,7 +455,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @struct openvrml::node_interface_compare
+ * @struct openvrml::node_interface_compare openvrml/node.h
  *
  * @brief Function object to compare two @c node_interface%s based on their
  * id.
@@ -540,7 +546,7 @@ openvrml::find_interface(const node_interface_set & interfaces,
 
 
 /**
- * @class openvrml::node_metatype_id
+ * @class openvrml::node_metatype_id openvrml/node.h
  *
  * @brief Identifier for @c node_metatype%s.
  *
@@ -705,7 +711,7 @@ bool openvrml::operator!=(const node_metatype_id & lhs,
 
 
 /**
- * @class openvrml::node_metatype
+ * @class openvrml::node_metatype openvrml/node.h
  *
  * @brief A class object for node instances.
  *
@@ -783,7 +789,7 @@ openvrml::browser & openvrml::node_metatype::browser() const OPENVRML_NOTHROW
  * This method is called during initialization of a @c browser object with a
  * new root @c scene.  It is called after the individual @c node instances
  * have been initialized, and before the world starts running.  It delegates
- * to @c node_metatype::do_initialize.
+ * to @c #do_initialize.
  *
  * @param[in,out] initial_viewpoint the @c viewpoint_node that should be bound
  *                                  initially; or 0 if the default
@@ -817,7 +823,7 @@ void openvrml::node_metatype::do_initialize(viewpoint_node *, double)
 /**
  * @brief <code>node_metatype</code>-specific rendering.
  *
- * This function delegates to @c node_metatype::do_render.
+ * This function delegates to @c #do_render.
  *
  * @param[in,out] v    the @c viewer to which to render.
  */
@@ -893,8 +899,8 @@ openvrml::node_metatype::create_type(const std::string & id,
  * @brief Shut down.
  *
  * This function is called during destruction of the @c browser, after the
- * root @c scene has been shut down.  This function delegates to @c
- * node_metatype::do_shutdown.
+ * root @c scene has been shut down.  This function delegates to
+ * @c #do_shutdown.
  *
  * @param[in] time  the current time.
  */
@@ -906,7 +912,7 @@ void openvrml::node_metatype::shutdown(const double time) OPENVRML_NOTHROW
 /**
  * @brief Shut down.
  *
- * This function is called by @c node_metatype::shutdown.
+ * This function is called by @c #shutdown.
  *
  * @param[in] time  the current time.
  */
@@ -922,7 +928,7 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::node_type
+ * @class openvrml::node_type openvrml/node.h
  *
  * @brief Type information object for @c node%s.
  */
@@ -988,7 +994,7 @@ const std::string & openvrml::node_type::id() const OPENVRML_NOTHROW
 /**
  * @brief Get the set of interfaces for the @c node_type.
  *
- * This function delegates to @c node_type::do_interfaces.
+ * This function delegates to @c #do_interfaces.
  *
  * @return the set of interfaces.
  */
@@ -1115,7 +1121,7 @@ bool openvrml::operator!=(const node_type & lhs, const node_type & rhs)
 
 
 /**
- * @class openvrml::field_value_type_mismatch
+ * @class openvrml::field_value_type_mismatch openvrml/node.h
  *
  * @brief Thrown when field value types do not match, generally in a @c ROUTE
  *      or @c IS.
@@ -1156,7 +1162,7 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @class openvrml::node
+ * @class openvrml::node openvrml/node.h
  *
  * @brief A @c node in the scene graph.
  */
@@ -3047,7 +3053,7 @@ bool openvrml::delete_route(node & from,
 
 
 /**
- * @class openvrml::appearance_node
+ * @class openvrml::appearance_node openvrml/node.h
  *
  * @brief Abstract base class for appearance nodes.
  */
@@ -3132,7 +3138,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
 
 
 /**
- * @class openvrml::bounded_volume_node
+ * @class openvrml::bounded_volume_node openvrml/node.h
  *
  * @brief Abstract base class for nodes that represent a bounded volume in the
  *        scene graph.
@@ -3256,7 +3262,7 @@ openvrml::bounded_volume_node::to_bounded_volume() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::child_node
+ * @class openvrml::child_node openvrml/node.h
  *
  * @brief Abstract base class for child nodes.
  */
@@ -3382,7 +3388,7 @@ void openvrml::child_node::do_relocate() OPENVRML_THROW1(std::bad_alloc)
 
 
 /**
- * @class openvrml::color_node
+ * @class openvrml::color_node openvrml/node.h
  *
  * @brief Abstract base class for color nodes.
  */
@@ -3426,7 +3432,7 @@ openvrml::color_node * openvrml::color_node::to_color() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::color_rgba_node
+ * @class openvrml::color_rgba_node openvrml/node.h
  *
  * @brief Abstract base class for RGBA color nodes.
  */
@@ -3471,7 +3477,7 @@ openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::coordinate_node
+ * @class openvrml::coordinate_node openvrml/node.h
  *
  * @brief Abstract base class for coordinate nodes.
  */
@@ -3516,7 +3522,7 @@ openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate()
 
 
 /**
- * @class openvrml::font_style_node
+ * @class openvrml::font_style_node openvrml/node.h
  *
  * @brief Abstract base class for font style nodes.
  */
@@ -3631,7 +3637,7 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
 
 
 /**
- * @class openvrml::geometry_node
+ * @class openvrml::geometry_node openvrml/node.h
  *
  * @brief Abstract base class for geometry nodes.
  */
@@ -3762,7 +3768,7 @@ const openvrml::color_node * openvrml::geometry_node::color() const
 
 
 /**
- * @class openvrml::grouping_node
+ * @class openvrml::grouping_node openvrml/node.h
  *
  * @brief Abstract base class for grouping nodes.
  */
@@ -3858,7 +3864,7 @@ activate_pointing_device_sensors(const double timestamp,
 
 
 /**
- * @class openvrml::light_node
+ * @class openvrml::light_node openvrml/node.h
  *
  * @brief Abstract base class for light nodes.
  */
@@ -3896,7 +3902,7 @@ openvrml::light_node * openvrml::light_node::to_light() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::material_node
+ * @class openvrml::material_node openvrml/node.h
  *
  * @brief Abstract base class for material nodes.
  */
@@ -3981,7 +3987,7 @@ openvrml::material_node * openvrml::material_node::to_material()
 
 
 /**
- * @class openvrml::navigation_info_node
+ * @class openvrml::navigation_info_node openvrml/node.h
  *
  * @brief Abstract base class for normal nodes.
  */
@@ -4060,7 +4066,7 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::normal_node
+ * @class openvrml::normal_node openvrml/node.h
  *
  * @brief Abstract base class for normal nodes.
  */
@@ -4104,7 +4110,7 @@ openvrml::normal_node * openvrml::normal_node::to_normal() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::pointing_device_sensor_node
+ * @class openvrml::pointing_device_sensor_node openvrml/node.h
  *
  * @brief A node that can be affected by a pointing device.
  */
@@ -4180,7 +4186,7 @@ openvrml::pointing_device_sensor_node::to_pointing_device_sensor()
 
 
 /**
- * @class openvrml::scoped_light_node
+ * @class openvrml::scoped_light_node openvrml/node.h
  *
  * @brief A light that falls within a specified area.
  */
@@ -4240,7 +4246,7 @@ openvrml::scoped_light_node * openvrml::scoped_light_node::to_scoped_light()
 
 
 /**
- * @class openvrml::sound_source_node
+ * @class openvrml::sound_source_node openvrml/node.h
  *
  * @brief Abstract base class for sound source nodes.
  */
@@ -4277,7 +4283,7 @@ openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
 
 
 /**
- * @class openvrml::texture_node
+ * @class openvrml::texture_node openvrml/node.h
  *
  * @brief Abstract base class for texture nodes.
  */
@@ -4393,7 +4399,7 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::texture_coordinate_node
+ * @class openvrml::texture_coordinate_node openvrml/node.h
  *
  * @brief Abstract base class for texture coordinate nodes.
  */
@@ -4439,7 +4445,7 @@ openvrml::texture_coordinate_node::to_texture_coordinate()
 
 
 /**
- * @class openvrml::texture_transform_node
+ * @class openvrml::texture_transform_node openvrml/node.h
  *
  * @brief Abstract base class for texture transform nodes.
  */
@@ -4495,7 +4501,7 @@ openvrml::texture_transform_node::to_texture_transform()
 }
 
 /**
- * @class openvrml::time_dependent_node
+ * @class openvrml::time_dependent_node openvrml/node.h
  *
  * @brief Abstract base class for time-dependent nodes.
  */
@@ -4552,7 +4558,7 @@ openvrml::time_dependent_node::to_time_dependent() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::transform_node
+ * @class openvrml::transform_node openvrml/node.h
  *
  * @brief Abstract base class for transform nodes.
  */
@@ -4600,7 +4606,7 @@ openvrml::transform_node * openvrml::transform_node::to_transform()
 
 
 /**
- * @class openvrml::viewpoint_node
+ * @class openvrml::viewpoint_node openvrml/node.h
  *
  * @brief Abstract base class for viewpoint nodes.
  */
@@ -4684,26 +4690,27 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
 
 
 /**
- * @class openvrml::node_traverser
+ * @class openvrml::node_traverser openvrml/node.h
  *
- * @brief Traverse the children of each @c node in a node hierarchy only once.
+ * @brief Traverse the children of each @c node in a @c node hierarchy only
+ *        once.
  *
  * The @c node_traverser provides a generalized traversal mechanism that
  * avoids redundantly traversing branches of the @c node hierarchy.  If a
  * @c node occurs multiple places in a branch, <strong>the children of that
- * @c node will be visted in the traversal only once</strong>.
+ * @c node will be visited in the traversal only once</strong>.
  *
  * For each @c node encountered in the traversal, @c node_traverser does the
  * following:
  *
- * -# Call @c node_traverser::on_entering.
+ * -# Call @c #on_entering.
  * -# Traverse descendants, if any.
- * -# Call @c node_traverser::on_leaving.
+ * -# Call @c #on_leaving.
  *
- * Concrete subclasses of @c node_traverser implement the @c on_entering
- * and/or @c on_leaving member functions in order to perform some operation(s)
+ * Concrete subclasses of @c node_traverser implement the @c #on_entering
+ * and/or @c #on_leaving member functions in order to perform some operation(s)
  * on each node.  The traversal can be ended prematurely by calling
- * @c node_traverser::halt_traversal.
+ * @c #halt_traversal.
  */
 
 /**
@@ -4744,7 +4751,7 @@ openvrml::node_traverser::~node_traverser() OPENVRML_NOTHROW
  * the event that this method throws.
  *
  * In addition to @c std::bad_alloc, this function throws any exception thrown
- * from @c on_entering or @c on_leaving.
+ * from @c #on_entering or @c #on_leaving.
  *
  * @param[in,out] n  the root @c node of the branch to traverse.
  *
@@ -4767,7 +4774,7 @@ void openvrml::node_traverser::traverse(node & n)
 /**
  * @overload
  *
- * @brief Traverse a <code>node</code>.
+ * @brief Traverse a @c node.
  *
  * @param[in,out] node  the root node of the branch to traverse.
  *
@@ -4794,12 +4801,12 @@ openvrml::node_traverser::traverse(const boost::intrusive_ptr<node> & node)
 }
 
 /**
- * @brief Traverse a <code>std::vector</code> of <code>node</code>s.
+ * @brief Traverse a @c std::vector of @c node%s.
  *
  * @overload
  *
- * @param[in,out] nodes  the root @link openvrml::node nodes@endlink of the branch to
- *               traverse.
+ * @param[in,out] nodes the root @link openvrml::node nodes@endlink of the
+ *                      branch to traverse.
  */
 void
 openvrml::node_traverser::traverse(
@@ -4830,11 +4837,11 @@ openvrml::node_traverser::traverse(
  * @brief Halt the traversal.
  *
  * If this method is called during a traversal, no more descendant @c node%s
- * will be traversed.  Note that if @c halt_traversal is called in the
- * implementation of @c on_entering, @c on_leaving will still be called for
+ * will be traversed.  Note that if @c #halt_traversal is called in the
+ * implementation of @c #on_entering, @c #on_leaving will still be called for
  * the current node and any parent nodes (that is, any node for which
- * @c on_entering has been called).  Implementations of @c on_leaving can call
- * @c node_traverser::halted to check whether the traversal has been halted.
+ * @c #on_entering has been called).  Implementations of @c #on_leaving can
+ * call @c #halted to check whether the traversal has been halted.
  */
 void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
 {
@@ -4844,7 +4851,7 @@ void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
 /**
  * @brief Indicate whether the traversal has been halted.
  *
- * This function is useful in implementations of @c on_leaving that need to
+ * This function is useful in implementations of @c #on_leaving that need to
  * check whether the traversal has been halted.
  *
  * @return @c true if the traversal has been halted; @c false otherwise.

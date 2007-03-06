@@ -23,7 +23,6 @@
 #   define OPENVRML_EVENT_H
 
 #   include <set>
-#   include <boost/cast.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
 

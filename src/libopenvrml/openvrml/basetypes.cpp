@@ -20,6 +20,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# include <cmath>
 # include <numeric>
 # include <ostream>
 # include <boost/spirit.hpp>
@@ -28,6 +29,13 @@
 # include <boost/spirit/phoenix.hpp>
 # include <private.h>
 # include "basetypes.h"
+
+/**
+ * @file openvrml/basetypes.h
+ *
+ * @brief Basic types for representing data in VRML/X3D worlds (color,
+ *        rotations, vectors, etc.).
+ */
 
 namespace {
 
@@ -107,7 +115,7 @@ namespace {
  */
 
 /**
- * @struct openvrml::color
+ * @struct openvrml::color openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a color.
  *
@@ -430,7 +438,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 }
 
 /**
- * @struct openvrml::color_rgba
+ * @struct openvrml::color_rgba openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a color with an alpha channel.
  *
@@ -713,7 +721,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
 
 
 /**
- * @struct openvrml::vec2f
+ * @struct openvrml::vec2f openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a two-component single-precision vector.
  */
@@ -1126,7 +1134,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 
 
 /**
- * @struct openvrml::vec2d
+ * @struct openvrml::vec2d openvrml/basetypes.h
  *
  * @brief Two-component double-precision vector.
  */
@@ -1539,7 +1547,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2d & v)
 
 
 /**
- * @class openvrml::vec3f
+ * @struct openvrml::vec3f openvrml/basetypes.h
  *
  * @brief Three-component single-precision vector.
  */
@@ -2082,7 +2090,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
 
 
 /**
- * @struct openvrml::vec3d
+ * @struct openvrml::vec3d openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a three-component double-precision vector.
  */
@@ -2625,7 +2633,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
 
 
 /**
- * @struct openvrml::rotation
+ * @struct openvrml::rotation openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a rotation.
  *
@@ -3169,7 +3177,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
 
 
 /**
- * @struct openvrml::mat4f
+ * @struct openvrml::mat4f openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a 4x4 matrix.
  *
@@ -4126,7 +4134,7 @@ bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs)
 
 
 /**
- * @class openvrml::quatf
+ * @struct openvrml::quatf openvrml/basetypes.h
  *
  * @brief A POD-struct comprising a quaternion.
  */
@@ -4692,15 +4700,15 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 
 
 /**
- * @class openvrml::image
+ * @class openvrml::image openvrml/basetypes.h
  *
  * @brief Pixmap data.
  *
- * The first pixel in the @link image::array array@endlink is the lower left
- * pixel and the last is the upper right pixel.  Pixel values are limited to
- * 256 levels of intensity.  The elements of @link image::array array@endlink
- * are bytes, with one byte per pixel component.  Thus the number of elements
- * in the array is @p x * @p y * @p comp.
+ * The first pixel in the @c #array is the lower left pixel and the last is
+ * the upper right pixel.  Pixel values are limited to 256 levels of
+ * intensity.  The elements of @c #array are bytes, with one byte per pixel
+ * component.  Thus the number of elements in the array is
+ * @p x * @p y * @p comp.
  *
  * A one-component image specifies one-byte greyscale values.  A two-component
  * image specifies the intensity in the first byte and the alpha opacity in

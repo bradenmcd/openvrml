@@ -19,6 +19,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+/**
+ * @file openvrml/gl/viewer.h
+ *
+ * @brief Definition of @c openvrml::gl::viewer.
+ */
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
@@ -355,7 +361,7 @@ extern "C" void OPENVRML_GL_CALLBACK_ tess_error(const GLenum error_code)
  */
 
 /**
- * @class openvrml::gl::viewer
+ * @class openvrml::gl::viewer openvrml/gl/viewer.h
  *
  * @brief Abstract class for display of VRML models using OpenGL/Mesa.
  *
@@ -496,18 +502,18 @@ extern "C" void OPENVRML_GL_CALLBACK_ tess_error(const GLenum error_code)
  */
 
 /**
- * @class openvrml::gl::viewer::modelview_matrix_stack
+ * @class openvrml::gl::viewer::modelview_matrix_stack openvrml/gl/viewer.h
  *
  * @brief Encapsulates an extended modelview matrix stack.
  *
  * OpenGL requires that implementations have a modelview matrix stack with a
- * maximum depth of only 32. Regardless of that, the maximum depth can be
- * expected to vary between implementations, and we don't want nesting of
+ * maximum depth of only 32.  Regardless of that, the maximum depth can be
+ * expected to vary between implementations; and we don't want nesting of
  * Transform nodes in VRML worlds to be constrained by this limit.
  *
- * modelview_matrix_stack uses the OpenGL modelview matrix stack until it fills
- * up, at which point any additional matrices that spill over are pushed onto
- * a conventional stack of mat4f.
+ * @c modelview_matrix_stack uses the OpenGL modelview matrix stack until it
+ * fills up, at which point any additional matrices that spill over are pushed
+ * onto a conventional stack of @c mat4f.
  */
 
 /**
@@ -996,46 +1002,25 @@ namespace {
     }
 }
 
-
-//
-//  beginObject/endObject should correspond to grouping nodes.
-//  Group-level scoping for directional lights, anchors, sensors
-//  are handled here. Display lists can optionally be created
-//  (but the retain flag is just a hint, not guaranteed). Retained
-//  objects can be referred to later to avoid duplicating geometry.
-//  OpenGL doesn't allow nested objects. The top-down approach of
-//  putting entire groups in display lists is faster for static
-//  scenes but uses more memory and means that if anything is changed,
-//  the whole object must be tossed.
-//  The bottom-up model wraps each piece of geometry in a dlist but
-//  requires traversal of the entire scene graph to reference each dlist.
-//  The decision about what groups to stuff in an object is punted to
-//  the object itself, as it can decide whether it is mutable.
-//
-//  The OpenGL viewer never puts objects in display lists, so the
-//  retain hint is ignored.
-
 /**
  * @brief Begin a display list.
  *
- * begin_object/end_object should correspond to
- * @link grouping_node grouping_nodes@endlink.
- * Group-level scoping for directional lights, anchors, sensors
- * are handled here. Display lists can optionally be created
- * (but the retain flag is just a hint, not guaranteed). Retained
- * objects can be referred to later to avoid duplicating geometry.
- * OpenGL doesn't allow nested objects. The top-down approach of
- * putting entire groups in display lists is faster for static
- * scenes but uses more memory and means that if anything is changed,
- * the whole object must be tossed.
+ * @c #begin_object and @c #end_object should correspond to @c
+ * grouping_node%s.  Group-level scoping for directional lights, anchors,
+ * sensors are handled here.  Display lists can optionally be created (but the
+ * retain flag is just a hint, not guaranteed).  Retained objects can be
+ * referred to later to avoid duplicating geometry.  OpenGL doesn't allow
+ * nested objects.  The top-down approach of putting entire groups in display
+ * lists is faster for static scenes but uses more memory and means that if
+ * anything is changed, the whole object must be tossed.
  *
- * The bottom-up model wraps each piece of geometry in a dlist but
- * requires traversal of the entire scene graph to reference each dlist.
- * The decision about what groups to stuff in an object is punted to
- * the object itself, as it can decide whether it is mutable.
+ * The bottom-up model wraps each piece of geometry in a dlist but requires
+ * traversal of the entire scene graph to reference each dlist.  The decision
+ * about what groups to stuff in an object is punted to the object itself, as
+ * it can decide whether it is mutable.
  *
- * The OpenGL viewer never puts objects in display lists, so the
- * retain hint is ignored.
+ * The OpenGL viewer never puts objects in display lists, so the retain hint
+ * is ignored.
  *
  * @param[in] id        not used.
  * @param[in] retain    not used.
@@ -2228,7 +2213,7 @@ namespace {
      * @param[in] first the first point in the extrusion spine.
      * @param[in] last  the last point in the extrusion spine.
      *
-     * @return the <var>y</var>axis of the spine-aligned cross-section plane
+     * @return the <var>y</var>-axis of the spine-aligned cross-section plane
      *         at @p point.
      */
     OPENVRML_GL_LOCAL

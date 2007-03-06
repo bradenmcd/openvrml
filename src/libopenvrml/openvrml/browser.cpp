@@ -63,6 +63,12 @@
 # include "x3d_nurbs.h"
 # include "x3d_cad_geometry.h"
 
+/**
+ * @file openvrml/browser.h
+ *
+ * @brief Classes that manage the scene.
+ */
+
 namespace openvrml {
 
     class OPENVRML_LOCAL null_node_metatype : public node_metatype {
@@ -103,9 +109,9 @@ namespace openvrml {
      * @brief @c node_metatype for @c PROTO%s.
      *
      * The @c proto_node_metatype is OpenVRML's in-memory representation of a
-     * @c PROTO (as opposed to a @c PROTO instance).  Through the @c
-     * proto_node_type intermediary, it facilitates spawning any number of @c
-     * proto_node instances.
+     * @c PROTO (as opposed to a @c PROTO instance).  Through the
+     * @c proto_node_type intermediary, it facilitates spawning any number of
+     * @c proto_node instances.
      */
     class OPENVRML_LOCAL proto_node_metatype : public node_metatype {
         friend class proto_node;
@@ -438,23 +444,23 @@ namespace openvrml {
      * relationship with the @c proto_node_type instance that creates them.
      * And @c proto_node_type has, in turn, a many-to-one relationship with
      * the @c proto_node_metatype instance that creates them.  Unlike a
-     * typical node implementation, there will very likely be more than one @c
-     * proto_node_metatype instance known to the @c browser instance; there
+     * typical node implementation, there will very likely be more than one
+     * @c proto_node_metatype instance known to the @c browser instance; there
      * will be one for each @c PROTO known to the @c browser.
      *
-     * As the @c proto_node_metatype encodes the data in a @c PROTO, the @c
-     * proto_node_type can be seen as modeling @c EXTERNPROTO. Each @c
-     * EXTERNPROTO will spawn a new @c proto_node_type from the @c
-     * proto_node_metatype that corresponds to the @c PROTO to which the @c
-     * EXTERNPROTO refers.  Recall that an @c EXTERNPROTO provides a subset of
-     * the interfaces defined for a @c PROTO; thus, for a @c PROTO with
-     * <var>n</var> interfaces, there are <var>n</var>! possible unique @c
-     * EXTERNPROTO%s (and thus unique @c proto_node_type instances).
+     * As the @c proto_node_metatype encodes the data in a @c PROTO, the
+     * @c proto_node_type can be seen as modeling @c EXTERNPROTO. Each
+     * @c EXTERNPROTO will spawn a new @c proto_node_type from the
+     * @c proto_node_metatype that corresponds to the @c PROTO to which the
+     * @c EXTERNPROTO refers.  Recall that an @c EXTERNPROTO provides a subset
+     * of the interfaces defined for a @c PROTO; thus, for a @c PROTO with
+     * <var>n</var> interfaces, there are <var>n</var>! possible unique
+     * @c EXTERNPROTO%s (and thus unique @c proto_node_type instances).
      *
      * Structurally, the implementation of @c proto_node is very similar to
      * that of @c proto_node_metatype. The difference is that event pathways
-     * for @c ROUTE%s and @c IS mappings are actually created in the @c
-     * proto_node.  The @c proto_node_metatype, on the other hand, includes
+     * for @c ROUTE%s and @c IS mappings are actually created in the
+     * @c proto_node.  The @c proto_node_metatype, on the other hand, includes
      * metadata about how these event pathways @e should be created.
      */
     class OPENVRML_LOCAL proto_node : public abstract_proto_node {
@@ -579,8 +585,8 @@ namespace openvrml {
     {}
 
     /**
-     * @brief A node path is used to store the path to a node for the purpose
-     *        of duplicating a route in a cloned node hierarchy.
+     * @brief A @c node path is used to store the path to a @c node for the
+     *        purpose of duplicating a route in a cloned @c node hierarchy.
      */
     typedef std::list<node_path_element> node_path_t;
 
@@ -2566,7 +2572,7 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param[in] t node type.
+     * @param[in] t @c node_type.
      */
     default_navigation_info::
     default_navigation_info(const openvrml::null_node_type & t)
@@ -3600,9 +3606,9 @@ namespace {
      * @param[in,out] in    input stream.
      * @param[in]     uri   URI associated with @p in.
      * @param[in]     type  MIME media type of the data to be read from @p in.
-     * @param[in]     scene a scene.
-     * @param[out]    nodes the root nodes.
-     * @param[out]    meta  the scene metadata.
+     * @param[in]     scene a @c scene.
+     * @param[out]    nodes the root @c node%s.
+     * @param[out]    meta  the @c scene metadata.
      *
      * @exception openvrml::bad_media_type
      * @exception openvrml::invalid_vrml
@@ -4522,7 +4528,7 @@ const char openvrml::x_vrml_media_type[15] = "x-world/x-vrml";
 const char openvrml::x3d_vrml_media_type[15] = "model/x3d+vrml";
 
 /**
- * @class openvrml::resource_istream
+ * @class openvrml::resource_istream openvrml/browser.h
  *
  * @brief An abstract input stream for network resources.
  *
@@ -4552,7 +4558,7 @@ openvrml::resource_istream::~resource_istream()
 /**
  * @brief Get the URL associated with the stream.
  *
- * This function delegates to @c do_url.
+ * This function delegates to @c #do_url.
  *
  * @return the URL associated with the stream.
  *
@@ -4575,7 +4581,7 @@ const std::string openvrml::resource_istream::url() const
 /**
  * @brief Get the MIME content type associated with the stream.
  *
- * This function delegates to @c do_type.
+ * This function delegates to @c #do_type.
  *
  * @return the MIME content type associated with the stream.
  */
@@ -4596,7 +4602,7 @@ const std::string openvrml::resource_istream::type() const
 /**
  * @brief Indicates whether data is available to be read from the stream.
  *
- * This function delegates to @c do_data_available.
+ * This function delegates to @c #do_data_available.
  *
  * @return @c true if there is data in the stream buffer to be read; @c false
  *         otherwise.
@@ -4653,12 +4659,12 @@ openvrml::resource_fetcher::get_resource(const std::string & uri)
  *
  * @brief Fetch a network resource.
  *
- * Called by @c resource_fetcher::get_resource, clients of OpenVRML are
- * required to provide an implementation for this function.  OpenVRML depends
- * on the implementation of this function for all of its input needs.  As
- * such, what kind of resources OpenVRML is capable of resolving is entirely
- * dependent on code provided by the application.  A trivial implementation
- * designed to handle only @c file resources can use @c std::filebuf:
+ * Called by @c #get_resource, clients of OpenVRML are required to provide an
+ * implementation for this function.  OpenVRML depends on the implementation
+ * of this function for all of its input needs.  As such, what kind of
+ * resources OpenVRML is capable of resolving is entirely dependent on code
+ * provided by the application.  A trivial implementation designed to handle
+ * only @c file resources can use @c std::filebuf:
  *
  * @code
  * std::auto_ptr<openvrml::resource_istream>
@@ -4772,10 +4778,10 @@ openvrml::resource_fetcher::get_resource(const std::string & uri)
 
 
 /**
- * @class openvrml::stream_listener
+ * @class openvrml::stream_listener openvrml/browser.h
  *
- * @brief An interface to simplify asynchronously reading a @c
- *        resource_istream.
+ * @brief An interface to simplify asynchronously reading a
+ *        @c resource_istream.
  */
 
 /**
@@ -4787,7 +4793,7 @@ openvrml::stream_listener::~stream_listener() OPENVRML_NOTHROW
 /**
  * @brief Called once the stream is available for use.
  *
- * This function calls @c stream_listener::do_stream_available.
+ * This function calls @c #do_stream_available.
  *
  * @param[in] uri           the URI associated with the stream.
  * @param[in] media_type    the MIME media type for the stream.
@@ -4802,7 +4808,7 @@ openvrml::stream_listener::stream_available(const std::string & uri,
 /**
  * @fn void openvrml::stream_listener::do_stream_available(const std::string & uri, const std::string & media_type)
  *
- * @brief Called by @c stream_listener::stream_available.
+ * @brief Called by @c #stream_available.
  *
  * Concrete @c stream_listener%s must override this function.
  *
@@ -4813,7 +4819,7 @@ openvrml::stream_listener::stream_available(const std::string & uri,
 /**
  * @brief Called when data is available.
  *
- * This function calls @c stream_listener::do_data_available.
+ * This function calls @c #do_data_available.
  *
  * @param[in] data  the data.
  */
@@ -4827,7 +4833,7 @@ data_available(const std::vector<unsigned char> & data)
 /**
  * @fn void openvrml::stream_listener::do_data_available(const std::vector<unsigned char> & data)
  *
- * @brief Called by @c stream_listener::data_available.
+ * @brief Called by @c #data_available.
  *
  * @param[in] data  the data.
  */
@@ -4886,7 +4892,7 @@ void openvrml::read_stream(std::auto_ptr<resource_istream> in,
 }
 
 /**
- * @class openvrml::invalid_vrml
+ * @class openvrml::invalid_vrml openvrml/browser.h
  *
  * @brief Exception thrown when the parser fails due to errors in the VRML
  *        input.
@@ -4936,7 +4942,7 @@ openvrml::invalid_vrml::~invalid_vrml() throw ()
 
 
 /**
- * @class openvrml::viewer_in_use
+ * @class openvrml::viewer_in_use openvrml/browser.h
  *
  * @brief Exception thrown when attempting to associate a @c viewer
  *        with a @c browser when the @c viewer is already
@@ -4958,7 +4964,7 @@ openvrml::viewer_in_use::~viewer_in_use() throw ()
 
 
 /**
- * @class openvrml::browser_event
+ * @class openvrml::browser_event openvrml/browser.h
  *
  * @brief A <code>browser</code>-wide event.
  */
@@ -5042,7 +5048,7 @@ openvrml::browser & openvrml::browser_event::source() const OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::browser_listener
+ * @class openvrml::browser_listener openvrml/browser.h
  *
  * @brief This class should be inherited by classes that want to listen for
  *        @c browser_event%s.
@@ -5053,8 +5059,7 @@ openvrml::browser & openvrml::browser_event::source() const OPENVRML_NOTHROW
  *
  * @var openvrml::browser_listener::browser
  *
- * @brief @c browser instances need to call @c
- *        browser_listener::browser_changed.
+ * @brief @c browser instances need to call @c #browser_changed.
  */
 
 /**
@@ -5068,8 +5073,7 @@ openvrml::browser_listener::~browser_listener() OPENVRML_NOTHROW
  *
  * @brief Send a @c browser_event.
  *
- * This function delegates to
- * @c browser_listener::do_browser_changed.
+ * This function delegates to @c #do_browser_changed.
  *
  * @param[in] event the @c browser_event to send.
  */
@@ -5086,7 +5090,7 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 
 
 /**
- * @class openvrml::browser
+ * @class openvrml::browser openvrml/browser.h
  *
  * @brief Encapsulates a VRML browser.
  *
@@ -5124,7 +5128,7 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 /**
  * @internal
  *
- * @class openvrml::browser::node_metatype_map
+ * @class openvrml::browser::node_metatype_map openvrml/browser.h
  *
  * @brief The map of @c node_metatype%s.
  */
@@ -5424,11 +5428,22 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @internal
  *
+ * @var boost::scoped_ptr<boost::thread> openvrml::browser::load_root_scene_thread_
+ *
+ * @brief The thread that loads the root scene.
+ *
+ * This thread is spawned by @c #load_url. It is joined there (in a subsequent
+ * call to @c #load_url) or when the @c browser is destroyed.
+ */
+
+/**
+ * @internal
+ *
  * @var boost::thread_group openvrml::browser::load_proto_thread_group_
  *
- * @brief The threads that load EXTERNPROTO implementations.
+ * @brief The threads that load @c EXTERNPROTO implementations.
  *
- * These threads @b must be joined by the browser before it is destroyed.
+ * These threads @b must be joined by the @c browser before it is destroyed.
  */
 
 /**
@@ -5444,7 +5459,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var openvrml::script_node_metatype openvrml::browser::script_node_metatype_
  *
- * @brief @c node_metatype for Script nodes in the browser.
+ * @brief @c node_metatype for Script @c node%s in the @c browser.
  */
 
 /**
@@ -5452,7 +5467,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var openvrml::scene * openvrml::browser::scene_
  *
- * @brief Pointer to the root scene.
+ * @brief Pointer to the root @c scene.
  */
 
 /**
@@ -5460,8 +5475,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var boost::intrusive_ptr<openvrml::node> openvrml::browser::default_viewpoint_
  *
- * @brief The &ldquo;default&rdquo; @c viewpoint_node used when no @c
- *        viewpoint_node in the scene is bound.
+ * @brief The &ldquo;default&rdquo; @c viewpoint_node used when no
+ *        @c viewpoint_node in the scene is bound.
  */
 
 /**
@@ -5494,7 +5509,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::list<openvrml::viewpoint_node *> openvrml::browser::viewpoint_list
  *
- * @brief A list of all the Viewpoint nodes in the browser.
+ * @brief A list of all the Viewpoint @c node%s in the @c browser.
  */
 
 /**
@@ -5502,7 +5517,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::list<openvrml::node *> openvrml::browser::scoped_lights
  *
- * @brief A list of all the scoped light nodes in the browser.
+ * @brief A list of all the scoped light @c node%s in the @c browser.
  */
 
 /**
@@ -5510,7 +5525,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::list<openvrml::script_node *> openvrml::browser::scripts
  *
- * @brief A list of all the Script nodes in the browser.
+ * @brief A list of all the Script @c node%s in the @c browser.
  */
 
 /**
@@ -5518,7 +5533,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::list<openvrml::time_dependent_node *> openvrml::browser::timers
  *
- * @brief A list of all the TimeSensor nodes in the browser.
+ * @brief A list of all the TimeSensor @c node%s in the @c browser.
  */
 
 /**
@@ -5526,8 +5541,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  *
  * @var std::set<openvrml::browser_listener *> openvrml::browser::listeners_
  *
- * @brief The set of @c browser_listener%s that will receive @c
- *        browser_event%s.
+ * @brief The set of @c browser_listener%s that will receive
+ *        @c browser_event%s.
  *
  * @sa openvrml::browser::add_listener
  * @sa openvrml::browser::remove_listener
@@ -5542,7 +5557,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @var boost::mutex openvrml::browser::modified_mutex_
  *
- * @brief Mutex protecting @c browser::modified_.
+ * @brief Mutex protecting @c #modified_.
  */
 
 /**
@@ -5595,7 +5610,7 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 /**
  * @var boost::mutex openvrml::browser::out_mutex_
  *
- * @brief Mutex guarding @a out_.
+ * @brief Mutex guarding @c #out_.
  */
 
 /**
@@ -5607,7 +5622,7 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 /**
  * @var boost::mutex openvrml::browser::err_mutex_
  *
- * @brief Mutex guarding @a err_.
+ * @brief Mutex guarding @c #err_.
  */
 
 /**
@@ -5620,11 +5635,11 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
  * @var bool openvrml::browser::flags_need_updating
  *
  * @brief Set by @c node::bounding_volume_dirty on any node in this browser graph,
- *      cleared by @c update_flags.
+ *        cleared by @c #update_flags.
  *
- * @c true if the bvolume dirty flag has been set on a node in the
- * browser graph, but has not yet been propagated to that node's
- * ancestors.
+ * @c true if the bvolume dirty flag has been set on a @c node in the
+ * @c browser graph, but has not yet been propagated to that
+ * <code>node</code>'s ancestors.
  */
 
 namespace {
@@ -5712,10 +5727,10 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
  * If a @c node_metatype identified by @p id has already been added to
  * the browser, it will be replaced.
  *
- * @warning If @c std::bad_alloc is thrown here, the <code>browser</code>'s @c
- *          node_metatype map is left in an unknown state.  In all likelihood
- *          any preexisting entry in the map with the same implementation
- *          identifier as @p id will have been removed.
+ * @warning If @c std::bad_alloc is thrown here, the <code>browser</code>'s
+ *          @c node_metatype map is left in an unknown state.  In all
+ *          likelihood any preexisting entry in the map with the same
+ *          implementation identifier as @p id will have been removed.
  *
  * @param[in] id    a @c node_metatype identifier.
  * @param[in] nc    a @c boost::shared_ptr to a @c node_metatype
@@ -5931,11 +5946,9 @@ void openvrml::browser::remove_viewpoint(viewpoint_node & viewpoint)
 }
 
 /**
- * @brief Get the list of @link viewpoint_node viewpoint_nodes@endlink for the
- *      world.
+ * @brief Get the list of @c viewpoint_node%s for the world.
  *
- * @return the list of @link viewpoint_node viewpoint_nodes@endlink for the
- *      world.
+ * @return the list of @c viewpoint_node%s for the world.
  */
 const std::list<openvrml::viewpoint_node *> &
 openvrml::browser::viewpoints() const OPENVRML_NOTHROW
@@ -5988,7 +6001,7 @@ const char * openvrml::browser::name() const OPENVRML_NOTHROW
 /**
  * @brief Get the @c browser version.
  *
- * @return the version of openvrml.
+ * @return the version of OpenVRML.
  *
  * Specific browsers may wish to override this method.
  */
@@ -6708,8 +6721,9 @@ openvrml::browser::remove_time_dependent(time_dependent_node & n)
  *
  * The invariant is that if a <code>node</code>'s bounding volume is out of
  * date, then the bounding volumes of all that <code>node</code>'s ancestors
- * must be out of date.  However, @c node does not maintain a parent pointer.  So
- * we must do a traversal of the entire browser graph to do the propagation.
+ * must be out of date.  However, @c node does not maintain a parent pointer.
+ * So we must do a traversal of the entire browser graph to do the
+ * propagation.
  *
  * @see node::setBVolumeDirty
  * @see node::isBVolumeDirty
@@ -6744,7 +6758,7 @@ void openvrml::browser::err(const std::string & str) const
 
 
 /**
- * @class openvrml::bad_url
+ * @class openvrml::bad_url openvrml/browser.h
  *
  * @brief Thrown when there is a problem resolving a URI.
  */
@@ -6766,7 +6780,7 @@ openvrml::bad_url::~bad_url() throw ()
 
 
 /**
- * @class openvrml::invalid_url
+ * @class openvrml::invalid_url openvrml/browser.h
  *
  * @brief Thrown when parsing a URI fails.
  */
@@ -6786,7 +6800,7 @@ openvrml::invalid_url::~invalid_url() throw ()
 
 
 /**
- * @class openvrml::bad_media_type
+ * @class openvrml::bad_media_type openvrml/browser.h
  *
  * @brief Thrown when an unexpected media type is received.
  */
@@ -6809,7 +6823,7 @@ openvrml::bad_media_type::~bad_media_type() throw ()
 
 
 /**
- * @class unreachable_url
+ * @class openvrml::unreachable_url openvrml/browser.h
  *
  * @brief Thrown when a URI cannot be reached.
  */
@@ -6829,7 +6843,7 @@ openvrml::unreachable_url::~unreachable_url() throw ()
 
 
 /**
- * @class openvrml::no_alternative_url
+ * @class openvrml::no_alternative_url openvrml/browser.h
  *
  * @brief Exception thrown when no URI in an alternative URI list can be
  *        resolved.
@@ -6850,7 +6864,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 
 
 /**
- * @class openvrml::scene
+ * @class openvrml::scene openvrml/browser.h
  *
  * @brief A scene in the VRML world.
  */
@@ -6904,7 +6918,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  *
  * @brief The URI for the scene.
  *
- * @a uri may be a relative or an absolute reference.
+ * This may be a relative or an absolute reference.
  */
 
 /**
@@ -6912,7 +6926,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  *
  * @var boost::mutex openvrml::scene::meta_mutex_
  *
- * @brief Mutex protecting @a meta_.
+ * @brief Mutex protecting @c #meta_.
  */
 
 /**
@@ -7089,10 +7103,10 @@ openvrml::scene::nodes() const throw()
 /**
  * @brief Set the root @c node%s for the @c scene.
  *
- * This function calls @c scene::shutdown to shut down the
+ * This function calls @c #shutdown to shut down the
  * <code>scene</code>'s existing @c node%s.
  *
- * @param[in] n the new root nodes for the @c scene.
+ * @param[in] n the new root @c node%s for the @c scene.
  *
  * @exception std::invalid_argument if any of the @c node%s in @p n has
  *                                  already been initialized.
@@ -7178,12 +7192,13 @@ void openvrml::scene::render(openvrml::viewer & viewer,
  *
  * @note There are a couple of edge cases here where we are probably doing the
  *      wrong thing:
- *       - If there is a URI in the list of the form "#NodeId" and it is not
- *         the first URI in the list, this URI will be loaded as if it were a
- *         new world rather than as a Viewpoint that should simply be bound.
- *       - If the first URI in the list is of the form "#NodeId" and no
- *         Viewpoint named "NodeId" exists in the scene, this method will not
- *         try any subsequent URIs in the list.
+ *       - If there is a URI in the list of the form &ldquo;#NodeId&rdquo; and
+ *         it is not the first URI in the list, this URI will be loaded as if
+ *         it were a new world rather than as a Viewpoint that should simply
+ *         be bound.
+ *       - If the first URI in the list is of the form &ldquo;#NodeId&rdquo;
+ *         and no Viewpoint named &ldquo;NodeId&rdquo; exists in the scene,
+ *         this method will not try any subsequent URIs in the list.
  *
  * @param[in] url       an array of URIs.  Per VRML97 convention, the first
  *                      resource in the sequence that can be reached will be
@@ -7291,7 +7306,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
 /**
  * @brief Shut down the nodes in the scene.
  *
- * This function @b must be called before the scene is destroyed.
+ * This function @b must be called before the @c scene is destroyed.
  *
  * @param[in] timestamp the current time.
  */
@@ -7307,10 +7322,10 @@ void openvrml::scene::shutdown(const double timestamp) OPENVRML_NOTHROW
 }
 
 /**
- * @brief Function called once the scene has been loaded.
+ * @brief Function called once the @c scene has been loaded.
  *
- * <code>scene::load</code> calls this function once the scene has finished
- * loading. The default implementation does nothing.
+ * @c #load calls this function once the @c scene has finished loading.  The
+ * default implementation does nothing.
  */
 void openvrml::scene::scene_loaded()
 {}

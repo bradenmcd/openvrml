@@ -16112,10 +16112,9 @@ namespace {
     /**
      * @brief Set the bind state.
      *
-     * This function is called by
-     * <code>bound_node_stack<BindableNode>::bind</code>.  It sets the
-     * "bind" state and fires an event; it does not actually put the
-     * node onto the bound node stack.
+     * This function is called by @c bound_node_stack<BindableNode>::bind.  It
+     * sets the &ldquo;bind&rdquo; state and fires an event; it does not
+     * actually put the node onto the bound node stack.
      *
      * @param[in] val       the bind state.
      * @param[in] timestamp the current time.
@@ -21481,7 +21480,7 @@ namespace {
     text_metatype::text_metatype(openvrml::browser & browser):
         node_metatype(text_metatype::id, browser)
     {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
         error = FT_Init_FreeType(&this->freeTypeLibrary);
         if (error) {
@@ -21495,7 +21494,7 @@ namespace {
      */
     text_metatype::~text_metatype() OPENVRML_NOTHROW
     {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         FT_Error error = 0;
         error = FT_Done_FreeType(this->freeTypeLibrary);
         if (error) {
@@ -22594,7 +22593,7 @@ namespace {
     void text_node::do_shutdown(double)
         OPENVRML_NOTHROW
     {
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         if (this->face) {
             FT_Error ftError = FT_Done_Face(this->face);
             assert(ftError == FT_Err_Ok); // Surely this can't fail.
@@ -22602,7 +22601,7 @@ namespace {
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
-# if OPENVRML_ENABLE_RENDER_TEXT_NODE
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     OPENVRML_LOCAL ptrdiff_t utf8_to_ucs4_(const unsigned char * src_orig,
                                            char32_t & dst,

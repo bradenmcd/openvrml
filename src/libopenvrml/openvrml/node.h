@@ -24,10 +24,8 @@
 #   define OPENVRML_NODE_H
 
 #   include <deque>
-#   include <list>
 #   include <set>
 #   include <utility>
-#   include <boost/thread/mutex.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>

@@ -23,6 +23,12 @@
 //  Abstract base class for display of VRML models
 //
 
+/**
+ * @file openvrml/viewer.h
+ *
+ * @brief Definition of @c openvrml::viewer.
+ */
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif

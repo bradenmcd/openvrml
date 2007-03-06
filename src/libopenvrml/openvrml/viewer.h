@@ -22,8 +22,6 @@
 # ifndef OPENVRML_VIEWER_H
 #   define OPENVRML_VIEWER_H
 
-#   include <cstddef>
-#   include <vector>
 #   include <boost/utility.hpp>
 #   include <openvrml/bounding_volume.h>
 #   include <openvrml/frustum.h>
