@@ -1,5 +1,19 @@
 2007-03-05 Braden McDaniel  <braden@endoframe.com>
 
+	Join the thread spawned by browser::load_url in browser's
+	destructor.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::~browser()): Join the thread that loads the
+	root scene.
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): First, join any thread already
+	loading a root scene.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Added member load_root_scene_thread.
+
+2007-03-05 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/configure.ac: Added back mozincludedir
 	substitution, which apparently got stomped on at some point.  Its
 	loss was disguised by mozilla-xpcom.pc adding flags for this

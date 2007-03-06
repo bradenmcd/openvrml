@@ -5522,6 +5522,7 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
  */
 openvrml::browser::~browser() OPENVRML_NOTHROW
 {
+    this->load_root_scene_thread_->join();
     this->load_proto_thread_group_.join_all();
 
     const double now = browser::current_time();
@@ -6154,8 +6155,11 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
     OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error)
 {
+    if (this->load_root_scene_thread_) {
+        this->load_root_scene_thread_->join();
+    }
     boost::function0<void> f = root_scene_loader(*this, url);
-    boost::thread t(f);
+    this->load_root_scene_thread_.reset(new boost::thread(f));
 }
 
 /**
@@ -6225,6 +6229,10 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
         std::map<string, string> meta;
         parse_vrml(in, stream_id.str(), type, *this->scene_, nodes, meta);
     } catch (openvrml::bad_media_type & ex) {
+        //
+        // bad_media_type is a std::runtime_error.  However, here we're using
+        // the media type as an argument.
+        //
         throw std::invalid_argument(ex.what());
     }
     return nodes;
