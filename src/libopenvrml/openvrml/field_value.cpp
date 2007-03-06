@@ -33,6 +33,12 @@
 # include "node.h"
 
 /**
+ * @file openvrml/field_value.h
+ *
+ * @brief Field value types.
+ */
+
+/**
  * @brief Stream output.
  *
  * @param[in,out] out   an output stream.
@@ -48,7 +54,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
 }
 
 /**
- * @class openvrml::field_value
+ * @class openvrml::field_value openvrml/field_value.h
  *
  * @brief Abstract base class for the VRML field types.
  *
@@ -59,7 +65,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
 /**
  * @internal
  *
- * @class openvrml::field_value::counted_impl_base
+ * @class openvrml::field_value::counted_impl_base openvrml/field_value.h
  *
  * @brief Base class for the internal reference-counted objects.
  */
@@ -73,7 +79,7 @@ openvrml::field_value::counted_impl_base::~counted_impl_base() OPENVRML_NOTHROW
 /**
  * @brief Clone.
  *
- * Delegates to <code>counted_impl_base::do_clone</code>.
+ * Delegates to @c counted_impl_base::do_clone.
  *
  * @return a clone of the instance.
  *
@@ -100,7 +106,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @internal
  *
- * @class openvrml::field_value::counted_impl
+ * @class openvrml::field_value::counted_impl openvrml/field_value.h
  *
  * @brief Concrete reference-counted implementation.
  */
@@ -114,8 +120,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var boost::shared_ptr<ValueType> openvrml::field_value::counted_impl::value_
  *
- * @brief A <code>shared_ptr</code> to an instance of the
- *        <code>value_type</code> of a
+ * @brief A @c shared_ptr to an instance of the @c value_type of a
  *        @link openvrml::FieldValueConcept Field Value@endlink.
  *
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
@@ -203,25 +208,25 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::sfbool_id
  *
- * @brief Designates an <code>sfbool</code>.
+ * @brief Designates an @c sfbool.
  */
 
 /**
  * @var openvrml::field_value::sfcolor_id
  *
- * @brief Designates an <code>sfcolor</code>.
+ * @brief Designates an @c sfcolor.
  */
 
 /**
  * @var openvrml::field_value::sfcolorrgba_id
  *
- * @brief Designates an <code>sfcolorrgba</code>.
+ * @brief Designates an @c sfcolorrgba.
  */
 
 /**
  * @var openvrml::field_value::sffloat_id
  *
- * @brief Designates an <code>sffloat</code>.
+ * @brief Designates an @c sffloat.
  */
 
 /**
@@ -233,43 +238,43 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::sfimage_id
  *
- * @brief Designates an <code>sfimage</code>.
+ * @brief Designates an @c sfimage.
  */
 
 /**
  * @var openvrml::field_value::sfint32_id
  *
- * @brief Designates an <code>sfint32</code>.
+ * @brief Designates an @c sfint32.
  */
 
 /**
  * @var openvrml::field_value::sfnode_id
  *
- * @brief Designates an <code>sfnode</code>.
+ * @brief Designates an @c sfnode.
  */
 
 /**
  * @var openvrml::field_value::sfrotation_id
  *
- * @brief Designates an <code>sfrotation</code>.
+ * @brief Designates an @c sfrotation.
  */
 
 /**
  * @var openvrml::field_value::sfstring_id
  *
- * @brief Designates an <code>sfstring</code>.
+ * @brief Designates an @c sfstring.
  */
 
 /**
  * @var openvrml::field_value::sftime_id
  *
- * @brief Designates an <code>sftime</code>.
+ * @brief Designates an @c sftime.
  */
 
 /**
  * @var openvrml::field_value::sfvec2f_id
  *
- * @brief Designates an <code>sfvec2f</code>.
+ * @brief Designates an @c sfvec2f.
  */
 
 /**
@@ -281,7 +286,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::sfvec3f_id
  *
- * @brief Designates an <code>sfvec3f</code>.
+ * @brief Designates an @c sfvec3f.
  */
 
 /**
@@ -293,25 +298,25 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::mfbool_id
  *
- * @brief Designates an <code>mfbool</code>.
+ * @brief Designates an @c mfbool.
  */
 
 /**
  * @var openvrml::field_value::mfcolor_id
  *
- * @brief Designates an <code>mfcolor</code>.
+ * @brief Designates an @c mfcolor.
  */
 
 /**
  * @var openvrml::field_value::mfcolorrgba_id
  *
- * @brief Designates an <code>mfcolorrgba</code>.
+ * @brief Designates an @c mfcolorrgba.
  */
 
 /**
  * @var openvrml::field_value::mffloat_id
  *
- * @brief Designates an <code>mffloat</code>.
+ * @brief Designates an @c mffloat.
  */
 
 /**
@@ -323,43 +328,43 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::mfimage_id
  *
- * @brief Designates an <code>mfimage</code>.
+ * @brief Designates an @c mfimage.
  */
 
 /**
  * @var openvrml::field_value::mfint32_id
  *
- * @brief Designates an <code>mfint32</code>.
+ * @brief Designates an @c mfint32.
  */
 
 /**
  * @var openvrml::field_value::mfnode_id
  *
- * @brief Designates an <code>mfnode</code>.
+ * @brief Designates an @c mfnode.
  */
 
 /**
  * @var openvrml::field_value::mfrotation_id
  *
- * @brief Designates an <code>mfrotation</code>.
+ * @brief Designates an @c mfrotation.
  */
 
 /**
  * @var openvrml::field_value::mfstring_id
  *
- * @brief Designates an <code>mfstring</code>.
+ * @brief Designates an @c mfstring.
  */
 
 /**
  * @var openvrml::field_value::mftime_id
  *
- * @brief Designates an <code>mftime</code>.
+ * @brief Designates an @c mftime.
  */
 
 /**
  * @var openvrml::field_value::mfvec2f_id
  *
- * @brief Designates an <code>mfvec2f</code>.
+ * @brief Designates an @c mfvec2f.
  */
 
 /**
@@ -371,7 +376,7 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
 /**
  * @var openvrml::field_value::mfvec3f_id
  *
- * @brief Designates an <code>mfvec3f</code>.
+ * @brief Designates an @c mfvec3f.
  */
 
 /**
@@ -426,7 +431,7 @@ openvrml::field_value::create(const type_id type)
 }
 
 /**
- * @class openvrml::field_value::value_type_constructor_tag
+ * @class openvrml::field_value::value_type_constructor_tag openvrml/field_value.h
  *
  * @brief This struct exists only to disambiguate <code>field_value</code>'s
  *        constructor template from its copy constructor.
@@ -472,9 +477,9 @@ openvrml::field_value::~field_value() OPENVRML_NOTHROW
 /**
  * @brief Polymorphically construct a copy.
  *
- * This function delegates to <code>field_value::do_clone</code>.
+ * This function delegates to @c field_value::do_clone.
  *
- * @return a new <code>field_value</code> identical to this one.
+ * @return a new @c field_value identical to this one.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -500,7 +505,7 @@ std::auto_ptr<openvrml::field_value> openvrml::field_value::clone() const
 /**
  * @brief Virtual assignment.
  *
- * Thus function delegates to <code>field_value::do_assign</code>.
+ * Thus function delegates to @c field_value::do_assign.
  *
  * @param[in] value the value to assign to the object.
  *
@@ -549,10 +554,10 @@ openvrml::field_value::assign(const field_value & value)
 /**
  * @brief Get the field type.
  *
- * This function delegates to <code>field_value::do_type</code>.
+ * This function delegates to @c field_value::do_type.
  *
- * @return the <code>type_id</code> enumerant corresponding to the
- *        <code>field_value</code>'s type.
+ * @return the @c type_id enumerant corresponding to the
+ *         <code>field_value</code>'s type.
  */
 openvrml::field_value::type_id openvrml::field_value::type() const
     OPENVRML_NOTHROW
@@ -676,7 +681,7 @@ std::istream & openvrml::operator>>(std::istream & in,
 }
 
 /**
- * @struct openvrml::FieldValueConcept
+ * @struct openvrml::FieldValueConcept openvrml/field_value.h
  *
  * @brief Concept checking class to validate that a template parameter is a
  *        model of the Field Value concept.
@@ -798,7 +803,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
- * @class openvrml::sfbool
+ * @class openvrml::sfbool openvrml/field_value.h
  *
  * @brief A boolean @c node field value.
  *
@@ -976,7 +981,7 @@ bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs)
 
 
 /**
- * @class openvrml::sfcolor
+ * @class openvrml::sfcolor openvrml/field_value.h
  *
  * @brief A color node field value.
  *
@@ -993,7 +998,7 @@ bool openvrml::operator!=(const sfbool & lhs, const sfbool & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfcolor::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -1109,7 +1114,7 @@ void openvrml::sfcolor::print(std::ostream & out) const
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfcolor.
  */
@@ -1154,7 +1159,7 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs)
 }
 
 /**
- * @class openvrml::sfcolorrgba
+ * @class openvrml::sfcolorrgba openvrml/field_value.h
  *
  * @brief A color_rgba node field value.
  *
@@ -1171,7 +1176,7 @@ bool openvrml::operator!=(const sfcolor & lhs, const sfcolor & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfcolorrgba::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -1289,7 +1294,7 @@ void openvrml::sfcolorrgba::print(std::ostream & out) const
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfcolorrgba.
  */
@@ -1334,7 +1339,7 @@ bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
 }
 
 /**
- * @class openvrml::sffloat
+ * @class openvrml::sffloat openvrml/field_value.h
  *
  * @brief A single precision floating point node field value.
  *
@@ -1351,7 +1356,7 @@ bool openvrml::operator!=(const sfcolorrgba & lhs, const sfcolorrgba & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sffloat::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -1511,7 +1516,7 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs)
 }
 
 /**
- * @class openvrml::sfdouble
+ * @class openvrml::sfdouble openvrml/field_value.h
  *
  * @brief A single precision doubleing point node field value.
  *
@@ -1528,7 +1533,7 @@ bool openvrml::operator!=(const sffloat & lhs, const sffloat & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfdouble::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -1689,7 +1694,7 @@ bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs)
 }
 
 /**
- * @class openvrml::sfimage
+ * @class openvrml::sfimage openvrml/field_value.h
  *
  * @brief A pixmap.
  *
@@ -1706,7 +1711,7 @@ bool openvrml::operator!=(const sfdouble & lhs, const sfdouble & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfimage::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -1825,7 +1830,7 @@ openvrml::sfimage & openvrml::sfimage::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfimage.
  */
@@ -1871,7 +1876,7 @@ bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs)
 
 
 /**
- * @class openvrml::sfint32
+ * @class openvrml::sfint32 openvrml/field_value.h
  *
  * @brief A 32-bit integer node field value.
  *
@@ -1888,7 +1893,7 @@ bool openvrml::operator!=(const sfimage & lhs, const sfimage & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfint32::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2003,7 +2008,7 @@ openvrml::sfint32 & openvrml::sfint32::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfint32.
  */
@@ -2049,7 +2054,7 @@ bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs)
 
 
 /**
- * @class openvrml::sfnode
+ * @class openvrml::sfnode openvrml/field_value.h
  *
  * @brief A node field value to hold a single node reference.
  *
@@ -2066,7 +2071,7 @@ bool openvrml::operator!=(const sfint32 & lhs, const sfint32 & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfnode::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2232,7 +2237,7 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
 
 
 /**
- * @class openvrml::sfrotation
+ * @class openvrml::sfrotation openvrml/field_value.h
  *
  * @brief A rotation node field value.
  *
@@ -2262,7 +2267,7 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfrotation::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2368,7 +2373,7 @@ openvrml::sfrotation::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfrotation.
  */
@@ -2424,7 +2429,7 @@ bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
 
 
 /**
- * @class openvrml::sfstring
+ * @class openvrml::sfstring openvrml/field_value.h
  *
  * @brief A string node field value.
  *
@@ -2441,7 +2446,7 @@ bool openvrml::operator!=(const sfrotation & lhs, const sfrotation & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfstring::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2560,7 +2565,7 @@ void openvrml::sfstring::print(std::ostream & out) const
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfstring.
  */
@@ -2606,7 +2611,7 @@ bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs)
 
 
 /**
- * @class openvrml::sftime
+ * @class openvrml::sftime openvrml/field_value.h
  *
  * @brief A double precision floating point node field value.
  *
@@ -2617,7 +2622,7 @@ bool openvrml::operator!=(const sfstring & lhs, const sfstring & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sftime::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2738,7 +2743,7 @@ void openvrml::sftime::print(std::ostream & out) const
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sftime.
  */
@@ -2785,7 +2790,7 @@ bool openvrml::operator!=(const sftime & lhs, const sftime & rhs)
 
 
 /**
- * @class openvrml::sfvec2f
+ * @class openvrml::sfvec2f openvrml/field_value.h
  *
  * @brief A 2-component vector node field value.
  *
@@ -2802,7 +2807,7 @@ bool openvrml::operator!=(const sftime & lhs, const sftime & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfvec2f::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -2907,7 +2912,7 @@ openvrml::sfvec2f & openvrml::sfvec2f::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfvec2f.
  */
@@ -2962,7 +2967,7 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
 }
 
 /**
- * @class openvrml::sfvec2d
+ * @class openvrml::sfvec2d openvrml/field_value.h
  *
  * @brief A 2-component vector node field value.
  *
@@ -2979,7 +2984,7 @@ bool openvrml::operator!=(const sfvec2f & lhs, const sfvec2f & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfvec2d::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -3084,7 +3089,7 @@ openvrml::sfvec2d & openvrml::sfvec2d::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfvec2d.
  */
@@ -3140,7 +3145,7 @@ bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
 
 
 /**
- * @class openvrml::sfvec3f
+ * @class openvrml::sfvec3f openvrml/field_value.h
  *
  * @brief A 3-component vector node field value.
  *
@@ -3151,7 +3156,7 @@ bool openvrml::operator!=(const sfvec2d & lhs, const sfvec2d & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfvec3f::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -3262,7 +3267,7 @@ openvrml::sfvec3f & openvrml::sfvec3f::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfvec3f.
  */
@@ -3317,7 +3322,7 @@ bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
 }
 
 /**
- * @class openvrml::sfvec3d
+ * @class openvrml::sfvec3d openvrml/field_value.h
  *
  * @brief A 3-component vector node field value.
  *
@@ -3328,7 +3333,7 @@ bool openvrml::operator!=(const sfvec3f & lhs, const sfvec3f & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::sfvec3d::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -3439,7 +3444,7 @@ openvrml::sfvec3d & openvrml::sfvec3d::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::sfvec3d.
  */
@@ -3495,7 +3500,7 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
 
 
 /**
- * @class openvrml::mfbool
+ * @class openvrml::mfbool openvrml/field_value.h
  *
  * @brief A @c bool array node field value.
  *
@@ -3512,13 +3517,13 @@ bool openvrml::operator!=(const sfvec3d & lhs, const sfvec3d & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfbool::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfbool</code> with @p n copies of @p value.
+ * Creates an @c mfbool with @p n copies of @p value.
  *
  * @param[in] n     the number elements in the mfbool.
  * @param[in] value used to initialize the mfbool.
@@ -3639,7 +3644,7 @@ openvrml::mfbool & openvrml::mfbool::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfbool.
  */
@@ -3706,7 +3711,7 @@ bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs)
 
 
 /**
- * @class openvrml::mfcolor
+ * @class openvrml::mfcolor openvrml/field_value.h
  *
  * @brief A color array node field value.
  *
@@ -3723,13 +3728,13 @@ bool openvrml::operator!=(const mfbool & lhs, const mfbool & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfcolor::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfcolor</code> with @p n copies of @p value.
+ * Creates an @c mfcolor with @p n copies of @p value.
  *
  * @param[in] n     the number elements in the mfcolor.
  * @param[in] value used to initialize the mfcolor.
@@ -3851,7 +3856,7 @@ openvrml::mfcolor & openvrml::mfcolor::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfcolor.
  */
@@ -3916,7 +3921,7 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs)
 }
 
 /**
- * @class openvrml::mfcolorrgba
+ * @class openvrml::mfcolorrgba openvrml/field_value.h
  *
  * @brief A color_rgba array node field value.
  *
@@ -3933,13 +3938,13 @@ bool openvrml::operator!=(const mfcolor & lhs, const mfcolor & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfcolorrgba::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfcolorrgba</code> with @p n copies of @p value.
+ * Creates an @c mfcolorrgba with @p n copies of @p value.
  *
  * @param[in] n     the number elements in the mfcolorrgba.
  * @param[in] value used to initialize the mfcolorrgba.
@@ -4064,7 +4069,7 @@ openvrml::mfcolorrgba::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfcolorrgba.
  */
@@ -4130,7 +4135,7 @@ bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
 
 
 /**
- * @class openvrml::mffloat
+ * @class openvrml::mffloat openvrml/field_value.h
  *
  * @brief A float array node field value.
  *
@@ -4147,16 +4152,16 @@ bool openvrml::operator!=(const mfcolorrgba & lhs, const mfcolorrgba & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mffloat::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mffloat</code> with @p n copies of @p value.
+ * Creates an @c mffloat with @p n copies of @p value.
  *
- * @param[in] n     the number of elements in the <code>mffloat</code>.
- * @param[in] value used to initialize the <code>mffloat</code>.
+ * @param[in] n     the number of elements in the @c mffloat.
+ * @param[in] value used to initialize the @c mffloat.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4340,7 +4345,7 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
 }
 
 /**
- * @class openvrml::mfdouble
+ * @class openvrml::mfdouble openvrml/field_value.h
  *
  * @brief A double array node field value.
  *
@@ -4357,16 +4362,16 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfdouble::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfdouble</code> with @p n copies of @p value.
+ * Creates an @c mfdouble with @p n copies of @p value.
  *
- * @param[in] n     the number of elements in the <code>mfdouble</code>.
- * @param[in] value used to initialize the <code>mfdouble</code>.
+ * @param[in] n     the number of elements in the @c mfdouble.
+ * @param[in] value used to initialize the @c mfdouble.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4550,7 +4555,7 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs)
 }
 
 /**
- * @class openvrml::mfimage
+ * @class openvrml::mfimage openvrml/field_value.h
  *
  * @brief A image array node field value.
  *
@@ -4567,13 +4572,13 @@ bool openvrml::operator!=(const mfdouble & lhs, const mfdouble & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfimage::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfimage</code> with @p n copies of @p value.
+ * Creates an @c mfimage with @p n copies of @p value.
  *
  * @param[in] n     the number elements in the mfimage.
  * @param[in] value used to initialize the mfimage.
@@ -4695,7 +4700,7 @@ openvrml::mfimage & openvrml::mfimage::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfimage.
  */
@@ -4760,7 +4765,7 @@ bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs)
 }
 
 /**
- * @class openvrml::mfint32
+ * @class openvrml::mfint32 openvrml/field_value.h
  *
  * @brief An integer array node field value.
  *
@@ -4777,16 +4782,16 @@ bool openvrml::operator!=(const mfimage & lhs, const mfimage & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfint32::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfint32</code> with @p n copies of @p value.
+ * Creates an @c mfint32 with @p n copies of @p value.
  *
- * @param[in] n     the number of elements in the <code>mfint32</code>.
- * @param[in] value used to initialize the <code>mfint32</code>.
+ * @param[in] n     the number of elements in the @c mfint32.
+ * @param[in] value used to initialize the @c mfint32.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -4905,7 +4910,7 @@ openvrml::mfint32 & openvrml::mfint32::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfint32_id.
  */
@@ -4971,7 +4976,7 @@ bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs)
 
 
 /**
- * @class openvrml::mfnode
+ * @class openvrml::mfnode openvrml/field_value.h
  *
  * @brief A node reference array node field value.
  *
@@ -4988,16 +4993,16 @@ bool openvrml::operator!=(const mfint32 & lhs, const mfint32 & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfnode::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfnode</code> with @p n copies of @p value.
+ * Creates an @c mfnode with @p n copies of @p value.
  *
- * @param[in] n     the number elements in the <code>mfnode</code>.
- * @param[in] value used to initialize the <code>mfnode</code>.
+ * @param[in] n     the number elements in the @c mfnode.
+ * @param[in] value used to initialize the @c mfnode.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5116,7 +5121,7 @@ openvrml::mfnode & openvrml::mfnode::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfnode_id.
  */
@@ -5185,7 +5190,7 @@ bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs)
 
 
 /**
- * @class openvrml::mfrotation
+ * @class openvrml::mfrotation openvrml/field_value.h
  *
  * @brief A rotation array node field value.
  *
@@ -5202,16 +5207,16 @@ bool openvrml::operator!=(const mfnode & lhs, const mfnode & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfrotation::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
  * @brief Construct.
  *
- * Creates an <code>mfrotation</code> with @p n copies of @p value.
+ * Creates an @c mfrotation with @p n copies of @p value.
  *
- * @param[in] n     the number elements in the <code>mfrotation</code>.
- * @param[in] value used to initialize the <code>mfrotation</code>.
+ * @param[in] n     the number elements in the @c mfrotation.
+ * @param[in] value used to initialize the @c mfrotation.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
@@ -5331,7 +5336,7 @@ openvrml::mfrotation::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfrotation_id.
  */
@@ -5397,7 +5402,7 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
 
 
 /**
- * @class openvrml::mfstring
+ * @class openvrml::mfstring openvrml/field_value.h
  *
  * @brief A string array node field value.
  *
@@ -5414,7 +5419,7 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfstring::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -5544,7 +5549,7 @@ openvrml::mfstring & openvrml::mfstring::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfstring_id.
  */
@@ -5610,7 +5615,7 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
 
 
 /**
- * @class openvrml::mftime
+ * @class openvrml::mftime openvrml/field_value.h
  *
  * @brief A double array node field value.
  *
@@ -5627,7 +5632,7 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mftime::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -5757,7 +5762,7 @@ openvrml::mftime & openvrml::mftime::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mftime_id.
  */
@@ -5823,7 +5828,7 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
 
 
 /**
- * @class openvrml::mfvec2f
+ * @class openvrml::mfvec2f openvrml/field_value.h
  *
  * @brief A 2-component vector array node field value.
  *
@@ -5840,7 +5845,7 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfvec2f::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -5969,7 +5974,7 @@ openvrml::mfvec2f & openvrml::mfvec2f::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfvec2f_id.
  */
@@ -6034,7 +6039,7 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
 }
 
 /**
- * @class openvrml::mfvec2d
+ * @class openvrml::mfvec2d openvrml/field_value.h
  *
  * @brief A 2-component vector array node field value.
  *
@@ -6051,7 +6056,7 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfvec2d::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -6180,7 +6185,7 @@ openvrml::mfvec2d & openvrml::mfvec2d::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfvec2d_id.
  */
@@ -6246,7 +6251,7 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
 
 
 /**
- * @class openvrml::mfvec3f
+ * @class openvrml::mfvec3f openvrml/field_value.h
  *
  * @brief A 3-component vector array node field value.
  *
@@ -6263,7 +6268,7 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfvec3f::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -6393,7 +6398,7 @@ openvrml::mfvec3f & openvrml::mfvec3f::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfvec3f_id.
  */
@@ -6458,7 +6463,7 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
 }
 
 /**
- * @class openvrml::mfvec3d
+ * @class openvrml::mfvec3d openvrml/field_value.h
  *
  * @brief A 3-component vector array node field value.
  *
@@ -6475,7 +6480,7 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
 /**
  * @var const openvrml::field_value::type_id openvrml::mfvec3d::field_value_type_id
  *
- * @brief <code>field_value::type_id</code> for this class.
+ * @brief @c field_value::type_id for this class.
  */
 
 /**
@@ -6605,7 +6610,7 @@ openvrml::mfvec3d & openvrml::mfvec3d::do_assign(const field_value & value)
 }
 
 /**
- * @brief Get the <code>field_value::type_id</code> associated with this class.
+ * @brief Get the @c field_value::type_id associated with this class.
  *
  * @return @c field_value::mfvec3d_id.
  */

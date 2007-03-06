@@ -28,6 +28,12 @@
 # include "frustum.h"
 
 /**
+ * @file openvrml/frustum.h
+ *
+ * @brief Definition of @c openvrml::frustum.
+ */
+
+/**
  * @class openvrml::frustum
  *
  * @brief A view frustum.

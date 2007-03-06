@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -29,34 +29,41 @@
 # include "node.h"
 
 /**
- * @class openvrml::scope
+ * @file openvrml/scope.h
  *
- * @brief The scope class keeps track of defined nodes and
- *      prototypes.
+ * @brief Definition of @c openvrml::scope.
+ */
+
+/**
+ * @class openvrml::scope openvrml/scope.h
  *
- * PROTO definitions add node types to the namespace. PROTO implementations are
- * a separate node type namespace, and require that any nested PROTOs @b not be
- * available outside the PROTO implementation. PROTOs defined outside the
- * current namespace are available.
+ * @brief The @c scope class keeps track of defined @c node%s and
+ *        prototypes.
+ *
+ * @c PROTO definitions add @c node_type%s to the namespace.  @c PROTO
+ * implementations are a separate @c node_type namespace and require that any
+ * nested @c PROTO%s @b not be available outside the @c PROTO
+ * implementation.  @c PROTO%s defined outside the current namespace are
+ * available.
  */
 
 /**
  * @var openvrml::scope::node
  *
- * @brief node identifiers are stored in the scope, so node needs special
+ * @brief @c node identifiers are stored in the scope, so @c node needs special
  *        privilege to access them.
  */
 
 /**
  * @var std::list<boost::shared_ptr<openvrml::node_type> > openvrml::scope::node_type_list
  *
- * @brief List of <code>node_type</code>s in the scope.
+ * @brief List of @c node_type%s in the @c scope.
  */
 
 /**
  * @var std::map<std::string, openvrml::node *> openvrml::scope::named_node_map
  *
- * @brief Map of the named <code>node</code>s in the scope.
+ * @brief Map of the named @c node%s in the @c scope.
  */
 
 /**
@@ -64,7 +71,7 @@
  *
  * @var const std::string openvrml::scope::id_
  *
- * @brief <code>scope</code> identifier.
+ * @brief @c scope identifier.
  */
 
 /**
@@ -72,17 +79,18 @@
  *
  * @var const boost::shared_ptr<const openvrml::scope> openvrml::scope::parent_
  *
- * @brief The parent scope; null if the scope is a root scope.
+ * @brief The parent @c scope; null if the @c scope is a root @c scope.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] id        the identifier for the scope.
- * @param[in] parent    the parent scope.
+ * @param[in] id        the identifier for the @c scope.
+ * @param[in] parent    the parent @c scope.
  *
- * For the root scope, @p id should be the URI of the world. For child scopes,
- * @p id should be the name of the PROTO to which the scope corresponds.
+ * For the root @c scope, @p id should be the URI of the world. For child
+ * @c scope%s, @p id should be the name of the @c PROTO to which the @c scope
+ * corresponds.
  */
 openvrml::scope::scope(const std::string & id,
                        const boost::shared_ptr<const scope> & parent):
@@ -91,9 +99,9 @@ openvrml::scope::scope(const std::string & id,
 {}
 
 /**
- * @brief <code>scope</code> identifier.
+ * @brief @c scope identifier.
  *
- * @return the <code>scope</code> identifier.
+ * @return the @c scope identifier.
  */
 const std::string & openvrml::scope::id() const OPENVRML_NOTHROW
 {
@@ -101,10 +109,9 @@ const std::string & openvrml::scope::id() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief The parent <code>scope</code>.
+ * @brief The parent @c scope.
  *
- * @return the parent <code>scope</code>; or null if the <code>scope</code> is
- *         a root <code>scope</code>.
+ * @return the parent @c scope; or null if the @c scope is a root @c scope.
  */
 const boost::shared_ptr<const openvrml::scope> &
 openvrml::scope::parent() const OPENVRML_NOTHROW
@@ -113,11 +120,11 @@ openvrml::scope::parent() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Add a node type.
+ * @brief Add a @c node_type.
  *
  * Print an error message if the argument type is already defined.
  *
- * @param[in] type  a node_type.
+ * @param[in] type  a @c node_type.
  *
  * @return a pair whose first element is a pointer to a @c node_type whose
  *         @c node_type::id is the same as that of @p type.  The second element
@@ -177,8 +184,8 @@ namespace {
 }
 
 /**
- * @brief Find a node type, given a type name. Returns 0 if type is
- *      not defined.
+ * @brief Find a @c node_type, given a type name.  Returns 0 if no
+ *        @c node_type named @p id is defined for the @c scope.
  */
 const boost::shared_ptr<openvrml::node_type> &
 openvrml::scope::find_type(const std::string & id) const
@@ -201,10 +208,10 @@ openvrml::scope::find_type(const std::string & id) const
 }
 
 /**
- * @brief The first type in the scope.
+ * @brief The first @c node_type in the @c scope.
  *
- * @return the first node_type in the scope, or a null shared_ptr if the scope
- *         has no node_types.
+ * @return the first @c node_type in the @c scope, or a null @c shared_ptr if
+ *         the @c scope has no @c node_type%s.
  */
 const boost::shared_ptr<openvrml::node_type> &
 openvrml::scope::first_type() const
@@ -216,10 +223,10 @@ openvrml::scope::first_type() const
 }
 
 /**
- * @brief Find the node in the scope with node::id @p id.
+ * @brief Find the @c node in the @c scope with @c node::id @p id.
  *
- * @return a pointer to a node with node::id @p id, or 0 if no such node exists
- *         in the scope.
+ * @return a pointer to a @c node with @c node::id @p id, or 0 if no such
+ *         @c node exists in the @c scope.
  */
 openvrml::node * openvrml::scope::find_node(const std::string & id) const
 {

@@ -20,6 +20,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# include <cmath>
 # include <numeric>
 # include <ostream>
 # include <boost/spirit.hpp>
@@ -28,6 +29,13 @@
 # include <boost/spirit/phoenix.hpp>
 # include <private.h>
 # include "basetypes.h"
+
+/**
+ * @file openvrml/basetypes.h
+ *
+ * @brief Basic types for representing data in VRML/X3D worlds (color,
+ *        rotations, vectors, etc.).
+ */
 
 namespace {
 
@@ -107,7 +115,7 @@ namespace {
  */
 
 /**
- * @class openvrml::color
+ * @class openvrml::color openvrml/basetypes.h
  *
  * @brief A color.
  *
@@ -411,7 +419,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 }
 
 /**
- * @class openvrml::color_rgba
+ * @class openvrml::color_rgba openvrml/basetypes.h
  *
  * @brief A color with alpha channel.
  *
@@ -676,7 +684,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
 
 
 /**
- * @class openvrml::vec2f
+ * @class openvrml::vec2f openvrml/basetypes.h
  *
  * @brief Two-component single-precision vector.
  */
@@ -1075,7 +1083,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 
 
 /**
- * @class openvrml::vec2d
+ * @class openvrml::vec2d openvrml/basetypes.h
  *
  * @brief Two-component double-precision vector.
  */
@@ -1474,7 +1482,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2d & v)
 
 
 /**
- * @class openvrml::vec3f
+ * @class openvrml::vec3f openvrml/basetypes.h
  *
  * @brief Three-component single-precision vector.
  */
@@ -2005,7 +2013,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
 
 
 /**
- * @class openvrml::vec3d
+ * @class openvrml::vec3d openvrml/basetypes.h
  *
  * @brief Three-component double-precision vector.
  */
@@ -2536,7 +2544,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
 
 
 /**
- * @class openvrml::rotation
+ * @class openvrml::rotation openvrml/basetypes.h
  *
  * @brief A rotation.
  *
@@ -3046,7 +3054,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
 
 
 /**
- * @class openvrml::mat4f
+ * @class openvrml::mat4f openvrml/basetypes.h
  *
  * @brief A class for all matrix operations.
  *
@@ -3982,7 +3990,7 @@ bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs)
 
 
 /**
- * @class openvrml::quatf
+ * @class openvrml::quatf openvrml/basetypes.h
  *
  * @brief A quaternion.
  */
@@ -4531,15 +4539,15 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 
 
 /**
- * @class openvrml::image
+ * @class openvrml::image openvrml/basetypes.h
  *
  * @brief Pixmap data.
  *
- * The first pixel in the @link image::array array@endlink is the lower left
- * pixel and the last is the upper right pixel.  Pixel values are limited to
- * 256 levels of intensity.  The elements of @link image::array array@endlink
- * are bytes, with one byte per pixel component.  Thus the number of elements
- * in the array is @p x * @p y * @p comp.
+ * The first pixel in the @c #array is the lower left pixel and the last is
+ * the upper right pixel.  Pixel values are limited to 256 levels of
+ * intensity.  The elements of @c #array are bytes, with one byte per pixel
+ * component.  Thus the number of elements in the array is
+ * @p x * @p y * @p comp.
  *
  * A one-component image specifies one-byte greyscale values.  A two-component
  * image specifies the intensity in the first byte and the alpha opacity in

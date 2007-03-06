@@ -26,6 +26,12 @@
 # include "frustum.h"
 
 /**
+ * @file openvrml/bounding_volume.h
+ *
+ * @brief Bounding volumes.
+ */
+
+/**
  * @class openvrml::bounding_volume
  *
  * @brief A bounding volume.

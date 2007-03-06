@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -20,6 +20,12 @@
 //
 
 # include "node_impl_util.h"
+
+/**
+ * @file openvrml/node_impl_util.h
+ *
+ * @brief Definition of utility classes to facilitate node implementations.
+ */
 
 /**
  * @namespace openvrml::node_impl_util

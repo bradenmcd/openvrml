@@ -31,7 +31,13 @@
 # include "ScriptJDK.h"
 
 /**
- * @class openvrml::script
+ * @file openvrml/script.h
+ *
+ * @brief Pluggable scripting engine support.
+ */
+
+/**
+ * @class openvrml::script openvrml/script.h
  *
  * @brief Abstract class implemented by scripting language bindings.
  *
@@ -291,7 +297,7 @@ void openvrml::script::process_direct_output(double timestamp)
 
 
 /**
- * @class openvrml::script_node_metatype
+ * @class openvrml::script_node_metatype openvrml/script.h
  *
  * @brief Class object for @c script_node%s.
  *
@@ -334,7 +340,7 @@ openvrml::script_node_metatype::do_create_type(const std::string &,
 
 
 /**
- * @class openvrml::script_node
+ * @class openvrml::script_node openvrml/script.h
  *
  * @brief Represents a VRML Script node.
  */
@@ -352,7 +358,7 @@ openvrml::script_node_metatype::do_create_type(const std::string &,
  */
 
 /**
- * @class openvrml::script_node::eventout
+ * @class openvrml::script_node::eventout openvrml/script.h
  *
  * @brief An @c event_emitter along with the emitted value.
  */
@@ -495,7 +501,7 @@ void openvrml::script_node::eventout::emit_event(const double timestamp)
 /**
  * @internal
  *
- * @class openvrml::script_node::script_node_type
+ * @class openvrml::script_node::script_node_type openvrml/script.h
  *
  * @brief Type objects for @c script_node%s.
  *
@@ -596,9 +602,11 @@ openvrml::script_node::script_node_type::do_interfaces() const
  * @c script_node instance must be created with a call to the
  * @c script_node constructor.
  *
- * @param[in] scope             the scope to which the node should belong.
- * @param[in] initial_values    a map of initial values for the node's
- *                              @c field%s and @c exposedField%s.
+ * @param[in] scope             the @c scope to which the @c node should
+ *                              belong.
+ * @param[in] initial_values    a map of initial values for the
+ *                              <code>node</code>'s @c field%s and
+ *                              @c exposedField%s.
  *
  * @exception unsupported_interface if @p initial_values specifies a field
  *                                  name that is not supported by the node
@@ -1022,7 +1030,7 @@ private:
  * @brief Create a Script node event listener.
  *
  * @param[in] type  the type of listener to create.
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  * @param[in] node  the containing script_node.
  *
  * @return a Script node event listener.
@@ -1192,7 +1200,7 @@ openvrml::script_node::create_emitter(script_node & node,
 /**
  * @internal
  *
- * @class openvrml::script_node::set_url_listener_t
+ * @class openvrml::script_node::set_url_listener_t openvrml/script.h
  *
  * @brief @c set_url event listener.
  */
@@ -1228,7 +1236,7 @@ openvrml::script_node::set_url_listener_t::do_eventin_id() const OPENVRML_NOTHRO
 /**
  * @brief Process an event.
  *
- * @param[in] value     new url value.
+ * @param[in] value     new @c url value.
  * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -1255,7 +1263,7 @@ do_process_event(const mfstring & value, const double timestamp)
 /**
  * @internal
  *
- * @class openvrml::script_node::url_changed_emitter
+ * @class openvrml::script_node::url_changed_emitter openvrml/script.h
  *
  * @brief @c url_changed event emitter.
  */
@@ -1278,9 +1286,9 @@ openvrml::script_node::url_changed_emitter::~url_changed_emitter() OPENVRML_NOTH
 {}
 
 /**
- * @brief The eventOut identifier.
+ * @brief The @c eventOut identifier.
  *
- * @return the eventOut identifier.
+ * @return the @c eventOut identifier.
  */
 const std::string
 openvrml::script_node::url_changed_emitter::do_eventout_id() const OPENVRML_NOTHROW
@@ -1291,15 +1299,15 @@ openvrml::script_node::url_changed_emitter::do_eventout_id() const OPENVRML_NOTH
 /**
  * @internal
  *
- * @class openvrml::script_node::set_metadata_listener
+ * @class openvrml::script_node::set_metadata_listener openvrml/script.h
  *
- * @brief set_metadata event listener.
+ * @brief @c set_metadata event listener.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] node  a reference to the containing script_node.
+ * @param[in] node  a reference to the containing @c script_node.
  */
 openvrml::script_node::set_metadata_listener::
 set_metadata_listener(script_node & node):
@@ -1314,9 +1322,9 @@ openvrml::script_node::set_metadata_listener::~set_metadata_listener() OPENVRML_
 {}
 
 /**
- * @brief Get the eventIn identifier.
+ * @brief Get the @c eventIn identifier.
  *
- * @return the eventIn identifier.
+ * @return the @c eventIn identifier.
  */
 const std::string
 openvrml::script_node::set_metadata_listener::do_eventin_id() const OPENVRML_NOTHROW
@@ -1351,9 +1359,9 @@ do_process_event(const sfnode & value, const double timestamp)
 /**
  * @internal
  *
- * @class openvrml::script_node::metadata_changed_emitter
+ * @class openvrml::script_node::metadata_changed_emitter openvrml/script.h
  *
- * @brief metadata_changed event emitter.
+ * @brief @c metadata_changed event emitter.
  */
 
 /**
@@ -1410,7 +1418,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var openvrml::sfbool openvrml::script_node::direct_output
  *
- * @brief directOutput field.
+ * @brief @c directOutput field.
  */
 
 /**
@@ -1418,7 +1426,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var openvrml::sfbool openvrml::script_node::must_evaluate
  *
- * @brief mustEvaluate field.
+ * @brief @c mustEvaluate field.
  */
 
 /**
@@ -1426,7 +1434,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var openvrml::script_node::set_url_listener_t openvrml::script_node::set_url_listener
  *
- * @brief set_url eventIn handler.
+ * @brief @c set_url @c eventIn handler.
  */
 
 /**
@@ -1434,7 +1442,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var openvrml::mfstring openvrml::script_node::url_
  *
- * @brief url exposedField.
+ * @brief @c url @c exposedField.
  */
 
 /**
@@ -1498,8 +1506,8 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  *
  * @var int openvrml::script_node::events_received
  *
- * @brief A count of the number of events received since script_node::update
- *      was called.
+ * @brief A count of the number of events received since @c #update was
+ *        called.
  */
 
 /**
@@ -1509,10 +1517,9 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  * @c node_type::create_node, the @c script_node constructor is called
  * directly when creating a new @c script_node from scratch.  However, a
  * @c script_node can be duplicated (or &ldquo;cloned&rdquo;) by calling
- * @c node_type::create_node on @c script_node::type of a @c script_node
- * instance.  This provides a consistent interface for cloning any node,
- * regardless of its type.  OpenVRML uses this internally when instantiating
- * @c PROTO%s.
+ * @c node_type::create_node on @c #type of a @c script_node instance.  This
+ * provides a consistent interface for cloning any node, regardless of its
+ * type.  OpenVRML uses this internally when instantiating @c PROTO%s.
  *
  * @param[in] class_            the @c script_node_metatype.  Typically
  *                              there is one @c script_node_metatype per
@@ -1692,9 +1699,9 @@ openvrml::script_node::~script_node() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @brief Return a pointer to this script_node.
+ * @brief Return a pointer to this @c script_node.
  *
- * @return a pointer to this script_node.
+ * @return a pointer to this @c script_node.
  */
 openvrml::script_node * openvrml::script_node::to_script() OPENVRML_NOTHROW
 {
@@ -1738,23 +1745,23 @@ void openvrml::script_node::update(const double current_time)
 /**
  * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const
  *
- * @brief eventOut map accessor.
+ * @brief @c eventOut map accessor.
  *
- * @return the eventOut map.
+ * @return the @c eventOut map.
  */
 
 /**
  * @internal
  *
  * @brief Special assignment function to take into account the fact that
- *        Script nodes can be self referential.
+ *        Script nodes can be self-referential.
  *
  * &ldquo;Undo&rdquo; the refcounting appropriately: decrement the refcount on
  * any self-references we acquire ownership of and increment the refcount on
  * any self-references for which ownership is relinquished.
  *
- * @param[in]  inval    input sfnode.
- * @param[out] retval   output sfnode.
+ * @param[in]  inval    input @c sfnode.
+ * @param[out] retval   output @c sfnode.
  */
 void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
                                                        sfnode & retval) const
@@ -1801,8 +1808,8 @@ void openvrml::script_node::assign_with_self_ref_check(const sfnode & inval,
  * any self-references we acquire ownership of and increment the refcount on
  * any self-references for which ownership is relinquished.
  *
- * @param[in]  inval    input mfnode.
- * @param[out] retval   output mfnode.
+ * @param[in]  inval    input @c mfnode.
+ * @param[out] retval   output @c mfnode.
  */
 void openvrml::script_node::assign_with_self_ref_check(const mfnode & inval,
                                                        mfnode & retval) const
@@ -1889,14 +1896,14 @@ openvrml::script_node::do_field(const std::string & id) const
 /**
  * @brief Get an event listener.
  *
- * This method is called by node::event_listener. Subclasses must implement
- * this method.
+ * This method is called by @c node::event_listener.  Subclasses must
+ * implement this method.
  *
- * @param[in] id    eventIn identifier.
+ * @param[in] id    @c eventIn identifier.
  *
  * @return the event listener.
  *
- * @exception unsupported_interface if the node has no eventIn @p id.
+ * @exception unsupported_interface if the node has no @c eventIn @p id.
  */
 openvrml::event_listener &
 openvrml::script_node::do_event_listener(const std::string & id)
@@ -1922,13 +1929,13 @@ openvrml::script_node::do_event_listener(const std::string & id)
 /**
  * @brief Get an event emitter.
  *
- * This method is called by node::event_emitter.
+ * This method is called by @c node::event_emitter.
  *
- * @param[in] id    eventOut identifier.
+ * @param[in] id    @c eventOut identifier.
  *
  * @return the event emitter.
  *
- * @exception unsupported_interface if the node has no eventOut @p id.
+ * @exception unsupported_interface if the @c node has no @c eventOut @p id.
  */
 openvrml::event_emitter &
 openvrml::script_node::do_event_emitter(const std::string & id)
@@ -1967,13 +1974,13 @@ openvrml::script_node::do_event_emitter(const std::string & id)
 /**
  * @fn const openvrml::script_node::eventout_map_t & openvrml::script_node::eventout_map() const
  *
- * @brief eventOut map.
+ * @brief @c eventOut map.
  *
- * @return the eventOut map.
+ * @return the @c eventOut map.
  */
 
 /**
- * @brief Called by node::shutdown.
+ * @brief Called by @c node::shutdown.
  *
  * @param[in] timestamp the current time.
  */
@@ -1984,7 +1991,7 @@ void openvrml::script_node::do_shutdown(const double timestamp) OPENVRML_NOTHROW
 }
 
 /**
- * @brief render_child implementation.
+ * @brief @c node::render_child implementation.
  *
  * @param[in,out] v         viewer implementation responsible for actually
  *                          doing the drawing.
@@ -2661,7 +2668,7 @@ private:
 };
 
 /**
- * @class Base class template for SFColor, SFNode, SFRotation,
+ * @brief Base class template for SFColor, SFNode, SFRotation,
  *      SFVec2f, SFVec3f.
  */
 template <typename Subclass>
@@ -2689,7 +2696,7 @@ private:
 };
 
 /**
- * @class Base class template for MFFloat, MFTime.
+ * @brief Base class template for MFFloat, MFTime.
  *
  * In JavaScript, all floating point values are treated as doubles.
  */

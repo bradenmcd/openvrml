@@ -26,7 +26,13 @@
 # include "event.h"
 
 /**
- * @class openvrml::event_listener
+ * @file openvrml/event.h
+ *
+ * @brief Event emitter and listener interfaces.
+ */
+
+/**
+ * @class openvrml::event_listener openvrml/event.h
  *
  * @brief Abstract base class of event listeners.
  */
@@ -55,7 +61,7 @@ openvrml::event_listener::~event_listener() OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::node_event_listener
+ * @class openvrml::node_event_listener openvrml/event.h
  *
  * @brief Base class for event listeners of nodes.
  */
@@ -119,7 +125,7 @@ const std::string openvrml::node_event_listener::eventin_id() const
 
 
 /**
- * @class openvrml::field_value_listener
+ * @class openvrml::field_value_listener openvrml/event.h
  *
  * @brief Concrete event listener template.
  */
@@ -351,7 +357,7 @@ const std::string openvrml::node_event_listener::eventin_id() const
 
 
 /**
- * @class openvrml::node_field_value_listener
+ * @class openvrml::node_field_value_listener openvrml/event.h
  *
  * @brief Base class for @c field_value_listener%s that are members of nodes.
  */
@@ -372,7 +378,7 @@ const std::string openvrml::node_event_listener::eventin_id() const
 
 
 /**
- * @class openvrml::event_emitter
+ * @class openvrml::event_emitter openvrml/event.h
  *
  * @brief Abstract base class of event emitters.
  */
@@ -547,7 +553,7 @@ void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
 
 
 /**
- * @class openvrml::field_value_emitter
+ * @class openvrml::field_value_emitter openvrml/event.h
  *
  * @brief Concrete event emitter template.
  */

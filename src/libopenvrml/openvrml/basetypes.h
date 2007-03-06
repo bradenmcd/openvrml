@@ -25,7 +25,6 @@
 
 #   include <openvrml-common.h>
 #   include <cassert>
-#   include <cmath>
 #   include <cstddef>
 #   include <algorithm>
 #   include <iosfwd>
