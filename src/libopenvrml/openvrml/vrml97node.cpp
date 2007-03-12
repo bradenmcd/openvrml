@@ -7139,19 +7139,20 @@ namespace {
         const vector<JOCTET>::size_type bytes_now_in_backtrack_buffer =
             source_mgr.bytes_in_buffer + reader.bytes_in_backtrack_buffer;
 
-        reader.backtrack_buffer.resize(bytes_now_in_backtrack_buffer);
+        if (bytes_now_in_backtrack_buffer > 0) {
+            reader.backtrack_buffer.resize(bytes_now_in_backtrack_buffer);
 
-        reader.backtrack_buffer.resize(bytes_now_in_backtrack_buffer);
+            std::copy(source_mgr.next_input_byte,
+                      source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
+                      reader.backtrack_buffer.begin()
+                      + reader.bytes_in_backtrack_buffer);
 
-        std::copy(source_mgr.next_input_byte,
-                  source_mgr.next_input_byte + source_mgr.bytes_in_buffer,
-                  reader.backtrack_buffer.begin()
-                  + reader.bytes_in_backtrack_buffer);
-
-        source_mgr.next_input_byte = &*(reader.backtrack_buffer.begin()
-                                        + reader.bytes_in_backtrack_buffer
-                                        - reader.backtrack_buffer_bytes_unread);
-        source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
+            source_mgr.next_input_byte =
+                &*(reader.backtrack_buffer.begin()
+                   + reader.bytes_in_backtrack_buffer
+                   - reader.backtrack_buffer_bytes_unread);
+            source_mgr.bytes_in_buffer += reader.backtrack_buffer_bytes_unread;
+        }
         reader.bytes_in_backtrack_buffer = bytes_now_in_backtrack_buffer;
         reader.reading = true;
         return false;

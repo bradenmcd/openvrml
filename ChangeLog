@@ -1,3 +1,10 @@
+2007-03-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(openvrml_jpeg_fill_input_buffer(j_decompress_ptr)): Guard against
+	the possibility that this function is called when the number of
+	bytes in the backtrack buffer should remain zero.
+
 2007-03-06 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Doxyfile: Set SHOW_INCLUDE_FILES to YES; required to show
