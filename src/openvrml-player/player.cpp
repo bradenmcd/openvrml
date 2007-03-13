@@ -128,6 +128,30 @@ namespace {
     };
 }
 
+# define OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(code, val) \
+    if G_LIKELY((code) == CURLE_OK) {} else {                     \
+        g_return_if_fail_warning(G_LOG_DOMAIN,                    \
+                                 __PRETTY_FUNCTION__,             \
+                                 curl_easy_strerror(code));       \
+        return (val);                                             \
+    }
+
+# define OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR(code)    \
+    if G_LIKELY((code) == CURLM_OK) {} else {                \
+        g_return_if_fail_warning(G_LOG_DOMAIN,               \
+                                 __PRETTY_FUNCTION__,        \
+                                 curl_multi_strerror(code)); \
+        return;                                              \
+    }
+
+# define OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(code, val) \
+    if G_LIKELY((code) == CURLM_OK) {} else {                      \
+        g_return_if_fail_warning(G_LOG_DOMAIN,                     \
+                                 __PRETTY_FUNCTION__,              \
+                                 curl_multi_strerror(code));       \
+        return (val);                                              \
+    }
+
 int main(int argc, char * argv[])
 {
     using std::string;
@@ -426,9 +450,7 @@ namespace {
                                                   &curl_source.write_fds,
                                                   &curl_source.exc_fds,
                                                   &curl_source.max_fd);
-        if (result != CURLM_OK) {
-            g_critical("%s", curl_multi_strerror(result));
-        }
+        OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR(result);
 
         if (curl_source.max_fd >= 0) {
             //
@@ -602,10 +624,13 @@ gboolean openvrml_player_curl_source_callback(const gpointer data)
             const CURLMcode multi_remove_result =
                 curl_multi_remove_handle(curl_source->multi_handle,
                                          easy_handle);
-            if (multi_remove_result != CURLM_OK) {
-                g_critical("%s", curl_multi_strerror(multi_remove_result));
-            }
-
+            OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(multi_remove_result,
+                                                           false);
+            //
+            // If we get an error from curl_multi_remove_handle, the cleanup
+            // won't happen; but that's probably safer than trying to go ahead
+            // and do the cleanup in that case.
+            //
             curl_easy_cleanup(easy_handle);
         }
     }
@@ -663,22 +688,16 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
             CURLcode setopt_result;
             setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_URL, stream_data.url());
-            if (setopt_result != CURLE_OK) {
-                g_critical("%s", curl_easy_strerror(setopt_result));
-                return false;
-            }
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
 
             setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_WRITEFUNCTION,
                                              openvrml_player_curl_write);
-            if (setopt_result != CURLE_OK) {
-                g_critical("%s", curl_easy_strerror(setopt_result));
-                return false;
-            }
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
 
             setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_WRITEDATA, &stream_data);
-            g_assert(setopt_result == CURLE_OK);
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
 
             CURLSource * const curl_source =
                 static_cast<CURLSource *>(
@@ -687,10 +706,8 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
 
             const CURLMcode add_handle_result =
                 curl_multi_add_handle(curl_source->multi_handle, handle);
-            if (add_handle_result != CURLM_OK) {
-                g_critical("%s", curl_multi_strerror(add_handle_result));
-                return false;
-            }
+            OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(add_handle_result,
+                                                           false);
             ++curl_source->outstanding_handles;
             std::ostringstream command;
             command << "get-url-result " << url << ' ' << 0 << '\n';
