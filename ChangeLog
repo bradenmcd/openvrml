@@ -1,5 +1,10 @@
 2007-03-13 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Call g_set_application_name.
+
+2007-03-13 Braden McDaniel  <braden@endoframe.com>
+
 	Use GLib-style return-if-fail macros for most of libcurl error
 	handling.
 
