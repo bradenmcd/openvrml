@@ -689,17 +689,24 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
             curl_stream_data & stream_data = pos->second;
             CURLcode setopt_result;
             setopt_result = curl_easy_setopt(handle,
+                                             CURLOPT_FAILONERROR, true);
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
+                                                          false);
+            setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_URL, stream_data.url());
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
+                                                          false);
 
             setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_WRITEFUNCTION,
                                              openvrml_player_curl_write);
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
+                                                          false);
 
             setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_WRITEDATA, &stream_data);
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
+                                                          false);
 
             CURLSource * const curl_source =
                 static_cast<CURLSource *>(
