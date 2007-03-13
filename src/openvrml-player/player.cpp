@@ -159,6 +159,8 @@ int main(int argc, char * argv[])
     using boost::lexical_cast;
     using boost::ref;
 
+    g_set_application_name(app_name);
+
     if (!gnome_vfs_init()) {
         g_critical("GnomeVFS initialization failed");
         return EXIT_FAILURE;
