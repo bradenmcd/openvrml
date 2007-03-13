@@ -1,3 +1,23 @@
+2007-03-13 Braden McDaniel  <braden@endoframe.com>
+
+	Use GLib-style return-if-fail macros for most of libcurl error
+	handling.
+
+	* src/openvrml-player/player.cpp
+	(OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR): Added macro.
+	(OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR): Added macro.
+	(OPENVRML_PLAYER_CULR_MULTI_RETURN_VAL_IF_ERROR): Added macro.
+	(reset_fds(CURLSource &)): Check result of curl_multi_fdset with
+	OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR.
+	(openvrml_player_curl_source_callback(gpointer)): Check result of
+	curl_multi_remove_handle with
+	OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR.
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Check result of curl_easy_setopt with
+	OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR; check result of
+	curl_multi_add_handle with
+	OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR.
+
 2007-03-12 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
