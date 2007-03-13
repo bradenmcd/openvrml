@@ -1,6 +1,13 @@
 2007-03-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Set CURLOPT_FAILONERROR to "true" for
+	easy handles.
+
+2007-03-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-player/player.cpp
 	(main(int, char *[])): Call g_set_application_name.
 
 2007-03-13 Braden McDaniel  <braden@endoframe.com>
