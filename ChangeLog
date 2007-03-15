@@ -2,6 +2,12 @@
 
 	* src/openvrml-player/player.cpp
 	(openvrml_player_curl_write(void *, size_t, size_t, void *)):
+	Moved "data" pointer back outside the "for" loop.
+
+2007-03-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-player/player.cpp
+	(openvrml_player_curl_write(void *, size_t, size_t, void *)):
 	Check result of curl_easy_getinfo with
 	OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR.
 
