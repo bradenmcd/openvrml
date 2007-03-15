@@ -752,9 +752,10 @@ size_t openvrml_player_curl_write(void * const ptr,
         using boost::ref;
 
         const char * type = 0;
-        CURLcode result = curl_easy_getinfo(stream_data.handle(),
-                                            CURLINFO_CONTENT_TYPE, &type);
-        boost::ignore_unused_variable_warning(result);
+        CURLcode getinfo_result =
+            curl_easy_getinfo(stream_data.handle(),
+                              CURLINFO_CONTENT_TYPE, &type);
+        OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
 
         GnomeVFSFileInfo * info = 0;
         scope_guard info_guard = make_guard(gnome_vfs_file_info_unref,
@@ -785,9 +786,7 @@ size_t openvrml_player_curl_write(void * const ptr,
     std::ostringstream command;
     command << "write " << ptrdiff_t(stream_data.handle()) << ' '
             << size * nmemb << '\n';
-
-    const char * data;
-    for (data = static_cast<char *>(ptr);
+    for (const char * data = static_cast<char *>(ptr);
          data != static_cast<char *>(ptr) + size * nmemb;
          ++data) {
         command.put(*data);
