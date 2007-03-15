@@ -515,7 +515,7 @@ gboolean gtk_vrml_browser_motion_notify_event(GtkWidget * const widget,
 
 gint gtk_vrml_browser_timeout_callback(const gpointer ptr)
 {
-    assert(ptr);
+    g_assert(ptr);
 
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
     viewer.timer_update();

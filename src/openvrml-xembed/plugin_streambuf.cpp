@@ -43,7 +43,7 @@ plugin_streambuf(const std::string & requested_url):
 void openvrml_xembed::plugin_streambuf::set_get_url_result(const int result)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    assert(this->get_url_result_ == -1);
+    g_assert(this->get_url_result_ == -1);
     this->get_url_result_ = result;
     this->received_get_url_result_.notify_all();
 }
