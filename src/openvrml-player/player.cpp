@@ -786,8 +786,8 @@ size_t openvrml_player_curl_write(void * const ptr,
     std::ostringstream command;
     command << "write " << ptrdiff_t(stream_data.handle()) << ' '
             << size * nmemb << '\n';
-    for (const char * data = static_cast<char *>(ptr);
-         data != static_cast<char *>(ptr) + size * nmemb;
+    const char * data = static_cast<char *>(ptr);
+    for (; data != static_cast<char *>(ptr) + size * nmemb;
          ++data) {
         command.put(*data);
     }
