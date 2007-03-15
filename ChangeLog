@@ -1,5 +1,21 @@
 2007-03-15 Braden McDaniel  <braden@endoframe.com>
 
+	Prefer GLib's g_assert to assert everywhere except bounded_buffer.
+
+	* src/openvrml-xembed/bounded_buffer.h: Include <cassert>.
+	* src/openvrml-xembed/command_istream.cpp: Don't include <cassert>.
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(gtk_vrml_browser_timeout_callback(gpointer)): Use g_assert
+	instead of assert.
+	* src/openvrml-xembed/main.cpp
+	(openvrml_xembed::command_istream_reader::operator() const): Use
+	g_assert instead of assert.
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	(openvrml_xembed::plugin_streambuf::set_get_url_result(int)): Use
+	g_assert instead of assert.
+
+2007-03-15 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-player/player.cpp
 	(openvrml_player_curl_write(void *, size_t, size_t, void *)):
 	Moved "data" pointer back outside the "for" loop.

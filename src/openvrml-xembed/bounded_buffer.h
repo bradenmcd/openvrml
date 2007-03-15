@@ -21,6 +21,7 @@
 # ifndef OPENVRML_XEMBED_BOUNDED_BUFFER_H
 #   define OPENVRML_XEMBED_BOUNDED_BUFFER_H
 
+#   include <cassert>
 #   include <string>
 #   include <boost/thread/mutex.hpp>
 #   include <boost/thread/condition.hpp>

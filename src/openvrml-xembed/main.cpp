@@ -84,7 +84,7 @@ namespace openvrml_xembed {
 
                     shared_ptr<plugin_streambuf> streambuf =
                         uninitialized_plugin_streambuf_map_.find(url);
-                    assert(streambuf);
+                    g_assert(streambuf);
                     streambuf->set_get_url_result(result);
                 } else if (command == "new-stream") {
                     using boost::shared_ptr;
