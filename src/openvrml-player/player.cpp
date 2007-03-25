@@ -604,18 +604,40 @@ gboolean openvrml_player_curl_source_callback(const gpointer data)
     while ((msg = curl_multi_info_read(curl_source->multi_handle,
                                        &msgs_in_queue))) {
         if (msg->msg == CURLMSG_DONE) {
-            const stream_data_map_t::size_type num_erased =
-                callback_data->stream_data_map.erase(msg->easy_handle);
-            g_assert(num_erased == 1);
+            const stream_data_map_t::iterator entry =
+                callback_data->stream_data_map.find(msg->easy_handle);
+            g_assert(entry != callback_data->stream_data_map.end());
+            //
+            // If the stream data was never initialized, then new-stream was
+            // never sent for it.  In that case, we shouldn't send
+            // destroy-stream.
+            //
+            if (entry->second.initialized()) {
+                std::ostringstream command;
+                command << "destroy-stream " << ptrdiff_t(msg->easy_handle)
+                        << '\n';
+                const ssize_t bytes_written = ::write_command(command.str());
+                g_return_val_if_fail(
+                    bytes_written == ssize_t(command.str().length()),
+                    false);
+            } else {
+                const char * url = 0;
+                const CURLcode getinfo_result =
+                    curl_easy_getinfo(msg->easy_handle,
+                                      CURLINFO_EFFECTIVE_URL, &url);
+                OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result,
+                                                              false);
+                std::ostringstream command;
+                command << "get-url-result " << url << ' ' << 1 << '\n';
+                const ssize_t bytes_written = write_command(command.str());
+                g_return_val_if_fail(
+                    bytes_written == ssize_t(command.str().length()),
+                    false);
+            }
+
+            callback_data->stream_data_map.erase(entry);
             g_assert(curl_source->outstanding_handles > 0);
             --curl_source->outstanding_handles;
-            std::ostringstream command;
-            command << "destroy-stream " << ptrdiff_t(msg->easy_handle)
-                    << '\n';
-            const ssize_t bytes_written = ::write_command(command.str());
-            g_return_val_if_fail(
-                bytes_written == ssize_t(command.str().length()),
-                false);
 
             //
             // Note that the call to curl_multi_remove_handle invalidates the
@@ -718,12 +740,6 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
             OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(add_handle_result,
                                                            false);
             ++curl_source->outstanding_handles;
-            std::ostringstream command;
-            command << "get-url-result " << url << ' ' << 0 << '\n';
-            const ssize_t bytes_written = write_command(command.str());
-            g_return_val_if_fail(
-                bytes_written == ssize_t(command.str().length()),
-                false);
             if (req_data.source_callback_data->stream_data_map.size() == 1) {
                 int running_handles;
                 CURLMcode perform_result;
@@ -751,10 +767,26 @@ size_t openvrml_player_curl_write(void * const ptr,
     if (!stream_data.initialized()) {
         using boost::ref;
 
-        const char * type = 0;
+        //
+        // If we're writing data, we send 0 for get-url-result.
+        //
+        const char * url = 0;
         CURLcode getinfo_result =
             curl_easy_getinfo(stream_data.handle(),
-                              CURLINFO_CONTENT_TYPE, &type);
+                              CURLINFO_EFFECTIVE_URL, &url);
+        OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
+
+        std::ostringstream get_url_result_command;
+        get_url_result_command << "get-url-result " << url << ' ' << 0 << '\n';
+        const ssize_t bytes_written =
+            ::write_command(get_url_result_command.str());
+        g_return_val_if_fail(
+            bytes_written == ssize_t(get_url_result_command.str().length()),
+            false);
+
+        const char * type = 0;
+        getinfo_result = curl_easy_getinfo(stream_data.handle(),
+                                           CURLINFO_CONTENT_TYPE, &type);
         OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
 
         GnomeVFSFileInfo * info = 0;
@@ -775,25 +807,26 @@ size_t openvrml_player_curl_write(void * const ptr,
             info_guard.dismiss();
         }
 
-        std::ostringstream command;
-        command << "new-stream " << ptrdiff_t(stream_data.handle()) << ' '
-                << (type ? type : "application/octet-stream") << ' '
-                << stream_data.url() << '\n';
-        write_command(command.str());
+        std::ostringstream new_stream_command;
+        new_stream_command
+            << "new-stream " << ptrdiff_t(stream_data.handle()) << ' '
+            << (type ? type : "application/octet-stream") << ' '
+            << stream_data.url() << '\n';
+        ::write_command(new_stream_command.str());
         stream_data.initialize();
     }
 
-    std::ostringstream command;
-    command << "write " << ptrdiff_t(stream_data.handle()) << ' '
-            << size * nmemb << '\n';
+    std::ostringstream write_command;
+    write_command << "write " << ptrdiff_t(stream_data.handle()) << ' '
+                  << size * nmemb << '\n';
     const char * data = static_cast<char *>(ptr);
     for (; data != static_cast<char *>(ptr) + size * nmemb;
          ++data) {
-        command.put(*data);
+        write_command.put(*data);
     }
 
-    const ssize_t bytes_written = ::write_command(command.str());
-    g_assert(bytes_written == ssize_t(command.str().length()));
+    const ssize_t bytes_written = ::write_command(write_command.str());
+    g_assert(bytes_written == ssize_t(write_command.str().length()));
 
     return size_t(data - static_cast<char *>(ptr));
 }

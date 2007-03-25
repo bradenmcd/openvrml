@@ -1,3 +1,19 @@
+2007-03-25 Braden McDaniel  <braden@endoframe.com>
+
+	Don't send destroy-stream for requested streams for which
+	new-stream was never sent.
+
+	* src/openvrml-player/player.cpp
+	(openvrml_player_curl_source_callback(gpointer)): Only send
+	destroy-stream for streams that have been initialized; otherwise,
+	send get-url-result with a value indicating failure.
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Don't send a successful get-url-result
+	immediately after dispatching the get-url request.
+	(openvrml_player_curl_write(void *, size_t, size_t, void *)): If
+	the stream hasn't been initialized yet, send a value for
+	get-url-result indicating success.
+
 2007-03-15 Braden McDaniel  <braden@endoframe.com>
 
 	Prefer GLib's g_assert to assert everywhere except bounded_buffer.
