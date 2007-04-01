@@ -2468,93 +2468,17 @@ namespace {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class back_url_exposedfield : public exposedfield<mfstring> {
+        class texture_url_exposedfield : public exposedfield<mfstring> {
+            bool background_node::* needs_update_;
+
         public:
-            explicit back_url_exposedfield(background_node & node)
+            explicit texture_url_exposedfield(
+                background_node & node,
+                bool background_node::* needs_update)
                 OPENVRML_NOTHROW;
-            back_url_exposedfield(const back_url_exposedfield & obj)
+            texture_url_exposedfield(const texture_url_exposedfield & obj)
                 OPENVRML_NOTHROW;
-            virtual ~back_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        class bottom_url_exposedfield : public exposedfield<mfstring> {
-        public:
-            explicit bottom_url_exposedfield(background_node & node)
-                OPENVRML_NOTHROW;
-            bottom_url_exposedfield(const bottom_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~bottom_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        class front_url_exposedfield : public exposedfield<mfstring> {
-        public:
-            explicit front_url_exposedfield(background_node & node)
-                OPENVRML_NOTHROW;
-            front_url_exposedfield(const front_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~front_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        class left_url_exposedfield : public exposedfield<mfstring> {
-        public:
-            explicit left_url_exposedfield(background_node & node)
-                OPENVRML_NOTHROW;
-            left_url_exposedfield(const left_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~left_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        class right_url_exposedfield : public exposedfield<mfstring> {
-        public:
-            explicit right_url_exposedfield(background_node & node)
-                OPENVRML_NOTHROW;
-            right_url_exposedfield(const right_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~right_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        class top_url_exposedfield : public exposedfield<mfstring> {
-        public:
-            explicit top_url_exposedfield(background_node & node)
-                OPENVRML_NOTHROW;
-            top_url_exposedfield(const top_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~top_url_exposedfield() OPENVRML_NOTHROW;
+            virtual ~texture_url_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<field_value> do_clone() const
@@ -2567,12 +2491,8 @@ namespace {
         set_bind_listener set_bind_listener_;
         exposedfield<mffloat> ground_angle_;
         exposedfield<mfcolor> ground_color_;
-        back_url_exposedfield back_url_;
-        bottom_url_exposedfield bottom_url_;
-        front_url_exposedfield front_url_;
-        left_url_exposedfield left_url_;
-        right_url_exposedfield right_url_;
-        top_url_exposedfield top_url_;
+        texture_url_exposedfield back_url_, bottom_url_, front_url_, left_url_,
+            right_url_, top_url_;
         exposedfield<mffloat> sky_angle_;
         exposedfield<mfcolor> sky_color_;
         sfbool is_bound_;
@@ -5783,15 +5703,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::back_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::back_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::back_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::back_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::back_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::back_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -5799,15 +5719,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::bottom_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::bottom_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::bottom_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::bottom_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::bottom_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::bottom_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -5815,15 +5735,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::front_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::front_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::front_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::front_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::front_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::front_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -5831,15 +5751,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::left_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::left_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::left_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::left_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::left_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::left_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -5847,15 +5767,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::right_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::right_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::right_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::right_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::right_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::right_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -5863,15 +5783,15 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        background_node::top_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::top_url_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        background_node::top_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::top_url_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        background_node::top_url_exposedfield>(
+                        background_node::texture_url_exposedfield>(
                             &background_node::top_url_)));
             } else if (*interface == *++supported_interface) {
                 backgroundNodeType.add_exposedfield(
@@ -6016,9 +5936,16 @@ namespace {
     /**
      * @internal
      *
-     * @class background_node::back_url_exposedfield
+     * @class background_node::texture_url_exposedfield
      *
-     * @brief backUrl exposedField implementation.
+     * @brief Texture URL @c exposedField implementation.
+     */
+
+    /**
+     * @var bool background_node::* texture_url_exposedfield::needs_update_
+     *
+     * @brief Pointer to a @c bool member that serves as a flag to indicate
+     *        whether a texture needs to be updated.
      */
 
     /**
@@ -6026,12 +5953,15 @@ namespace {
      *
      * @param node  background_node.
      */
-    background_node::back_url_exposedfield::
-    back_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
+    background_node::texture_url_exposedfield::
+    texture_url_exposedfield(background_node & node,
+                             bool background_node::* const needs_update)
+        OPENVRML_NOTHROW:
         node_event_listener(node),
         event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(node),
-        exposedfield<openvrml::mfstring>(node)
+        exposedfield<openvrml::mfstring>(node),
+        needs_update_(needs_update)
     {}
 
     /**
@@ -6039,20 +5969,21 @@ namespace {
      *
      * @param obj   instance to copy.
      */
-    background_node::back_url_exposedfield::
-    back_url_exposedfield(const back_url_exposedfield & obj) OPENVRML_NOTHROW:
+    background_node::texture_url_exposedfield::
+    texture_url_exposedfield(const texture_url_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
         node_event_listener(obj.node_event_listener::node()),
         openvrml::event_emitter(static_cast<const field_value &>(*this)),
         mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
+        exposedfield<openvrml::mfstring>(obj),
+        needs_update_(obj.needs_update_)
     {}
 
     /**
      * @brief Destroy.
      */
-    background_node::back_url_exposedfield::
-    ~back_url_exposedfield() OPENVRML_NOTHROW
+    background_node::texture_url_exposedfield::
+    ~texture_url_exposedfield() OPENVRML_NOTHROW
     {}
 
     /**
@@ -6063,419 +5994,29 @@ namespace {
      * @exception std::bad_alloc    if memory allocation fails.
      */
     std::auto_ptr<openvrml::field_value>
-    background_node::back_url_exposedfield::do_clone() const
+    background_node::texture_url_exposedfield::do_clone() const
         OPENVRML_THROW1(std::bad_alloc)
     {
         return std::auto_ptr<openvrml::field_value>(
-            new back_url_exposedfield(*this));
+            new texture_url_exposedfield(*this));
     }
 
     /**
      * @brief Process event.
      *
-     * @param value     new backUrl value.
+     * @param value     new value.
      * @param timestamp the current time.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
     void
-    background_node::back_url_exposedfield::
+    background_node::texture_url_exposedfield::
     event_side_effect(const mfstring &, double)
         OPENVRML_THROW1(std::bad_alloc)
     {
         try {
             dynamic_cast<background_node &>(this->node_event_listener::node())
-                .back_needs_update = true;
-        } catch (std::bad_cast & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-
-    /**
-     * @internal
-     *
-     * @class background_node::bottom_url_exposedfield
-     *
-     * @brief bottomUrl exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  background_node.
-     */
-    background_node::bottom_url_exposedfield::
-    bottom_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
-        node_event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(node),
-        exposedfield<mfstring>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    background_node::bottom_url_exposedfield::
-    bottom_url_exposedfield(const bottom_url_exposedfield & obj) OPENVRML_NOTHROW:
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    background_node::bottom_url_exposedfield::
-    ~bottom_url_exposedfield() OPENVRML_NOTHROW
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    background_node::bottom_url_exposedfield::do_clone() const
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new bottom_url_exposedfield(*this));
-    }
-
-    /**
-     * @brief Process event.
-     *
-     * @param value     new bottomUrl value.
-     * @param timestamp the current time.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    void
-    background_node::bottom_url_exposedfield::
-    event_side_effect(const mfstring &, double)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            dynamic_cast<background_node &>(this->node_event_listener::node())
-                .bottom_needs_update = true;
-        } catch (std::bad_cast & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-
-    /**
-     * @internal
-     *
-     * @class background_node::front_url_exposedfield
-     *
-     * @brief frontUrl exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  background_node.
-     */
-    background_node::front_url_exposedfield::
-    front_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
-        node_event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(node),
-        exposedfield<mfstring>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    background_node::front_url_exposedfield::
-    front_url_exposedfield(const front_url_exposedfield & obj) OPENVRML_NOTHROW:
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    background_node::front_url_exposedfield::
-    ~front_url_exposedfield() OPENVRML_NOTHROW
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    background_node::front_url_exposedfield::do_clone() const
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new front_url_exposedfield(*this));
-    }
-
-    /**
-     * @brief Process event.
-     *
-     * @param value     new frontUrl value.
-     * @param timestamp the current time.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    void
-    background_node::front_url_exposedfield::
-    event_side_effect(const mfstring &, double)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            dynamic_cast<background_node &>(this->node_event_listener::node())
-                .front_needs_update = true;
-        } catch (std::bad_cast & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-
-    /**
-     * @internal
-     *
-     * @class background_node::left_url_exposedfield
-     *
-     * @brief leftUrl exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  background_node.
-     */
-    background_node::left_url_exposedfield::
-    left_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
-        node_event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(node),
-        exposedfield<mfstring>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    background_node::left_url_exposedfield::
-    left_url_exposedfield(const left_url_exposedfield & obj) OPENVRML_NOTHROW:
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    background_node::left_url_exposedfield::
-    ~left_url_exposedfield() OPENVRML_NOTHROW
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    background_node::left_url_exposedfield::do_clone() const
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new left_url_exposedfield(*this));
-    }
-
-    /**
-     * @brief Process event.
-     *
-     * @param value     new leftUrl value.
-     * @param timestamp the current time.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    void
-    background_node::left_url_exposedfield::
-    event_side_effect(const mfstring &, double)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            dynamic_cast<background_node &>(this->node_event_listener::node())
-                .left_needs_update = true;
-        } catch (std::bad_cast & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-
-    /**
-     * @internal
-     *
-     * @class background_node::right_url_exposedfield
-     *
-     * @brief rightUrl exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  background_node.
-     */
-    background_node::right_url_exposedfield::
-    right_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
-        node_event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(node),
-        exposedfield<mfstring>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    background_node::right_url_exposedfield::
-    right_url_exposedfield(const right_url_exposedfield & obj) OPENVRML_NOTHROW:
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    background_node::right_url_exposedfield::
-    ~right_url_exposedfield() OPENVRML_NOTHROW
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    background_node::right_url_exposedfield::do_clone() const
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new right_url_exposedfield(*this));
-    }
-
-    /**
-     * @brief Process event.
-     *
-     * @param value     new rightUrl value.
-     * @param timestamp the current time.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    void
-    background_node::right_url_exposedfield::
-    event_side_effect(const mfstring &, double)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            dynamic_cast<background_node &>(this->node_event_listener::node())
-                .right_needs_update = true;
-        } catch (std::bad_cast & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
-    }
-
-    /**
-     * @internal
-     *
-     * @class background_node::top_url_exposedfield
-     *
-     * @brief topUrl exposedField implementation.
-     */
-
-    /**
-     * @brief Construct.
-     *
-     * @param node  background_node.
-     */
-    background_node::top_url_exposedfield::
-    top_url_exposedfield(background_node & node) OPENVRML_NOTHROW:
-        node_event_listener(node),
-        event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(node),
-        exposedfield<mfstring>(node)
-    {}
-
-    /**
-     * @brief Construct a copy.
-     *
-     * @param obj   instance to copy.
-     */
-    background_node::top_url_exposedfield::
-    top_url_exposedfield(const top_url_exposedfield & obj) OPENVRML_NOTHROW:
-        openvrml::event_listener(),
-        node_event_listener(obj.node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const field_value &>(*this)),
-        mfstring_listener(obj.node_event_listener::node()),
-        exposedfield<openvrml::mfstring>(obj)
-    {}
-
-    /**
-     * @brief Destroy.
-     */
-    background_node::top_url_exposedfield::
-    ~top_url_exposedfield() OPENVRML_NOTHROW
-    {}
-
-    /**
-     * @brief Polymorphically construct a copy.
-     *
-     * @return a copy of the instance.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    std::auto_ptr<openvrml::field_value>
-    background_node::top_url_exposedfield::do_clone() const
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        return std::auto_ptr<openvrml::field_value>(
-            new top_url_exposedfield(*this));
-    }
-
-    /**
-     * @brief Process event.
-     *
-     * @param value     new topUrl value.
-     * @param timestamp the current time.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    void
-    background_node::top_url_exposedfield::
-    event_side_effect(const mfstring &, double)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            dynamic_cast<background_node &>(this->node_event_listener::node())
-                .top_needs_update = true;
+                .*this->needs_update_ = true;
         } catch (std::bad_cast & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
         }
@@ -6500,37 +6041,37 @@ namespace {
      */
 
     /**
-     * @var background_node::back_url_exposedfield background_node::back_url_
+     * @var background_node::texture_url_exposedfield background_node::back_url_
      *
      * @brief backUrl exposedField.
      */
 
     /**
-     * @var background_node::bottom_url_exposedfield background_node::bottom_url_
+     * @var background_node::texture_url_exposedfield background_node::bottom_url_
      *
      * @brief bottomUrl exposedField.
      */
 
     /**
-     * @var background_node::front_url_exposedfield background_node::front_url_
+     * @var background_node::texture_url_exposedfield background_node::front_url_
      *
      * @brief frontUrl exposedField.
      */
 
     /**
-     * @var background_node::left_url_exposedfield background_node::left_url_
+     * @var background_node::texture_url_exposedfield background_node::left_url_
      *
      * @brief leftUrl exposedField.
      */
 
     /**
-     * @var background_node::right_url_exposedfield background_node::right_url_
+     * @var background_node::texture_url_exposedfield background_node::right_url_
      *
      * @brief rightUrl exposedField.
      */
 
     /**
-     * @var background_node::top_url_exposedfield background_node::top_url_
+     * @var background_node::texture_url_exposedfield background_node::top_url_
      *
      * @brief topUrl exposedField.
      */
@@ -6653,12 +6194,12 @@ namespace {
         set_bind_listener_(*this),
         ground_angle_(*this),
         ground_color_(*this),
-        back_url_(*this),
-        bottom_url_(*this),
-        front_url_(*this),
-        left_url_(*this),
-        right_url_(*this),
-        top_url_(*this),
+        back_url_(*this, &background_node::back_needs_update),
+        bottom_url_(*this, &background_node::bottom_needs_update),
+        front_url_(*this, &background_node::front_needs_update),
+        left_url_(*this, &background_node::left_needs_update),
+        right_url_(*this, &background_node::right_needs_update),
+        top_url_(*this, &background_node::top_needs_update),
         sky_angle_(*this),
         sky_color_(*this, std::vector<color>(1, make_color(0.0, 0.0, 0.0))),
         is_bound_emitter_(*this, this->is_bound_),

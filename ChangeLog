@@ -1,3 +1,26 @@
+2007-04-01 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced *Url exposedField implementations with a class template.
+	This incurs some runtime expense in terms of bloating
+	background_node instances a bit; but since there shouldn't be too
+	many of those, this is probably worth the code savings.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(background_node::back_url_exposedfield): Removed class.
+	(background_node::bottom_url_exposedfield): Removed class.
+	(background_node::front_url_exposedfield): Removed class.
+	(background_node::left_url_exposedfield): Removed class.
+	(background_node::right_url_exposedfield): Removed class.
+	(background_node::top_url_exposedfield): Removed class.
+	(background_node::texture_url_exposedfield): Added template.
+	(background_node): Use instances of texture_url_exposedfield for
+	types of back_url_, bottom_url_, front_url_, left_url_,
+	right_url_, and top_url_.
+	(background_metatype::do_create_type(const std::string &, const
+	node_interface_set &) const): Use instances of
+	texture_url_exposedfield for types of back_url_, bottom_url_,
+	front_url_, left_url_, right_url_, and top_url_.
+
 2007-03-25 Braden McDaniel  <braden@endoframe.com>
 
 	Don't send destroy-stream for requested streams for which
