@@ -1,3 +1,9 @@
+2007-04-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-player/player.cpp
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Clear the request_line buffer.
+
 2007-04-01 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced *Url exposedField implementations with a class template.

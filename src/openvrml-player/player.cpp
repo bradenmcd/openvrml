@@ -751,6 +751,7 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
             }
         }
 
+        req_data.request_line.str(string());
         req_data.request_line.clear();
     }
 
