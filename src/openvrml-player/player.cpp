@@ -328,10 +328,18 @@ int main(int argc, char * argv[])
                                  ? error->message
                                  : "g_io_channel_set_encoding failure");
     }
-    error_guard.dismiss();
 
     ::request_channel = g_io_channel_unix_new(standard_output);
     if (!::request_channel) { throw std::bad_alloc(); }
+    status = g_io_channel_set_encoding(::command_channel,
+                                       0, // binary (no encoding)
+                                       &error);
+    if (status != G_IO_STATUS_NORMAL) {
+        throw std::runtime_error(error
+                                 ? error->message
+                                 : "g_io_channel_set_encoding failure");
+    }
+    error_guard.dismiss();
 
     CURLM * const multi_handle = curl_multi_init();
     g_return_val_if_fail(multi_handle, EXIT_FAILURE);
