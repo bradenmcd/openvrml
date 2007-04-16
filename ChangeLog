@@ -1,5 +1,10 @@
 2007-04-15 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp: Doc-comment
+	improvements; use "class" when documenting friend classes.
+
+2007-04-15 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-player/player.cpp
 	(main(int, char *[])): Set the request_channel encoding to none.
 

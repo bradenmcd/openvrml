@@ -4520,7 +4520,7 @@ namespace {
      */
 
     /**
-     * @var anchor_node::anchor_metatype
+     * @var class anchor_node::anchor_metatype
      *
      * @brief Class object for Anchor nodes.
      */
@@ -4791,7 +4791,7 @@ namespace {
      */
 
     /**
-     * @var appearance_node::appearance_metatype
+     * @var class appearance_node::appearance_metatype
      *
      * @brief Class object for Appearance nodes.
      */
@@ -5248,7 +5248,7 @@ namespace {
      */
 
     /**
-     * @var audio_clip_node::audio_clip_metatype
+     * @var class audio_clip_node::audio_clip_metatype
      *
      * @brief Class object for AudioClip nodes.
      */
@@ -5871,7 +5871,7 @@ namespace {
      */
 
     /**
-     * @var background_node::background_metatype
+     * @var class background_node::background_metatype
      *
      * @brief Class object for Background nodes.
      */
@@ -7251,7 +7251,7 @@ namespace {
      */
 
     /**
-     * @var billboard_node::billboard_metatype
+     * @var class billboard_node::billboard_metatype
      *
      * @brief Class object for Billboard nodes.
      */
@@ -7514,7 +7514,7 @@ namespace {
      */
 
     /**
-     * @var box_node::box_metatype
+     * @var class box_node::box_metatype
      *
      * @brief Class object for Box nodes.
      */
@@ -7808,7 +7808,7 @@ namespace {
      */
 
     /**
-     * @var collision_node::collision_metatype
+     * @var class collision_node::collision_metatype
      *
      * @brief Class object for Collision nodes.
      */
@@ -7978,7 +7978,7 @@ namespace {
      */
 
     /**
-     * @var color_node::color_metatype
+     * @var class color_node::color_metatype
      *
      * @brief Class object for Color nodes.
      */
@@ -8178,7 +8178,7 @@ namespace {
      */
 
     /**
-     * @var color_interpolator_node::color_interpolator_metatype
+     * @var class color_interpolator_node::color_interpolator_metatype
      *
      * @brief Class object for ColorInterpolator nodes.
      */
@@ -8475,7 +8475,7 @@ namespace {
      */
 
     /**
-     * @var cone_node::cone_metatype
+     * @var class cone_node::cone_metatype
      *
      * @brief Class object for Cone nodes.
      */
@@ -8654,7 +8654,7 @@ namespace {
      */
 
     /**
-     * @var coordinate_node::coordinate_metatype
+     * @var class coordinate_node::coordinate_metatype
      *
      * @brief Class object for Coordinate nodes.
      */
@@ -9158,7 +9158,7 @@ namespace {
      */
 
     /**
-     * @var cylinder_node::cylinder_metatype
+     * @var class cylinder_node::cylinder_metatype
      *
      * @brief Class object for Cylinder nodes.
      */
@@ -9525,7 +9525,7 @@ namespace {
      */
 
     /**
-     * @var cylinder_sensor_node::cylinder_sensor_metatype
+     * @var class cylinder_sensor_node::cylinder_sensor_metatype
      *
      * @brief Class object for CylinderSensor nodes.
      */
@@ -9982,7 +9982,7 @@ namespace {
      */
 
     /**
-     * @var directional_light_node::directional_light_metatype
+     * @var class directional_light_node::directional_light_metatype
      *
      * @brief Class object for DirectionalLight nodes.
      */
@@ -10294,7 +10294,7 @@ namespace {
      */
 
     /**
-     * @var elevation_grid_node::elevation_grid_metatype
+     * @var class elevation_grid_node::elevation_grid_metatype
      *
      * @brief Class object for ElevationGrid nodes.
      */
@@ -10790,7 +10790,7 @@ namespace {
      */
 
     /**
-     * @var extrusion_node::extrusion_metatype
+     * @var class extrusion_node::extrusion_metatype
      *
      * @brief Class object for Extrusion nodes.
      */
@@ -11817,7 +11817,7 @@ namespace {
      */
 
     /**
-     * @var font_style_node::font_style_metatype
+     * @var class font_style_node::font_style_metatype
      *
      * @brief Class object for FontStyle nodes.
      */
@@ -12156,7 +12156,7 @@ namespace {
      */
 
     /**
-     * @var group_node::group_metatype
+     * @var class group_node::group_metatype
      *
      * @brief Class object for Group nodes.
      */
@@ -12910,7 +12910,7 @@ namespace {
     }
 
     /**
-     * @var indexed_face_set_node::indexed_face_set_metatype
+     * @var class indexed_face_set_node::indexed_face_set_metatype
      *
      * @brief Class object for IndexedFaceSet nodes.
      */
@@ -13364,7 +13364,7 @@ namespace {
      */
 
     /**
-     * @var indexed_line_set_node::indexed_line_set_metatype
+     * @var class indexed_line_set_node::indexed_line_set_metatype
      *
      * @brief Class object for IndexedLineSet nodes.
      */
@@ -13583,7 +13583,7 @@ namespace {
      */
 
     /**
-     * @var inline_node::inline_metatype
+     * @var class inline_node::inline_metatype
      *
      * @brief Class object for Inline nodes.
      */
@@ -13949,7 +13949,7 @@ namespace {
      */
 
     /**
-     * @var lod_node::lod_metatype
+     * @var class lod_node::lod_metatype
      *
      * @brief Class object for LOD nodes.
      */
@@ -14326,7 +14326,7 @@ namespace {
      */
 
     /**
-     * @var material_node::material_metatype
+     * @var class material_node::material_metatype
      *
      * @brief Class object for Material nodes.
      */
@@ -15865,7 +15865,7 @@ namespace {
      */
 
     /**
-     * @var normal_node::normal_metatype
+     * @var class normal_node::normal_metatype
      *
      * @brief Class object for Normal nodes.
      */
@@ -16702,7 +16702,7 @@ namespace {
      */
 
     /**
-     * @var pixel_texture_node::pixel_texture_metatype
+     * @var class pixel_texture_node::pixel_texture_metatype
      *
      * @brief Class object for PixelTexture nodes.
      */
@@ -17012,7 +17012,7 @@ namespace {
      */
 
     /**
-     * @var plane_sensor_node::plane_sensor_metatype
+     * @var class plane_sensor_node::plane_sensor_metatype
      *
      * @brief Class object for PlaneSensor instances.
      */
@@ -17466,7 +17466,7 @@ namespace {
      */
 
     /**
-     * @var point_light_node::point_light_metatype
+     * @var class point_light_node::point_light_metatype
      *
      * @brief Class object for PointLight instances.
      */
@@ -17695,7 +17695,7 @@ namespace {
      */
 
     /**
-     * @var point_set_node::point_set_metatype
+     * @var class point_set_node::point_set_metatype
      *
      * @brief Class object for PointSet instances.
      */
@@ -18364,7 +18364,7 @@ namespace {
      */
 
     /**
-     * @var proximity_sensor_node::proximity_sensor_metatype
+     * @var class proximity_sensor_node::proximity_sensor_metatype
      *
      * @brief Class object for ProximitySensor instances.
      */
@@ -19009,7 +19009,7 @@ namespace {
      */
 
     /**
-     * @var shape_node::shape_metatype
+     * @var class shape_node::shape_metatype
      *
      * @brief Class object for Shape instances.
      */
@@ -19455,7 +19455,7 @@ namespace {
      */
 
     /**
-     * @var sound_node::sound_metatype
+     * @var class sound_node::sound_metatype
      *
      * @brief Class object for Sound instances.
      */
@@ -19675,7 +19675,7 @@ namespace {
      */
 
     /**
-     * @var sphere_node::sphere_metatype
+     * @var class sphere_node::sphere_metatype
      *
      * @brief Class object for Sphere instances.
      */
@@ -19957,7 +19957,7 @@ namespace {
      */
 
     /**
-     * @var sphere_sensor_node::sphere_sensor_metatype
+     * @var class sphere_sensor_node::sphere_sensor_metatype
      *
      * @brief Class object for SphereSensor instances.
      */
@@ -20464,7 +20464,7 @@ namespace {
      */
 
     /**
-     * @var spot_light_node::spot_light_metatype
+     * @var class spot_light_node::spot_light_metatype
      *
      * @brief Class object for SpotLight instances.
      */
@@ -23328,7 +23328,7 @@ namespace {
      */
 
     /**
-     * @var texture_coordinate_node::texture_coordinate_metatype
+     * @var class texture_coordinate_node::texture_coordinate_metatype
      *
      * @brief Class object for TextureCoordinate instances.
      */
@@ -23551,7 +23551,7 @@ namespace {
      */
 
     /**
-     * @var texture_transform_node::texture_transform_metatype
+     * @var class texture_transform_node::texture_transform_metatype
      *
      * @brief Class object for TextureTransform instances.
      */
@@ -24609,7 +24609,7 @@ namespace {
      */
 
     /**
-     * @var touch_sensor_node::touch_sensor_metatype
+     * @var class touch_sensor_node::touch_sensor_metatype
      *
      * @brief Class object for TouchSensor instances.
      */
@@ -26687,7 +26687,7 @@ namespace {
      */
 
     /**
-     * @var visibility_sensor_node::visibility_sensor_metatype
+     * @var class visibility_sensor_node::visibility_sensor_metatype
      *
      * @brief Class object for VisibilitySensor instances.
      */
@@ -26957,7 +26957,7 @@ namespace {
      */
 
     /**
-     * @var world_info_node::world_info_metatype
+     * @var class world_info_node::world_info_metatype
      *
      * @brief Class object for WorldInfo instances.
      */
@@ -27230,7 +27230,7 @@ namespace {
      */
 
     /**
-     * @var cad_layer_node::cad_layer_metatype
+     * @var class cad_layer_node::cad_layer_metatype
      *
      * @brief Class object for CADLayer nodes.
      */
@@ -27640,7 +27640,7 @@ namespace {
      */
 
     /**
-     * @var cad_assembly_node::cad_assembly_metatype
+     * @var class cad_assembly_node::cad_assembly_metatype
      *
      * @brief Class object for Group nodes.
      */
@@ -27650,7 +27650,7 @@ namespace {
      */
     cad_assembly_node::
     cad_assembly_node(const node_type & type,
-               const boost::shared_ptr<openvrml::scope> & scope):
+                      const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
         child_node(type, scope),
