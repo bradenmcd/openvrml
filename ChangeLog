@@ -1,5 +1,10 @@
 2007-04-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/bounding_volume.h
+	(bounding_sphere): Changed parameter name to match doc-comment.
+
+2007-04-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::load_url(const std::vector<std::string> &, const
 	std::vector<std::string> &)): Doc-comment fixes.
