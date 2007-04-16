@@ -13215,7 +13215,7 @@ namespace {
             add_scope_entry(b,
                             "QuadSet",
                             interface_set,
-                            "urn:X-openvrml:node:QuadSet",
+                            "urn:X-openvrml:node:IndexedQuadSet",
                             scope);
         }
     }
