@@ -45,8 +45,8 @@
 /**
  * @var openvrml::browser * openvrml::viewer::browser_
  *
- * @brief A pointer to the <code>browser</code> with which the @c viewer is
- *        currently associated.
+ * @brief A pointer to the @c browser with which the @c viewer is currently
+ *        associated.
  */
 
 /**
@@ -135,12 +135,12 @@ openvrml::viewer::~viewer() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief A pointer to the <code>browser</code> with which the
- *        <code>viewer</code> is currently associated.
+ * @brief A pointer to the @c browser with which the @c viewer is currently
+ *        associated.
  *
- * @return a pointer to the <code>browser</code> with which the
- *         <code>viewer</code> is currently associated, or 0 if the
- *         <code>viewer</code> is not associated with a <code>browser</code>.
+ * @return a pointer to the @c browser with which the @c viewer is currently
+ *         associated, or 0 if the @c viewer is not associated with a
+ *         @c browser.
  */
 openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
 {
@@ -1211,12 +1211,12 @@ openvrml::viewer::do_intersect_view_volume(const bounding_volume & bvolume) cons
 {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
-    // systems with non-standard view volumes, this can be changed to
-    // cull as appropriate. Note that culling can be disabled by setting
-    // a flag in rendering_context. Since I don't have access to the
-    // appropriate cave/boom/whichever api's, I can't be sure that this
-    // is enough. If it isn't, please express any concerns to the
-    // OpenVRML developer's list, and it can be fixed...
+    // systems with non-standard view volumes, this can be changed to cull as
+    // appropriate. Note that culling can be disabled by setting a flag in
+    // rendering_context. Since I don't have access to the appropriate
+    // cave/boom/whichever api's, I can't be sure that this is enough. If it
+    // isn't, please express any concerns to the OpenVRML developer's list,
+    // and it can be fixed...
     //
     return bvolume.intersect_frustum(this->frustum_);
 }
@@ -1224,8 +1224,8 @@ openvrml::viewer::do_intersect_view_volume(const bounding_volume & bvolume) cons
 /**
  * @brief Draw a bounding sphere.
  *
- * Used for debugging view culling. Probably should be draw_bounding_volume and
- * handle axis_aligned_bounding_boxes as well.
+ * Used for debugging view culling.  Probably should be draw_bounding_volume
+ * and handle axis_aligned_bounding_boxes as well.
  *
  * This function delegates to @c viewer::do_draw_bounding_sphere.
  *
@@ -1246,8 +1246,8 @@ draw_bounding_sphere(const bounding_sphere & bs,
  *
  * @brief Draw a bounding sphere.
  *
- * Used for debugging view culling. Probably should be draw_bounding_volume and
- * handle axis_aligned_bounding_boxes as well.
+ * Used for debugging view culling.  Probably should be draw_bounding_volume
+ * and handle axis_aligned_bounding_boxes as well.
  *
  * @param[in] bs            a bounding sphere; if max, will not be drawn
  * @param[in] intersection  one of the bvolume intersection test constants, or 4
@@ -1259,10 +1259,9 @@ draw_bounding_sphere(const bounding_sphere & bs,
  *
  * This function delegates to @c viewer::do_frustum.
  *
- * @todo We're forcing everybody to carry around a frustum
- *       whether they want it or not. It shouldn't be used except
- *       for debugging and stuff since it might not be valid in some
- *       implementations
+ * @todo We're forcing everybody to carry around a frustum whether they want
+ *       it or not.  It shouldn't be used except for debugging and stuff since
+ *       it might not be valid in some implementations
  *
  * @return the frustum.
  */
@@ -1272,10 +1271,9 @@ const openvrml::frustum & openvrml::viewer::frustum() const
 }
 
 /**
- * @todo We're forcing everybody to carry around a frustum
- *       whether they want it or not. It shouldn't be used except
- *       for debugging and stuff since it might not be valid in some
- *       implementations
+ * @todo We're forcing everybody to carry around a frustum whether they want
+ *       it or not.  It shouldn't be used except for debugging and stuff since
+ *       it might not be valid in some implementations
  *
  * @return the frustum.
  */
