@@ -181,9 +181,9 @@ namespace {
                     find(next(dot_pos.base()), this->url_.end(), '#');
                 const string ext(dot_pos.base(), hash_pos);
                 if (iequals(ext, "wrl")) {
-                    media_type = "model/vrml";
+                    media_type = openvrml::vrml_media_type;
                 } else if (iequals(ext, "x3dv")) {
-                    media_type = "model/x3d+vrml";
+                    media_type = openvrml::x3d_vrml_media_type;
                 } else if (iequals(ext, "png")) {
                     media_type = "image/png";
                 } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {

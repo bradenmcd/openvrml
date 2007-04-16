@@ -1,5 +1,11 @@
 2007-04-16 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp
+	(browser::do_get_resource(const std::string &)): Use the MIME type
+	strings exported by libopenvrml.
+
+2007-04-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/viewer.cpp: Doc-comment improvements.
 
 2007-04-15 Braden McDaniel  <braden@endoframe.com>
