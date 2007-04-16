@@ -56,12 +56,12 @@ namespace {
     /**
      * @brief Class object for IndexedQuadSet and QuadSet nodes.
      */
-    class OPENVRML_LOCAL quad_set_metatype : public node_metatype {
+    class OPENVRML_LOCAL indexed_quad_set_metatype : public node_metatype {
     public:
         static const char * const id;
 
-        explicit quad_set_metatype(openvrml::browser & browser);
-        virtual ~quad_set_metatype() OPENVRML_NOTHROW;
+        explicit indexed_quad_set_metatype(openvrml::browser & browser);
+        virtual ~indexed_quad_set_metatype() OPENVRML_NOTHROW;
 
     private:
         virtual const boost::shared_ptr<node_type>
@@ -77,8 +77,8 @@ void register_cad_geometry_node_metatypes(openvrml::browser & b)
     using boost::shared_ptr;
     b.add_node_metatype(cad_face_metatype::id,
                         shared_ptr<node_metatype>(new cad_face_metatype(b)));
-    b.add_node_metatype(quad_set_metatype::id,
-                        shared_ptr<node_metatype>(new quad_set_metatype(b)));
+    b.add_node_metatype(indexed_quad_set_metatype::id,
+                        shared_ptr<node_metatype>(new indexed_quad_set_metatype(b)));
 }
 
 namespace {
@@ -109,9 +109,9 @@ namespace {
 
 
 
-    class OPENVRML_LOCAL quad_set_node : public abstract_node<quad_set_node>,
+    class OPENVRML_LOCAL indexed_quad_set_node : public abstract_node<indexed_quad_set_node>,
                                          public geometry_node {
-        friend class quad_set_metatype;
+        friend class indexed_quad_set_metatype;
 
         class set_index_listener : public event_listener_base<self_t>,
                                    public mfint32_listener {
@@ -138,9 +138,9 @@ namespace {
         bounding_sphere bsphere;
 
     public:
-        quad_set_node(const node_type & type,
+        indexed_quad_set_node(const node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~quad_set_node() OPENVRML_NOTHROW;
+        virtual ~indexed_quad_set_node() OPENVRML_NOTHROW;
 
         virtual const color_node * color() const OPENVRML_NOTHROW;
         virtual bool modified() const;
@@ -275,21 +275,24 @@ namespace {
     /**
      * @brief @c node_metatype identifier.
      */
-    const char * const quad_set_metatype::id = "urn:X-openvrml:node:QuadSet";
+    const char * const indexed_quad_set_metatype::id =
+        "urn:X-openvrml:node:IndexedQuadSet";
 
     /**
      * @brief Construct.
      *
-     * @param browser the browser associated with this quad_set_metatype.
+     * @param browser the browser associated with this
+     *                @c indexed_quad_set_metatype.
      */
-    quad_set_metatype::quad_set_metatype(openvrml::browser & browser):
+    indexed_quad_set_metatype::
+    indexed_quad_set_metatype(openvrml::browser & browser):
         node_metatype(cad_face_metatype::id, browser)
     {}
 
     /**
      * @brief Destroy.
      */
-    quad_set_metatype::~quad_set_metatype() OPENVRML_NOTHROW
+    indexed_quad_set_metatype::~indexed_quad_set_metatype() OPENVRML_NOTHROW
     {}
 
     /**
@@ -301,11 +304,11 @@ namespace {
      * @return a @c node_type capable of creating IndexedQuadSet nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by quad_set_metatype.
+     *                                  not supported by indexed_quad_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
-    quad_set_metatype::
+    indexed_quad_set_metatype::
     do_create_type(const std::string & id,
                    const node_interface_set & interfaces) const
         OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
@@ -346,7 +349,7 @@ namespace {
                            field_value::mfint32_id,
                            "index")
         };
-        typedef node_type_impl<quad_set_node> node_type_t;
+        typedef node_type_impl<indexed_quad_set_node> node_type_t;
 
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
@@ -362,123 +365,123 @@ namespace {
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        quad_set_node::set_index_listener>(
-                            &quad_set_node::set_index_listener_)));
+                        indexed_quad_set_node::set_index_listener>(
+                            &indexed_quad_set_node::set_index_listener_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::color_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::color_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::color_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::color_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::color_)));
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::color_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::coord_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::coord_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::coord_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::coord_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::coord_)));
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::coord_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::metadata)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::metadata)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::metadata)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::metadata)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::metadata)));
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::metadata)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::normal_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::normal_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::normal_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::normal_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::normal_)));
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::normal_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::event_listener_ptr_ptr(
                         new node_type_t::event_listener_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::tex_coord_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::tex_coord_)),
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::tex_coord_)),
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::tex_coord_)),
                     node_type_t::event_emitter_ptr_ptr(
                         new node_type_t::event_emitter_ptr<
-                        abstract_node<quad_set_node>::exposedfield<sfnode> >(
-                            &quad_set_node::tex_coord_)));
+                        abstract_node<indexed_quad_set_node>::exposedfield<sfnode> >(
+                            &indexed_quad_set_node::tex_coord_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
-                            &quad_set_node::ccw_)));
+                            &indexed_quad_set_node::ccw_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
-                            &quad_set_node::color_per_vertex_)));
+                            &indexed_quad_set_node::color_per_vertex_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
-                            &quad_set_node::normal_per_vertex_)));
+                            &indexed_quad_set_node::normal_per_vertex_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
-                            &quad_set_node::solid_)));
+                            &indexed_quad_set_node::solid_)));
             } else if (*interface == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfint32>(
-                            &quad_set_node::index_)));
+                            &indexed_quad_set_node::index_)));
             } else {
                 throw unsupported_interface(*interface);
             }
@@ -493,7 +496,7 @@ namespace {
      */
 
     /**
-     * @var cad_face_node::cad_face_metatype
+     * @var class cad_face_node::cad_face_metatype
      *
      * @brief Class object for CADFace nodes.
      */
@@ -589,94 +592,110 @@ namespace {
     {}
 
     /**
-     * @class quad_set_node
+     * @class indexed_quad_set_node
      *
      * @brief Represents IndexedQuadSet node instances.
      */
 
     /**
-     * @var quad_set_node::indexed_quad_set_metatype
+     * @var class indexed_quad_set_node::indexed_quad_set_metatype
      *
      * @brief Class object for IndexedQuadSet nodes.
      */
 
     /**
-     * @var quad_set_node::set_index_
+     * @var indexed_quad_set_node::set_index_listener indexed_quad_set_node::set_index_listener_
      *
      * @brief set_index eventIn
      */
 
     /**
-     * @var quad_set_node::color_
+     * @var abstract_node<indexed_quad_set_node>::exposedfield<openvrml::sfnode> indexed_quad_set_node::color_
      *
      * @brief color exposedField
      */
 
     /**
-     * @var quad_set_node::coord_
+     * @var abstract_node<indexed_quad_set_node>::exposedfield<openvrml::sfnode> indexed_quad_set_node::coord_
      *
      * @brief coord exposedField
      */
 
     /**
-     * @var quad_set_node::normal_
+     * @var abstract_node<indexed_quad_set_node>::exposedfield<openvrml::sfnode> indexed_quad_set_node::normal_
      *
      * @brief normal exposedField
      */
 
     /**
-     * @var quad_set_node::tex_coord_
+     * @var abstract_node<indexed_quad_set_node>::exposedfield<openvrml::sfnode> indexed_quad_set_node::tex_coord_
      *
      * @brief tex_coord exposedField
      */
 
     /**
-     * @var quad_set_node::ccw_
+     * @var openvrml::sfbool indexed_quad_set_node::ccw_
      *
      * @brief ccw field
      */
 
     /**
-     * @var quad_set_node::color_per_vertex_
+     * @var openvrml::sfbool indexed_quad_set_node::color_per_vertex_
      *
      * @brief color_per_vertex field
      */
 
     /**
-     * @var quad_set_node::normal_per_vertex_
+     * @var openvrml::sfbool indexed_quad_set_node::normal_per_vertex_
      *
      * @brief normal_per_vertex field
      */
 
     /**
-     * @var quad_set_node::solid_
+     * @var openvrml::sfbool indexed_quad_set_node::solid_
      *
      * @brief solid field
      */
 
     /**
-     * @var quad_set_node::index_
+     * @var openvrml::mfint32 indexed_quad_set_node::index_
      *
      * @brief index field
      */
 
-    quad_set_node::set_index_listener::
+    /**
+     * @brief Construct.
+     *
+     * @param[in] node  a @c indexed_quad_set_node.
+     */
+    indexed_quad_set_node::set_index_listener::
     set_index_listener(self_t & node):
         node_event_listener(node),
         event_listener_base<self_t>(node),
         mfint32_listener(node)
     {}
 
-    quad_set_node::set_index_listener::
+    /**
+     * @brief Destroy.
+     */
+    indexed_quad_set_node::set_index_listener::
     ~set_index_listener() OPENVRML_NOTHROW
     {}
 
-    void quad_set_node::set_index_listener::
-    do_process_event(const mfint32 & /* fraction */, const double /* timestamp */)
+    /**
+     * @brief Process @c set_index event.
+     *
+     * @todo Needs implementation.
+     *
+     * @param[in] index     coordinate indices.
+     * @param[in] timestamp the current time.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void indexed_quad_set_node::set_index_listener::
+    do_process_event(const mfint32 & /* index */, const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
-    {
-        //TODO: add logic here
-    }
+    {}
 
     /**
      * @brief Construct.
@@ -684,9 +703,9 @@ namespace {
      * @param type  the @c node_type associated with this node.
      * @param scope the @c scope to which the node belongs.
      */
-    quad_set_node::
-    quad_set_node(const node_type & type,
-                  const boost::shared_ptr<openvrml::scope> & scope):
+    indexed_quad_set_node::
+    indexed_quad_set_node(const node_type & type,
+                          const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
         abstract_node<self_t>(type, scope),
@@ -705,7 +724,7 @@ namespace {
     /**
      * @brief Destroy.
      */
-    quad_set_node::~quad_set_node() OPENVRML_NOTHROW
+    indexed_quad_set_node::~indexed_quad_set_node() OPENVRML_NOTHROW
     {}
 
     /**
@@ -714,10 +733,10 @@ namespace {
      * @return the bounding volume associated with the node.
      */
     const openvrml::bounding_volume &
-    quad_set_node::do_bounding_volume() const
+    indexed_quad_set_node::do_bounding_volume() const
     {
         if (this->bounding_volume_dirty()) {
-            const_cast<quad_set_node *>(this)->recalc_bsphere();
+            const_cast<indexed_quad_set_node *>(this)->recalc_bsphere();
         }
         return this->bsphere;
     }
@@ -725,7 +744,7 @@ namespace {
     /**
      * @brief Recalculate the bounding volume.
      */
-    void quad_set_node::recalc_bsphere()
+    void indexed_quad_set_node::recalc_bsphere()
     {
         // take the bvolume of all the points. technically, we should figure
         // out just which points are used by the index and just use those,
@@ -744,7 +763,7 @@ namespace {
         this->bounding_volume_dirty(false);
     }
 
-    const color_node * quad_set_node::color() const OPENVRML_NOTHROW
+    const color_node * indexed_quad_set_node::color() const OPENVRML_NOTHROW
     {
         return node_cast<color_node *>(color_.sfnode::value().get());
     }
@@ -758,7 +777,7 @@ namespace {
      * @todo Implement this!
      */
     openvrml::viewer::object_t
-    quad_set_node::
+    indexed_quad_set_node::
     do_render_geometry(openvrml::viewer & /* viewer */,
                        const rendering_context /* context */)
     {
@@ -772,7 +791,7 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool quad_set_node::modified() const
+    bool indexed_quad_set_node::modified() const
     {
         return this->node::modified()
             || (this->color_.sfnode::value()

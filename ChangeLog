@@ -1,5 +1,20 @@
 2007-04-16 Braden McDaniel  <braden@endoframe.com>
 
+	IndexedQuadSet seems to offer a superset of QuadSet's
+	functionality (to the extent that it's not clear why the latter
+	exists as a distinct node).  Changed names used in the
+	implementation to reflect that it supports IndexedQuadSet.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_cad_geometry_component::do_add_to_scope(const
+	openvrml::browser &, openvrml::scope &, size_t)): Changed URN for
+	QuadSet to "urn:X-openvrml:node:IndexedQuadSet".
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp: Renamed
+	quad_set_node to indexed_quad_set_node; renamed quad_set_metatype
+	to indexed_quad_set_metatype.
+
+2007-04-16 Braden McDaniel  <braden@endoframe.com>
+
 	* examples/sdl_viewer.cpp
 	(browser::do_get_resource(const std::string &)): Use the MIME type
 	strings exported by libopenvrml.
