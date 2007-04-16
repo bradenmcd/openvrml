@@ -1,5 +1,11 @@
 2007-04-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::load_url(const std::vector<std::string> &, const
+	std::vector<std::string> &)): Doc-comment fixes.
+
+2007-04-16 Braden McDaniel  <braden@endoframe.com>
+
 	IndexedQuadSet seems to offer a superset of QuadSet's
 	functionality (to the extent that it's not clear why the latter
 	exists as a distinct node).  Changed names used in the

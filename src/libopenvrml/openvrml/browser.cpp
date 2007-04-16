@@ -7192,13 +7192,14 @@ void openvrml::scene::render(openvrml::viewer & viewer,
  *
  * @note There are a couple of edge cases here where we are probably doing the
  *      wrong thing:
- *       - If there is a URI in the list of the form &ldquo;#NodeId&rdquo; and
- *         it is not the first URI in the list, this URI will be loaded as if
- *         it were a new world rather than as a Viewpoint that should simply
- *         be bound.
- *       - If the first URI in the list is of the form &ldquo;#NodeId&rdquo;
- *         and no Viewpoint named &ldquo;NodeId&rdquo; exists in the scene,
- *         this method will not try any subsequent URIs in the list.
+ *       - If there is a URI in the list of the form
+ *         &ldquo;<code>\#NodeId</code>&rdquo; and it is not the first URI in
+ *         the list, this URI will be loaded as if it were a new world rather
+ *         than as a Viewpoint that should simply be bound.
+ *       - If the first URI in the list is of the form
+ *         &ldquo;<code>\#NodeId</code>&rdquo; and no Viewpoint named
+ *         &ldquo;<code>NodeId</code>&rdquo; exists in the scene, this method
+ *         will not try any subsequent URIs in the list.
  *
  * @param[in] url       an array of URIs.  Per VRML97 convention, the first
  *                      resource in the sequence that can be reached will be
