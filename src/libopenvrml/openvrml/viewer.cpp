@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -45,8 +45,8 @@
 /**
  * @var openvrml::browser * openvrml::viewer::browser_
  *
- * @brief A pointer to the <code>browser</code> with which the
- * <code>viewer</code> is currently associated.
+ * @brief A pointer to the @c browser with which the @c viewer is currently
+ *        associated.
  */
 
 /**
@@ -135,12 +135,12 @@ openvrml::viewer::~viewer() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief A pointer to the <code>browser</code> with which the
- *        <code>viewer</code> is currently associated.
+ * @brief A pointer to the @c browser with which the @c viewer is currently
+ *        associated.
  *
- * @return a pointer to the <code>browser</code> with which the
- *         <code>viewer</code> is currently associated, or 0 if the
- *         <code>viewer</code> is not associated with a <code>browser</code>.
+ * @return a pointer to the @c browser with which the @c viewer is currently
+ *         associated, or 0 if the @c viewer is not associated with a
+ *         @c browser.
  */
 openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
 {
@@ -403,8 +403,8 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  * @brief Set the fog.
  *
  * @param[in] color             fog color.
- * @param[in] visibility_range  the distance at which objects are fully obscured by
- *                          fog.
+ * @param[in] visibility_range  the distance at which objects are fully
+ *                              obscured by fog.
  * @param[in] type              fog type.
  */
 
@@ -521,12 +521,11 @@ openvrml::browser * openvrml::viewer::browser() const OPENVRML_NOTHROW
  */
 
 /**
- * Intersect the given bounding volume with the view volume. This
- * goes into the viewer to provide a hook for systems that use
- * non-standard view volumes. Most subclasses should be able to use
- * the default implementation provided here. If your view volume is
- * so strange that there's no way to cull to is, then reimplement to
- * always return bounding_volume::inside.
+ * Intersect the given bounding volume with the view volume.  This goes into
+ * the viewer to provide a hook for systems that use non-standard view
+ * volumes.  Most subclasses should be able to use the default implementation
+ * provided here.  If your view volume is so strange that there's no way to
+ * cull to is, then reimplement to always return @c bounding_volume::inside.
  *
  * @param[in] bvolume   the bounding volume to intersect with the view volume.
  *
@@ -538,12 +537,12 @@ openvrml::viewer::intersect_view_volume(const bounding_volume & bvolume) const
 {
     //
     // For normal VRML97 use, this won't need to be overridden, but for
-    // systems with non-standard view volumes, this can be changed to
-    // cull as appropriate. Note that culling can be disabled by setting
-    // a flag in rendering_context. Since I don't have access to the
-    // appropriate cave/boom/whichever api's, I can't be sure that this
-    // is enough. If it isn't, please express any concerns to the
-    // OpenVRML developer's list, and it can be fixed...
+    // systems with non-standard view volumes, this can be changed to cull as
+    // appropriate. Note that culling can be disabled by setting a flag in
+    // rendering_context. Since I don't have access to the appropriate
+    // cave/boom/whichever api's, I can't be sure that this is enough. If it
+    // isn't, please express any concerns to the OpenVRML developer's list,
+    // and it can be fixed...
     //
     return bvolume.intersect_frustum(this->frustum_);
 }
@@ -553,19 +552,20 @@ openvrml::viewer::intersect_view_volume(const bounding_volume & bvolume) const
  *
  * @brief Draw a bounding sphere.
  *
- * Used for debugging view culling. Probably should be draw_bounding_volume and
- * handle axis_aligned_bounding_boxes as well.
+ * Used for debugging view culling.
+ *
+ * @todo Probably should be draw_bounding_volume and handle
+ *       axis_aligned_bounding_boxes as well.
  *
  * @param[in] bs            a bounding sphere; if max, will not be drawn
- * @param[in] intersection  one of the bvolume intersection test constants, or 4
- *                      to draw in unique way. (useful for debugging)
+ * @param[in] intersection  one of the bvolume intersection test constants, or
+ *                          4 to draw in unique way. (useful for debugging)
  */
 
 /**
- * @todo We're forcing everybody to carry around a frustum
- *       whether they want it or not. It shouldn't be used except
- *       for debugging and stuff since it might not be valid in some
- *       implementations
+ * @todo We're forcing everybody to carry around a frustum whether they want
+ *       it or not.  It shouldn't be used except for debugging and stuff since
+ *       it might not be valid in some implementations
  *
  * @return the frustum.
  */

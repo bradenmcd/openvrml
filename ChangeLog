@@ -1,3 +1,7 @@
+2007-04-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/viewer.cpp: Doc-comment improvements.
+
 2007-04-15 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp: Doc-comment
