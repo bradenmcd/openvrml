@@ -83,7 +83,7 @@ namespace openvrml {
         virtual intersection
         do_intersect_frustum(const openvrml::frustum & frustum) const;
         virtual void do_extend(const vec3f & p);
-        virtual void do_extend(const axis_aligned_bounding_box & b);
+        virtual void do_extend(const axis_aligned_bounding_box & bbox);
         virtual void do_extend(const bounding_sphere & b);
         virtual void do_enclose(const std::vector<vec3f> & points);
         virtual void do_ortho_transform(const mat4f & t);
