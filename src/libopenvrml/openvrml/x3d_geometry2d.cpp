@@ -884,7 +884,7 @@ namespace {
      */
 
     /**
-     * @var circle2d_node::Circle2D_metatype
+     * @var circle2d_node::circle2d_metatype
      *
      * @brief Class object for Circle2D nodes.
      */
@@ -1531,7 +1531,7 @@ namespace {
      */
 
     /**
-     * @var polyline2d_node::Polyline2D_metatype
+     * @var polyline2d_node::polyline2d_metatype
      *
      * @brief Class object for Polyline2D nodes.
      */

@@ -1,3 +1,11 @@
+2007-04-18 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements.
+
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+
 2007-04-17 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp: Added doc-comments for
