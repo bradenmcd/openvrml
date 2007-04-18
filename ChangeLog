@@ -1,5 +1,12 @@
 2007-04-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/script.cpp: Added doc-comments for
+	openvrml::script_node::set_metadata_listener_,
+	openvrml::script_node::metadata_, and
+	openvrml::script_node::metadata_changed_emitter_.
+
+2007-04-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
 	for openvrml::node_impl_util::abstract_node::self_t.
 

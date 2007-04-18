@@ -1414,6 +1414,24 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  */
 
 /**
+ * @var openvrml::script_node::set_metadata_listener openvrml::script_node::set_metadata_listener_
+ *
+ * @brief @c set_metadata @c eventIn handler.
+ */
+
+/**
+ * @var openvrml::sfnode openvrml::script_node::metadata_
+ *
+ * @brief @c metadata field value.
+ */
+
+/**
+ * @var openvrml::script_node::metadata_changed_emitter openvrml::script_node::metadata_changed_emitter_
+ *
+ * @brief @c metadata_changed @c eventOut emitter.
+ */
+
+/**
  * @internal
  *
  * @var openvrml::sfbool openvrml::script_node::direct_output
