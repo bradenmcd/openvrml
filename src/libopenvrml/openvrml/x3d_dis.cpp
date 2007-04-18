@@ -3899,415 +3899,433 @@ namespace {
      */
 
     /**
-     * @var espdu_transform_node::espdu_transform_metatype
+     * @var class espdu_transform_node::espdu_transform_metatype
      *
      * @brief Class object for EspduTransform nodes.
      */
 
     /**
-     * @var espdu_transform_node::add_children_
+     * @var espdu_transform_node::add_children_listener espdu_transform_node::add_children_listener_
      *
      * @brief add_children eventIn
      */
 
     /**
-     * @var espdu_transform_node::remove_children_
+     * @var espdu_transform_node::remove_children_listener espdu_transform_node::remove_children_listener_
      *
      * @brief remove_children eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value0_
+     * @var espdu_transform_node::set_articulation_parameter_value0_listener espdu_transform_node::set_articulation_parameter_value0_listener_
      *
      * @brief set_articulation_parameter_value0 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value1_
+     * @var espdu_transform_node::set_articulation_parameter_value1_listener espdu_transform_node::set_articulation_parameter_value1_listener_
      *
      * @brief set_articulation_parameter_value1 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value2_
+     * @var espdu_transform_node::set_articulation_parameter_value2_listener espdu_transform_node::set_articulation_parameter_value2_listener_
      *
      * @brief set_articulation_parameter_value2 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value3_
+     * @var espdu_transform_node::set_articulation_parameter_value3_listener espdu_transform_node::set_articulation_parameter_value3_listener_
      *
      * @brief set_articulation_parameter_value3 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value4_
+     * @var espdu_transform_node::set_articulation_parameter_value4_listener espdu_transform_node::set_articulation_parameter_value4_listener_
      *
      * @brief set_articulation_parameter_value4 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value5_
+     * @var espdu_transform_node::set_articulation_parameter_value5_listener espdu_transform_node::set_articulation_parameter_value5_listener_
      *
      * @brief set_articulation_parameter_value5 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value6_
+     * @var espdu_transform_node::set_articulation_parameter_value6_listener espdu_transform_node::set_articulation_parameter_value6_listener_
      *
      * @brief set_articulation_parameter_value6 eventIn
      */
 
     /**
-     * @var espdu_transform_node::set_articulation_parameter_value7_
+     * @var espdu_transform_node::set_articulation_parameter_value7_listener espdu_transform_node::set_articulation_parameter_value7_listener_
      *
      * @brief set_articulation_parameter_value7 eventIn
      */
 
     /**
-     * @var espdu_transform_node::address_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfstring> espdu_transform_node::address_
      *
      * @brief address exposedField
      */
 
     /**
-     * @var espdu_transform_node::application_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::application_id_
      *
      * @brief application_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_count_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::articulation_parameter_count_
      *
      * @brief articulation_parameter_count exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_designator_array_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mfint32> espdu_transform_node::articulation_parameter_designator_array_
      *
      * @brief articulation_parameter_designator_array exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_change_indicator_array_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mfint32> espdu_transform_node::articulation_parameter_change_indicator_array_
      *
      * @brief articulation_parameter_change_indicator_array exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_id_part_attached_to_array_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mfint32> espdu_transform_node::articulation_parameter_id_part_attached_to_array_
      *
      * @brief articulation_parameter_id_part_attached_to_array exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_type_array_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mfint32> espdu_transform_node::articulation_parameter_type_array_
      *
      * @brief articulation_parameter_type_array exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_array_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mffloat> espdu_transform_node::articulation_parameter_array_
      *
      * @brief articulation_parameter_array exposedField
      */
 
     /**
-     * @var espdu_transform_node::center_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::center_
      *
      * @brief center exposedField
      */
 
     /**
-     * @var espdu_transform_node::children_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::mfnode> espdu_transform_node::children_
      *
      * @brief children exposedField
      */
 
     /**
-     * @var espdu_transform_node::collision_type_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::collision_type_
      *
      * @brief collision_type exposedField
      */
 
     /**
-     * @var espdu_transform_node::dead_reckoning_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::dead_reckoning_
      *
      * @brief dead_reckoning exposedField
      */
 
     /**
-     * @var espdu_transform_node::detonation_location_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::detonation_location_
      *
      * @brief detonation_location exposedField
      */
 
     /**
-     * @var espdu_transform_node::detonation_relative_location_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::detonation_relative_location_
      *
      * @brief detonation_relative_location exposedField
      */
 
     /**
-     * @var espdu_transform_node::detonation_result_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::detonation_result_
      *
      * @brief detonation_result exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_category_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_category_
      *
      * @brief entity_category exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_country_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_country_
      *
      * @brief entity_country exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_domain_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_domain_
      *
      * @brief entity_domain exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_extra_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_extra_
      *
      * @brief entity_extra exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_id_
      *
      * @brief entity_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_kind_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_kind_
      *
      * @brief entity_kind exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_specific_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_specific_
      *
      * @brief entity_specific exposedField
      */
 
     /**
-     * @var espdu_transform_node::entity_sub_category_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::entity_sub_category_
      *
      * @brief entity_sub_category exposedField
      */
 
     /**
-     * @var espdu_transform_node::event_application_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::event_application_id_
      *
      * @brief event_application_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::event_entity_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::event_entity_id_
      *
      * @brief event_entity_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::event_number_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::event_number_
      *
      * @brief event_number exposedField
      */
 
     /**
-     * @var espdu_transform_node::event_site_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::event_site_id_
      *
      * @brief event_site_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::fired1_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfbool> espdu_transform_node::fired1_
      *
      * @brief fired1 exposedField
      */
 
     /**
-     * @var espdu_transform_node::fired2_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfbool> espdu_transform_node::fired2_
      *
      * @brief fired2 exposedField
      */
 
     /**
-     * @var espdu_transform_node::fire_mission_index_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::fire_mission_index_
      *
      * @brief fire_mission_index exposedField
      */
 
     /**
-     * @var espdu_transform_node::firing_range_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sffloat> espdu_transform_node::firing_range_
      *
      * @brief firing_range exposedField
      */
 
     /**
-     * @var espdu_transform_node::firing_rate_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::firing_rate_
      *
      * @brief firing_rate exposedField
      */
 
     /**
-     * @var espdu_transform_node::force_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::force_id_
      *
      * @brief force_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::fuse_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::fuse_
      *
      * @brief fuse exposedField
      */
 
     /**
-     * @var espdu_transform_node::linear_velocity_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::linear_velocity_
      *
      * @brief linear_velocity exposedField
      */
 
     /**
-     * @var espdu_transform_node::linear_acceleration_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::linear_acceleration_
      *
      * @brief linear_acceleration exposedField
      */
 
     /**
-     * @var espdu_transform_node::marking_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfstring> espdu_transform_node::marking_
      *
      * @brief marking exposedField
      */
 
     /**
-     * @var espdu_transform_node::multicast_relay_host_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfstring> espdu_transform_node::multicast_relay_host_
      *
      * @brief multicast_relay_host exposedField
      */
 
     /**
-     * @var espdu_transform_node::multicast_relay_port_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::multicast_relay_port_
      *
      * @brief multicast_relay_port exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_application_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::munition_application_id_
      *
      * @brief munition_application_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_end_point_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::munition_end_point_
      *
      * @brief munition_end_point exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_entity_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::munition_entity_id_
      *
      * @brief munition_entity_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_quantity_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::munition_quantity_
      *
      * @brief munition_quantity exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_site_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::munition_site_id_
      *
      * @brief munition_site_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::munition_start_point_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::munition_start_point_
      *
      * @brief munition_start_point exposedField
      */
 
     /**
-     * @var espdu_transform_node::network_mode_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfstring> espdu_transform_node::network_mode_
      *
      * @brief network_mode exposedField
      */
 
     /**
-     * @var espdu_transform_node::port_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::port_
      *
      * @brief port exposedField
      */
 
     /**
-     * @var espdu_transform_node::read_interval_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sftime> espdu_transform_node::read_interval_
      *
      * @brief read_interval exposedField
      */
 
     /**
-     * @var espdu_transform_node::rotation_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfrotation> espdu_transform_node::rotation_
      *
      * @brief rotation exposedField
      */
 
     /**
-     * @var espdu_transform_node::scale_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::scale_
      *
      * @brief scale exposedField
      */
 
     /**
-     * @var espdu_transform_node::scale_orientation_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfrotation> espdu_transform_node::scale_orientation_
      *
      * @brief scale_orientation exposedField
      */
 
     /**
-     * @var espdu_transform_node::site_id_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::site_id_
      *
      * @brief site_id exposedField
      */
 
     /**
-     * @var espdu_transform_node::translation_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfvec3f> espdu_transform_node::translation_
      *
      * @brief translation exposedField
      */
 
     /**
-     * @var espdu_transform_node::warhead_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sfint32> espdu_transform_node::warhead_
      *
      * @brief warhead exposedField
      */
 
     /**
-     * @var espdu_transform_node::write_interval_
+     * @var abstract_node<espdu_transform_node>::exposedfield<openvrml::sftime> espdu_transform_node::write_interval_
      *
      * @brief write_interval exposedField
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_value0_changed_
+     * @var openvrml::sffloat espdu_transform_node::articulation_parameter_value0_changed_
      *
      * @brief articulation_parameter_value0_changed eventOut
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_value1_changed_
+     * @var abstract_node::sffloat_emitter espdu_transform_node::articulation_parameter_value0_changed_emitter_
+     *
+     * @brief articulation_parameter_value0_changed eventOut
+     */
+
+    /**
+     * @var openvrml::sffloat espdu_transform_node::articulation_parameter_value1_changed_
      *
      * @brief articulation_parameter_value1_changed eventOut
      */
 
     /**
-     * @var espdu_transform_node::articulation_parameter_value2_changed_
+     * @var abstract_node::sffloat_emitter espdu_transform_node::articulation_parameter_value1_changed_emitter_
+     *
+     * @brief articulation_parameter_value1_changed eventOut
+     */
+
+    /**
+     * @var openvrml::sffloat espdu_transform_node::articulation_parameter_value2_changed_
+     *
+     * @brief articulation_parameter_value2_changed eventOut
+     */
+
+    /**
+     * @var abstract_node::sffloat_emitter espdu_transform_node::articulation_parameter_value2_changed_emitter_
      *
      * @brief articulation_parameter_value2_changed eventOut
      */

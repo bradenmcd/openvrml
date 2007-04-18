@@ -2306,25 +2306,25 @@ namespace {
      */
 
     /**
-     * @var geo_coordinate_node::geo_coordinate_metatype
+     * @var class geo_coordinate_node::geo_coordinate_metatype
      *
      * @brief Class object for GeoCoordinate nodes.
      */
 
     /**
-     * @var geo_coordinate_node::point_
+     * @var openvrml::node_impl_util::abstract_node<geo_coordinate_node>::exposedfield<openvrml::mfvec3d> geo_coordinate_node::point_
      *
      * @brief point exposedField
      */
 
     /**
-     * @var geo_coordinate_node::geo_origin_
+     * @var openvrml::sfnode geo_coordinate_node::geo_origin_
      *
      * @brief geo_origin field
      */
 
     /**
-     * @var geo_coordinate_node::geo_system_
+     * @var openvrml::mfstring geo_coordinate_node::geo_system_
      *
      * @brief geo_system field
      */
@@ -2369,7 +2369,7 @@ namespace {
      */
 
     /**
-     * @var geo_elevation_grid_node::set_height_
+     * @var geo_elevation_grid_node::set_height_listener geo_elevation_grid_node::set_height_listener_
      *
      * @brief set_height eventIn
      */
@@ -2577,13 +2577,13 @@ namespace {
      */
 
     /**
-     * @var geo_location_node::add_children_
+     * @var geo_location_node::add_children_listener geo_location_node::add_children_listener_
      *
      * @brief add_children eventIn
      */
 
     /**
-     * @var geo_location_node::remove_children_
+     * @var geo_location_node::remove_children_listener geo_location_node::remove_children_listener_
      *
      * @brief remove_children eventIn
      */
@@ -2702,13 +2702,13 @@ namespace {
      */
 
     /**
-     * @var geo_lod_node::add_children_
+     * @var geo_lod_node::add_children_listener geo_lod_node::add_children_listener_
      *
      * @brief add_children eventIn
      */
 
     /**
-     * @var geo_lod_node::remove_children_
+     * @var geo_lod_node::remove_children_listener geo_lod_node::remove_children_listener_
      *
      * @brief remove_children eventIn
      */
@@ -2978,7 +2978,7 @@ namespace {
      */
 
     /**
-     * @var geo_position_interpolator_node::set_fraction_
+     * @var geo_position_interpolator_node::set_fraction_listener geo_position_interpolator_node::set_fraction_listener_
      *
      * @brief set_fraction eventIn
      */
@@ -3183,91 +3183,91 @@ namespace {
      */
 
     /**
-     * @var geo_viewpoint_node::set_bind_
+     * @var geo_viewpoint_node::set_bind_listener geo_viewpoint_node::set_bind_listener_
      *
      * @brief set_bind eventIn
      */
 
     /**
-     * @var geo_viewpoint_node::set_orientation_
+     * @var geo_viewpoint_node::set_orientation_listener geo_viewpoint_node::set_orientation_listener_
      *
      * @brief set_orientation eventIn
      */
 
     /**
-     * @var geo_viewpoint_node::set_position_
+     * @var geo_viewpoint_node::set_position_listener geo_viewpoint_node::set_position_listener_
      *
      * @brief set_position eventIn
      */
 
     /**
-     * @var geo_viewpoint_node::description_
+     * @var openvrml::node_impl_util::abstract_node<geo_viewpoint_node>::exposedfield<openvrml::sfstring> geo_viewpoint_node::description_
      *
      * @brief description exposedField
      */
 
     /**
-     * @var geo_viewpoint_node::field_of_view_
+     * @var openvrml::node_impl_util::abstract_node<geo_viewpoint_node>::exposedfield<openvrml::sffloat> geo_viewpoint_node::field_of_view_
      *
      * @brief field_of_view exposedField
      */
 
     /**
-     * @var geo_viewpoint_node::headlight_
+     * @var openvrml::node_impl_util::abstract_node<geo_viewpoint_node>::exposedfield<openvrml::sfbool> geo_viewpoint_node::headlight_
      *
      * @brief headlight exposedField
      */
 
     /**
-     * @var geo_viewpoint_node::jump_
+     * @var openvrml::node_impl_util::abstract_node<geo_viewpoint_node>::exposedfield<openvrml::sfbool> geo_viewpoint_node::jump_
      *
      * @brief jump exposedField
      */
 
     /**
-     * @var geo_viewpoint_node::nav_type_
+     * @var openvrml::node_impl_util::abstract_node<geo_viewpoint_node>::exposedfield<openvrml::mfstring> geo_viewpoint_node::nav_type_
      *
      * @brief navType exposedField
      */
 
     /**
-     * @var geo_viewpoint_node::bind_time_
+     * @var openvrml::sftime geo_viewpoint_node::bind_time_
      *
      * @brief bind_time eventOut
      */
 
     /**
-     * @var geo_viewpoint_node::is_bound_
+     * @var openvrml::sfbool geo_viewpoint_node::is_bound_
      *
      * @brief is_bound eventOut
      */
 
     /**
-     * @var geo_viewpoint_node::geo_origin_
+     * @var openvrml::sfnode geo_viewpoint_node::geo_origin_
      *
      * @brief geo_origin field
      */
 
     /**
-     * @var geo_viewpoint_node::geo_system_
+     * @var openvrml::mfstring geo_viewpoint_node::geo_system_
      *
      * @brief geo_system field
      */
 
     /**
-     * @var geo_viewpoint_node::orientation_
+     * @var openvrml::sfrotation geo_viewpoint_node::orientation_
      *
      * @brief orientation field
      */
 
     /**
-     * @var geo_viewpoint_node::position_
+     * @var openvrml::sfvec3d geo_viewpoint_node::position_
      *
      * @brief position field
      */
 
     /**
-     * @var geo_viewpoint_node::speed_factor_
+     * @var openvrml::sffloat geo_viewpoint_node::speed_factor_
      *
      * @brief speed_factor field
      */
