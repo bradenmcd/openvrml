@@ -1,3 +1,8 @@
+2007-04-17 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
+	for openvrml::node_impl_util::abstract_node::self_t.
+
 2007-04-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/bounding_volume.h

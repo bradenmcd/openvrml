@@ -478,6 +478,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @typedef Derived openvrml::node_impl_util::abstract_node::self_t
+ *
+ * @brief The derived type.
+ */
+
+/**
  * @typedef openvrml::node_field_value_listener<openvrml::sfbool> openvrml::node_impl_util::abstract_node::sfbool_listener
  *
  * @brief @c openvrml::sfbool listener.  Provided for convenience.
