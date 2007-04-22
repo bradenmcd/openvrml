@@ -104,6 +104,7 @@ namespace {
 
     public:
         explicit browser(GIOChannel & request_channel);
+        virtual ~browser() OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
@@ -530,6 +531,9 @@ namespace {
     browser::browser(GIOChannel & request_channel):
         openvrml::browser(std::cerr, std::cerr),
         request_channel_(&request_channel)
+    {}
+
+    browser::~browser() OPENVRML_NOTHROW
     {}
 
     std::auto_ptr<openvrml::resource_istream>
