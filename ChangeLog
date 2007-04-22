@@ -1,5 +1,20 @@
 2007-04-22 Braden McDaniel  <braden@endoframe.com>
 
+	Ensure that only one thread at a time writes a request to the
+	request channel.
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(browser): Added member request_channel_mutex_ to protect
+	request_channel_.  Added member function write_request_chars.
+	(browser::do_get_resource(const std::string &)): Store a reference
+	to the browser in the plugin_resource_istream so that the
+	thread-safe function browser::write_request_chars can be called.
+	(browser::write_request_chars(const gcharr *, gssize, gsize *)):
+	Lock the request_channel_mutex_ while writing to the
+	request_channel_.
+
+2007-04-22 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
 	(resource_fetcher::~resource_fetcher()): Added destructor
 	definition; openvrml::resource_fetcher::~resource_fetcher is
