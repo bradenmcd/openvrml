@@ -1,4 +1,4 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML Mozilla plug-in
 // Copyright 2004, 2005, 2006  Braden N. McDaniel
@@ -99,8 +99,16 @@ GType gtk_vrml_browser_get_type()
 namespace {
     G_GNUC_INTERNAL GdkGLConfig * gl_config;
 
+    //
+    // IMPORTANT: browser::request_channel_mutex_ protects the
+    // request_channel_ from concurrently running do_get_resource threads.  If
+    // other threads will be using the request_channel concurrently, *you need
+    // to implement a thread-safe GIOChannel and use that for the
+    // request_channel*.
+    //
     class G_GNUC_INTERNAL browser : public openvrml::browser {
         GIOChannel * request_channel_;
+        boost::mutex request_channel_mutex_;
 
     public:
         explicit browser(GIOChannel & request_channel);
@@ -109,6 +117,9 @@ namespace {
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
         do_get_resource(const std::string & uri);
+
+        bool write_request_chars(const gchar * buf, gssize count,
+                                 gsize * bytes_written);
     };
 
 
@@ -543,14 +554,14 @@ namespace {
 
         class plugin_resource_istream : public openvrml::resource_istream {
             const boost::shared_ptr<plugin_streambuf> streambuf_;
-            GIOChannel * const request_channel_;
+            browser & browser_;
 
         public:
             plugin_resource_istream(const std::string & uri,
-                                    GIOChannel * const request_channel):
+                                    browser & b):
                 openvrml::resource_istream(0),
                 streambuf_(new plugin_streambuf(uri)),
-                request_channel_(request_channel)
+                browser_(b)
             {
                 using std::ostringstream;
                 using boost::ref;
@@ -563,24 +574,11 @@ namespace {
                 ostringstream request;
                 request << "get-url " << uri << '\n';
                 gsize bytes_written;
-                GError * error = 0;
-                scope_guard error_guard = make_guard(g_error_free, ref(error));
-                boost::ignore_unused_variable_warning(error_guard);
-                GIOStatus io_status =
-                    g_io_channel_write_chars(this->request_channel_,
-                                             request.str().data(),
-                                             request.str().length(),
-                                             &bytes_written,
-                                             &error);
-                if (io_status != G_IO_STATUS_NORMAL) {
-                    g_warning(error->message);
-                    this->setstate(ios_base::badbit);
-                    return;
-                }
-
-                io_status = g_io_channel_flush(this->request_channel_, &error);
-                if (io_status != G_IO_STATUS_NORMAL) {
-                    g_warning(error->message);
+                const bool write_succeeded =
+                    this->browser_.write_request_chars(request.str().data(),
+                                                       request.str().length(),
+                                                       &bytes_written);
+                if (!write_succeeded) {
                     this->setstate(ios_base::badbit);
                     return;
                 }
@@ -592,8 +590,6 @@ namespace {
                 if (get_url_result != 0) {
                     this->setstate(ios_base::badbit);
                 }
-
-                error_guard.dismiss();
             }
 
         private:
@@ -613,7 +609,37 @@ namespace {
             }
         };
         return std::auto_ptr<openvrml::resource_istream>(
-            new plugin_resource_istream(uri, this->request_channel_));
+            new plugin_resource_istream(uri, *this));
+    }
+
+    bool browser::write_request_chars(const gchar * const buf,
+                                      const gssize count,
+                                      gsize * const bytes_written)
+    {
+        boost::mutex::scoped_lock lock(this->request_channel_mutex_);
+
+        using boost::ref;
+
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
+        boost::ignore_unused_variable_warning(error_guard);
+
+        GIOStatus status =
+            g_io_channel_write_chars(this->request_channel_, buf, count,
+                                     bytes_written, &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            g_warning(error->message);
+            return false;
+        }
+
+        status = g_io_channel_flush(this->request_channel_, &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            g_warning(error->message);
+            return false;
+        }
+
+        error_guard.dismiss();
+        return true;
     }
 
     browser_listener::browser_listener(GtkGLViewer & viewer):
