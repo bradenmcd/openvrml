@@ -1,3 +1,10 @@
+2007-04-22 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(resource_fetcher::~resource_fetcher()): Added destructor
+	definition; openvrml::resource_fetcher::~resource_fetcher is
+	declared with OPENVRML_NOTHROW.
+
 2007-04-18 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.

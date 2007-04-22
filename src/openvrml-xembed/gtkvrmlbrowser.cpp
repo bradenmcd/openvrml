@@ -104,6 +104,7 @@ namespace {
 
     public:
         explicit resource_fetcher(GIOChannel & request_channel);
+        virtual ~resource_fetcher() OPENVRML_NOTHROW;
 
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
@@ -526,6 +527,9 @@ namespace {
 
     resource_fetcher::resource_fetcher(GIOChannel & request_channel):
         request_channel_(&request_channel)
+    {}
+
+    resource_fetcher::~resource_fetcher() OPENVRML_NOTHROW
     {}
 
     std::auto_ptr<openvrml::resource_istream>
