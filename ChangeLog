@@ -1,3 +1,10 @@
+2007-04-26 Braden McDaniel  <braden@endoframe.com>
+
+	* lib/gtkglext/configure.in: Calls to AM_PATH_GLIB_2_0 and
+	AM_PATH_GTK_2_0 aren't doing anything useful; actual dependency
+	checking and definition of substitution variables happens using
+	pkg-config.
+
 2007-04-22 Braden McDaniel  <braden@endoframe.com>
 
 	Ensure that only one thread at a time writes a request to the
