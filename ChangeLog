@@ -1,5 +1,24 @@
 2007-04-26 Braden McDaniel  <braden@endoframe.com>
 
+	gtk_vrml_browser_load_url needs to spawn a new thread.  Otherwise
+	we can hold up the main event loop and deadlock.
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(resource_fetcher): Added thread_group_ for threads spawned from
+	gtk_vrml_browser_load_url; added create_thread wrapper for
+	boost::thread::thread_group::create_thread.
+	(GtkGLViewer): Added member load_url, a thread function object.
+	(GtkGLViewer::load_url): Thread function object called by thread
+	spawned from gtk_vrml_browser_load_url.
+	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
+	gchar **): Delegate to a new thread.
+	(resource_fetcher::~resource_fetcher()): Join all threads in the
+	thread group.
+	(resource_fetcher::create_thread(const boost::function0<void> &)):
+	Create a new thread.
+
+2007-04-26 Braden McDaniel  <braden@endoframe.com>
+
 	* lib/gtkglext/configure.in: Calls to AM_PATH_GLIB_2_0 and
 	AM_PATH_GTK_2_0 aren't doing anything useful; actual dependency
 	checking and definition of substitution variables happens using
