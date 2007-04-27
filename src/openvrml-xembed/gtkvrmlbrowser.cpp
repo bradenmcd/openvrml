@@ -109,10 +109,13 @@ namespace {
     class G_GNUC_INTERNAL browser : public openvrml::browser {
         GIOChannel * request_channel_;
         boost::mutex request_channel_mutex_;
+        boost::thread_group thread_group_;
 
     public:
         explicit browser(GIOChannel & request_channel);
         virtual ~browser() OPENVRML_NOTHROW;
+
+        void create_thread(const boost::function0<void> & threadfunc);
 
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
@@ -154,6 +157,8 @@ namespace {
             (::gtk_vrml_browser_motion_notify_event)(GtkWidget *,
                                                      GdkEventMotion *,
                                                      gpointer);
+
+        struct load_url;
 
         ::browser browser_;
         ::browser_listener browser_listener_;
@@ -199,6 +204,32 @@ GtkWidget * gtk_vrml_browser_new(GIOChannel * const request_channel)
     return GTK_WIDGET(vrml_browser);
 }
 
+namespace {
+    struct GtkGLViewer::load_url {
+        load_url(GtkGLViewer & viewer,
+                 const std::vector<std::string> & url,
+                 const std::vector<std::string> & parameter):
+            viewer_(&viewer),
+            url_(url),
+            parameter_(parameter)
+        {}
+
+        void operator()() const throw ()
+        {
+            {
+                boost::mutex::scoped_lock
+                    lock(this->viewer_->browser_initialized_mutex_);
+                this->viewer_->browser_initialized_ = false;
+            }
+            this->viewer_->browser_.load_url(this->url_, this->parameter_);
+        }
+
+    private:
+        GtkGLViewer * const viewer_;
+        const std::vector<std::string> url_, parameter_;
+    };
+}
+
 void gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
                                const gchar ** url,
                                const gchar ** parameter)
@@ -211,11 +242,8 @@ void gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
     while (url && *url) { url_vec.push_back(*(url++)); }
     while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
 
-    {
-        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
-        viewer.browser_initialized_ = false;
-    }
-    viewer.browser_.load_url(url_vec, param_vec);
+    viewer.browser_
+        .create_thread(GtkGLViewer::load_url(viewer, url_vec, param_vec));
 }
 
 void gtk_vrml_browser_set_world(GtkVrmlBrowser * vrml_browser,
@@ -545,7 +573,14 @@ namespace {
     {}
 
     browser::~browser() OPENVRML_NOTHROW
-    {}
+    {
+        this->thread_group_.join_all();
+    }
+
+    void browser::create_thread(const boost::function0<void> & threadfunc)
+    {
+        this->thread_group_.create_thread(threadfunc);
+    }
 
     std::auto_ptr<openvrml::resource_istream>
     browser::do_get_resource(const std::string & uri)
