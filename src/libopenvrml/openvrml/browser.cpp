@@ -5537,7 +5537,9 @@ openvrml::browser::browser(std::ostream & out, std::ostream & err)
  */
 openvrml::browser::~browser() OPENVRML_NOTHROW
 {
-    this->load_root_scene_thread_->join();
+    if (this->load_root_scene_thread_) {
+        this->load_root_scene_thread_->join();
+    }
     this->load_proto_thread_group_.join_all();
 
     const double now = browser::current_time();

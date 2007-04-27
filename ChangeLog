@@ -1,4 +1,10 @@
-2007-04-26 Braden McDaniel  <braden@endoframe.com>
+2007-04-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::~browser()): Check to make sure we have a root
+	scene thread before joining it.
+
+2007-04-27 Braden McDaniel  <braden@endoframe.com>
 
 	gtk_vrml_browser_load_url needs to spawn a new thread.  Otherwise
 	we can hold up the main event loop and deadlock.
