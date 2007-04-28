@@ -119,7 +119,12 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
                   [have_gtk=no])
 PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
-PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0], , [have_gnomeui=no])
+#
+# openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
+# introduced in libgnome 2.14.
+#
+PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0 libgnome-2.0 >= 2.14], ,
+                  [have_gnomeui=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
 AC_PATH_XTRA
 AX_CHECK_GLU
