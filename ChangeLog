@@ -1,5 +1,11 @@
 2007-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Require libgnome 2.14.  openvrml-player uses
+	GNOME_PARAM_GOPTION_CONTEXT, which was introduced in libgnome
+	2.14.
+
+2007-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/Makefile.am
 	(AM_LDFLAGS): Culled redundant/unnecessary flags.
 
