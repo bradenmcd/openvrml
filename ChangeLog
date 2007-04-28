@@ -1,5 +1,10 @@
 2007-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-xembed/Makefile.am
+	(AM_LDFLAGS): Culled redundant/unnecessary flags.
+
+2007-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(char32_t): Ensure char32_t is 4 bytes even if wchar_t is not.
 
