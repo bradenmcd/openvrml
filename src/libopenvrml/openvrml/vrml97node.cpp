@@ -3792,11 +3792,10 @@ namespace {
 
 
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-#   ifdef _WIN32
-    typedef __int32 char32_t;
-#   else
-    typedef wchar_t char32_t;
-#   endif
+    typedef boost::mpl::if_c<sizeof (wchar_t) == 4,
+                             wchar_t,
+                             openvrml::int32>::type
+        char32_t;
 # endif
 
     class OPENVRML_LOCAL text_node : public abstract_node<text_node>,

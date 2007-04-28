@@ -1,3 +1,8 @@
+2007-04-28 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(char32_t): Ensure char32_t is 4 bytes even if wchar_t is not.
+
 2007-04-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
