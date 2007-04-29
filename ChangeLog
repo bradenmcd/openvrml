@@ -1,5 +1,10 @@
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Added mention of the XEmbed control and OpenVRML Player
+	to "License terms".
+
+2007-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Documented --disable-player configure option.
 
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
