@@ -92,7 +92,8 @@ Package directory layout
      /libopenvrml       :  Runtime library sources.
      /libopenvrml-gl    :  OpenGL renderer library sources.
      /openvrml-xembed   :  XEmbed control application sources.
-   /test                :  Test programs.
+     /openvrml-player   :  OpenVRML Player application sources.
+   /tests               :  Test programs.
 
 
 Prerequisites
