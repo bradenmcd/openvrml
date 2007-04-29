@@ -1,3 +1,11 @@
+2007-04-29 Braden McDaniel  <braden@endoframe.com>
+
+	Turned off "Enable Minimal Rebuild" in the Debug configuration; it
+	seems to trigger compiler error C1073.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+
 2007-04-28 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Require libgnome 2.14.  openvrml-player uses
