@@ -70,9 +70,10 @@ file "COPYING.LESSER".  Code used in these libararies under other terms
 
      OpenGL(TM) is a trademark of Silicon Graphics, Inc.
 
-   The Mozilla plug-in as well as the included example programs are
-available under the terms of the GNU General Public License (GPL),
-version 2.  The full text of the GPL can be found in the file "COPYING".
+   The XEmbed control, OpenVRML Player, and the Mozilla plug-in as
+well as the included example programs are available under the terms of
+the GNU General Public License (GPL), version 2.  The full text of the
+GPL can be found in the file "COPYING".
 
 
 Package directory layout
