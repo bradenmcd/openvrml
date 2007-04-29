@@ -1,5 +1,9 @@
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Documented --disable-player configure option.
+
+2007-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Added /src/openvrml-player to package directory layout.
 
 2007-04-29 Braden McDaniel  <braden@endoframe.com>

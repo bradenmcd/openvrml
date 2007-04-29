@@ -191,6 +191,11 @@ depends on.
      XEmbed container.  This depends on GTK+.  It also requires that
      the GL renderer be built.
 
+ --disable-player
+     Do not build openvrml-player.  This is a GNOME application that
+     hosts the XEmbed control.  It depends on GNOME (libgnomeui) and
+     libcurl.
+
  --disable-mozilla-plugin
      Do not build the Mozilla plug-in.  The Mozilla plug-in depends on
      GTK+ and, of course, a Mozilla-based browser.  It also requires
