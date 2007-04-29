@@ -1,5 +1,9 @@
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Added /src/openvrml-player to package directory layout.
+
+2007-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	Turned off "Enable Minimal Rebuild" in the Debug configuration; it
 	seems to trigger compiler error C1073.
 
