@@ -1,3 +1,18 @@
+Changes new in version 0.16.4, 30 April, 2007
+========================================================================
+
+- openvrml-gtkplug has been renamed to openvrml-xembed.
+
+- Added openvrml-player, a stand-alone container for openvrml-xembed.
+  openvrml-player uses libcurl for resource fetching.
+
+- Fixed coordinate generation for Extrusion node rendering.
+
+- Fixed progressive rendering of JPEG images.
+
+- Various other minor bug fixes.
+
+
 Changes new in version 0.16.3, 30 December, 2006
 ========================================================================
 
