@@ -77,7 +77,6 @@ libantlr_la_SOURCES = \
         src/String.cpp \
         src/Token.cpp \
         src/TokenBuffer.cpp \
-        src/TokenRefCount.cpp \
         src/TokenStreamBasicFilter.cpp \
         src/TokenStreamHiddenTokenFilter.cpp \
         src/TokenStreamSelector.cpp \

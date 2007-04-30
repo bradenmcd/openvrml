@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.16.3], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.16.4], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -50,11 +50,11 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-OV_PROG_ANTLR([2.7.6])
+OV_PROG_ANTLR([2.7.4])
 AS_IF([test -z "$ANTLR"],
       [AS_IF([test ! -f $srcdir/src/libopenvrml/openvrml/Vrml97Parser.cpp],
-             [AC_MSG_FAILURE([antlr 2.7.6 not found])],
-             [AC_MSG_WARN([antlr 2.7.6 not found; but generated files already exist])])])
+             [AC_MSG_FAILURE([antlr 2.7.4 not found])],
+             [AC_MSG_WARN([antlr 2.7.4 not found; but generated files already exist])])])
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])

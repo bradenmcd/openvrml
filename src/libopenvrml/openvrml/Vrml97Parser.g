@@ -2094,7 +2094,7 @@ options { defaultErrorHandler=false; }
     float x, y, z, angle;
 }
     :   x=floatValue y=floatValue z=floatValue angle=floatValue {
-            vec3f axis = make_vec3f(x, y, z);
+            vec3f axis(x, y, z);
 
             const float axisLength = axis.length();
             if (!fequal(axisLength, 1.0f)) {
@@ -2106,7 +2106,7 @@ options { defaultErrorHandler=false; }
                     axis = axis.normalize();
                 }
             }
-            r = make_rotation(axis, angle);
+            r = rotation(axis, angle);
         }
     ;
 

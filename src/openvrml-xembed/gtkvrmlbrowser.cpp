@@ -99,14 +99,21 @@ GType gtk_vrml_browser_get_type()
 namespace {
     G_GNUC_INTERNAL GdkGLConfig * gl_config;
 
-    class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
+    //
+    // IMPORTANT: browser::request_channel_mutex_ protects the
+    // request_channel_ from concurrently running do_get_resource threads.  If
+    // other threads will be using the request_channel concurrently, *you need
+    // to implement a thread-safe GIOChannel and use that for the
+    // request_channel*.
+    //
+    class G_GNUC_INTERNAL browser : public openvrml::browser {
         GIOChannel * request_channel_;
         boost::mutex request_channel_mutex_;
         boost::thread_group thread_group_;
 
     public:
-        explicit resource_fetcher(GIOChannel & request_channel);
-        virtual ~resource_fetcher() OPENVRML_NOTHROW;
+        explicit browser(GIOChannel & request_channel);
+        virtual ~browser() OPENVRML_NOTHROW;
 
         void create_thread(const boost::function0<void> & threadfunc);
 
@@ -153,8 +160,7 @@ namespace {
 
         struct load_url;
 
-        ::resource_fetcher fetcher_;
-        openvrml::browser browser_;
+        ::browser browser_;
         ::browser_listener browser_listener_;
         bool browser_initialized_;
         boost::mutex browser_initialized_mutex_;
@@ -236,7 +242,7 @@ void gtk_vrml_browser_load_url(GtkVrmlBrowser * const vrml_browser,
     while (url && *url) { url_vec.push_back(*(url++)); }
     while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
 
-    viewer.fetcher_
+    viewer.browser_
         .create_thread(GtkGLViewer::load_url(viewer, url_vec, param_vec));
 }
 
@@ -557,36 +563,40 @@ gint gtk_vrml_browser_timeout_callback(const gpointer ptr)
 
 namespace {
 
-    resource_fetcher::resource_fetcher(GIOChannel & request_channel):
+    //
+    // We use stdout for communication with the host process; so send
+    // all browser output to stderr.
+    //
+    browser::browser(GIOChannel & request_channel):
+        openvrml::browser(std::cerr, std::cerr),
         request_channel_(&request_channel)
     {}
 
-    resource_fetcher::~resource_fetcher() OPENVRML_NOTHROW
+    browser::~browser() OPENVRML_NOTHROW
     {
         this->thread_group_.join_all();
     }
 
-    void
-    resource_fetcher::create_thread(const boost::function0<void> & threadfunc)
+    void browser::create_thread(const boost::function0<void> & threadfunc)
     {
         this->thread_group_.create_thread(threadfunc);
     }
 
     std::auto_ptr<openvrml::resource_istream>
-    resource_fetcher::do_get_resource(const std::string & uri)
+    browser::do_get_resource(const std::string & uri)
     {
         using openvrml_xembed::plugin_streambuf;
 
         class plugin_resource_istream : public openvrml::resource_istream {
             const boost::shared_ptr<plugin_streambuf> streambuf_;
-            resource_fetcher & resource_fetcher_;
+            browser & browser_;
 
         public:
             plugin_resource_istream(const std::string & uri,
-                                    resource_fetcher & fetcher):
+                                    browser & b):
                 openvrml::resource_istream(0),
                 streambuf_(new plugin_streambuf(uri)),
-                resource_fetcher_(fetcher)
+                browser_(b)
             {
                 using std::ostringstream;
                 using boost::ref;
@@ -600,10 +610,9 @@ namespace {
                 request << "get-url " << uri << '\n';
                 gsize bytes_written;
                 const bool write_succeeded =
-                    this->resource_fetcher_
-                    .write_request_chars(request.str().data(),
-                                         request.str().length(),
-                                         &bytes_written);
+                    this->browser_.write_request_chars(request.str().data(),
+                                                       request.str().length(),
+                                                       &bytes_written);
                 if (!write_succeeded) {
                     this->setstate(ios_base::badbit);
                     return;
@@ -638,9 +647,9 @@ namespace {
             new plugin_resource_istream(uri, *this));
     }
 
-    bool resource_fetcher::write_request_chars(const gchar * const buf,
-                                               const gssize count,
-                                               gsize * const bytes_written)
+    bool browser::write_request_chars(const gchar * const buf,
+                                      const gssize count,
+                                      gsize * const bytes_written)
     {
         boost::mutex::scoped_lock lock(this->request_channel_mutex_);
 
@@ -691,14 +700,9 @@ namespace {
         }
     }
 
-    //
-    // We use stdout for communication with the host process; so send
-    // all browser output to stderr.
-    //
     GtkGLViewer::GtkGLViewer(GIOChannel & request_channel,
                              GtkVrmlBrowser & vrml_browser):
-        fetcher_(request_channel),
-        browser_(this->fetcher_, std::cerr, std::cerr),
+        browser_(request_channel),
         browser_listener_(*this),
         browser_initialized_(true),
         vrml_browser_(vrml_browser),
