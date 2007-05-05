@@ -195,13 +195,15 @@ int main(int argc, char * argv[])
                                       translation_domain);
 
     GnomeProgram * const program =
-        gnome_program_init(app_id,
-                           PACKAGE_VERSION,
-                           LIBGNOMEUI_MODULE,
-                           argc,
-                           argv,
-                           GNOME_PARAM_GOPTION_CONTEXT, option_context,
-                           GNOME_PARAM_NONE);
+        gnome_program_init(
+            app_id,
+            PACKAGE_VERSION,
+            LIBGNOMEUI_MODULE,
+            argc,
+            argv,
+            GNOME_PARAM_GOPTION_CONTEXT, option_context,
+            GNOME_PARAM_APP_DATADIR, OPENVRML_PLAYER_PKGDATADIR_,
+            GNOME_PARAM_NONE);
 
     glade_init();
     glade_register_widget(OPENVRML_PLAYER_TYPE_FILE_CHOOSER_DIALOG,
