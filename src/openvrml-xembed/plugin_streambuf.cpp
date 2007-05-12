@@ -71,8 +71,7 @@ void openvrml_xembed::plugin_streambuf::init(const size_t stream_id,
     this->type_ = type;
     this->initialized_ = true;
     const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
-    succeeded = plugin_streambuf_map.insert(make_pair(stream_id, this_))
-        .second;
+    succeeded = plugin_streambuf_map_.insert(stream_id, this_);
     g_assert(succeeded);
     this->streambuf_initialized_or_failed_.notify_all();
 }
@@ -138,10 +137,6 @@ openvrml_xembed::plugin_streambuf::underflow()
     return traits_type::to_int_type(*this->gptr());
 }
 
-
-openvrml_xembed::uninitialized_plugin_streambuf_map
-openvrml_xembed::uninitialized_plugin_streambuf_map_;
-
 const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::uninitialized_plugin_streambuf_map::
 find(const std::string & url) const
@@ -202,5 +197,39 @@ openvrml_xembed::uninitialized_plugin_streambuf_map::front() const
     return this->map_.begin()->second;
 }
 
+openvrml_xembed::uninitialized_plugin_streambuf_map
+openvrml_xembed::uninitialized_plugin_streambuf_map_;
 
-openvrml_xembed::plugin_streambuf_map_t openvrml_xembed::plugin_streambuf_map;
+
+const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
+openvrml_xembed::plugin_streambuf_map::find(const size_t id) const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    map_t::const_iterator pos = this->map_.find(id);
+    return pos == this->map_.end()
+        ? boost::shared_ptr<plugin_streambuf>()
+        : pos->second;
+}
+
+bool
+openvrml_xembed::plugin_streambuf_map::
+insert(const size_t id,
+       const boost::shared_ptr<plugin_streambuf> & streambuf)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->map_.insert(make_pair(id, streambuf)).second;
+}
+
+/**
+ * @brief Erase the entry corresponding to @p id.
+ *
+ * @return @c true if an entry was removed; @c false otherwise.
+ */
+bool openvrml_xembed::plugin_streambuf_map::erase(const size_t id)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->map_.erase(id) > 0;
+}
+
+openvrml_xembed::plugin_streambuf_map
+openvrml_xembed::plugin_streambuf_map_;

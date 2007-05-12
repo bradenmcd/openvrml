@@ -70,14 +70,13 @@ namespace openvrml_xembed {
 
             string command_line;
             while (getline(*this->in_, command_line)) {
+                using boost::shared_ptr;
                 using std::istringstream;
 
                 istringstream command_line_stream(command_line);
                 string command;
                 command_line_stream >> command;
                 if (command == "get-url-result") {
-                    using boost::shared_ptr;
-
                     std::string url;
                     int result;
                     command_line_stream >> url >> result;
@@ -87,8 +86,6 @@ namespace openvrml_xembed {
                     g_assert(streambuf);
                     streambuf->set_get_url_result(result);
                 } else if (command == "new-stream") {
-                    using boost::shared_ptr;
-
                     size_t stream_id;
                     std::string type, url;
                     command_line_stream >> stream_id >> type >> url;
@@ -114,25 +111,26 @@ namespace openvrml_xembed {
                 } else if (command == "destroy-stream") {
                     size_t stream_id;
                     command_line_stream >> stream_id;
-                    plugin_streambuf_map_t::iterator pos = 
-                        plugin_streambuf_map.find(stream_id);
-                    if (pos == plugin_streambuf_map.end()) {
-                        g_warning("Attempt to destroy a nonexistent stream.");
+                    const shared_ptr<plugin_streambuf> streambuf =
+                        plugin_streambuf_map_.find(stream_id);
+                    if (!streambuf) {
+                        g_warning("Attempt to destroy a nonexistent stream "
+                                  "(with stream ID %lu).", stream_id);
                         continue;
                     }
-                    pos->second->buf_.set_eof();
-                    plugin_streambuf_map.erase(pos);
+                    streambuf->buf_.set_eof();
+                    plugin_streambuf_map_.erase(stream_id);
                 } else if (command == "write") {
                     size_t stream_id, length;
                     command_line_stream >> stream_id >> length;
-                    plugin_streambuf_map_t::const_iterator pos =
-                        plugin_streambuf_map.find(stream_id);
-                    if (pos == plugin_streambuf_map.end()) {
+                    const shared_ptr<plugin_streambuf> streambuf =
+                        plugin_streambuf_map_.find(stream_id);
+                    if (!streambuf) {
                         g_warning("Attempt to write to a nonexistent stream.");
                         continue;
                     }
                     for (size_t i = 0; i < length; ++i) {
-                        pos->second->buf_.put(this->in_->get());
+                        streambuf->buf_.put(this->in_->get());
                     }
                 } else if (command == "load-url") {
                     string url;
