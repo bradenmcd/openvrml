@@ -14,7 +14,7 @@
  * <tr><td>@ref getting_started</td></tr>
  * <tr><td>@ref resource_fetching</td></tr>
  * <tr><td>@ref resource_fetching_rationale</td></tr>
- * <tr><td>@ref introducing_resource_istream</td></tr>
+ * <tr><td>@ref resource_istream</td></tr>
  * <tr><td>@ref introducing_browser</td></tr>
  * <tr><td>@ref resource_istream_impl_considerations</td></tr>
  * <tr><td>@ref conformance</td><td>NIST VRML Test Suite results</td></tr>

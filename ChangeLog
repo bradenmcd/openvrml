@@ -1,5 +1,9 @@
 2007-05-11 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/index.doc: Fixed reference.
+
+2007-05-11 Braden McDaniel  <braden@endoframe.com>
+
 	Protect the plugin_streambuf_map with a mutex.
 
 	* src/openvrml-xembed/main.cpp
