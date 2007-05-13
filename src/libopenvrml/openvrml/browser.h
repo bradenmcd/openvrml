@@ -388,8 +388,8 @@ namespace openvrml {
             OPENVRML_THROW1(std::bad_alloc);
         const std::vector<std::string> meta_keys() const
             OPENVRML_THROW1(std::bad_alloc);
-        const std::vector<boost::intrusive_ptr<node> > & nodes() const
-            OPENVRML_NOTHROW;
+        const std::vector<boost::intrusive_ptr<node> > nodes() const
+            OPENVRML_THROW1(std::bad_alloc);
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         const scope * root_scope() const OPENVRML_NOTHROW;

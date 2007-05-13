@@ -3808,22 +3808,26 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping()
 /**
  * @brief Get the children in the scene graph.
  *
- * This function delegates to <code>node::do_children</code>.
+ * This function delegates to @c node::do_children.
  *
  * @return the children in the scene graph.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-const std::vector<boost::intrusive_ptr<openvrml::node> > &
-openvrml::grouping_node::children() const OPENVRML_NOTHROW
+const std::vector<boost::intrusive_ptr<openvrml::node> >
+openvrml::grouping_node::children() const OPENVRML_THROW1(std::bad_alloc)
 {
     return this->do_children();
 }
 
 /**
- * @fn const std::vector<boost::intrusive_ptr<openvrml::node> > & openvrml::grouping_node::do_children() const
+ * @fn const std::vector<boost::intrusive_ptr<openvrml::node> > openvrml::grouping_node::do_children() const
  *
  * @brief Get the children in the scene graph.
  *
  * @return the child nodes in the scene graph.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
 
 /**

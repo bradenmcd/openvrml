@@ -1859,8 +1859,8 @@ namespace {
                                      rendering_context context);
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
 
         virtual void recalc_bsphere();
         void render_nocull(openvrml::viewer & viewer,
@@ -2314,10 +2314,13 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
     template <typename Derived>
-    const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    grouping_node_base<Derived>::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<openvrml::node> >
+    grouping_node_base<Derived>::do_children() const
+        OPENVRML_THROW1(std::bad_alloc)
     {
         return this->children_.mfnode::value();
     }
@@ -3163,8 +3166,8 @@ namespace {
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
 
         void load();
     };
@@ -3188,8 +3191,8 @@ namespace {
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
         virtual void recalc_bsphere();
     };
 
@@ -3785,8 +3788,8 @@ namespace {
 
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
         virtual void recalc_bsphere();
     };
 
@@ -13670,9 +13673,11 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    inline_node::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<openvrml::node> >
+    inline_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         static const std::vector<boost::intrusive_ptr<openvrml::node> > empty;
         return this->inline_scene_
@@ -14085,9 +14090,11 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    lod_node::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<openvrml::node> >
+    lod_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         return this->current_children_.value();
     }
@@ -20971,9 +20978,11 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    switch_node::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<openvrml::node> >
+    switch_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         return this->current_children_.value();
     }
@@ -27036,8 +27045,8 @@ namespace {
 
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const throw ();
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
         virtual void recalc_bsphere();
     };
 
@@ -27406,9 +27415,11 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<openvrml::node> > &
-    cad_layer_node::do_children() const throw ()
+    const std::vector<boost::intrusive_ptr<openvrml::node> >
+    cad_layer_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         return this->current_children_.value();
     }

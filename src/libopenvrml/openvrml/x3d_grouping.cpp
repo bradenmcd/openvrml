@@ -93,8 +93,8 @@ namespace {
                                      rendering_context context);
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
 
         virtual void recalc_bsphere();
         void render_nocull(openvrml::viewer & viewer,
@@ -242,9 +242,11 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<node> > &
-    static_group_node::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<node> >
+    static_group_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         return this->children_.value();
     }

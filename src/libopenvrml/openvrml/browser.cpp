@@ -7094,9 +7094,11 @@ const std::vector<std::string> openvrml::scene::meta_keys() const
  * @brief Root @c node%s for the @c scene.
  *
  * @return the root @c node%s for the @c scene.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-const std::vector<boost::intrusive_ptr<openvrml::node> > &
-openvrml::scene::nodes() const throw()
+const std::vector<boost::intrusive_ptr<openvrml::node> >
+openvrml::scene::nodes() const OPENVRML_THROW1(std::bad_alloc)
 {
     boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
     return this->nodes_;

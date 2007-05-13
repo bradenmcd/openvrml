@@ -1030,8 +1030,8 @@ namespace openvrml {
     public:
         virtual ~grouping_node() OPENVRML_NOTHROW = 0;
 
-        const std::vector<boost::intrusive_ptr<node> > & children() const
-            OPENVRML_NOTHROW;
+        const std::vector<boost::intrusive_ptr<node> > children() const
+            OPENVRML_THROW1(std::bad_alloc);
         void activate_pointing_device_sensors(double timestamp,
                                               bool over,
                                               bool active,
@@ -1044,8 +1044,8 @@ namespace openvrml {
 
     private:
         virtual grouping_node * to_grouping() OPENVRML_NOTHROW;
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-        do_children() const OPENVRML_NOTHROW = 0;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc) = 0;
     };
 
 

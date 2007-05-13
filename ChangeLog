@@ -1,3 +1,40 @@
+2007-05-12 Braden McDaniel  <braden@endoframe.com>
+
+	In order to be thread-safe, scene::nodes and
+	grouping_node::children must return a copy of the vector rather
+	than a const reference.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::nodes() const): Return the vector of nodes as a
+	copy.  As a consequence of this, the function could throw
+	std::bad_alloc.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::scene): Changed nodes accessor to return a copy of the
+	node vector.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::grouping_node::children() const): Return the vector of
+	nodes as a copy.  As a consequence of this, the function could
+	throw std::bad_alloc.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::grouping_node): Changed children and do_children
+	members to return the node vector by copy (rather than by const
+	reference).
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base): Changed do_children member to return the
+	node vector by copy.
+	(inline_node): Changed do_children member to return the node
+	vector by copy.
+	(lod_node): Changed do_children member to return the node vector
+	by copy.
+	(switch_node): Changed do_children member to return the node
+	vector by copy.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
+	(cad_face_node): Changed do_children member to return the node
+	vector by copy.
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	(static_group_node): Changed do_children member to return the node
+	vector by copy.
+
 2007-05-11 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/index.doc: Fixed reference.

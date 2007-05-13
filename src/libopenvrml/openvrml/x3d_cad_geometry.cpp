@@ -103,14 +103,15 @@ namespace {
 
     protected:
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
-        virtual const std::vector<boost::intrusive_ptr<node> > &
-            do_children() const OPENVRML_NOTHROW;
+        virtual const std::vector<boost::intrusive_ptr<node> >
+            do_children() const OPENVRML_THROW1(std::bad_alloc);
     };
 
 
+    class OPENVRML_LOCAL indexed_quad_set_node :
+        public abstract_node<indexed_quad_set_node>,
+        public geometry_node {
 
-    class OPENVRML_LOCAL indexed_quad_set_node : public abstract_node<indexed_quad_set_node>,
-                                         public geometry_node {
         friend class indexed_quad_set_metatype;
 
         class set_index_listener : public event_listener_base<self_t>,
@@ -517,18 +518,21 @@ namespace {
      * @brief Get the children in the scene graph.
      *
      * @return the child nodes in the scene graph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
-    const std::vector<boost::intrusive_ptr<node> > &
-    cad_face_node::do_children() const OPENVRML_NOTHROW
+    const std::vector<boost::intrusive_ptr<node> >
+    cad_face_node::do_children() const OPENVRML_THROW1(std::bad_alloc)
     {
         cad_face_node * me = const_cast<cad_face_node *>(this);
-        //if there is no child
-        if (shape_.sfnode::value().get() == NULL)
+        // if there is no child
+        if (!shape_.sfnode::value().get()) {
             me->children_.clear();
-        //if we have not set the child, or the child has changed.
-        else if (this->children_.empty() || this->children_[0] != shape_.sfnode::value())
+        } else if (this->children_.empty()
+                   || this->children_[0] != shape_.sfnode::value()) {
+            // if we have not set the child, or the child has changed.
             me->children_.assign(1, shape_.sfnode::value());
-
+        }
         return children_;
     }
 
