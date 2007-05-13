@@ -7031,7 +7031,7 @@ namespace {
                                               img,
                                               node,
                                               node_mutex));
-                read_stream(in, listener);
+                node.scene()->read_stream(in, listener);
             }
         } catch (const openvrml::no_alternative_url &) {}
     }
@@ -12481,7 +12481,7 @@ namespace {
                                               this->image_,
                                               *this,
                                               this->mutex()));
-                read_stream(in, listener);
+                this->scene()->read_stream(in, listener);
             }
             this->texture_needs_update = false;
         }

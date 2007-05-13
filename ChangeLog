@@ -1,3 +1,27 @@
+2007-05-13 Braden McDaniel  <braden@endoframe.com>
+
+	Moved read_stream to be a member of openvrml::scene.  We need to
+	hang a thread group for these threads somewhere so we can join
+	them; and the scene would seem to be a reasonable place.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::read_stream(std::auto_ptr<resource_istream>,
+	std::auto_ptr<stream_listener>)): Removed.
+	(openvrml::scene::~scene()): Join any stream reader threads.
+	(openvrml::scene::read_stream(std::auto_ptr<resource_istream>,
+	std::auto_ptr<stream_listener>)): Read a stream.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::read_stream(std::auto_ptr<resource_istream>,
+	std::auto_ptr<stream_listener>)): Removed.
+	(openvrml::scene): Added members stream_reader_threads_ and
+	read_stream.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(update_texture(background_node &, boost::recursive_mutex &, const
+	openvrml::mfstring &, openvrml::image &)): Call read_stream on the
+	scene.
+	(image_texture_node::update_texture()): Call read_stream on the
+	scene.
+
 2007-05-12 Braden McDaniel  <braden@endoframe.com>
 
 	In order to be thread-safe, scene::nodes and

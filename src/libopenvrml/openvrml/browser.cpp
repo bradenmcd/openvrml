@@ -4838,59 +4838,6 @@ data_available(const std::vector<unsigned char> & data)
  * @param[in] data  the data.
  */
 
-namespace {
-
-    struct OPENVRML_LOCAL stream_reader {
-        stream_reader(std::auto_ptr<openvrml::resource_istream> in,
-                      std::auto_ptr<openvrml::stream_listener> listener):
-            in_(in),
-            listener_(listener)
-        {}
-
-        void operator()() const
-        {
-            this->listener_->stream_available(this->in_->url(),
-                                              this->in_->type());
-            while (*this->in_) {
-                std::vector<unsigned char> data;
-                while (this->in_->data_available()) {
-                    using openvrml::resource_istream;
-                    const resource_istream::int_type c = this->in_->get();
-                    if (c != resource_istream::traits_type::eof()) {
-                        data.push_back(
-                            resource_istream::traits_type::to_char_type(c));
-                    } else {
-                        break;
-                    }
-                }
-                if (!data.empty()) {
-                    this->listener_->data_available(data);
-                }
-            }
-        }
-
-    private:
-        boost::shared_ptr<openvrml::resource_istream> in_;
-        boost::shared_ptr<openvrml::stream_listener> listener_;
-    };
-}
-
-/**
- * @brief Read a stream in a new thread.
- *
- * @c read_stream takes ownership of its arguments; the resources are released
- * when reading the stream completes and the thread terminates.
- *
- * @param[in] in        an input stream.
- * @param[in] listener  a stream listener.
- */
-void openvrml::read_stream(std::auto_ptr<resource_istream> in,
-                           std::auto_ptr<stream_listener> listener)
-{
-    boost::function0<void> f = stream_reader(in, listener);
-    boost::thread t(f);
-}
-
 /**
  * @class openvrml::invalid_vrml openvrml/browser.h
  *
@@ -6955,7 +6902,9 @@ openvrml::scene::scene(openvrml::browser & browser, scene * parent)
  * @brief Destroy.
  */
 openvrml::scene::~scene() OPENVRML_NOTHROW
-{}
+{
+    this->stream_reader_threads_.join_all();
+}
 
 /**
  * @brief Get the associated @c browser.
@@ -7186,6 +7135,59 @@ void openvrml::scene::render(openvrml::viewer & viewer,
         child_node * child = node_cast<child_node *>(n->get());
         if (child) { child->render_child(viewer, context); }
     }
+}
+
+namespace {
+
+    struct OPENVRML_LOCAL stream_reader {
+        stream_reader(std::auto_ptr<openvrml::resource_istream> in,
+                      std::auto_ptr<openvrml::stream_listener> listener):
+            in_(in),
+            listener_(listener)
+        {}
+
+        void operator()() const
+        {
+            this->listener_->stream_available(this->in_->url(),
+                                              this->in_->type());
+            while (*this->in_) {
+                std::vector<unsigned char> data;
+                while (this->in_->data_available()) {
+                    using openvrml::resource_istream;
+                    const resource_istream::int_type c = this->in_->get();
+                    if (c != resource_istream::traits_type::eof()) {
+                        data.push_back(
+                            resource_istream::traits_type::to_char_type(c));
+                    } else {
+                        break;
+                    }
+                }
+                if (!data.empty()) {
+                    this->listener_->data_available(data);
+                }
+            }
+        }
+
+    private:
+        boost::shared_ptr<openvrml::resource_istream> in_;
+        boost::shared_ptr<openvrml::stream_listener> listener_;
+    };
+}
+
+/**
+ * @brief Read a stream in a new thread.
+ *
+ * @c #read_stream takes ownership of its arguments; the resources are released
+ * when reading the stream completes and the thread terminates.
+ *
+ * @param[in] in        an input stream.
+ * @param[in] listener  a stream listener.
+ */
+void openvrml::scene::read_stream(std::auto_ptr<resource_istream> in,
+                                  std::auto_ptr<stream_listener> listener)
+{
+    boost::function0<void> f = stream_reader(in, listener);
+    this->stream_reader_threads_.create_thread(f);
 }
 
 /**

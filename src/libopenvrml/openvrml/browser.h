@@ -80,9 +80,6 @@ namespace openvrml {
         do_data_available(const std::vector<unsigned char> & data) = 0;
     };
 
-    OPENVRML_API void read_stream(std::auto_ptr<resource_istream> in,
-                                  std::auto_ptr<stream_listener> listener);
-
 
     class OPENVRML_API invalid_vrml : public std::runtime_error {
     public:
@@ -373,6 +370,8 @@ namespace openvrml {
         mutable boost::mutex meta_mutex_;
         std::map<std::string, std::string> meta_;
 
+        boost::thread_group stream_reader_threads_;
+
     public:
         explicit scene(openvrml::browser & browser, scene * parent = 0)
             OPENVRML_NOTHROW;
@@ -401,6 +400,8 @@ namespace openvrml {
         std::auto_ptr<resource_istream>
         get_resource(const std::vector<std::string> & url) const
             OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
+        void read_stream(std::auto_ptr<resource_istream> in,
+                         std::auto_ptr<stream_listener> listener);
         void shutdown(double timestamp) OPENVRML_NOTHROW;
 
     private:
