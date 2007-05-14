@@ -1,3 +1,29 @@
+2007-05-14 Braden McDaniel  <braden@endoframe.com>
+
+	Visual C++ 8.0 project file updates.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Removed
+	sdl-viewer dependency on antlr.  openvrml's dependency on antlr
+	should be sufficient.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj:
+	Added TokenRefCount.{cpp,hpp} to the project.  Define
+	NO_STATIC_CONSTS; otherwise, static const integers defined in the
+	class definition confuse the linker.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Define NO_STATIC_CONSTS for antlr.  Added gdi32.lib, advapi32.lib,
+	shell32.lib as additional dependencies--Visual C++ Express seems
+	to need these, though the professional version does not.  Upgraded
+	FreeType dependency to version 2.3.4. Made "Whole Program
+	Optimization" a project default for the Release configuration.
+	Ignore default libraries libcmtd.lib and libcmt.lib for Debug and
+	Release configurations, respectively; boost_thread is probably
+	pulling these in.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Made "Whole Program Optimization" a project default for the
+	Release configuration.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Ignore msvcrt.lib in the Debug configuration; SDL pulls this in.
+
 2007-05-13 Braden McDaniel  <braden@endoframe.com>
 
 	Moved read_stream to be a member of openvrml::scene.  We need to

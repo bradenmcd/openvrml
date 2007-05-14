@@ -68,6 +68,7 @@
 				AdditionalDependencies="opengl32.lib glu32.lib SDLmain.lib SDL.lib"
 				OutputFile="$(SolutionDir)..\bin\sdl-viewerd.exe"
 				LinkIncremental="2"
+				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/sdl-viewer.pdb"
 				SubSystem="2"

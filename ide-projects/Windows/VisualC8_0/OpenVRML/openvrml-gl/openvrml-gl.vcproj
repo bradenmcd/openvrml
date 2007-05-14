@@ -102,6 +102,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -123,7 +124,6 @@
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml;..\openvrml;."
 				PreprocessorDefinitions="WIN32;NDEBUG;HAVE_WINDOWS_H;OPENVRML_GL_BUILD_DLL;OPENVRML_USE_DLL"
 				StringPooling="true"
