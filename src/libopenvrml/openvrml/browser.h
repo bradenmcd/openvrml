@@ -24,6 +24,7 @@
 #   define OPENVRML_BROWSER_H
 
 #   include <boost/thread.hpp>
+#   include <openvrml/read_write_mutex.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -188,7 +189,7 @@ namespace openvrml {
         struct root_scene_loader;
 
         class OPENVRML_LOCAL node_metatype_map {
-            mutable boost::mutex mutex_;
+            mutable read_write_mutex mutex_;
             typedef std::map<std::string, boost::shared_ptr<node_metatype> >
                 map_t;
             map_t map_;
@@ -242,13 +243,16 @@ namespace openvrml {
         std::list<scoped_light_node *> scoped_lights;
         std::list<script_node *> scripts;
         std::list<time_dependent_node *> timers;
+
+        read_write_mutex listeners_mutex_;
         std::set<browser_listener *> listeners_;
+
         bool new_view;
         double delta_time;
         openvrml::viewer * viewer_;
 
         bool modified_;
-        mutable boost::mutex modified_mutex_;
+        mutable read_write_mutex modified_mutex_;
 
         resource_fetcher & fetcher_;
 
@@ -362,13 +366,13 @@ namespace openvrml {
         openvrml::browser * const browser_;
         scene * const parent_;
 
-        mutable boost::recursive_mutex nodes_mutex_;
+        mutable read_write_mutex nodes_mutex_;
         std::vector<boost::intrusive_ptr<node> > nodes_;
 
-        mutable boost::mutex url_mutex_;
+        mutable read_write_mutex url_mutex_;
         std::string url_;
 
-        mutable boost::mutex meta_mutex_;
+        mutable read_write_mutex meta_mutex_;
         std::map<std::string, std::string> meta_;
 
         boost::thread_group stream_reader_threads_;

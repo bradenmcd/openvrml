@@ -157,7 +157,7 @@ namespace {
         openvrml::browser browser_;
         ::browser_listener browser_listener_;
         bool browser_initialized_;
-        boost::mutex browser_initialized_mutex_;
+        openvrml::read_write_mutex browser_initialized_mutex_;
         GtkVrmlBrowser & vrml_browser_;
         guint timer;
 
@@ -211,7 +211,7 @@ namespace {
         void operator()() const throw ()
         {
             {
-                boost::mutex::scoped_lock
+                openvrml::read_write_mutex::scoped_write_lock
                     lock(this->viewer_->browser_initialized_mutex_);
                 this->viewer_->browser_initialized_ = false;
             }
@@ -245,7 +245,8 @@ void gtk_vrml_browser_set_world(GtkVrmlBrowser * vrml_browser,
 {
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(vrml_browser->viewer);
     {
-        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+        openvrml::read_write_mutex::scoped_write_lock
+            lock(viewer.browser_initialized_mutex_);
         viewer.browser_initialized_ = false;
     }
     viewer.browser_.set_world(in);
@@ -347,8 +348,11 @@ gboolean gtk_vrml_browser_expose_event(GtkWidget * const widget,
     g_assert(gl_context);
     GtkGLViewer & viewer =
         *static_cast<GtkGLViewer *>(GTK_VRML_BROWSER(widget)->viewer);
-    boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
-    if (!viewer.browser_initialized_) { return true; }
+    {
+        openvrml::read_write_mutex::scoped_read_lock
+            lock(viewer.browser_initialized_mutex_);
+        if (!viewer.browser_initialized_) { return true; }
+    }
 
     if (event->count == 0
         && gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
@@ -539,7 +543,8 @@ gboolean gtk_vrml_browser_motion_notify_event(GtkWidget * const widget,
         g_assert(GTK_VRML_BROWSER(widget)->viewer);
         GtkGLViewer & viewer =
             *static_cast<GtkGLViewer *>(GTK_VRML_BROWSER(widget)->viewer);
-        boost::mutex::scoped_lock lock(viewer.browser_initialized_mutex_);
+        openvrml::read_write_mutex::scoped_read_lock
+            lock(viewer.browser_initialized_mutex_);
         if (!viewer.browser_initialized_) { return true; }
         viewer.input(&info);
     }
@@ -676,9 +681,11 @@ namespace {
     browser_listener::do_browser_changed(const openvrml::browser_event & event)
     {
         if (event.id() == openvrml::browser_event::initialized) {
-            using boost::mutex;
-            mutex::scoped_lock lock(this->viewer_.browser_initialized_mutex_);
-            this->viewer_.browser_initialized_ = true;
+            {
+                openvrml::read_write_mutex::scoped_write_lock
+                    lock(this->viewer_.browser_initialized_mutex_);
+                this->viewer_.browser_initialized_ = true;
+            }
             gdk_threads_enter();
             scope_guard gdk_threads_guard = make_guard(gdk_threads_leave);
             boost::ignore_unused_variable_warning(gdk_threads_guard);

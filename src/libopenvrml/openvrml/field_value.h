@@ -33,6 +33,7 @@
 #   include <boost/utility.hpp>
 #   include <boost/thread/mutex.hpp>
 #   include <openvrml/basetypes.h>
+#   include <openvrml/read_write_mutex.h>
 
 namespace openvrml {
 
@@ -59,7 +60,7 @@ namespace openvrml {
 
         template <typename ValueType>
         class counted_impl : public counted_impl_base {
-            mutable boost::mutex mutex_;
+            mutable read_write_mutex mutex_;
             boost::shared_ptr<ValueType> value_;
 
         public:
@@ -175,7 +176,7 @@ namespace openvrml {
     counted_impl(const counted_impl<ValueType> & ci) OPENVRML_NOTHROW:
         counted_impl_base()
     {
-        boost::mutex::scoped_lock lock(ci.mutex_);
+        read_write_mutex::scoped_read_lock lock(ci.mutex_);
         value_ = ci.value_;
     }
 
@@ -187,7 +188,7 @@ namespace openvrml {
     const ValueType & field_value::counted_impl<ValueType>::value() const
         OPENVRML_NOTHROW
     {
-        boost::mutex::scoped_lock lock(this->mutex_);
+        read_write_mutex::scoped_read_lock lock(this->mutex_);
         assert(this->value_);
         return *this->value_;
     }
@@ -196,7 +197,7 @@ namespace openvrml {
     void field_value::counted_impl<ValueType>::value(const ValueType & val)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        boost::mutex::scoped_lock lock(this->mutex_);
+        read_write_mutex::scoped_write_lock lock(this->mutex_);
         assert(this->value_);
         if (!this->value_.unique()) {
             this->value_.reset(new ValueType(val));

@@ -5,6 +5,7 @@ pkginclude_HEADERS = \
         openvrml-common.h
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
+        openvrml/read_write_mutex.h \
         openvrml/basetypes.h \
         openvrml/field_value.h \
         openvrml/event.h \
@@ -91,6 +92,7 @@ AM_CXXFLAGS = \
         @JS_CFLAGS@
 
 libopenvrml_la_SOURCES = \
+        openvrml/read_write_mutex.cpp \
         openvrml/basetypes.cpp \
         openvrml/field_value.cpp \
         openvrml/event.cpp \

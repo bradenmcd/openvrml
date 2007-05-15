@@ -27,6 +27,7 @@
 #   include <boost/noncopyable.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/enable_shared_from_this.hpp>
+#   include <openvrml/read_write_mutex.h>
 #   include "bounded_buffer.h"
 
 namespace openvrml_xembed {
@@ -67,7 +68,7 @@ namespace openvrml_xembed {
     };
 
     extern class uninitialized_plugin_streambuf_map : boost::noncopyable {
-        mutable boost::mutex mutex_;
+        mutable openvrml::read_write_mutex mutex_;
         typedef std::multimap<std::string, boost::shared_ptr<plugin_streambuf> >
             map_t;
         map_t map_;
@@ -84,7 +85,7 @@ namespace openvrml_xembed {
     } uninitialized_plugin_streambuf_map_;
 
     extern class plugin_streambuf_map : boost::noncopyable {
-        mutable boost::mutex mutex_;
+        mutable openvrml::read_write_mutex mutex_;
         typedef std::map<size_t, boost::shared_ptr<plugin_streambuf> > map_t;
         map_t map_;
 

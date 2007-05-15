@@ -141,7 +141,7 @@ const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::uninitialized_plugin_streambuf_map::
 find(const std::string & url) const
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
     map_t::const_iterator pos = this->map_.find(url);
     return pos == this->map_.end()
         ? boost::shared_ptr<plugin_streambuf>()
@@ -153,7 +153,7 @@ openvrml_xembed::uninitialized_plugin_streambuf_map::
 insert(const std::string & url,
        const boost::shared_ptr<plugin_streambuf> & streambuf)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
     this->map_.insert(make_pair(url, streambuf));
 }
 
@@ -170,7 +170,7 @@ bool
 openvrml_xembed::uninitialized_plugin_streambuf_map::
 erase(const std::string & url)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
     const map_t::iterator pos = this->map_.find(url);
     if (pos == this->map_.end()) { return false; }
     this->map_.erase(pos);
@@ -179,20 +179,20 @@ erase(const std::string & url)
 
 size_t openvrml_xembed::uninitialized_plugin_streambuf_map::size() const
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
     return this->map_.size();
 }
 
 bool openvrml_xembed::uninitialized_plugin_streambuf_map::empty() const
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
     return this->map_.empty();
 }
 
 const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::uninitialized_plugin_streambuf_map::front() const
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
     g_assert(!this->map_.empty());
     return this->map_.begin()->second;
 }
@@ -204,7 +204,7 @@ openvrml_xembed::uninitialized_plugin_streambuf_map_;
 const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::plugin_streambuf_map::find(const size_t id) const
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
     map_t::const_iterator pos = this->map_.find(id);
     return pos == this->map_.end()
         ? boost::shared_ptr<plugin_streambuf>()
@@ -216,7 +216,7 @@ openvrml_xembed::plugin_streambuf_map::
 insert(const size_t id,
        const boost::shared_ptr<plugin_streambuf> & streambuf)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
     return this->map_.insert(make_pair(id, streambuf)).second;
 }
 
@@ -227,7 +227,7 @@ insert(const size_t id,
  */
 bool openvrml_xembed::plugin_streambuf_map::erase(const size_t id)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
     return this->map_.erase(id) > 0;
 }
 

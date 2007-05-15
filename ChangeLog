@@ -1,3 +1,117 @@
+2007-05-15 Braden McDaniel  <braden@endoframe.com>
+
+	Added a read/write mutex.  Hopefully Boost will have a read/write
+	mutex before too long; if/when that happens, this one can probably
+	go away.  openvrml::read_write_mutex simply follows the
+	implementation described by Butenhof using the Boost thread
+	primitives.
+
+	* src/libopenvrml/Makefile.am
+	(openvrml_include_HEADERS): Added openvrml/read_write_mutex.h.
+	(libopenvrml_la_SOURCES): Added openvrml/read_write_mutex.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_metatype_map::operator=(const
+	node_metatype_map &)): Use read and write locks.
+	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
+	double)): Use a read lock.
+	(openvrml::browser::node_metatype_map::insert(const std::string &,
+	const boost::shared_ptr<openvrml::node_metatype> &)): Use a write
+	lock.
+	(openvrml::browser::node_metatype_map::remove(const
+	std::string&)): Use a write lock.
+	(openvrml::browser::node_metatype_map::find(const std::string &)
+	const): Use a read lock.
+	(openvrml::browser::node_metatype_map::node_metatype_ids(const
+	openvrml::node_metatype &) const): Use a read lock.
+	(openvrml::browser::node_metatype_map::render(openvrml::viewer&)):
+	Use a read lock.
+	(openvrml::browser::node_metatype_map::shutdown(double)): Use a
+	read lock.
+	(openvrml::browser::set_world(resource_istream &)): Only grab the
+	browser-wide mutex for as long as necessary.  This needs more
+	attention; but this change is a start.
+	(openvrml::browser::root_scene_loader::operator()() const): Grab
+	the browser-wide recursive mutex.
+	(openvrml::browser::add_listener(browser_listener &)): Acquire a
+	write lock of the listeners_mutex_.
+	(openvrml::browser::remove_listener(browser_listener &)): Acquire
+	a write lock of the listeners_mutex_.
+	(openvrml::browser::modified(bool)): Acquire a write lock of the
+	modified_mutex_.
+	(openvrml::browser::modified()): Acquire a read lock of the
+	modified_mutex_.
+	(openvrml::scene::load(resource_istream &)): Acquire write locks.
+	(openvrml::scene::initialize(double)): Acquire a read lock.
+	(openvrml::scene::meta(const std::string &, const std::string &)):
+	Aquire a write lock.
+	(openvrml::scene::meta_keys() const): Acquire a read lock.
+	(openvrml::scene::nodes() const): Acquire a read lock.
+	(openvrml::scene::nodes(const
+	std::vector<boost::intrusive_ptr<node> > &)): Acquire a write
+	lock.
+	(openvrml::scene::root_scope() const): Acquire a read lock.
+	(openvrml::scene::url() const): Acquire a read lock.
+	(openvrml::scene::render(openvrml::viewer &, rendering_context)):
+	Aquire a read lock.
+	(openvrml::scene::shutdown(double)): Aquire a read lock.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser::node_metatype_map): Changed mutex_ to be a
+	read_write_mutex.
+	(openvrml::browser): Added member listeners_mutex_ to protect
+	listeners_.
+	(openvrml::scene): Changed nodes_mutex_, url_mutex_, and
+	meta_mutex_ to be read_write_mutexes.
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	(openvrml::read_write_mutex::scoped_read_lock::scoped_read_lock(read_write_mutex&)):
+	Acquire a lock for reading.
+	(openvrml::read_write_mutex::scoped_read_lock::~scoped_read_lock()):
+	Release a read lock.
+	(openvrml::read_write_mutex::scoped_write_lock::scoped_write_lock(read_write_mutex&)):
+	Acquire a lock for writing.
+	(openvrml::read_write_mutex::scoped_write_lock::~scoped_write_lock()):
+	Release a write lock.
+	(openvrml::read_write_mutex::read_write_mutex()): Construct a
+	read/write mutex.
+	* src/libopenvrml/openvrml/read_write_mutex.h
+	(openvrml::read_write_mutex): Added class.
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(GtkGLViewer): Changed browser_initialized_mutex_ to an
+	openvrml::read_write_mutex.
+	(GtkGLViewer::load_url::operator()() const): Acquire a write lock.
+	(gtk_vrml_browser_set_world(GtkVrmlBrowser *,
+	openvrml::resource_istream &)): Acquire a write lock.
+	(gtk_vrml_browser_expose_event(GtkWidget *, GdkEventExpose *,
+	gpointer)): Acquire a read lock.
+	(gtk_vrml_browser_motion_notify_event(GtkWidget *,
+	GdkEventMotion*, gpointer)): Acquire a read lock.
+	(browser_listener::do_browser_changed(const
+	openvrml::browser_event &)): Acquire a write lock.
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::find(const
+	std::string &) const): Acquire a read lock.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::insert(const
+	std::string &, const boost::shared_ptr<plugin_streambuf> &)):
+	Acquire a write lock.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::erase(const
+	std::string &)): Acquire a write lock.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::size()
+	const): Acquire a read lock.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::empty()
+	const): Acquire a read lock.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::front()
+	const): Acquire a read lock.
+	(openvrml_xembed::plugin_streambuf_map::find(size_t) const):
+	Acquire a read lock.
+	(openvrml_xembed::plugin_streambuf_map::insert(size_t, const
+	boost::shared_ptr<plugin_streambuf> &)): Acquire a write lock.
+	(openvrml_xembed::plugin_streambuf_map::erase(size_t)): Acquire a
+	write lock.
+	* src/openvrml-xembed/plugin_streambuf.h
+	(openvrml_xembed::uninitialized_plugin_streambuf_map): Changed
+	mutex_ to an openvrml::read_write_mutex.
+	(openvrml_xembed::plugin_streambuf_map): Changed mutex_ to an
+	openvrml::read_write_mutex.
+
 2007-05-14 Braden McDaniel  <braden@endoframe.com>
 
 	Moved implementation of create_vrml_from_url to openvrml::scene.

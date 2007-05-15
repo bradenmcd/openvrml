@@ -5081,7 +5081,7 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  */
 
 /**
- * @var boost::mutex openvrml::browser::node_metatype_map::mutex_
+ * @var openvrml::read_write_mutex openvrml::browser::node_metatype_map::mutex_
  *
  * @brief Object mutex.
  */
@@ -5162,7 +5162,8 @@ openvrml::browser::node_metatype_map::~node_metatype_map() OPENVRML_NOTHROW
 openvrml::browser::node_metatype_map &
 openvrml::browser::node_metatype_map::operator=(const node_metatype_map & ncm)
 {
-    boost::mutex::scoped_lock my_lock(this->mutex_), map_lock(ncm.mutex_);
+    read_write_mutex::scoped_write_lock my_lock(this->mutex_);
+    read_write_mutex::scoped_read_lock map_lock(ncm.mutex_);
     map_t temp(ncm.map_);
     swap(this->map_, temp);
     return *this;
@@ -5206,7 +5207,7 @@ void
 openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
                                            const double timestamp)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(),
              init_node_metatype(initial_viewpoint, timestamp));
 }
@@ -5228,7 +5229,7 @@ openvrml::browser::node_metatype_map::
 insert(const std::string & id,
        const boost::shared_ptr<openvrml::node_metatype> & node_metatype)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_write_lock lock(this->mutex_);
     return this->map_.insert(make_pair(id, node_metatype)).first->second;
 }
 
@@ -5241,7 +5242,7 @@ insert(const std::string & id,
  */
 bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_write_lock lock(this->mutex_);
     return this->map_.erase(id) > 0;
 }
 
@@ -5256,6 +5257,7 @@ bool openvrml::browser::node_metatype_map::remove(const std::string & id)
 const boost::shared_ptr<openvrml::node_metatype>
 openvrml::browser::node_metatype_map::find(const std::string & id) const
 {
+    read_write_mutex::scoped_read_lock lock(this->mutex_);
     const map_t::const_iterator pos = this->map_.find(id);
     return (pos != this->map_.end())
         ? pos->second
@@ -5274,6 +5276,7 @@ openvrml::browser::node_metatype_map::
 node_metatype_ids(const openvrml::node_metatype & node_metatype) const
     OPENVRML_THROW1(std::bad_alloc)
 {
+    read_write_mutex::scoped_read_lock lock(this->mutex_);
     std::vector<node_metatype_id> ids;
     for (map_t::const_iterator entry = this->map_.begin();
          entry != this->map_.end();
@@ -5310,7 +5313,7 @@ namespace {
  */
 void openvrml::browser::node_metatype_map::render(openvrml::viewer & v)
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(), render_node_metatype(v));
 }
 
@@ -5341,7 +5344,7 @@ void
 openvrml::browser::node_metatype_map::shutdown(const double timestamp)
     OPENVRML_NOTHROW
 {
-    boost::mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_lock lock(this->mutex_);
     for_each(this->map_.begin(), this->map_.end(),
              shutdown_node_metatype(timestamp));
 }
@@ -5486,13 +5489,21 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @internal
  *
+ * @var boost::mutex openvrml::browser::listeners_mutex_
+ *
+ * @brief Mutex to guard @c #listeners_.
+ */
+
+/**
+ * @internal
+ *
  * @var std::set<openvrml::browser_listener *> openvrml::browser::listeners_
  *
  * @brief The set of @c browser_listener%s that will receive
  *        @c browser_event%s.
  *
- * @sa openvrml::browser::add_listener
- * @sa openvrml::browser::remove_listener
+ * @sa #add_listener
+ * @sa #remove_listener
  */
 
 /**
@@ -5502,7 +5513,7 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  */
 
 /**
- * @var boost::mutex openvrml::browser::modified_mutex_
+ * @var openvrml::read_write_mutex openvrml::browser::modified_mutex_
  *
  * @brief Mutex protecting @c #modified_.
  */
@@ -5995,80 +6006,87 @@ const std::string openvrml::browser::world_url() const
  */
 void openvrml::browser::set_world(resource_istream & in)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    {
+        boost::recursive_mutex::scoped_lock lock(this->mutex_);
 
-    using std::for_each;
-    using std::string;
+        using std::for_each;
+        using std::string;
 
-    //
-    // Clear out the current scene.
-    //
-    this->load_proto_thread_group_.join_all();
-    double now = browser::current_time();
-    if (this->scene_) { this->scene_->shutdown(now); }
-    this->node_metatype_map_.shutdown(now);
-    for_each(this->listeners_.begin(), this->listeners_.end(),
-             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
-                            browser_event(*this, browser_event::shutdown)));
-    this->scene_.reset();
-    this->active_viewpoint_ =
-        node_cast<viewpoint_node *>(this->default_viewpoint_.get());
-    assert(this->viewpoint_list.empty());
-    assert(this->scoped_lights.empty());
-    assert(this->scripts.empty());
-    assert(this->timers.empty());
+        //
+        // Clear out the current scene.
+        //
+        this->load_proto_thread_group_.join_all();
+        double now = browser::current_time();
+        if (this->scene_) { this->scene_->shutdown(now); }
+        this->node_metatype_map_.shutdown(now);
+        read_write_mutex::scoped_read_lock
+            listeners_lock(this->listeners_mutex_);
+        for_each(this->listeners_.begin(), this->listeners_.end(),
+                 boost::bind2nd(
+                     boost::mem_fun(&browser_listener::browser_changed),
+                     browser_event(*this, browser_event::shutdown)));
+        this->scene_.reset();
+        this->active_viewpoint_ =
+            node_cast<viewpoint_node *>(this->default_viewpoint_.get());
+        assert(this->viewpoint_list.empty());
+        assert(this->scoped_lights.empty());
+        assert(this->scripts.empty());
+        assert(this->timers.empty());
 
-    //
-    // Create the new scene.
-    //
-    node_metatype_map new_map;
-    this->node_metatype_map_ = new_map;
-    register_node_metatypes(*this);
-    this->scene_.reset(new scene(*this));
-    this->scene_->load(in);
+        //
+        // Create the new scene.
+        //
+        node_metatype_map new_map;
+        this->node_metatype_map_ = new_map;
+        register_node_metatypes(*this);
+        this->scene_.reset(new scene(*this));
+        this->scene_->load(in);
 
-    //
-    // Initialize.
-    //
-    now = browser::current_time();
-    this->scene_->initialize(now);
+        //
+        // Initialize.
+        //
+        now = browser::current_time();
+        this->scene_->initialize(now);
 
-    //
-    // Get the initial viewpoint_node, if any was specified.
-    //
-    viewpoint_node * initial_viewpoint = 0;
-    const string viewpoint_node_id = uri(this->scene_->url()).fragment();
-    if (!viewpoint_node_id.empty()) {
-        if (!this->scene_->nodes().empty()) {
-            using boost::intrusive_ptr;
-            const intrusive_ptr<node> & n = this->scene_->nodes().front();
-            if (n) {
-                node * const vp = n->scope().find_node(viewpoint_node_id);
-                initial_viewpoint = dynamic_cast<viewpoint_node *>(vp);
+        //
+        // Get the initial viewpoint_node, if any was specified.
+        //
+        viewpoint_node * initial_viewpoint = 0;
+        const string viewpoint_node_id = uri(this->scene_->url()).fragment();
+        if (!viewpoint_node_id.empty()) {
+            if (!this->scene_->nodes().empty()) {
+                using boost::intrusive_ptr;
+                const intrusive_ptr<node> & n = this->scene_->nodes().front();
+                if (n) {
+                    node * const vp = n->scope().find_node(viewpoint_node_id);
+                    initial_viewpoint = dynamic_cast<viewpoint_node *>(vp);
+                }
             }
         }
-    }
 
-    //
-    // Initialize the node_metatypes.
-    //
-    this->node_metatype_map_.init(initial_viewpoint, now);
+        //
+        // Initialize the node_metatypes.
+        //
+        this->node_metatype_map_.init(initial_viewpoint, now);
 
-    if (this->active_viewpoint_
-        != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
-        // XXX
-        // XXX Fix openvrml::viewpoint_node so that we don't have to get an
-        // XXX event_listener here.
-        // XXX
-        event_listener & listener =
-            this->active_viewpoint_->event_listener("set_bind");
-        dynamic_cast<sfbool_listener &>(listener).process_event(sfbool(true),
-                                                                now);
-    }
+        if (this->active_viewpoint_
+            != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
+            // XXX
+            // XXX Fix openvrml::viewpoint_node so that we don't have to get an
+            // XXX event_listener here.
+            // XXX
+            event_listener & listener =
+                this->active_viewpoint_->event_listener("set_bind");
+            dynamic_cast<sfbool_listener &>(listener)
+                .process_event(sfbool(true), now);
+        }
 
-    this->modified(true);
-    this->new_view = true; // Force resetUserNav
+        this->modified(true);
+        this->new_view = true; // Force resetUserNav
+    } // unlock this->mutex_, this->listeners_mutex_
 
+    read_write_mutex::scoped_read_lock
+        listeners_lock(this->listeners_mutex_);
     for_each(this->listeners_.begin(), this->listeners_.end(),
              boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
                             browser_event(*this, browser_event::initialized)));
@@ -6111,6 +6129,7 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
             openvrml::browser & browser = *this->browser_;
 
             try {
+                boost::recursive_mutex::scoped_lock lock(browser.mutex_);
                 std::auto_ptr<resource_istream> in =
                     browser.scene_->get_resource(this->url_);
                 if (!(*in)) { throw unreachable_url(); }
@@ -6277,6 +6296,7 @@ create_vrml_from_url(const std::vector<std::string> & url,
 bool openvrml::browser::add_listener(browser_listener & listener)
     OPENVRML_THROW1(std::bad_alloc)
 {
+    read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
     return this->listeners_.insert(&listener).second;
 }
 
@@ -6292,6 +6312,7 @@ bool openvrml::browser::add_listener(browser_listener & listener)
 bool openvrml::browser::remove_listener(browser_listener & listener)
     OPENVRML_NOTHROW
 {
+    read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
     return this->listeners_.erase(&listener) > 0;
 }
 
@@ -6476,7 +6497,7 @@ void openvrml::browser::render()
  */
 void openvrml::browser::modified(const bool value)
 {
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
+    read_write_mutex::scoped_write_lock lock(this->modified_mutex_);
     this->modified_ = value;
 }
 
@@ -6487,7 +6508,7 @@ void openvrml::browser::modified(const bool value)
  */
 bool openvrml::browser::modified() const
 {
-    boost::mutex::scoped_lock lock(this->modified_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->modified_mutex_);
     return this->modified_;
 }
 
@@ -6792,7 +6813,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 /**
  * @internal
  *
- * @var boost::recursive_mutex openvrml::scene::nodes_mutex_
+ * @var openvrml::read_write_mutex openvrml::scene::nodes_mutex_
  *
  * @brief Mutex protecting @a nodes_.
  */
@@ -6808,7 +6829,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 /**
  * @internal
  *
- * @var boost::read_write_mutex openvrml::scene::url_mutex_
+ * @var openvrml::read_write_mutex openvrml::scene::url_mutex_
  *
  * @brief Mutex protecting @a url_.
  */
@@ -6826,7 +6847,7 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
 /**
  * @internal
  *
- * @var boost::mutex openvrml::scene::meta_mutex_
+ * @var openvrml::read_write_mutex openvrml::scene::meta_mutex_
  *
  * @brief Mutex protecting @c #meta_.
  */
@@ -6892,8 +6913,8 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
  */
 void openvrml::scene::load(resource_istream & in)
 {
-    boost::recursive_mutex::scoped_lock nodes_lock(this->nodes_mutex_);
-    boost::mutex::scoped_lock
+    read_write_mutex::scoped_write_lock
+        nodes_lock(this->nodes_mutex_),
         url_lock(this->url_mutex_),
         meta_lock(this->meta_mutex_);
 
@@ -6914,7 +6935,7 @@ void openvrml::scene::load(resource_istream & in)
 void openvrml::scene::initialize(const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator node(
              this->nodes_.begin());
          node != this->nodes_.end();
@@ -6941,7 +6962,7 @@ void openvrml::scene::initialize(const double timestamp)
 const std::string openvrml::scene::meta(const std::string & key) const
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
-    boost::mutex::scoped_lock lock(this->meta_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->meta_mutex_);
 
     using std::map;
     using std::string;
@@ -6965,7 +6986,7 @@ const std::string openvrml::scene::meta(const std::string & key) const
 void openvrml::scene::meta(const std::string & key, const std::string & value)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::mutex::scoped_lock lock(this->meta_mutex_);
+    read_write_mutex::scoped_write_lock lock(this->meta_mutex_);
     this->meta_[key] = value;
 }
 
@@ -6977,7 +6998,7 @@ void openvrml::scene::meta(const std::string & key, const std::string & value)
 const std::vector<std::string> openvrml::scene::meta_keys() const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::mutex::scoped_lock lock(this->meta_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->meta_mutex_);
 
     using std::map;
     using std::string;
@@ -7002,7 +7023,7 @@ const std::vector<std::string> openvrml::scene::meta_keys() const
 const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::scene::nodes() const OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
     return this->nodes_;
 }
 
@@ -7032,7 +7053,7 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
     } check_uninitialized;
     check_uninitialized.traverse(n);
 
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_write_lock lock(this->nodes_mutex_);
     const double now = browser::current_time();
     this->shutdown(now);
     this->nodes_ = n;
@@ -7046,7 +7067,7 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
 const openvrml::scope * openvrml::scene::root_scope() const
     OPENVRML_NOTHROW
 {
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
     return this->nodes_.empty()
         ? 0
         : &this->nodes_.front()->scope();
@@ -7061,7 +7082,7 @@ const openvrml::scope * openvrml::scene::root_scope() const
  */
 const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::mutex::scoped_lock lock(this->url_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->url_mutex_);
     using std::string;
     const string result = (this->parent_ && !this->url_.empty())
                         ? string(uri(this->url_)
@@ -7079,7 +7100,7 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 void openvrml::scene::render(openvrml::viewer & viewer,
                              rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator n(
              this->nodes_.begin());
          n != this->nodes_.end();
@@ -7348,7 +7369,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
  */
 void openvrml::scene::shutdown(const double timestamp) OPENVRML_NOTHROW
 {
-    boost::recursive_mutex::scoped_lock lock(this->nodes_mutex_);
+    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator n(
              this->nodes_.begin());
          n != this->nodes_.end();
