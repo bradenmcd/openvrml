@@ -1,5 +1,36 @@
 2007-05-14 Braden McDaniel  <braden@endoframe.com>
 
+	Moved implementation of create_vrml_from_url to openvrml::scene.
+	This allows the spawned thread to be a member of the
+	scene::stream_reader_threads_ thread group; and it means that
+	relative URLs in Script nodes in inline worlds should now resolve
+	properly.  browser::create_vrml_from_url now simply delegates to
+	scene::create_vrml_from_url on the root scene.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::vrml_from_url_creator): Moved to
+	openvrml::scene::vrml_from_url_creator.
+	(openvrml::browser::create_vrml_from_url(const
+	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
+	const std::string &)): Delegate to
+	openvrml::scene::create_vrml_from_url.
+	(openvrml::scene::vrml_from_url_creator): Moved from
+	openvrml::browser::vrml_from_url_creator.
+	(openvrml::scene::create_vrml_from_url(const
+	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
+	const std::string &)): Create the thread as a member of the
+	stream_reader_threads_ group.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Removed vrml_from_url_creator declaration.
+	(openvrml::scene): Added vrml_from_url_creator declaration; added
+	create_vrml_from_url member function.
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::Browser::createVrmlFromURL(JSContext *, JSObject *, uintN,
+	jsval *, jsval *)): Call openvrml::scene::create_vrml_from_url
+	rather than openvrml::browser::create_vrml_from_url.
+
+2007-05-14 Braden McDaniel  <braden@endoframe.com>
+
 	Visual C++ 8.0 project file updates.
 
 	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Removed

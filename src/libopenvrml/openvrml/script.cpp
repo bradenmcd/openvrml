@@ -4444,10 +4444,10 @@ JSBool createVrmlFromURL(JSContext * const cx,
     const char * const event = JS_GetStringBytes(event_str);
 
     try {
-        script.script_node().openvrml::node::type().metatype().browser()
-            .create_vrml_from_url(url->value(),
-                                  node->value(),
-                                  event ? event : "");
+        script.script_node().scene()
+            ->create_vrml_from_url(url->value(),
+                                   node->value(),
+                                   event ? event : "");
     } catch (const std::bad_cast & ex) {
         JS_ReportError(cx, "%s is not of type MFNode", event);
         return JS_FALSE;

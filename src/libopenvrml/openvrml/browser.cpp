@@ -6235,53 +6235,6 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
     return nodes;
 }
 
-struct OPENVRML_LOCAL openvrml::browser::vrml_from_url_creator {
-    vrml_from_url_creator(openvrml::browser & browser,
-                          const std::vector<std::string> & url,
-                          const boost::intrusive_ptr<node> & node,
-                          const std::string & event)
-        OPENVRML_THROW2(unsupported_interface, std::bad_cast):
-        browser_(&browser),
-        url_(&url),
-        node_(node),
-        listener_(&dynamic_cast<mfnode_listener &>(
-                      node->event_listener(event)))
-    {}
-
-    void operator()() const OPENVRML_NOTHROW
-    {
-        try {
-            try {
-                std::auto_ptr<resource_istream> in =
-                    this->browser_->scene_->get_resource(*this->url_);
-                if (!(*in)) { throw unreachable_url(); }
-                mfnode nodes;
-                nodes.value(
-                    this->browser_->create_vrml_from_stream(*in, in->type()));
-                this->listener_->process_event(nodes, browser::current_time());
-            } catch (std::exception & ex) {
-                this->browser_->err(ex.what());
-                throw unreachable_url();
-            } catch (...) {
-                //
-                // The implementation of resource_istream is provided by the
-                // user; and unfortunately, operations on it could throw
-                // anything.
-                //
-                throw unreachable_url();
-            }
-        } catch (std::exception & ex) {
-            this->browser_->err(ex.what());
-        }
-    }
-
-private:
-    openvrml::browser * const browser_;
-    const std::vector<std::string> * const url_;
-    const boost::intrusive_ptr<node> node_;
-    mfnode_listener * const listener_;
-};
-
 /**
  * @brief Create nodes from a URI.
  *
@@ -6306,8 +6259,8 @@ create_vrml_from_url(const std::vector<std::string> & url,
     OPENVRML_THROW3(unsupported_interface, std::bad_cast,
                     boost::thread_resource_error)
 {
-    boost::function0<void> f = vrml_from_url_creator(*this, url, node, event);
-    boost::thread t(f);
+    assert(this->scene_);
+    this->scene_->create_vrml_from_url(url, node, event);
 }
 
 /**
@@ -7187,6 +7140,82 @@ void openvrml::scene::read_stream(std::auto_ptr<resource_istream> in,
                                   std::auto_ptr<stream_listener> listener)
 {
     boost::function0<void> f = stream_reader(in, listener);
+    this->stream_reader_threads_.create_thread(f);
+}
+
+struct OPENVRML_LOCAL openvrml::scene::vrml_from_url_creator {
+    vrml_from_url_creator(openvrml::scene & scene,
+                          const std::vector<std::string> & url,
+                          const boost::intrusive_ptr<node> & node,
+                          const std::string & event)
+        OPENVRML_THROW2(unsupported_interface, std::bad_cast):
+        scene_(&scene),
+        url_(&url),
+        node_(node),
+        listener_(&dynamic_cast<mfnode_listener &>(
+                      node->event_listener(event)))
+    {}
+
+    void operator()() const OPENVRML_NOTHROW
+    {
+        try {
+            try {
+                std::auto_ptr<resource_istream> in =
+                    this->scene_->get_resource(*this->url_);
+                if (!(*in)) { throw unreachable_url(); }
+                mfnode nodes;
+                nodes.value(
+                    this->scene_->browser()
+                    .create_vrml_from_stream(*in, in->type()));
+                this->listener_->process_event(nodes, browser::current_time());
+            } catch (std::exception & ex) {
+                this->scene_->browser().err(ex.what());
+                throw unreachable_url();
+            } catch (...) {
+                //
+                // The implementation of resource_istream is provided by the
+                // user; and unfortunately, operations on it could throw
+                // anything.
+                //
+                throw unreachable_url();
+            }
+        } catch (std::exception & ex) {
+            this->scene_->browser().err(ex.what());
+        }
+    }
+
+private:
+    openvrml::scene * const scene_;
+    const std::vector<std::string> * const url_;
+    const boost::intrusive_ptr<node> node_;
+    mfnode_listener * const listener_;
+};
+
+/**
+ * @brief Create nodes from a URI.
+ *
+ * This function executes asynchronously. When the nodes have been completely
+ * loaded, they are sent to the @p event MFNode eventIn of @p node.
+ *
+ * @param[in] url       an alternative URI list.
+ * @param[in] node      the node to which the nodes loaded from @p url should be
+ *                      sent as an event.
+ * @param[in] event     the event of @p node to which the new nodes will be sent.
+ *
+ * @exception unsupported_interface         if @p node has no eventIn @p event.
+ * @exception std::bad_cast                 if the @p event eventIn of @p node
+ *                                          is not an MFNode.
+ * @exception boost::thread_resource_error  if thread creation fails.
+ */
+void
+openvrml::scene::
+create_vrml_from_url(const std::vector<std::string> & url,
+                     const boost::intrusive_ptr<node> & node,
+                     const std::string & event)
+    OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                    boost::thread_resource_error)
+{
+    boost::function0<void> f = vrml_from_url_creator(*this, url, node, event);
     this->stream_reader_threads_.create_thread(f);
 }
 

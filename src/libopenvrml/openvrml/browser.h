@@ -186,7 +186,6 @@ namespace openvrml {
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
-        struct vrml_from_url_creator;
 
         class OPENVRML_LOCAL node_metatype_map {
             mutable boost::mutex mutex_;
@@ -358,6 +357,8 @@ namespace openvrml {
 
 
     class OPENVRML_API scene : boost::noncopyable {
+        struct vrml_from_url_creator;
+
         openvrml::browser * const browser_;
         scene * const parent_;
 
@@ -402,6 +403,11 @@ namespace openvrml {
             OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
         void read_stream(std::auto_ptr<resource_istream> in,
                          std::auto_ptr<stream_listener> listener);
+        void create_vrml_from_url(const std::vector<std::string> & url,
+                                  const boost::intrusive_ptr<node> & node,
+                                  const std::string & event)
+            OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                            boost::thread_resource_error);
         void shutdown(double timestamp) OPENVRML_NOTHROW;
 
     private:
