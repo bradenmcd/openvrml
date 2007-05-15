@@ -1,5 +1,10 @@
 2007-05-15 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Added read_write_mutex.{cpp,h} to the project.
+
+2007-05-15 Braden McDaniel  <braden@endoframe.com>
+
 	Added a read/write mutex.  Hopefully Boost will have a read/write
 	mutex before too long; if/when that happens, this one can probably
 	go away.  openvrml::read_write_mutex simply follows the
