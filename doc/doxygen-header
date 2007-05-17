@@ -135,8 +135,8 @@ div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
   font-weight: bold;
 }
 
-.memItemLeft, .memItemRight,
-.memTemplParams, .memTemplItemLeft, .memTemplItemRight,
+td.memItemLeft, td.memItemRight,
+td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight,
 .memproto, .memproto td {
   font-family: "Bitstream Vera Sans Mono",
                "LucidaTypewriter",
