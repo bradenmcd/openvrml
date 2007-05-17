@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="freetype221MT_D.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib freetype234MT_D.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
 				GenerateDebugInformation="true"
 				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
@@ -152,7 +152,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="freetype221MT.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib freetype234MT.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
 				LinkTimeCodeGeneration="1"
 				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
