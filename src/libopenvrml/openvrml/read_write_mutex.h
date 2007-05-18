@@ -28,7 +28,7 @@
 
 namespace openvrml {
 
-    class read_write_mutex : boost::noncopyable {
+    class OPENVRML_API read_write_mutex : boost::noncopyable {
         boost::mutex mutex_;
         boost::condition read_, write_;
         size_t readers_active_, readers_waiting_, writers_waiting_;
