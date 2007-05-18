@@ -1,5 +1,11 @@
 2007-05-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Changed null_node_metatype_ and
+	null_node_type_ from auto_ptrs to scoped_ptrs.
+
+2007-05-17 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Style sheet fixes.
 
 2007-05-15 Braden McDaniel  <braden@endoframe.com>
