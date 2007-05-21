@@ -1,3 +1,89 @@
+2007-05-20 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced the browser-wide recursive mutex with several read-write
+	mutexes.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
+	std::ostream &)): Changed positions of fetcher_ and frame_rate_ in
+	the member initializer list to match the declaration order.
+	(openvrml::browser::~browser()): Lock the scene_mutex_ for
+	reading.
+	(openvrml::browser::root_scene() const): Lock the scene_mutex_ for
+	reading.
+	(openvrml::browser::find_node(const node &) const): Lock the
+	scene_mutex_ for reading.
+	(openvrml::browser::active_viewpoint() const): Lock the
+	active_viewpoint_mutex_ for reading.
+	(openvrml::browser::active_viewpoint(viewpoint_node &)): Lock the
+	active_viewpoint_mutex_ for writing.
+	(openvrml::browser::reset_default_viewpoint()): Lock the
+	active_viewpoint_mutex_ for writing.
+	(openvrml::browser::active_navigation_info() const): Lock the
+	active_navigation_info_mutex_ for reading.
+	(openvrml::browser::active_navigation_info(navigation_info_node&)):
+	Lock the active_navigation_info_mutex_ for writing.
+	(openvrml::browser::reset_default_navigation_info()): Lock the
+	active_navigation_info_mutex_ for writing.
+	(openvrml::browser::add_viewpoint(viewpoint_node &)): Lock the
+	viewpoint_list_mutex_ for writing.
+	(openvrml::browser::remove_viewpoint(viewpoint_node &)): Lock the
+	viewpoint_list_mutex_ for writing.
+	(openvrml::browser::viewer(openvrml::viewer *)): Lock the
+	viewer_mutex_ for writing.
+	(openvrml::browser::viewer()): Lock the viewer_mutex_ for reading.
+	(openvrml::browser::current_speed()): Lock the
+	active_navigation_info_mutex_ for reading.
+	(openvrml::browser::world_url() const): Lock the scene_mutex_ for
+	reading.
+	(openvrml::browser::set_world(resource_istream &)): Lock the
+	scene_mutex_ and the active_viewpoint_mutex_ for writing.
+	(openvrml::browser::replace_world(const
+	std::vector<boost::intrusive_ptr<node> > &)): Lock the
+	scene_mutex_ for reading.
+	(openvrml::browser::root_scene_loader::operator()() const): Lock
+	the browser::scene_mutex_ for reading while getting the
+	resource_istream.
+	(openvrml::browser::create_vrml_from_stream(std::istream &, const
+	std::string &)): Lock the scene_mutex_ for reading.
+	(openvrml::browser::create_vrml_from_url(const
+	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
+	const std::string &)): Lock the scene_mutex_ for reading.
+	(openvrml::browser::frame_rate() const): Lock the
+	frame_rate_mutex_ for reading.
+	(openvrml::browser::sensitive_event(node *, double, bool, bool,
+	const double (&)[3])): Don't need to lock the browser here.
+	(openvrml::browser::update(double)): Lock the timers_mutex_ and
+	the scripts_mutex_ for reading.
+	(openvrml::browser::render()): Lock the scene_mutex_ and the
+	active_viewpoint_mutex_ for reading.  Lock the
+	scoped_lights_mutex_ for reading while iterating over the
+	scoped_lights_ list.  Lock the frame_rate_mutex_ for writing.
+	(openvrml::browser::delta(double)): Lock the delta_time_mutex_ for
+	writing.
+	(openvrml::browser::delta() const): Lock the delta_time_mutex_ for
+	reading.
+	(openvrml::browser::add_scoped_light(scoped_light_node &)): Lock
+	the scoped_lights_mutex_ for writing.
+	(openvrml::browser::remove_scoped_light(scoped_light_node &)):
+	Lock the scoped_lights_mutex_ for writing.
+	(openvrml::browser::add_script(script_node &)): Lock the
+	scripts_mutex_ for writing.
+	(openvrml::browser::remove_script(script_node &)): Lock the
+	scripts_mutex_ for writing.
+	(openvrml::browser::add_time_dependent(time_dependent_node &)):
+	Lock the timers_mutex_ for writing.
+	(openvrml::browser::remove_time_dependent(time_dependent_node &)):
+	Lock the timers_mutex_ for writing.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Removed mutex_; added scene_mutex_,
+	active_viewpoint_mutex_, active_navigation_info_mutex_,
+	viewpoint_list_mutex_, scoped_lights_mutex_, scripts_mutex_,
+	timers_mutex_, delta_time_mutex_, viewer_mutex_, and
+	frame_rate_mutex_.  Made frame_rate_ private rather than
+	protected.  Changed viewpoints accessor to return a copy of the
+	list (rather than a const reference).
+
 2007-05-18 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/read_write_mutex.h

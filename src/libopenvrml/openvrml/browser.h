@@ -227,43 +227,61 @@ namespace openvrml {
             node_metatype_map(const node_metatype_map & map);
         };
 
-        mutable boost::recursive_mutex mutex_;
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
         const boost::scoped_ptr<null_node_type> null_node_type_;
         boost::scoped_ptr<boost::thread> load_root_scene_thread_;
         boost::thread_group load_proto_thread_group_;
         node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;
+        resource_fetcher & fetcher_;
+
+        mutable read_write_mutex scene_mutex_;
         boost::scoped_ptr<scene> scene_;
+
         const boost::intrusive_ptr<node> default_viewpoint_;
+
+        mutable read_write_mutex active_viewpoint_mutex_;
         viewpoint_node * active_viewpoint_;
+
         const boost::intrusive_ptr<node> default_navigation_info_;
+
+        mutable read_write_mutex active_navigation_info_mutex_;
         navigation_info_node * active_navigation_info_;
-        std::list<viewpoint_node *> viewpoint_list;
-        std::list<scoped_light_node *> scoped_lights;
-        std::list<script_node *> scripts;
-        std::list<time_dependent_node *> timers;
+
+        mutable read_write_mutex viewpoint_list_mutex_;
+        std::list<viewpoint_node *> viewpoint_list_;
+
+        read_write_mutex scoped_lights_mutex_;
+        std::list<scoped_light_node *> scoped_lights_;
+
+        read_write_mutex scripts_mutex_;
+        std::list<script_node *> scripts_;
+
+        read_write_mutex timers_mutex_;
+        std::list<time_dependent_node *> timers_;
 
         read_write_mutex listeners_mutex_;
         std::set<browser_listener *> listeners_;
 
         bool new_view;
+
+        mutable read_write_mutex delta_time_mutex_;
         double delta_time;
+
+        mutable read_write_mutex viewer_mutex_;
         openvrml::viewer * viewer_;
 
         bool modified_;
         mutable read_write_mutex modified_mutex_;
 
-        resource_fetcher & fetcher_;
+        mutable read_write_mutex frame_rate_mutex_;
+        double frame_rate_;
 
         mutable boost::mutex out_mutex_;
         std::ostream * const out_;
 
         mutable boost::mutex err_mutex_;
         std::ostream * const err_;
-
-    protected:
-        double frame_rate_;
 
     public:
         static double current_time() OPENVRML_NOTHROW;
@@ -297,8 +315,7 @@ namespace openvrml {
         void add_viewpoint(viewpoint_node & viewpoint)
             OPENVRML_THROW1(std::bad_alloc);
         void remove_viewpoint(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
-        const std::list<viewpoint_node *> & viewpoints() const
-            OPENVRML_NOTHROW;
+        const std::list<viewpoint_node *> viewpoints() const OPENVRML_NOTHROW;
         void viewer(openvrml::viewer * v) OPENVRML_THROW1(viewer_in_use);
         openvrml::viewer * viewer() const OPENVRML_NOTHROW;
 
