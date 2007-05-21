@@ -700,7 +700,8 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
 
         if (c != '\n') { req_data.request_line.put(c); }
         error_guard.dismiss();
-    } while (g_io_channel_get_buffer_condition(source) & G_IO_IN);
+    } while (g_io_channel_get_buffer_condition(source) & G_IO_IN
+             && c != '\n');
 
     if (c == '\n') {
         string request_type;

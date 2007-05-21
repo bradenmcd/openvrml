@@ -1,5 +1,13 @@
 2007-05-21 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Fall out of the loop if we get a
+	linefeed even if there is additional input; any additional input
+	would be associated with an additional request.
+
+2007-05-21 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am: Applied BOOST_LIB_SUFFIX to uses of
 	-lboost_unit_test_framework.
 
