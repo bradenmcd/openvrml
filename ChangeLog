@@ -1,5 +1,10 @@
 2007-05-21 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/Makefile.am: Applied BOOST_LIB_SUFFIX to uses of
+	-lboost_unit_test_framework.
+
+2007-05-21 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Added check to ensure
 	libboost_thread$BOOST_LIB_SUFFIX is usable.
 
