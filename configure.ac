@@ -80,6 +80,26 @@ AC_SUBST([OPENVRML_GL_LOCAL])
 #
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
+#
+# Allow users to specify any Boost library name suffix
+#
+AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix])
+
+AC_CACHE_CHECK([for boost_thread$BOOST_LIB_SUFFIX library],
+[ov_cv_boost_thread],
+[ov_cv_boost_thread=no
+ov_save_LIBS=$LIBS
+LIBS="-lboost_thread$BOOST_LIB_SUFFIX $LIBS"
+AC_LANG_PUSH([C++])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <boost/thread.hpp>]],
+                                [[boost::thread t]])],
+               [ov_cv_boost_thread=yes])
+AC_LANG_POP
+LIBS=$ov_save_LIBS
+])
+AS_IF([test X$ov_cv_boost_thread = Xno],
+      [AC_MSG_FAILURE([libboost_thread$BOOST_LIB_SUFFIX not found])])
+
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 PKG_CHECK_MODULES([FREETYPE], [$REQUIRE_FREETYPE], , [have_freetype=no])
 #
@@ -148,11 +168,6 @@ AC_SUBST([SDL_CFLAGS])
 AC_SUBST([SDL_LIBS])
 
 OV_CHECK_JNI
-
-#
-# Allow users to specify any Boost library name suffix
-#
-AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix])
 
 #
 # Use exception specifications?

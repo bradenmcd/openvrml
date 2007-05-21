@@ -1,3 +1,8 @@
+2007-05-21 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Added check to ensure
+	libboost_thread$BOOST_LIB_SUFFIX is usable.
+
 2007-05-20 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced the browser-wide recursive mutex with several read-write
