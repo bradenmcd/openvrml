@@ -24,25 +24,28 @@ libtest_openvrml_la_LIBADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 color_SOURCES = color.cpp
 color_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 rotation_SOURCES = rotation.cpp
 rotation_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 mat4f_SOURCES = mat4f.cpp
 mat4f_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 image_SOURCES = image.cpp
 image_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 browser_SOURCES = browser.cpp
-browser_LDADD = libtest-openvrml.la -lboost_unit_test_framework -lboost_filesystem
+browser_LDADD = \
+        libtest-openvrml.la \
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX) \
+        -lboost_filesystem$(BOOST_LIB_SUFFIX)
 
 parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = libtest-openvrml.la
@@ -50,12 +53,12 @@ parse_anchor_LDADD = libtest-openvrml.la
 node_interface_set_SOURCES = node_interface_set.cpp
 node_interface_set_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 node_metatype_id_SOURCES = node_metatype_id.cpp
 node_metatype_id_LDADD = \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
-        -lboost_unit_test_framework
+        -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 parse_vrml97_SOURCES = parse_vrml97.cpp
 parse_vrml97_LDADD = libtest-openvrml.la
