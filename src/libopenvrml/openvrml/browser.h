@@ -229,7 +229,10 @@ namespace openvrml {
 
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
         const boost::scoped_ptr<null_node_type> null_node_type_;
+
+        read_write_mutex load_root_scene_thread_mutex_;
         boost::scoped_ptr<boost::thread> load_root_scene_thread_;
+
         boost::thread_group load_proto_thread_group_;
         node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;

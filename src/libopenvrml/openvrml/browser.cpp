@@ -5384,6 +5384,14 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @internal
  *
+ * @var openvrml::read_write_mutex openvrml::browser::load_root_scene_thread_mutex_
+ *
+ * @brief Mutex protecting @c #load_root_scene_thread_.
+ */
+
+/**
+ * @internal
+ *
  * @var boost::scoped_ptr<boost::thread> openvrml::browser::load_root_scene_thread_
  *
  * @brief The thread that loads the root scene.
@@ -5768,9 +5776,12 @@ openvrml::browser::browser(resource_fetcher & fetcher,
  */
 openvrml::browser::~browser() OPENVRML_NOTHROW
 {
+    read_write_mutex::scoped_read_lock
+        lock(this->load_root_scene_thread_mutex_);
     if (this->load_root_scene_thread_) {
         this->load_root_scene_thread_->join();
     }
+
     this->load_proto_thread_group_.join_all();
 
     const double now = browser::current_time();
@@ -6284,10 +6295,18 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
     OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error)
 {
-    if (this->load_root_scene_thread_) {
-        this->load_root_scene_thread_->join();
+    {
+        read_write_mutex::scoped_read_lock
+            lock(this->load_root_scene_thread_mutex_);
+        if (this->load_root_scene_thread_) {
+            this->load_root_scene_thread_->join();
+        }
     }
+
     boost::function0<void> f = root_scene_loader(*this, url);
+
+    read_write_mutex::scoped_write_lock
+        lock(this->load_root_scene_thread_mutex_);
     this->load_root_scene_thread_.reset(new boost::thread(f));
 }
 

@@ -1,3 +1,16 @@
+2007-05-25 Braden McDaniel  <braden@endoframe.com>
+
+	Protect browser::load_root_scene_thread_ with a read-write mutex.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::~browser()): Lock the
+	load_root_scene_thread_mutex_ for reading.
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Lock the
+	load_root_scene_thread_mutex_.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Added member load_root_scene_thread_mutex_.
+
 2007-05-21 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp
