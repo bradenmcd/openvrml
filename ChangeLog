@@ -1,5 +1,22 @@
 2007-05-31 Braden McDaniel  <braden@endoframe.com>
 
+	Ensure indices into coordinate, normal, and color data are valid
+	before using them in the renderer.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(ShellData): Changed texAxes to be an array reference.
+	(ShellData::ShellData): Changed texAxes to be an array reference.
+	(insertShellConvex(ShellData *)): Ensure indices are valid before
+	using them.
+	(openvrml::gl::viewer::insert_shell(unsigned int, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<color> &, const std::vector<int32> &, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<vec2f> &, const std::vector<int32> &)): Initialize
+	texAxes to { 0, 1 }.
+
+2007-05-31 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::url() const): Ensure the scene's URL is relative
 	before trying to resolve it against that of the parent scene.

@@ -208,7 +208,7 @@ namespace {
         const std::vector<openvrml::int32> & normalIndex;
         const std::vector<openvrml::vec2f> & texCoord;
         const std::vector<openvrml::int32> & texCoordIndex;
-        int *texAxes;
+        int (&texAxes)[2];
         float *texParams;
         size_t nf, i;
 
@@ -221,7 +221,7 @@ namespace {
                   const std::vector<openvrml::int32> & normalIndex,
                   const std::vector<openvrml::vec2f> & texCoord,
                   const std::vector<openvrml::int32> & texCoordIndex,
-                  int * texAxes, float * texParams, size_t nf, size_t i);
+                  int (&texAxes)[2], float * texParams, size_t nf, size_t i);
     };
 
     ShellData::ShellData(unsigned int mask,
@@ -233,7 +233,7 @@ namespace {
                          const std::vector<openvrml::int32> & normalIndex,
                          const std::vector<openvrml::vec2f> & texCoord,
                          const std::vector<openvrml::int32> & texCoordIndex,
-                         int * texAxes,
+                         int (&texAxes)[2],
                          float * texParams,
                          size_t nf,
                          size_t i):
@@ -2801,23 +2801,23 @@ namespace {
                 glBegin(GL_POLYGON);
 
                 // Per-face attributes
-                if (!s->color.empty()
-                        && !(s->mask & viewer::mask_color_per_vertex)) {
-                    const size_t index = !s->colorIndex.empty()
-                                       ? s->colorIndex[nf]
-                                       : nf;
-                    glColor3fv(&s->color[index][0]);
+                const size_t color_index = (nf < s->colorIndex.size())
+                                         ? s->colorIndex[nf]
+                                         : nf;
+                if (color_index < s->color.size()
+                    && !(s->mask & viewer::mask_color_per_vertex)) {
+                    glColor3fv(&s->color[color_index][0]);
                 }
 
                 if (! (s->mask & viewer::mask_normal_per_vertex)) {
                     size_t i1 = (i == 0)
                            ? 0
                            : i + 1;
-                    if (!s->normal.empty()) {
-                        const size_t index = !s->normalIndex.empty()
-                                           ? s->normalIndex[nf]
-                                           : nf;
-                        glNormal3fv(&s->normal[index][0]);
+                    const size_t normal_index = (nf < s->normalIndex.size())
+                                              ? s->normalIndex[nf]
+                                              : nf;
+                    if (normal_index < s->normal.size()) {
+                        glNormal3fv(&s->normal[normal_index][0]);
                     } else if (i < s->coordIndex.size() - 4
                         && s->coordIndex[i1] >= 0
                         && s->coordIndex[i1 + 1] >= 0
@@ -2838,31 +2838,31 @@ namespace {
 
             if (s->coordIndex[i] >= 0) {
                 // Per-vertex attributes
-                if (!s->color.empty()
-                        && (s->mask & viewer::mask_color_per_vertex)) {
-                    const size_t index = !s->colorIndex.empty()
-                                       ? s->colorIndex[i]
-                                       : s->coordIndex[i];
-                    glColor3fv(&s->color[index][0]);
+                const size_t color_index = (i < s->colorIndex.size())
+                                         ? s->colorIndex[i]
+                                         : s->coordIndex[i];
+                if (color_index < s->color.size()
+                    && (s->mask & viewer::mask_color_per_vertex)) {
+                    glColor3fv(&s->color[color_index][0]);
                 }
 
                 if (s->mask & viewer::mask_normal_per_vertex) {
-                    if (!s->normal.empty()) {
-                        const size_t index = !s->normalIndex.empty()
-                                           ? s->normalIndex[i]
-                                           : s->coordIndex[i];
-                        glNormal3fv(&s->normal[index][0]);
+                    const size_t normal_index = (i < s->normalIndex.size())
+                                              ? s->normalIndex[i]
+                                              : s->coordIndex[i];
+                    if (normal_index < s->normal.size()) {
+                        glNormal3fv(&s->normal[normal_index][0]);
                     } else {
                         ; // Generate per-vertex normal here...
                     }
                 }
 
                 const vec3f & v = s->coord[s->coordIndex[i]];
-                if (!s->texCoord.empty()) {
-                    const size_t index = !s->texCoordIndex.empty()
-                                       ? s->texCoordIndex[i]
-                                       : s->coordIndex[i];
-                    glTexCoord2fv(&s->texCoord[index][0]);
+                const size_t tex_coord_index = (i < s->texCoordIndex.size())
+                                             ? s->texCoordIndex[i]
+                                             : s->coordIndex[i];
+                if (tex_coord_index < s->texCoord.size()) {
+                    glTexCoord2fv(&s->texCoord[tex_coord_index][0]);
                 } else {
                     float c0, c1;
                     c0 = (v[s->texAxes[0]] - s->texParams[0])
@@ -2994,7 +2994,7 @@ do_insert_shell(unsigned int mask,
     if (coord_index.size() < 4) { return 0; } // 3 pts and a trailing -1
 
     // Texture coordinate generation parameters.
-    int texAxes[2];                        // Map s,t to x,y,z
+    int texAxes[2] = { 0, 1 };         // Map s,t to x,y,z
     float texParams[4];                // s0, 1/sSize, t0, 1/tSize
 
     // Compute bounding box for texture coord generation and lighting.
