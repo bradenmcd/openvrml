@@ -241,12 +241,13 @@ namespace openvrml {
         mutable read_write_mutex scene_mutex_;
         boost::scoped_ptr<scene> scene_;
 
-        const boost::intrusive_ptr<node> default_viewpoint_;
+        const boost::intrusive_ptr<viewpoint_node> default_viewpoint_;
 
         mutable read_write_mutex active_viewpoint_mutex_;
         viewpoint_node * active_viewpoint_;
 
-        const boost::intrusive_ptr<node> default_navigation_info_;
+        const boost::intrusive_ptr<navigation_info_node>
+            default_navigation_info_;
 
         mutable read_write_mutex active_navigation_info_mutex_;
         navigation_info_node * active_navigation_info_;

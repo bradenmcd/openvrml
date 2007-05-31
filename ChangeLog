@@ -1,5 +1,12 @@
 2007-05-31 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::browser): Changed default_viewpoint_ to be an
+	intrusive_ptr<viewpoint_node>; changed default_navigation_info_ to
+	be an intrusive_ptr<navigation_info_node>.
+
+2007-05-31 Braden McDaniel  <braden@endoframe.com>
+
 	Ensure indices into coordinate, normal, and color data are valid
 	before using them in the renderer.
 
