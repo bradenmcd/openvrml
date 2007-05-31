@@ -7228,11 +7228,9 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 {
     read_write_mutex::scoped_read_lock lock(this->url_mutex_);
     using std::string;
-    const string result = (this->parent_ && !this->url_.empty())
-                        ? string(uri(this->url_)
-                                 .resolve_against(uri(this->parent_->url())))
-                        : this->url_;
-    return result;
+    return (this->parent_ && !this->url_.empty() && relative(uri(this->url_)))
+        ? string(uri(this->url_).resolve_against(uri(this->parent_->url())))
+        : this->url_;
 }
 
 /**

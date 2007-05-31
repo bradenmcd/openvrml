@@ -1,3 +1,9 @@
+2007-05-31 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::url() const): Ensure the scene's URL is relative
+	before trying to resolve it against that of the parent scene.
+
 2007-05-25 Braden McDaniel  <braden@endoframe.com>
 
 	Protect browser::load_root_scene_thread_ with a read-write mutex.
