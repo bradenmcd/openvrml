@@ -6147,9 +6147,7 @@ const std::string openvrml::browser::world_url() const
 void openvrml::browser::set_world(resource_istream & in)
 {
     {
-        read_write_mutex::scoped_write_lock
-            scene_lock(this->scene_mutex_),
-            active_viewpoint_lock(this->active_viewpoint_mutex_);
+        read_write_mutex::scoped_write_lock scene_lock(this->scene_mutex_);
 
         using std::for_each;
         using std::string;
@@ -6168,8 +6166,6 @@ void openvrml::browser::set_world(resource_istream & in)
                      boost::mem_fun(&browser_listener::browser_changed),
                      browser_event(*this, browser_event::shutdown)));
         this->scene_.reset();
-        this->active_viewpoint_ =
-            node_cast<viewpoint_node *>(this->default_viewpoint_.get());
         assert(this->viewpoint_list_.empty());
         assert(this->scoped_lights_.empty());
         assert(this->scripts_.empty());
@@ -6211,21 +6207,15 @@ void openvrml::browser::set_world(resource_istream & in)
         //
         this->node_metatype_map_.init(initial_viewpoint, now);
 
-        if (this->active_viewpoint_
-            != node_cast<viewpoint_node *>(this->default_viewpoint_.get())) {
-            // XXX
-            // XXX Fix openvrml::viewpoint_node so that we don't have to get an
-            // XXX event_listener here.
-            // XXX
-            event_listener & listener =
-                this->active_viewpoint_->event_listener("set_bind");
-            dynamic_cast<sfbool_listener &>(listener)
-                .process_event(sfbool(true), now);
+        if (!this->active_viewpoint_) {
+            read_write_mutex::scoped_write_lock
+                lock(this->active_viewpoint_mutex_);
+            this->active_viewpoint_ = this->default_viewpoint_.get();
         }
 
         this->modified(true);
         this->new_view = true; // Force resetUserNav
-    } // unlock this->mutex_, this->listeners_mutex_
+    } // unlock this->scene_mutex_, this->active_viewpoint_mutex_
 
     read_write_mutex::scoped_read_lock
         listeners_lock(this->listeners_mutex_);

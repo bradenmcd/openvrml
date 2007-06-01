@@ -1,5 +1,13 @@
 2007-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::set_world(resource_istream &)): Sending TRUE
+	to the newly-active Viewpoint's set_bind is handled in during
+	initialization of the viewpoint_node implementation's metatype; we
+	don't need to do it again.
+
+2007-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	Ensure that scene pointers for the active viewpoint_node and the
 	active navigation_info_node point to scenes that are either the
 	browser's root_scene or one of its descendants.
