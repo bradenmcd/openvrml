@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: config.hpp,v 1.6 2006-11-03 05:38:18 braden Exp $
+ * $Id: config.hpp,v 1.7 2007-06-01 20:04:37 braden Exp $
  */
 
 /*
@@ -101,7 +101,7 @@
 // - Anyone know which is in which standard?
 # define NO_STRCASECMP
 # undef ANTLR_CCTYPE_NEEDS_STD
-
+#	define NO_STATIC_CONSTS
 #endif	// End of Microsoft Visual C++
 
 /*}}}*/

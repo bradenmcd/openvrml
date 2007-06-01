@@ -1,5 +1,9 @@
 2007-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Upgrade to/require ANTLR 2.7.7.
+
+2007-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	Locking fixes for loading inline scenes.
 
 	* src/libopenvrml/openvrml/browser.cpp

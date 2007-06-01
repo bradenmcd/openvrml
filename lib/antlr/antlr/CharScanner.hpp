@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CharScanner.hpp,v 1.2 2006-11-03 09:31:14 braden Exp $
+ * $Id: CharScanner.hpp,v 1.3 2007-06-01 20:04:37 braden Exp $
  */
 
 #include <antlr/config.hpp>
