@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: LexerSharedInputState.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
+ * $Id: LexerSharedInputState.hpp,v 1.1.1.4 2007-06-01 18:48:38 braden Exp $
  */
 
 #include <antlr/config.hpp>

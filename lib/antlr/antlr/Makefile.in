@@ -1,5 +1,5 @@
 ###############################################################################
-# $Id: Makefile.in,v 1.1.1.1 2006-11-03 05:28:19 braden Exp $
+# $Id: Makefile.in,v 1.1.1.2 2007-06-01 18:48:38 braden Exp $
 ###############################################################################
 
 ##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -69,15 +69,15 @@ all :
 clean:
 
 distclean: clean
-	$(RM) Makefile
+	@RMF@ Makefile
 
 test:
 
 install:
-	@echo "install hpp files .. "
+	@@ECHO@ "install hpp files .. "
 	@$(MKDIR) -p "$(includedir)/antlr"
 	@for f in $(antlr_hpp_FILES) ; do \
-		echo "install $${f}" ; \
+		@ECHO@ "install $${f}" ; \
 		if test -f "$${f}" ; then \
 			$(INSTALL) -m 444 "$${f}" "$(includedir)/antlr" ; \
 		fi ;\

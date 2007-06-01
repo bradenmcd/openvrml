@@ -19,8 +19,10 @@
 namespace antlr {
 #endif
 
+#ifndef NO_STATIC_CONSTS
 const size_t TokenStreamRewriteEngine::MIN_TOKEN_INDEX = 0;
 const int TokenStreamRewriteEngine::PROGRAM_INIT_SIZE = 100;
+#endif
 
 const char* TokenStreamRewriteEngine::DEFAULT_PROGRAM_NAME = "default";
 
