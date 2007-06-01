@@ -5917,11 +5917,23 @@ openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const
  * @brief Set the active @c viewpoint_node.
  *
  * @param[in] viewpoint a @c viewpoint_node.
+ *
+ * @pre @p viewpoint.scene() == @c this->root_scene()
  */
 void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_write_lock lock(this->active_viewpoint_mutex_);
+    read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
+    read_write_mutex::scoped_write_lock
+        active_viewpoint_lock(this->active_viewpoint_mutex_);
+# ifndef NDEBUG
+    scene * root_scene = 0;
+    for (root_scene = viewpoint.scene();
+         root_scene->parent();
+         root_scene = root_scene->parent())
+    {}
+# endif
+    assert(root_scene == this->scene_.get());
     this->active_viewpoint_ = &viewpoint;
 }
 
@@ -5957,12 +5969,23 @@ openvrml::browser::active_navigation_info() const OPENVRML_NOTHROW
  * @brief Set the active @c navigation_info_node.
  *
  * @param[in] nav_info a @c navigation_info_node.
+ *
+ * @pre @p viewpoint.scene() == @c this->root_scene()
  */
 void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
     OPENVRML_NOTHROW
 {
+    read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
     read_write_mutex::scoped_write_lock
-        lock(this->active_navigation_info_mutex_);
+        active_navigation_info_lock(this->active_navigation_info_mutex_);
+# ifndef NDEBUG
+    scene * root_scene = 0;
+    for (root_scene = nav_info.scene();
+         root_scene->parent();
+         root_scene = root_scene->parent())
+    {}
+# endif
+    assert(root_scene == this->scene_.get());
     this->active_navigation_info_ = &nav_info;
 }
 

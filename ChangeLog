@@ -1,7 +1,24 @@
 2007-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	Ensure that scene pointers for the active viewpoint_node and the
+	active navigation_info_node point to scenes that are either the
+	browser's root_scene or one of its descendants.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::active_viewpoint(viewpoint_node &)): Validate
+	that the argument viewpoint_node's scene is (a descendant of) the
+	browser's root_scene.
+	(openvrml::browser::active_navigation_info(navigation_info_node&)):
+	Validate that the argument navigation_info_node's scene is (a
+	descendant of) the browser's root_scene.
+
+2007-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	Removed node-wide recursive mutex.
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::externproto_node::set_proto_node(proto_node_type &)):
+	Removed lock.
 	* src/libopenvrml/openvrml/node.cpp
 	(openvrml::node::scene() const): Moved definition from node.h;
 	acquire a read lock of the scene_mutex_.
@@ -105,7 +122,7 @@
 	(ShellData::ShellData): Changed texAxes to be an array reference.
 	(insertShellConvex(ShellData *)): Ensure indices are valid before
 	using them.
-	(openvrml::gl::viewer::insert_shell(unsigned int, const
+	(openvrml::gl::viewer::do_insert_shell(unsigned int, const
 	std::vector<vec3f> &, const std::vector<int32> &, const
 	std::vector<color> &, const std::vector<int32> &, const
 	std::vector<vec3f> &, const std::vector<int32> &, const
