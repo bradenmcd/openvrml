@@ -17,8 +17,6 @@ ANTLR_USING_NAMESPACE(std)
 namespace antlr {
 #endif
 
-const char* const BaseAST::TYPE_NAME = "BaseAST";
-
 size_t BaseAST::getNumberOfChildren() const
 {
 	RefBaseAST t = this->down;

@@ -1,3 +1,0 @@
-#!/bin/sh
-( cd lib/gtkglext && gtkdocize )
-autoreconf --install --symlink

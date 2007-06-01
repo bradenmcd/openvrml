@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: BaseAST.hpp,v 1.2 2006-11-03 09:31:14 braden Exp $
+ * $Id: BaseAST.hpp,v 1.1.1.4 2007-06-01 18:48:38 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -34,17 +34,10 @@ public:
 	}
 
 	/// Return the class name
-	const char* typeName( void ) const
-	{
-		return BaseAST::TYPE_NAME;
-	}
+	virtual const char* typeName( void ) const = 0;
 
 	/// Clone this AST node.
-	RefAST clone( void ) const
-	{
-		ANTLR_USE_NAMESPACE(std)cerr << "BaseAST::clone()" << ANTLR_USE_NAMESPACE(std)endl;
-		return nullAST;
-	}
+	virtual RefAST clone( void ) const = 0;
 
    /// Is node t equal to this in terms of token type and text?
 	virtual bool equals(RefAST t) const;
@@ -138,18 +131,18 @@ public:
 	}
 
 	/// Set the next sibling after this one.
-	void setNextSibling(RefAST n)
+	virtual void setNextSibling(RefAST n)
 	{
 		right = static_cast<BaseAST*>(static_cast<AST*>(n));
 	}
 
 	/// Set the token text for this node
-	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& /* txt */)
+	virtual void setText(const ANTLR_USE_NAMESPACE(std)string& txt)
 	{
 	}
 
 	/// Set the token type for this node
-	virtual void setType(int /* type */)
+	virtual void setType(int type)
 	{
 	}
 
@@ -175,8 +168,6 @@ public:
 	/// Print out a child sibling tree in LISP notation
 	virtual ANTLR_USE_NAMESPACE(std)string toStringList() const;
 	virtual ANTLR_USE_NAMESPACE(std)string toStringTree() const;
-
-	static const char* const TYPE_NAME;
 protected:
 	RefBaseAST down;
 	RefBaseAST right;
