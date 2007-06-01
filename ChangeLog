@@ -1,5 +1,16 @@
 2007-06-01 Braden McDaniel  <braden@endoframe.com>
 
+	Locking fixes for loading inline scenes.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::set_world(resource_istream &)): Lock the
+	scene_mutex_ with a read-write lock; promote the lock only when
+	resetting scene_.
+	(openvrml::scene::load(resource_istream &)): Release the locks
+	before calling scene_loaded.
+
+2007-06-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::set_world(resource_istream &)): Sending TRUE
 	to the newly-active Viewpoint's set_bind is handled in during

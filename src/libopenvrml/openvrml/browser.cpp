@@ -6147,7 +6147,7 @@ const std::string openvrml::browser::world_url() const
 void openvrml::browser::set_world(resource_istream & in)
 {
     {
-        read_write_mutex::scoped_write_lock scene_lock(this->scene_mutex_);
+        read_write_mutex::scoped_read_write_lock scene_lock(this->scene_mutex_);
 
         using std::for_each;
         using std::string;
@@ -6165,6 +6165,9 @@ void openvrml::browser::set_world(resource_istream & in)
                  boost::bind2nd(
                      boost::mem_fun(&browser_listener::browser_changed),
                      browser_event(*this, browser_event::shutdown)));
+
+        scene_lock.promote();
+
         this->scene_.reset();
         assert(this->viewpoint_list_.empty());
         assert(this->scoped_lights_.empty());
@@ -6178,6 +6181,9 @@ void openvrml::browser::set_world(resource_istream & in)
         this->node_metatype_map_ = new_map;
         register_node_metatypes(*this);
         this->scene_.reset(new scene(*this));
+
+        scene_lock.demote();
+
         this->scene_->load(in);
 
         //
@@ -7068,15 +7074,17 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
  */
 void openvrml::scene::load(resource_istream & in)
 {
-    read_write_mutex::scoped_write_lock
-        nodes_lock(this->nodes_mutex_),
-        url_lock(this->url_mutex_),
-        meta_lock(this->meta_mutex_);
+    {
+        read_write_mutex::scoped_write_lock
+            nodes_lock(this->nodes_mutex_),
+            url_lock(this->url_mutex_),
+            meta_lock(this->meta_mutex_);
 
-    this->nodes_.clear();
-    this->meta_.clear();
-    this->url_ = in.url();
-    parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
+        this->nodes_.clear();
+        this->meta_.clear();
+        this->url_ = in.url();
+        parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
+    }
     this->scene_loaded();
 }
 
