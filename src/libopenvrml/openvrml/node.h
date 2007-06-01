@@ -448,10 +448,13 @@ namespace openvrml {
         mutable boost::mutex ref_count_mutex_;
         mutable size_t ref_count_;
 
-        mutable boost::recursive_mutex mutex_;
         const node_type & type_;
-        boost::shared_ptr<openvrml::scope> scope_;
+        const boost::shared_ptr<openvrml::scope> scope_;
+
+        mutable read_write_mutex scene_mutex_;
         openvrml::scene * scene_;
+
+        mutable read_write_mutex modified_mutex_;
         bool modified_;
 
     public:
@@ -512,8 +515,6 @@ namespace openvrml {
         node(const node_type & type,
              const boost::shared_ptr<openvrml::scope> & scope)
             OPENVRML_NOTHROW;
-
-        boost::recursive_mutex & mutex() const OPENVRML_NOTHROW;
 
     private:
         virtual void do_initialize(double timestamp)
@@ -597,15 +598,6 @@ namespace openvrml {
         return *this->scope_;
     }
 
-    inline openvrml::scene * node::scene() const OPENVRML_NOTHROW
-    {
-        return this->scene_;
-    }
-
-    inline boost::recursive_mutex & node::mutex() const OPENVRML_NOTHROW
-    {
-        return this->mutex_;
-    }
 
     template <typename FieldValue>
     const FieldValue
@@ -613,8 +605,6 @@ namespace openvrml {
         OPENVRML_THROW2(unsupported_interface, std::bad_cast)
     {
         boost::function_requires<FieldValueConcept<FieldValue> >();
-
-        boost::recursive_mutex::scoped_lock lock(this->mutex_);
         return dynamic_cast<const FieldValue &>(this->do_field(id));
     }
 
@@ -882,6 +872,7 @@ namespace openvrml {
 
 
     class OPENVRML_API bounded_volume_node : public virtual node {
+        mutable read_write_mutex bounding_volume_dirty_mutex_;
         mutable bool bounding_volume_dirty_;
 
     public:
@@ -1002,6 +993,7 @@ namespace openvrml {
 
 
     class OPENVRML_API geometry_node : public virtual bounded_volume_node {
+        boost::mutex geometry_reference_mutex_;
         viewer::object_t geometry_reference;
 
     public:
@@ -1175,6 +1167,7 @@ namespace openvrml {
 
 
     class OPENVRML_API texture_node : public virtual node {
+        boost::mutex texture_reference_mutex_;
         viewer::texture_object_t texture_reference;
 
     public:

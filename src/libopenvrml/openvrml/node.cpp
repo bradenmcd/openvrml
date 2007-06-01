@@ -1759,14 +1759,6 @@ openvrml::node::self_tag(new self_ref_node);
 /**
  * @internal
  *
- * @var boost::recursive_mutex openvrml::node::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @internal
- *
  * @var const openvrml::node_type & openvrml::node::type_
  *
  * @brief The type information object for the node.
@@ -1785,9 +1777,25 @@ openvrml::node::self_tag(new self_ref_node);
 /**
  * @internal
  *
+ * @var openvrml::read_write_mutex openvrml::node::scene_mutex_
+ *
+ * @brief Mutex protecting @c #scene_.
+ */
+
+/**
+ * @internal
+ *
  * @var openvrml::scene * openvrml::node::scene_
  *
  * @brief The scene with which the node is associated.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::read_write_mutex openvrml::node::modified_mutex_
+ *
+ * @brief Mutex protecting @c #modified_.
  */
 
 /**
@@ -1981,12 +1989,16 @@ const std::string & openvrml::node::id() const OPENVRML_NOTHROW
  */
 
 /**
- * @fn openvrml::scene * openvrml::node::scene() const
- *
  * @brief Get the scene with which the node is associated.
  *
  * @return the scene with which the node is associated.
  */
+openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
+{
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    return this->scene_;
+}
+
 
 /**
  * @brief Initialize the node.
@@ -2006,9 +2018,11 @@ void openvrml::node::initialize(openvrml::scene & scene,
                                 const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_write_lock lock(this->scene_mutex_);
     if (!this->scene_) {
+        lock.promote();
         this->scene_ = &scene;
+        lock.demote();
         this->do_initialize(timestamp);
 
         const node_interface_set & interfaces = this->type_.interfaces();
@@ -2141,10 +2155,12 @@ openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
  */
 void openvrml::node::shutdown(const double timestamp) OPENVRML_NOTHROW
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_write_lock lock(this->scene_mutex_);
     if (this->scene_) {
         this->do_shutdown(timestamp);
+        lock.promote();
         this->scene_ = 0;
+        lock.demote();
 
         const node_interface_set & interfaces = this->type_.interfaces();
         for (node_interface_set::const_iterator interface(interfaces.begin());
@@ -2513,7 +2529,7 @@ openvrml::viewpoint_node * openvrml::node::to_viewpoint() OPENVRML_NOTHROW
  */
 void openvrml::node::modified(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_write_lock lock(this->modified_mutex_);
     this->modified_ = value;
     if (this->modified_) { this->type_.metatype().browser().modified(true); }
 }
@@ -2529,7 +2545,7 @@ void openvrml::node::modified(const bool value)
  */
 bool openvrml::node::modified() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_lock lock(this->modified_mutex_);
     return this->modified_;
 }
 
@@ -2547,17 +2563,6 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
 {
     emitter.emit_event(timestamp);
 }
-
-/**
- * @fn boost::recursive_mutex & openvrml::node::mutex() const
- *
- * @brief Get the mutex associated with the @c node.
- *
- * Concrete node types should lock the @c node mutex when modifying field
- * values outside the rendering thread.
- *
- * @return the mutex associated with the @c node.
- */
 
 namespace {
     struct OPENVRML_LOCAL field_printer_ {
@@ -2634,7 +2639,6 @@ namespace {
 std::ostream & openvrml::node::print(std::ostream & out,
                                      const size_t indent) const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
     for (size_t i = 0; i < indent; ++i) { out << ' '; }
     std::string nodeId = this->id();
     if (!nodeId.empty()) { out << "DEF " << nodeId << " "; }
@@ -3086,25 +3090,24 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_appearance(v, context);
     this->modified(false);
 }
 
 /**
- * @brief render_appearance implementation.
+ * @brief @c #render_appearance implementation.
  *
- * @param[in,out] v         viewer.
- * @param[in]     context   rendering_context.
+ * @param[in,out] v         @c viewer.
+ * @param[in]     context   @c rendering_context.
  */
 void
 openvrml::appearance_node::do_render_appearance(viewer &, rendering_context)
 {}
 
 /**
- * @brief Cast to an appearance_node.
+ * @brief Cast to an @c appearance_node.
  *
- * @return a pointer to this appearance_node.
+ * @return a pointer to this @c appearance_node.
  */
 openvrml::appearance_node * openvrml::appearance_node::to_appearance()
     OPENVRML_NOTHROW
@@ -3117,7 +3120,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  *
  * @brief Get the material node associated with this appearance node.
  *
- * @return the material_node associated with this appearance_node.
+ * @return the @c material_node associated with this @c appearance_node.
  */
 
 /**
@@ -3125,7 +3128,7 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  *
  * @brief Get the texture node associated with this appearance node.
  *
- * @return the texture_node associated with this appearance_node.
+ * @return the @c texture_node associated with this @c appearance_node.
  */
 
 /**
@@ -3133,7 +3136,8 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
- * @return the texture_transform_node associated with this appearance_node.
+ * @return the @c texture_transform_node associated with this
+ *         @c appearance_node.
  */
 
 
@@ -3142,6 +3146,14 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  *
  * @brief Abstract base class for nodes that represent a bounded volume in the
  *        scene graph.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::read_write_mutex openvrml::bounded_volume_node::bounding_volume_dirty_mutex_
+ *
+ * @brief Mutex protecting @c #bounding_volume_dirty_.
  */
 
 /**
@@ -3177,11 +3189,11 @@ openvrml::bounded_volume_node::~bounded_volume_node() OPENVRML_NOTHROW
  *
  * Nodes that have no bounding volume, or have a difficult to calculate
  * bvolume (like, say, Extrusion or Billboard) can just return an infinite
- * bsphere. Note that returning an infinite bvolume means that all the node's
+ * bsphere.  Note that returning an infinite bvolume means that all the node's
  * ancestors will also end up with an infinite bvolume, and will never be
  * culled.
  *
- * Delegates to <code>bounded_volume_node::do_bounding_volume</code>.
+ * Delegates to @c #do_bounding_volume.
  *
  * @return a maximized bounding volume.
  */
@@ -3189,12 +3201,14 @@ const openvrml::bounding_volume &
 openvrml::bounded_volume_node::bounding_volume() const
 {
     const openvrml::bounding_volume & bv = this->do_bounding_volume();
+    read_write_mutex::scoped_write_lock
+        lock(this->bounding_volume_dirty_mutex_);
     this->bounding_volume_dirty_ = false;
     return bv;
 }
 
 /**
- * @brief Called by <code>bounded_volume_node::bounding_volume</code>.
+ * @brief Called by @c #bounding_volume.
  *
  * @return a maximized bounding volume.
  */
@@ -3226,7 +3240,8 @@ openvrml::bounded_volume_node::do_bounding_volume() const
  */
 void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    read_write_mutex::scoped_write_lock
+        lock(this->bounding_volume_dirty_mutex_);
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
         this->type().metatype().browser().flags_need_updating = true;
@@ -3241,7 +3256,8 @@ void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
  */
 bool openvrml::bounded_volume_node::bounding_volume_dirty() const
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    read_write_mutex::scoped_read_lock
+        lock(this->bounding_volume_dirty_mutex_);
     if (this->type().metatype().browser().flags_need_updating) {
         this->type().metatype().browser().update_flags();
         this->type().metatype().browser().flags_need_updating = false;
@@ -3298,8 +3314,6 @@ openvrml::child_node::~child_node() OPENVRML_NOTHROW
  */
 void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
-
     typedef void (child_node::* Do_relocate)();
 
     class RelocateTraverser : public node_traverser {
@@ -3345,7 +3359,6 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 void openvrml::child_node::render_child(viewer & v,
                                         const rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     this->do_render_child(v, context);
     this->modified(false);
 }
@@ -3643,6 +3656,16 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
+ * @internal
+ *
+ * @var boost::mutex openvrml::geometry_node::gemoetry_reference_mutex_
+ *
+ * @brief Mutex protecting @c #geometry_reference.
+ */
+
+/**
+ * @internal
+ *
  * @var openvrml::viewer::object_t openvrml::geometry_node::geometry_reference
  *
  * @brief Identifier for a geometry object in the renderer.
@@ -3651,8 +3674,8 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::geometry_node::
 geometry_node(const node_type & type,
@@ -3666,10 +3689,9 @@ geometry_node(const node_type & type,
 /**
  * @brief Destroy.
  *
- * @todo Proper resource deallocation in the <code>viewer</code> depends on the
- *       <code>viewer</code> <strong>not</strong> having been decoupled from
- *       the browser. We need to handle this better via some refcounting
- *       scheme.
+ * @todo Proper resource deallocation in the @c viewer depends on the
+ *       @c viewer @b not having been decoupled from the @c browser.  We need
+ *       to handle this better via some refcounting scheme.
  */
 openvrml::geometry_node::~geometry_node() OPENVRML_NOTHROW
 {}
@@ -3697,7 +3719,7 @@ openvrml::viewer::object_t
 openvrml::geometry_node::render_geometry(viewer & v,
                                          rendering_context context)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
 
     if (this->geometry_reference != 0 && this->modified()) {
         v.remove_object(this->geometry_reference);
@@ -3723,7 +3745,6 @@ openvrml::geometry_node::render_geometry(viewer & v,
  */
 bool openvrml::geometry_node::emissive() const OPENVRML_NOTHROW
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
     return this->do_emissive();
 }
 
@@ -4293,6 +4314,16 @@ openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
  */
 
 /**
+ * @internal
+ *
+ * @var boost::mutex openvrml::texture_node::texture_reference_mutex_
+ *
+ * @brief Mutex protecting @c #texture_reference.
+ */
+
+/**
+ * @internal
+ *
  * @var openvrml::viewer::texture_object_t openvrml::texture_node::texture_reference
  *
  * @brief Identifier for a texture object in the renderer.
@@ -4315,10 +4346,9 @@ texture_node(const node_type & type,
 /**
  * @brief Destroy.
  *
- * @todo Proper resource deallocation in the <code>viewer</code> depends on the
- *       <code>viewer</code> <strong>not</strong> having been decoupled from
- *       the browser. We need to handle this better via some refcounting
- *       scheme.
+ * @todo Proper resource deallocation in the @c viewer depends on the
+ *       @c viewer @b not having been decoupled from the @c browser.  We need
+ *       to handle this better via some refcounting scheme.
  */
 openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 {}
@@ -4333,7 +4363,7 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 openvrml::viewer::texture_object_t
 openvrml::texture_node::render_texture(viewer & v)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
+    boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
 
     if (this->texture_reference != 0 && this->modified()) {
         v.remove_texture_object(this->texture_reference);

@@ -35,7 +35,11 @@ namespace openvrml {
         bool writing_;
 
     public:
+        class scoped_read_write_lock;
+
         class scoped_read_lock : boost::noncopyable {
+            friend class scoped_read_write_lock;
+
             read_write_mutex & mutex_;
             boost::mutex::scoped_lock lock_;
 
@@ -51,6 +55,15 @@ namespace openvrml {
         public:
             explicit scoped_write_lock(read_write_mutex & mutex);
             ~scoped_write_lock();
+        };
+
+        class scoped_read_write_lock : scoped_read_lock {
+        public:
+            explicit scoped_read_write_lock(read_write_mutex & mutex);
+            ~scoped_read_write_lock();
+
+            void promote();
+            void demote();
         };
 
         read_write_mutex();

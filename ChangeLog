@@ -1,3 +1,93 @@
+2007-06-01 Braden McDaniel  <braden@endoframe.com>
+
+	Removed node-wide recursive mutex.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::scene() const): Moved definition from node.h;
+	acquire a read lock of the scene_mutex_.
+	(openvrml::node::initialize(openvrml::scene &, double)): Acquire a
+	read lock of the scene_mutex_; promote it to a write lock when
+	actually setting the scene_.
+	(openvrml::node::shutdown(double)): Acquire a read lock of the
+	scene_mutex_; promote it to a write lock when actually setting the
+	scene_.
+	(openvrml::node::modified(bool)): Acquire a write lock of the
+	modified_mutex_.
+	(openvrml::node::modified() const): Acquire a read lock of the
+	modified_mutex_.
+	(openvrml::node::print(std::ostream &, size_t) const): Removed
+	lock.
+	(openvrml::appearance_node::render_appearance(viewer &,
+	rendering_context)): Removed lock.
+	(openvrml::bounded_volume_node::bounding_volume() const): Acquire
+	a write lock of the bounding_volume_dirty_mutex_.
+	(openvrml::bounded_volume_node::bounding_volume_dirty(bool)):
+	Acquire a write lock of the bounding_volume_dirty_mutex_.
+	(openvrml::bounded_volume_node::bounding_volume_dirty() const):
+	Acquire a read lock of the bounding_volume_dirty_mutex_.
+	(openvrml::child_node::relocate()): Removed lock.
+	(openvrml::child_node::render_child(viewer &, rendering_context)):
+	Removed lock.
+	(openvrml::geometry_node::render_geometry(viewer &,
+	rendering_context)): Lock the geometry_reference_mutex_.
+	(openvrml::geometry_node::emissive() const): Removed lock.
+	(openvrml::texture_node::render_texture(viewer &)): Lock the
+	texture_reference_mutex_.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Removed mutex_ and its accessor; changed scope_
+	to be const; added scene_mutex_ and modified_mutex_.
+	(openvrml::node::scene() const): Moved to be out-of-line in
+	node.cpp.
+	(openvrml::bounded_volume_node): Added
+	bounding_volume_dirty_mutex_.
+	(openvrml::geometry_node): Added geometry_reference_mutex_.
+	(openvrml::texture_node): Added texture_reference_mutex_.
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	(openvrml::read_write_mutex::scoped_read_write_lock::scoped_read_write_lock(read_write_mutex&)):
+	Added constructor.
+	(openvrml::read_write_mutex::scoped_read_write_lock::~scoped_read_write_lock()):
+	Added destructor.
+	(openvrml::read_write_mutex::scoped_read_write_lock::promote()):
+	Added function to promote the lock to a write lock.
+	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
+	Added function to demote a promted lock back to a read lock.
+	* src/libopenvrml/openvrml/read_write_mutex.h
+	(openvrml::read_write_mutex): Added scoped_read_write_lock, a lock
+	that is constructed as a read lock and can be promoted to a write
+	lock.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(background_node): Added read_write_mutexes to protect the
+	images--front_mutex_, back_mutex_, left_mutex_, right_mutex_,
+	top_mutex_, bottom_mutex_.
+	(image_texture_node): Added image_mutex_.
+	(background_metatype::do_render(viewer &) const): Acquire read
+	locks of all the image mutexes before calling
+	viewer::insert_background.
+	(image_stream_listener): Replaced node_mutex_--a reference to the
+	node-wide recursive mutex--with image_mutex_, a reference to the
+	mutex associated with the image.
+	(image_stream_listener::image_stream_listener(const std::string &,
+	openvrml::image &, openvrml::node &,
+	openvrml::read_write_mutex&)): Pass the read_write_mutex
+	associated with the image instead of the node-wide recursive
+	mutex.
+	(openvrml_png_info_callback(png_structp, png_infop)): Acquire a
+	write lock of the image_mutex_.
+	(openvrml_png_row_callback(png_structp, png_bytep, png_uint_32,
+	int)): Acquire a write lock of the image_mutex_.
+	(image_stream_listener::jpeg_reader::do_read(const
+	std::vector<unsigned char> &)): Acquire a write lock of the
+	image_mutex_.
+	(image_stream_listener::jpeg_reader::output_scanlines()): Removed
+	lock.
+	(update_texture(background_node &, openvrml::read_write_mutex &,
+	const openvrml::mfstring &, openvrml::image &)): Pass the
+	read_write_mutex associated with the image instead of the
+	node-wide recursive mutex.
+	(background_node::update_textures()): Pass the read_write_mutexes
+	associated with the images instead of the node-wide recursive
+	mutex.
+
 2007-05-31 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.h

@@ -4109,8 +4109,6 @@ openvrml::externproto_node::
 set_proto_node(proto_node_type & node_type)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex());
-
     using boost::static_pointer_cast;
 
     this->proto_node_ =

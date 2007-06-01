@@ -24,6 +24,7 @@
 # endif
 
 #include "read_write_mutex.h"
+#include <cassert>
 
 /**
  * @class openvrml::read_write_mutex openvrml/read_write_mutex.h
@@ -223,3 +224,61 @@ openvrml::read_write_mutex::read_write_mutex():
     writers_waiting_(0),
     writing_(false)
 {}
+
+
+/**
+ * @class openvrml::read_write_mutex::scoped_read_write_lock openvrml/read_write_lock.h
+ *
+ * @brief Lock the mutex for read/write access.
+ *
+ * Upon construction, the associated mutex is locked for reading.  The lock
+ * can be &ldquo;promoted&rdquo; to a write lock by calling @c #promote.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] mutex a @c read_write_mutex.
+ */
+openvrml::read_write_mutex::scoped_read_write_lock::
+scoped_read_write_lock(read_write_mutex & mutex):
+    scoped_read_lock(mutex)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::read_write_mutex::scoped_read_write_lock::~scoped_read_write_lock()
+{
+    this->demote();
+}
+
+/**
+ * @brief Promote the lock to a write lock.
+ */
+void openvrml::read_write_mutex::scoped_read_write_lock::promote()
+{
+    this->lock_.lock();
+    assert(!this->mutex_.writing_);
+    if (this->mutex_.readers_active_ != 1) {
+        ++this->mutex_.writers_waiting_;
+        while (this->mutex_.readers_active_ != 1) {
+            this->mutex_.write_.wait(this->lock_);
+        }
+        --this->mutex_.writers_waiting_;
+    }
+    this->mutex_.writing_ = true;
+    this->lock_.unlock();
+}
+
+/**
+ * @brief Demote the lock from a write lock back to a read lock.
+ *
+ * If the lock has not previously been promoted, this function has no effect.
+ */
+void openvrml::read_write_mutex::scoped_read_write_lock::demote()
+{
+    this->lock_.lock();
+    this->mutex_.writing_ = false;
+    this->lock_.unlock();
+}

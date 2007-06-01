@@ -2503,16 +2503,27 @@ namespace {
         sftime bind_time_;
         sftime_emitter bind_time_emitter_;
 
+        read_write_mutex front_mutex_;
         image front;
         bool front_needs_update;
+
+        read_write_mutex back_mutex_;
         image back;
         bool back_needs_update;
+
+        read_write_mutex left_mutex_;
         image left;
         bool left_needs_update;
+
+        read_write_mutex right_mutex_;
         image right;
         bool right_needs_update;
+
+        read_write_mutex top_mutex_;
         image top;
         bool top_needs_update;
+
+        read_write_mutex bottom_mutex_;
         image bottom;
         bool bottom_needs_update;
 
@@ -3039,6 +3050,7 @@ namespace {
 
         url_exposedfield url_;
 
+        read_write_mutex image_mutex_;
         openvrml::image image_;
         bool texture_needs_update;
 
@@ -5567,6 +5579,14 @@ namespace {
             } else {
                 background.update_textures();
 
+                read_write_mutex::scoped_read_lock
+                    front_lock(background.front_mutex_),
+                    back_lock(background.back_mutex_),
+                    left_lock(background.left_mutex_),
+                    right_lock(background.right_mutex_),
+                    top_lock(background.top_mutex_),
+                    bottom_lock(background.bottom_mutex_);
+
                 background.viewerObject =
                     v.insert_background(
                         background.ground_angle_.mffloat::value(),
@@ -5588,14 +5608,14 @@ namespace {
     /**
      * @brief Create a node_type.
      *
-     * @param id            the name for the new node_type.
-     * @param interfaces    the interfaces for the new node_type.
+     * @param id            the name for the new @c node_type.
+     * @param interfaces    the interfaces for the new @c node_type.
      *
-     * @return a boost::shared_ptr<node_type> to a node_type capable of
+     * @return a @c boost::shared_ptr<node_type> to a @c node_type capable of
      *         creating Background nodes.
      *
      * @exception unsupported_interface if @p interfaces includes an interface
-     *                                  not supported by background_metatype.
+     *                                  not supported by @c background_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
     const boost::shared_ptr<openvrml::node_type>
@@ -6303,7 +6323,7 @@ namespace {
         public openvrml::stream_listener {
 
         const std::string uri_;
-        boost::recursive_mutex & node_mutex_;
+        openvrml::read_write_mutex & image_mutex_;
         openvrml::image & image_;
         openvrml::node & node_;
 
@@ -6406,7 +6426,7 @@ namespace {
         image_stream_listener(const std::string & uri,
                               openvrml::image & image,
                               openvrml::node & node,
-                              boost::recursive_mutex & node_mutex);
+                              openvrml::read_write_mutex & image_mutex);
         virtual ~image_stream_listener() OPENVRML_NOTHROW;
 
     private:
@@ -6435,8 +6455,8 @@ namespace {
         png_reader_t & reader =
             *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
 
-        boost::recursive_mutex::scoped_lock
-            lock(reader.stream_listener.node_mutex_);
+        openvrml::read_write_mutex::scoped_write_lock
+            lock(reader.stream_listener.image_mutex_);
 
         openvrml::image & image = reader.stream_listener.image_;
 
@@ -6537,8 +6557,8 @@ namespace {
         png_reader_t & reader =
             *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
 
-        boost::recursive_mutex::scoped_lock
-            lock(reader.stream_listener.node_mutex_);
+        openvrml::read_write_mutex::scoped_write_lock
+            lock(reader.stream_listener.image_mutex_);
 
         openvrml::image & image = reader.stream_listener.image_;
 
@@ -6793,8 +6813,8 @@ namespace {
     image_stream_listener::jpeg_reader::
     do_read(const std::vector<unsigned char> & data)
     {
-        boost::recursive_mutex::scoped_lock
-            lock(this->stream_listener.node_mutex_);
+        openvrml::read_write_mutex::scoped_write_lock
+            lock(this->stream_listener.image_mutex_);
 
         if (data.size() > this->buffer.size()) {
             this->buffer.resize(data.size());
@@ -6931,9 +6951,6 @@ namespace {
 
     bool image_stream_listener::jpeg_reader::output_scanlines()
     {
-        boost::recursive_mutex::scoped_lock
-            lock(this->stream_listener.node_mutex_);
-
         JDIMENSION top = this->cinfo_.output_scanline;
         bool result = true;
 
@@ -6975,9 +6992,9 @@ namespace {
     image_stream_listener(const std::string & uri,
                           openvrml::image & image,
                           openvrml::node & node,
-                          boost::recursive_mutex & node_mutex):
+                          openvrml::read_write_mutex & image_mutex):
         uri_(uri),
-        node_mutex_(node_mutex),
+        image_mutex_(image_mutex),
         image_(image),
         node_(node)
     {}
@@ -7010,7 +7027,7 @@ namespace {
     }
 
     void update_texture(background_node & node,
-                        boost::recursive_mutex & node_mutex,
+                        openvrml::read_write_mutex & img_mutex,
                         const openvrml::mfstring & url,
                         openvrml::image & img)
         OPENVRML_THROW1(std::bad_alloc)
@@ -7030,7 +7047,7 @@ namespace {
                     new image_stream_listener(in->url(),
                                               img,
                                               node,
-                                              node_mutex));
+                                              img_mutex));
                 node.scene()->read_stream(in, listener);
             }
         } catch (const openvrml::no_alternative_url &) {}
@@ -7044,42 +7061,42 @@ namespace {
     {
         if (this->front_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->front_mutex_,
                            this->front_url_,
                            this->front);
             this->front_needs_update = false;
         }
         if (this->back_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->back_mutex_,
                            this->back_url_,
                            this->back);
             this->back_needs_update = false;
         }
         if (this->left_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->left_mutex_,
                            this->left_url_,
                            this->left);
             this->left_needs_update = false;
         }
         if (this->right_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->right_mutex_,
                            this->right_url_,
                            this->right);
             this->right_needs_update = false;
         }
         if (this->top_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->top_mutex_,
                            this->top_url_,
                            this->top);
             this->top_needs_update = false;
         }
         if (this->bottom_needs_update) {
             update_texture(*this,
-                           this->mutex(),
+                           this->bottom_mutex_,
                            this->bottom_url_,
                            this->bottom);
             this->bottom_needs_update = false;
@@ -12480,7 +12497,7 @@ namespace {
                     new image_stream_listener(in->url(),
                                               this->image_,
                                               *this,
-                                              this->mutex()));
+                                              this->image_mutex_));
                 this->scene()->read_stream(in, listener);
             }
             this->texture_needs_update = false;
@@ -13657,13 +13674,11 @@ namespace {
      *
      * Render each of the children.
      *
-     * @param viewer    a Viewer.
-     * @param context   a rendering context.
+     * @param viewer    a @c viewer.
+     * @param context   a @c rendering_context.
      */
-    void
-    inline_node::
-    do_render_child(openvrml::viewer & viewer,
-                    const rendering_context context)
+    void inline_node::do_render_child(openvrml::viewer & viewer,
+                                      const rendering_context context)
     {
         this->load();
         if (this->inline_scene_) { this->inline_scene_->render(viewer, context); }
