@@ -1,5 +1,5 @@
 ##############################################################################
-# $Id: Makefile.in,v 1.1.1.1 2006-11-03 05:28:19 braden Exp $
+# $Id: Makefile.in,v 1.1.1.2 2007-06-01 18:48:38 braden Exp $
 ###############################################################################
 
 ##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -95,15 +95,15 @@ antlr_obj_FILES = \
 	@ @CXX_LIB_CMD@ $(antlr_obj_FILES)
 
 clean:
-	rm -rf *.obj *.o *.a  *.lib *.so *.dll *~ @ANTLR_LIB@
+	@RMF@ *.obj *.o *.a  *.lib *.so *.dll *~ @ANTLR_LIB@
 
 ## use this target if you just want to rebuild the lib without
 ## compiling again.
 clean-lib:
-	rm -f @ANTLR_LIB@
+	@RMF@ @ANTLR_LIB@
 
 distclean: clean
-	$(RM) Makefile
+	@RMF@ Makefile
 
 test:
 
@@ -115,9 +115,9 @@ antlr_lib_FILES = \
 
 this-install: @ANTLR_LIB@ 
 	@$(MKDIR) -p "$(libdir)"
-	@echo "install C++ core files .. "
+	@@ECHO@ "install C++ core files .. "
 	@for f in $(antlr_lib_FILES) ; do \
-		echo "install $${f}" ; \
+		@ECHO@ "install $${f}" ; \
 		if test -f "$${f}" ; then \
 			$(INSTALL) -m 444 "$${f}" "$(libdir)" ; \
 		fi ;\

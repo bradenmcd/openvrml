@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CircularQueue.hpp,v 1.1.1.3 2006-11-03 05:28:19 braden Exp $
+ * $Id: CircularQueue.hpp,v 1.1.1.4 2007-06-01 18:48:38 braden Exp $
  */
 
 #include <antlr/config.hpp>
@@ -56,7 +56,18 @@ public:
 	}
 	inline void removeItems( size_t nb )
 	{
-		assert(nb <= entries());
+		// it would be nice if we would not get called with nb > entries
+		// (or to be precise when entries() == 0)
+		// This case is possible when lexer/parser::recover() calls
+		// consume+consumeUntil when the queue is empty.
+		// In recover the consume says to prepare to read another
+		// character/token. Then in the subsequent consumeUntil the
+		// LA() call will trigger
+		// syncConsume which calls this method *before* the same queue
+		// has been sufficiently filled.
+		if( nb > entries() )
+			nb = entries();
+
 		if (m_offset >= OFFSET_MAX_RESIZE)
 		{
 			storage.erase( storage.begin(), storage.begin() + m_offset + nb );
