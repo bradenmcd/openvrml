@@ -1,3 +1,9 @@
+Changes new in version 0.16.5, 2 June, 2007
+========================================================================
+
+- Fixed openvrml-player to know about its application data directory.
+
+
 Changes new in version 0.16.4, 30 April, 2007
 ========================================================================
 

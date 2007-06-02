@@ -38,7 +38,10 @@ extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
 
 namespace {
 
-    class resource_fetcher : public openvrml::resource_fetcher {
+    class browser : public openvrml::browser {
+    public:
+        browser();
+
     private:
         virtual std::auto_ptr<openvrml::resource_istream>
         do_get_resource(const std::string & uri);
@@ -102,8 +105,7 @@ int main(int argc, char * argv[])
         const string url = argv[1];
 
         sdl_viewer v(url);
-        resource_fetcher fetcher;
-        openvrml::browser b(fetcher, std::cout, std::cerr);
+        browser b;
         b.viewer(&v);
 
         vector<string> uri(1, url);
@@ -126,8 +128,12 @@ int main(int argc, char * argv[])
 
 namespace {
 
+    browser::browser():
+        openvrml::browser(std::cout, std::cerr)
+    {}
+
     std::auto_ptr<openvrml::resource_istream>
-    resource_fetcher::do_get_resource(const std::string & uri)
+    browser::do_get_resource(const std::string & uri)
     {
         using std::auto_ptr;
         using std::invalid_argument;

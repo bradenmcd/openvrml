@@ -1,139 +1,22 @@
-2007-06-01 Braden McDaniel  <braden@endoframe.com>
+2007-06-02 Braden McDaniel  <braden@endoframe.com>
 
-	* configure.ac: Upgrade to/require ANTLR 2.7.7.
+	Updates for 0.16.5 release.
 
-2007-06-01 Braden McDaniel  <braden@endoframe.com>
-
-	Locking fixes for loading inline scenes.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::set_world(resource_istream &)): Lock the
-	scene_mutex_ with a read-write lock; promote the lock only when
-	resetting scene_.
-	(openvrml::scene::load(resource_istream &)): Release the locks
-	before calling scene_loaded.
-
-2007-06-01 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::set_world(resource_istream &)): Sending TRUE
-	to the newly-active Viewpoint's set_bind is handled in during
-	initialization of the viewpoint_node implementation's metatype; we
-	don't need to do it again.
-
-2007-06-01 Braden McDaniel  <braden@endoframe.com>
-
-	Ensure that scene pointers for the active viewpoint_node and the
-	active navigation_info_node point to scenes that are either the
-	browser's root_scene or one of its descendants.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::active_viewpoint(viewpoint_node &)): Validate
-	that the argument viewpoint_node's scene is (a descendant of) the
-	browser's root_scene.
-	(openvrml::browser::active_navigation_info(navigation_info_node&)):
-	Validate that the argument navigation_info_node's scene is (a
-	descendant of) the browser's root_scene.
-
-2007-06-01 Braden McDaniel  <braden@endoframe.com>
-
-	Removed node-wide recursive mutex.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::externproto_node::set_proto_node(proto_node_type &)):
-	Removed lock.
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::node::scene() const): Moved definition from node.h;
-	acquire a read lock of the scene_mutex_.
-	(openvrml::node::initialize(openvrml::scene &, double)): Acquire a
-	read lock of the scene_mutex_; promote it to a write lock when
-	actually setting the scene_.
-	(openvrml::node::shutdown(double)): Acquire a read lock of the
-	scene_mutex_; promote it to a write lock when actually setting the
-	scene_.
-	(openvrml::node::modified(bool)): Acquire a write lock of the
-	modified_mutex_.
-	(openvrml::node::modified() const): Acquire a read lock of the
-	modified_mutex_.
-	(openvrml::node::print(std::ostream &, size_t) const): Removed
-	lock.
-	(openvrml::appearance_node::render_appearance(viewer &,
-	rendering_context)): Removed lock.
-	(openvrml::bounded_volume_node::bounding_volume() const): Acquire
-	a write lock of the bounding_volume_dirty_mutex_.
-	(openvrml::bounded_volume_node::bounding_volume_dirty(bool)):
-	Acquire a write lock of the bounding_volume_dirty_mutex_.
-	(openvrml::bounded_volume_node::bounding_volume_dirty() const):
-	Acquire a read lock of the bounding_volume_dirty_mutex_.
-	(openvrml::child_node::relocate()): Removed lock.
-	(openvrml::child_node::render_child(viewer &, rendering_context)):
-	Removed lock.
-	(openvrml::geometry_node::render_geometry(viewer &,
-	rendering_context)): Lock the geometry_reference_mutex_.
-	(openvrml::geometry_node::emissive() const): Removed lock.
-	(openvrml::texture_node::render_texture(viewer &)): Lock the
-	texture_reference_mutex_.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node): Removed mutex_ and its accessor; changed scope_
-	to be const; added scene_mutex_ and modified_mutex_.
-	(openvrml::node::scene() const): Moved to be out-of-line in
-	node.cpp.
-	(openvrml::bounded_volume_node): Added
-	bounding_volume_dirty_mutex_.
-	(openvrml::geometry_node): Added geometry_reference_mutex_.
-	(openvrml::texture_node): Added texture_reference_mutex_.
-	* src/libopenvrml/openvrml/read_write_mutex.cpp
-	(openvrml::read_write_mutex::scoped_read_write_lock::scoped_read_write_lock(read_write_mutex&)):
-	Added constructor.
-	(openvrml::read_write_mutex::scoped_read_write_lock::~scoped_read_write_lock()):
-	Added destructor.
-	(openvrml::read_write_mutex::scoped_read_write_lock::promote()):
-	Added function to promote the lock to a write lock.
-	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
-	Added function to demote a promted lock back to a read lock.
-	* src/libopenvrml/openvrml/read_write_mutex.h
-	(openvrml::read_write_mutex): Added scoped_read_write_lock, a lock
-	that is constructed as a read lock and can be promoted to a write
-	lock.
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(background_node): Added read_write_mutexes to protect the
-	images--front_mutex_, back_mutex_, left_mutex_, right_mutex_,
-	top_mutex_, bottom_mutex_.
-	(image_texture_node): Added image_mutex_.
-	(background_metatype::do_render(viewer &) const): Acquire read
-	locks of all the image mutexes before calling
-	viewer::insert_background.
-	(image_stream_listener): Replaced node_mutex_--a reference to the
-	node-wide recursive mutex--with image_mutex_, a reference to the
-	mutex associated with the image.
-	(image_stream_listener::image_stream_listener(const std::string &,
-	openvrml::image &, openvrml::node &,
-	openvrml::read_write_mutex&)): Pass the read_write_mutex
-	associated with the image instead of the node-wide recursive
-	mutex.
-	(openvrml_png_info_callback(png_structp, png_infop)): Acquire a
-	write lock of the image_mutex_.
-	(openvrml_png_row_callback(png_structp, png_bytep, png_uint_32,
-	int)): Acquire a write lock of the image_mutex_.
-	(image_stream_listener::jpeg_reader::do_read(const
-	std::vector<unsigned char> &)): Acquire a write lock of the
-	image_mutex_.
-	(image_stream_listener::jpeg_reader::output_scanlines()): Removed
-	lock.
-	(update_texture(background_node &, openvrml::read_write_mutex &,
-	const openvrml::mfstring &, openvrml::image &)): Pass the
-	read_write_mutex associated with the image instead of the
-	node-wide recursive mutex.
-	(background_node::update_textures()): Pass the read_write_mutexes
-	associated with the images instead of the node-wide recursive
-	mutex.
-
-2007-05-31 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Changed default_viewpoint_ to be an
-	intrusive_ptr<viewpoint_node>; changed default_navigation_info_ to
-	be an intrusive_ptr<navigation_info_node>.
+	* NEWS: Updated for 0.16.5 release.
+	* README: Updated for 0.16.5 release.
+	* configure.ac: Updated for 0.16.5 release.
+	* doc/Doxyfile: Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Updated for 0.16.5 release.
+	* mozilla-plugin/configure.ac: Updated for 0.16.5 release.
+	* src/libopenvrml/Makefile.am (LIBRARY_VERSION): Updated libtool
+	library version number.
+	* src/libopenvrml-gl/Makefile.am (LIBRARY_VERSION): Updated
+	libtool library version number.
 
 2007-05-31 Braden McDaniel  <braden@endoframe.com>
 
@@ -145,7 +28,7 @@
 	(ShellData::ShellData): Changed texAxes to be an array reference.
 	(insertShellConvex(ShellData *)): Ensure indices are valid before
 	using them.
-	(openvrml::gl::viewer::do_insert_shell(unsigned int, const
+	(openvrml::gl::viewer::insert_shell(unsigned int, const
 	std::vector<vec3f> &, const std::vector<int32> &, const
 	std::vector<color> &, const std::vector<int32> &, const
 	std::vector<vec3f> &, const std::vector<int32> &, const
@@ -157,19 +40,6 @@
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::url() const): Ensure the scene's URL is relative
 	before trying to resolve it against that of the parent scene.
-
-2007-05-25 Braden McDaniel  <braden@endoframe.com>
-
-	Protect browser::load_root_scene_thread_ with a read-write mutex.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::~browser()): Lock the
-	load_root_scene_thread_mutex_ for reading.
-	(openvrml::browser::load_url(const std::vector<std::string> &,
-	const std::vector<std::string> &)): Lock the
-	load_root_scene_thread_mutex_.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Added member load_root_scene_thread_mutex_.
 
 2007-05-21 Braden McDaniel  <braden@endoframe.com>
 
@@ -189,348 +59,26 @@
 	* configure.ac: Added check to ensure
 	libboost_thread$BOOST_LIB_SUFFIX is usable.
 
-2007-05-20 Braden McDaniel  <braden@endoframe.com>
-
-	Replaced the browser-wide recursive mutex with several read-write
-	mutexes.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
-	std::ostream &)): Changed positions of fetcher_ and frame_rate_ in
-	the member initializer list to match the declaration order.
-	(openvrml::browser::~browser()): Lock the scene_mutex_ for
-	reading.
-	(openvrml::browser::root_scene() const): Lock the scene_mutex_ for
-	reading.
-	(openvrml::browser::find_node(const node &) const): Lock the
-	scene_mutex_ for reading.
-	(openvrml::browser::active_viewpoint() const): Lock the
-	active_viewpoint_mutex_ for reading.
-	(openvrml::browser::active_viewpoint(viewpoint_node &)): Lock the
-	active_viewpoint_mutex_ for writing.
-	(openvrml::browser::reset_default_viewpoint()): Lock the
-	active_viewpoint_mutex_ for writing.
-	(openvrml::browser::active_navigation_info() const): Lock the
-	active_navigation_info_mutex_ for reading.
-	(openvrml::browser::active_navigation_info(navigation_info_node&)):
-	Lock the active_navigation_info_mutex_ for writing.
-	(openvrml::browser::reset_default_navigation_info()): Lock the
-	active_navigation_info_mutex_ for writing.
-	(openvrml::browser::add_viewpoint(viewpoint_node &)): Lock the
-	viewpoint_list_mutex_ for writing.
-	(openvrml::browser::remove_viewpoint(viewpoint_node &)): Lock the
-	viewpoint_list_mutex_ for writing.
-	(openvrml::browser::viewer(openvrml::viewer *)): Lock the
-	viewer_mutex_ for writing.
-	(openvrml::browser::viewer()): Lock the viewer_mutex_ for reading.
-	(openvrml::browser::current_speed()): Lock the
-	active_navigation_info_mutex_ for reading.
-	(openvrml::browser::world_url() const): Lock the scene_mutex_ for
-	reading.
-	(openvrml::browser::set_world(resource_istream &)): Lock the
-	scene_mutex_ and the active_viewpoint_mutex_ for writing.
-	(openvrml::browser::replace_world(const
-	std::vector<boost::intrusive_ptr<node> > &)): Lock the
-	scene_mutex_ for reading.
-	(openvrml::browser::root_scene_loader::operator()() const): Lock
-	the browser::scene_mutex_ for reading while getting the
-	resource_istream.
-	(openvrml::browser::create_vrml_from_stream(std::istream &, const
-	std::string &)): Lock the scene_mutex_ for reading.
-	(openvrml::browser::create_vrml_from_url(const
-	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
-	const std::string &)): Lock the scene_mutex_ for reading.
-	(openvrml::browser::frame_rate() const): Lock the
-	frame_rate_mutex_ for reading.
-	(openvrml::browser::sensitive_event(node *, double, bool, bool,
-	const double (&)[3])): Don't need to lock the browser here.
-	(openvrml::browser::update(double)): Lock the timers_mutex_ and
-	the scripts_mutex_ for reading.
-	(openvrml::browser::render()): Lock the scene_mutex_ and the
-	active_viewpoint_mutex_ for reading.  Lock the
-	scoped_lights_mutex_ for reading while iterating over the
-	scoped_lights_ list.  Lock the frame_rate_mutex_ for writing.
-	(openvrml::browser::delta(double)): Lock the delta_time_mutex_ for
-	writing.
-	(openvrml::browser::delta() const): Lock the delta_time_mutex_ for
-	reading.
-	(openvrml::browser::add_scoped_light(scoped_light_node &)): Lock
-	the scoped_lights_mutex_ for writing.
-	(openvrml::browser::remove_scoped_light(scoped_light_node &)):
-	Lock the scoped_lights_mutex_ for writing.
-	(openvrml::browser::add_script(script_node &)): Lock the
-	scripts_mutex_ for writing.
-	(openvrml::browser::remove_script(script_node &)): Lock the
-	scripts_mutex_ for writing.
-	(openvrml::browser::add_time_dependent(time_dependent_node &)):
-	Lock the timers_mutex_ for writing.
-	(openvrml::browser::remove_time_dependent(time_dependent_node &)):
-	Lock the timers_mutex_ for writing.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Removed mutex_; added scene_mutex_,
-	active_viewpoint_mutex_, active_navigation_info_mutex_,
-	viewpoint_list_mutex_, scoped_lights_mutex_, scripts_mutex_,
-	timers_mutex_, delta_time_mutex_, viewer_mutex_, and
-	frame_rate_mutex_.  Made frame_rate_ private rather than
-	protected.  Changed viewpoints accessor to return a copy of the
-	list (rather than a const reference).
-
-2007-05-18 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/read_write_mutex.h
-	(openvrml::read_write_mutex): Apply OPENVRML_API to
-	read_write_mutex.
-
 2007-05-17 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Changed null_node_metatype_ and
-	null_node_type_ from auto_ptrs to scoped_ptrs.
-
-2007-05-17 Braden McDaniel  <braden@endoframe.com>
-
-	* doc/doxygen-header: Style sheet fixes.
-
-2007-05-15 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
-	Added read_write_mutex.{cpp,h} to the project.
-
-2007-05-15 Braden McDaniel  <braden@endoframe.com>
-
-	Added a read/write mutex.  Hopefully Boost will have a read/write
-	mutex before too long; if/when that happens, this one can probably
-	go away.  openvrml::read_write_mutex simply follows the
-	implementation described by Butenhof using the Boost thread
-	primitives.
-
-	* src/libopenvrml/Makefile.am
-	(openvrml_include_HEADERS): Added openvrml/read_write_mutex.h.
-	(libopenvrml_la_SOURCES): Added openvrml/read_write_mutex.cpp.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::node_metatype_map::operator=(const
-	node_metatype_map &)): Use read and write locks.
-	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
-	double)): Use a read lock.
-	(openvrml::browser::node_metatype_map::insert(const std::string &,
-	const boost::shared_ptr<openvrml::node_metatype> &)): Use a write
-	lock.
-	(openvrml::browser::node_metatype_map::remove(const
-	std::string&)): Use a write lock.
-	(openvrml::browser::node_metatype_map::find(const std::string &)
-	const): Use a read lock.
-	(openvrml::browser::node_metatype_map::node_metatype_ids(const
-	openvrml::node_metatype &) const): Use a read lock.
-	(openvrml::browser::node_metatype_map::render(openvrml::viewer&)):
-	Use a read lock.
-	(openvrml::browser::node_metatype_map::shutdown(double)): Use a
-	read lock.
-	(openvrml::browser::set_world(resource_istream &)): Only grab the
-	browser-wide mutex for as long as necessary.  This needs more
-	attention; but this change is a start.
-	(openvrml::browser::root_scene_loader::operator()() const): Grab
-	the browser-wide recursive mutex.
-	(openvrml::browser::add_listener(browser_listener &)): Acquire a
-	write lock of the listeners_mutex_.
-	(openvrml::browser::remove_listener(browser_listener &)): Acquire
-	a write lock of the listeners_mutex_.
-	(openvrml::browser::modified(bool)): Acquire a write lock of the
-	modified_mutex_.
-	(openvrml::browser::modified()): Acquire a read lock of the
-	modified_mutex_.
-	(openvrml::scene::load(resource_istream &)): Acquire write locks.
-	(openvrml::scene::initialize(double)): Acquire a read lock.
-	(openvrml::scene::meta(const std::string &, const std::string &)):
-	Aquire a write lock.
-	(openvrml::scene::meta_keys() const): Acquire a read lock.
-	(openvrml::scene::nodes() const): Acquire a read lock.
-	(openvrml::scene::nodes(const
-	std::vector<boost::intrusive_ptr<node> > &)): Acquire a write
-	lock.
-	(openvrml::scene::root_scope() const): Acquire a read lock.
-	(openvrml::scene::url() const): Acquire a read lock.
-	(openvrml::scene::render(openvrml::viewer &, rendering_context)):
-	Aquire a read lock.
-	(openvrml::scene::shutdown(double)): Aquire a read lock.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser::node_metatype_map): Changed mutex_ to be a
-	read_write_mutex.
-	(openvrml::browser): Added member listeners_mutex_ to protect
-	listeners_.
-	(openvrml::scene): Changed nodes_mutex_, url_mutex_, and
-	meta_mutex_ to be read_write_mutexes.
-	* src/libopenvrml/openvrml/read_write_mutex.cpp
-	(openvrml::read_write_mutex::scoped_read_lock::scoped_read_lock(read_write_mutex&)):
-	Acquire a lock for reading.
-	(openvrml::read_write_mutex::scoped_read_lock::~scoped_read_lock()):
-	Release a read lock.
-	(openvrml::read_write_mutex::scoped_write_lock::scoped_write_lock(read_write_mutex&)):
-	Acquire a lock for writing.
-	(openvrml::read_write_mutex::scoped_write_lock::~scoped_write_lock()):
-	Release a write lock.
-	(openvrml::read_write_mutex::read_write_mutex()): Construct a
-	read/write mutex.
-	* src/libopenvrml/openvrml/read_write_mutex.h
-	(openvrml::read_write_mutex): Added class.
-	* src/openvrml-xembed/gtkvrmlbrowser.cpp
-	(GtkGLViewer): Changed browser_initialized_mutex_ to an
-	openvrml::read_write_mutex.
-	(GtkGLViewer::load_url::operator()() const): Acquire a write lock.
-	(gtk_vrml_browser_set_world(GtkVrmlBrowser *,
-	openvrml::resource_istream &)): Acquire a write lock.
-	(gtk_vrml_browser_expose_event(GtkWidget *, GdkEventExpose *,
-	gpointer)): Acquire a read lock.
-	(gtk_vrml_browser_motion_notify_event(GtkWidget *,
-	GdkEventMotion*, gpointer)): Acquire a read lock.
-	(browser_listener::do_browser_changed(const
-	openvrml::browser_event &)): Acquire a write lock.
-	* src/openvrml-xembed/plugin_streambuf.cpp
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::find(const
-	std::string &) const): Acquire a read lock.
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::insert(const
-	std::string &, const boost::shared_ptr<plugin_streambuf> &)):
-	Acquire a write lock.
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::erase(const
-	std::string &)): Acquire a write lock.
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::size()
-	const): Acquire a read lock.
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::empty()
-	const): Acquire a read lock.
-	(openvrml_xembed::uninitialized_plugin_streambuf_map::front()
-	const): Acquire a read lock.
-	(openvrml_xembed::plugin_streambuf_map::find(size_t) const):
-	Acquire a read lock.
-	(openvrml_xembed::plugin_streambuf_map::insert(size_t, const
-	boost::shared_ptr<plugin_streambuf> &)): Acquire a write lock.
-	(openvrml_xembed::plugin_streambuf_map::erase(size_t)): Acquire a
-	write lock.
-	* src/openvrml-xembed/plugin_streambuf.h
-	(openvrml_xembed::uninitialized_plugin_streambuf_map): Changed
-	mutex_ to an openvrml::read_write_mutex.
-	(openvrml_xembed::plugin_streambuf_map): Changed mutex_ to an
-	openvrml::read_write_mutex.
-
-2007-05-14 Braden McDaniel  <braden@endoframe.com>
-
-	Moved implementation of create_vrml_from_url to openvrml::scene.
-	This allows the spawned thread to be a member of the
-	scene::stream_reader_threads_ thread group; and it means that
-	relative URLs in Script nodes in inline worlds should now resolve
-	properly.  browser::create_vrml_from_url now simply delegates to
-	scene::create_vrml_from_url on the root scene.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::vrml_from_url_creator): Moved to
-	openvrml::scene::vrml_from_url_creator.
-	(openvrml::browser::create_vrml_from_url(const
-	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
-	const std::string &)): Delegate to
-	openvrml::scene::create_vrml_from_url.
-	(openvrml::scene::vrml_from_url_creator): Moved from
-	openvrml::browser::vrml_from_url_creator.
-	(openvrml::scene::create_vrml_from_url(const
-	std::vector<std::string> &, const boost::intrusive_ptr<node> &,
-	const std::string &)): Create the thread as a member of the
-	stream_reader_threads_ group.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Removed vrml_from_url_creator declaration.
-	(openvrml::scene): Added vrml_from_url_creator declaration; added
-	create_vrml_from_url member function.
-	* src/libopenvrml/openvrml/script.cpp
-	(js_::Browser::createVrmlFromURL(JSContext *, JSObject *, uintN,
-	jsval *, jsval *)): Call openvrml::scene::create_vrml_from_url
-	rather than openvrml::browser::create_vrml_from_url.
-
-2007-05-14 Braden McDaniel  <braden@endoframe.com>
 
 	Visual C++ 8.0 project file updates.
 
 	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Removed
 	sdl-viewer dependency on antlr.  openvrml's dependency on antlr
 	should be sufficient.
-	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj:
-	Added TokenRefCount.{cpp,hpp} to the project.  Define
-	NO_STATIC_CONSTS; otherwise, static const integers defined in the
-	class definition confuse the linker.
 	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
-	Define NO_STATIC_CONSTS for antlr.  Added gdi32.lib, advapi32.lib,
-	shell32.lib as additional dependencies--Visual C++ Express seems
-	to need these, though the professional version does not.  Upgraded
-	FreeType dependency to version 2.3.4. Made "Whole Program
-	Optimization" a project default for the Release configuration.
-	Ignore default libraries libcmtd.lib and libcmt.lib for Debug and
-	Release configurations, respectively; boost_thread is probably
-	pulling these in.
-	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
-	Made "Whole Program Optimization" a project default for the
-	Release configuration.
+	Added gdi32.lib, advapi32.lib, shell32.lib as additional
+	dependencies--Visual C++ Express seems to need these, though the
+	professional version does not.  Upgraded FreeType dependency to
+	version 2.3.4. Ignore default libraries libcmtd.lib and libcmt.lib
+	for Debug and Release configurations, respectively; boost_thread
+	is probably pulling these in.
 	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
 	Ignore msvcrt.lib in the Debug configuration; SDL pulls this in.
 
-2007-05-13 Braden McDaniel  <braden@endoframe.com>
+2007-05-17 Braden McDaniel  <braden@endoframe.com>
 
-	Moved read_stream to be a member of openvrml::scene.  We need to
-	hang a thread group for these threads somewhere so we can join
-	them; and the scene would seem to be a reasonable place.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::read_stream(std::auto_ptr<resource_istream>,
-	std::auto_ptr<stream_listener>)): Removed.
-	(openvrml::scene::~scene()): Join any stream reader threads.
-	(openvrml::scene::read_stream(std::auto_ptr<resource_istream>,
-	std::auto_ptr<stream_listener>)): Read a stream.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::read_stream(std::auto_ptr<resource_istream>,
-	std::auto_ptr<stream_listener>)): Removed.
-	(openvrml::scene): Added members stream_reader_threads_ and
-	read_stream.
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(update_texture(background_node &, boost::recursive_mutex &, const
-	openvrml::mfstring &, openvrml::image &)): Call read_stream on the
-	scene.
-	(image_texture_node::update_texture()): Call read_stream on the
-	scene.
-
-2007-05-12 Braden McDaniel  <braden@endoframe.com>
-
-	In order to be thread-safe, scene::nodes and
-	grouping_node::children must return a copy of the vector rather
-	than a const reference.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::scene::nodes() const): Return the vector of nodes as a
-	copy.  As a consequence of this, the function could throw
-	std::bad_alloc.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::scene): Changed nodes accessor to return a copy of the
-	node vector.
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::grouping_node::children() const): Return the vector of
-	nodes as a copy.  As a consequence of this, the function could
-	throw std::bad_alloc.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::grouping_node): Changed children and do_children
-	members to return the node vector by copy (rather than by const
-	reference).
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(grouping_node_base): Changed do_children member to return the
-	node vector by copy.
-	(inline_node): Changed do_children member to return the node
-	vector by copy.
-	(lod_node): Changed do_children member to return the node vector
-	by copy.
-	(switch_node): Changed do_children member to return the node
-	vector by copy.
-	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
-	(cad_face_node): Changed do_children member to return the node
-	vector by copy.
-	* src/libopenvrml/openvrml/x3d_grouping.cpp
-	(static_group_node): Changed do_children member to return the node
-	vector by copy.
-
-2007-05-11 Braden McDaniel  <braden@endoframe.com>
-
-	* doc/index.doc: Fixed reference.
+	* doc/doxygen-header: Style sheet fixes.
 
 2007-05-11 Braden McDaniel  <braden@endoframe.com>
 
@@ -633,7 +181,7 @@
 	we can hold up the main event loop and deadlock.
 
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
-	(resource_fetcher): Added thread_group_ for threads spawned from
+	(browser): Added thread_group_ for threads spawned from
 	gtk_vrml_browser_load_url; added create_thread wrapper for
 	boost::thread::thread_group::create_thread.
 	(GtkGLViewer): Added member load_url, a thread function object.
@@ -641,10 +189,9 @@
 	spawned from gtk_vrml_browser_load_url.
 	(gtk_vrml_browser_load_url(GtkVrmlBrowser *, const gchar **, const
 	gchar **): Delegate to a new thread.
-	(resource_fetcher::~resource_fetcher()): Join all threads in the
-	thread group.
-	(resource_fetcher::create_thread(const boost::function0<void> &)):
-	Create a new thread.
+	(browser::~browser()): Join all threads in the thread group.
+	(browser::create_thread(const boost::function0<void> &)): Create a
+	new thread.
 
 2007-04-26 Braden McDaniel  <braden@endoframe.com>
 
@@ -671,9 +218,8 @@
 2007-04-22 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
-	(resource_fetcher::~resource_fetcher()): Added destructor
-	definition; openvrml::resource_fetcher::~resource_fetcher is
-	declared with OPENVRML_NOTHROW.
+	(browser::~browser()): Added destructor definition;
+	openvrml::browser::~browser is declared with OPENVRML_NOTHROW.
 
 2007-04-18 Braden McDaniel  <braden@endoframe.com>
 
@@ -1186,6 +732,11 @@
 
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Removed redundant checks to see whether
+	openvrml-gtkplug should be built (apparent cruft).
+
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Added load-url command to openvrml-gtkplug; this facilitates
 	loading a new world into an existing component instance.
 
@@ -1232,35 +783,6 @@
 
 2007-01-22 Braden McDaniel  <braden@endoframe.com>
 
-	Separated specification of the view frustum from specification of
-	the viewpoint.  The former needs to happen before the background
-	is rendered; the latter needs to happen after it.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::render()): Render the node_metatypes after
-	setting the view frustum.
-	* src/libopenvrml/openvrml/viewer.cpp
-	(openvrml::viewer::set_frustum(float, float, float)): Added
-	function definition.
-	(openvrml::viewer::set_viewpoint(const vec3f &, const rotation &
-	orientation, float, float)): Removed field_of_view parameter.
-	* src/libopenvrml/openvrml/viewer.h
-	(openvrml::viewer): Added member functions set_frustum and
-	do_set_frustum.  Removed field_of_view parameter from set_viewpoint
-	and do_set_viewpoint.
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	(openvrml::gl::viewer::do_set_frustum(float, float, float)): Added
-	function.
-	(openvrml::gl::viewer::do_set_viewpoint(const vec3f &, const
-	openvrml::rotation &, float, float)): Removed fieldOfView
-	parameter; moved specification of the view frustum to
-	do_set_frustum.
-	* src/libopenvrml-gl/openvrml/gl/viewer.h
-	(openvrml::gl::viewer): Added member function do_set_frustum;
-	removed fieldOfView parameter from do_set_viewpoint.
-
-2007-01-22 Braden McDaniel  <braden@endoframe.com>
-
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(openvrml::gl::viewer::insert_background(const
 	std::vector<float>&, const std::vector<color> &, const
@@ -1268,13 +790,6 @@
 	const image &, const image &, const image &, const image &, const
 	image &)): Enabled #if 0'd code to put the background in a display
 	list.  So far, it seems harmless.
-
-2007-01-22 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(viewpoint_node::viewpoint_node(const node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Reordered
-	user_view_transform_ initialization to match declaration order.
 
 2007-01-21 Braden McDaniel  <braden@endoframe.com>
 
@@ -1290,8 +805,8 @@
 2007-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp
-	(openvrml::make_rotation(const vec3f &, const vec3f &)): Normalize
-	the rotation axis.
+	(openvrml::rotation::rotation(const vec3f &, const vec3f &)):
+	Normalize the rotation axis.
 
 2007-01-16 Braden McDaniel  <braden@endoframe.com>
 
@@ -1334,33 +849,6 @@
 	std::vector<openvrml::vec2f> &)): Refactored for correctness and
 	readability.
 
-2007-01-15 Braden McDaniel  <braden@endoframe.com>
-
-	Initialize mat4f instances with make_mat4f.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(default_viewpoint::default_viewpoint(const
-	openvrml::null_node_type &)): Initialize userViewTransform using
-	openvrml::make_mat4f.
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(cylinder_sensor_node::cylinder_sensor_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Initialize activationMatrix
-	and modelview with make_mat4f.
-	(plane_sensor_node::plane_sensor_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Initialize
-	activationMatrix and modelview with make_mat4f.
-	(sphere_sensor_node::sphere_sensor_node(const
-	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
-	Initialize modelview with make_mat4f.
-	(transform_node::transform_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Initialize transform_ with
-	make_mat4f.
-	(viewpoint_node::viewpoint_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Initialize
-	parent_transform, final_transformation, and user_view_transform_
-	with make_mat4f.
-
 2007-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Removed dead code.
@@ -1398,8 +886,8 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(resource_fetcher::do_get_resource(const std::string &)): Dismiss
-	the error_guard.
+	(browser::do_get_resource(const std::string &)): Dismiss the
+	error_guard.
 
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
@@ -1409,16 +897,16 @@
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(GtkGLViewer::GtkGLViewer(GIOChannel &, GtkVrmlBrowser &)): Since
-	stdout is used to communicate with the host process, send all
-	browser output to stderr.
+	(browser::browser(GIOChannel &)): Since stdout is used to
+	communicate with the host process, send all browser output to
+	stderr.
 
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(resource_fetcher::do_get_resource(const std::string &)): Check
-	the return status given by g_io_channel_write_chars and
-	g_io_channel_flush; set badbit and bail if there's a problem.
+	(browser::do_get_resource(const std::string &)): Check the return
+	status given by g_io_channel_write_chars and g_io_channel_flush;
+	set badbit and bail if there's a problem.
 
 2007-01-03 Braden McDaniel  <braden@endoframe.com>
 
@@ -1484,7 +972,7 @@
 	might be when execution in the scope completes.
 
 	This changes OpenVRML's implementation of ScopeGuard to keep const
-	references to the parameters in the guard implementation. Also,
+	references to the parameters in the guard implementation.  Also,
 	use of boost::multi_index::detail::scope_guard (where use of
 	OpenVRML's ScopeGuard implementation is inconvenient) now
 	explicitly gives a reference template parameter to the
@@ -1656,14 +1144,14 @@
 	does not produce a readable stream.
 
 	* examples/sdl_viewer.cpp
-	(resource_fetcher::do_get_resource(const std::string &): Set
+	(browser::do_get_resource(const std::string &): Set
 	ios_base::badbit instead of failbit.
 	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::resource_fetcher::do_get_resource(const std::string &): In the
+	(openvrml::browser::do_get_resource(const std::string &): In the
 	example code in the doc-comment, set ios_base::badbit instead of
 	failbit.
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(resource_fetcher::do_get_resource(const std::string &)): Set
+	(browser::do_get_resource(const std::string &)): Set
 	ios_base::badbit instead of failbit.
 
 2006-12-05 Braden McDaniel  <braden@endoframe.com>
@@ -1672,21 +1160,21 @@
 	text) files.  Windows requires this.
 
 	* examples/sdl_viewer.cpp
-	(resource_fetcher::do_get_resource(const std::string &): Pass the
+	(browser::do_get_resource(const std::string &): Pass the
 	ios_base::binary flag when opening the filebuf.
 	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::resource_fetcher::do_get_resource(const std::string &):
-	In the example in the doc-comment, pass the ios_base::binary flag
-	when opening the filebuf.
+	(openvrml::browser::do_get_resource(const std::string &): In the
+	example in the doc-comment, pass the ios_base::binary flag when
+	opening the filebuf.
 
 2006-12-05 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed relative URI resolution on Windows.
 
 	* examples/sdl_viewer.cpp
-	(resource_fetcher::do_get_resource(const std::string &): On
-	Windows, start the system path on the second character of the URI
-	path; the first character is a leading slash.
+	(browser::do_get_resource(const std::string &): On Windows, start
+	the system path on the second character of the URI path; the first
+	character is a leading slash.
 	* src/libopenvrml/openvrml/browser.cpp
 	(create_file_url(const uri &)): Ensure the URI path begins with a
 	slash on Windows--_getcwd gets a path that starts with a drive
@@ -1720,9 +1208,8 @@
 	on them (creating a deadlock).
 
 	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(resource_fetcher::do_get_resource(const std::string &)): Fixed
-	comment to be more host-agnostic (i.e., removed reference to
-	NPN_GetURL).
+	(browser::do_get_resource(const std::string &)): Fixed comment to
+	be more host-agnostic (i.e., removed reference to NPN_GetURL).
 	* src/openvrml-gtkplug/main.cpp
 	(openvrml_player::command_istream_reader::operator()() const):
 	Mark any remaining uninitialized plugin_streambufs as failed.
@@ -1832,70 +1319,14 @@
 	too much error.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
-	(openvrml::make_rotation(const float (&)[4])): Assert that
+	(openvrml::rotation::rotation(const float (&)[4])): Assert that
 	the length of the vector is 1.0.
-	(openvrml::make_rotation(float, float, float, float)): Assert
+	(openvrml::rotation::rotation(float, float, float, float)): Assert
 	that the length of the vector is 1.0.
-	(openvrml::make_rotation(const vec3f &, float)): Assert that
+	(openvrml::rotation::rotation(const vec3f &, float)): Assert that
 	the length of the vector is 1.0.
 	(openvrml::rotation::axis(const vec3f &)): Assert that the length
 	of the vector is 1.0.
-
-2006-11-21 Braden McDaniel  <braden@endoframe.com>
-
-	Factored creation of openvrml::resource_istreams to a dedicated
-	abstract factory, openvrml::resource_fetcher.  This allows the
-	code associated with resource fetching to live at least as long as
-	the browser instance, which it needs to do if there are any
-	outstanding fetches happening when the browser instance is
-	destroyed.
-
-	* doc/index.doc: Updates to reflect addition of
-	openvrml::resource_fetcher.
-	* examples/sdl_viewer.cpp: Inherit openvrml::resource_fetcher to
-	implement do_get_resource instead of openvrml::browser.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::resource_fetcher::~resource_fetcher()): Destructor.
-	(openvrml::resource_fetcher::get_resource(const std::string &)):
-	Delegate to do_get_resource.
-	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
-	std::ostream &)): Initialize openvrml::browser::fetcher_.
-	(openvrml::browser::get_resource(const std::string &)): Removed
-	function.
-	(openvrml::scene::get_resource(const std::vector<std::string> &)
-	const): Delegate instead to browser::fetcher_.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::resource_fetcher): Added class.
-	(openvrml::browser): Granted friendship to openvrml::scene so that
-	it can access browser::fetcher_; added browser::fetcher_ member;
-	changed constructor to take an openvrml::resource_fetcher
-	reference; removed browser::get_resource and
-	browser::do_get_resource members.
-	* src/openvrml-gtkplug/gtkvrmlbrowser.cpp
-	(browser): Removed class.
-	(resource_fetcher): Added class.
-	(GtkGLViewer): Added concrete resource_fetcher member; changed
-	browser_ member to be an openvrml::browser.
-	(GtkGLViewer::GtkGLViewer(GIOChannel &, GtkVrmlBrowser &)):
-	Initialize fetcher_ with the GIOChannel; initialize browser_ with
-	fetcher_.
-	* tests/Makefile.am
-	(noinst_HEADERS): Changed test_browser.h to
-	test_resource_fetcher.h.
-	(libtest_openvrml_la_SOURCES): Changed test_browser.cpp to
-	test_resource_fetcher.cpp.
-	* tests/browser.cpp: Use test_resource_fetcher instead of
-	test_browser.
-	* tests/parse_anchor.cpp: Use test_resource_fetcher instead of
-	test_browser.
-	* tests/parse_vrml97.cpp: Use test_resource_fetcher instead of
-	test_browser.
-	* tests/parse_x3dvrml.cpp: Use test_resource_fetcher instead of
-	test_browser.
-	* tests/test_browser.cpp: Removed file.
-	* tests/test_browser.h: Removed file.
-	* tests/test_resource_fetcher.cpp: Added file.
-	* tests/test_resource_fetcher.h: Added file.
 
 2006-11-19 Braden McDaniel  <braden@endoframe.com>
 
@@ -2031,66 +1462,6 @@
 	* lib/gtkglext/configure.in: Don't fail configure if
 	BASE_DEPENDENCIES aren't found. Seriously.
 
-2006-11-08 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/viewer.cpp
-	(openvrml::viewer::remove_object(object_t)): Removed erroneously
-	added recursive call.
-
-2006-11-04 Braden McDaniel  <braden@endoframe.com>
-
-	Quelled warnings from gtkglext.
-
-	* lib/gtkglext/gdk/x11/gdkglcontext-x11.c
-	(_gdk_gl_context_destroy): Quelled type-punning warnings triggered
-	by strict aliasing rules.
-	(_gdk_gl_context_set_gl_drawable): Quelled type-punning warnings
-	triggered by strict aliasing rules.
-	(gdk_gl_context_hash): Delegate to g_direct_hash to avoid warning
-	about converting a pointer to an unsigned int (likely to be
-	triggered on 64-bit platforms).
-
-2006-11-04 Braden McDaniel  <braden@endoframe.com>
-
-	* lib/antlr/src/String.cpp
-	(antlr::operator+(const std::string &, size_t)): %lu, not %ul.
-
-2006-11-03 Braden McDaniel  <braden@endoframe.com>
-
-	Quell warnings from libantlr.
-
-	* lib/antlr/antlr/BaseAST.hpp
-	(antlr::BaseAST::setText(const std::string &)): Commented out
-	unused argument declaration.
-	(antlr::BaseAST::setType(int)): Commented out argument unused
-	declaration.
-	* lib/antlr/antlr/CharScanner.hpp
-	(antlr::CharScanner::recover(const RecognitionException &, const
-	BitSet &)): Commented out unused argument declaration.
-	* lib/antlr/antlr/Parser.hpp
-	(antlr::Parser::recover(const RecognitionException &, const
-	BitSet&)): Commented out unused argument declaration.
-	* lib/antlr/src/String.cpp
-	(antlr::operator+(const std::string &, size_t)): Use %ul when
-	printing size_t.
-
-2006-11-03 Braden McDaniel  <braden@endoframe.com>
-
-	Updated Antlr support library to 2.7.6.
-
-	* configure.ac: Require Antlr 2.7.6 to build the parser.
-	* lib/antlr/GNUmakefile.am (libantlr_la_SOURCES): Added
-	TokenRefCount.cpp.
-
-2006-10-30 Braden McDaniel  <braden@endoframe.com>
-
-	Applied nonvirtual interface pattern to openvrml::viewer.
-
-	* src/libopenvrml/openvrml/viewer.cpp
-	* src/libopenvrml/openvrml/viewer.h
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	* src/libopenvrml-gl/openvrml/gl/viewer.h
-
 2006-10-28 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for the 0.16.1 release.
@@ -2187,17 +1558,6 @@
 	implementation (moved to node.cpp).
 	* src/libopenvrml/openvrml/node.cpp: Moved
 	openvrml::node_metatype_id implementation to here.
-
-2006-10-18 Braden McDaniel  <braden@endoframe.com>
-
-	Fixed some residual uses of the openvrml::mat4f constructor.
-
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(viewpoint_node::do_relocate()): Use make_mat4f instead of mat4f's
-	default constructor.
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	(openvrml::gl::viewer::reset_user_navigation()): Use make_mat4f
-	instead of mat4f's default constructor.
 
 2006-10-12 Braden McDaniel  <braden@endoframe.com>
 
@@ -3017,12 +2377,6 @@
 
 2006-09-19 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/basetypes.h: Changed declaration of
-	openvrml::mat4f from class to struct for consistency with
-	definition.
-
-2006-09-19 Braden McDaniel  <braden@endoframe.com>
-
 	Removed unnecessary declarations of openvrml::mat4f.
 
 	* src/libopenvrml/openvrml/bounding_volume.h: Removed spurious
@@ -3038,11 +2392,6 @@
 	attention to the FontStyle specification; but it should reliably
 	pick a font such that text is rendered.
 
-2006-09-06 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/basetypes.h: Added missing applications
-	of OPENVRML_API.
-
 2006-09-02 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp: Doc-comment fixes.
@@ -3051,555 +2400,6 @@
 
 	* examples/sdl_viewer.cpp (main(int, char **)): Allocate a console
 	and direct stdout and stderr to it on Windows.
-
-2006-08-31 Braden McDaniel  <braden@endoframe.com>
-
-	Updated test programs to use make_* functions to create
-	fundamental types.
-
-	* tests/color.cpp
-	(stream_extraction_without_commas()): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	(stream_extraction_with_commas()): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	* tests/mat4f.cpp
-	(stream_insertion()): Use openvrml::make_mat4f instead of
-	openvrml::mat4f constructor.
-	(stream_extraction_numbers_only()): Use openvrml::make_mat4f
-	instead of openvrml::mat4f constructor.
-	(stream_extraction_numbers_with_commas()): Use
-	openvrml::make_mat4f instead of openvrml::mat4f constructor.
-
-2006-08-31 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	(trackball(float, float, float, float): Added missing "using
-	openvrml::make_vec3f".
-	(computeExtrusion_(const std::vector<openvrml::rotation> &, const
-	std::vector<openvrml::vec2f> &, const
-	std::vector<openvrml::vec2f>&, const
-	std::vector<openvrml::vec3f>&, std::vector<openvrml::vec3f> &,
-	std::vector<openvrml::vec2f> &)): Added missing "using
-	openvrml::make_vec3f".
-
-2006-08-31 Braden McDaniel  <braden@endoframe.com>
-
-	Made openvrml::color, openvrml::color_rgba, openvrml::vec2f,
-	openvrml::vec2d, openvrml::vec3f, openvrml::vec3d,
-	openvrml::rotation, openvrml::mat4f, and openvrml::quatf
-	POD-structs.  This allows safe usage of these types in C APIs.
-
-	* src/libopenvrml/openvrml/Vrml97Parser.g (rotationValue): Use
-	construction functions instead of constructors.
-	* src/libopenvrml/openvrml/basetypes.cpp
-	(openvrml::color::color()): Removed constructor; use
-	openvrml::make_color() instead.
-	(openvrml::color::color(const float (&)[3])): Removed constructor;
-	use openvrml::make_color(const float (&)[3]) instead.
-	(openvrml::color::color(float, float, float)): Removed
-	constructor; use openvrml::make_color(float, float, float)
-	instead.
-	(openvrml::make_color()): Added function.
-	(openvrml::make_color(const float (&)[3])): Added function.
-	(openvrml::make_color(float, float, float)): Added function.
-	(openvrml::color_rgba::color_rgba()): Removed constructor; use
-	openvrml::make_color_rgba() instead.
-	(openvrml::color_rgba::color_rgba(const float (&)[4])): Removed
-	constructor; use openvrml::make_color_rgba(const float (&)[4])
-	instead.
-	(openvrml::color_rgba::color_rgba(float, float, float, float)):
-	Removed constructor; use openvrml::make_color_rgba(float, float,
-	float, float) instead.
-	(openvrml::make_color_rgba()): Added function.
-	(openvrml::make_color_rgba(const float (&)[4])): Added function.
-	(openvrml::make_color_rgba(float, float, float, float)): Added
-	function.
-	(openvrml::vec2f::vec2f()): Removed constructor; use
-	openvrml::make_vec2f() instead.
-	(openvrml::vec2f::vec2f(const float (&)[2])): Removed constructor;
-	use openvrml::make_vec2f(const float (&)[2]) instead.
-	(openvrml::vec2f::vec2f(float, float)): Removed constructor; use
-	openvrml::make_vec2f(float, float) instead.
-	(openvrml::vec2f::operator-()): Use make_vec2f instead of
-	constructor.
-	(openvrml::make_vec2f()): Added function.
-	(openvrml::make_vec2f(const float (&)[2])): Added function.
-	(openvrml::make_vec2f(float, float)): Added function.
-	(openvrml::vec2d::vec2d()): Removed constructor; use
-	openvrml::make_vec2d() instead.
-	(openvrml::vec2d::vec2d(const double (&)[2])): Removed
-	constructor; use openvrml::make_vec2d(const double (&)[2])
-	instead.
-	(openvrml::vec2d::vec2d(double, double)): Removed constructor; use
-	openvrml::make_vec2d(double, double) instead.
-	(openvrml::vec2d::operator-()): Use make_vec2d instead of
-	constructor.
-	(openvrml::make_vec2d()): Added function.
-	(openvrml::make_vec2d(const double (&)[2])): Added function.
-	(openvrml::make_vec2d(double, double)): Added function.
-	(openvrml::vec3f::vec3f()): Removed constructor; use
-	openvrml::make_vec3f() instead.
-	(openvrml::vec3f::vec3f(const float (&)[3])): Removed constructor;
-	use openvrml::make_vec3f(const float (&)[3]) instead.
-	(openvrml::vec3f::vec3f(float, float, float)): Removed
-	constructor; use openvrml::make_vec3f(float, float, float)
-	instead.
-	(openvrml::vec3f::operator-()): Use make_vec3f instead of
-	constructor.
-	(openvrml::make_vec3f()): Added function.
-	(openvrml::make_vec3f(const float (&)[3])): Added function.
-	(openvrml::make_vec3f(float, float, float)): Added function.
-	(openvrml::vec3d::vec3d()): Removed constructor; use
-	openvrml::make_vec3d() instead.
-	(openvrml::vec3d::vec3d(const double (&)[3])): Removed
-	constructor; use openvrml::make_vec3d(const double (&)[3])
-	instead.
-	(openvrml::vec3d::vec3d(double, double, double)): Removed
-	constructor; use openvrml::make_vec3d(double, double, double)
-	instead.
-	(openvrml::vec3d::operator-()): Use make_vec3d instead of
-	constructor.
-	(openvrml::make_vec3d()): Added function.
-	(openvrml::make_vec3d(const double (&)[3])): Added function.
-	(openvrml::make_vec3d(double, double, double)): Added function.
-	(openvrml::rotation::rotation()): Removed constructor; use
-	openvrml::make_rotation() instead.
-	(openvrml::rotation::rotation(const float (&)[4])): Removed
-	constructor; use openvrml::make_rotation(const float (&)[4])
-	instead.
-	(openvrml::rotation::rotation(float, float, float, float)):
-	Removed constructor; use openvrml::make_rotation(float, float,
-	float, float) instead.
-	(openvrml::rotation::rotation(const vec3f &, float)): Removed
-	constructor; use openvrml::make_rotation(const vec3f &, float)
-	instead.
-	(openvrml::rotation::rotation(const vec3f &, const vec3f &)):
-	Removed constructor; use openvrml::make_rotation(const vec3f &,
-	const vec3f &) instead.
-	(openvrml::rotation::rotation(const quatf &)): Removed
-	constructor; use openvrml::make_rotation(const quatf &) instead.
-	(openvrml::rotation::operator*=(const rotation &)): Use
-	make_rotation, make_quatf instead of constructors.
-	(openvrml::rotation::slerp(const rotation &, float)): Use
-	make_rotation, make_quatf instead of constructors.
-	(openvrml::make_rotation()): Added function.
-	(openvrml::make_rotation(const float (&)[4])): Added function.
-	(openvrml::make_rotation(float, float, float, float)): Added
-	function.
-	(openvrml::make_rotation(const vec3f &, float)): Added function.
-	(openvrml::make_rotation(const vec3f &, const vec3f &)): Added
-	function.
-	(openvrml::rotation::rotation(const quatf &)): Removed
-	constructor; use openvrml::make_rotation(const quatf &) instead.
-	(is_normalized::operator()() const): Use make_vec3f instead of
-	constructor.
-	(openvrml::mat4f::rotation(const openvrml::rotation &)): Removed
-	function; use openvrml::make_rotation_mat4f(const rotation &)
-	instead.
-	(openvrml::mat4f::rotation(const quatf &)): Removed function; use
-	openvrml::make_rotation_mat4f(const quatf &) instead.
-	(openvrml::mat4f::scale(float)): Removed function; use
-	openvrml::make_scale_mat4f(float) instead.
-	(openvrml::mat4f::scale(const vec3f &)): Removed function; use
-	openvrml::make_scale_mat4f(const vec3f &) instead.
-	(openvrml::mat4f::translation(const vec3f &)): Removed function;
-	use openvrml::make_translation_mat4f(const vec3f &) instead.
-	(openvrml::mat4f::transformation(const vec3f &, const
-	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
-	const vec3f &)): Removed function; use
-	openvrml::make_transformation_mat4f(const vec3f &, const
-	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
-	const vec3f &) instead.
-	(openvrml::mat4f::mat4f()): Removed constructor; use
-	openvrml::make_mat4f() instead.
-	(openvrml::mat4f::mat4f(float, float, float, float, float, float,
-	float, float, float, float, float, float, float, float, float,
-	float)): Removed constructor; use openvrml::make_mat4f(float,
-	float, float, float, float, float, float, float, float, float,
-	float, float, float, float, float, float) instead.
-	(openvrml::mat4f::mat4f(const float[])): Removed constructor; use
-	openvrml::make_mat4f(const float[]) instead.
-	(openvrml::mat4f::mat4f(const float (&)[4][4])): Removed
-	constructor; use openvrml::make_mat4f(const float (&)[4][4])
-	instead.
-	(openvrml::mat4f::transformation(vec3f &, openvrml::rotation &,
-	vec3f &)): Use make_vec3f, make_quatf, and make_rotation instead
-	of constructors.
-	(openvrml::mat4f::transpose() const): Use aggregate initializer
-	instead of constructor.
-	(openvrml::make_rotation_mat4f(const openvrml::rotation &)): Added
-	function.
-	(openvrml::make_rotation_mat4f(const quatf &)): Added function.
-	(openvrml::make_scale_mat4f(float)): Added function.
-	(openvrml::make_scale_mat4f(const vec3f &)): Added function.
-	(openvrml::make_translation_mat4f(const vec3f &)): Added function.
-	(openvrml::make_transformation_mat4f(const vec3f &, const
-	openvrml::rotation &, const vec3f &, const openvrml::rotation &,
-	const vec3f &)): Added function.
-	(openvrml::make_mat4f()): Added function.
-	(openvrml::make_mat4f(float, float, float, float, float, float,
-	float, float, float, float, float, float, float, float, float,
-	float)): Added function.
-	(openvrml::make_mat4f(const float[])): Added function.
-	(openvrml::make_mat4f(const float (&)[4][4])): Added function.
-	(openvrml::quatf::quatf()): Removed constructor; use
-	openvrml::make_quatf() instead.
-	(openvrml::quatf::quatf(float, float, float, float)): Removed
-	constructor; use openvrml::make_quatf(float, float, float, float)
-	instead.
-	(openvrml::quatf::quatf(const float (&)[4])): Removed constructor;
-	use openvrml::make_quatf(const float (&)[4]) instead.
-	(openvrml::quatf::quatf(const mat4f &)): Removed constructor; use
-	openvrml::make_quatf(const mat4f &) instead.
-	(openvrml::quatf::quatf(const rotation &)): Removed constructor;
-	use openvrml::make_quatf(const rotation &) instead.
-	(openvrml::quatf::operator*=(const quatf &)): Use make_quatf
-	instead of constructor.
-	(openvrml::quatf::conjugate() const): Use aggregate initializer
-	instead of constructor.
-	(openvrml::quatf::normalize() const): Use aggregate initializer
-	instead of constructor.
-	(openvrml::make_quatf()): Added function.
-	(openvrml::make_quatf(float, float, float, float)): Added
-	function.
-	(openvrml::make_quatf(const float (&)[4])): Added function.
-	(openvrml::make_quatf(const mat4f &)): Added function.
-	(openvrml::make_quatf(const rotation &)): Added function.
-	* src/libopenvrml/openvrml/basetypes.h
-	(openvrml::color): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_color()): Added function declaration.
-	(openvrml::make_color(const float (&)[3])): Added function
-	declaration.
-	(openvrml::make_color(float, float, float)): Added function
-	declaration.
-	(openvrml::color_rgba): Changed to struct; removed unnecessary
-	friend declaration for operator>>; removed constructor
-	declarations.
-	(openvrml::make_color_rgba()): Added function declaration.
-	(openvrml::make_color_rgba(const float (&)[4])): Added function
-	declaration.
-	(openvrml::make_color_rgba(float, float, float, float)): Added
-	function declaration.
-	(openvrml::vec2f): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_vec2f()): Added function declaration.
-	(openvrml::make_vec2f(const float (&)[2])): Added function
-	declaration.
-	(openvrml::make_vec2f(float, float)): Added function declaration.
-	(openvrml::vec2d): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_vec2d()): Added function declaration.
-	(openvrml::make_vec2d(const double (&)[2])): Added function
-	declaration.
-	(openvrml::make_vec2d(double, double)): Added function
-	declaration.
-	(openvrml::vec3f): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_vec3f()): Added function declaration.
-	(openvrml::make_vec3f(const float (&)[3])): Added function
-	declaration.
-	(openvrml::make_vec3f(float, float, float)): Added function
-	declaration.
-	(openvrml::vec3d): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_vec3d()): Added function declaration.
-	(openvrml::make_vec3d(const double (&)[3])): Added function
-	declaration.
-	(openvrml::make_vec3d(double, double, double)): Added function
-	declaration.
-	(openvrml::rotation): Changed to struct; removed constructor
-	declarations.
-	(openvrml::make_rotation()): Added function declaration.
-	(openvrml::make_rotation(const float (&)[4])): Added function
-	declaration.
-	(openvrml::make_rotation(float, float, float, float)): Added
-	function declaration.
-	(openvrml::make_rotation(const vec3f &, float)): Added function
-	declaration.
-	(openvrml::make_rotation(const vec3f &, const vec3f &)): Added
-	function declaration.
-	(openvrml::make_rotation(const quatf &)): Added function
-	declaration.
-	(openvrml::rotation::axis()) const): Use make_vec3f instead of
-	constructor.
-	(openvrml::mat4f): Changed to struct; changed static creation
-	functions to be nonmembers; removed constructor declarations.
-	(openvrml::make_mat4f()): Added function declaration.
-	(openvrml::make_mat4f(float, float, float, float, float, float,
-	float, float, float, float, float, float, float, float, float,
-	float)): Added function declaration.
-	(openvrml::make_mat4f(const float[])): Added function declaration.
-	(openvrml::make_mat4f(const float (&)[4][4])): Added function
-	declaration.
-	(openvrml::make_rotation_mat4f(const rotation &)): Added function
-	declaration.
-	(openvrml::make_rotation_mat4f(const quatf &)): Added function
-	declaration.
-	(openvrml::make_scale_mat4f(float)): Added function declaration.
-	(openvrml::make_scale_mat4f(const vec3f &)): Added function
-	declaration.
-	(openvrml::make_translation_mat4f(const vec3f &)): Added function
-	declaration.
-	(openvrml::make_transformation_mat4f(const vec3f &, const rotation
-	&, const vec3f &, const rotation &, const vec3f &)): Added
-	function declaration.
-	(openvrml::quatf): Changed to struct; removed unnecessary friend
-	declaration for operator>>; removed constructor declarations.
-	(openvrml::make_quatf()): Added function declaration.
-	(openvrml::make_quatf(float, float, float, float)): Added function
-	declaration.
-	(openvrml::make_quatf(const float (&)[4])): Added function
-	declaration.
-	(openvrml::make_quatf(const rotation &)): Added function
-	declaration.
-	(openvrml::make_quatf(const mat4f &)): Added function declaration.
-	* src/libopenvrml/openvrml/bounding_volume.cpp
-	(openvrml::bounding_sphere::do_extend(const bounding_sphere &)):
-	Use make_vec3f instead of constructor.
-	(openvrml::bounding_sphere::do_maximize()): Use make_vec3f instead
-	of constructor.
-	(openvrml::bounding_sphere::do_ortho_transform(const mat4f &)):
-	Use make_vec3f instead of constructor.
-	(openvrml::bounding_sphere::do_transform(const mat4f &)): Use
-	make_vec3f instead of constructor.
-	* src/libopenvrml/openvrml/browser.cpp
-	(default_viewpoint::transformation() const): Use make_vec3f,
-	make_rotation instead of constructors.
-	(openvrml::browser::render()): Use make_color, make_vec3f instead
-	of constructors.
-	* src/libopenvrml/openvrml/script.cpp
-	(js_::SFColor::initObject(JSContext *, JSObject *, const
-	jsdouble (&)[3])): Use openvrml::make_color instead of
-	openvrml::color constructor.
-	(js_::SFRotation::initObject(JSContext *, JSObject *, const
-	jsdouble (&)[4])): Use openvrml::make_vec3f and
-	openvrml::make_rotation instead of openvrml::vec3f and
-	openvrml::rotation constructors.
-	(js_::SFRotation::setProperty(JSContext *, JSObject *, jsval,
-	jsval *)): Use openvrml::make_rotation instead of
-	openvrml::rotation constructor.
-	(js_::SFRotation::multVec(JSContext *, JSObject *, uintN, jsval *,
-	jsval *)): Use openvrml::make_rotation_mat4f instead of
-	openvrml::mat4f::rotation.
-	(js_::sfvec2_jsobject<SFVec2>::initObject(JSContext *, JSObject *,
-	const jsdouble (&)[2])): Use aggregate initializer instead of
-	constructor.
-	(js_::sfvec3_jsobject<SFVec3>::initObject(JSContext *, JSObject *,
-	const jsdouble (&)[3])): Use aggregate initializer instead of
-	constructor.
-	(js_::VrmlMatrix::initObject(JSContext *, JSObject *, const
-	jsdouble (&)[16])): Use openvrml::make_mat4f instead of
-	openvrml::mat4f constructor.
-	(js_::VrmlMatrix::setTransform(JSContext *, JSObject *, uintN,
-	jsval *, jsval *)): Use openvrml::make_rotation and
-	openvrml::make_vec3f instead of openvrml::rotation and
-	openvrml::vec3f constructors; use
-	openvrml::make_transformation_mat4f instead of
-	openvrml::mat4f::transformation.
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(abstract_light_node<Derived>::abstract_light_node(const
-	openvrml::node_type &, const boost::shared_ptr<openvrml::scope> &
-	scope)): Use openvrml::make_color instead of openvrml::color
-	constructor.
-	(grouping_node_base<Derived>::grouping_node_base(const
-	openvrml::node_type &, const boost::shared_ptr<openvrml::scope>
-	&)): Use openvrml::make_vec3f instead of openvrml::vec3f
-	constructor.
-	(set_unlit_material(openvrml::viewer &)): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	(appearance_node::do_render_appearance(openvrml::viewer &,
-	rendering_context)): Use openvrml::make_color and
-	openvrml::make_vec2f instead of openvrml::color and
-	openvrml::vec2f constructors.
-	(background_node::background_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_color instead of openvrml::color constructor.
-	(billboard_node::billboard_to_matrix(const billboard_node &, const
-	openvrml::mat4f &)): Use openvrml::make_vec3f instead of
-	openvrml::vec3f constructor; use openvrml::make_rotation_mat4f
-	instead of openvrml::mat4f::rotation.
-	(billboard_node::billboard_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(cylinder_sensor_node::do_activate(double, bool, bool, const
-	double (&)[3])): Use openvrml::make_vec3f and
-	openvrml::make_rotation instead of openvrml::vec3f and
-	openvrml::rotation constructors.
-	(directional_light_node::directional_light_node(const
-	openvrml::node_type &, const boost::shared_ptr<openvrml::scope>
-	&)): Use openvrml::make_vec3f instead of openvrml::vec3f
-	constructor.
-	(extrusionDefaultCrossSection_): Use openvrml::make_vec2f instead
-	of openvrml::vec2f constructor.
-	(extrusionDefaultScale_): Use openvrml::make_vec2f instead of
-	openvrml::vec2f constructor.
-	(extrusionDefaultOrientation_): Use openvrml::make_rotation
-	instead of openvrml::rotation constructor.
-	(extrusionDefaultSpine_): Use openvrml::make_vec3f instead of
-	openvrml::vec3f constructor.
-	(fog_node::fog_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	(material_node::material_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	(orientation_interpolator_node::set_fraction_listener::do_process_event(const
-	sffloat &, double)): Use openvrml::make_rotation instead of
-	openvrml::rotation constructor.
-	(plane_sensor_node::plane_sensor_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec2f and openvrml::make_vec3f instead of
-	openvrml::vec2f and openvrml::vec3f constructors.
-	(plane_sensor_node::do_activate(double, bool, bool, const
-	double (&)[3])): Use openvrml::make_vec3f instead of
-	openvrml::vec3f constructor.
-	(point_light_node::point_light_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(proximity_sensor_node::proximity_sensor_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(proximity_sensor_node::do_render_child(openvrml::viewer &,
-	rendering_context)): Use openvrml::make_vec3f instead of
-	openvrml::vec3f constructor.
-	(shape_node::shape_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(shape_node::do_render_child(openvrml::viewer &,
-	rendering_context)): Use openvrml::make_color instead of
-	openvrml::color constructor.
-	(sound_node::sound_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(sphere_sensor_node::sphere_sensor_node(const
-	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
-	Use openvrml::make_rotation instead of openvrml::rotation
-	constructor.
-	(sphere_sensor_node::do_activate(double, bool, bool, const
-	double (&p)[3])): Use openvrml::make_vec3f and
-	openvrml::make_rotation instead of openvrml::vec3f and
-	openvrml::rotation constructors.
-	(spot_light_node::spot_light_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope>&)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(moveTo_(FT_Vector *, void *)): Use openvrml::make_vec2f instead
-	of openvrml::vec2f constructor.
-	(lineTo_(FT_Vector *, void *)): Use openvrml::make_vec2f instead
-	of openvrml::vec2f constructor.
-	(conic_(FT_Vector *, FT_Vector *, void *)): Use
-	openvrml::make_vec2f instead of openvrml::vec2f constructor.
-	(cubic_(FT_Vector *, FT_Vector *, FT_Vector *, void *)): Use
-	openvrml::make_vec2f instead of openvrml::vec2f constructor.
-	(text_node::update_geometry()): Use openvrml::make_vec2f and
-	openvrml::make_vec3f instead of openvrml::vec2f and
-	openvrml::vec3f constructors.
-	(texture_transform_node::texture_transform_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec2f
-	instead of openvrml::vec2f constructor.
-	(transform_node::scale_exposedfield::scale_exposedfield(transform_node&)):
-	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(transform_node::update_transform()): Use
-	openvrml::make_transformation_mat4f instead of
-	openvrml::mat4f::transformation.
-	(viewpoint_node::position_exposedfield::position_exposedfield(viewpoint_node&)):
-	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(viewpoint_node::update_final_transformation() const): Use
-	openvrml::make_vec3f and openvrml::make_rotation instead of
-	openvrml::vec3f and openvrml::rotation constructors; use
-	openvrml::make_transformation_mat4f instead of
-	openvrml::mat4f::transformation.
-	(visibility_sensor_node::visibility_sensor_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	* src/libopenvrml/openvrml/x3d_dis.cpp
-	(espdu_transform_node::espdu_transform_node(const
-	openvrml::node_type &, const boost::shared_ptr<openvrml::scope&)):
-	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(receiver_pdu_node::receiver_pdu_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(signal_pdu_node::signal_pdu_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(transmitter_pdu_node::transmitter_pdu_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
-	(rectangle2d_node::rectangle2d_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec2f instead of openvrml::vec2f constructor.
-	* src/libopenvrml/openvrml/x3d_geospatial.cpp
-	(geo_location_node::geo_location_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(geo_lod_node::geo_lod_node(const openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope> &)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(geo_viewpoint_node::geo_viewpoint_node(const
-	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
-	Use openvrml::make_vec3d instead of openvrml::vec3d constructor.
-	* src/libopenvrml/openvrml/x3d_grouping.cpp
-	(static_group_node::static_group_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	* src/libopenvrml/openvrml/x3d_hanim.cpp
-	(hanim_humanoid_node::hanim_humanoid_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(hanim_joint_node::hanim_joint_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(hanim_segment_node::hanim_segment_node(const
-	openvrml::node_type&, const boost::shared_ptr<openvrml::scope>&)):
-	Use openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	(hanim_site_node::hanim_site_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	* src/libopenvrml/openvrml/x3d_nurbs.cpp
-	(nurbs_set_node::nurbs_set_node(const openvrml::node_type &,
-	const boost::shared_ptr<openvrml::scope> &)): Use
-	openvrml::make_vec3f instead of openvrml::vec3f constructor.
-	* src/libopenvrml/openvrml/x3d_shape.cpp
-	(fill_properties_node::fill_properties_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	* src/libopenvrml/openvrml/x3d_texturing.cpp
-	(multi_texture_node::multi_texture_properties_node(const
-	openvrml::node_type &, const
-	boost::shared_ptr<openvrml::scope>&)): Use openvrml::make_color
-	instead of openvrml::color constructor.
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-	(trackball(float, float, float, float)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
-	(openvrml::gl::viewer::insert_elevation_grid(unsigned int, const
-	std::vector<float> &, int32, int32, float, float, const
-	std::vector<color> &, const std::vector<vec3f> &, const
-	std::vector<vec2f> &)): Use openvrml::make_vec3f instead of
-	openvrml::vec3f constructor.
-	(computeExtrusion_(const std::vector<openvrml::rotation> &, const
-	std::vector<openvrml::vec2f> &, const
-	std::vector<openvrml::vec2f>&, const
-	std::vector<openvrml::vec3f>&, std::vector<openvrml::vec3f> &,
-	std::vector<openvrml::vec2f> &)): Use openvrml::make_rotation and
-	openvrml::make_vec3f instead of openvrml::rotation and
-	openvrml::vec3f constructors; use openvrml::make_rotation_mat4f
-	instead of openvrml::mat4f::rotation.
-	(openvrml::gl::viewer::rotate(const openvrml::rotation &)): Use
-	openvrml::make_rotation_mat4f instead of
-	openvrml::mat4f::rotation; use openvrml::make_translation_mat4f
-	instead of openvrml::mat4f::translation.
-	(openvrml::gl::viewer::step(float, float, float)): Use
-	openvrml::make_translation_mat4f instead of
-	openvrml::mat4f::translation.
-	(openvrml::gl::viewer::zoom(float)): Use openvrml::make_vec3f
-	instead of openvrml::vec3f constructor.
 
 2006-08-31 Braden McDaniel  <braden@endoframe.com>
 

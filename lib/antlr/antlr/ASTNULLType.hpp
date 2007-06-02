@@ -5,7 +5,7 @@
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ASTNULLType.hpp,v 1.1.1.4 2007-06-01 18:48:38 braden Exp $
+ * $Id: ASTNULLType.hpp,v 1.1.1.2 2004-11-08 20:45:24 braden Exp $
  */
 
 #include <antlr/config.hpp>

@@ -24,7 +24,6 @@
 #   define OPENVRML_BROWSER_H
 
 #   include <boost/thread.hpp>
-#   include <openvrml/read_write_mutex.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {
@@ -53,18 +52,6 @@ namespace openvrml {
     };
 
 
-    class OPENVRML_API resource_fetcher {
-    public:
-        virtual ~resource_fetcher() OPENVRML_NOTHROW = 0;
-
-        std::auto_ptr<resource_istream> get_resource(const std::string & uri);
-
-    private:
-        virtual std::auto_ptr<resource_istream>
-        do_get_resource(const std::string & uri) = 0;
-    };
-
-
     class OPENVRML_API stream_listener {
     public:
         virtual ~stream_listener() OPENVRML_NOTHROW = 0;
@@ -80,6 +67,9 @@ namespace openvrml {
         virtual void
         do_data_available(const std::vector<unsigned char> & data) = 0;
     };
+
+    OPENVRML_API void read_stream(std::auto_ptr<resource_istream> in,
+                                  std::auto_ptr<stream_listener> listener);
 
 
     class OPENVRML_API invalid_vrml : public std::runtime_error {
@@ -180,16 +170,16 @@ namespace openvrml {
     class null_node_type;
 
     class OPENVRML_API browser : boost::noncopyable {
-        friend class scene;
         friend class Vrml97Parser;
         friend class X3DVrmlParser;
         friend bool OPENVRML_API operator==(const node_type &, const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
+        struct vrml_from_url_creator;
 
         class OPENVRML_LOCAL node_metatype_map {
-            mutable read_write_mutex mutex_;
+            mutable boost::mutex mutex_;
             typedef std::map<std::string, boost::shared_ptr<node_metatype> >
                 map_t;
             map_t map_;
@@ -227,59 +217,29 @@ namespace openvrml {
             node_metatype_map(const node_metatype_map & map);
         };
 
-        const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
-        const boost::scoped_ptr<null_node_type> null_node_type_;
-
-        read_write_mutex load_root_scene_thread_mutex_;
+        mutable boost::recursive_mutex mutex_;
+        std::auto_ptr<null_node_metatype> null_node_metatype_;
+        std::auto_ptr<null_node_type> null_node_type_;
         boost::scoped_ptr<boost::thread> load_root_scene_thread_;
-
         boost::thread_group load_proto_thread_group_;
         node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;
-        resource_fetcher & fetcher_;
-
-        mutable read_write_mutex scene_mutex_;
         boost::scoped_ptr<scene> scene_;
-
-        const boost::intrusive_ptr<viewpoint_node> default_viewpoint_;
-
-        mutable read_write_mutex active_viewpoint_mutex_;
+        const boost::intrusive_ptr<node> default_viewpoint_;
         viewpoint_node * active_viewpoint_;
-
-        const boost::intrusive_ptr<navigation_info_node>
-            default_navigation_info_;
-
-        mutable read_write_mutex active_navigation_info_mutex_;
+        const boost::intrusive_ptr<node> default_navigation_info_;
         navigation_info_node * active_navigation_info_;
-
-        mutable read_write_mutex viewpoint_list_mutex_;
-        std::list<viewpoint_node *> viewpoint_list_;
-
-        read_write_mutex scoped_lights_mutex_;
-        std::list<scoped_light_node *> scoped_lights_;
-
-        read_write_mutex scripts_mutex_;
-        std::list<script_node *> scripts_;
-
-        read_write_mutex timers_mutex_;
-        std::list<time_dependent_node *> timers_;
-
-        read_write_mutex listeners_mutex_;
+        std::list<viewpoint_node *> viewpoint_list;
+        std::list<scoped_light_node *> scoped_lights;
+        std::list<script_node *> scripts;
+        std::list<time_dependent_node *> timers;
         std::set<browser_listener *> listeners_;
-
         bool new_view;
-
-        mutable read_write_mutex delta_time_mutex_;
         double delta_time;
-
-        mutable read_write_mutex viewer_mutex_;
         openvrml::viewer * viewer_;
 
         bool modified_;
-        mutable read_write_mutex modified_mutex_;
-
-        mutable read_write_mutex frame_rate_mutex_;
-        double frame_rate_;
+        mutable boost::mutex modified_mutex_;
 
         mutable boost::mutex out_mutex_;
         std::ostream * const out_;
@@ -287,14 +247,15 @@ namespace openvrml {
         mutable boost::mutex err_mutex_;
         std::ostream * const err_;
 
+    protected:
+        double frame_rate_;
+
     public:
         static double current_time() OPENVRML_NOTHROW;
 
         bool flags_need_updating;
 
-        browser(resource_fetcher & fetcher,
-                std::ostream & out,
-                std::ostream & err)
+        browser(std::ostream & out, std::ostream & err)
             OPENVRML_THROW1(std::bad_alloc);
         virtual ~browser() OPENVRML_NOTHROW;
 
@@ -319,9 +280,11 @@ namespace openvrml {
         void add_viewpoint(viewpoint_node & viewpoint)
             OPENVRML_THROW1(std::bad_alloc);
         void remove_viewpoint(viewpoint_node & viewpoint) OPENVRML_NOTHROW;
-        const std::list<viewpoint_node *> viewpoints() const OPENVRML_NOTHROW;
+        const std::list<viewpoint_node *> & viewpoints() const
+            OPENVRML_NOTHROW;
         void viewer(openvrml::viewer * v) OPENVRML_THROW1(viewer_in_use);
         openvrml::viewer * viewer() const OPENVRML_NOTHROW;
+        std::auto_ptr<resource_istream> get_resource(const std::string & uri);
 
         virtual const char * name() const OPENVRML_NOTHROW;
         virtual const char * version() const OPENVRML_NOTHROW;
@@ -378,25 +341,25 @@ namespace openvrml {
 
     protected:
         bool headlight_on();
+
+    private:
+        virtual std::auto_ptr<resource_istream>
+        do_get_resource(const std::string & uri) = 0;
     };
 
 
     class OPENVRML_API scene : boost::noncopyable {
-        struct vrml_from_url_creator;
-
         openvrml::browser * const browser_;
         scene * const parent_;
 
-        mutable read_write_mutex nodes_mutex_;
+        mutable boost::recursive_mutex nodes_mutex_;
         std::vector<boost::intrusive_ptr<node> > nodes_;
 
-        mutable read_write_mutex url_mutex_;
+        mutable boost::mutex url_mutex_;
         std::string url_;
 
-        mutable read_write_mutex meta_mutex_;
+        mutable boost::mutex meta_mutex_;
         std::map<std::string, std::string> meta_;
-
-        boost::thread_group stream_reader_threads_;
 
     public:
         explicit scene(openvrml::browser & browser, scene * parent = 0)
@@ -413,8 +376,8 @@ namespace openvrml {
             OPENVRML_THROW1(std::bad_alloc);
         const std::vector<std::string> meta_keys() const
             OPENVRML_THROW1(std::bad_alloc);
-        const std::vector<boost::intrusive_ptr<node> > nodes() const
-            OPENVRML_THROW1(std::bad_alloc);
+        const std::vector<boost::intrusive_ptr<node> > & nodes() const
+            OPENVRML_NOTHROW;
         void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
         const scope * root_scope() const OPENVRML_NOTHROW;
@@ -426,13 +389,6 @@ namespace openvrml {
         std::auto_ptr<resource_istream>
         get_resource(const std::vector<std::string> & url) const
             OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
-        void read_stream(std::auto_ptr<resource_istream> in,
-                         std::auto_ptr<stream_listener> listener);
-        void create_vrml_from_url(const std::vector<std::string> & url,
-                                  const boost::intrusive_ptr<node> & node,
-                                  const std::string & event)
-            OPENVRML_THROW3(unsupported_interface, std::bad_cast,
-                            boost::thread_resource_error);
         void shutdown(double timestamp) OPENVRML_NOTHROW;
 
     private:

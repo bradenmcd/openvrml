@@ -4697,7 +4697,7 @@ namespace {
         port_(*this),
         read_interval_(*this, 0.1f),
         rotation_(*this),
-        scale_(*this, make_vec3f(1.0, 1.0, 1.0)),
+        scale_(*this, vec3f(1,1,1)),
         scale_orientation_(*this),
         site_id_(*this),
         translation_(*this),
@@ -4722,7 +4722,7 @@ namespace {
         is_rtp_header_heard_emitter_(*this, this->is_rtp_header_heard_),
         is_stand_alone_emitter_(*this, this->is_stand_alone_),
         timestamp_emitter_(*this, this->timestamp_),
-        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -4945,7 +4945,7 @@ namespace {
         is_rtp_header_heard_emitter_(*this, this->is_rtp_header_heard_),
         is_stand_alone_emitter_(*this, this->is_stand_alone_),
         timestamp_emitter_(*this, this->timestamp_),
-        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -5168,7 +5168,7 @@ namespace {
         is_rtp_header_heard_emitter_(*this, this->is_rtp_header_heard_),
         is_stand_alone_emitter_(*this, this->is_stand_alone_),
         timestamp_emitter_(*this, this->timestamp_),
-        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
@@ -5503,7 +5503,7 @@ namespace {
         is_rtp_header_heard_emitter_(*this, this->is_rtp_header_heard_),
         is_stand_alone_emitter_(*this, this->is_stand_alone_),
         timestamp_emitter_(*this, this->timestamp_),
-        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
+        bbox_size_(vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**
