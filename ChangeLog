@@ -1,3 +1,23 @@
+2007-06-02 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.16.5 release.
+
+	* NEWS: Updated for 0.16.5 release.
+	* README: Updated for 0.16.5 release.
+	* configure.ac: Updated for 0.16.5 release.
+	* doc/Doxyfile: Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Updated for 0.16.5 release.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Updated for 0.16.5 release.
+	* mozilla-plugin/configure.ac: Updated for 0.16.5 release.
+	* src/libopenvrml/Makefile.am (LIBRARY_VERSION): Updated libtool
+	library version number.
+	* src/libopenvrml-gl/Makefile.am (LIBRARY_VERSION): Updated
+	libtool library version number.
+
 2007-06-01 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Upgrade to/require ANTLR 2.7.7.
