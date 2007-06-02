@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./$(dirname $0)/configure -C --disable-static --enable-gtk-doc CPPFLAGS='-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC' CXXFLAGS='-g3 -O0 -Wall -Wextra -Wno-missing-braces -Wno-missing-field-initializers -Wno-attributes' "$*"
+./$(dirname $0)/configure -C --prefix=$HOME --disable-static --enable-gtk-doc CPPFLAGS='-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC' CXXFLAGS='-g3 -O0 -Wall -Wextra -Wno-missing-braces -Wno-missing-field-initializers -Wno-attributes' "$*"
