@@ -3538,16 +3538,14 @@ openvrml::mfbool::mfbool(const value_type::size_type n, const bool value)
 {}
 
 /**
+ * @fn openvrml::mfbool::mfbool(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfbool::mfbool(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -3750,16 +3748,14 @@ openvrml::mfcolor::mfcolor(const std::vector<color>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfcolor::mfcolor(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfcolor::mfcolor(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -3961,16 +3957,14 @@ openvrml::mfcolorrgba::mfcolorrgba(const value_type::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfcolorrgba::mfcolorrgba(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfcolorrgba::mfcolorrgba(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -4174,16 +4168,14 @@ openvrml::mffloat::mffloat(const std::vector<float>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mffloat::mffloat(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mffloat::mffloat(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -4378,22 +4370,20 @@ bool openvrml::operator!=(const mffloat & lhs, const mffloat & rhs)
  * @post size is @p n. Every element is a copy of @p value.
  */
 openvrml::mfdouble::mfdouble(const std::vector<double>::size_type n,
-                           const double value)
+                             const double value)
     OPENVRML_THROW1(std::bad_alloc):
     field_value(std::vector<double>(n, value), value_type_constructor_tag())
 {}
 
 /**
+ * @fn openvrml::mfdouble::mfdouble(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfdouble::mfdouble(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -4594,16 +4584,14 @@ openvrml::mfimage::mfimage(const value_type::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfimage::mfimage(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfimage::mfimage(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -4804,16 +4792,14 @@ openvrml::mfint32::mfint32(const std::vector<int32>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfint32::mfint32(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfint32::mfint32(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -5015,16 +5001,14 @@ openvrml::mfnode::mfnode(const value_type::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfnode::mfnode(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfnode::mfnode(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -5229,16 +5213,14 @@ openvrml::mfrotation::mfrotation(const std::vector<rotation>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfrotation::mfrotation(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfrotation::mfrotation(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -5425,7 +5407,7 @@ bool openvrml::operator!=(const mfrotation & lhs, const mfrotation & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mfstring</code> with @p n copies of @p value.
+ * Creates an @c mfstring with @p n copies of @p value.
  *
  * @param[in] n     the number elements in @a mfstring::value.
  * @param[in] value used to initialize @a mfstring::value.
@@ -5443,16 +5425,14 @@ openvrml::mfstring::mfstring(const std::vector<std::string>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfstring::mfstring(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfstring::mfstring(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -5638,7 +5618,7 @@ bool openvrml::operator!=(const mfstring & lhs, const mfstring & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mftime</code> with @p n copies of @p value.
+ * Creates an @c mftime with @p n copies of @p value.
  *
  * @param[in] n     the number of elements in @a mftime::value.
  * @param[in] value used to initialize @a mftime::value.
@@ -5655,16 +5635,14 @@ openvrml::mftime::mftime(const std::vector<double>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mftime::mftime(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mftime::mftime(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -5851,7 +5829,7 @@ bool openvrml::operator!=(const mftime & lhs, const mftime & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mfvec2f</code> with @p n copies of @p value.
+ * Creates an @c mfvec2f with @p n copies of @p value.
  *
  * @param[in] n     the number elements in @a mfvec2f::value.
  * @param[in] value used to initialize @a mfvec2f::value.
@@ -5868,16 +5846,14 @@ openvrml::mfvec2f::mfvec2f(const std::vector<vec2f>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfvec2f::mfvec2f(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec2f::mfvec2f(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -6062,7 +6038,7 @@ bool openvrml::operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mfvec2d</code> with @p n copies of @p value.
+ * Creates an @c mfvec2d with @p n copies of @p value.
  *
  * @param[in] n     the number elements in @a mfvec2d::value.
  * @param[in] value used to initialize @a mfvec2d::value.
@@ -6079,16 +6055,14 @@ openvrml::mfvec2d::mfvec2d(const std::vector<vec2d>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfvec2d::mfvec2d(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec2d::mfvec2d(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -6274,7 +6248,7 @@ bool openvrml::operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mfvec3f</code> with @p n copies of @p value.
+ * Creates an @c mfvec3f with @p n copies of @p value.
  *
  * @param[in] n     the number elements in @a mfvec3f::value.
  * @param[in] value used to initialize @a mfvec3f::value.
@@ -6291,16 +6265,14 @@ openvrml::mfvec3f::mfvec3f(const std::vector<vec3f>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfvec3f::mfvec3f(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec3f::mfvec3f(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.
@@ -6486,7 +6458,7 @@ bool openvrml::operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
 /**
  * @brief Construct.
  *
- * Creates an <code>mfvec3d</code> with @p n copies of @p value.
+ * Creates an @c mfvec3d with @p n copies of @p value.
  *
  * @param[in] n     the number elements in @a mfvec3d::value.
  * @param[in] value used to initialize @a mfvec3d::value.
@@ -6503,16 +6475,14 @@ openvrml::mfvec3d::mfvec3d(const std::vector<vec3d>::size_type n,
 {}
 
 /**
+ * @fn openvrml::mfvec3d::mfvec3d(const value_type & value)
+ *
  * @brief Construct.
  *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::mfvec3d::mfvec3d(const value_type & value)
-    OPENVRML_THROW1(std::bad_alloc):
-    field_value(value, value_type_constructor_tag())
-{}
 
 /**
  * @brief Construct a copy.

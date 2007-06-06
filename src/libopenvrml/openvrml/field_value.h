@@ -824,6 +824,11 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfbool & lhs, const mfbool & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfbool::mfbool(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mfcolor : public field_value {
     public:
@@ -859,6 +864,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfcolor & lhs, const mfcolor & rhs)
         OPENVRML_NOTHROW;
+
+    inline mfcolor::mfcolor(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfcolorrgba : public field_value {
@@ -898,6 +908,11 @@ namespace openvrml {
                                  const mfcolorrgba & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfcolorrgba::mfcolorrgba(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mffloat : public field_value {
     public:
@@ -933,6 +948,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mffloat & lhs, const mffloat & rhs)
         OPENVRML_NOTHROW;
+
+    inline mffloat::mffloat(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfdouble : public field_value {
@@ -970,6 +990,11 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfdouble & lhs, const mfdouble & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfdouble::mfdouble(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mfimage : public field_value {
     public:
@@ -1006,6 +1031,11 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfimage & lhs, const mfimage & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfimage::mfimage(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mfint32 : public field_value {
     public:
@@ -1039,6 +1069,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfint32 & lhs, const mfint32 & rhs)
         OPENVRML_NOTHROW;
+
+    inline openvrml::mfint32::mfint32(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfnode : public field_value {
@@ -1075,6 +1110,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfnode & lhs, const mfnode & rhs)
         OPENVRML_NOTHROW;
+
+    inline openvrml::mfnode::mfnode(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfrotation : public field_value {
@@ -1114,6 +1154,11 @@ namespace openvrml {
                                  const mfrotation & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfrotation::mfrotation(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mfstring : public field_value {
     public:
@@ -1150,6 +1195,11 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfstring & lhs, const mfstring & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfstring::mfstring(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mftime : public field_value {
     public:
@@ -1184,6 +1234,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mftime & lhs, const mftime & rhs)
         OPENVRML_NOTHROW;
+
+    inline mftime::mftime(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfvec2f : public field_value {
@@ -1221,6 +1276,11 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfvec2f & lhs, const mfvec2f & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfvec2f::mfvec2f(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
 
     class OPENVRML_API mfvec2d : public field_value {
     public:
@@ -1256,6 +1316,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec2d & lhs, const mfvec2d & rhs)
         OPENVRML_NOTHROW;
+
+    inline mfvec2d::mfvec2d(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 
 
     class OPENVRML_API mfvec3f : public field_value {
@@ -1293,6 +1358,12 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mfvec3f & lhs, const mfvec3f & rhs)
         OPENVRML_NOTHROW;
 
+    inline mfvec3f::mfvec3f(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
+
+
     class OPENVRML_API mfvec3d : public field_value {
     public:
         typedef std::vector<vec3d> value_type;
@@ -1327,6 +1398,11 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const mfvec3d & lhs, const mfvec3d & rhs)
         OPENVRML_NOTHROW;
+
+    inline mfvec3d::mfvec3d(const value_type & value)
+        OPENVRML_THROW1(std::bad_alloc):
+        field_value(value, value_type_constructor_tag())
+    {}
 }
 
 namespace std {

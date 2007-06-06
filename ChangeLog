@@ -1,3 +1,11 @@
+2007-06-06 Braden McDaniel  <braden@endoframe.com>
+
+	Made constructors of mf* types taking a FieldValue::value_type
+	inline.  This should facilitate elision of a copy of the argument.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+
 2007-06-02 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.16.5 release.
