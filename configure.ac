@@ -126,12 +126,14 @@ AC_LANG_POP])
              [AC_MSG_RESULT([no])])
 ])
 
-
+have_libmozjs=yes
 PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                   [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
                   [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
                                      [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
-                                     [have_js=no])])
+                                     [have_libmozjs=no])])
+AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
+
 #
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
@@ -238,24 +240,33 @@ fi
 AC_ARG_ENABLE([script-node-javascript],
               [AC_HELP_STRING([--disable-script-node-javascript],
                               [disable Script node JavaScript support])])
+AC_ARG_WITH([libjs],
+            [AC_HELP_STRING([--with-libjs],
+                            [use libjs for JavaScript support])])
 if test "X$enable_script_node_javascript" = "Xno"; then
   JS_CFLAGS=""
   JS_LIBS=""
 else
-  if test "X$have_js" = "Xno"; then
-    AC_MSG_FAILURE([Mozilla JavaScript is required for Script node JavaScript support.])
+  if test X$with_libjs = Xyes; then
+    JS_CFLAGS=""
+    JS_LIBS="-ljs"
   fi
-  if test -n "${OPENVRML_PKG_REQUIRES}"; then
-    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
+  if test X$have_libmozjs = Xno -a X$have_libjs = Xno; then
+    AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])
   fi
-  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
-  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
+  if test X$with_libjs = Xno; then
+    if test -n "${OPENVRML_PKG_REQUIRES}"; then
+      OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
+    fi
+    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
+    AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
-  GRE_PATH=`$PKG_CONFIG --libs-only-L ${mozilla_js_pkg%% *} | sed -e 's/^-L//' -e 's/ *$//'`
-  if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
-    openvrml_run_path=":${openvrml_run_path}"
+    GRE_PATH=`$PKG_CONFIG --libs-only-L ${mozilla_js_pkg%% *} | sed -e 's/^-L//' -e 's/ *$//'`
+    if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
+      openvrml_run_path=":${openvrml_run_path}"
+    fi
+    openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
   fi
-  openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])

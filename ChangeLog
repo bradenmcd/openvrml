@@ -1,5 +1,10 @@
 2007-06-21 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Added option --with-libjs to enable use of libjs
+	built from the stand-alone SpiderMonkey distribution.
+
+2007-06-21 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp: Wrap include of
 	jpeglib.h in extern "C"; the MacPorts variant of the libjpeg
 	header doesn't do this.
