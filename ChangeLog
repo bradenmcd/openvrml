@@ -1,3 +1,9 @@
+2007-06-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp: Wrap include of
+	jpeglib.h in extern "C"; the MacPorts variant of the libjpeg
+	header doesn't do this.
+
 2007-06-06 Braden McDaniel  <braden@endoframe.com>
 
 	Made constructors of mf* types taking a FieldValue::value_type
