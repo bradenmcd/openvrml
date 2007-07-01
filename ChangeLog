@@ -1,3 +1,7 @@
+2007-07-01 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.pc.in: Added BOOST_LIB_SUFFIX to -lboost_thread.
+
 2007-06-30 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed comparison of with_libjs shell variable.
