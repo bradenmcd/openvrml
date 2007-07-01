@@ -29,14 +29,14 @@
 #   include <config.h>
 # endif
 
-# if HAVE_WINDOWS_H && defined(_WIN32)
+# if defined(HAVE_WINDOWS_H) && defined(_WIN32)
 #   include <windows.h>
 # endif
 # ifdef interface
 #   undef interface
 # endif
 
-# if HAVE_APPLE_OPENGL_FRAMEWORK
+# ifdef HAVE_APPLE_OPENGL_FRAMEWORK
 #   include <OpenGL/gl.h>
 #   include <OpenGL/glu.h>
 # else
@@ -1978,7 +1978,7 @@ extern "C" {
      * As the type of callback functions given to OpenGL, this type must have
      * C linkage.
      */
-# if HAVE_APPLE_OPENGL_FRAMEWORK
+# ifdef HAVE_APPLE_OPENGL_FRAMEWORK
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(...);
 # else
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(GLvoid);

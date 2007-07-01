@@ -1,5 +1,10 @@
 2007-06-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Check to see whether
+	HAVE_WINDOWS_H and HAVE_APPLE_OPENGL_FRAMEWORK are defined.
+
+2007-06-30 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(trackball(float, float, float, float)): Initialize rotation.
 
