@@ -1045,6 +1045,11 @@ namespace openvrml {
     public:
         virtual ~light_node() OPENVRML_NOTHROW = 0;
 
+        float ambient_intensity() const OPENVRML_NOTHROW;
+        float intensity() const OPENVRML_NOTHROW;
+        bool on() const OPENVRML_NOTHROW;
+        const openvrml::color & color() const OPENVRML_NOTHROW;
+
     protected:
         light_node(const node_type & type,
                    const boost::shared_ptr<openvrml::scope> & scope)
@@ -1052,6 +1057,11 @@ namespace openvrml {
 
     private:
         virtual light_node * to_light() OPENVRML_NOTHROW;
+
+        virtual float do_ambient_intensity() const OPENVRML_NOTHROW = 0;
+        virtual float do_intensity() const OPENVRML_NOTHROW = 0;
+        virtual bool do_on() const OPENVRML_NOTHROW = 0;
+        virtual const openvrml::color & do_color() const OPENVRML_NOTHROW = 0;
     };
 
 

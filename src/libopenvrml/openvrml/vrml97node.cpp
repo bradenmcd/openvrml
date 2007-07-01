@@ -1584,15 +1584,16 @@ namespace {
     public:
         virtual ~abstract_light_node() OPENVRML_NOTHROW = 0;
 
-        float ambient_intensity() const OPENVRML_NOTHROW;
-        float intensity() const OPENVRML_NOTHROW;
-        bool on() const OPENVRML_NOTHROW;
-        const openvrml::color & color() const OPENVRML_NOTHROW;
-
     protected:
         abstract_light_node(
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
+
+    private:
+        virtual float do_ambient_intensity() const OPENVRML_NOTHROW;
+        virtual float do_intensity() const OPENVRML_NOTHROW;
+        virtual bool do_on() const OPENVRML_NOTHROW;
+        virtual const openvrml::color & do_color() const OPENVRML_NOTHROW;
     };
 
     /**
@@ -1653,9 +1654,10 @@ namespace {
      * @return the ambient intensity.
      */
     template <typename Derived>
-    float abstract_light_node<Derived>::ambient_intensity() const OPENVRML_NOTHROW
+    float abstract_light_node<Derived>::do_ambient_intensity() const
+        OPENVRML_NOTHROW
     {
-        return this->ambient_intensity_.sffloat::value;
+        return this->ambient_intensity_.sffloat::value();
     }
 
     /**
@@ -1664,9 +1666,9 @@ namespace {
      * @return the intensity.
      */
     template <typename Derived>
-    float abstract_light_node<Derived>::intensity() const OPENVRML_NOTHROW
+    float abstract_light_node<Derived>::do_intensity() const OPENVRML_NOTHROW
     {
-        return this->intensity_.sffloat::value;
+        return this->intensity_.sffloat::value();
     }
 
     /**
@@ -1675,9 +1677,9 @@ namespace {
      * @return @c true if the light is on; @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_light_node<Derived>::on() const OPENVRML_NOTHROW
+    bool abstract_light_node<Derived>::do_on() const OPENVRML_NOTHROW
     {
-        return this->on_.sfbool::value;
+        return this->on_.sfbool::value();
     }
 
     /**
@@ -1687,9 +1689,9 @@ namespace {
      */
     template <typename Derived>
     const openvrml::color &
-    abstract_light_node<Derived>::color() const OPENVRML_NOTHROW
+    abstract_light_node<Derived>::do_color() const OPENVRML_NOTHROW
     {
-        return this->color_.sfcolor::value;
+        return this->color_.sfcolor::value();
     }
 
 

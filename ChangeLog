@@ -1,4 +1,23 @@
-2007-06-27 Braden McDaniel  <braden@endoframe.com>
+2007-06-30 Braden McDaniel  <braden@endoframe.com>
+
+	Expose common attributes of lighting nodes via
+	openvrml::light_node.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::light_node::ambient_intensity() const): Added function.
+	(openvrml::light_node::intensity() const): Added function.
+	(openvrml::light_node::on() const): Added function.
+	(openvrml::light_node::color() const): Added function.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::light_node): Added member functions ambient_intensity,
+	do_ambient_intensity, intensity, do_intensity, on, do_on, color,
+	do_color.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(abstract_light_node): Removed functions ambient_intensity,
+	intensity, on, color.  Added virtual functions
+	do_ambient_intensity, do_intensity, do_on, do_color.
+
+2007-06-30 Braden McDaniel  <braden@endoframe.com>
 
 	automake no longer requires that M4 macros be explicitly
 	listed (in EXTRA_DIST) in order to be packaged.

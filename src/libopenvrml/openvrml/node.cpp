@@ -1470,181 +1470,181 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @var class openvrml::node::exposedfield<sfbool>
  *
- * @brief <code>sfbool</code> <code>exposedfield</code>.
+ * @brief @c sfbool @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfcolor>
  *
- * @brief <code>sfcolor</code> <code>exposedfield</code>.
+ * @brief @c sfcolor @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfcolorrgba>
  *
- * @brief <code>sfcolorrgba</code> <code>exposedfield</code>.
+ * @brief @c sfcolorrgba @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfdouble>
  *
- * @brief <code>sfdouble</code> <code>exposedfield</code>.
+ * @brief @c sfdouble @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sffloat>
  *
- * @brief <code>sffloat</code> <code>exposedfield</code>.
+ * @brief @c sffloat @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfimage>
  *
- * @brief <code>sfimage</code> <code>exposedfield</code>.
+ * @brief @c sfimage @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfint32>
  *
- * @brief <code>sfint32</code> <code>exposedfield</code>.
+ * @brief @c sfint32 @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfnode>
  *
- * @brief <code>sfnode</code> <code>exposedfield</code>.
+ * @brief @c sfnode @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfrotation>
  *
- * @brief <code>sfrotation</code> <code>exposedfield</code>.
+ * @brief @c sfrotation @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfstring>
  *
- * @brief <code>sfstring</code> <code>exposedfield</code>.
+ * @brief @c sfstring @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sftime>
  *
- * @brief <code>sftime</code> <code>exposedfield</code>.
+ * @brief @c sftime @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfvec2d>
  *
- * @brief <code>sfvec2d</code> <code>exposedfield</code>.
+ * @brief @c sfvec2d @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfvec2f>
  *
- * @brief <code>sfvec2f</code> <code>exposedfield</code>.
+ * @brief @c sfvec2f @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfvec3d>
  *
- * @brief <code>sfvec3d</code> <code>exposedfield</code>.
+ * @brief @c sfvec3d @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<sfvec3f>
  *
- * @brief <code>sfvec3f</code> <code>exposedfield</code>.
+ * @brief @c sfvec3f @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfbool>
  *
- * @brief <code>mfbool</code> <code>exposedfield</code>.
+ * @brief @c mfbool @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfcolor>
  *
- * @brief <code>mfcolor</code> <code>exposedfield</code>.
+ * @brief @c mfcolor @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfcolorrgba>
  *
- * @brief <code>mfcolorrgba</code> <code>exposedfield</code>.
+ * @brief @c mfcolorrgba @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfdouble>
  *
- * @brief <code>mfdouble</code> <code>exposedfield</code>.
+ * @brief @c mfdouble @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mffloat>
  *
- * @brief <code>mffloat</code> <code>exposedfield</code>.
+ * @brief @c mffloat @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfimage>
  *
- * @brief <code>mfimage</code> <code>exposedfield</code>.
+ * @brief @c mfimage @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfint32>
  *
- * @brief <code>mfint32</code> <code>exposedfield</code>.
+ * @brief @c mfint32 @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfnode>
  *
- * @brief <code>mfnode</code> <code>exposedfield</code>.
+ * @brief @c mfnode @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfrotation>
  *
- * @brief <code>mfrotation</code> <code>exposedfield</code>.
+ * @brief @c mfrotation @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfstring>
  *
- * @brief <code>mfstring</code> <code>exposedfield</code>.
+ * @brief @c mfstring @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mftime>
  *
- * @brief <code>mftime</code> <code>exposedfield</code>.
+ * @brief @c mftime @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfvec2d>
  *
- * @brief <code>mfvec2d</code> <code>exposedfield</code>.
+ * @brief @c mfvec2d @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfvec2f>
  *
- * @brief <code>mfvec2f</code> <code>exposedfield</code>.
+ * @brief @c mfvec2f @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfvec3d>
  *
- * @brief <code>mfvec3d</code> <code>exposedfield</code>.
+ * @brief @c mfvec3d @c exposedfield.
  */
 
 /**
  * @var class openvrml::node::exposedfield<mfvec3f>
  *
- * @brief <code>mfvec3f</code> <code>exposedfield</code>.
+ * @brief @c mfvec3f @c exposedfield.
  */
 
 namespace {
@@ -1732,10 +1732,10 @@ namespace {
 }
 
 /**
- * @brief Special value used when initializing a script_node.
+ * @brief Special value used when initializing a @c script_node.
  *
- * One should never attempt to dereference this value. It is useful only
- * for comparison.
+ * One should never attempt to dereference this value.  It is useful only for
+ * comparison.
  */
 const boost::intrusive_ptr<openvrml::node>
 openvrml::node::self_tag(new self_ref_node);
@@ -1745,7 +1745,7 @@ openvrml::node::self_tag(new self_ref_node);
  *
  * @var boost::mutex openvrml::node::ref_count_mutex_
  *
- * @brief Mutex to guard @a ref_count_.
+ * @brief Mutex to guard @c #ref_count_.
  */
 
 /**
@@ -1761,7 +1761,7 @@ openvrml::node::self_tag(new self_ref_node);
  *
  * @var const openvrml::node_type & openvrml::node::type_
  *
- * @brief The type information object for the node.
+ * @brief The type information object for the @c node.
  */
 
 /**
@@ -1769,7 +1769,7 @@ openvrml::node::self_tag(new self_ref_node);
  *
  * @var boost::shared_ptr<openvrml::scope> openvrml::node::scope_
  *
- * @brief The scope to which the node belongs.
+ * @brief The @c scope to which the @c node belongs.
  *
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
@@ -1787,7 +1787,7 @@ openvrml::node::self_tag(new self_ref_node);
  *
  * @var openvrml::scene * openvrml::node::scene_
  *
- * @brief The scene with which the node is associated.
+ * @brief The scene with which the @c node is associated.
  */
 
 /**
@@ -1803,16 +1803,16 @@ openvrml::node::self_tag(new self_ref_node);
  *
  * @var bool openvrml::node::modified_
  *
- * @brief Indicate whether the node has been modified.
+ * @brief Indicate whether the @c node has been modified.
  *
- * @see openvrml::node::modified
+ * @sa #modified
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the instance.
- * @param[in] scope the scope associated with the instance.
+ * @param[in] type  the @c node_type associated with the instance.
+ * @param[in] scope the @c scope associated with the instance.
  */
 openvrml::node::node(const node_type & type,
                      const boost::shared_ptr<openvrml::scope> & scope)
@@ -1854,7 +1854,7 @@ namespace {
 /**
  * @brief Destructor.
  *
- * Remove node name (if any) from the @c scope.
+ * Remove @c node name (if any) from the @c scope.
  */
 openvrml::node::~node() OPENVRML_NOTHROW
 {
@@ -1902,8 +1902,8 @@ openvrml::node::~node() OPENVRML_NOTHROW
  * reference count drops to zero</strong>.  This function should be used with
  * caution.  It is really only appropriate when the caller is aware that the
  * reference count may drop to zero but destroying the instance in that case
- * would be inappropriate. In most cases it is appropriate to use
- * @c node::release.
+ * would be inappropriate.  In most cases it is appropriate to use
+ * @c #release.
  */
 
 /**
@@ -1936,9 +1936,9 @@ size_t openvrml::node::use_count() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief The type information object for the node.
+ * @brief The type information object for the @c node.
  *
- * @return the type information object for the node.
+ * @return the type information object for the @c node.
  */
 const openvrml::node_type & openvrml::node::type() const OPENVRML_NOTHROW
 {
@@ -1946,9 +1946,9 @@ const openvrml::node_type & openvrml::node::type() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Set the name of the node.
+ * @brief Set the name of the @c node.
  *
- * @param[in] node_id the name for the node.
+ * @param[in] node_id the name for the @c node.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
@@ -1960,9 +1960,9 @@ void openvrml::node::id(const std::string & node_id)
 }
 
 /**
- * @brief Retrieve the name of this node.
+ * @brief Retrieve the name of this @c node.
  *
- * @return the node name.
+ * @return the @c node name.
  */
 const std::string & openvrml::node::id() const OPENVRML_NOTHROW
 {
@@ -1981,17 +1981,17 @@ const std::string & openvrml::node::id() const OPENVRML_NOTHROW
 /**
  * @fn const boost::shared_ptr<const openvrml::scope> & openvrml::node::scope() const
  *
- * @brief Get the scope to which the node belongs.
+ * @brief Get the @c scope to which the @c node belongs.
  *
- * @return the scope to which the node belongs.
+ * @return the @c scope to which the @c node belongs.
  *
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
 /**
- * @brief Get the scene with which the node is associated.
+ * @brief Get the @c scene with which the @c node is associated.
  *
- * @return the scene with which the node is associated.
+ * @return the @c scene with which the @c node is associated.
  */
 openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
 {
@@ -2004,15 +2004,15 @@ openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
  * @brief Initialize the node.
  *
  * This method works recursively, initializing any child nodes to the same
- * @p scene and @p timestamp. If the node has already been initialized, this
+ * @p scene and @p timestamp.  If the node has already been initialized, this
  * method has no effect.
  *
- * @param[in,out] scene     the Scene to which the node will belong.
+ * @param[in,out] scene the @c scene to which the @c node will belong.
  * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
  *
- * @post @a scene points to @p scene.
+ * @post @a #scene_ points to @p scene.
  */
 void openvrml::node::initialize(openvrml::scene & scene,
                                 const double timestamp)
@@ -2665,7 +2665,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const node & n)
 /**
  * @brief @c node subclass-specific initialization.
  *
- * This method is called by @c node::initialize.  Subclasses of node should
+ * This method is called by @c #initialize.  Subclasses of node should
  * override this method for any subclass-specific initialization.
  *
  * The default implementation of this method does nothing.
@@ -2683,8 +2683,8 @@ void openvrml::node::do_initialize(double)
  *
  * @brief Get an event listener.
  *
- * This method is called by @c node::event_listener.  Subclasses must
- * implement this method.
+ * This method is called by @c #event_listener.  Subclasses must implement
+ * this method.
  *
  * @param[in] id    @c eventIn identifier.
  *
@@ -2698,8 +2698,8 @@ void openvrml::node::do_initialize(double)
  *
  * @brief Get an event emitter.
  *
- * This method is called by @c node::event_emitter.  Subclasses must implement
- * this method.
+ * This method is called by @c #event_emitter.  Subclasses must implement this
+ * method.
  *
  * @param[in] id    @c eventOut identifier.
  *
@@ -2711,9 +2711,9 @@ void openvrml::node::do_initialize(double)
 /**
  * @brief @c node subclass-specific shut down.
  *
- * This method is called by @c node::shutdown.  Subclasses of node should
- * override this method for any subclass-specific shut down.  Note that this
- * method cannot throw.
+ * This method is called by @c #shutdown.  Subclasses of node should override
+ * this method for any subclass-specific shut down.  Note that this method
+ * cannot throw.
  *
  * The default implementation of this method does nothing.
  *
@@ -2882,34 +2882,34 @@ bool openvrml::delete_route(node & from,
 /**
  * @fn template <> openvrml::appearance_node * openvrml::node_cast<openvrml::appearance_node *>(node * n)
  *
- * @brief Cast to an appearance_node.
+ * @brief Cast to an @c appearance_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return an appearance_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not an appearance_node.
+ * @return an @c appearance_node pointer to the @c node pointed to by @p n, or
+ *         0 if the @c node is not an @c appearance_node.
  */
 
 /**
  * @fn template <> openvrml::child_node * openvrml::node_cast<openvrml::child_node *>(node * n)
  *
- * @brief Cast to a child_node.
+ * @brief Cast to a @c child_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a child_node pointer to the node pointed to by @p n, or 0 if the
- *         node is not a child_node.
+ * @return a @c child_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c child_node.
  */
 
 /**
  * @fn template <> openvrml::color_node * openvrml::node_cast<openvrml::color_node *>(node * n)
  *
- * @brief Cast to a color_node.
+ * @brief Cast to a @c color_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a color_node pointer to the node pointed to by @p n, or 0 if the
- *         node is not a color_node.
+ * @return a @c color_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c color_node.
  */
 
 /**
@@ -2926,111 +2926,111 @@ bool openvrml::delete_route(node & from,
 /**
  * @fn template <> openvrml::coordinate_node * openvrml::node_cast<openvrml::coordinate_node *>(node * n)
  *
- * @brief Cast to a coordinate_node.
+ * @brief Cast to a @c coordinate_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a coordinate_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a coordinate_node.
+ * @return a @c coordinate_node pointer to the @c node pointed to by @p n, or
+ *         0 if the node is not a @c coordinate_node.
  */
 
 /**
  * @fn template <> openvrml::font_style_node * openvrml::node_cast<openvrml::font_style_node *>(node * n)
  *
- * @brief Cast to a font_style_node.
+ * @brief Cast to a @c font_style_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a font_style_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a font_style_node.
+ * @return a @c font_style_node pointer to the @c node pointed to by @p n, or
+ *         0 if the @c node is not a @c font_style_node.
  */
 
 /**
  * @fn template <> openvrml::geometry_node * openvrml::node_cast<openvrml::geometry_node *>(node * n)
  *
- * @brief Cast to a geometry_node.
+ * @brief Cast to a @c geometry_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a geometry_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a geometry_node.
+ * @return a @c geometry_node pointer to the @c node pointed to by @p n, or 0
+ *         if the @c node is not a @c geometry_node.
  */
 
 /**
  * @fn template <> openvrml::grouping_node * openvrml::node_cast<openvrml::grouping_node *>(node * n)
  *
- * @brief Cast to a grouping_node.
+ * @brief Cast to a @c grouping_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a grouping_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a grouping_node.
+ * @return a @c grouping_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c grouping_node.
  */
 
 /**
  * @fn template <> openvrml::material_node * openvrml::node_cast<openvrml::material_node *>(node * n)
  *
- * @brief Cast to a material_node.
+ * @brief Cast to a @c material_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a material_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a material_node.
+ * @return a @c material_node pointer to the @c node pointed to by @p n, or 0
+ *         if the @c node is not a @c material_node.
  */
 
 /**
  * @fn template <> openvrml::normal_node * openvrml::node_cast<openvrml::normal_node *>(node * n)
  *
- * @brief Cast to a normal_node.
+ * @brief Cast to a @c normal_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a normal_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a normal_node.
+ * @return a @c normal_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c normal_node.
  */
 
 /**
  * @fn template <> openvrml::sound_source_node * openvrml::node_cast<openvrml::sound_source_node *>(node * n)
  *
- * @brief Cast to a sound_source_node.
+ * @brief Cast to a @c sound_source_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a sound_source_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a sound_source_node.
+ * @return a @c sound_source_node pointer to the @c node pointed to by @p n, or 0 if
+ *         the @c node is not a @c sound_source_node.
  */
 
 /**
  * @fn template <> openvrml::texture_node * openvrml::node_cast<openvrml::texture_node *>(node * n)
  *
- * @brief Cast to a texture_node.
+ * @brief Cast to a @c texture_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a texture_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a texture_node.
+ * @return a @c texture_node pointer to the @c node pointed to by @p n, or 0
+ *         if the @c node is not a @c texture_node.
  */
 
 /**
  * @fn template <> openvrml::texture_coordinate_node * openvrml::node_cast<openvrml::texture_coordinate_node *>(node * n)
  *
- * @brief Cast to a texture_coordinate_node.
+ * @brief Cast to a @c texture_coordinate_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a texture_coordinate_node pointer to the node pointed to by @p n, or
- *         0 if the node is not a texture_coordinate_node.
+ * @return a @c texture_coordinate_node pointer to the @c node pointed to by
+ *         @p n, or 0 if the @c node is not a @c texture_coordinate_node.
  */
 
 /**
  * @fn template <> openvrml::texture_transform_node * openvrml::node_cast<openvrml::texture_transform_node *>(node * n)
  *
- * @brief Cast to a texture_transform_node.
+ * @brief Cast to a @c texture_transform_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a texture_transform_node pointer to the node pointed to by @p n, or
- *         0 if the node is not a texture_transform_node.
+ * @return a @c texture_transform_node pointer to the @c node pointed to by
+ *         @p n, or 0 if the @c node is not a @c texture_transform_node.
  */
 
 /**
@@ -3038,21 +3038,21 @@ bool openvrml::delete_route(node & from,
  *
  * @brief Cast to a transform_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a transform_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a transform_node.
+ * @return a @c transform_node pointer to the @c node pointed to by @p n, or 0
+ *         if the @c node is not a @c transform_node.
  */
 
 /**
  * @fn template <> openvrml::viewpoint_node * openvrml::node_cast<openvrml::viewpoint_node *>(node * n)
  *
- * @brief Cast to a viewpoint_node.
+ * @brief Cast to a @c viewpoint_node.
  *
- * @param[in] n node.
+ * @param[in] n @c node.
  *
- * @return a viewpoint_node pointer to the node pointed to by @p n, or 0 if
- *         the node is not a viewpoint_node.
+ * @return a @c viewpoint_node pointer to the @c node pointed to by @p n, or 0
+ *         if the @c node is not a @c viewpoint_node.
  */
 
 
@@ -3065,8 +3065,8 @@ bool openvrml::delete_route(node & from,
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::appearance_node::
 appearance_node(const node_type & type,
@@ -3084,8 +3084,8 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 /**
  * @brief Insert appearance when rendering.
  *
- * @param[in,out] v         viewer.
- * @param[in]     context   rendering_context.
+ * @param[in,out] v         @c viewer.
+ * @param[in]     context   @c rendering_context.
  */
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
@@ -3161,7 +3161,8 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  *
  * @var bool openvrml::bounded_volume_node::bounding_volume_dirty_
  *
- * @brief Indicate whether the node's cached bounding volume needs updating.
+ * @brief Indicate whether the <code>node</code>'s cached bounding volume
+ *        needs updating.
  */
 
 /**
@@ -3266,9 +3267,9 @@ bool openvrml::bounded_volume_node::bounding_volume_dirty() const
 }
 
 /**
- * @brief Cast to an <code>bounded_volume_node</code>.
+ * @brief Cast to an @c bounded_volume_node.
  *
- * @return a pointer to this <code>bounded_volume_node</code>.
+ * @return a pointer to this @c bounded_volume_node.
  */
 openvrml::bounded_volume_node *
 openvrml::bounded_volume_node::to_bounded_volume() OPENVRML_NOTHROW
@@ -3364,7 +3365,7 @@ void openvrml::child_node::render_child(viewer & v,
 }
 
 /**
- * @brief render_child implementation.
+ * @brief @c #render_child implementation.
  *
  * Rendered child nodes should override this method.
  *
@@ -3749,7 +3750,7 @@ bool openvrml::geometry_node::emissive() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief render_geometry implementation.
+ * @brief @c #render_geometry implementation.
  *
  * @param[in,out] v         viewer.
  * @param[in] context   rendering context.
@@ -3763,7 +3764,7 @@ openvrml::geometry_node::do_render_geometry(viewer &, rendering_context)
 }
 
 /**
- * @brief emissive implementation.
+ * @brief @c #emissive implementation.
  *
  * @return @c false.
  */
@@ -3916,14 +3917,94 @@ openvrml::light_node::~light_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a light_node.
+ * @brief Cast to a @c light_node.
  *
- * @return a pointer to this light_node.
+ * @return a pointer to this @c light_node.
  */
 openvrml::light_node * openvrml::light_node::to_light() OPENVRML_NOTHROW
 {
     return this;
 }
+
+/**
+ * @brief Ambient intensity.
+ *
+ * Delegates to @c #do_ambient_intensity.
+ *
+ * @return the ambient intensity.
+ */
+float openvrml::light_node::ambient_intensity() const OPENVRML_NOTHROW
+{
+    return this->do_ambient_intensity();
+}
+
+/**
+ * @fn float openvrml::light_node::do_ambient_intensity() const
+ *
+ * @brief @c #ambient_intensity implementation.
+ *
+ * @return the ambient intensity.
+ */
+
+/**
+ * @brief Intensity.
+ *
+ * Delegates to @c #do_intensity.
+ *
+ * @return the intensity.
+ */
+float openvrml::light_node::intensity() const OPENVRML_NOTHROW
+{
+    return this->do_intensity();
+}
+
+/**
+ * @fn float openvrml::light_node::do_intensity() const
+ *
+ * @brief @c #intensity implementation.
+ *
+ * @return the intensity.
+ */
+
+/**
+ * @brief &ldquo;On&rdquo; state.
+ *
+ * Delegates to @c #do_on.
+ *
+ * @return @c true if the light is on; @c false otherwise.
+ */
+bool openvrml::light_node::on() const OPENVRML_NOTHROW
+{
+    return this->do_on();
+}
+
+/**
+ * @fn bool openvrml::light_node::do_on() const
+ *
+ * @brief @c #on implementation.
+ *
+ * @return @c true if the light is on; @c false otherwise.
+ */
+
+/**
+ * @brief Color.
+ *
+ * Delegates to @c #do_color.
+ *
+ * @return the color.
+ */
+const openvrml::color & openvrml::light_node::color() const OPENVRML_NOTHROW
+{
+    return this->do_color();
+}
+
+/**
+ * @fn const openvrml::color & openvrml::light_node::do_color() const
+ *
+ * @brief @c #color implementation.
+ *
+ * @return the color.
+ */
 
 
 /**
@@ -3952,9 +4033,9 @@ openvrml::material_node::~material_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a material_node.
+ * @brief Cast to a @c material_node.
  *
- * @return a pointer to this material_node.
+ * @return a pointer to this @c material_node.
  */
 openvrml::material_node * openvrml::material_node::to_material()
     OPENVRML_NOTHROW
@@ -4164,8 +4245,7 @@ openvrml::pointing_device_sensor_node::~pointing_device_sensor_node()
 /**
  * @brief Convey a pointing device state change.
  *
- * This function delegates to
- * <code>pointing_device_sensor_node::do_activate</code>.
+ * This function delegates to @c #do_activate.
  *
  * @param[in] timestamp the current time.
  * @param[in] over      whether the pointing device is over the geometry affected
@@ -4198,7 +4278,7 @@ void openvrml::pointing_device_sensor_node::activate(double timestamp,
 /**
  * @internal
  *
- * @brief Cast to a <code>pointing_device_sensor_node</code>
+ * @brief Cast to a @c pointing_device_sensor_node.
  *
  * @return a pointer to the object.
  */
@@ -4219,8 +4299,8 @@ openvrml::pointing_device_sensor_node::to_pointing_device_sensor()
 /**
  * @brief Construct.
  *
- * @param[in] type  the <code>node_type</code>.
- * @param[in] scope the <code>scope</code> to which the node belongs.
+ * @param[in] type  the @c node_type.
+ * @param[in] scope the @c scope to which the @c node belongs.
  */
 openvrml::scoped_light_node::
 scoped_light_node(const node_type & type,
@@ -4241,7 +4321,7 @@ openvrml::scoped_light_node::~scoped_light_node() OPENVRML_NOTHROW
 /**
  * @brief Render the light.
  *
- * Delegates to <code>scoped_light_node::do_render_scoped_light</code>
+ * Delegates to @c #do_render_scoped_light.
  *
  * @param[in,out] v a viewer.
  */
@@ -4251,7 +4331,7 @@ void openvrml::scoped_light_node::render_scoped_light(viewer & v)
 }
 
 /**
- * @brief Convert to a <code>scoped_light_node</code>.
+ * @brief Convert to a @c scoped_light_node.
  *
  * @return a pointer to the instance.
  */
@@ -4266,7 +4346,7 @@ openvrml::scoped_light_node * openvrml::scoped_light_node::to_scoped_light()
  *
  * @brief Render the light.
  *
- * @param[in,out] v a <code>viewer</code>.
+ * @param[in,out] v a @c viewer.
  */
 
 
@@ -4279,8 +4359,8 @@ openvrml::scoped_light_node * openvrml::scoped_light_node::to_scoped_light()
 /**
  * @brief Constructor.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::sound_source_node::
 sound_source_node(const node_type & type,
@@ -4296,9 +4376,9 @@ openvrml::sound_source_node::~sound_source_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a sound_source_node.
+ * @brief Cast to a @c sound_source_node.
  *
- * @return a pointer to this sound_source_node.
+ * @return a pointer to this @c sound_source_node.
  */
 openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
     OPENVRML_NOTHROW
@@ -4332,8 +4412,8 @@ openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::texture_node::
 texture_node(const node_type & type,
@@ -4381,7 +4461,7 @@ openvrml::texture_node::render_texture(viewer & v)
 }
 
 /**
- * @brief render_texture implementation.
+ * @brief @c #render_texture implementation.
  *
  * @param[in,out] v viewer.
  *
@@ -4394,9 +4474,9 @@ openvrml::texture_node::do_render_texture(viewer &)
 }
 
 /**
- * @brief Cast to a texture_node.
+ * @brief Cast to a @c texture_node.
  *
- * @return a pointer to this texture_node.
+ * @return a pointer to this @c texture_node.
  */
 openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
 {
@@ -4441,8 +4521,8 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::texture_coordinate_node::
 texture_coordinate_node(const node_type & type,
@@ -4458,9 +4538,9 @@ openvrml::texture_coordinate_node::~texture_coordinate_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a texture_coordinate_node.
+ * @brief Cast to a @c texture_coordinate_node.
  *
- * @return a pointer to this texture_coordinate_node.
+ * @return a pointer to this @c texture_coordinate_node.
  */
 openvrml::texture_coordinate_node *
 openvrml::texture_coordinate_node::to_texture_coordinate()
@@ -4487,8 +4567,8 @@ openvrml::texture_coordinate_node::to_texture_coordinate()
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the @c node.
+ * @param[in] scope the @c scope the @c node belongs to.
  */
 openvrml::texture_transform_node::
 texture_transform_node(const node_type & type,
@@ -4562,7 +4642,7 @@ openvrml::time_dependent_node::~time_dependent_node() OPENVRML_NOTHROW
 /**
  * @brief Update with the current time.
  *
- * This function delegates to @c time_dependent_node::do_update.
+ * This function delegates to @c #do_update.
  *
  * @param[in] time  the current time.
  */
