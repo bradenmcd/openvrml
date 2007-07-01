@@ -1,5 +1,10 @@
 2007-06-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(trackball(float, float, float, float)): Initialize rotation.
+
+2007-06-30 Braden McDaniel  <braden@endoframe.com>
+
 	Expose common attributes of lighting nodes via
 	openvrml::light_node.
 

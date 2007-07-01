@@ -866,6 +866,7 @@ namespace {
                                                          float p2y)
     {
         using openvrml::rotation;
+        using openvrml::make_rotation;
         using openvrml::vec3f;
         using openvrml::make_vec3f;
 
@@ -878,7 +879,7 @@ namespace {
         //
         static const float trackballSize = 0.8f;
 
-        rotation result;
+        rotation result = make_rotation();
 
         if (p1x == p2x && p1y == p2y) {
             /* Zero rotation */
