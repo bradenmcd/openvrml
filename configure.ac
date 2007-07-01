@@ -253,7 +253,7 @@ else
   if test X$have_libmozjs = Xno -a X$have_libjs = Xno; then
     AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])
   fi
-  if test X$with_libjs = Xno; then
+  if test X$with_libjs != Xyes; then
     if test -n "${OPENVRML_PKG_REQUIRES}"; then
       OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
     fi
