@@ -84,25 +84,15 @@ libantlr_la_SOURCES = \
         src/TreeParser.cpp
 
 EXTRA_DIST = \
-        Makefile \
-        antlr.dsp \
-        antlr.dsw \
+        Makefile.in \
         doxygen.cfg \
-        antlr/Makefile \
+        antlr/Makefile.in \
         contrib/bcb4/README \
         contrib/bcb4/antlr.cpp \
         contrib/bcb4/antlr.bpr \
-        contrib/MSCV6/README \
-        contrib/MSCV6/libcpp.dsp \
-        contrib/MSCV6/libcpp.dsw \
-        contrib/MSCV6-dll/README \
-        contrib/MSCV6-dll/antlr.dsw \
-        contrib/MSCV6-dll/dll.cpp \
-        contrib/MSCV6-dll/dll.dsp \
-        contrib/MSCV6-dll/lib.dsp \
         scripts/cr_stripper.sh \
         scripts/make_change_log.tcl \
-        src/Makefile \
+        src/Makefile.in \
         src/dll.cpp
 
 DISTCLEANFILES = GNUmakefile

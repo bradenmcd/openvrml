@@ -1,5 +1,9 @@
 2007-07-01 Braden McDaniel  <braden@endoframe.com>
 
+	* lib/antlr/GNUmakefile.am (EXTRA_DIST): Updates for ANTLR 2.7.7.
+
+2007-07-01 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.pc.in: Added BOOST_LIB_SUFFIX to -lboost_thread.
 
 2007-06-30 Braden McDaniel  <braden@endoframe.com>
