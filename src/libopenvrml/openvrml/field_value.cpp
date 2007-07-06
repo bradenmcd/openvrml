@@ -659,7 +659,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @relatesalso openvrml::field_value
  *
  * @param[in,out] in    input stream.
- * @param[in] type_id   @c field_value type identifier.
+ * @param[out] type_id  @c field_value type identifier.
  *
  * @return @p in.
  */

@@ -1,3 +1,10 @@
+2007-07-06 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment fixes.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
 2007-07-01 Braden McDaniel  <braden@endoframe.com>
 
 	* lib/antlr/GNUmakefile.am (EXTRA_DIST): Updates for ANTLR 2.7.7.

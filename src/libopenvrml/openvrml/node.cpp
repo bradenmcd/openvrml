@@ -184,7 +184,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @relatesalso node_interface
  *
  * @param[in,out] in    an input stream.
- * @param[in]     type  a @c node interface type.
+ * @param[out]    type  a @c node interface type.
  *
  * @return @p in.
  */
@@ -302,7 +302,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  * @brief Stream input.
  *
  * @param[in,out] in        input stream.
- * @param[in]     interface @c node_interface.
+ * @param[out]    interface @c node_interface.
  *
  * @return @p in.
  */
