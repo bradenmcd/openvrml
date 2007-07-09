@@ -1,5 +1,12 @@
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes.
+
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/node.cpp
+
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.pc.in: Added BOOST_LIB_SUFFIX to -lboost_thread.
 
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
