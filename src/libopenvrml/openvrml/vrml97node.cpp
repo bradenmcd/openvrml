@@ -30,7 +30,9 @@
 #   include <png.h>
 # endif
 # ifdef OPENVRML_ENABLE_JPEG_TEXTURES
+extern "C" {
 #   include <jpeglib.h>
+}
 # endif
 # include <algorithm>
 # include <iterator>
