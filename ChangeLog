@@ -1,5 +1,16 @@
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
+	automake no longer requires that M4 macros be explicitly
+	listed (in EXTRA_DIST) in order to be packaged.
+
+	* Makefile.am
+	* configure.ac
+	* m4/COPYING: Removed; a copy of the GPL is now in the package
+	root directory.
+	* m4/Makefile.am: Removed.
+
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Added documentation for --with-libjs.
 
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
