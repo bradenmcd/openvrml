@@ -216,6 +216,13 @@ depends on.
  --with-apple-opengl-framework
      Use Apple's OpenGL framework on Mac OS X.
 
+ --with-libjs
+     Use the stand-alone SpiderMonkey distribution.  By default,
+     "configure" looks for SpiderMonkey as it is distributed with a
+     Mozilla Gecko-based Web browser (i.e., libmozjs).  Passing the
+     argument "--with-libjs" causes "configure" to look instead for the
+     stand-alone distribution of SpiderMonkey (i.e., libjs).
+
 
 Significant preprocessor symbols
 ================================

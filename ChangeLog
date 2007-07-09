@@ -1,5 +1,9 @@
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Added documentation for --with-libjs.
+
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Added option --with-libjs to enable use of libjs
 	built from the stand-alone SpiderMonkey distribution.
 
