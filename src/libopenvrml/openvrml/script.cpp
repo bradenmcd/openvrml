@@ -3216,6 +3216,13 @@ void script::activate(const double timeStamp, const std::string & fname,
 {
     assert(this->cx);
 
+# ifdef JS_THREADSAFE
+    JS_SetContextThread(this->cx);
+    openvrml_::scope_guard context_thread_guard =
+        openvrml_::make_guard(&JS_ClearContextThread, this->cx);
+    boost::ignore_unused_variable_warning(context_thread_guard);
+# endif
+
     jsval fval, rval;
     JSObject * const globalObj = JS_GetGlobalObject(this->cx);
     assert(globalObj);

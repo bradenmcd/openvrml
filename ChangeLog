@@ -1,8 +1,24 @@
+2007-07-06 Braden McDaniel  <braden@endoframe.com>
+
+	Define JS_THREADSAFE when compiling against newer libmozjs.  This
+	is required when building against the libmozjs included with
+	Firefox 2.0.
+
+	* configure.ac: The pkg-config metadata file for libmozjs doesn't
+	include -DJS_THREADSAFE in Cflags.  Inspect mozilla-config.h to
+	see if JS_THREADSAFE is defined there; and if so, add
+	-DJS_THREADSAFE to JS_CFLAGS.
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::script::activate(double, const std::string &, size_t, const
+	openvrml::field_value *[])): When compiling with JS_THREADSAFE,
+	call JS_SetContextThread on entering this function and
+	JS_ClearContextThread on leaving it.
+
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Added documentation for --with-libjs.
 
-2007-07-06 Braden McDaniel  <braden@endoframe.com>
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes.
 
