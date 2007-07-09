@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@/@PACKAGE_TARNAME@
 
 Name: @PACKAGE_NAME@
-Description: VRML97 run-time library.
+Description: VRML/X3D run-time library.
 Version: @PACKAGE_VERSION@
 Requires: @OPENVRML_PKG_REQUIRES@
-Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @JNI_LIBS@ -lboost_thread
+Libs: -L${libdir} -lopenvrml @JPEG_LIBS@ @PNG_LIBS@ @JNI_LIBS@ -lboost_thread@BOOST_LIB_SUFFIX@
 Cflags: -I${includedir}
