@@ -1,5 +1,10 @@
 2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Check to see whether
+	HAVE_WINDOWS_H and HAVE_APPLE_OPENGL_FRAMEWORK are defined.
+
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
+
 	automake no longer requires that M4 macros be explicitly
 	listed (in EXTRA_DIST) in order to be packaged.
 
