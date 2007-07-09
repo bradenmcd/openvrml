@@ -265,6 +265,19 @@ else
       openvrml_run_path=":${openvrml_run_path}"
     fi
     openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
+
+    #
+    # Ugh.  libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the
+    # Cflags from the pkg-config metadata don't include it.  Check
+    # mozilla-config.h; if we find JS_THREADSAFE there, assume we need
+    # it.
+    #
+    AS_IF([test -n "$mozilla_js_pkg"],
+          [moz_includedir=`$PKG_CONFIG --variable=includedir $mozilla_js_pkg`
+           AS_IF([grep JS_THREADSAFE $moz_includedir/mozilla-config.h > /dev/null],
+                 [AS_IF([$PKG_CONFIG --cflags $mozilla_js_pkg | grep JS_THREADSAFE > /dev/null],
+                        ,
+                        [JS_CFLAGS="${JS_CFLAGS} -DJS_THREADSAFE"])])])
   fi
 fi
 AC_SUBST([JS_CFLAGS])
