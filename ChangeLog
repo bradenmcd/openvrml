@@ -1,4 +1,10 @@
-2007-07-06 Braden McDaniel  <braden@endoframe.com>
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_node::create_script()): Treat the "ecmascript"
+	scheme as JavaScript.
+
+2007-07-09 Braden McDaniel  <braden@endoframe.com>
 
 	Define JS_THREADSAFE when compiling against newer libmozjs.  This
 	is required when building against the libmozjs included with

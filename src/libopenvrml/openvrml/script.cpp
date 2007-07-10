@@ -2117,6 +2117,8 @@ private:
  */
 openvrml::script * openvrml::script_node::create_script()
 {
+    using std::equal;
+
     // Try each url until we find one we like
     for (size_t i = 0; i < this->url_.value().size(); ++i) {
         if (this->url_.value()[i].empty()) { continue; }
@@ -2124,11 +2126,17 @@ openvrml::script * openvrml::script_node::create_script()
         // Get the protocol & mimetype...
 # if OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
         // Need to handle external .js files too...
-        const char * javascriptScheme = "javascript:";
-        const char * vrmlscriptScheme = "vrmlscript:";
-        if (std::equal(javascriptScheme, javascriptScheme + 11,
-                       this->url_.value()[i].begin())
-                || std::equal(vrmlscriptScheme, vrmlscriptScheme + 11,
+        static const char ecmascript_scheme[12] = "ecmascript:";
+        static const char javascript_scheme[12] = "javascript:";
+        static const char vrmlscript_scheme[12] = "vrmlscript:";
+        //
+        // As it happens, all the possible schemes for ECMAScript scripts are
+        // 
+        if (equal(ecmascript_scheme, ecmascript_scheme + 11,
+                  this->url_.value()[i].begin())
+            || equal(javascript_scheme, javascript_scheme + 11,
+                     this->url_.value()[i].begin())
+            || equal(vrmlscript_scheme, vrmlscript_scheme + 11,
                               this->url_.value()[i].begin())) {
             return new js_::script(*this,
                                    this->url_.value()[i].substr(11));
