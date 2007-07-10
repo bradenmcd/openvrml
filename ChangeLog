@@ -1,5 +1,11 @@
 2007-07-10 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp (sdl_viewer::run()): Don't call
+	SDL_WaitEvent before calling SDL_PollEvent; it doesn't seem to be
+	doing anything and could be deleterious.
+
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp
 	(openvrml::script_node::create_script()): Treat the "ecmascript"
 	scheme as JavaScript.

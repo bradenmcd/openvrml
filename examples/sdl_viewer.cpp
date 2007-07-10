@@ -277,7 +277,6 @@ namespace {
         do {
             SDL_Event event;
             sdl_viewer::event_info viewer_event_info;
-            SDL_WaitEvent(0);
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                 case SDL_VIDEOEXPOSE:
