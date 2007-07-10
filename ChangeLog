@@ -1,10 +1,16 @@
 2007-07-10 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp (sdl_viewer::run()): Don't call
+	SDL_WaitEvent before calling SDL_PollEvent; it doesn't seem to be
+	doing anything and could be deleterious.
+
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp
 	(openvrml::script_node::create_script()): Treat the "ecmascript"
 	scheme as JavaScript.
 
-2007-07-09 Braden McDaniel  <braden@endoframe.com>
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
 
 	Define JS_THREADSAFE when compiling against newer libmozjs.  This
 	is required when building against the libmozjs included with
@@ -204,6 +210,10 @@
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Documented --disable-player configure option.
+
+2007-04-29 Braden McDaniel  <braden@endoframe.com>
+
+	* README: Added /src/openvrml-player to package directory layout.
 
 2007-04-29 Braden McDaniel  <braden@endoframe.com>
 
