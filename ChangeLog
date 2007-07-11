@@ -1,5 +1,12 @@
 2007-07-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Emit the message in an exception thrown from
+	browser::get_resource to browser::err.
+
+2007-07-11 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/node_interface_set.cpp: Changes to build with Boost 1.34.0.
 	From Simon Barner <barner@users.sourceforge.net>
 
@@ -31,7 +38,7 @@
 	call JS_SetContextThread on entering this function and
 	JS_ClearContextThread on leaving it.
 
-2007-07-09 Braden McDaniel  <braden@endoframe.com>
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes.
 
