@@ -4645,6 +4645,9 @@ openvrml::resource_fetcher::~resource_fetcher() OPENVRML_NOTHROW
  * This function delegates to @c resource_fetcher::do_get_resource.
  *
  * @return the requested resource as a stream.
+ *
+ * @exception std::invalid_argument if @p uri is malformed or in an
+ *                                  unsupported format.
  */
 std::auto_ptr<openvrml::resource_istream>
 openvrml::resource_fetcher::get_resource(const std::string & uri)
@@ -4661,8 +4664,13 @@ openvrml::resource_fetcher::get_resource(const std::string & uri)
  * implementation for this function.  OpenVRML depends on the implementation
  * of this function for all of its input needs.  As such, what kind of
  * resources OpenVRML is capable of resolving is entirely dependent on code
- * provided by the application.  A trivial implementation designed to handle
- * only @c file resources can use @c std::filebuf:
+ * provided by the application.
+ *
+ * Implementations should throw @c std::invalid_argument if @p uri is
+ * malformed or in an format that is not supported by the implementation.
+ *
+ * A trivial implementation designed to handle only @c file resources can use
+ * @c std::filebuf:
  *
  * @code
  * std::auto_ptr<openvrml::resource_istream>
@@ -4770,6 +4778,9 @@ openvrml::resource_fetcher::get_resource(const std::string & uri)
  * @param[in] uri   an absolute Uniform Resource Identifier.
  *
  * @return the requested resource as a stream.
+ *
+ * @exception std::invalid_argument if @p uri is malformed or in an
+ *                                  unsupported format.
  *
  * @sa ftp://ftp.rfc-editor.org/in-notes/std/std66.txt
  */
@@ -7487,37 +7498,46 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
     std::auto_ptr<resource_istream> in;
 
     for (vector<string>::size_type i = 0; i < url.size(); ++i) {
-        try {
-            //
-            // Throw invalid_url if it isn't a valid URI.
-            //
-            uri test_uri(url[i]);
+        //
+        // Throw invalid_url if it isn't a valid URI.
+        //
+        uri test_uri(url[i]);
 
+        //
+        // If we have a relative reference, resolve it against this->url();
+        // unless the parent is null and this->url() is empty, in which case
+        // we are loading the root scene.  In that case, construct an absolute
+        // file URL.
+        //
+        const uri absolute_uri = !relative(test_uri)
+                               ? test_uri
+                               : (!this->parent() && this->url().empty())
+                                    ? create_file_url(test_uri)
+                                    : test_uri
+                                        .resolve_against(uri(this->url()));
+        try {
+            in = this->browser().fetcher_.get_resource(absolute_uri);
+        } catch (std::exception & ex) {
+            std::ostringstream msg;
+            msg << string(absolute_uri) << ": " << ex.what();
+            this->browser().err(msg.str());
+            continue;
+        } catch (...) {
             //
-            // If we have a relative reference, resolve it against this->url();
-            // unless the parent is null and this->url() is empty, in which
-            // case we are loading the root scene.  In that case, construct an
-            // absolute file URL.
+            // Swallow unrecognized exceptions.  Output to browser::err
+            // happens below when "in" is found to be unusable.
             //
-            const uri absolute_uri = !relative(test_uri)
-                                   ? test_uri
-                                   : (!this->parent() && this->url().empty())
-                                        ? create_file_url(test_uri)
-                                        : test_uri
-                                            .resolve_against(uri(this->url()));
-            try {
-                in = this->browser().fetcher_.get_resource(absolute_uri);
-            } catch (...) {
-                throw unreachable_url();
-            }
-            if (!in.get() || !(*in)) { throw unreachable_url(); }
-            break;
-        } catch (bad_url & ex) {
-            this->browser().err(ex.what());
+        }
+        if (!in.get() || !(*in)) {
+            std::ostringstream msg;
+            msg << string(absolute_uri)
+                << ": unrecognized error during resolution";
+            this->browser().err(msg.str());
             continue;
         }
+        break; // Success.
     }
-    if (!in.get()) { throw no_alternative_url(); }
+    if (!in.get() || !(*in)) { throw no_alternative_url(); }
     return in;
 }
 

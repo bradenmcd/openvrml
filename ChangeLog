@@ -1,5 +1,12 @@
 2007-07-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Emit the message in an exception thrown from
+	resource_fetcher::get_resource to browser::err.
+
+2007-07-11 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/node_interface_set.cpp: Changes to build with Boost 1.34.0.
 	From Simon Barner <barner@users.sourceforge.net>
 
@@ -15,7 +22,7 @@
 	(openvrml::script_node::create_script()): Treat the "ecmascript"
 	scheme as JavaScript.
 
-2007-07-09 Braden McDaniel  <braden@endoframe.com>
+2007-07-10 Braden McDaniel  <braden@endoframe.com>
 
 	Define JS_THREADSAFE when compiling against newer libmozjs.  This
 	is required when building against the libmozjs included with
