@@ -1,5 +1,9 @@
 2007-07-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Doc-comment fix.
+
+2007-07-11 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::get_resource(const std::vector<std::string> &)
 	const): Emit the message in an exception thrown from

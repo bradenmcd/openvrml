@@ -4533,9 +4533,9 @@ const char openvrml::x3d_vrml_media_type[15] = "model/x3d+vrml";
  * @c resource_istream inherits @c std::istream, adding functions to get the
  * URI and the MIME content type associated with the stream.  Users of the
  * library must provide an implementation of this class, to be returned from
- * @c openvrml::browser::do_get_resource.
+ * @c openvrml::resource_fetcher::do_get_resource.
  *
- * @sa openvrml::browser::do_get_resource(const std::string &)
+ * @sa openvrml::resource_fetcher::do_get_resource(const std::string &)
  */
 
 /**
