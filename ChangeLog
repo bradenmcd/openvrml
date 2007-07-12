@@ -1,5 +1,22 @@
 2007-07-12 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.16.6 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/libopenvrml/Makefile.am: Updated libtool library version
+	to 7:5:1.
+	* src/libopenvrml-gl/Makefile.am: Updated libtool library
+	version to 6:7:0.
+
+2007-07-12 Braden McDaniel  <braden@endoframe.com>
+
 	Quell some warnings from gcc.
 
 	* lib/gtkglext/gdk/gdkglpixmap.c
