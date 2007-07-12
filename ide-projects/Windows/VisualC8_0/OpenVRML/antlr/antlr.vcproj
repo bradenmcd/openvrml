@@ -41,7 +41,6 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="NO_STATIC_CONSTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -88,7 +87,6 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -110,8 +108,9 @@
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\..\..\..\lib\antlr"
-				PreprocessorDefinitions="NDEBUG;NO_STATIC_CONSTS"
+				PreprocessorDefinitions="NDEBUG"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -249,10 +248,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\lib\antlr\src\TokenBuffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\lib\antlr\src\TokenRefCount.cpp"
 				>
 			</File>
 			<File
@@ -422,10 +417,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\lib\antlr\antlr\TokenBuffer.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\lib\antlr\antlr\TokenRefCount.hpp"
 				>
 			</File>
 			<File
