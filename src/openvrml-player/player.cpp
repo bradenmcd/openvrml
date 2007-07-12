@@ -88,8 +88,8 @@ extern "C" {
 }
 
 namespace {
-    G_GNUC_INTERNAL const char app_name[] = "OpenVRML Player";
-    G_GNUC_INTERNAL const char app_id[] = "openvrml-player";
+    const char app_name[] = "OpenVRML Player";
+    const char app_id[] = "openvrml-player";
 
     G_GNUC_INTERNAL GIOChannel * command_channel;
     G_GNUC_INTERNAL GIOChannel * request_channel;

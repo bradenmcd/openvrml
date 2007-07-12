@@ -1,3 +1,16 @@
+2007-07-12 Braden McDaniel  <braden@endoframe.com>
+
+	Quell some warnings from gcc.
+
+	* lib/gtkglext/gdk/gdkglpixmap.c
+	* lib/gtkglext/gdk/gdkglwindow.c
+	* lib/gtkglext/gdk/x11/gdkglcontext-x11.c
+	* lib/gtkglext/gdk/x11/gdkglpixmap-x11.c
+	* lib/gtkglext/gdk/x11/gdkglwindow-x11.c
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/openvrml-player/filechooserdialog.cpp
+	* src/openvrml-player/player.cpp
+
 2007-07-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp: Doc-comment fix.

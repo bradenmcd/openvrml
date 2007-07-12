@@ -227,7 +227,7 @@ gdk_gl_window_finalize (GObject *object)
 
   if (glwindow->drawable != NULL)
     g_object_remove_weak_pointer (G_OBJECT (glwindow->drawable),
-                                  (gpointer *) &(glwindow->drawable));
+                                  (gpointer) &glwindow->drawable);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

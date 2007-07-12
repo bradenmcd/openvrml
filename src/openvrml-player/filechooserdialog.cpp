@@ -108,6 +108,6 @@ namespace {
                 g_type_class_peek_parent(G_OBJECT_CLASS(g_class)));
     }
 
-    void init(GTypeInstance * const instance, gpointer /* g_class */)
+    void init(GTypeInstance * /* instance */, gpointer /* g_class */)
     {}
 }
