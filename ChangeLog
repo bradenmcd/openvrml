@@ -5,6 +5,11 @@
 2007-07-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
+	(create_file_url(const uri &)): Quell type conversion warning.
+
+2007-07-11 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::get_resource(const std::vector<std::string> &)
 	const): Emit the message in an exception thrown from
 	resource_fetcher::get_resource to browser::err.

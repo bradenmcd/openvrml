@@ -3561,7 +3561,7 @@ namespace {
         // begins with a drive letter.
         //
         cwd_buf[0] = '/';
-        while (!_getcwd(&cwd_buf.front() + 1, cwd_buf.size())
+        while (!_getcwd(&cwd_buf.front() + 1, int(cwd_buf.size()))
                && errno == ERANGE) {
             cwd_buf.resize(cwd_buf.size() * 2);
         }
