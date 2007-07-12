@@ -227,7 +227,7 @@ gdk_gl_pixmap_finalize (GObject *object)
 
   if (glpixmap->drawable != NULL)
     g_object_remove_weak_pointer (G_OBJECT (glpixmap->drawable),
-                                  (gpointer *) &(glpixmap->drawable));
+                                  (gpointer) &glpixmap->drawable);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

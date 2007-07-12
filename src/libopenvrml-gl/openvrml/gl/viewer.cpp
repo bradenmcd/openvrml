@@ -115,7 +115,7 @@ namespace {
         }
     };
 
-    OPENVRML_GL_LOCAL const fequal_t fequal = fequal_t();
+    const fequal_t fequal = fequal_t();
 
     class OPENVRML_GL_LOCAL gl_capabilities {
     public:

@@ -108,7 +108,7 @@ _gdk_gl_context_destroy (GdkGLContext *glcontext)
   if (impl->gldrawable != NULL)
     {
       g_object_remove_weak_pointer (G_OBJECT (impl->gldrawable),
-                                    (gpointer *) &(impl->gldrawable));
+                                    (gpointer) &impl->gldrawable);
       impl->gldrawable = NULL;
     }
 
@@ -361,7 +361,7 @@ _gdk_gl_context_set_gl_drawable (GdkGLContext  *glcontext,
   if (impl->gldrawable != NULL)
     {
       g_object_remove_weak_pointer (G_OBJECT (impl->gldrawable),
-                                    (gpointer *) &(impl->gldrawable));
+                                    (gpointer) &impl->gldrawable);
       impl->gldrawable = NULL;
     }
 
@@ -369,7 +369,7 @@ _gdk_gl_context_set_gl_drawable (GdkGLContext  *glcontext,
     {
       impl->gldrawable = gldrawable;
       g_object_add_weak_pointer (G_OBJECT (impl->gldrawable),
-                                 (gpointer *) &(impl->gldrawable));
+                                 (gpointer) &impl->gldrawable);
     }
 }
 
@@ -590,7 +590,7 @@ gdk_gl_context_lookup (GLXContext glxcontext)
 static guint
 gdk_gl_context_hash (GLXContext *glxcontext)
 {
-  return (guint) *glxcontext;
+  return (ptrdiff_t) *glxcontext;
 }
 
 static gboolean
