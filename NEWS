@@ -1,3 +1,12 @@
+Changes new in version 0.16.6, 12 July, 2007
+========================================================================
+
+- Fixed JavaScript support to work in the presence of JS_THREADSAFE.
+
+- Added a configure option --with-libjs to accommodate compiling
+  against a stand-alone SpiderMonkey distribution.
+
+
 Changes new in version 0.16.5, 2 June, 2007
 ========================================================================
 
