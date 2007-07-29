@@ -1,3 +1,8 @@
+2007-07-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.h: Add find_interface to the std
+	namespace so ADL will work with openvrml::node_interface_set.
+
 2007-07-12 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.16.6 release.
