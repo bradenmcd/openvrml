@@ -32,6 +32,7 @@
 # include <libgnomeui/libgnomeui.h>
 # include <glade/glade.h>
 # include <glade/glade-build.h>
+# include <openvrml/browser.h>
 
 # include "filechooserdialog.h"
 
@@ -95,9 +96,14 @@ namespace {
     G_GNUC_INTERNAL GIOChannel * request_channel;
     G_GNUC_INTERNAL guint request_channel_watch_id;
 
+    G_GNUC_INTERNAL void get_openvrml_xembed_cmd(gint & argc, gchar ** & argv);
+    G_GNUC_INTERNAL GPid spawn_openvrml_xembed(GdkNativeWindow socket_id,
+                                               gint & in_fd,
+                                               gint & out_fd);
     G_GNUC_INTERNAL ssize_t write_command(const std::string & command);
     G_GNUC_INTERNAL GSource * curl_source_new(CURLM * multi_handle);
     G_GNUC_INTERNAL GladeXML * xml_new(GnomeProgram & program);
+    G_GNUC_INTERNAL void set_locationentry_text(const gchar * text);
     G_GNUC_INTERNAL void load_url(const gchar * url);
 
 
@@ -126,6 +132,8 @@ namespace {
         std::stringstream request_line;
         curl_source_callback_data * source_callback_data;
     };
+
+    GtkWidget * location_entry;
 }
 
 # define OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(code, val) \
@@ -220,108 +228,25 @@ int main(int argc, char * argv[])
     gtk_window_set_transient_for(GTK_WINDOW(file_chooser_dialog),
                                  GTK_WINDOW(app_window));
 
-    GtkWidget * const location_entry =
-        glade_xml_get_widget(xml, "locationentry");
+    ::location_entry = glade_xml_get_widget(xml, "locationentry");
     g_signal_connect(file_chooser_dialog,
                      "response",
                      G_CALLBACK(openvrml_player_on_filechooserdialog_response),
                      location_entry);
 
-    //
-    // The OPENVRML_XEMBED environment variable overrides the default
-    // path to the child process executable.  To allow OPENVRML_XEMBED
-    // to include arguments (rather than just be a path to an
-    // executable), it is parsed with g_shell_parse_argv.  This is
-    // particularly useful in case we want to run the child process in
-    // a harness like valgrind.
-    //
-    gint openvrml_xembed_cmd_argc = 0;
-    gchar ** openvrml_xembed_cmd_argv = 0;
-    scope_guard openvrml_xembed_cmd_argv_guard =
-        make_guard(g_strfreev, ref(openvrml_xembed_cmd_argv));
-    boost::ignore_unused_variable_warning(openvrml_xembed_cmd_argv_guard);
-    const gchar * const openvrml_xembed_cmd = g_getenv("OPENVRML_XEMBED");
-    if (!openvrml_xembed_cmd) {
-        openvrml_xembed_cmd_argc = 1;
-        openvrml_xembed_cmd_argv =
-            static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-        if (!openvrml_xembed_cmd_argv) { throw std::bad_alloc(); }
-        openvrml_xembed_cmd_argv[0] =
-            g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-xembed");
-        if (!openvrml_xembed_cmd_argv[0]) { throw std::bad_alloc(); }
-    } else {
-        GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, ref(error));
-        gboolean succeeded =
-            g_shell_parse_argv(openvrml_xembed_cmd,
-                               &openvrml_xembed_cmd_argc,
-                               &openvrml_xembed_cmd_argv,
-                               &error);
-        if (!succeeded) {
-            throw std::runtime_error(error
-                                     ? error->message
-                                     : "g_shell_parse_argv failure");
-        }
-        error_guard.dismiss();
-    }
-
-    GtkWidget * const socket = glade_xml_get_widget(xml, "socket");
-    string socket_id_arg =
-        lexical_cast<string>(gtk_socket_get_id(GTK_SOCKET(socket)));
-    const char * socket_id_arg_c_str = socket_id_arg.c_str();
-    vector<char> socket_id_arg_vec(
-        socket_id_arg_c_str,
-        socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-    const gint child_argv_size = openvrml_xembed_cmd_argc + 2;
-    gchar ** const child_argv =
-        static_cast<gchar **>(g_malloc(sizeof (gchar *) * child_argv_size));
-    if (!argv) { throw std::bad_alloc(); }
-    scope_guard child_argv_guard = make_guard(g_free, child_argv);
-    boost::ignore_unused_variable_warning(child_argv_guard);
-    gint i;
-    for (i = 0; i < openvrml_xembed_cmd_argc; ++i) {
-        child_argv[i] = openvrml_xembed_cmd_argv[i];
-    }
-    child_argv[i++] = &socket_id_arg_vec.front();
-    child_argv[i]   = 0;
-
-    gchar * const working_dir = g_get_current_dir();
-    if (!working_dir) { throw std::bad_alloc(); };
-    scope_guard working_dir_guard = make_guard(g_free, working_dir);
-    boost::ignore_unused_variable_warning(working_dir_guard);
-
-    gchar ** envp = 0;
-    GPid child_pid;
     gint standard_input, standard_output;
-    gint * const standard_error = 0;
-    GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, ref(error));
-    gboolean succeeded = g_spawn_async_with_pipes(working_dir,
-                                                  child_argv,
-                                                  envp,
-                                                  G_SPAWN_DO_NOT_REAP_CHILD,
-                                                  0,
-                                                  0,
-                                                  &child_pid,
-                                                  &standard_input,
-                                                  &standard_output,
-                                                  standard_error,
-                                                  &error);
-    if (!succeeded) {
-        throw std::runtime_error(error
-                                 ? error->message
-                                 : "g_spawn_async_with_pipes failure");
-    }
+    GtkWidget * const socket = glade_xml_get_widget(xml, "socket");
+    const GPid child_pid =
+        spawn_openvrml_xembed(gtk_socket_get_id(GTK_SOCKET(socket)),
+                              standard_input,
+                              standard_output);
 
     g_child_watch_add(child_pid, openvrml_player_watch_child, 0);
 
-    //
-    // Don't dismiss "error_guard" yet; we reuse "error" below.
-    //
-
     ::command_channel = g_io_channel_unix_new(standard_input);
     if (!::command_channel) { throw std::bad_alloc(); }
+    GError * error = 0;
+    scope_guard error_guard = make_guard(g_error_free, ref(error));
     GIOStatus status = g_io_channel_set_encoding(::command_channel,
                                                  0, // binary (no encoding)
                                                  &error);
@@ -369,12 +294,123 @@ int main(int argc, char * argv[])
                        openvrml_player_request_data_available,
                        &req_data);
 
+    ::write_command("add-browser-event-listener "
+                    + lexical_cast<string>(getpid()) + "\n");
+
+    if (remaining_args && remaining_args[0]) {
+        ::load_url(remaining_args[0]);
+    }
+
     gtk_widget_show(app_window);
 
     gtk_main();
 }
 
 namespace {
+
+    void get_openvrml_xembed_cmd(gint & argc, gchar ** & argv)
+    {
+        using boost::ref;
+
+        const gchar * const openvrml_xembed_cmd = g_getenv("OPENVRML_XEMBED");
+
+        if (!openvrml_xembed_cmd) {
+            argc = 1;
+            argv = static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
+            if (!argv) { throw std::bad_alloc(); }
+            argv[0] = g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-xembed");
+            scope_guard argv_guard = make_guard(g_strfreev, ref(argv));
+            boost::ignore_unused_variable_warning(argv_guard);
+            if (!argv[0]) { throw std::bad_alloc(); }
+            argv_guard.dismiss();
+            return;
+        }
+
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
+        const gboolean succeeded =
+            g_shell_parse_argv(openvrml_xembed_cmd, &argc, &argv, &error);
+        if (!succeeded) {
+            throw std::runtime_error(error
+                                     ? error->message
+                                     : "g_shell_parse_argv failure");
+        }
+        error_guard.dismiss();
+    }
+
+    GPid spawn_openvrml_xembed(const GdkNativeWindow socket_id,
+                               gint & in_fd,
+                               gint & out_fd)
+    {
+        using std::string;
+        using std::vector;
+        using boost::lexical_cast;
+        using boost::ref;
+
+        //
+        // The OPENVRML_XEMBED environment variable overrides the default path
+        // to the child process executable.  To allow OPENVRML_XEMBED to
+        // include arguments (rather than just be a path to an executable), it
+        // is parsed with g_shell_parse_argv.  This is particularly useful in
+        // case we want to run the child process in a harness like valgrind.
+        //
+        gint openvrml_xembed_cmd_argc = 0;
+        gchar ** openvrml_xembed_cmd_argv = 0;
+        get_openvrml_xembed_cmd(openvrml_xembed_cmd_argc,
+                                openvrml_xembed_cmd_argv);
+
+        const string socket_id_arg = lexical_cast<string>(socket_id);
+        const char * socket_id_arg_c_str = socket_id_arg.c_str();
+        vector<char> socket_id_arg_vec(
+            socket_id_arg_c_str,
+            socket_id_arg_c_str + socket_id_arg.length() + 1);
+
+        const gint child_argv_size = openvrml_xembed_cmd_argc + 2;
+        gchar ** const child_argv =
+            static_cast<gchar **>(g_malloc(sizeof (gchar *) * child_argv_size));
+        if (!child_argv) { throw std::bad_alloc(); }
+        scope_guard child_argv_guard = make_guard(g_free, child_argv);
+        boost::ignore_unused_variable_warning(child_argv_guard);
+        gint i;
+        for (i = 0; i < openvrml_xembed_cmd_argc; ++i) {
+            child_argv[i] = openvrml_xembed_cmd_argv[i];
+        }
+        child_argv[i++] = &socket_id_arg_vec.front();
+        child_argv[i]   = 0;
+
+        gchar * const working_dir = g_get_current_dir();
+        if (!working_dir) { throw std::bad_alloc(); };
+        scope_guard working_dir_guard = make_guard(g_free, working_dir);
+        boost::ignore_unused_variable_warning(working_dir_guard);
+
+        gchar ** envp = 0;
+        GPid child_pid;
+        gint * const standard_error = 0;
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
+        boost::ignore_unused_variable_warning(error_guard);
+        gboolean succeeded =
+            g_spawn_async_with_pipes(working_dir,
+                                     child_argv,
+                                     envp,
+                                     G_SPAWN_DO_NOT_REAP_CHILD,
+                                     0,
+                                     0,
+                                     &child_pid,
+                                     &in_fd,
+                                     &out_fd,
+                                     standard_error,
+                                     &error);
+        if (!succeeded) {
+            throw std::runtime_error(error
+                                     ? error->message
+                                     : "g_spawn_async_with_pipes failure");
+        }
+
+        error_guard.dismiss();
+
+        return child_pid;
+    }
 
     GladeXML * xml_new(GnomeProgram & program)
     {
@@ -403,7 +439,12 @@ namespace {
         return glade_xml_new(glade_file, 0, 0);
     }
 
-    G_GNUC_INTERNAL void load_url(const gchar * url)
+    void set_locationentry_text(const gchar * const text)
+    {
+        gtk_entry_set_text(GTK_ENTRY(::location_entry), text);
+    }
+
+    void load_url(const gchar * url)
     {
         std::ostringstream command;
         command << "load-url " << url << std::endl;
@@ -760,6 +801,18 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
                                            &running_handles);
                 } while (perform_result == CURLM_CALL_MULTI_PERFORM);
             }
+        } else if (request_type == "browser-event") {
+            pid_t listener_id;
+            long event;
+            req_data.request_line >> listener_id >> event;
+
+            if (event == openvrml::browser_event::initialized) {
+                ::write_command("get-world-url\n");
+            }
+        } else if (request_type == "world-url") {
+            std::string url;
+            req_data.request_line >> url;
+            ::set_locationentry_text(url.c_str());
         }
 
         req_data.request_line.str(string());

@@ -8,8 +8,8 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml-gl \
         -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED
-AM_CXXFLAGS = @PTHREAD_CFLAGS@ @GTK_CFLAGS@ @GL_CFLAGS@
-AM_LDFLAGS = @OPENVRML_RPATH@ $(GTK_LIBS)
+AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(GTK_CFLAGS) $(GL_CFLAGS)
+AM_LDFLAGS = $(OPENVRML_RPATH) $(GTK_LIBS)
 LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/src/libopenvrml/libopenvrml.la \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
@@ -22,7 +22,8 @@ noinst_HEADERS = \
         bounded_buffer.h \
         command_istream.h \
         plugin_streambuf.h \
-        gtkvrmlbrowser.h
+        gtkvrmlbrowser.h \
+        request_channel.h
 openvrml_xembed_SOURCES = \
         main.cpp \
         command_istream.cpp \

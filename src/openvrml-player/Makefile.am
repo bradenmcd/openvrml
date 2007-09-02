@@ -3,9 +3,11 @@ AM_CPPFLAGS = \
         -DGTK_DISABLE_DEPRECATED \
         -DGNOME_DISABLE_DEPRECATED \
         -DOPENVRML_PLAYER_PKGDATADIR_=\"$(datadir)/openvrml-player\" \
-        -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\"
-AM_CXXFLAGS = @GNOMEUI_CFLAGS@ @GLADE_CFLAGS@ @CURL_CFLAGS@
-AM_LDFLAGS = -export-dynamic @GNOMEUI_LIBS@ @GLADE_LIBS@ @CURL_LIBS@
+        -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+AM_CXXFLAGS = $(GNOMEUI_CFLAGS) $(GLADE_CFLAGS) $(CURL_CFLAGS)
+AM_LDFLAGS = -export-dynamic $(GNOMEUI_LIBS) $(GLADE_LIBS) $(CURL_LIBS)
 
 gladedir = $(datadir)/openvrml-player/glade
 

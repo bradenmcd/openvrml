@@ -1,7 +1,7 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// OpenVRML Mozilla plug-in
-// Copyright 2004, 2005, 2006  Braden N. McDaniel
+// OpenVRML XEmbed control
+// Copyright 2004, 2005, 2006, 2007  Braden N. McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #   include "config.h"
 # endif
 
+# include "request_channel.h"
 # include "gtkvrmlbrowser.h"
 # include "command_istream.h"
 # include "plugin_streambuf.h"
@@ -53,9 +54,66 @@ namespace {
     const char initial_stream_uri[] = "x-openvrml-initial:";
 }
 
+extern "C" G_GNUC_INTERNAL
+void openvrml_xembed_browser_event_func(GtkVrmlBrowser * source,
+                                        GtkVrmlBrowserEvent event,
+                                        gpointer data);
+
 namespace openvrml_xembed {
 
-    struct command_istream_reader {
+    G_GNUC_INTERNAL GIOChannel * request_channel;
+    G_GNUC_INTERNAL boost::mutex request_channel_mutex;
+
+    //
+    // Map a listener identifier from the client to a listener identifier
+    // gotten from the GtkVrmlBrowser.
+    //
+    class G_GNUC_INTERNAL event_listener_id_map : std::map<gulong, gulong> {
+        openvrml::read_write_mutex mutex_;
+
+    public:
+        using std::map<gulong, gulong>::iterator;
+        using std::map<gulong, gulong>::value_type;
+
+        using std::map<gulong, gulong>::end;
+
+        value_type * insert(gulong command_listener_id,
+                            gulong widget_listener_id);
+        void erase(iterator pos);
+        iterator find(gulong command_listener_id);
+    } event_listener_id_map_;
+
+    event_listener_id_map::value_type *
+    event_listener_id_map::insert(const gulong command_listener_id,
+                                  const gulong widget_listener_id)
+    {
+        using std::pair;
+        using std::make_pair;
+        using std::map;
+
+        openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+        pair<map<gulong, gulong>::iterator, bool> result =
+            this->map<gulong, gulong>::insert(make_pair(widget_listener_id,
+                                                        command_listener_id));
+        return result.second
+            ? &(*result.first)
+            : 0;
+    }
+
+    void event_listener_id_map::erase(iterator pos)
+    {
+        openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+        this->std::map<gulong, gulong>::erase(pos);
+    }
+
+    event_listener_id_map::iterator
+    event_listener_id_map::find(const gulong command_listener_id)
+    {
+        openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+        return this->std::map<gulong, gulong>::find(command_listener_id);
+    }
+
+    struct G_GNUC_INTERNAL command_istream_reader {
         command_istream_reader(command_istream & in,
                                GtkVrmlBrowser & vrml_browser,
                                GMainLoop & command_channel_loop):
@@ -144,6 +202,51 @@ namespace openvrml_xembed {
                     boost::ignore_unused_variable_warning(urls_guard);
 
                     gtk_vrml_browser_load_url(this->vrml_browser_, urls, 0);
+                } else if (command == "add-browser-event-listener") {
+                    size_t listener_id;
+                    command_line_stream >> listener_id;
+                    event_listener_id_map::value_type * const map_entry =
+                        event_listener_id_map_.insert(listener_id, 0);
+                    map_entry->second =
+                        gtk_vrml_browser_add_listener(
+                            this->vrml_browser_,
+                            openvrml_xembed_browser_event_func,
+                            &map_entry->second);
+                } else if (command == "remove-browser-event-listener") {
+                    size_t listener_id;
+                    command_line_stream >> listener_id;
+                    const event_listener_id_map::iterator pos =
+                        event_listener_id_map_.find(listener_id);
+                    if (pos == event_listener_id_map_.end()) {
+                        g_warning("Listener %lu not found", listener_id);
+                        continue;
+                    }
+                    gboolean removed =
+                        gtk_vrml_browser_remove_listener(this->vrml_browser_,
+                                                         pos->second);
+                    if (!removed) {
+                        g_warning("No listener associated with %lu to be "
+                                  "removed", listener_id);
+                    }
+                    event_listener_id_map_.erase(pos);
+                } else if (command == "get-world-url") {
+                    const gchar * const world_url =
+                        gtk_vrml_browser_get_world_url(this->vrml_browser_);
+                    scope_guard world_url_guard =
+                        make_guard(g_free, const_cast<gchar *>(world_url));
+                    boost::ignore_unused_variable_warning(world_url_guard);
+
+                    std::ostringstream request;
+                    request << "world-url " << world_url << '\n';
+                    gsize bytes_written;
+                    const bool write_succeeded =
+                        write_request_chars(request.str().data(),
+                                            request.str().length(),
+                                            &bytes_written);
+                    if (!write_succeeded) {
+                        g_warning("Failed to write world-url request: %s",
+                                  world_url);
+                    }
                 }
             }
 
@@ -386,7 +489,7 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    GIOChannel * const request_channel = g_io_channel_unix_new(1); // stdout
+    ::request_channel = g_io_channel_unix_new(1); // stdout
     g_return_val_if_fail(request_channel, EXIT_FAILURE);
     scope_guard request_channel_guard = make_guard(request_channel_shutdown,
                                                    request_channel);
@@ -402,7 +505,7 @@ int main(int argc, char * argv[])
     GtkWidget * const window =  gtk_plug_new(socket_id);
     g_return_val_if_fail(window, EXIT_FAILURE);
 
-    GtkWidget * const vrml_browser = gtk_vrml_browser_new(request_channel);
+    GtkWidget * const vrml_browser = gtk_vrml_browser_new();
     g_return_val_if_fail(vrml_browser, EXIT_FAILURE);
     gtk_container_add(GTK_CONTAINER(window), vrml_browser);    
 
@@ -451,6 +554,24 @@ int main(int argc, char * argv[])
     error_guard.dismiss();
 }
 
+void openvrml_xembed_browser_event_func(GtkVrmlBrowser * /* source */,
+                                        GtkVrmlBrowserEvent event,
+                                        gpointer data)
+{
+    using std::ostringstream;
+
+    const gulong * listener_id = static_cast<gulong *>(data);
+
+    ostringstream request;
+    request << "browser-event " << *listener_id << ' ' << event << '\n';
+    gsize bytes_written;
+    const bool write_succeeded =
+        openvrml_xembed::write_request_chars(request.str().data(),
+                                             request.str().length(),
+                                             &bytes_written);
+    g_return_if_fail(write_succeeded);
+}
+
 namespace {
 
     void command_channel_shutdown(GIOChannel * const command_channel)
@@ -485,5 +606,40 @@ namespace {
         }
         g_io_channel_unref(request_channel);
         error_guard.dismiss();
+    }
+}
+
+namespace openvrml_xembed {
+
+    bool write_request_chars(const gchar * const buf,
+                             const gssize count,
+                             gsize * const bytes_written)
+    {
+        g_assert(::request_channel);
+
+        boost::mutex::scoped_lock lock(::request_channel_mutex);
+
+        using boost::ref;
+
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, ref(error));
+        boost::ignore_unused_variable_warning(error_guard);
+
+        GIOStatus status =
+            g_io_channel_write_chars(::request_channel, buf, count,
+                                     bytes_written, &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            g_warning(error->message);
+            return false;
+        }
+
+        status = g_io_channel_flush(::request_channel, &error);
+        if (status != G_IO_STATUS_NORMAL) {
+            g_warning(error->message);
+            return false;
+        }
+
+        error_guard.dismiss();
+        return true;
     }
 }

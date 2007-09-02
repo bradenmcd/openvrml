@@ -1,3 +1,84 @@
+2007-09-02 Braden McDaniel  <braden@endoframe.com>
+
+	Changes to facilitate setting openvrml-player's location entry
+	after the world has been loaded.
+
+	Significantly, access to the GIOChannel used by the
+	GtkVrmlBrowser (i.e., the request channel) needed to be made
+	thread-safe.  Accordingly, all access to the request channel now
+	goes through the function openvrml_xembed::write_request_chars.
+
+	* doc/openvrml-xembed.texi: Documented browser-event and world-url
+	requests; and add-browser-event-listener,
+	remove-browser-event-listener, and get-world-url commands.
+	* src/openvrml-player/Makefile.am (AM_CPPFLAGS): -I flags for
+	libopenvrml headers.  player.cpp now uses
+	openvrml::browser_event::type_id enumerants.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Factored subprocess spawning to
+	spawn_openvrml_xembed; made location_entry a global variable.
+	(get_openvrml_xembed_cmd(gint &, gchar ** &)): Get the program
+	name--and any user-supplied arguments--for openvrml-xembed.  The
+	result is an argument vector to accommodate any user-supplied
+	arguments in the OPENVRML_XEMBED environment variable.
+	(spawn_openvrml_xembed(GdkNativeWindow, gint &, gint &)): Spawn
+	the openvrml-xembed subprocess.
+	(set_locationentry_text(const gchar *)): Set the text for the
+	location text entry.
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Added support for browser-event and
+	world-url requests.
+	* src/openvrml-xembed/Makefile.am (noinst_HEADERS): Added
+	request_channel.h.
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(resource_fetcher): Removed request_channel_ member; removed
+	constructor definition (use compiler-generated default
+	constructor).  Removed write_request_chars member function.
+	(redraw_listener): Renamed browser_listener class.
+	(event_func_listener): openvrml::browser_listener implementation
+	for handling listeners registered with
+	gtk_vrml_browser_add_listener.
+	(GtkGLViewer): Added friend functions
+	gtk_vrml_browser_get_world_url, gtk_vrml_browser_add_listener, and
+	gtk_vrml_browser_remove_listener.  Added member
+	event_func_listener_map_.
+	(gtk_vrml_browser_new()): Removed GIOChannel argument.
+	(gtk_vrml_browser_get_world_url(GtkVrmlBrowser *)): Get the URL of
+	the currentl loaded world.
+	(gtk_vrml_browser_add_listener(GtkVrmlBrowser *,
+	GtkVrmlBrowserEventFunc, gpointer)): Add a browser event callback.
+	(gtk_vrml_browser_remove_listener(GtkVrmlBrowser *, gulong)):
+	Remove a browser event callback.
+	(resource_fetcher::do_get_resource(const std::string &)): Send
+	request using openvrml_xembed::write_request_chars.
+	* src/openvrml-xembed/gtkvrmlbrowser.h
+	(GtkVrmlBrowserEvent): Added enumeration.
+	(GtkVrmlBrowserEventFunc): Type of callback function used with
+	gtk_vrml_browser_add_listener.
+	(gtk_vrml_browser_new()): Removed GIOChannel argument.
+	(gtk_vrml_browser_get_world_url(GtkVrmlBrowser *)): Added
+	function.
+	(gtk_vrml_browser_add_listener(GtkVrmlBrowser *,
+	GtkVrmlBrowserEventFunc, gpointer)): Added function.
+	(gtk_vrml_browser_remove_listener(GtkVrmlBrowser *, gulong)):
+	Added function.
+	* src/openvrml-xembed/main.cpp
+	(event_listener_id_map): Maps a listener identifier from the host
+	application (i.e., from the add-browser-event-listener command) to
+	the corresponding listener identifier gotten from the
+	GtkVrmlBrowser.
+	(command_istream_reader::operator()() const): Handle
+	add-browser-event-listener, remove-browser-event-listener, and
+	get-world-url commands.
+	(openvrml_xembed_browser_event_func(GtkVrmlBrowser *,
+	GtkVrmlBrowserEvent, gpointer)): GtkVrmlBrowser event listener
+	callback function.  Sends browser-event via the request channel.
+	(openvrml_xembed::write_request_chars(const gchar *, gssize,
+	gsize*)): Lock the request_channel's mutex and write a request to
+	be consumed by the host application.
+	* src/openvrml-xembed/request_channel.h: Added file.  Declaration
+	of openvrml_xembed::write_request_chars.
+
 2007-07-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.h: Add find_interface to the std

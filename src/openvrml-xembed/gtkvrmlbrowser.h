@@ -45,12 +45,30 @@ struct GtkVrmlBrowserClass_ {
     GtkDrawingAreaClass parent_class;
 };
 
+//
+// This must correspond to openvrml::browser_event::type_id.
+//
+typedef enum {
+    GTK_VRML_BROWSER_INITIALIZED = 1,
+    GTK_VRML_BROWSER_SHUTDOWN = 2
+} GtkVrmlBrowserEvent;
+
+typedef void (*GtkVrmlBrowserEventFunc)(GtkVrmlBrowser *source,
+                                        GtkVrmlBrowserEvent event,
+                                        gpointer data);
+
 
 GType gtk_vrml_browser_get_type(void) G_GNUC_CONST;
-GtkWidget *gtk_vrml_browser_new(GIOChannel *request_channel);
+GtkWidget *gtk_vrml_browser_new();
 void gtk_vrml_browser_load_url(GtkVrmlBrowser *vrml_browser,
                                const gchar **url,
                                const gchar **parameter);
+gchar *gtk_vrml_browser_get_world_url(GtkVrmlBrowser *vrml_browser);
+gulong gtk_vrml_browser_add_listener(GtkVrmlBrowser *vrml_browser,
+                                     GtkVrmlBrowserEventFunc func,
+                                     gpointer user_data);
+gboolean gtk_vrml_browser_remove_listener(GtkVrmlBrowser *vrml_browser,
+                                          gulong listener_id);
 
 G_END_DECLS
 

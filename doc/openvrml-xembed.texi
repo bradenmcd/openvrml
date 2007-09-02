@@ -261,10 +261,62 @@ The @code{get-url} request expects a response in the form of a
 process the availability of the resource until it receives this
 command; so it should be issued as soon as possible.
 
+@cindex browser-event
+@section The @code{browser-event} Request
+
+@code{openvrml-xembed} sends a @code{browser-event} request
+corresponding to @code{openvrml::browser_event}s for each listener the
+host application has registered with an
+@code{add-browser-event-listener} command.  This request takes the
+following form:
+
+@example
+browser-event @var{listener-id} @var{event}
+@end example
+
+@table @var
+@item listener-id
+An integer identifer corresponding to that used with the
+@code{add-browser-event-listener} command.
+
+@item event
+An integer identifier for a browser event.  These correspond to
+@code{openvrml::browser_event::type_id}; i.e.:
+
+@multitable @columnfractions .2 .8
+@headitem event @tab @code{openvrml::browser_event::type_id}
+@item 1
+@tab @code{openvrml::browser_event::initialized}
+@item 2
+@tab @code{openvrml::browser_event::shutdown}
+@end multitable
+@end table
+
+@cindex world-url
+@section The @code{world-url} Request
+
+@code{world-url} is sent in response to a @code{get-world-url} command
+from the host application.
+
+The @code{world-url} request isn't semantically a request; however, it
+falls under this heading since it is sent from @code{openvrml-xembed}
+to the host application via the request channel.
+
+The @code{world-url} request takes the following form:
+
+@example
+world-url @var{url}
+@end example
+
+@table @var
+@item url
+The URL for the currently loaded world.
+@end table
+
 @section Commands
 
 @cindex load-url
-@subsection @code{load-url}
+@subsection The @code{load-url} Command
 
 The @code{load-url} command initiates loading of a VRML or X3D world.
 
@@ -280,7 +332,7 @@ A URL for a VRML or X3D world.
 @end table
 
 @cindex get-url-result
-@subsection @code{get-url-result}
+@subsection The @code{get-url-result} Command
 
 The @code{get-url-result} command should be sent immediately in
 response to a @code{get-url} request.  This command should indicate
@@ -308,7 +360,7 @@ corresponding @code{get-url} request.  The @var{result} is an integer
 value; 0 indicates success, while nonzero indicates failure.
 
 @cindex new-stream
-@subsection @code{new-stream}
+@subsection The @code{new-stream} Command
 
 The @code{new-stream} command indicates to @code{openvrml-xembed}
 that the host application intends to begin writing data associated
@@ -340,7 +392,7 @@ The @var{type} parameter is the MIME media type of the stream.  The
 previously issued @code{get-url-result} command.
 
 @cindex write
-@subsection @code{write}
+@subsection The @code{write} Command
 
 The @code{write} command writes data to a stream for which
 @code{new-stream} has already been issued.  This command takes the
@@ -374,7 +426,7 @@ parameter.
 consecutive blocks of data for the stream.
 
 @cindex destroy-stream
-@subsection @code{destroy-stream}
+@subsection The @code{destroy-stream} Command
 
 @code{destroy-stream} should be sent for a @var{stream-id} after no
 more @code{write} commands will be issued for it.  This command takes
@@ -392,6 +444,52 @@ An integer identifier for a stream.
 @var{stream-id} should identify a stream for which @code{new-stream}
 has been sent, but for which @code{destroy-stream} has @emph{not}
 already been sent.
+
+@cindex add-browser-event-listener
+@subsection The @code{add-browser-event-listener} Command
+
+A listener for browser events can be registered with
+@code{add-browser-event-listener}.  These events correspond to those
+represented by the @code{openvrml::browser_event} class.  This command
+takes the following form:
+
+@example
+add-browser-event-listener @var{listener-id}
+@end example
+
+@table @var
+@item listener-id
+An integer identifier for a listener.
+@end table
+
+@cindex remove-browser-event-listener
+@subsection The @code{remove-browser-event-listener} Command
+
+@code{remove-browser-event-listener} removes a listener that was
+previously added with @code{add-browser-event-listener}.  The command
+takes the form:
+
+@example
+remove-browser-event-listener @var{listener-id}
+@end example
+
+@table @var
+@item listener-id
+The integer identifier of a listener previously added with
+@code{add-browser-event-listener}.
+@end table
+
+@cindex get-world-url
+@subsection The @code{get-world-url} Command
+
+Get the URL of the currently-loaded world.  The XEmbed control
+responds to this command by sending @code{world-url} via the request
+channel.  This command takes no arguments:
+
+@example
+get-world-url
+@end example
+
 
 @node Problems
 @chapter Getting Help and Reporting Bugs
