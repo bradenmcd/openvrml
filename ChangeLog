@@ -1,5 +1,59 @@
 2007-09-04 Braden McDaniel  <braden@endoframe.com>
 
+	If two requests for the same resource are made, it is possible
+	that the one picked from the uninitialized_plugin_streambuf_map_
+	for the purpose of calling set_get_url_result will be one for
+	which that has already been called.
+
+	This change introduces the requested_plugin_streambuf_map_, which
+	is a holding area for streambufs for which set_get_url_result has
+	not yet been called.
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(resource_fetcher::do_get_resource(const std::string &)): Insert
+	the new plugin_streambuf into the requested_plugin_streambuf_map_
+	instead of the uninitialized_plugin_streambuf_map_.
+	* src/openvrml-xembed/main.cpp
+	(openvrml_xembed::command_istream_reader::operator()() const): Get
+	the plugin_streambuf from the requested_plugin_streambuf_map_ when
+	handling the get-url-result command.
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	(openvrml_xembed::plugin_streambuf::set_get_url_result(int)):
+	Erase the plugin_streambuf from the
+	requested_plugin_streambuf_map_ and, if the result code indicates
+	success, insert it in the uninitialized_plugin_streambuf_map_.
+	(openvrml_xembed::plugin_streambuf::init(size_t, const
+	std::string&, const std::string &)): Changes for parity with
+	change to
+	openvrml_xembed::uninitialized_plugin_streambuf_map::erase.
+	(openvrml_xembed::plugin_streambuf::fail()): Changes for parity
+	with change to
+	openvrml_xembed::uninitialized_plugin_streambuf_map::erase.
+	(openvrml_xembed::requested_plugin_streambuf_map::find(const
+	std::string &) const): Added function.  Find a plugin_streambuf
+	given a URL.
+	(openvrml_xembed::requested_plugin_streambuf_map::insert(const
+	std::string &, const boost::shared_ptr<plugin_streambuf> &)):
+	Added function.  Insert a plugin_streambuf into the map.
+	(openvrml_xembed::requested_plugin_streambuf_map::map_entry_matches_streambuf):
+	Predicate used in
+	openvrml_xembed::requested_plugin_streambuf_map::erase.
+	(openvrml_xembed::requested_plugin_streambuf_map::erase(const
+	plugin_streambuf &)): Erase a plugin_streambuf from the map.
+	(openvrml_xembed::requested_plugin_streambuf_map_): Map instance.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf):
+	Predicate used in
+	openvrml_xembed::uninitialized_plugin_streambuf_map::erase.
+	(openvrml_xembed::uninitialized_plugin_streambuf_map::erase(const
+	plugin_streambuf &)): Changed to take a reference to a
+	plugin_streambuf (rather than a URL).
+	* src/openvrml-xembed/plugin_streambuf.h
+	(openvrml_xembed::requested_plugin_streambuf_map): A map to hold
+	plugin_streambuf instances for which
+	plugin_streambuf::set_get_url_result has not yet been called.
+
+2007-09-04 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(image_texture_node::update_texture()): Catch any exception thrown
 	in the process of creating the image stream.

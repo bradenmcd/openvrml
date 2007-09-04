@@ -139,8 +139,8 @@ namespace openvrml_xembed {
                     int result;
                     command_line_stream >> url >> result;
 
-                    shared_ptr<plugin_streambuf> streambuf =
-                        uninitialized_plugin_streambuf_map_.find(url);
+                    const shared_ptr<plugin_streambuf> streambuf =
+                        requested_plugin_streambuf_map_.find(url);
                     g_assert(streambuf);
                     streambuf->set_get_url_result(result);
                 } else if (command == "new-stream") {

@@ -32,6 +32,52 @@
 
 namespace openvrml_xembed {
 
+    //
+    // plugin_streambuf Life Cycle
+    //
+    // A plugin_streambuf is first created in GtkVrmlBrowser's
+    // resource_fetcher::do_get_resource implementation (which is
+    // called whenever libopenvrml needs to load a stream).
+    //
+    // Step 1: requested_plugin_streambuf_map_
+    //
+    // Upon creation, the plugin_streambuf is inserted into the
+    // requested_plugin_streambuf_map_.  do_get_resource does not
+    // complete until the result of asking the host application to
+    // resolve the URL is known; i.e.,
+    // plugin_streambuf::get_url_result.  get_url_result blocks until
+    // the response is received from the host application; i.e., until
+    // plugin_streambuf::set_get_url_result has been called.
+    // set_get_url_result removes the plugin_streambuf from the
+    // requested_plugin_streambuf_map_.
+    //
+    // Step 2: uninitialized_plugin_streambuf_map_
+    //
+    // If plugin_streambuf::set_get_url_result is given a result code
+    // indicating success (i.e., 0), the plugin_streambuf is inserted
+    // in the uninitialized_plugin_streambuf_map_.  When a new-stream
+    // command is received for a URL, a plugin_streambuf matching that
+    // URL is gotten from the uninitialized_plugin_streambuf_map_ and
+    // plugin_streambuf::init is called on it.  init removes the
+    // plugin_streambuf from the uninitialized_plugin_streambuf_map_
+    // and inserts it in the plugin_streambuf_map_.
+    //
+    // Step 3: plugin_streambuf_map_
+    //
+    // The plugin_streambuf_map_ comprises plugin_streambufs that are
+    // being written to in response to write commands and read from by
+    // stream readers in libopenvrml.  Once the host application is
+    // done sending write commands for a stream, it is expected that
+    // it will send a destroy-stream command.  In response to
+    // destroy-stream, bounded_buffer<>::set_eof is called on the
+    // plugin_streambuf's underlying bounded_buffer<> and the
+    // plugin_streambuf is removed from the plugin_streambuf_map_.
+    //
+    // Once the last reference to the resource_istream corresponding
+    // to the plugin_streambuf is removed, the plugin_streambuf is
+    // deleted.
+    //
+
     class command_istream_reader;
 
     class plugin_streambuf :
@@ -67,7 +113,29 @@ namespace openvrml_xembed {
         bool data_available() const;
     };
 
+    extern class requested_plugin_streambuf_map :
+        std::multimap<std::string, boost::shared_ptr<plugin_streambuf> >,
+        boost::noncopyable {
+
+        struct map_entry_matches_streambuf;
+
+        typedef std::multimap<std::string,
+                              boost::shared_ptr<plugin_streambuf> >
+            base_t;
+
+        mutable openvrml::read_write_mutex mutex_;
+
+    public:
+        const boost::shared_ptr<plugin_streambuf>
+        find(const std::string & url) const;
+        void insert(const std::string & url,
+                    const boost::shared_ptr<plugin_streambuf> & streambuf);
+        bool erase(const plugin_streambuf & streambuf);
+    } requested_plugin_streambuf_map_;
+
     extern class uninitialized_plugin_streambuf_map : boost::noncopyable {
+        struct map_entry_matches_streambuf;
+
         mutable openvrml::read_write_mutex mutex_;
         typedef std::multimap<std::string, boost::shared_ptr<plugin_streambuf> >
             map_t;
@@ -78,7 +146,7 @@ namespace openvrml_xembed {
         find(const std::string & url) const;
         void insert(const std::string & url,
                     const boost::shared_ptr<plugin_streambuf> & streambuf);
-        bool erase(const std::string & url);
+        bool erase(const plugin_streambuf & url);
         size_t size() const;
         bool empty() const;
         const boost::shared_ptr<plugin_streambuf> front() const;

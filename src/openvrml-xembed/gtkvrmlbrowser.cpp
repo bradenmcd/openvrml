@@ -690,11 +690,10 @@ namespace {
             {
                 using std::ostringstream;
                 using boost::ref;
-                using openvrml_xembed::uninitialized_plugin_streambuf_map_;
+                using openvrml_xembed::requested_plugin_streambuf_map_;
 
                 this->rdbuf(this->streambuf_.get());
-                uninitialized_plugin_streambuf_map_.insert(uri,
-                                                           this->streambuf_);
+                requested_plugin_streambuf_map_.insert(uri, this->streambuf_);
 
                 ostringstream request;
                 request << "get-url " << uri << '\n';
