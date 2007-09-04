@@ -12488,21 +12488,26 @@ namespace {
     }
 
     /**
-     * @brief Called to lazily update texture data.
+     * @brief Called to update texture data lazily.
      */
     void image_texture_node::update_texture()
     {
         if (this->texture_needs_update) {
-            if (!this->url_.mfstring::value().empty()) {
-                using std::auto_ptr;
-                auto_ptr<resource_istream> in(
-                    this->scene()->get_resource(this->url_.mfstring::value()));
-                auto_ptr<stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              this->image_,
-                                              *this,
-                                              this->image_mutex_));
-                this->scene()->read_stream(in, listener);
+            try {
+                if (!this->url_.mfstring::value().empty()) {
+                    using std::auto_ptr;
+                    auto_ptr<resource_istream> in(
+                        this->scene()->get_resource(
+                            this->url_.mfstring::value()));
+                    auto_ptr<stream_listener> listener(
+                        new image_stream_listener(in->url(),
+                                                  this->image_,
+                                                  *this,
+                                                  this->image_mutex_));
+                    this->scene()->read_stream(in, listener);
+                }
+            } catch (std::exception & ex) {
+                this->scene()->browser().err(ex.what());
             }
             this->texture_needs_update = false;
         }
@@ -12518,7 +12523,8 @@ namespace {
     /**
      * @brief Construct.
      *
-     * @param browser the @c browser associated with this @c node_metatype object.
+     * @param browser the @c browser associated with this @c node_metatype
+     *                object.
      */
     indexed_face_set_metatype::
     indexed_face_set_metatype(openvrml::browser & browser):

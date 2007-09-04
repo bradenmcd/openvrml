@@ -1,3 +1,9 @@
+2007-09-04 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(image_texture_node::update_texture()): Catch any exception thrown
+	in the process of creating the image stream.
+
 2007-09-02 Braden McDaniel  <braden@endoframe.com>
 
 	Changes to facilitate setting openvrml-player's location entry
