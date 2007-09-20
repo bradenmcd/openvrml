@@ -1,5 +1,10 @@
 2007-09-20 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Use the FREETYPE_FLAGS shell variable when testing
+	whether FreeType needs const in callback function signatures.
+
+2007-09-20 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp
 	(image_texture_node::update_texture()): Catch any exception thrown
 	in the process of creating the image stream.
