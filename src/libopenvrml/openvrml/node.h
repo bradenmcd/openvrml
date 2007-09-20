@@ -1316,4 +1316,8 @@ namespace openvrml {
     };
 }
 
+namespace std {
+    using openvrml::find_interface;
+}
+
 # endif
