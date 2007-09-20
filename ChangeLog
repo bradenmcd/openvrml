@@ -1,3 +1,9 @@
+2007-09-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(image_texture_node::update_texture()): Catch any exception thrown
+	in the process of creating the image stream.
+
 2007-09-19 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.h: Add find_interface to the std
