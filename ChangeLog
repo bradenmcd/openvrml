@@ -1,3 +1,8 @@
+2007-09-20 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Use the FREETYPE_FLAGS shell variable when testing
+	whether FreeType needs const in callback function signatures.
+
 2007-09-04 Braden McDaniel  <braden@endoframe.com>
 
 	If two requests for the same resource are made, it is possible
