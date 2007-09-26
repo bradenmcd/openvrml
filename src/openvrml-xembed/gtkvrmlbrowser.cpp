@@ -102,7 +102,6 @@ namespace {
     G_GNUC_INTERNAL GdkGLConfig * gl_config;
 
     class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
-        boost::mutex request_channel_mutex_;
         boost::thread_group thread_group_;
 
     public:

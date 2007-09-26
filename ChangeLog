@@ -1,3 +1,9 @@
+2007-09-26 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	(resource_fetcher): Removed obsolete request_channel_mutex_
+	member.
+
 2007-09-20 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Use the FREETYPE_FLAGS shell variable when testing
