@@ -1,5 +1,14 @@
 2007-09-26 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes and improvements.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+
+2007-09-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
 	(resource_fetcher): Removed obsolete request_channel_mutex_
 	member.

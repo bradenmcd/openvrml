@@ -5367,14 +5367,6 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
 /**
  * @internal
  *
- * @var boost::recursive_mutex openvrml::browser::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @internal
- *
  * @var std::auto_ptr<openvrml::null_node_metatype> openvrml::browser::null_node_metatype_
  *
  * @brief &ldquo;Null&rdquo; class object for default nodes (e.g.,

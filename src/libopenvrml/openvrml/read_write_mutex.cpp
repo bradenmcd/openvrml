@@ -95,7 +95,7 @@
  */
 
 /**
- * @class openvrml::read_write_mutex::scoped_read_lock openvrml/read_write_lock.h
+ * @class openvrml::read_write_mutex::scoped_read_lock openvrml/read_write_mutex.h
  *
  * @brief Lock the mutex for read access.
  */
@@ -155,7 +155,7 @@ openvrml::read_write_mutex::scoped_read_lock::~scoped_read_lock()
 }
 
 /**
- * @class openvrml::read_write_mutex::scoped_write_lock openvrml/read_write_lock.h
+ * @class openvrml::read_write_mutex::scoped_write_lock openvrml/read_write_mutex.h
  *
  * @brief Lock the mutex for write access.
  */
@@ -227,7 +227,7 @@ openvrml::read_write_mutex::read_write_mutex():
 
 
 /**
- * @class openvrml::read_write_mutex::scoped_read_write_lock openvrml/read_write_lock.h
+ * @class openvrml::read_write_mutex::scoped_read_write_lock openvrml/read_write_mutex.h
  *
  * @brief Lock the mutex for read/write access.
  *

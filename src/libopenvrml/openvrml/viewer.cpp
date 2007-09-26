@@ -1286,7 +1286,7 @@ const openvrml::frustum & openvrml::viewer::do_frustum() const
  * @brief Set the frustum.
  *
  * This function delegates to
- * <code>viewer::do_frustum(const openvrml::frustum &)<code>.
+ * <code>viewer::do_frustum(const openvrml::frustum &)</code>.
  *
  * @param[in] f new frustum value.
  */

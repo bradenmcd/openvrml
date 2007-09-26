@@ -3659,7 +3659,7 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
 /**
  * @internal
  *
- * @var boost::mutex openvrml::geometry_node::gemoetry_reference_mutex_
+ * @var boost::mutex openvrml::geometry_node::geometry_reference_mutex_
  *
  * @brief Mutex protecting @c #geometry_reference.
  */
