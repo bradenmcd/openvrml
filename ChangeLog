@@ -1,5 +1,19 @@
 2007-10-06 Braden McDaniel  <braden@endoframe.com>
 
+	Made the build less recursive.
+
+	* configure.ac: Removed references to obsolete makefiles.
+	* lib/Makefile.am: Moved libantlr build rules here.
+	* lib/antlr/GNUmakefile.am: Removed file.
+	* src/Makefile.am: Moved build rules for libopenvrml,
+	libopenvrml-gl, openvrml-xembed, and openvrml-player here.
+	* src/libopenvrml/Makefile.am: Removed file.
+	* src/libopenvrml-gl/Makefile.am: Removed file.
+	* src/openvrml-player/Makefile.am: Removed file.
+	* src/openvrml-xembed/Makefile.am: Removed file.
+
+2007-10-06 Braden McDaniel  <braden@endoframe.com>
+
 	Test fixes for Boost 1.34.1.
 
 	* tests/Makefile.am
