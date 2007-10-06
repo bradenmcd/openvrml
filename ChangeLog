@@ -1,3 +1,16 @@
+2007-10-06 Braden McDaniel  <braden@endoframe.com>
+
+	Test fixes for Boost 1.34.1.
+
+	* tests/Makefile.am
+	* tests/browser.cpp
+	* tests/color.cpp
+	* tests/image.cpp
+	* tests/mat4f.cpp
+	* tests/node_interface_set.cpp
+	* tests/node_metatype_id.cpp
+	* tests/rotation.cpp
+
 2007-09-26 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes and improvements.

@@ -17,6 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# define BOOST_TEST_MAIN
+# define BOOST_TEST_MODULE image
+
 # include <sstream>
 # include <boost/array.hpp>
 # include <boost/test/unit_test.hpp>
@@ -25,7 +28,7 @@
 using namespace std;
 using namespace openvrml;
 
-void stream_insertion()
+BOOST_AUTO_TEST_CASE(stream_insertion)
 {
     const image img(2, 2, 1);
     const string image_str = "2 2 1 0x0 0x0 0x0 0x0";
@@ -35,7 +38,7 @@ void stream_insertion()
     BOOST_REQUIRE_EQUAL(out.str(), image_str);
 }
 
-void stream_extraction()
+BOOST_AUTO_TEST_CASE(stream_extraction)
 {
     const boost::array<unsigned char, 4> pixels = { 0xFF, 0x00, 0xFF, 0x00 };
     const image img1(2, 2, 1, pixels.begin(), pixels.end());
@@ -47,21 +50,11 @@ void stream_extraction()
     BOOST_REQUIRE_EQUAL(img1, img2);
 }
 
-void stream_extraction_insufficient_pixel_values()
+BOOST_AUTO_TEST_CASE(stream_extraction_insufficient_pixel_values)
 {
     const string image_str = "2 2 1 0xFF 0x00 0xFF";
     istringstream in(image_str);
     image img;
     in >> img;
     BOOST_REQUIRE(in.fail());
-}
-
-boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
-{
-    using boost::unit_test::test_suite;
-    test_suite * const suite = BOOST_TEST_SUITE("image");
-    suite->add(BOOST_TEST_CASE(&stream_insertion));
-    suite->add(BOOST_TEST_CASE(&stream_extraction));
-    suite->add(BOOST_TEST_CASE(&stream_extraction_insufficient_pixel_values));
-    return suite;
 }

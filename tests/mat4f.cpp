@@ -17,6 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# define BOOST_TEST_MAIN
+# define BOOST_TEST_MODULE mat4f
+
 # include <sstream>
 # include <boost/test/unit_test.hpp>
 # include <openvrml/basetypes.h>
@@ -24,7 +27,7 @@
 using namespace std;
 using namespace openvrml;
 
-void stream_insertion()
+BOOST_AUTO_TEST_CASE(stream_insertion)
 {
     mat4f m = make_mat4f();
     const string mat4f_str = "[1, 0, 0, 0], "
@@ -36,7 +39,7 @@ void stream_insertion()
     BOOST_REQUIRE_EQUAL(out.str(), mat4f_str);
 }
 
-void stream_extraction_numbers_only()
+BOOST_AUTO_TEST_CASE(stream_extraction_numbers_only)
 {
     const mat4f m1 = make_mat4f(1, 0, 0, 0,
                                 0, 2, 0, 0,
@@ -52,7 +55,7 @@ void stream_extraction_numbers_only()
     BOOST_REQUIRE_EQUAL(m1, m2);
 }
 
-void stream_extraction_numbers_with_commas()
+BOOST_AUTO_TEST_CASE(stream_extraction_numbers_with_commas)
 {
     const mat4f m1 = make_mat4f(1, 0, 0, 0,
                                 0, 2, 0, 0,
@@ -66,14 +69,4 @@ void stream_extraction_numbers_with_commas()
     istringstream in(mat4f_str);
     in >> m2;
     BOOST_REQUIRE_EQUAL(m1, m2);
-}
-
-boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
-{
-    using boost::unit_test::test_suite;
-    test_suite * const suite = BOOST_TEST_SUITE("mat4f");
-    suite->add(BOOST_TEST_CASE(&stream_insertion));
-    suite->add(BOOST_TEST_CASE(&stream_extraction_numbers_only));
-    suite->add(BOOST_TEST_CASE(&stream_extraction_numbers_with_commas));
-    return suite;
 }

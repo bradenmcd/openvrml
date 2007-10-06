@@ -1,5 +1,25 @@
-# define BOOST_TEST_DYN_LINK
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+//
+// Copyright 2007  Braden McDaniel
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+
 # define BOOST_TEST_MAIN
+# define BOOST_TEST_MODULE node_interface_set
+
 # include <boost/test/unit_test.hpp>
 # include <openvrml/node.h>
 
@@ -12,7 +32,7 @@
 using namespace std;
 using namespace openvrml;
 
-void insert_eventin()
+BOOST_AUTO_TEST_CASE(insert_eventin)
 {
     node_interface_set interfaces;
     const node_interface interface(node_interface::eventin_id,
@@ -21,7 +41,7 @@ void insert_eventin()
     BOOST_REQUIRE(interfaces.insert(interface).second);
 }
 
-void insert_exactly_conflicting_eventin()
+BOOST_AUTO_TEST_CASE(insert_exactly_conflicting_eventin)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventin_id,
@@ -35,7 +55,7 @@ void insert_exactly_conflicting_eventin()
     BOOST_REQUIRE(!interfaces.insert(interface2).second);
 }
 
-void insert_conflicting_exposedfield()
+BOOST_AUTO_TEST_CASE(insert_conflicting_exposedfield)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventin_id,
@@ -48,7 +68,7 @@ void insert_conflicting_exposedfield()
     BOOST_REQUIRE(!interfaces.insert(interface2).second);
 }
 
-void insert_eventout()
+BOOST_AUTO_TEST_CASE(insert_eventout)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventin_id,
@@ -61,7 +81,7 @@ void insert_eventout()
     BOOST_REQUIRE(interfaces.insert(interface2).second);
 }
 
-void insert_exactly_conflicting_eventout()
+BOOST_AUTO_TEST_CASE(insert_exactly_conflicting_eventout)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventout_id,
@@ -74,7 +94,7 @@ void insert_exactly_conflicting_eventout()
     BOOST_REQUIRE(!interfaces.insert(interface2).second);
 }
 
-void insert_field()
+BOOST_AUTO_TEST_CASE(insert_field)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventin_id,
@@ -91,7 +111,7 @@ void insert_field()
     BOOST_REQUIRE(interfaces.insert(interface3).second);
 }
 
-void insert_exposedfield()
+BOOST_AUTO_TEST_CASE(insert_exposedfield)
 {
     node_interface_set interfaces;
     const node_interface interface1(node_interface::eventin_id,
@@ -112,7 +132,7 @@ void insert_exposedfield()
     BOOST_REQUIRE(interfaces.insert(interface4).second);
 }
 
-void find_exposedfield_matching_eventin()
+BOOST_AUTO_TEST_CASE(find_exposedfield_matching_eventin)
 {
     node_interface_set interfaces;
     const node_interface interface(node_interface::exposedfield_id,
@@ -123,20 +143,4 @@ void find_exposedfield_matching_eventin()
 	interfaces.find(interface);
     BOOST_CHECK(pos != interfaces.end());
     BOOST_REQUIRE(interface == *pos);
-}
-
-boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
-{
-    using boost::unit_test::test_suite;
-    test_suite * const suite =
-	BOOST_TEST_SUITE("node_interface_set");
-    suite->add(BOOST_TEST_CASE(&insert_eventin));
-    suite->add(BOOST_TEST_CASE(&insert_exactly_conflicting_eventin));
-    suite->add(BOOST_TEST_CASE(&insert_conflicting_exposedfield));
-    suite->add(BOOST_TEST_CASE(&insert_eventout));
-    suite->add(BOOST_TEST_CASE(&insert_exactly_conflicting_eventout));
-    suite->add(BOOST_TEST_CASE(&insert_field));
-    suite->add(BOOST_TEST_CASE(&insert_exposedfield));
-    suite->add(BOOST_TEST_CASE(&find_exposedfield_matching_eventin));
-    return suite;
 }

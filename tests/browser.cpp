@@ -17,6 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# define BOOST_TEST_MAIN
+# define BOOST_TEST_MODULE browser
+
 # include <fstream>
 # include <iostream>
 # include <sstream>
@@ -31,7 +34,7 @@ using namespace openvrml;
 using namespace boost::filesystem;
 using namespace boost::multi_index::detail; // for scope_guard
 
-void create_vrml_from_stream()
+BOOST_AUTO_TEST_CASE(create_vrml_from_stream)
 {
     test_resource_fetcher fetcher;
     browser b(fetcher, std::cout, std::cerr);
@@ -47,7 +50,7 @@ void create_vrml_from_stream()
     BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Group");
 }
 
-void create_vrml_from_stream_with_externproto()
+BOOST_AUTO_TEST_CASE(create_vrml_from_stream_with_externproto)
 {
     {
         ofstream file("test.wrl");
@@ -55,7 +58,7 @@ void create_vrml_from_stream_with_externproto()
              << "PROTO Node [] { Group {} }" << endl;
     }
     scope_guard test_file_guard =
-        make_guard(&boost::filesystem::remove,
+        make_guard(&boost::filesystem::remove<boost::filesystem::path>,
                    boost::filesystem::path("test.wrl"));
     boost::ignore_unused_variable_warning(test_file_guard);
 
@@ -73,7 +76,7 @@ void create_vrml_from_stream_with_externproto()
     BOOST_CHECK_EQUAL(nodes[0]->type().id(), "Node");
 }
 
-void create_vrml_from_url()
+BOOST_AUTO_TEST_CASE(create_vrml_from_url)
 {
     class children_listener : public openvrml::mfnode_listener {
         bool received_event_;
@@ -108,7 +111,7 @@ void create_vrml_from_url()
 	     << "Shape {}" << endl;
     }
     scope_guard test_file_guard =
-        make_guard(&boost::filesystem::remove,
+        make_guard(&boost::filesystem::remove<boost::filesystem::path>,
                    boost::filesystem::path("test.wrl"));
     boost::ignore_unused_variable_warning(test_file_guard);
 
@@ -146,14 +149,4 @@ void create_vrml_from_url()
     const vector<boost::intrusive_ptr<node> > & children = group->children();
     BOOST_REQUIRE(children.size() == 1);
     BOOST_CHECK_EQUAL(children[0]->type().id(), "Shape");
-}
-
-boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
-{
-    using boost::unit_test::test_suite;
-    test_suite * const suite = BOOST_TEST_SUITE("browser");
-    suite->add(BOOST_TEST_CASE(&create_vrml_from_stream));
-    suite->add(BOOST_TEST_CASE(&create_vrml_from_stream_with_externproto));
-    suite->add(BOOST_TEST_CASE(&create_vrml_from_url));
-    return suite;
 }
