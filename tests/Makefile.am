@@ -1,8 +1,9 @@
 AM_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml
-AM_CXXFLAGS = @PTHREAD_CFLAGS@
-AM_LDFLAGS = @OPENVRML_RPATH@
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_TEST_DYN_LINK
+AM_CXXFLAGS = $(PTHREAD_CFLAGS)
+AM_LDFLAGS = $(OPENVRML_RPATH)
 
 TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
 TESTS = color \

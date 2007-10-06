@@ -17,6 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+# define BOOST_TEST_MAIN
+# define BOOST_TEST_MODULE rotation
+
 # include <sstream>
 # include <boost/test/unit_test.hpp>
 # include <openvrml/basetypes.h>
@@ -24,19 +27,11 @@
 using namespace std;
 using namespace openvrml;
 
-void stream_extraction_fail_on_nonnormalized_axis()
+BOOST_AUTO_TEST_CASE(stream_extraction_fail_on_nonnormalized_axis)
 {
     string rotation_str = "2.0 2.0 0.0 0.0";
     istringstream in(rotation_str);
     rotation r;
     in >> r;
     BOOST_REQUIRE(in.fail());
-}
-
-boost::unit_test::test_suite * init_unit_test_suite(int, char * [])
-{
-    using boost::unit_test::test_suite;
-    test_suite * const suite = BOOST_TEST_SUITE("rotation");
-    suite->add(BOOST_TEST_CASE(&stream_extraction_fail_on_nonnormalized_axis));
-    return suite;
 }
