@@ -1,3 +1,8 @@
+2007-10-07 Braden McDaniel  <braden@endoframe.com>
+
+	* lib/gtkglext/configure.in: Add X_CFLAGS to CFLAGS before
+	checking for GLX types.
+
 2007-10-06 Braden McDaniel  <braden@endoframe.com>
 
 	Made the build less recursive.
