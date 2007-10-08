@@ -650,6 +650,9 @@ if test "x$gdktarget" = "xx11"; then
 
   # Checks for some types in gdk/GL/glxext.h
 
+  ge_save_CFLAGS=$CFLAGS
+  CFLAGS="$X_CFLAGS $CFLAGS"
+
   # GLXFBConfigSGIX
   GDKGLEXT_NEED_GLXFBCONFIGSGIX_TYPEDEF=no
   AC_CHECK_TYPES([GLXFBConfigSGIX], , ,
@@ -690,6 +693,7 @@ if test "x$gdktarget" = "xx11"; then
     GDKGLEXT_NEED_GLXEXTFUNCPTR_TYPEDEF=yes
   fi
 
+  CFLAGS=$ge_save_CFLAGS
 else
 
   # for Win32
