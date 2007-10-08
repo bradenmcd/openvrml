@@ -1,5 +1,11 @@
 2007-10-07 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/Makefile.am (AM_LDFLAGS): On Mac OS X, it seems we
+	can't always rely on the dependency to be propagated via
+	libopenvrml-gl.la; add GLU_LIBS here.
+
+2007-10-07 Braden McDaniel  <braden@endoframe.com>
+
 	* lib/gtkglext/configure.in: Add X_CFLAGS to CFLAGS before
 	checking for GLX types.
 
