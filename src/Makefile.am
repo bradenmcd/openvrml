@@ -182,6 +182,7 @@ libopenvrml_gl_libopenvrml_gl_la_SOURCES = \
 libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_GL_LIBRARY_VERSION) \
         $(GLU_LIBS)
+libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_srcdir)/lib/gtkglext \
@@ -205,7 +206,6 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
 openvrml_xembed_openvrml_xembed_LDFLAGS = $(OPENVRML_RPATH) $(GTK_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
         libopenvrml-gl/libopenvrml-gl.la \
-        libopenvrml/libopenvrml.la \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
         $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
 

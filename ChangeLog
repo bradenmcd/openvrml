@@ -1,3 +1,17 @@
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
+	Let libtool handle the dependency relationship between
+	libopenvrml-gl and libopenvrml so clients can just refer to the
+	former.
+
+	* examples/Makefile.am (LDADD): Removed reference to
+	libopenvrml.la.
+	* src/Makefile.am
+	(libopenvrml_gl_libopenvrml_gl_la_LIBADD): Depend on
+	libopenvrml.la.
+	(openvrml_xembed_openvrml_xembed_LDADD): Remove reference to
+	libopenvrml.la.
+
 2007-10-07 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/Makefile.am (AM_LDFLAGS): On Mac OS X, it seems we
