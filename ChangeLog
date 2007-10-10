@@ -1,5 +1,12 @@
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/node_interface_set.cpp
+	(find_exposedfield_matching_eventin): We want to test
+	openvrml::find_interface here, not
+	openvrml::node_interface_set::find.
+
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/private.h: Added overload of std::operator<< to
 	make BOOST_SPIRIT_DEBUG happy.
 

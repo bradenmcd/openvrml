@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(find_exposedfield_matching_eventin)
 				   "yyy");
     BOOST_CHECK(interfaces.insert(interface).second);
     const node_interface_set::const_iterator pos =
-	interfaces.find(interface);
+        find_interface(interfaces, "set_yyy");
     BOOST_CHECK(pos != interfaces.end());
     BOOST_REQUIRE(interface == *pos);
 }
