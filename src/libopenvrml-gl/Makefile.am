@@ -27,6 +27,7 @@ openvrml_gl_include_HEADERS =  openvrml/gl/viewer.h
 
 libopenvrml_gl_la_SOURCES = openvrml/gl/viewer.cpp
 libopenvrml_gl_la_LDFLAGS = -version-info $(LIBRARY_VERSION) @GLU_LIBS@
+libopenvrml_gl_la_LIBADD = ../libopenvrml/libopenvrml.la
 endif
 
 EXTRA_DIST = \

@@ -11,7 +11,6 @@ AM_CPPFLAGS = \
 AM_CXXFLAGS = @PTHREAD_CFLAGS@ @GTK_CFLAGS@ @GL_CFLAGS@
 AM_LDFLAGS = @OPENVRML_RPATH@ $(GTK_LIBS)
 LDADD = $(top_builddir)/src/libopenvrml-gl/libopenvrml-gl.la \
-        $(top_builddir)/src/libopenvrml/libopenvrml.la \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
         $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
 
