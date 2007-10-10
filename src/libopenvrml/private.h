@@ -821,9 +821,9 @@ namespace {
 
             absolute_uri
                 =   (
-                    scheme[
-                        absolute_uri.scheme_begin = arg1,
-                        absolute_uri.scheme_end = arg2
+                        scheme[
+                            absolute_uri.scheme_begin = arg1,
+                            absolute_uri.scheme_end = arg2
                         ] >> ':'
                     )[
                         assign_iterators(self.actions.scheme,
@@ -831,7 +831,7 @@ namespace {
                                          absolute_uri.scheme_end)
                         ] >> (hier_part | opaque_part)[
                             self.actions.scheme_specific_part
-                            ]
+                        ]
                 ;
 
             scheme
@@ -985,5 +985,17 @@ namespace {
         }
     }
 }
+
+#   ifdef BOOST_SPIRIT_DEBUG
+namespace std {
+
+    template <typename C, typename E, typename IteratorT>
+    std::basic_ostream<C, E> &
+    operator<<(std::basic_ostream<C, E> & out, IteratorT)
+    {
+        return out;
+    }
+}
+#   endif
 
 # endif

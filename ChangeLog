@@ -1,5 +1,10 @@
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/private.h: Added overload of std::operator<< to
+	make BOOST_SPIRIT_DEBUG happy.
+
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
 	Let libtool handle the dependency relationship between
 	libopenvrml-gl and libopenvrml so clients can just refer to the
 	former.
