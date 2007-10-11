@@ -275,7 +275,7 @@ namespace {
         bool need_update = false;
         bool need_redraw = false;
         do {
-            SDL_Event event;
+            SDL_Event event = {};
             sdl_viewer::event_info viewer_event_info;
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
