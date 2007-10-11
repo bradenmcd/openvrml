@@ -1,5 +1,16 @@
 2007-10-11 Braden McDaniel  <braden@endoframe.com>
 
+	Improved resiliency of create_file_url to getcwd failures.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(create_file_url(const uri &)): Throw std::runtime_error if getcwd
+	fails with an error other than ERANGE, EFAULT, or EINVAL.
+	Assertion will fail in case of the latter two errors.
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Catch an exception thrown from create_file_url.
+
+2007-10-11 Braden McDaniel  <braden@endoframe.com>
+
 	* examples/sdl_viewer.cpp (sdl_viewer::run()):
 	Initialize the SDL_Event struct.
 

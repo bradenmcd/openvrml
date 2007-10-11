@@ -3521,6 +3521,8 @@ namespace {
 
 
     /**
+     * @internal
+     *
      * @brief Create an absolute &ldquo;file&rdquo; URL from a relative path.
      *
      * This function constructs a syntactically valid &ldquo;file&rdquo; URL;
@@ -3531,12 +3533,14 @@ namespace {
      * @return an absolute &ldquo;file&rdquo; URL corresponding to
      *         @p relative_uri.
      *
-     * @exception std::bad_alloc    if memory allocation fails.
+     * @exception std::runtime_error    if the current working directory
+     *                                  cannot be determined.
+     * @exception std::bad_alloc        if memory allocation fails.
      *
      * @sa ftp://ftp.rfc-editor.org/in-notes/rfc1738.txt
      */
     OPENVRML_LOCAL const uri create_file_url(const uri & relative_uri)
-        OPENVRML_THROW1(std::bad_alloc)
+        OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         assert(relative(relative_uri));
 
@@ -3554,6 +3558,7 @@ namespace {
             return uri(base_uri.str());
         }
 
+        char * getcwd_result = 0;
 # ifdef _WIN32
         std::vector<char> cwd_buf(_MAX_PATH);
         //
@@ -3561,8 +3566,8 @@ namespace {
         // begins with a drive letter.
         //
         cwd_buf[0] = '/';
-        while (!_getcwd(&cwd_buf.front() + 1, int(cwd_buf.size()))
-               && errno == ERANGE) {
+        while (!(getcwd_result = _getcwd(&cwd_buf[1], int(cwd_buf.size())))
+               && (errno == ERANGE)) {
             cwd_buf.resize(cwd_buf.size() * 2);
         }
         std::replace_if(cwd_buf.begin() + 1,
@@ -3570,10 +3575,18 @@ namespace {
                         std::bind2nd(std::equal_to<char>(), '\\'), '/');
 # else
         std::vector<char> cwd_buf(PATH_MAX);
-        while (!getcwd(&cwd_buf.front(), cwd_buf.size()) && errno == ERANGE) {
+        while (!(getcwd_result = getcwd(&cwd_buf.front(), cwd_buf.size()))
+               && (errno == ERANGE)) {
             cwd_buf.resize(cwd_buf.size() * 2);
         }
 # endif
+        if (getcwd_result == 0) {
+            assert(errno != 0);
+            assert(errno != EFAULT);
+            assert(errno != EINVAL);
+            throw std::runtime_error(strerror(errno));
+        }
+
         base_uri << &cwd_buf.front();
 
         //
@@ -7501,17 +7514,19 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
         // we are loading the root scene.  In that case, construct an absolute
         // file URL.
         //
-        const uri absolute_uri = !relative(test_uri)
-                               ? test_uri
-                               : (!this->parent() && this->url().empty())
-                                    ? create_file_url(test_uri)
-                                    : test_uri
-                                        .resolve_against(uri(this->url()));
+        uri absolute_uri;
         try {
+            absolute_uri = !relative(test_uri)
+                         ? test_uri
+                         : (!this->parent() && this->url().empty())
+                             ? create_file_url(test_uri)
+                             : test_uri.resolve_against(uri(this->url()));
             in = this->browser().fetcher_.get_resource(absolute_uri);
         } catch (std::exception & ex) {
             std::ostringstream msg;
-            msg << string(absolute_uri) << ": " << ex.what();
+            msg << string(!absolute_uri.scheme().empty() ? absolute_uri
+                                                         : test_uri)
+                << ": " << ex.what();
             this->browser().err(msg.str());
             continue;
         } catch (...) {
