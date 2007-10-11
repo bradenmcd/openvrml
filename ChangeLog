@@ -4,6 +4,7 @@
 	(openvrml::image): Since unsigned long is quite probably larger
 	than 4 bytes on 64-bit platforms, use openvrml::int32 in pixel
 	accessor and mutator functions.
+	* src/libopenvrml/openvrml/basetypes.cpp: Doc-comment updates.
 
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
