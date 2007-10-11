@@ -29,15 +29,11 @@
 #   include <algorithm>
 #   include <iosfwd>
 #   include <vector>
-#   include <sys/types.h>
+#   include <boost/cstdint.hpp>
 
 namespace openvrml {
 
-#   ifdef _WIN32
-    typedef __int32 int32;
-#   else
-    typedef int32_t int32;
-#   endif
+    typedef boost::int32_t int32;
 
 
     struct OPENVRML_API color {

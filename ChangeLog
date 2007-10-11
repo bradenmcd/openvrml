@@ -1,6 +1,11 @@
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::int32): Use boost::int32_t;
+
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h
 	(openvrml::image): Since unsigned long is quite probably larger
 	than 4 bytes on 64-bit platforms, use openvrml::int32 in pixel
 	accessor and mutator functions.
