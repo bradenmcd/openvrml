@@ -1,5 +1,12 @@
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::image): Since unsigned long is quite probably larger
+	than 4 bytes on 64-bit platforms, use openvrml::int32 in pixel
+	accessor and mutator functions.
+
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/node_interface_set.cpp
 	(find_exposedfield_matching_eventin): We want to test
 	openvrml::find_interface here, not

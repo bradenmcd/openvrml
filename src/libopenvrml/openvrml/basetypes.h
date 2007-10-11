@@ -906,10 +906,10 @@ namespace openvrml {
         template <typename InputIterator>
         void array(InputIterator begin, InputIterator end) OPENVRML_NOTHROW;
 
-        unsigned long pixel(size_t index) const OPENVRML_NOTHROW;
-        void pixel(size_t index, unsigned long value) OPENVRML_NOTHROW;
-        unsigned long pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
-        void pixel(size_t x, size_t y, unsigned long value) OPENVRML_NOTHROW;
+        int32 pixel(size_t index) const OPENVRML_NOTHROW;
+        void pixel(size_t index, int32 value) OPENVRML_NOTHROW;
+        int32 pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
+        void pixel(size_t x, size_t y, int32 value) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const image & lhs, const image & rhs)
@@ -972,22 +972,22 @@ namespace openvrml {
         std::copy(begin, end, this->array_.begin());
     }
 
-    inline unsigned long image::pixel(const size_t index) const
+    inline int32 image::pixel(const size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
-        unsigned long retval = 0x00000000;
+        int32 retval = 0x00000000;
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
             retval |=
-                static_cast<unsigned long>(this->array_[i])
+                static_cast<int32>(this->array_[i])
                 << (8 * (component - 1));
         }
         return retval;
     }
 
-    inline void image::pixel(const size_t index, const unsigned long value)
+    inline void image::pixel(const size_t index, const int32 value)
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
@@ -1000,7 +1000,7 @@ namespace openvrml {
         }
     }
 
-    inline unsigned long image::pixel(const size_t x, const size_t y) const
+    inline int32 image::pixel(const size_t x, const size_t y) const
         OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
@@ -1009,7 +1009,7 @@ namespace openvrml {
 
     inline void image::pixel(const size_t x,
                              const size_t y,
-                             const unsigned long value)
+                             const int32 value)
         OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
