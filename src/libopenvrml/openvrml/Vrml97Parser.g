@@ -801,7 +801,7 @@ options { defaultErrorHandler=false; }
 
 protoInterfaceDeclaration[
     const openvrml::scene & scene,
-    const boost::shared_ptr<const openvrml::scope> & outer_scope,
+    const boost::shared_ptr<openvrml::scope> & outer_scope,
     const std::string & proto_id,
     node_interface_set & interfaces,
     proto_node_metatype::default_value_map_t & default_value_map]

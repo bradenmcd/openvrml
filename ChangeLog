@@ -3,10 +3,11 @@
 	* examples/sdl_viewer.cpp (sdl_viewer::run()):
 	Initialize the SDL_Event struct.
 
-2007-10-10 Braden McDaniel  <braden@endoframe.com>
+2007-10-11 Braden McDaniel  <braden@endoframe.com>
 
 	Made the scope parent pointer nonconst.
 
+	* src/libopenvrml/openvrml/Vrml97Parser.g
 	* src/libopenvrml/openvrml/scope.cpp
 	* src/libopenvrml/openvrml/scope.h
 
