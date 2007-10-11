@@ -41,16 +41,16 @@ namespace openvrml {
         std::list<boost::shared_ptr<node_type> > node_type_list;
         std::map<std::string, node *> named_node_map;
         const std::string id_;
-        const boost::shared_ptr<const scope> parent_;
+        const boost::shared_ptr<scope> parent_;
 
     public:
         explicit scope(const std::string & id,
-                       const boost::shared_ptr<const scope> & parent =
+                       const boost::shared_ptr<scope> & parent =
                        boost::shared_ptr<scope>());
 
         const std::string & id() const OPENVRML_NOTHROW;
 
-        const boost::shared_ptr<const scope> & parent() const OPENVRML_NOTHROW;
+        const boost::shared_ptr<scope> & parent() const OPENVRML_NOTHROW;
 
         const std::pair<boost::shared_ptr<node_type>, bool>
             add_type(const boost::shared_ptr<node_type> & type)

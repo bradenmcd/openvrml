@@ -1,5 +1,12 @@
 2007-10-10 Braden McDaniel  <braden@endoframe.com>
 
+	Made the scope parent pointer nonconst.
+
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+
+2007-10-10 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.h
 	(openvrml::int32): Use boost::int32_t;
 

@@ -93,7 +93,7 @@
  * corresponds.
  */
 openvrml::scope::scope(const std::string & id,
-                       const boost::shared_ptr<const scope> & parent):
+                       const boost::shared_ptr<scope> & parent):
     id_(id),
     parent_(parent)
 {}
@@ -113,7 +113,7 @@ const std::string & openvrml::scope::id() const OPENVRML_NOTHROW
  *
  * @return the parent @c scope; or null if the @c scope is a root @c scope.
  */
-const boost::shared_ptr<const openvrml::scope> &
+const boost::shared_ptr<openvrml::scope> &
 openvrml::scope::parent() const OPENVRML_NOTHROW
 {
     return this->parent_;
