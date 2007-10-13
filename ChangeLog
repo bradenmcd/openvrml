@@ -1,3 +1,8 @@
+2007-10-13 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Makefile.am (DOCUMENTED_SOURCE_FILES): Added
+	read_write_mutex source files.
+
 2007-10-11 Braden McDaniel  <braden@endoframe.com>
 
 	Improved resiliency of create_file_url to getcwd failures.
