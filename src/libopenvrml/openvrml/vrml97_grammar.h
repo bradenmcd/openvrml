@@ -213,6 +213,7 @@ namespace openvrml {
     const vrml_parse_assertion expect_is(is_expected);
     const vrml_parse_assertion expect_interface_type_or_rbracket(
         interface_type_or_rbracket_expected);
+    const vrml_parse_assertion expect_field_type(field_type_expected);
     const vrml_parse_assertion expect_bool(bool_expected);
     const vrml_parse_assertion expect_color(color_expected);
     const vrml_parse_assertion expect_float(float_expected);
@@ -272,53 +273,6 @@ namespace openvrml {
     const boost::spirit::real_parser<float, boost::spirit::real_parser_policies<float> >
         float_p =
             boost::spirit::real_parser<float, boost::spirit::real_parser_policies<float> >();
-
-
-    struct id_parser {
-        typedef std::string result_t;
-
-        template <typename ScannerT>
-        std::ptrdiff_t operator()(const ScannerT & scan,
-                                  result_t & result) const
-        {
-            using boost::spirit::match_result;
-            using boost::spirit::lexeme_d;
-            using boost::spirit::chset_p;
-            using boost::spirit::anychar_p;
-            using phoenix::arg1;
-            using phoenix::arg2;
-            using phoenix::construct_;
-            using phoenix::var;
-            typedef boost::spirit::chset<typename ScannerT::value_t> chset;
-            typedef boost::spirit::symbols<typename ScannerT::value_t> symbols;
-            typedef typename match_result<ScannerT, result_t>::type match_t;
-
-            chset invalid_id_rest_char(
-                "\x01-\x20\x22\x23\x27,.[\\]{}\x7f");
-            chset invalid_id_first_char(
-                chset_p("1234567890+-") | invalid_id_rest_char);
-
-            symbols keywords;
-            keywords = "DEF", "EXTERNPROTO", "FALSE", "IS", "NULL", "PROTO",
-                       "ROUTE", "TO", "TRUE", "USE", "eventIn", "eventOut",
-                       "field", "exposedField";
-
-            match_t match
-                =   lexeme_d[
-                        ((anychar_p - vrml97_space_p - invalid_id_first_char)
-                         >> *(anychar_p - vrml97_space_p
-                              - invalid_id_rest_char))
-                        - (keywords
-                           >> anychar_p - (anychar_p - vrml97_space_p
-                                           - invalid_id_rest_char))
-                    ][var(result) = construct_<std::string>(arg1, arg2)]
-                    .parse(scan)
-                ;
-            return match.length();
-        }
-    };
-
-    const boost::spirit::functor_parser<id_parser> id_p;
 
 
     struct event_interface_type_parser {
@@ -496,6 +450,7 @@ namespace openvrml {
     const boost::spirit::functor_parser<field_type_parser> field_type_p;
 
 
+# if 0
     struct interface_decl_parser {
         typedef node_interface result_t;
 
@@ -530,6 +485,7 @@ namespace openvrml {
 
     const boost::spirit::functor_parser<interface_decl_parser>
         interface_decl_p;
+# endif
 
     struct bool_parser {
         typedef bool result_t;
@@ -1013,6 +969,61 @@ namespace openvrml {
         member1 null;
     };
 
+    struct interface_decl_closure :
+        boost::spirit::closure<interface_decl_closure,
+                               node_interface> {
+        member1 interface;
+    };
+
+    struct set_node_interface_type_function {
+        template <typename NodeInterface, typename NodeInterfaceType>
+        struct result {
+            typedef void type;
+        };
+
+        template <typename NodeInterface, typename NodeInterfaceType>
+        void operator()(NodeInterface & interface,
+                        NodeInterfaceType type) const
+        {
+            interface.type = type;
+        }
+    };
+
+    const phoenix::function<set_node_interface_type_function>
+        set_node_interface_type;
+
+    struct set_node_interface_field_type_function {
+        template <typename NodeInterface, typename FieldType>
+        struct result {
+            typedef void type;
+        };
+
+        template <typename NodeInterface, typename FieldType>
+        void operator()(NodeInterface & interface, FieldType field_type) const
+        {
+            interface.field_type = field_type;
+        }
+    };
+
+    const phoenix::function<set_node_interface_field_type_function>
+        set_node_interface_field_type;
+
+    struct set_node_interface_id_function {
+        template <typename NodeInterface, typename String>
+        struct result {
+            typedef void type;
+        };
+
+        template <typename NodeInterface, typename String>
+        void operator()(NodeInterface & interface, String id) const
+        {
+            interface.id = id;
+        }
+    };
+
+    const phoenix::function<set_node_interface_id_function>
+        set_node_interface_id;
+
     struct proto_closure : boost::spirit::closure<proto_closure,
                                                   node_type_decl,
                                                   bool> {
@@ -1020,11 +1031,13 @@ namespace openvrml {
         member2 add_node_interface_succeeded;
     };
 
+# if 0
     struct proto_interface_closure :
         boost::spirit::closure<proto_interface_closure,
                                node_interface> {
         member1 interface;
     };
+# endif
 
     struct is_mapping_closure : boost::spirit::closure<is_mapping_closure,
                                                        node_interface,
@@ -1458,6 +1471,10 @@ namespace openvrml {
                 sfnode_rule_type;
 
             typedef boost::spirit::rule<ScannerT,
+                                        interface_decl_closure::context_t>
+                interface_decl_rule_type;
+
+            typedef boost::spirit::rule<ScannerT,
                                         script_interface_closure::context_t>
                 script_interface_rule_type;
 
@@ -1465,7 +1482,7 @@ namespace openvrml {
                 proto_rule_type;
 
             typedef boost::spirit::rule<ScannerT,
-                                        proto_interface_closure::context_t>
+                                        interface_decl_closure::context_t>
                 proto_interface_rule_type;
 
             typedef boost::spirit::rule<ScannerT, is_mapping_closure::context_t>
@@ -1764,8 +1781,10 @@ namespace openvrml {
                     const scope_stack_t & scope_stack_;
                 };
 
-                explicit node_name_id_parser(const scope_stack_t & scope_stack):
-                    scope_stack_(scope_stack)
+                explicit node_name_id_parser(const scope_stack_t & scope_stack,
+                                             rule_type & id):
+                    scope_stack_(scope_stack),
+                    id_(id)
                 {}
 
                 std::ptrdiff_t operator()(const ScannerT & scan,
@@ -1782,7 +1801,7 @@ namespace openvrml {
                     assertion<vrml_parse_error> expect_id(id_expected);
 
                     rule_t node_name_id
-                        =   (expect_id(id_p) >> eps_p)[
+                        =   expect_id(id_)[
                                 get_node_type(result, this->scope_stack_)
                             ]
                         ;
@@ -1795,6 +1814,7 @@ namespace openvrml {
 
             private:
                 const scope_stack_t & scope_stack_;
+                rule_type & id_;
             };
 
             const boost::spirit::functor_parser<node_name_id_parser>
@@ -1849,8 +1869,10 @@ namespace openvrml {
                     scope_stack_t & scope_stack_;
                 };
 
-                explicit node_type_id_parser(scope_stack_t & scope_stack):
-                    scope_stack_(scope_stack)
+                explicit node_type_id_parser(scope_stack_t & scope_stack,
+                                             rule_type & id):
+                    scope_stack_(scope_stack),
+                    id_(id)
                 {}
 
                 std::ptrdiff_t operator()(const ScannerT & scan,
@@ -1864,9 +1886,7 @@ namespace openvrml {
                         match_t;
 
                     rule_t node_type_id
-                        =   (id_p >> eps_p)[
-                                get_node_type(result, this->scope_stack_)
-                            ]
+                        =   id_[get_node_type(result, this->scope_stack_)]
                         ;
 
                     BOOST_SPIRIT_DEBUG_NODE(node_type_id);
@@ -1877,6 +1897,7 @@ namespace openvrml {
 
             private:
                 scope_stack_t & scope_stack_;
+                rule_type & id_;
             };
 
             const boost::spirit::functor_parser<node_type_id_parser>
@@ -2374,6 +2395,23 @@ namespace openvrml {
 
             phoenix::function<on_route_function> on_route;
 
+            struct on_proto_start_t {
+                explicit on_proto_start_t(const Actions & actions):
+                    actions(actions)
+                {}
+
+                template <typename IteratorT>
+                void operator()(IteratorT first, IteratorT last) const
+                {
+                    actions.on_proto_start(std::string(first, last));
+                }
+
+            private:
+                const Actions & actions;
+            };
+
+            const on_proto_start_t on_proto_start;
+
             struct on_proto_body_start_t {
                 explicit on_proto_body_start_t(const Actions & actions):
                     actions(actions)
@@ -2478,6 +2516,8 @@ namespace openvrml {
             std::string node_type_id;
             bool node_type_already_exists;
 
+            boost::spirit::symbols<typename ScannerT::value_t> keywords;
+
             rule_type vrml_scene;
             rule_type statement;
             rule_type proto_statement;
@@ -2489,11 +2529,15 @@ namespace openvrml {
             root_node_statement_rule_type root_node_statement;
             rule_type node;
             rule_type node_body_element;
+            interface_decl_rule_type interface_decl;
             script_interface_rule_type script_interface;
             field_value_rule_type field_value;
             std::stack<field_value_rule_type> field_value_rule_stack;
             is_mapping_rule_type is_mapping;
             route_statement_rule_type route_statement;
+            rule_type id;
+            boost::spirit::chset<typename ScannerT::value_t>
+                invalid_id_rest_char, invalid_id_first_char;
 
             explicit definition(const vrml97_grammar & self);
 
@@ -2612,8 +2656,8 @@ namespace openvrml {
             >(self.rotation_p)),
         mfnode_p(mfnode_parser(this->node_statement)),
         add_script_interface(add_script_interface_function(*this)),
-        node_name_id_p(node_name_id_parser(this->scope_stack)),
-        node_type_id_p(node_type_id_parser(this->scope_stack)),
+        node_name_id_p(node_name_id_parser(this->scope_stack, this->id)),
+        node_type_id_p(node_type_id_parser(this->scope_stack, this->id)),
         push_proto_scope(push_proto_scope_function(this->scope_stack)),
         on_scene_start(self.actions_),
         on_scene_finish(self.actions_),
@@ -2627,13 +2671,18 @@ namespace openvrml {
         on_script_interface_decl(
             on_script_interface_decl_function(self.actions_)),
         on_route(on_route_function(self.actions_)),
+        on_proto_start(self.actions_),
         on_proto_body_start(self.actions_),
         get_is_mapping(get_is_mapping_function(this->scope_stack)),
         on_is_mapping(on_is_mapping_function(self.actions_)),
         on_mfnode(self.actions_),
         self(self),
-        node_type_already_exists(false)
+        node_type_already_exists(false),
+        invalid_id_rest_char("\x01-\x20\x22\x23\x27,.[\\]{}\x7f"),
+        invalid_id_first_char(boost::spirit::chset_p("1234567890+-")
+                              | invalid_id_rest_char)
     {
+        using std::string;
         using namespace boost::spirit;
         using namespace phoenix;
         BOOST_SPIRIT_DEBUG_NODE(vrml_scene);
@@ -2655,6 +2704,11 @@ namespace openvrml {
 
         this->scope_stack.push(parse_scope());
         this->scope_stack.top().node_body_repo = self.node_types_;
+
+        keywords =
+            "DEF", "EXTERNPROTO", "FALSE", "IS", "NULL", "PROTO",
+            "ROUTE", "TO", "TRUE", "USE", "eventIn", "eventOut",
+            "field", "exposedField";
 
         vrml_scene
             =   eps_p[on_scene_start] >> *statement >> eps_p[on_scene_finish]
@@ -2689,9 +2743,12 @@ namespace openvrml {
 
         proto
             =   "PROTO"
-                >> expect_id(id_p)[set_node_type_id(proto.node_type, arg1)]
-                                  [push_proto_scope(proto.node_type)]
-                                  [self.actions_.on_proto_start]
+                >>  expect_id(id)[
+                    set_node_type_id(proto.node_type,
+                                     construct_<string>(arg1, arg2))
+                ]
+                [push_proto_scope(proto.node_type)]
+                [on_proto_start]
                 >> expect_lbracket(ch_p('['))
                 >> eps_p[push_field_value_rule(*this)]
                 >> *proto_interface
@@ -2707,7 +2764,7 @@ namespace openvrml {
             ;
 
         proto_interface
-            =   (   interface_decl_p[
+            =   (   interface_decl[
                         proto_interface.interface = arg1
                     ][
                         proto.add_node_interface_succeeded =
@@ -2726,12 +2783,29 @@ namespace openvrml {
                 >> eps_p[pop_scope(this->scope_stack)]
             ;
 
+        interface_decl
+            =   interface_type_p[
+                    set_node_interface_type(interface_decl.interface,
+                                            arg1)
+                ]
+                >>  expect_field_type(field_type_p)[
+                    set_node_interface_field_type(interface_decl.interface,
+                                                  arg1)
+                ]
+                >>  expect_id(id)[
+                    set_node_interface_id(interface_decl.interface,
+                                          construct_<string>(arg1, arg2))
+                ]
+            ;
+
         externproto
             =   str_p("EXTERNPROTO")
-                >> expect_id(id_p)[set_node_type_id(externproto.node_type,
-                                                    arg1)]
+                >>  expect_id(id)[
+                    set_node_type_id(externproto.node_type,
+                                     construct_<string>(arg1, arg2))
+                ]
                 >> expect_lbracket(ch_p('['))
-                >> *(   interface_decl_p[
+                >> *(   interface_decl[
                             externproto.add_node_interface_succeeded =
                                 add_node_interface(externproto.node_type, arg1)
                         ]
@@ -2751,10 +2825,10 @@ namespace openvrml {
             =   "ROUTE"
                 >>  node_name_id_p[route_statement.from_node = arg1]
                 >>  expect_dot(ch_p('.'))
-                >>  expect_id(id_p)[
+                >>  expect_id(id)[
                         route_statement.from_node_interface =
                             get_route_eventout(route_statement.from_node,
-                                               arg1)
+                                               construct_<string>(arg1, arg2))
                     ]
                 >>  expect_eventout_id(
                         eps_p(check(route_statement.from_node_interface))
@@ -2762,10 +2836,10 @@ namespace openvrml {
                 >>  expect_to(str_p("TO"))
                 >>  node_name_id_p[route_statement.to_node = arg1]
                 >>  expect_dot(ch_p('.'))
-                >>  expect_id(id_p)[
+                >>  expect_id(id)[
                         route_statement.to_node_interface =
                             get_route_eventin(route_statement.to_node,
-                                              arg1)
+                                              construct_<string>(arg1, arg2))
                     ]
                 >>  expect_eventin_id(
                         eps_p(check(route_statement.to_node_interface))
@@ -2795,9 +2869,10 @@ namespace openvrml {
             ;
 
         root_node_statement
-            =  !( "DEF" >> expect_id(id_p)[
-                       root_node_statement.node_name_id = arg1
-                   ]
+            =  !( "DEF" >> expect_id(id)[
+                        root_node_statement.node_name_id =
+                            construct_<string>(arg1, arg2)
+                    ]
                 )
                 >> node
             ;
@@ -2823,16 +2898,14 @@ namespace openvrml {
         node_body_element
             =   eps_p(is_script_node(root_node_statement.node_type))
                 >> script_interface
-            |   (id_p >> eps_p)[
-                    set_field_value_rule(root_node_statement.node_type, *this)
-                ]
+            |   id[set_field_value_rule(root_node_statement.node_type, *this)]
                 >> field_value
             |   route_statement
             |   proto_statement
             ;
 
         script_interface
-            =   interface_decl_p[script_interface.interface = arg1]
+            =   interface_decl[script_interface.interface = arg1]
                 >>  eps_p[
                         // add_script_interface sets field_value as a
                         // side-effect.
@@ -2847,9 +2920,10 @@ namespace openvrml {
 
         is_mapping
             =   "IS"
-                >>  expect_id(id_p)[
+                >>  expect_id(id)[
                         is_mapping.proto_interface =
-                            get_is_mapping(is_mapping.impl_interface, arg1)
+                            get_is_mapping(is_mapping.impl_interface,
+                                           construct_<string>(arg1, arg2))
                     ]
                 >>  expect_compatible_proto_interface(
                          eps_p(
@@ -2859,6 +2933,15 @@ namespace openvrml {
                          )
                     )
                 >>  eps_p[on_is_mapping(is_mapping.proto_interface)]
+            ;
+
+        id
+            =   lexeme_d[
+                    ((anychar_p - vrml97_space_p - invalid_id_first_char)
+                     >> *(anychar_p - vrml97_space_p - invalid_id_rest_char))
+                    - (keywords >> anychar_p - (anychar_p - vrml97_space_p
+                                                - invalid_id_rest_char))
+                ]
             ;
     }
 
