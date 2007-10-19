@@ -1,0 +1,8 @@
+#VRML V2.0 utf8
+PROTO Node [
+  field SFNode val0 Group { children [ DEF G Group {} ] }
+  field SFNode val1 Group { children [ USE G ] }
+] {
+  Group {}
+}
+Node {}

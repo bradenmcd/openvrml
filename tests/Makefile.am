@@ -70,7 +70,32 @@ parse_x3dvrml_LDADD = libtest-openvrml.la
 EXTRA_DIST = \
         package.m4 \
         testsuite.at \
-        testsuite
+        testsuite \
+        vrml97/bad/proto-eventin-conflict.wrl \
+        vrml97/bad/proto-eventout-conflict.wrl \
+        vrml97/bad/unrecognized-node.wrl \
+        vrml97/bad/use-def-in-different-proto-default-value.wrl \
+        vrml97/good/def-use-in-proto-default-value.wrl \
+        vrml97/good/line-number.wrl \
+        vrml97/good/proto-containment-2-deep.wrl \
+        vrml97/good/proto-containment-trivial.wrl \
+        vrml97/good/proto-field-is-proto.wrl \
+        vrml97/good/proto-impl-exposedfield-event-is.wrl \
+        vrml97/good/proto-in-proto-default-value.wrl \
+        vrml97/good/route-referencing-current-node.wrl \
+        vrml97/good/self-referential-script-in-proto.wrl \
+        vrml97/good/self-referential-script.wrl \
+        vrml97/good/unimplemented-externproto.wrl \
+        vrml97/good/unrecognized-externproto.wrl \
+        x3dv/bad/unsupported-component-level.x3dv \
+        x3dv/good/core+core2.x3dv \
+        x3dv/good/minimal.x3dv \
+        x3dv/good/minimal-full.x3dv \
+        x3dv/good/minimal-immersive.x3dv \
+        x3dv/good/minimal-interactive.x3dv \
+        x3dv/good/minimal-interchange.x3dv \
+        x3dv/good/minimal-mpeg4.x3dv \
+        x3dv/good/x3d+vrml97-component.x3dv
 
 TESTSUITE = $(srcdir)/testsuite
 check-local: atconfig atlocal $(TESTSUITE)

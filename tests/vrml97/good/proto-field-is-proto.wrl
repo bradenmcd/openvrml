@@ -1,0 +1,10 @@
+#VRML V2.0 utf8
+PROTO Node0 [] { Group {} }
+PROTO Node1 [
+  field SFNode field0 Node0 {}
+] {
+  Collision {
+    proxy IS field0
+  }
+}
+Node1 {}

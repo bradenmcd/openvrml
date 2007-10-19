@@ -3,165 +3,58 @@ AT_INIT
 AT_BANNER([VRML97 parse tests: code that should be accepted])
 
 AT_SETUP([Ensure the line number is reported correctly for the last token on a line])
-AT_DATA([line-number.wrl],
-[[#VRML V2.0 utf8
-Transform {
-  rotation 0 0 0 0
-}
-]])
-AT_CHECK([parse-vrml97 < line-number.wrl], [0], [],
-[urn:X-openvrml:stream:1:3:17: warning: axis component of a rotation must be a normalized vector
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/line-number.wrl],
+         [0], [],
+         [urn:X-openvrml:stream:1:3:17: warning: axis component of a rotation must be a normalized vector
 ])
 AT_CLEANUP
 
 AT_SETUP([Trivial PROTO containment])
-AT_DATA([proto-containment-trivial.wrl],
-[[#VRML V2.0 utf8
-PROTO Outer0 [] { PROTO Inner [] { Group {} } Inner {} }
-Outer0 {}
-]])
-AT_CHECK([parse-vrml97 < proto-containment-trivial.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-containment-trivial.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO containment 2 levels deep])
-AT_DATA([proto-containment-2-deep.wrl],
-[[#VRML V2.0 utf8
-PROTO Outer [] {
-  PROTO Inner0 [] {
-    PROTO Inner1 [] {
-      Group {}
-    }
-    Inner1 {}
-  }
-  Inner0 {}
-}
-Outer {}
-]])
-AT_CHECK([parse-vrml97 < proto-containment-2-deep.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-containment-2-deep.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO instance as default PROTO field value])
-AT_DATA([proto-field-is-proto.wrl],
-[[#VRML V2.0 utf8
-PROTO Node0 [] { Group {} }
-PROTO Node1 [
-  field SFNode field0 Node0 {}
-] {
-  Collision {
-    proxy IS field0
-  }
-}
-Node1 {}
-]])
-AT_CHECK([parse-vrml97 < proto-field-is-proto.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-field-is-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Map PROTO eventIn, eventOut to an exposedField])
-AT_DATA([proto-impl-exposedfield-event-is.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  eventIn MFNode set_children
-  eventOut MFNode children_changed
-] {
-  Group {
-    set_children IS set_children
-    children_changed IS children_changed
-  }
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < proto-impl-exposedfield-event-is.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-impl-exposedfield-event-is.wrl])
 AT_CLEANUP
 
 AT_SETUP([ROUTE referring to the current node])
 AT_XFAIL_IF([true])
-AT_DATA([route-referencing-current-node.wrl],
-[[#VRML V2.0 utf8
-DEF G1 Group {}
-DEF G2 Group {
-  ROUTE G1.children TO G2.children
-}
-]])
-AT_CHECK([parse-vrml97 < route-referencing-current-node.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/route-referencing-current-node.wrl])
 AT_CLEANUP
 
 AT_SETUP([DEF/USE in a PROTO field default value])
-AT_DATA([def-use-in-proto-default-value.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  field MFNode val [ Group { children [ DEF G Group {} ] },
-                     Group { children [ USE G ] } ]
-] {
-  Group {}
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < def-use-in-proto-default-value.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/def-use-in-proto-default-value.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO in a PROTO field default value])
-AT_DATA([proto-in-proto-default-value.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  field MFNode val [
-    Group {
-      PROTO Local [] { Group {} }
-      children [ Local {} ]
-    }
-  ]
-] {
-  Group { children IS val }
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < proto-in-proto-default-value.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-in-proto-default-value.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node])
-AT_DATA([self-referential-script.wrl],
-[[#VRML V2.0 utf8
-DEF S Script {
-  field SFNode val0 USE S
-  field MFNode val1 [ Group {}, USE S, Group {} ]
-}
-]])
-AT_CHECK([parse-vrml97 < self-referential-script.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/self-referential-script.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node in a PROTO])
-AT_DATA([self-referential-script-in-proto.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [] {
-  DEF S Script {
-    field SFNode val0 USE S
-    field MFNode val1 [ Group {}, USE S, Group {} ]
-  }
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < self-referential-script-in-proto.wrl])
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/self-referential-script-in-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Unrecognized EXTERNPROTO])
-AT_DATA([unrecognized-externproto.wrl],
-[[#VRML V2.0 utf8
-EXTERNPROTO UnrecognizedNode [ exposedField SFBool sfboolField ]
-[ "urn:unrecognized" ]
-UnrecognizedNode { sfboolField TRUE }
-]])
-AT_CHECK([parse-vrml97 < unrecognized-externproto.wrl],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/unrecognized-externproto.wrl],
          [0],
          [ignore],
          [ignore])
 AT_CLEANUP
 
 AT_SETUP([Unimplemented EXTERNPROTO])
-AT_DATA([unimplemented-externproto.wrl],
-[[#VRML V2.0 utf8
-EXTERNPROTO UnimplementedNode [ exposedField SFBool sfboolField ] []
-UnimplementedNode { sfboolField TRUE }
-]])
-AT_CHECK([parse-vrml97 < unimplemented-externproto.wrl],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/unimplemented-externproto.wrl],
          [0],
          [ignore],
          [ignore])
@@ -170,59 +63,25 @@ AT_CLEANUP
 AT_BANNER([VRML97 parse tests: code that should be rejected])
 
 AT_SETUP([Unrecognized node type])
-AT_DATA([unrecognized-node.wrl],
-[[#VRML V2.0 utf8
-UnrecognizedNode {}
-]])
-AT_CHECK([parse-vrml97 < unrecognized-node.wrl], [1], [],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/unrecognized-node.wrl], [1], [],
 [urn:X-openvrml:stream:1:2:0: error: unknown node type "UnrecognizedNode"
 ])
 AT_CLEANUP
 
 AT_SETUP([PROTO with a conflicting eventIn and exposedField])
-AT_DATA([proto-eventin-conflict.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  eventIn SFBool set_foo
-  exposedField MFNode foo []
-] {
-  Group {}
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < proto-eventin-conflict.wrl], [1], [],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/proto-eventin-conflict.wrl], [1], [],
 [urn:X-openvrml:stream:1:4:22: error: Interface "exposedField MFNode foo" conflicts with previous declaration
 ])
 AT_CLEANUP
 
 AT_SETUP([PROTO with a conflicting eventOut and exposedField])
-AT_DATA([proto-eventout-conflict.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  exposedField MFVec3f foo []
-  eventOut SFColor foo_changed
-] {
-  Group {}
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < proto-eventout-conflict.wrl], [1], [],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/proto-eventout-conflict.wrl], [1], [],
 [urn:X-openvrml:stream:1:4:19: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
 ])
 AT_CLEANUP
 
 AT_SETUP([USE a node DEFined in a different PROTO field default value])
-AT_DATA([use-def-in-different-proto-default-value.wrl],
-[[#VRML V2.0 utf8
-PROTO Node [
-  field SFNode val0 Group { children [ DEF G Group {} ] }
-  field SFNode val1 Group { children [ USE G ] }
-] {
-  Group {}
-}
-Node {}
-]])
-AT_CHECK([parse-vrml97 < use-def-in-different-proto-default-value.wrl], [1], [],
+AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/use-def-in-different-proto-default-value.wrl], [1], [],
 [urn:X-openvrml:stream:1:4:43: error: node "G" has not been defined in this scope
 ])
 AT_CLEANUP
@@ -230,80 +89,41 @@ AT_CLEANUP
 AT_BANNER([X3D VRML parse tests: code that should be accepted])
 
 AT_SETUP([Minimal world])
-AT_DATA([minimal.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Core
-]])
-AT_CHECK([parse-x3dvrml < minimal.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Core profile world plus Core component level 2])
-AT_DATA([core+core2.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Core
-COMPONENT Core:2
-]])
-AT_CHECK([parse-x3dvrml < core+core2.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/core+core2.x3dv])
 AT_CLEANUP
 
 AT_SETUP([X3D Core plus VRML97 component])
-AT_DATA([x3d+vrml97-component.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Core
-COMPONENT VRML97:1
-]])
-AT_CHECK([parse-x3dvrml < x3d+vrml97-component.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/x3d+vrml97-component.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Interchange world])
-AT_DATA([minimal-interchange.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Interchange
-]])
-AT_CHECK([parse-x3dvrml < minimal-interchange.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-interchange.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Interactive world])
-AT_DATA([minimal-interactive.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Interactive
-]])
-AT_CHECK([parse-x3dvrml < minimal-interactive.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-interactive.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal MPEG-4 Interactive world])
-AT_DATA([minimal-mpeg4.x3dv],
-[[#X3D V3.0 utf8
-PROFILE MPEG-4
-]])
-AT_CHECK([parse-x3dvrml < minimal-mpeg4.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-mpeg4.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Immersive world])
-AT_DATA([minimal-immersive.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Immersive
-]])
-AT_CHECK([parse-x3dvrml < minimal-immersive.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-immersive.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Full world])
-AT_DATA([minimal-full.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Full
-]])
-AT_CHECK([parse-x3dvrml < minimal-full.x3dv])
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-full.x3dv])
 AT_CLEANUP
 
 AT_BANNER([X3D VRML parse tests: code that should be rejected])
 
 AT_SETUP([Unsupported component level])
-AT_DATA([unsupported-component-level.x3dv],
-[[#X3D V3.0 utf8
-PROFILE Core
-COMPONENT Grouping:100
-]])
-AT_CHECK([parse-x3dvrml < unsupported-component-level.x3dv], [1], [],
+AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/bad/unsupported-component-level.x3dv], [1], [],
 [urn:X-openvrml:stream:1:3:10: error: unsupported component level
 ])
 AT_CLEANUP

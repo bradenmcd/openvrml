@@ -1,0 +1,11 @@
+#VRML V2.0 utf8
+PROTO Node [
+  eventIn MFNode set_children
+  eventOut MFNode children_changed
+] {
+  Group {
+    set_children IS set_children
+    children_changed IS children_changed
+  }
+}
+Node {}
