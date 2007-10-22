@@ -2765,13 +2765,13 @@ namespace {
  *         the route already existed).
  *
  * @exception std::bad_alloc            if memory allocation fails.
- * @exception unsupported_interface     if the node has no eventOut
- *                                      @p eventout; or if @p to has no eventIn
- *                                      @p eventin.
+ * @exception unsupported_interface     if @p from has no eventOut
+ *                                      @p eventout; or if @p to has no
+ *                                      eventIn @p eventin.
  * @exception field_value_type_mismatch if @p eventout and @p eventin have
  *                                      different field value types.
  *
- * @pre @p to_node is not null.
+ * @pre @p from and @p to are not null.
  */
 bool openvrml::add_route(node & from,
                          const std::string & eventout,
@@ -2826,10 +2826,8 @@ namespace {
 }
 
 /**
- * @brief Remove a route from an @c eventOut of this @c node to an @c eventIn
+ * @brief Remove a route from an @c eventOut from a @c node to an @c eventIn
  *        of another @c node.
- *
- * If no such route exists, this method has no effect.
  *
  * @param[in,out] from      source @c node.
  * @param[in]     eventout  an @c eventOut of @p from.
