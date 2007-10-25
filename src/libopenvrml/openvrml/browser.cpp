@@ -3196,26 +3196,146 @@ namespace {
 
     void uri::swap(uri & id) OPENVRML_NOTHROW
     {
+        using std::distance;
+        using std::string;
         using std::swap;
+
+        const string::size_type id_scheme_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.scheme_begin);
+        const string::size_type id_scheme_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.scheme_end);
+        const string::size_type id_scheme_specific_part_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(),
+                                             id.scheme_specific_part_begin);
+        const string::size_type id_scheme_specific_part_end_distance =
+            distance<string::const_iterator>(id.str_.begin(),
+                                             id.scheme_specific_part_end);
+        const string::size_type id_authority_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.authority_begin);
+        const string::size_type id_authority_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.authority_end);
+        const string::size_type id_userinfo_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.userinfo_begin);
+        const string::size_type id_userinfo_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.userinfo_end);
+        const string::size_type id_host_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.host_begin);
+        const string::size_type id_host_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.host_end);
+        const string::size_type id_port_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.port_begin);
+        const string::size_type id_port_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.port_end);
+        const string::size_type id_path_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.path_begin);
+        const string::size_type id_path_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.path_end);
+        const string::size_type id_query_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.query_begin);
+        const string::size_type id_query_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.query_end);
+        const string::size_type id_fragment_begin_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.fragment_begin);
+        const string::size_type id_fragment_end_distance =
+            distance<string::const_iterator>(id.str_.begin(), id.fragment_end);
+
+        const string::size_type this_scheme_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->scheme_begin);
+        const string::size_type this_scheme_end_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->scheme_end);
+        const string::size_type this_scheme_specific_part_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->scheme_specific_part_begin);
+        const string::size_type this_scheme_specific_part_end_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->scheme_specific_part_end);
+        const string::size_type this_authority_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->authority_begin);
+        const string::size_type this_authority_end_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->authority_end);
+        const string::size_type this_userinfo_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->userinfo_begin);
+        const string::size_type this_userinfo_end_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->userinfo_end);
+        const string::size_type this_host_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->host_begin);
+        const string::size_type this_host_end_distance =
+            distance<string::const_iterator>(this->str_.begin(), this->host_end);
+        const string::size_type this_port_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->port_begin);
+        const string::size_type this_port_end_distance =
+            distance<string::const_iterator>(this->str_.begin(), this->port_end);
+        const string::size_type this_path_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->path_begin);
+        const string::size_type this_path_end_distance =
+            distance<string::const_iterator>(this->str_.begin(), this->path_end);
+        const string::size_type this_query_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->query_begin);
+        const string::size_type this_query_end_distance =
+            distance<string::const_iterator>(this->str_.begin(), this->query_end);
+        const string::size_type this_fragment_begin_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->fragment_begin);
+        const string::size_type this_fragment_end_distance =
+            distance<string::const_iterator>(this->str_.begin(),
+                                             this->fragment_end);
+
         swap(this->str_, id.str_);
-        swap(this->scheme_begin, id.scheme_begin);
-        swap(this->scheme_end, id.scheme_end);
-        swap(this->scheme_specific_part_begin, id.scheme_specific_part_begin);
-        swap(this->scheme_specific_part_end, id.scheme_specific_part_end);
-        swap(this->authority_begin, id.authority_begin);
-        swap(this->authority_end, id.authority_end);
-        swap(this->userinfo_begin, id.userinfo_begin);
-        swap(this->userinfo_end, id.userinfo_end);
-        swap(this->host_begin, id.host_begin);
-        swap(this->host_end, id.host_end);
-        swap(this->port_begin, id.port_begin);
-        swap(this->port_end, id.port_end);
-        swap(this->path_begin, id.path_begin);
-        swap(this->path_end, id.path_end);
-        swap(this->query_begin, id.query_begin);
-        swap(this->query_end, id.query_end);
-        swap(this->fragment_begin, id.fragment_begin);
-        swap(this->fragment_end, id.fragment_end);
+
+        id.scheme_begin = id.str_.begin() + this_scheme_begin_distance;
+        id.scheme_end = id.str_.begin() + this_scheme_end_distance;
+        id.scheme_specific_part_begin =
+            id.str_.begin() + this_scheme_specific_part_begin_distance;
+        id.scheme_specific_part_end =
+            id.str_.begin() + this_scheme_specific_part_end_distance;
+        id.authority_begin = id.str_.begin() + this_authority_begin_distance;
+        id.authority_end = id.str_.begin() + this_authority_end_distance;
+        id.userinfo_begin = id.str_.begin() + this_userinfo_begin_distance;
+        id.userinfo_end = id.str_.begin() + this_userinfo_end_distance;
+        id.host_begin = id.str_.begin() + this_host_begin_distance;
+        id.host_end = id.str_.begin() + this_host_end_distance;
+        id.port_begin = id.str_.begin() + this_port_begin_distance;
+        id.port_end = id.str_.begin() + this_port_end_distance;
+        id.path_begin = id.str_.begin() + this_path_begin_distance;
+        id.path_end = id.str_.begin() + this_path_end_distance;
+        id.query_begin = id.str_.begin() + this_query_begin_distance;
+        id.query_end = id.str_.begin() + this_query_end_distance;
+        id.fragment_begin = id.str_.begin() + this_fragment_begin_distance;
+        id.fragment_end = id.str_.begin() + this_fragment_end_distance;
+
+        this->scheme_begin = this->str_.begin() + id_scheme_begin_distance;
+        this->scheme_end = this->str_.begin() + id_scheme_end_distance;
+        this->scheme_specific_part_begin =
+            this->str_.begin() + id_scheme_specific_part_begin_distance;
+        this->scheme_specific_part_end =
+            this->str_.begin() + id_scheme_specific_part_end_distance;
+        this->authority_begin =
+            this->str_.begin() + id_authority_begin_distance;
+        this->authority_end = this->str_.begin() + id_authority_end_distance;
+        this->userinfo_begin =
+            this->str_.begin() + id_userinfo_begin_distance;
+        this->userinfo_end = this->str_.begin() + id_userinfo_end_distance;
+        this->host_begin = this->str_.begin() + id_host_begin_distance;
+        this->host_end = this->str_.begin() + id_host_end_distance;
+        this->port_begin = this->str_.begin() + id_port_begin_distance;
+        this->port_end = this->str_.begin() + id_port_end_distance;
+        this->path_begin = this->str_.begin() + id_path_begin_distance;
+        this->path_end = this->str_.begin() + id_path_end_distance;
+        this->query_begin = this->str_.begin() + id_query_begin_distance;
+        this->query_end = this->str_.begin() + id_query_end_distance;
+        this->fragment_begin =
+            this->str_.begin() + id_fragment_begin_distance;
+        this->fragment_end = this->str_.begin() + id_fragment_end_distance;
     }
 
     const std::string uri::scheme() const OPENVRML_THROW1(std::bad_alloc)

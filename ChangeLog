@@ -1,6 +1,14 @@
 2007-10-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
+	(uri::swap(uri &)): Swapping std::string invalidates iterators;
+	see 21.3,5 in the C++ spec.  Copy the iterator offsets to
+	temporary variables in order to recreate them.  This fixes a
+	failure with Release builds using the Microsoft compiler.
+
+2007-10-25 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::scene::get_resource(const std::vector<std::string> &)
 	const): Catch invalid_url exception.
 
