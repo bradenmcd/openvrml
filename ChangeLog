@@ -1,3 +1,9 @@
+2007-10-25 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::scene::get_resource(const std::vector<std::string> &)
+	const): Catch invalid_url exception.
+
 2007-10-11 Braden McDaniel  <braden@endoframe.com>
 
 	Improved resiliency of create_file_url to getcwd failures.
