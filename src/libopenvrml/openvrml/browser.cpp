@@ -7504,24 +7504,29 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
 
     for (vector<string>::size_type i = 0; i < url.size(); ++i) {
         //
-        // Throw invalid_url if it isn't a valid URI.
-        //
-        uri test_uri(url[i]);
-
-        //
         // If we have a relative reference, resolve it against this->url();
         // unless the parent is null and this->url() is empty, in which case
         // we are loading the root scene.  In that case, construct an absolute
         // file URL.
         //
-        uri absolute_uri;
+        uri test_uri, absolute_uri;
         try {
+            //
+            // Throw invalid_url if it isn't a valid URI.
+            //
+            test_uri = uri(url[i]);
+
             absolute_uri = !relative(test_uri)
                          ? test_uri
                          : (!this->parent() && this->url().empty())
                              ? create_file_url(test_uri)
                              : test_uri.resolve_against(uri(this->url()));
             in = this->browser().fetcher_.get_resource(absolute_uri);
+        } catch (invalid_url &) {
+            std::ostringstream msg;
+            msg << url[i] << ": invalid URI";
+            this->browser().err(msg.str());
+            continue;
         } catch (std::exception & ex) {
             std::ostringstream msg;
             msg << string(!absolute_uri.scheme().empty() ? absolute_uri
