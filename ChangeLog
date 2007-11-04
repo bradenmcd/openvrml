@@ -1,5 +1,9 @@
 2007-11-04 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Made GRE_PATH precious.
+
+2007-11-04 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Get GRE_PATH from JS_LIBS rather than from
 	pkg-config output.  This is resilient to providing JS_LIBS at
 	configure time in situations where pkg-config metadata may
