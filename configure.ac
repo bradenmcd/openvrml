@@ -255,7 +255,7 @@ else
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
     AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
-    GRE_PATH=`$PKG_CONFIG --libs-only-L ${mozilla_js_pkg%% *} | sed -e 's/^-L//' -e 's/ *$//'`
+    GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
     if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
       openvrml_run_path=":${openvrml_run_path}"
     fi

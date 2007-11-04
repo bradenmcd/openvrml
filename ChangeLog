@@ -1,3 +1,10 @@
+2007-11-04 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Get GRE_PATH from JS_LIBS rather than from
+	pkg-config output.  This is resilient to providing JS_LIBS at
+	configure time in situations where pkg-config metadata may
+	unavaiable or otherwise nonfunctional.
+
 2007-10-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
