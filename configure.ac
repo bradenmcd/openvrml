@@ -231,6 +231,7 @@ fi
 #
 # Script node JavaScript support
 #
+AC_ARG_VAR([GRE_PATH], [Path to Gecko runtime libraries])
 AC_ARG_ENABLE([script-node-javascript],
               [AC_HELP_STRING([--disable-script-node-javascript],
                               [disable Script node JavaScript support])])
@@ -255,7 +256,9 @@ else
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
     AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
-    GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
+    if test -z "${GRE_PATH}"; then
+      GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
+    fi
     if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
       openvrml_run_path=":${openvrml_run_path}"
     fi
@@ -277,7 +280,6 @@ else
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
-AC_SUBST([GRE_PATH])
 
 #
 # Script node Java support
