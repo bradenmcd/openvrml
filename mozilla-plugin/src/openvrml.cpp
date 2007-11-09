@@ -31,7 +31,6 @@
 # include <boost/noncopyable.hpp>
 # include <boost/ref.hpp>
 # include <boost/scoped_ptr.hpp>
-# include <mozilla-config.h>
 # include <npupp.h>
 # if defined MOZ_X11
 #   include <fcntl.h>

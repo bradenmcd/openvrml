@@ -15,17 +15,18 @@ AC_PROG_LIBTOOL
 
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 
-PKG_CHECK_MODULES([MOZILLA_PLUGIN],
-                  [firefox-plugin],
+AC_PATH_X
+if test X$no_x != Xyes; then
+  AC_DEFINE([MOZ_X11], [1], [Build an X11 plug-in])
+fi
+
+PKG_CHECK_MODULES([MOZILLA_PLUGIN], [firefox-plugin],
                   [mozilla_plugin_pkg=firefox-plugin],
-                  [PKG_CHECK_MODULES([MOZILLA_PLUGIN],
-                                     [mozilla-plugin >= 1.6],
+                  [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
                                      [mozilla_plugin_pkg=mozilla-plugin],
                                      [have_mozilla_plugin=no])])
 mozlibdir=`$PKG_CONFIG --variable=libdir $mozilla_plugin_pkg`
 AC_SUBST([mozlibdir])
-mozincludedir=`$PKG_CONFIG --variable=includedir $mozilla_plugin_pkg`
-AC_SUBST([mozincludedir])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 
 if test "X$enable_mozilla_plugin" != "Xno"; then
