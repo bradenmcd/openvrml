@@ -25,8 +25,6 @@ PKG_CHECK_MODULES([MOZILLA_PLUGIN], [firefox-plugin],
                   [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
                                      [mozilla_plugin_pkg=mozilla-plugin],
                                      [have_mozilla_plugin=no])])
-mozlibdir=`$PKG_CONFIG --variable=libdir $mozilla_plugin_pkg`
-AC_SUBST([mozlibdir])
 PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
 
 if test "X$enable_mozilla_plugin" != "Xno"; then
