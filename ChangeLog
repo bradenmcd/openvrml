@@ -1,5 +1,12 @@
 2007-11-09 Braden McDaniel  <braden@endoframe.com>
 
+	Prefer xulrunner-js and xulrunner-plugin pkg-config module names.
+
+	* configure.ac
+	* mozilla-plugin/configure.ac
+
+2007-11-09 Braden McDaniel  <braden@endoframe.com>
+
 	Removed completely unnecessary rpath from the Mozilla plug-in.
 
 	* mozilla-plugin/configure.ac: Removed mozlibdir substitution.
