@@ -1,5 +1,13 @@
 2007-11-09 Braden McDaniel  <braden@endoframe.com>
 
+	Removed completely unnecessary rpath from the Mozilla plug-in.
+
+	* mozilla-plugin/configure.ac: Removed mozlibdir substitution.
+	* mozilla-plugin/src/Makefile.am (openvrml_la_LDFLAGS): Removed
+	rpath.
+
+2007-11-09 Braden McDaniel  <braden@endoframe.com>
+
 	Avoid including <mozilla-config.h>.  This file resides outside the
 	paths specified in the pkg-config metadata.
 
