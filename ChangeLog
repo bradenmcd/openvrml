@@ -1,3 +1,11 @@
+2007-11-10 Braden McDaniel  <braden@endoframe.com>
+
+	Build with libpng using the Visual C++ project files.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+
 2007-11-09 Braden McDaniel  <braden@endoframe.com>
 
 	Prefer xulrunner-js and xulrunner-plugin pkg-config module names.
