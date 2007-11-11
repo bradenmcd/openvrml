@@ -1,5 +1,20 @@
 2007-11-11 Braden McDaniel  <braden@endoframe.com>
 
+	Use floating point literals to quell compiler warnings.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(get_spine_length(const std::vector<openvrml::vec3f> &)): Use
+	floating point literals to quell compiler warnings.
+	(get_cross_section_length(const std::vector<openvrml::vec2f> &)):
+	Use floating point literals to quell compiler warnings.
+
+2007-11-11 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.h: Applied OPENVRML_API to
+	friend declarations of operator<<.
+
+2007-11-11 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
 	Updated FreeType dependency to 2.3.5.
 

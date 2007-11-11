@@ -2171,7 +2171,7 @@ namespace {
              ++point) {
             result += (*(point + 1) - *point).length();
         }
-        return result == 0.0 ? 1.0 : result;
+        return result == 0.0f ? 1.0f : result;
     }
 
     /**
@@ -2203,7 +2203,7 @@ namespace {
              ++point) {
             result += (*(point + 1) - *point).length();
         }
-        return result == 0.0 ? 1.0 : result;
+        return result == 0.0f ? 1.0f : result;
     }
 
     /**
