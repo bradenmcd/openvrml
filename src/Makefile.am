@@ -92,8 +92,8 @@ noinst_HEADERS = \
         openvrml-xembed/gtkvrmlbrowser.h \
         openvrml-player/filechooserdialog.h
 
-LIBOPENVRML_LIBRARY_VERSION =    7:5:1
-LIBOPENVRML_GL_LIBRARY_VERSION = 6:7:0
+LIBOPENVRML_LIBRARY_VERSION =    7:6:1
+LIBOPENVRML_GL_LIBRARY_VERSION = 6:8:0
 #                                | | |
 #                         +------+ | +---+
 #                         |        |     |
