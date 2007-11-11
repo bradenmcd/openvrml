@@ -1,6 +1,6 @@
 2007-11-11 Braden McDaniel  <braden@endoframe.com>
 
-	Removed unnecessary WIN32 preprocessor definition.
+	Removed unnecessary preprocessor definitions.
 
 	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
 	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
