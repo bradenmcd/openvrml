@@ -1,5 +1,15 @@
 2007-11-11 Braden McDaniel  <braden@endoframe.com>
 
+	Quell some compiler/linker warnings.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Define _SCL_SECURE_NO_WARNINGS for the Release configuration to
+	suppress warnings when using C++ standard library functions.
+	Suppress the default libraries libcmt and libcmtd in the Release
+	and Debug configurations, respectively.
+
+2007-11-11 Braden McDaniel  <braden@endoframe.com>
+
 	Don't define NO_STATIC_CONSTS for antlr.  The Microsoft compiler
 	bug that necessitated this appears to have been fixed in cl
 	14.00.50727.762.
