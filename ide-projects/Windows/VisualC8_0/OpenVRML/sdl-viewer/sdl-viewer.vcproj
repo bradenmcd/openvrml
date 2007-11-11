@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml;&quot;..\openvrml-gl&quot;;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL"
+				PreprocessorDefinitions="_DEBUG;_WINDOWS;OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -126,7 +126,7 @@
 				Optimization="3"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\openvrml;&quot;..\openvrml-gl&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL"
+				PreprocessorDefinitions="NDEBUG;_WINDOWS;OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"
@@ -135,7 +135,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				DisableSpecificWarnings="4226;4250;4290;4355;4800"
+				DisableSpecificWarnings="4226;4250;4251;4275;4290;4355;4800"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
