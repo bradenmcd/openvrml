@@ -1,5 +1,14 @@
 2007-11-11 Braden McDaniel  <braden@endoframe.com>
 
+	Don't define NO_STATIC_CONSTS for antlr.  The Microsoft compiler
+	bug that necessitated this appears to have been fixed in cl
+	14.00.50727.762.
+
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj
+
+2007-11-11 Braden McDaniel  <braden@endoframe.com>
+
 	Use floating point literals to quell compiler warnings.
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
