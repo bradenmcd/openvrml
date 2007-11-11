@@ -45,7 +45,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, color & c);
 
     class OPENVRML_API color {
-        friend std::istream & operator>>(std::istream & in, color & c);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      color & c);
 
         float rgb[3];
 
@@ -118,7 +119,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, color_rgba & c);
 
     class OPENVRML_API color_rgba {
-        friend std::istream & operator>>(std::istream & in, color_rgba & c);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      color_rgba & c);
 
         float rgba[4];
 
@@ -205,7 +207,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, vec2f & v);
 
     class OPENVRML_API vec2f {
-        friend std::istream & operator>>(std::istream & in, vec2f & v);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec2f & v);
 
         float vec[2];
 
@@ -295,7 +298,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, vec2d & v);
 
     class OPENVRML_API vec2d {
-        friend std::istream & operator>>(std::istream & in, vec2d & v);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec2d & v);
 
         double vec[2];
 
@@ -386,7 +390,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, vec3f & v);
 
     class OPENVRML_API vec3f {
-        friend std::istream & operator>>(std::istream & in, vec3f & v);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec3f & v);
 
         float vec[3];
 
@@ -503,7 +508,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, vec3d & v);
 
     class OPENVRML_API vec3d {
-        friend std::istream & operator>>(std::istream & in, vec3d & v);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec3d & v);
 
         double vec[3];
 
@@ -773,7 +779,8 @@ namespace openvrml {
     OPENVRML_API std::istream & operator>>(std::istream & in, quatf & q);
 
     class OPENVRML_API quatf {
-        friend std::istream & operator>>(std::istream & in, quatf & q);
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      quatf & q);
 
         float quat[4];
 
