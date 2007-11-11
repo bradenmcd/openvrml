@@ -115,77 +115,58 @@ namespace {
  */
 
 /**
- * @struct openvrml::color openvrml/basetypes.h
+ * @class openvrml::color openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a color.
+ * @brief A color.
  *
  * VRML colors are represented as three single-precision floating point
  * components&mdash;red, green, and blue&mdash;ranging from 0.0 to 1.0.
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::color::rgb[3]
  *
  * @brief RGB triplet.
  */
 
 /**
- * @relatesalso openvrml::color
- *
- * @brief Create a zero-initialized color.
- *
- * @return a zero-initialized color.
+ * @brief Construct.
  */
-const openvrml::color openvrml::make_color() OPENVRML_NOTHROW
-{
-    const color c = { { 0.0, 0.0, 0.0 } };
-    return c;
-}
+openvrml::color::color() OPENVRML_NOTHROW
+{}
 
 /**
- * @relatesalso openvrml::color
- *
- * @brief Create a color.
- *
- * @overload
+ * @brief Construct from a 3-element float array.
  *
  * @param[in] rgb   an array comprising red, green, and blue components.
- *
- * @return a color.
  */
-const openvrml::color openvrml::make_color(const float (&rgb)[3])
-    OPENVRML_NOTHROW
+openvrml::color::color(const float (&rgb)[3]) OPENVRML_NOTHROW
 {
     assert(rgb[0] >= 0.0 && rgb[0] <= 1.0);
+    this->rgb[0] = rgb[0];
     assert(rgb[1] >= 0.0 && rgb[1] <= 1.0);
+    this->rgb[1] = rgb[1];
     assert(rgb[2] >= 0.0 && rgb[2] <= 1.0);
-    const color c = { { rgb[0], rgb[1], rgb[2] } };
-    return c;
+    this->rgb[2] = rgb[2];
 }
 
 /**
- * @relatesalso openvrml::color
- *
- * @brief Create a color.
- *
- * @overload
+ * @brief Construct from red, green, and blue components.
  *
  * @param[in] r red component.
  * @param[in] g green component.
  * @param[in] b blue component.
- *
- * @return a color.
  */
-const openvrml::color openvrml::make_color(const float r,
-                                           const float g,
-                                           const float b)
-    OPENVRML_NOTHROW
+openvrml::color::color(float r, float g, float b) OPENVRML_NOTHROW
 {
     assert(r >= 0.0 && r <= 1.0);
+    this->rgb[0] = r;
     assert(g >= 0.0 && g <= 1.0);
+    this->rgb[1] = g;
     assert(b >= 0.0 && b <= 1.0);
-    const color c = { { r, g, b } };
-    return c;
+    this->rgb[2] = b;
 }
 
 /**
@@ -438,9 +419,9 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
 }
 
 /**
- * @struct openvrml::color_rgba openvrml/basetypes.h
+ * @class openvrml::color_rgba openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a color with an alpha channel.
+ * @brief A color with alpha channel.
  *
  * VRML @c color_rgba%s are represented as four single-precision floating
  * point components&mdash;red, green, blue, and alpha&mdash;ranging from 0.0
@@ -448,73 +429,55 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color & c)
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::color_rgba::rgba[4]
  *
  * @brief RGB triplet plus alpha.
  */
 
 /**
- * @relatesalso openvrml::color_rgba
- *
- * @brief Create a zero-initialized @c color_rgba.
- *
- * @return a zero-initialized @c color_rgba.
+ * @brief Construct.
  */
-const openvrml::color_rgba openvrml::make_color_rgba() OPENVRML_NOTHROW
-{
-    const color_rgba c = { { 0.0, 0.0, 0.0, 0.0 } };
-    return c;
-}
+openvrml::color_rgba::color_rgba() OPENVRML_NOTHROW
+{}
 
 /**
- * @relatesalso openvrml::color_rgba
+ * @brief Construct from a 4-element float array.
  *
- * @brief Create a @c color_rgba.
- *
- * @overload
- *
- * @param[in] rgba   an array comprising red, green, blue, and alpha
- *                   components.
- *
- * @return a @c color_rgba.
+ * @param[in] rgba   an array comprising red, green, and blue components.
  */
-const openvrml::color_rgba openvrml::make_color_rgba(const float (&rgba)[4])
-    OPENVRML_NOTHROW
+openvrml::color_rgba::color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW
 {
     assert(rgba[0] >= 0.0 && rgba[0] <= 1.0);
+    this->rgba[0] = rgba[0];
     assert(rgba[1] >= 0.0 && rgba[1] <= 1.0);
+    this->rgba[1] = rgba[1];
     assert(rgba[2] >= 0.0 && rgba[2] <= 1.0);
+    this->rgba[2] = rgba[2];
     assert(rgba[3] >= 0.0 && rgba[3] <= 1.0);
-    const color_rgba c = { { rgba[0], rgba[1], rgba[2], rgba[3] } };
-    return c;
+    this->rgba[3] = rgba[3];
 }
 
 /**
- * @relatesalso openvrml::color_rgba
- *
- * @brief Create a @c color_rgba.
- *
- * @overload
+ * @brief Construct from red, green, and blue components.
  *
  * @param[in] r red component.
  * @param[in] g green component.
  * @param[in] b blue component.
  * @param[in] a alpha component.
- *
- * @return a @c color_rgba.
  */
-const openvrml::color_rgba openvrml::make_color_rgba(const float r,
-                                                     const float g,
-                                                     const float b,
-                                                     const float a)
+openvrml::color_rgba::color_rgba(float r, float g, float b, float a)
     OPENVRML_NOTHROW
 {
     assert(r >= 0.0 && r <= 1.0);
+    this->rgba[0] = r;
     assert(g >= 0.0 && g <= 1.0);
+    this->rgba[1] = g;
     assert(b >= 0.0 && b <= 1.0);
+    this->rgba[2] = b;
     assert(a >= 0.0 && a <= 1.0);
-    const color_rgba c = { { r, g, b, a } };
-    return c;
+    this->rgba[3] = a;
 }
 
 /**
@@ -721,79 +684,65 @@ std::ostream & openvrml::operator<<(std::ostream & out, const color_rgba & c)
 
 
 /**
- * @struct openvrml::vec2f openvrml/basetypes.h
+ * @class openvrml::vec2f openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a two-component single-precision vector.
+ * @brief Two-component single-precision vector.
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::vec2f::vec[2]
  *
  * @brief Vector components.
  */
 
 /**
- * @relatesalso openvrml::vec2f
- *
- * @brief Create a @c vec2f.
- *
- * @return a zero-initialized @c vec2f.
+ * @brief Construct.
  */
-const openvrml::vec2f openvrml::make_vec2f() OPENVRML_NOTHROW
+openvrml::vec2f::vec2f() OPENVRML_NOTHROW
 {
-    const vec2f v = { { 0.0, 0.0 } };
-    return v;
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
 }
 
 /**
- * @relatesalso openvrml::vec2f
- *
- * @brief Create a @c vec2f from an array.
- *
- * @overload
+ * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param[in] vec   an array comprising the vector components.
- *
- * @return a @c vec2f with the values in @p vec.
  */
-const openvrml::vec2f openvrml::make_vec2f(const float (&vec)[2])
-    OPENVRML_NOTHROW
+openvrml::vec2f::vec2f(const float (&vec)[2]) OPENVRML_NOTHROW
 {
     //
     // Ensure elements of vec are not NaN.
     //
     assert(vec[0] == vec[0]);
     assert(vec[1] == vec[1]);
-    const vec2f v = { { vec[0], vec[1] } };
-    return v;
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
 }
 
 /**
- * @relatesalso openvrml::vec2f
- *
- * @brief Create a @c vec2f from @p x and @p y components.
- *
- * @overload
+ * @brief Construct from @p x and @p y components.
  *
  * @pre @p x and @p y are valid numeric values (i.e., not NaN).
  *
  * @param[in] x x component.
  * @param[in] y y component.
- *
- * @return a @c vec2f with the values @p x and @p y.
  */
-const openvrml::vec2f openvrml::make_vec2f(const float x, const float y)
-    OPENVRML_NOTHROW
+openvrml::vec2f::vec2f(const float x, const float y) OPENVRML_NOTHROW
 {
     //
     // Ensure x and y are not NaN.
     //
     assert(x == x);
     assert(y == y);
-    const vec2f v = { { x, y } };
-    return v;
+
+    this->vec[0] = x;
+    this->vec[1] = y;
 }
 
 /**
@@ -953,7 +902,7 @@ const openvrml::vec2f openvrml::operator-(const vec2f & lhs, const vec2f & rhs)
  */
 const openvrml::vec2f openvrml::vec2f::operator-() const OPENVRML_NOTHROW
 {
-    return make_vec2f(-this->vec[0], -this->vec[1]);
+    return vec2f(-this->vec[0], -this->vec[1]);
 }
 
 /**
@@ -1134,79 +1083,65 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2f & v)
 
 
 /**
- * @struct openvrml::vec2d openvrml/basetypes.h
+ * @class openvrml::vec2d openvrml/basetypes.h
  *
  * @brief Two-component double-precision vector.
  */
 
 /**
+ * @internal
+ *
  * @var double openvrml::vec2d::vec[2]
  *
  * @brief Vector components.
  */
 
 /**
- * @relatesalso openvrml::vec2d
- *
- * @brief Create a @c vec2d.
- *
- * @return a zero-initialized @c vec2d.
+ * @brief Construct.
  */
-const openvrml::vec2d openvrml::make_vec2d() OPENVRML_NOTHROW
+openvrml::vec2d::vec2d() OPENVRML_NOTHROW
 {
-    const vec2d v = { { 0.0, 0.0 } };
-    return v;
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
 }
 
 /**
- * @relatesalso openvrml::vec2d
- *
- * @brief Create a @c vec2d from an array.
- *
- * @overload
+ * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param[in] vec   an array comprising the vector components.
- *
- * @return a @c vec2d with the values in @p vec.
  */
-const openvrml::vec2d openvrml::make_vec2d(const double (&vec)[2])
-    OPENVRML_NOTHROW
+openvrml::vec2d::vec2d(const double (&vec)[2]) OPENVRML_NOTHROW
 {
     //
     // Ensure elements of vec are not NaN.
     //
     assert(vec[0] == vec[0]);
     assert(vec[1] == vec[1]);
-    const vec2d v = { { vec[0], vec[1] } };
-    return v;
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
 }
 
 /**
- * @relatesalso openvrml::vec2d
- *
- * @brief Create a @c vec2d from @p x and @p y components.
- *
- * @overload
+ * @brief Construct from @p x and @p y components.
  *
  * @pre @p x and @p y are valid numeric values (i.e., not NaN).
  *
  * @param[in] x x component.
  * @param[in] y y component.
- *
- * @return a @c vec2d with the values @p x and @p y.
  */
-const openvrml::vec2d openvrml::make_vec2d(const double x, const double y)
-    OPENVRML_NOTHROW
+openvrml::vec2d::vec2d(const double x, const double y) OPENVRML_NOTHROW
 {
     //
     // Ensure x and y are not NaN.
     //
     assert(x == x);
     assert(y == y);
-    const vec2d v = { { x, y } };
-    return v;
+
+    this->vec[0] = x;
+    this->vec[1] = y;
 }
 
 /**
@@ -1366,7 +1301,7 @@ const openvrml::vec2d openvrml::operator-(const vec2d & lhs, const vec2d & rhs)
  */
 const openvrml::vec2d openvrml::vec2d::operator-() const OPENVRML_NOTHROW
 {
-    return make_vec2d(-this->vec[0], -this->vec[1]);
+    return vec2d(-this->vec[0], -this->vec[1]);
 }
 
 /**
@@ -1547,84 +1482,72 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec2d & v)
 
 
 /**
- * @struct openvrml::vec3f openvrml/basetypes.h
+ * @class openvrml::vec3f openvrml/basetypes.h
  *
  * @brief Three-component single-precision vector.
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::vec3f::vec[3]
  *
  * @brief Vector components.
  */
 
 /**
- * @relatesalso openvrml::vec3f
- *
- * @brief Create a @c vec3f.
- *
- * @return a zero-initialized @c vec3f.
+ * @brief Construct.
  */
-const openvrml::vec3f openvrml::make_vec3f() OPENVRML_NOTHROW
+openvrml::vec3f::vec3f() OPENVRML_NOTHROW
 {
-    const vec3f v = { { 0.0, 0.0, 0.0 } };
-    return v;
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
+    this->vec[2] = 0.0;
 }
 
 /**
- * @relatesalso openvrml::vec3f
- *
- * @brief Create a @c vec3f from an array.
- *
- * @overload
+ * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param[in] vec   an array comprising the vector components.
- *
- * @return a @c vec3f with the values in @p vec.
  */
-const openvrml::vec3f openvrml::make_vec3f(const float (&vec)[3])
-    OPENVRML_NOTHROW
+openvrml::vec3f::vec3f(const float (&vec)[3]) OPENVRML_NOTHROW
 {
     //
-    // Ensure elements of vec are not NaN.
+    // Ensure the elements of vec are not NaN.
     //
     assert(vec[0] == vec[0]);
     assert(vec[1] == vec[1]);
     assert(vec[2] == vec[2]);
-    const vec3f v = { { vec[0], vec[1], vec[2] } };
-    return v;
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
+    this->vec[2] = vec[2];
 }
 
 /**
- * @relatesalso openvrml::vec3f
+ * @brief Construct from @p x, @p y, and @p z components.
  *
- * @brief Create a @c vec3f from @p x, @p y, and @p z components.
- *
- * @overload
- *
- * @pre @p x, @p y and @p z are valid numeric values (i.e., not NaN).
+ * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
  *
  * @param[in] x x component.
  * @param[in] y y component.
  * @param[in] z z component.
- *
- * @return a @c vec3f with the values @p x, @p y, and @p z.
  */
-const openvrml::vec3f openvrml::make_vec3f(const float x,
-                                           const float y,
-                                           const float z)
+openvrml::vec3f::vec3f(const float x, const float y, const float z)
     OPENVRML_NOTHROW
 {
     //
-    // Ensure x and y are not NaN.
+    // Ensure x, y, and z are not NaN.
     //
     assert(x == x);
     assert(y == y);
     assert(z == z);
-    const vec3f v = { { x, y, z } };
-    return v;
+
+    this->vec[0] = x;
+    this->vec[1] = y;
+    this->vec[2] = z;
 }
 
 /**
@@ -1724,7 +1647,7 @@ const openvrml::vec3f openvrml::operator*(const mat4f & mat, const vec3f & vec)
                     + mat[2][2] * vec[2] + mat[2][3];
     const float w = mat[3][0] * vec[0] + mat[3][1] * vec[1]
                     + mat[3][2] * vec[2] + mat[3][3];
-    return make_vec3f(x / w, y / w, z / w);
+    return vec3f(x / w, y / w, z / w);
 }
 
 /**
@@ -1888,7 +1811,7 @@ const openvrml::vec3f openvrml::operator-(const vec3f & lhs, const vec3f & rhs)
  */
 const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
 {
-    return make_vec3f(-this->vec[0], -this->vec[1], -this->vec[2]);
+    return vec3f(-this->vec[0], -this->vec[1], -this->vec[2]);
 }
 
 /**
@@ -2090,84 +2013,72 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3f & v)
 
 
 /**
- * @struct openvrml::vec3d openvrml/basetypes.h
+ * @class openvrml::vec3d openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a three-component double-precision vector.
+ * @brief Three-component double-precision vector.
  */
 
 /**
+ * @internal
+ *
  * @var double openvrml::vec3d::vec[3]
  *
  * @brief Vector components.
  */
 
 /**
- * @relatesalso openvrml::vec3d
- *
- * @brief Create a @c vec3d.
- *
- * @return a zero-initialized @c vec3d.
+ * @brief Construct.
  */
-const openvrml::vec3d openvrml::make_vec3d() OPENVRML_NOTHROW
+openvrml::vec3d::vec3d() OPENVRML_NOTHROW
 {
-    const vec3d v = { { 0.0, 0.0, 0.0 } };
-    return v;
+    this->vec[0] = 0.0;
+    this->vec[1] = 0.0;
+    this->vec[2] = 0.0;
 }
 
 /**
- * @relatesalso openvrml::vec3d
- *
- * @brief Create a @c vec3d from an array.
- *
- * @overload
+ * @brief Construct from an array.
  *
  * @pre Elements of @p vec are valid numeric values (i.e., not NaN).
  *
  * @param[in] vec   an array comprising the vector components.
- *
- * @return a @c vec3d with the values in @p vec.
  */
-const openvrml::vec3d openvrml::make_vec3d(const double (&vec)[3])
-    OPENVRML_NOTHROW
+openvrml::vec3d::vec3d(const double (&vec)[3]) OPENVRML_NOTHROW
 {
     //
-    // Ensure elements of vec are not NaN.
+    // Ensure the elements of vec are not NaN.
     //
     assert(vec[0] == vec[0]);
     assert(vec[1] == vec[1]);
     assert(vec[2] == vec[2]);
-    const vec3d v = { { vec[0], vec[1], vec[2] } };
-    return v;
+
+    this->vec[0] = vec[0];
+    this->vec[1] = vec[1];
+    this->vec[2] = vec[2];
 }
 
 /**
- * @relatesalso openvrml::vec3d
+ * @brief Construct from @p x, @p y, and @p z components.
  *
- * @brief Create a @c vec3d from @p x, @p y, and @p z components.
- *
- * @overload
- *
- * @pre @p x, @p y and @p z are valid numeric values (i.e., not NaN).
+ * @pre @p x, @p y, and @p z are valid numeric values (i.e., not NaN).
  *
  * @param[in] x x component.
  * @param[in] y y component.
  * @param[in] z z component.
- *
- * @return a @c vec3d with the values @p x, @p y, and @p z.
  */
-const openvrml::vec3d openvrml::make_vec3d(const double x,
-                                           const double y,
-                                           const double z)
+openvrml::vec3d::vec3d(const double x, const double y, const double z)
     OPENVRML_NOTHROW
 {
     //
-    // Ensure x and y are not NaN.
+    // Ensure x, y, and z are not NaN.
     //
     assert(x == x);
     assert(y == y);
     assert(z == z);
-    const vec3d v = { { x, y, z } };
-    return v;
+
+    this->vec[0] = x;
+    this->vec[1] = y;
+    this->vec[2] = z;
 }
 
 /**
@@ -2267,7 +2178,7 @@ const openvrml::vec3d openvrml::operator*(const mat4f & mat, const vec3d & vec)
                     + mat[2][2] * vec[2] + mat[2][3];
     const double w = mat[3][0] * vec[0] + mat[3][1] * vec[1]
                     + mat[3][2] * vec[2] + mat[3][3];
-    return make_vec3d(x / w, y / w, z / w);
+    return vec3d(x / w, y / w, z / w);
 }
 
 /**
@@ -2431,7 +2342,7 @@ const openvrml::vec3d openvrml::operator-(const vec3d & lhs, const vec3d & rhs)
  */
 const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
 {
-    return make_vec3d(-this->vec[0], -this->vec[1], -this->vec[2]);
+    return vec3d(-this->vec[0], -this->vec[1], -this->vec[2]);
 }
 
 /**
@@ -2633,9 +2544,9 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
 
 
 /**
- * @struct openvrml::rotation openvrml/basetypes.h
+ * @class openvrml::rotation openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a rotation.
+ * @brief A rotation.
  *
  * VRML rotations are represented with four single-precision floating point
  * components. The first three are an axis of rotation, and the last is
@@ -2643,6 +2554,8 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::rotation::rot[4]
  *
  * @brief Rotation components.
@@ -2652,34 +2565,25 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
  */
 
 /**
- * @relatesalso openvrml::rotation
- *
- * @brief Create a default @c rotation.
- *
- * @return a default @c rotation.
+ * @brief Construct.
  */
-const openvrml::rotation openvrml::make_rotation() OPENVRML_NOTHROW
+openvrml::rotation::rotation() OPENVRML_NOTHROW
 {
-    const rotation r = { { 0.0, 0.0, 1.0, 0.0 } };
-    return r;
+    this->rot[0] = 0.0;
+    this->rot[1] = 0.0;
+    this->rot[2] = 1.0;
+    this->rot[3] = 0.0;
 }
 
 /**
- * @relatesalso openvrml::rotation
- *
- * @brief Create a @c rotation from an array.
- *
- * @overload
+ * @brief Construct from an array.
  *
  * @param[in] rot   an array comprising the rotation components.
  *
  * @pre The vector represented by the first three components of @p rot is
  *      normalized.
- *
- * @return a @c rotation initialized to the values in @p rot.
  */
-const openvrml::rotation openvrml::make_rotation(const float (&rot)[4])
-    OPENVRML_NOTHROW
+openvrml::rotation::rotation(const float (&rot)[4]) OPENVRML_NOTHROW
 {
     //
     // Ensure the elements of rot are not NaN.
@@ -2689,18 +2593,12 @@ const openvrml::rotation openvrml::make_rotation(const float (&rot)[4])
     assert(rot[2] == rot[2]);
     assert(rot[3] == rot[3]);
 
-    assert(openvrml_::fequal(1.0f,
-                             make_vec3f(rot[0], rot[1], rot[2]).length()));
-    const rotation r = { { rot[0], rot[1], rot[2], rot[3] } };
-    return r;
+    assert(openvrml_::fequal(1.0f, vec3f(rot[0], rot[1], rot[2]).length()));
+    std::copy(rot, rot + 4, this->rot);
 }
 
 /**
- * @relatesalso openvrml::rotation
- *
- * @brief Create a @c rotation from @p x, @p y, @p z, and @p angle components.
- *
- * @overload
+ * @brief Construct from @p x, @p y, @p z, and @p angle components.
  *
  * @param[in] x     x-component of the rotation axis.
  * @param[in] y     y-component of the rotation axis.
@@ -2708,13 +2606,11 @@ const openvrml::rotation openvrml::make_rotation(const float (&rot)[4])
  * @param[in] angle rotation angle.
  *
  * @pre The vector represented by @p x, @p y, and @p z is normalized.
- *
- * @return a @c rotation initialized to [ @p x, @p y, @p z, @p angle ].
  */
-const openvrml::rotation openvrml::make_rotation(const float x,
-                                                 const float y,
-                                                 const float z,
-                                                 const float angle)
+openvrml::rotation::rotation(const float x,
+                             const float y,
+                             const float z,
+                             const float angle)
     OPENVRML_NOTHROW
 {
     //
@@ -2725,27 +2621,22 @@ const openvrml::rotation openvrml::make_rotation(const float x,
     assert(z == z);
     assert(angle == angle);
 
-    assert(openvrml_::fequal(1.0f, make_vec3f(x, y, z).length()));
-    const rotation r = { { x, y, z, angle } };
-    return r;
+    assert(openvrml_::fequal(1.0f, vec3f(x, y, z).length()));
+    this->rot[0] = x;
+    this->rot[1] = y;
+    this->rot[2] = z;
+    this->rot[3] = angle;
 }
 
 /**
- * @relatesalso openvrml::rotation
- *
- * @brief Create a @c rotation from an axis vector and an angle.
- *
- * @overload
+ * @brief Construct from an axis vector and an angle.
  *
  * @param[in] axis  rotation axis.
  * @param[in] angle rotation angle.
  *
  * @pre @p axis is a normalized vector.
- *
- * @return a @c rotation initialized using @p axis and @p angle.
  */
-const openvrml::rotation openvrml::make_rotation(const vec3f & axis,
-                                                 const float angle)
+openvrml::rotation::rotation(const vec3f & axis, const float angle)
     OPENVRML_NOTHROW
 {
     //
@@ -2754,62 +2645,49 @@ const openvrml::rotation openvrml::make_rotation(const vec3f & axis,
     assert(angle == angle);
 
     assert(openvrml_::fequal(1.0f, axis.length()));
-    const rotation r = { { axis.x(), axis.y(), axis.z(), angle } };
-    return r;
+    this->axis(axis);
+    this->rot[3] = angle;
 }
 
 /**
- * @relatesalso openvrml::rotation
+ * @brief Construct a rotation between two vectors.
  *
- * @brief Create a @c rotation equal to the rotation between two different
- *        vectors.
- *
- * @overload
+ * Construct a rotation equal to the rotation between two different vectors.
  *
  * @param[in] from_vec  the starting vector.
  * @param[in] to_vec    the ending vector.
- *
- * @return a @c rotation equal to the rotation between @p from_vec and
- *         @p to_vec.
  */
-const openvrml::rotation openvrml::make_rotation(const vec3f & from_vec,
-                                                 const vec3f & to_vec)
+openvrml::rotation::rotation(const vec3f & from_vec, const vec3f & to_vec)
     OPENVRML_NOTHROW
 {
-    const vec3f axis = (from_vec * to_vec).normalize();
-    const float angle = float(acos(from_vec.dot(to_vec)
-                                   / (from_vec.length() * to_vec.length())));
-    const rotation r = { { axis.x(), axis.y(), axis.z(), angle } };
-    return r;
+    this->axis((from_vec * to_vec).normalize());
+    this->rot[3] = float(acos(from_vec.dot(to_vec)
+                              / (from_vec.length() * to_vec.length())));
 }
 
 /**
- * @relatesalso openvrml::rotation
- *
- * @brief Create a @c rotation from a quaternion.
- *
- * @overload
+ * @brief Construct from a quaternion.
  *
  * @param[in] quat  a quaternion.
- *
- * @return a @c rotation corresponding to @p quat.
  */
-const openvrml::rotation openvrml::make_rotation(const quatf & quat)
-    OPENVRML_NOTHROW
+openvrml::rotation::rotation(const quatf & quat) OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
 
-    rotation r = make_rotation();
     const float val = float(acos(quat.w()));
-    if (fequal(val, 0.0f)) { return r; }
-
-    const float sin_val = float(sin(val));
-    const vec3f axis = make_vec3f(quat.x() / sin_val,
-                                  quat.y() / sin_val,
-                                  quat.z() / sin_val);
-    r.axis(axis.normalize());
-    r.angle(2 * val);
-    return r;
+    if (fequal(val, 0.0f)) {
+        this->rot[0] = 0.0;
+        this->rot[1] = 0.0;
+        this->rot[2] = 1.0;
+        this->rot[3] = 0.0;
+    } else {
+        const float sin_val = float(sin(val));
+        const vec3f axis(quat.x() / sin_val,
+                         quat.y() / sin_val,
+                         quat.z() / sin_val);
+        this->axis(axis.normalize());
+        this->rot[3] = 2 * val;
+    }
 }
 
 /**
@@ -2822,7 +2700,7 @@ const openvrml::rotation openvrml::make_rotation(const quatf & quat)
 openvrml::rotation & openvrml::rotation::operator*=(const rotation & rot)
     OPENVRML_NOTHROW
 {
-    return *this = make_rotation(make_quatf(*this) * make_quatf(rot));
+    return *this = rotation(quatf(*this) * quatf(rot));
 }
 
 /**
@@ -2994,7 +2872,7 @@ const openvrml::rotation openvrml::rotation::inverse() const OPENVRML_NOTHROW
  *
  * @param[in] dest_rot  destination rotation.
  * @param[in] t         fraction representing the desired position between the
- *                      rotation and @p dest_rot.
+ *                  rotation and @p dest_rot.
  *
  * @return the rotation corresponding to @p t between the rotation and
  *         @p dest_rot.
@@ -3005,7 +2883,7 @@ const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
 {
     using openvrml_::fequal;
 
-    quatf from_quat = make_quatf(*this), to_quat = make_quatf(dest_rot);
+    quatf from_quat(*this), to_quat(dest_rot);
 
     //
     // Calculate cosine.
@@ -3047,7 +2925,7 @@ const openvrml::rotation openvrml::rotation::slerp(const rotation & dest_rot,
     //
     const quatf result_quat =
         (from_quat * float(scale0)) + (to1 * float(scale1));
-    return make_rotation(result_quat);
+    return rotation(result_quat);
 }
 
 /**
@@ -3093,10 +2971,9 @@ namespace {
 
         bool operator()() const
         {
-            using openvrml::make_vec3f;
+            using openvrml::vec3f;
             using openvrml_::fequal;
-            return fequal(make_vec3f(this->x_, this->y_, this->z_).length(),
-                          1.0f);
+            return fequal(vec3f(this->x_, this->y_, this->z_).length(), 1.0f);
         }
 
     private:
@@ -3177,30 +3054,29 @@ std::ostream & openvrml::operator<<(std::ostream & out, const rotation & r)
 
 
 /**
- * @struct openvrml::mat4f openvrml/basetypes.h
+ * @class openvrml::mat4f openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a 4x4 matrix.
+ * @brief A class for all matrix operations.
  *
  * Matrices are stored in row-major order.
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::mat4f::mat[4][4]
  *
  * @brief 4x4 float matrix.
  */
 
 /**
- * @relatesalso openvrml::mat4f
- *
  * @brief Create a rotation matrix.
  *
  * @param[in] rot   a rotation.
  *
  * @return a matrix representation of @p rot.
  */
-const openvrml::mat4f
-openvrml::make_rotation_mat4f(const rotation & rot)
+const openvrml::mat4f openvrml::mat4f::rotation(const openvrml::rotation & rot)
     OPENVRML_NOTHROW
 {
     const double s = sin(rot.angle());
@@ -3210,36 +3086,32 @@ openvrml::make_rotation_mat4f(const rotation & rot)
     const float y = rot.y();
     const float z = rot.z();
 
-    return make_mat4f(float(t * x * x + c),
-                      float(t * x * y + s * z),
-                      float(t * x * z - s * y),
-                      0.0f,
-                      float(t * x * y - s * z),
-                      float(t * y * y + c),
-                      float(t * y * z + s * x),
-                      0.0f,
-                      float(t * x * z + s * y),
-                      float(t * y * z - s * x),
-                      float(t * z * z + c),
-                      0.0f,
-                      0.0f,
-                      0.0f,
-                      0.0f,
-                      1.0f);
+    return mat4f(float(t * x * x + c),
+                 float(t * x * y + s * z),
+                 float(t * x * z - s * y),
+                 0.0f,
+                 float(t * x * y - s * z),
+                 float(t * y * y + c),
+                 float(t * y * z + s * x),
+                 0.0f,
+                 float(t * x * z + s * y),
+                 float(t * y * z - s * x),
+                 float(t * z * z + c),
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 1.0f);
 }
 
 /**
- * @relatesalso openvrml::mat4f
- *
  * @brief Create a rotation matrix.
- *
- * @overload
  *
  * @param[in] quat  a quaternion.
  *
  * @return a matrix representation of @p quat.
  */
-const openvrml::mat4f openvrml::make_rotation_mat4f(const quatf & quat)
+const openvrml::mat4f openvrml::mat4f::rotation(const quatf & quat)
     OPENVRML_NOTHROW
 {
     const float x = quat.x();
@@ -3247,83 +3119,71 @@ const openvrml::mat4f openvrml::make_rotation_mat4f(const quatf & quat)
     const float z = quat.z();
     const float w = quat.w();
 
-    return make_mat4f(float(1.0 - 2.0 * (y * y + z * z)),
-                      float(2.0 * (x * y + z * w)),
-                      float(2.0 * (z * x - y * w)),
-                      0.0f,
-                      float(2.0 * (x * y - z * w)),
-                      float(1.0 - 2.0 * (z * z + x * x)),
-                      float(2.0 * (y * z + x * w)),
-                      0.0f,
-                      float(2.0 * (z * x + y * w)),
-                      float(2.0 * (y * z - x * w)),
-                      float(1.0 - 2.0 * (y * y + x * x)),
-                      0.0f,
-                      0.0f,
-                      0.0f,
-                      0.0f,
-                      1.0f);
+    return mat4f(float(1.0 - 2.0 * (y * y + z * z)),
+                 float(2.0 * (x * y + z * w)),
+                 float(2.0 * (z * x - y * w)),
+                 0.0f,
+                 float(2.0 * (x * y - z * w)),
+                 float(1.0 - 2.0 * (z * z + x * x)),
+                 float(2.0 * (y * z + x * w)),
+                 0.0f,
+                 float(2.0 * (z * x + y * w)),
+                 float(2.0 * (y * z - x * w)),
+                 float(1.0 - 2.0 * (y * y + x * x)),
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 0.0f,
+                 1.0f);
 }
 
 /**
- * @relatesalso openvrml::mat4f
+ * @brief Create a uniform scale matrix.
  *
+ * @param[in] s scale factor.
+ *
+ * @return a uniform scale matrix.
+ */
+const openvrml::mat4f openvrml::mat4f::scale(const float s) OPENVRML_NOTHROW
+{
+    return mat4f(s,   0.0, 0.0, 0.0,
+                 0.0, s,   0.0, 0.0,
+                 0.0, 0.0, s,   0.0,
+                 0.0, 0.0, 0.0, 1.0);
+}
+
+/**
  * @brief Create a scale matrix.
  *
  * @param[in] s a vector.
  *
  * @return a scale matrix.
  */
-const openvrml::mat4f openvrml::make_scale_mat4f(const vec3f & s)
-    OPENVRML_NOTHROW
+const openvrml::mat4f openvrml::mat4f::scale(const vec3f & s) OPENVRML_NOTHROW
 {
-    return make_mat4f(s.x(), 0.0,   0.0,   0.0,
-                      0.0,   s.y(), 0.0,   0.0,
-                      0.0,   0.0,   s.z(), 0.0,
-                      0.0,   0.0,   0.0,   1.0);
+    return mat4f(s.x(), 0.0,   0.0,   0.0,
+                 0.0,   s.y(), 0.0,   0.0,
+                 0.0,   0.0,   s.z(), 0.0,
+                 0.0,   0.0,   0.0,   1.0);
 }
 
 /**
- * @relatesalso openvrml::mat4f
- *
- * @brief Create a uniform scale matrix.
- *
- * @overload
- *
- * @param[in] s scale factor.
- *
- * @return a uniform scale matrix.
- */
-const openvrml::mat4f openvrml::make_scale_mat4f(const float s)
-    OPENVRML_NOTHROW
-{
-    return make_mat4f(s,   0.0, 0.0, 0.0,
-                      0.0, s,   0.0, 0.0,
-                      0.0, 0.0, s,   0.0,
-                      0.0, 0.0, 0.0, 1.0);
-}
-
-/**
- * @relatesalso openvrml::mat4f
- *
  * @brief Create a translation matrix.
  *
  * @param[in] t translation vector.
  *
  * @return a translation matrix.
  */
-const openvrml::mat4f openvrml::make_translation_mat4f(const vec3f & t)
+const openvrml::mat4f openvrml::mat4f::translation(const vec3f & t)
     OPENVRML_NOTHROW
 {
-    return make_mat4f(1.0,   0.0,   0.0,   0.0,
-                      0.0,   1.0,   0.0,   0.0,
-                      0.0,   0.0,   1.0,   0.0,
-                      t.x(), t.y(), t.z(), 1.0);
+    return mat4f(1.0,   0.0,   0.0,   0.0,
+                 0.0,   1.0,   0.0,   0.0,
+                 0.0,   0.0,   1.0,   0.0,
+                 t.x(), t.y(), t.z(), 1.0);
 }
 
 /**
- * @relatesalso openvrml::mat4f
- *
  * @brief Create a transformation matrix from a translation, a rotation,
  *      a scale, a scaleOrientation, and a center.
  *
@@ -3336,46 +3196,72 @@ const openvrml::mat4f openvrml::make_translation_mat4f(const vec3f & t)
  * @return a transformation matrix.
  */
 const openvrml::mat4f
-openvrml::make_transformation_mat4f(const vec3f & t,
-                                    const rotation & r,
-                                    const vec3f & s,
-                                    const rotation & sr,
-                                    const vec3f & c)
+openvrml::mat4f::transformation(const vec3f & t,
+                                const openvrml::rotation & r,
+                                const vec3f & s,
+                                const openvrml::rotation & sr,
+                                const vec3f & c)
     OPENVRML_NOTHROW
 {
     using openvrml_::fequal;
 
-    mat4f mat = make_mat4f();
-    if (t != make_vec3f(0.0, 0.0, 0.0)) {
-        mat = make_translation_mat4f(t) * mat; // M = T * M   = T
+    mat4f mat;
+    if (t != vec3f(0.0, 0.0, 0.0)) {
+        mat = translation(t) * mat; // M = T * M   = T
     }
-    if (c != make_vec3f(0.0, 0.0, 0.0)) {
-        mat = make_translation_mat4f(c) * mat; // M = C * M   = C * T
+    if (c != vec3f(0.0, 0.0, 0.0)) {
+        mat = translation(c) * mat; // M = C * M   = C * T
     }
     if (!fequal(r.angle(), 0.0f)) {
-        mat = make_rotation_mat4f(r) * mat; // M = R * M    = R * C * T
+        mat = rotation(r) * mat; // M = R * M    = R * C * T
     }
-    if (s != make_vec3f(1.0, 1.0, 1.0)) {
+    if (s != vec3f(1.0, 1.0, 1.0)) {
         if (!fequal(sr.angle(), 0.0f)) {
-            mat = make_rotation_mat4f(sr) * mat; // M = SR * M    = SR * R * C * T
+            mat = rotation(sr) * mat; // M = SR * M    = SR * R * C * T
         }
-        mat = make_scale_mat4f(s) * mat; // M = S * M     = S * SR * R * C * T
+        mat = scale(s) * mat; // M = S * M     = S * SR * R * C * T
         if (!fequal(sr.angle(), 0.0f)) {
             // M = -SR * M   = -SR * S * SR * R * C * T
-            mat = make_rotation_mat4f(sr.inverse()) * mat;
+            mat = rotation(sr.inverse()) * mat;
         }
     }
-    if (c != make_vec3f(0.0, 0.0, 0.0)) {
+    if (c != vec3f(0.0, 0.0, 0.0)) {
         // M = -C * M    =  -C * -SR * S * SR * R * C * T
-        mat = make_translation_mat4f(-c) * mat;
+        mat = translation(-c) * mat;
     }
     return mat;
 }
 
 /**
- * @relatesalso openvrml::mat4f
+ * @brief Construct.
  *
- * @brief Create a @c mat4f with given 16 elements in row-major order.
+ * The matrix is initialized to the identity matrix.
+ */
+openvrml::mat4f::mat4f() OPENVRML_NOTHROW
+{
+    this->mat[0][0] = 1.0;
+    this->mat[0][1] = 0.0;
+    this->mat[0][2] = 0.0;
+    this->mat[0][3] = 0.0;
+
+    this->mat[1][0] = 0.0;
+    this->mat[1][1] = 1.0;
+    this->mat[1][2] = 0.0;
+    this->mat[1][3] = 0.0;
+
+    this->mat[2][0] = 0.0;
+    this->mat[2][1] = 0.0;
+    this->mat[2][2] = 1.0;
+    this->mat[2][3] = 0.0;
+
+    this->mat[3][0] = 0.0;
+    this->mat[3][1] = 0.0;
+    this->mat[3][2] = 0.0;
+    this->mat[3][3] = 1.0;
+}
+
+/**
+ * @brief Construct mat4f with given 16 elements in row-major order.
  *
  * \f[ \left[ \begin{array}{cccc}
  *            f_{11} & f_{12} & f_{13} & f_{14} \\
@@ -3400,77 +3286,52 @@ openvrml::make_transformation_mat4f(const vec3f & t,
  * @param[in] f42
  * @param[in] f43
  * @param[in] f44
- *
- * @return a @c mat4f with given 16 elements in row-major order.
  */
-const openvrml::mat4f openvrml::make_mat4f(
-    const float f11, const float f12, const float f13, const float f14,
-    const float f21, const float f22, const float f23, const float f24,
-    const float f31, const float f32, const float f33, const float f34,
-    const float f41, const float f42, const float f43, const float f44)
+openvrml::mat4f::mat4f(float f11, float f12, float f13, float f14,
+                       float f21, float f22, float f23, float f24,
+                       float f31, float f32, float f33, float f34,
+                       float f41, float f42, float f43, float f44)
     OPENVRML_NOTHROW
 {
-    const mat4f m = { { { f11, f12, f13, f14 },
-                        { f21, f22, f23, f24 },
-                        { f31, f32, f33, f34 },
-                        { f41, f42, f43, f44 } } };
-    return m;
+    this->mat[0][0] = f11;
+    this->mat[0][1] = f12;
+    this->mat[0][2] = f13;
+    this->mat[0][3] = f14;
+
+    this->mat[1][0] = f21;
+    this->mat[1][1] = f22;
+    this->mat[1][2] = f23;
+    this->mat[1][3] = f24;
+
+    this->mat[2][0] = f31;
+    this->mat[2][1] = f32;
+    this->mat[2][2] = f33;
+    this->mat[2][3] = f34;
+
+    this->mat[3][0] = f41;
+    this->mat[3][1] = f42;
+    this->mat[3][2] = f43;
+    this->mat[3][3] = f44;
 }
 
 /**
- * @relatesalso openvrml::mat4f
+ * @brief Construct from an array of 16 values.
  *
- * @brief Create an identity matrix.
- *
- * @overload
- *
- * @return an identity matrix.
+ * @param[in] mat   an array of values in row-major order.
  */
-const openvrml::mat4f openvrml::make_mat4f() OPENVRML_NOTHROW
+openvrml::mat4f::mat4f(const float mat[16]) OPENVRML_NOTHROW
 {
-    const mat4f m = { { { 1.0, 0.0, 0.0, 0.0 },
-                        { 0.0, 1.0, 0.0, 0.0 },
-                        { 0.0, 0.0, 1.0, 0.0 },
-                        { 0.0, 0.0, 0.0, 1.0 } } };
-    return m;
+    std::copy(mat, mat + 16, &this->mat[0][0]);
 }
 
 /**
- * @relatesalso openvrml::mat4f
- *
- * @brief Create a matrix from an array of 16 values.
- *
- * @overload
- *
- * @pre @p mat points to a sequence of at least 16 @c float values.
- *
- * @param[in] mat   a pointer to a sequence of 16 @c float values in row-major
- *                  order.
- *
- * @return a @c mat4f containing the values in @p mat.
- */
-const openvrml::mat4f openvrml::make_mat4f(const float mat[16]) OPENVRML_NOTHROW
-{
-    mat4f m;
-    std::copy(mat, mat + 16, &m.mat[0][0]);
-    return m;
-}
-
-/**
- * @relatesalso openvrml::mat4f
- *
- * @brief Create a matrix from a 4x4 array.
- *
- * @overload
+ * @brief Construct from a 4x4 array.
  *
  * @param[in] mat   a 4x4 array of elements in row-major order.
- *
- * @return a @c mat4f containing the values in @p mat.
  */
-const openvrml::mat4f openvrml::make_mat4f(const float (&mat)[4][4])
-    OPENVRML_NOTHROW
+openvrml::mat4f::mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW
 {
-    return make_mat4f(&mat[0][0]);
+    std::copy(&mat[0][0], &mat[0][0] + 16, &this->mat[0][0]);
 }
 
 /**
@@ -3625,7 +3486,7 @@ namespace {
  * @param[out] s    scale.
  */
 void openvrml::mat4f::transformation(vec3f & t,
-                                     rotation & r,
+                                     openvrml::rotation & r,
                                      vec3f & s) const
     OPENVRML_NOTHROW
 {
@@ -3663,15 +3524,9 @@ void openvrml::mat4f::transformation(vec3f & t,
     t.y(tmp_matrix[3][1]);
     t.z(tmp_matrix[3][2]);
     tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-    vec3f row_0 = make_vec3f(tmp_matrix[0][0],
-                             tmp_matrix[0][1],
-                             tmp_matrix[0][2]);
-    vec3f row_1 = make_vec3f(tmp_matrix[1][0],
-                             tmp_matrix[1][1],
-                             tmp_matrix[1][2]);
-    vec3f row_2 = make_vec3f(tmp_matrix[2][0],
-                             tmp_matrix[2][1],
-                             tmp_matrix[2][2]);
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
 
     //
     // Compute X scale factor and normalize first row.
@@ -3703,12 +3558,12 @@ void openvrml::mat4f::transformation(vec3f & t,
     // system flip?  (According to VRML97, scale > 0.0.)  Calculate quaternion
     // rotation from this matrix.
     //
-    quatf quat = make_quatf(tmp_matrix);
+    quatf quat(tmp_matrix);
 
     //
     // now convert back to axis/angle.
     //
-    r = make_rotation(quat);
+    r = openvrml::rotation(quat);
 }
 
 /**
@@ -3726,7 +3581,7 @@ void openvrml::mat4f::transformation(vec3f & t,
  * @param[out] shear    shear.
  */
 void openvrml::mat4f::transformation(vec3f & t,
-                                     rotation & r,
+                                     openvrml::rotation & r,
                                      vec3f & s,
                                      vec3f & shear) const
     OPENVRML_NOTHROW
@@ -3765,15 +3620,9 @@ void openvrml::mat4f::transformation(vec3f & t,
     t.y(tmp_matrix[3][1]);
     t.z(tmp_matrix[3][2]);
     tmp_matrix[3][0] = tmp_matrix[3][1] = tmp_matrix[3][2] = 0.0;
-    vec3f row_0 = make_vec3f(tmp_matrix[0][0],
-                             tmp_matrix[0][1],
-                             tmp_matrix[0][2]);
-    vec3f row_1 = make_vec3f(tmp_matrix[1][0],
-                             tmp_matrix[1][1],
-                             tmp_matrix[1][2]);
-    vec3f row_2 = make_vec3f(tmp_matrix[2][0],
-                             tmp_matrix[2][1],
-                             tmp_matrix[2][2]);
+    vec3f row_0(tmp_matrix[0][0], tmp_matrix[0][1], tmp_matrix[0][2]);
+    vec3f row_1(tmp_matrix[1][0], tmp_matrix[1][1], tmp_matrix[1][2]);
+    vec3f row_2(tmp_matrix[2][0], tmp_matrix[2][1], tmp_matrix[2][2]);
 
     //
     // Compute X scale factor and normalize first row.
@@ -3828,12 +3677,12 @@ void openvrml::mat4f::transformation(vec3f & t,
     // system flip?  (According to VRML standard, scale > 0.0.) Calculate
     // quaternion rotation from this matrix.
     //
-    quatf quat = make_quatf(tmp_matrix);
+    quatf quat(tmp_matrix);
 
     //
     // Now convert back to axis/angle.
     //
-    r = make_rotation(quat);
+    r = openvrml::rotation(quat);
 }
 
 namespace {
@@ -3951,15 +3800,22 @@ const openvrml::mat4f openvrml::mat4f::inverse() const OPENVRML_NOTHROW
  */
 const openvrml::mat4f openvrml::mat4f::transpose() const OPENVRML_NOTHROW
 {
-    const mat4f m = {
-        {
-            { this->mat[0][0], this->mat[1][0], this->mat[2][0], this->mat[3][0] },
-            { this->mat[0][1], this->mat[1][1], this->mat[2][1], this->mat[3][1] },
-            { this->mat[0][2], this->mat[1][2], this->mat[2][2], this->mat[3][2] },
-            { this->mat[0][3], this->mat[1][3], this->mat[2][3], this->mat[3][3] }
-        }
-    };
-    return m;
+    return mat4f(this->mat[0][0],
+                 this->mat[1][0],
+                 this->mat[2][0],
+                 this->mat[3][0],
+                 this->mat[0][1],
+                 this->mat[1][1],
+                 this->mat[2][1],
+                 this->mat[3][1],
+                 this->mat[0][2],
+                 this->mat[1][2],
+                 this->mat[2][2],
+                 this->mat[3][2],
+                 this->mat[0][3],
+                 this->mat[1][3],
+                 this->mat[2][3],
+                 this->mat[3][3]);
 }
 
 /**
@@ -4134,93 +3990,83 @@ bool openvrml::operator!=(const mat4f & lhs, const mat4f & rhs)
 
 
 /**
- * @struct openvrml::quatf openvrml/basetypes.h
+ * @class openvrml::quatf openvrml/basetypes.h
  *
- * @brief A POD-struct comprising a quaternion.
+ * @brief A quaternion.
  */
 
 /**
+ * @internal
+ *
  * @var float openvrml::quatf::quat[4]
  *
  * @brief An array comprising the quaternion components.
  */
 
 /**
- * @relatesalso openvrml::quatf
- *
- * @brief Create a default @c quatf.
- *
- * @return a @c quatf with the value [0.0, 0.0, 0.0, 1.0].
+ * @brief Default constructor.
  */
-const openvrml::quatf openvrml::make_quatf() OPENVRML_NOTHROW
+openvrml::quatf::quatf() OPENVRML_NOTHROW
 {
-    const quatf q = { 0.0, 0.0, 0.0, 1.0 };
-    return q;
+    this->quat[0] = 0.0;
+    this->quat[1] = 0.0;
+    this->quat[2] = 0.0;
+    this->quat[3] = 1.0;
 }
 
 /**
- * @relatesalso openvrml::quatf
- *
- * @brief Create a @c quatf from four values.
+ * @brief Construct from four values.
  *
  * @param[in] x the x vector component.
  * @param[in] y the y vector component.
  * @param[in] z the z vector component.
  * @param[in] w the scalar value w.
- *
- * @return a @c quatf with the value [@p x, @p y, @p z, @p w].
  */
-const openvrml::quatf openvrml::make_quatf(const float x,
-                                           const float y,
-                                           const float z,
-                                           const float w)
+openvrml::quatf::quatf(const float x,
+                       const float y,
+                       const float z,
+                       const float w)
     OPENVRML_NOTHROW
 {
-    const quatf q = { x, y, z, w };
-    return q;
+    this->quat[0] = x;
+    this->quat[1] = y;
+    this->quat[2] = z;
+    this->quat[3] = w;
 }
 
 /**
- * @relatesalso openvrml::quatf
- *
- * @brief Create a @c quatf from an array of four values.
+ * @brief Construct from an array of four values.
  *
  * @param[in] quat  the first three values in the array are used for the x, y,
  *                  and z vector components, respectively.  The fourth value
  *                  in the array is used for the scalar part of the
  *                  quaternion.
- *
- * @return a @c quatf with the values in @p quat.
  */
-const openvrml::quatf openvrml::make_quatf(const float (&quat)[4])
-    OPENVRML_NOTHROW
+openvrml::quatf::quatf(const float (&quat)[4]) OPENVRML_NOTHROW
 {
-    const quatf q = { quat[0], quat[1], quat[2], quat[3] };
-    return q;
+    this->quat[0] = quat[0];
+    this->quat[1] = quat[1];
+    this->quat[2] = quat[2];
+    this->quat[3] = quat[3];
 }
 
 /**
- * @relatesalso openvrml::quatf
- *
- * @brief Create a @c quatf from a rotation matrix.
+ * @brief Construct from a rotation matrix.
  *
  * @param[in] mat   a rotation matrix.
- *
- * @return a @c quatf corresponding to the rotation applied by @p mat.
  */
-const openvrml::quatf openvrml::make_quatf(const mat4f & mat) OPENVRML_NOTHROW
+openvrml::quatf::quatf(const mat4f & mat) OPENVRML_NOTHROW
 {
-    quatf q;
     float diagonal, s;
     diagonal = mat[0][0] + mat[1][1] + mat[2][2];
     // check the diagonal
     if (diagonal > 0.0) {
         s = float(sqrt(diagonal + 1.0));
-        q.quat[3] = s / 2.0f;
+        this->quat[3] = s / 2.0f;
         s = 0.5f / s;
-        q.quat[0] = (mat[1][2] - mat[2][1]) * s;
-        q.quat[1] = (mat[2][0] - mat[0][2]) * s;
-        q.quat[2] = (mat[0][1] - mat[1][0]) * s;
+        this->quat[0] = (mat[1][2] - mat[2][1]) * s;
+        this->quat[1] = (mat[2][0] - mat[0][2]) * s;
+        this->quat[2] = (mat[0][1] - mat[1][0]) * s;
     } else {
         using openvrml_::fequal;
         size_t i, j, k;
@@ -4232,36 +4078,29 @@ const openvrml::quatf openvrml::make_quatf(const mat4f & mat) OPENVRML_NOTHROW
         j = next[i];
         k = next[j];
         s = float(sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0));
-        q.quat[i] = s * 0.5f;
+        this->quat[i] = s * 0.5f;
 
         if (!fequal(s, 0.0f)) { s = 0.5f / s; }
-        q.quat[3] = (mat[j][k] - mat[k][j]) * s;
-        q.quat[j] = (mat[i][j] + mat[j][i]) * s;
-        q.quat[k] = (mat[i][k] + mat[k][i]) * s;
+        this->quat[3] = (mat[j][k] - mat[k][j]) * s;
+        this->quat[j] = (mat[i][j] + mat[j][i]) * s;
+        this->quat[k] = (mat[i][k] + mat[k][i]) * s;
     }
-    return q;
 }
 
 /**
- * @relatesalso openvrml::quatf
- *
- * @brief Create a @c quatf from a @c rotation.
+ * @brief Construct from an rotation.
  *
  * @param[in] rot   a rotation.
- *
- * @return a @c quatf corresponding to the rotation applied by @p rot.
  */
-const openvrml::quatf openvrml::make_quatf(const rotation & rot)
-    OPENVRML_NOTHROW
+openvrml::quatf::quatf(const rotation & rot) OPENVRML_NOTHROW
 {
     assert(openvrml_::fequal(rot.axis().length(), 1.0f));
 
     const float sin_angle = float(sin(rot.angle() / 2.0));
-    const quatf q = { rot.x() * sin_angle,
-                      rot.y() * sin_angle,
-                      rot.z() * sin_angle,
-                      float(cos(rot.angle() / 2.0)) };
-    return q;
+    this->quat[0] = rot.x() * sin_angle;
+    this->quat[1] = rot.y() * sin_angle;
+    this->quat[2] = rot.z() * sin_angle;
+    this->quat[3] = float(cos(rot.angle() / 2.0));
 }
 
 /**
@@ -4278,15 +4117,15 @@ const openvrml::quatf openvrml::make_quatf(const rotation & rot)
 openvrml::quatf & openvrml::quatf::operator*=(const quatf & quat)
     OPENVRML_NOTHROW
 {
-    *this = make_quatf(this->quat[1] * quat[2] - this->quat[2] * quat[1]
-                       + quat[3] * this->quat[0] + this->quat[3] * quat[0],
-                       this->quat[2] * quat[0] - this->quat[0] * quat[2]
-                       + quat[3] * this->quat[1] + this->quat[3] * quat[1],
-                       this->quat[0] * quat[1] - this->quat[1] * quat[0]
-                       + quat[3] * this->quat[2] + this->quat[3] * quat[2],
-                       this->quat[3] * quat[3]
-                       - (this->quat[0] * quat[0] + this->quat[1] * quat[1]
-                          + this->quat[2] * quat[2]));
+    *this = quatf(this->quat[1] * quat[2] - this->quat[2] * quat[1]
+                    + quat[3] * this->quat[0] + this->quat[3] * quat[0],
+                  this->quat[2] * quat[0] - this->quat[0] * quat[2]
+                    + quat[3] * this->quat[1] + this->quat[3] * quat[1],
+                  this->quat[0] * quat[1] - this->quat[1] * quat[0]
+                    + quat[3] * this->quat[2] + this->quat[3] * quat[2],
+                  this->quat[3] * quat[3]
+                    - (this->quat[0] * quat[0] + this->quat[1] * quat[1]
+                        + this->quat[2] * quat[2]));
     return *this;
 }
 
@@ -4557,10 +4396,10 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 const openvrml::quatf openvrml::quatf::conjugate() const OPENVRML_NOTHROW
 {
-    const quatf q = { -this->quat[0],
-                      -this->quat[1],
-                      -this->quat[2],
-                       this->quat[3] };
+    const quatf q(-this->quat[0],
+                  -this->quat[1],
+                  -this->quat[2],
+                  this->quat[3]);
     return q;
 }
 
@@ -4599,10 +4438,10 @@ float openvrml::quatf::norm() const OPENVRML_NOTHROW
 const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
 {
     const float n = this->norm();
-    const quatf q = { this->quat[0] / n,
-                      this->quat[1] / n,
-                      this->quat[2] / n,
-                      this->quat[3] / n };
+    const quatf q(this->quat[0] / n,
+                       this->quat[1] / n,
+                       this->quat[2] / n,
+                       this->quat[3] / n);
     return q;
 }
 
@@ -4946,7 +4785,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t index) const
+ * @fn unsigned long openvrml::image::pixel(size_t index) const
  *
  * @brief Pixel value.
  *
@@ -4958,7 +4797,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t index, int32 value)
+ * @fn void openvrml::image::pixel(size_t index, unsigned long value)
  *
  * @brief Set a pixel value.
  *
@@ -4969,7 +4808,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t x, size_t y) const
+ * @fn unsigned long openvrml::image::pixel(size_t x, size_t y) const
  *
  * @brief Pixel value.
  *
@@ -4982,7 +4821,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t x, size_t y, int32 value)
+ * @fn void openvrml::image::pixel(size_t x, size_t y, unsigned long value)
  *
  * @brief Set a pixel value.
  *

@@ -443,99 +443,87 @@ namespace {
      */
 
     /**
-     * @var texture_background_node::set_bind_listener texture_background_node::set_bind_listener_
+     * @var texture_background_node::set_bind_
      *
      * @brief set_bind eventIn
      */
 
     /**
-     * @var exposedfield<mffloat> texture_background_node::ground_angle_
+     * @var texture_background_node::ground_angle_
      *
      * @brief ground_angle exposedField
      */
 
     /**
-     * @var exposedfield<mfcolor> texture_background_node::ground_color_
+     * @var texture_background_node::ground_color_
      *
      * @brief ground_color exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::back_texture_
+     * @var texture_background_node::back_texture_
      *
      * @brief back_texture exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::bottom_texture_
+     * @var texture_background_node::bottom_texture_
      *
      * @brief bottom_texture exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::front_texture_
+     * @var texture_background_node::front_texture_
      *
      * @brief front_texture exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::left_texture_
+     * @var texture_background_node::left_texture_
      *
      * @brief left_texture exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::right_texture_
+     * @var texture_background_node::right_texture_
      *
      * @brief right_texture exposedField
      */
 
     /**
-     * @var exposedfield<sfnode> texture_background_node::top_texture_
+     * @var texture_background_node::top_texture_
      *
      * @brief top_texture exposedField
      */
 
     /**
-     * @var exposedfield<mffloat> texture_background_node::sky_angle_
+     * @var texture_background_node::sky_angle_
      *
      * @brief sky_angle exposedField
      */
 
     /**
-     * @var exposedfield<mfcolor> texture_background_node::sky_color_
+     * @var texture_background_node::sky_color_
      *
      * @brief sky_color exposedField
      */
 
     /**
-     * @var exposedfield<mffloat> texture_background_node::transparency_
+     * @var texture_background_node::transparency_
      *
      * @brief transparency exposedField
      */
 
     /**
-     * @var sftime texture_background_node::bind_time_
+     * @var texture_background_node::bind_time_
      *
-     * @brief bind_time eventOut.
+     * @brief bind_time eventOut
      */
 
     /**
-     * @var sftime_emitter texture_background_node::bind_time_emitter_
+     * @var texture_background_node::is_bound_
      *
-     * @brief bind_time eventOut emitter.
-     */
-
-    /**
-     * @var sfbool texture_background_node::is_bound_
-     *
-     * @brief is_bound eventOut.
-     */
-
-    /**
-     * @var sfbool_emitter texture_background_node::is_bound_emitter_
-     *
-     * @brief is_bound eventOut emitter.
+     * @brief is_bound eventOut
      */
 
     texture_background_node::set_bind_listener::

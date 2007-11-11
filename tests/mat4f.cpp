@@ -29,7 +29,7 @@ using namespace openvrml;
 
 BOOST_AUTO_TEST_CASE(stream_insertion)
 {
-    mat4f m = make_mat4f();
+    mat4f m;
     const string mat4f_str = "[1, 0, 0, 0], "
                              "[0, 1, 0, 0], "
                              "[0, 0, 1, 0], "
@@ -41,10 +41,10 @@ BOOST_AUTO_TEST_CASE(stream_insertion)
 
 BOOST_AUTO_TEST_CASE(stream_extraction_numbers_only)
 {
-    const mat4f m1 = make_mat4f(1, 0, 0, 0,
-                                0, 2, 0, 0,
-                                0, 0, 3, 0,
-                                0, 0, 0, 4);
+    const mat4f m1(1, 0, 0, 0,
+                   0, 2, 0, 0,
+                   0, 0, 3, 0,
+                   0, 0, 0, 4);
     mat4f m2;
     const string mat4f_str = "1 0 0 0 "
                              "0 2 0 0 "
@@ -57,10 +57,10 @@ BOOST_AUTO_TEST_CASE(stream_extraction_numbers_only)
 
 BOOST_AUTO_TEST_CASE(stream_extraction_numbers_with_commas)
 {
-    const mat4f m1 = make_mat4f(1, 0, 0, 0,
-                                0, 2, 0, 0,
-                                0, 0, 3, 0,
-                                0, 0, 0, 4);
+    const mat4f m1(1, 0, 0, 0,
+                   0, 2, 0, 0,
+                   0, 0, 3, 0,
+                   0, 0, 0, 4);
     mat4f m2;
     const string mat4f_str = "1, 0, 0, 0, "
                              "0, 2, 0, 0, "

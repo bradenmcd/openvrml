@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.16.6], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.16.7], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -8,13 +8,18 @@ AC_CONFIG_FILES([Makefile]
                 [models/audio/Makefile]
                 [models/textures/Makefile]
                 [lib/Makefile]
+                [lib/antlr/GNUmakefile]
                 [java/Makefile]
                 [java/vrml/Makefile]
                 [java/vrml/node/Makefile]
                 [java/vrml/field/Makefile]
                 [src/Makefile]
+                [src/libopenvrml/Makefile]
                 [src/libopenvrml/openvrml-config.h]
+                [src/libopenvrml-gl/Makefile]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
+                [src/openvrml-xembed/Makefile]
+                [src/openvrml-player/Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
@@ -45,11 +50,11 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-OV_PROG_ANTLR([2.7.7])
+OV_PROG_ANTLR([2.7.4])
 AS_IF([test -z "$ANTLR"],
       [AS_IF([test ! -f $srcdir/src/libopenvrml/openvrml/Vrml97Parser.cpp],
-             [AC_MSG_FAILURE([antlr 2.7.7 not found])],
-             [AC_MSG_WARN([antlr 2.7.7 not found; but generated files already exist])])])
+             [AC_MSG_FAILURE([antlr 2.7.4 not found])],
+             [AC_MSG_WARN([antlr 2.7.4 not found; but generated files already exist])])])
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])

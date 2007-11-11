@@ -29,15 +29,31 @@
 #   include <algorithm>
 #   include <iosfwd>
 #   include <vector>
-#   include <boost/cstdint.hpp>
+#   include <sys/types.h>
 
 namespace openvrml {
 
-    typedef boost::int32_t int32;
+#   ifdef _WIN32
+    typedef __int32 int32;
+#   else
+    typedef int32_t int32;
+#   endif
 
 
-    struct OPENVRML_API color {
+    class color;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, color & c);
+
+    class OPENVRML_API color {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      color & c);
+
         float rgb[3];
+
+    public:
+        color() OPENVRML_NOTHROW;
+        explicit color(const float (&rgb)[3]) OPENVRML_NOTHROW;
+        color(float r, float g, float b) OPENVRML_NOTHROW;
 
         const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
@@ -53,17 +69,10 @@ namespace openvrml {
         void hsv(float h, float s, float v) OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const color make_color() OPENVRML_NOTHROW;
-    OPENVRML_API const color make_color(const float (&rgb)[3])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const color make_color(float r, float g, float b)
-        OPENVRML_NOTHROW;
-
     OPENVRML_API bool operator==(const color & lhs, const color & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const color & lhs, const color & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API std::istream & operator>>(std::istream & in, color & c);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color & c);
 
@@ -105,8 +114,20 @@ namespace openvrml {
     }
 
 
-    struct OPENVRML_API color_rgba {
+    class color_rgba;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, color_rgba & c);
+
+    class OPENVRML_API color_rgba {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      color_rgba & c);
+
         float rgba[4];
+
+    public:
+        color_rgba() OPENVRML_NOTHROW;
+        explicit color_rgba(const float (&rgba)[4]) OPENVRML_NOTHROW;
+        color_rgba(float r, float g, float b, float a = 1.0f) OPENVRML_NOTHROW;
 
         const float & operator[](size_t index) const OPENVRML_NOTHROW;
 
@@ -124,22 +145,12 @@ namespace openvrml {
         void hsv(float h, float s, float v, float a = 1.0f) OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const color_rgba make_color_rgba() OPENVRML_NOTHROW;
-    OPENVRML_API const color_rgba make_color_rgba(const float (&rgba)[4])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const color_rgba make_color_rgba(float r,
-                                                  float g,
-                                                  float b,
-                                                  float a)
-        OPENVRML_NOTHROW;
-
     OPENVRML_API bool operator==(const color_rgba & lhs,
                                  const color_rgba & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const color_rgba & lhs,
                                  const color_rgba & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API std::istream & operator>>(std::istream & in, color_rgba & c);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color_rgba & c);
 
@@ -191,8 +202,20 @@ namespace openvrml {
     }
 
 
-    struct OPENVRML_API vec2f {
+    class vec2f;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec2f & v);
+
+    class OPENVRML_API vec2f {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec2f & v);
+
         float vec[2];
+
+    public:
+        vec2f() OPENVRML_NOTHROW;
+        explicit vec2f(const float (&vec)[2]) OPENVRML_NOTHROW;
+        vec2f(float x, float y) OPENVRML_NOTHROW;
 
         vec2f & operator*=(float scalar) OPENVRML_NOTHROW;
         vec2f & operator/=(float scalar) OPENVRML_NOTHROW;
@@ -214,11 +237,6 @@ namespace openvrml {
         const vec2f normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec2f make_vec2f() OPENVRML_NOTHROW;
-    OPENVRML_API const vec2f make_vec2f(const float (&vec)[2])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const vec2f make_vec2f(float x, float y) OPENVRML_NOTHROW;
-
     OPENVRML_API const vec2f operator*(const vec2f & lhs, float rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API const vec2f operator*(float lhs, const vec2f & rhs)
@@ -234,7 +252,6 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const vec2f & lhs, const vec2f & rhs)
         OPENVRML_NOTHROW;
 
-    OPENVRML_API std::istream & operator>>(std::istream & in, vec2f & v);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2f & v);
 
@@ -276,8 +293,20 @@ namespace openvrml {
     }
 
 
-    struct OPENVRML_API vec2d {
+    class vec2d;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec2d & v);
+
+    class OPENVRML_API vec2d {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec2d & v);
+
         double vec[2];
+
+    public:
+        vec2d() OPENVRML_NOTHROW;
+        explicit vec2d(const double (&vec)[2]) OPENVRML_NOTHROW;
+        vec2d(double x, double y) OPENVRML_NOTHROW;
 
         vec2d & operator*=(double scalar) OPENVRML_NOTHROW;
         vec2d & operator/=(double scalar) OPENVRML_NOTHROW;
@@ -299,11 +328,6 @@ namespace openvrml {
         const vec2d normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec2d make_vec2d() OPENVRML_NOTHROW;
-    OPENVRML_API const vec2d make_vec2d(const double (&vec)[2])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const vec2d make_vec2d(double x, double y) OPENVRML_NOTHROW;
-
     OPENVRML_API const vec2d operator*(const vec2d & lhs, double rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API const vec2d operator*(double lhs, const vec2d & rhs)
@@ -319,7 +343,6 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const vec2d & lhs, const vec2d & rhs)
         OPENVRML_NOTHROW;
 
-    OPENVRML_API std::istream & operator>>(std::istream & in, vec2d & v);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2d & v);
 
@@ -361,10 +384,21 @@ namespace openvrml {
     }
 
 
-    struct mat4f;
+    class mat4f;
+    class vec3f;
 
-    struct OPENVRML_API vec3f {
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec3f & v);
+
+    class OPENVRML_API vec3f {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec3f & v);
+
         float vec[3];
+
+    public:
+        vec3f() OPENVRML_NOTHROW;
+        explicit vec3f(const float (&vec)[3]) OPENVRML_NOTHROW;
+        vec3f(float x, float y, float z) OPENVRML_NOTHROW;
 
         vec3f & operator*=(const vec3f & vec) OPENVRML_NOTHROW;
         vec3f & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
@@ -391,12 +425,6 @@ namespace openvrml {
         const vec3f normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec3f make_vec3f() OPENVRML_NOTHROW;
-    OPENVRML_API const vec3f make_vec3f(const float (&vec)[3])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const vec3f make_vec3f(float x, float y, float z)
-        OPENVRML_NOTHROW;
-
     OPENVRML_API const vec3f operator*(const vec3f & lhs, const vec3f & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API const vec3f operator*(const vec3f & lhs, float rhs)
@@ -418,7 +446,6 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const vec3f & lhs, const vec3f & rhs)
         OPENVRML_NOTHROW;
 
-    OPENVRML_API std::istream & operator>>(std::istream & in, vec3f & v);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec3f & v);
 
@@ -476,8 +503,20 @@ namespace openvrml {
     }
 
 
-    struct OPENVRML_API vec3d {
+    class vec3d;
+
+    OPENVRML_API std::istream & operator>>(std::istream & in, vec3d & v);
+
+    class OPENVRML_API vec3d {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      vec3d & v);
+
         double vec[3];
+
+    public:
+        vec3d() OPENVRML_NOTHROW;
+        explicit vec3d(const double (&vec)[3]) OPENVRML_NOTHROW;
+        vec3d(double x, double y, double z) OPENVRML_NOTHROW;
 
         vec3d & operator*=(const vec3d & vec) OPENVRML_NOTHROW;
         vec3d & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
@@ -504,12 +543,6 @@ namespace openvrml {
         const vec3d normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const vec3d make_vec3d() OPENVRML_NOTHROW;
-    OPENVRML_API const vec3d make_vec3d(const double (&vec)[3])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const vec3d make_vec3d(double x, double y, double z)
-        OPENVRML_NOTHROW;
-
     OPENVRML_API const vec3d operator*(const vec3d & lhs, const vec3d & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API const vec3d operator*(const vec3d & lhs, double rhs)
@@ -531,7 +564,6 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const vec3d & lhs, const vec3d & rhs)
         OPENVRML_NOTHROW;
 
-    OPENVRML_API std::istream & operator>>(std::istream & in, vec3d & v);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec3d & v);
 
@@ -589,10 +621,19 @@ namespace openvrml {
     }
 
 
-    struct quatf;
+    class quatf;
 
-    struct OPENVRML_API rotation {
+    class OPENVRML_API rotation {
         float rot[4];
+
+    public:
+        rotation() OPENVRML_NOTHROW;
+        explicit rotation(const float (&rot)[4]) OPENVRML_NOTHROW;
+        rotation(float x, float y, float z, float angle) OPENVRML_NOTHROW;
+        rotation(const vec3f & axis, float angle) OPENVRML_NOTHROW;
+        rotation(const vec3f & from_vec, const vec3f & to_vec)
+            OPENVRML_NOTHROW;
+        explicit rotation(const quatf & quat) OPENVRML_NOTHROW;
 
         rotation & operator*=(const rotation & rot) OPENVRML_NOTHROW;
 
@@ -615,23 +656,7 @@ namespace openvrml {
             OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const rotation make_rotation() OPENVRML_NOTHROW;
-    OPENVRML_API const rotation make_rotation(const float (&rot)[4])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const rotation make_rotation(float x,
-                                              float y,
-                                              float z,
-                                              float angle)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const rotation make_rotation(const vec3f & axis, float angle)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const rotation make_rotation(const vec3f & from_vec,
-                                              const vec3f & to_vec)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const rotation make_rotation(const quatf & quat)
-        OPENVRML_NOTHROW;
-
-    OPENVRML_API const rotation operator*(const rotation & lhs,
+    const rotation OPENVRML_API operator*(const rotation & lhs,
                                           const rotation & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator==(const rotation & lhs, const rotation & rhs)
@@ -666,7 +691,7 @@ namespace openvrml {
 
     inline const vec3f rotation::axis() const OPENVRML_NOTHROW
     {
-        return make_vec3f(this->rot[0], this->rot[1], this->rot[2]);
+        return vec3f(this->rot[0], this->rot[1], this->rot[2]);
     }
 
     inline float rotation::angle() const OPENVRML_NOTHROW
@@ -680,8 +705,31 @@ namespace openvrml {
     }
 
 
-    struct OPENVRML_API mat4f {
+    class OPENVRML_API mat4f {
         float mat[4][4];
+
+    public:
+        static const mat4f rotation(const openvrml::rotation & rot)
+            OPENVRML_NOTHROW;
+        static const mat4f rotation(const quatf & quat) OPENVRML_NOTHROW;
+        static const mat4f scale(float s) OPENVRML_NOTHROW;
+        static const mat4f scale(const vec3f & s) OPENVRML_NOTHROW;
+        static const mat4f translation(const vec3f & t) OPENVRML_NOTHROW;
+        static const mat4f transformation(const vec3f & t,
+                                          const openvrml::rotation & r,
+                                          const vec3f & s,
+                                          const openvrml::rotation & sr,
+                                          const vec3f & c) OPENVRML_NOTHROW;
+
+        mat4f() OPENVRML_NOTHROW;
+        mat4f(float f11, float f12, float f13, float f14,
+              float f21, float f22, float f23, float f24,
+              float f31, float f32, float f33, float f34,
+              float f41, float f42, float f43, float f44) OPENVRML_NOTHROW;
+        explicit mat4f(const float mat[16]) OPENVRML_NOTHROW;
+        explicit mat4f(const float (&mat)[4][4]) OPENVRML_NOTHROW;
+
+        // Use compiler-defined operator= and copy constructor.
 
         mat4f & operator*=(float scalar) OPENVRML_NOTHROW;
         mat4f & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
@@ -689,9 +737,9 @@ namespace openvrml {
         float (&operator[](const size_t index) OPENVRML_NOTHROW)[4];
         const float (&operator[](const size_t index) const OPENVRML_NOTHROW)[4];
 
-        void transformation(vec3f & t, rotation & r, vec3f & s) const
+        void transformation(vec3f & t, openvrml::rotation & r, vec3f & s) const
             OPENVRML_NOTHROW;
-        void transformation(vec3f & t, rotation & r, vec3f & s,
+        void transformation(vec3f & t, openvrml::rotation & r, vec3f & s,
                             vec3f & shear) const
             OPENVRML_NOTHROW;
 
@@ -699,34 +747,6 @@ namespace openvrml {
         const mat4f transpose() const OPENVRML_NOTHROW;
         float det() const OPENVRML_NOTHROW;
     };
-
-    OPENVRML_API const mat4f make_mat4f() OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f
-    make_mat4f(float f11, float f12, float f13, float f14,
-               float f21, float f22, float f23, float f24,
-               float f31, float f32, float f33, float f34,
-               float f41, float f42, float f43, float f44)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_mat4f(const float mat[16]) OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_mat4f(const float (&mat)[4][4])
-        OPENVRML_NOTHROW;
-
-    OPENVRML_API const mat4f make_rotation_mat4f(const rotation & rot)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_rotation_mat4f(const quatf & quat)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_scale_mat4f(float s)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_scale_mat4f(const vec3f & s)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_translation_mat4f(const vec3f & t)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const mat4f make_transformation_mat4f(const vec3f & t,
-                                                       const rotation & r,
-                                                       const vec3f & s,
-                                                       const rotation & sr,
-                                                       const vec3f & c)
-        OPENVRML_NOTHROW;
 
     OPENVRML_API bool operator==(const mat4f & lhs, const mat4f & rhs)
         OPENVRML_NOTHROW;
@@ -756,8 +776,22 @@ namespace openvrml {
                                            const mat4f & mat);
 
 
-    struct OPENVRML_API quatf {
+    OPENVRML_API std::istream & operator>>(std::istream & in, quatf & q);
+
+    class OPENVRML_API quatf {
+        friend OPENVRML_API std::istream & operator>>(std::istream & in,
+                                                      quatf & q);
+
         float quat[4];
+
+    public:
+        quatf() OPENVRML_NOTHROW;
+        quatf(float x, float y, float z, float w) OPENVRML_NOTHROW;
+        explicit quatf(const float (&quat)[4]) OPENVRML_NOTHROW;
+        explicit quatf(const rotation & rot) OPENVRML_NOTHROW;
+        explicit quatf(const mat4f & mat) OPENVRML_NOTHROW;
+
+        // use compiler-defined operator= and copy constructor.
 
         quatf & operator*=(const quatf & quat) OPENVRML_NOTHROW;
         quatf & operator*=(float scalar) OPENVRML_NOTHROW;
@@ -784,14 +818,6 @@ namespace openvrml {
         const quatf normalize() const OPENVRML_NOTHROW;
     };
 
-    OPENVRML_API const quatf make_quatf() OPENVRML_NOTHROW;
-    OPENVRML_API const quatf make_quatf(float x, float y, float z, float w)
-        OPENVRML_NOTHROW;
-    OPENVRML_API const quatf make_quatf(const float (&quat)[4])
-        OPENVRML_NOTHROW;
-    OPENVRML_API const quatf make_quatf(const rotation & rot) OPENVRML_NOTHROW;
-    OPENVRML_API const quatf make_quatf(const mat4f & mat) OPENVRML_NOTHROW;
-
     OPENVRML_API const quatf operator*(const quatf & lhs, const quatf & rhs)
         OPENVRML_NOTHROW;
     OPENVRML_API const quatf operator*(const quatf & quat, const float scalar)
@@ -808,7 +834,6 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const quatf & lhs, const quatf & rhs)
         OPENVRML_NOTHROW;
-    OPENVRML_API std::istream & operator>>(std::istream & in, quatf & q);
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const quatf & quat);
 
@@ -902,10 +927,10 @@ namespace openvrml {
         template <typename InputIterator>
         void array(InputIterator begin, InputIterator end) OPENVRML_NOTHROW;
 
-        int32 pixel(size_t index) const OPENVRML_NOTHROW;
-        void pixel(size_t index, int32 value) OPENVRML_NOTHROW;
-        int32 pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
-        void pixel(size_t x, size_t y, int32 value) OPENVRML_NOTHROW;
+        unsigned long pixel(size_t index) const OPENVRML_NOTHROW;
+        void pixel(size_t index, unsigned long value) OPENVRML_NOTHROW;
+        unsigned long pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
+        void pixel(size_t x, size_t y, unsigned long value) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const image & lhs, const image & rhs)
@@ -968,22 +993,22 @@ namespace openvrml {
         std::copy(begin, end, this->array_.begin());
     }
 
-    inline int32 image::pixel(const size_t index) const
+    inline unsigned long image::pixel(const size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
-        int32 retval = 0x00000000;
+        unsigned long retval = 0x00000000;
         for (size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
             retval |=
-                static_cast<int32>(this->array_[i])
+                static_cast<unsigned long>(this->array_[i])
                 << (8 * (component - 1));
         }
         return retval;
     }
 
-    inline void image::pixel(const size_t index, const int32 value)
+    inline void image::pixel(const size_t index, const unsigned long value)
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
@@ -996,7 +1021,7 @@ namespace openvrml {
         }
     }
 
-    inline int32 image::pixel(const size_t x, const size_t y) const
+    inline unsigned long image::pixel(const size_t x, const size_t y) const
         OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
@@ -1005,7 +1030,7 @@ namespace openvrml {
 
     inline void image::pixel(const size_t x,
                              const size_t y,
-                             const int32 value)
+                             const unsigned long value)
         OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());

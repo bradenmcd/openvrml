@@ -1,0 +1,107 @@
+noinst_HEADERS = \
+        antlr/ANTLRException.hpp \
+        antlr/ANTLRUtil.hpp \
+        antlr/ASTArray.hpp \
+        antlr/AST.hpp \
+        antlr/ASTArray.hpp \
+        antlr/ASTFactory.hpp \
+        antlr/ASTNULLType.hpp \
+        antlr/ASTPair.hpp \
+        antlr/ASTRefCount.hpp \
+        antlr/BaseAST.hpp \
+        antlr/BitSet.hpp \
+        antlr/CharBuffer.hpp \
+        antlr/CharInputBuffer.hpp \
+        antlr/CharScanner.hpp \
+        antlr/CharStreamException.hpp \
+        antlr/CharStreamIOException.hpp \
+        antlr/CircularQueue.hpp \
+        antlr/CommonAST.hpp \
+        antlr/CommonASTWithHiddenTokens.hpp \
+        antlr/CommonHiddenStreamToken.hpp \
+        antlr/CommonToken.hpp \
+        antlr/InputBuffer.hpp \
+        antlr/IOException.hpp \
+        antlr/LLkParser.hpp \
+        antlr/LexerSharedInputState.hpp \
+        antlr/MismatchedCharException.hpp \
+        antlr/MismatchedTokenException.hpp \
+        antlr/NoViableAltException.hpp \
+        antlr/NoViableAltForCharException.hpp \
+        antlr/Parser.hpp \
+        antlr/ParserSharedInputState.hpp \
+        antlr/RecognitionException.hpp \
+        antlr/RefCount.hpp \
+        antlr/SemanticException.hpp \
+        antlr/String.hpp \
+        antlr/Token.hpp \
+        antlr/TokenBuffer.hpp \
+        antlr/TokenStream.hpp \
+        antlr/TokenStreamBasicFilter.hpp \
+        antlr/TokenStreamException.hpp \
+        antlr/TokenStreamHiddenTokenFilter.hpp \
+        antlr/TokenStreamIOException.hpp \
+        antlr/TokenStreamRecognitionException.hpp \
+        antlr/TokenStreamRetryException.hpp \
+        antlr/TokenStreamSelector.hpp \
+        antlr/TreeParser.hpp \
+        antlr/TreeParserSharedInputState.hpp \
+        antlr/config.hpp
+
+AM_CPPFLAGS = -I$(top_srcdir)/lib/antlr -DANTLR_EXPORTS
+
+noinst_LTLIBRARIES = libantlr.la
+libantlr_la_LDFLAGS = -avoid-version
+
+libantlr_la_SOURCES = \
+        src/ANTLRUtil.cpp \
+        src/ASTFactory.cpp \
+        src/ASTNULLType.cpp \
+        src/ASTRefCount.cpp \
+        src/BaseAST.cpp \
+        src/BitSet.cpp \
+        src/CharBuffer.cpp \
+        src/CharScanner.cpp \
+        src/CommonAST.cpp \
+        src/CommonASTWithHiddenTokens.cpp \
+        src/CommonHiddenStreamToken.cpp \
+        src/CommonToken.cpp \
+        src/InputBuffer.cpp \
+        src/LLkParser.cpp \
+        src/MismatchedCharException.cpp \
+        src/MismatchedTokenException.cpp \
+        src/NoViableAltException.cpp \
+        src/NoViableAltForCharException.cpp \
+        src/Parser.cpp \
+        src/RecognitionException.cpp \
+        src/String.cpp \
+        src/Token.cpp \
+        src/TokenBuffer.cpp \
+        src/TokenStreamBasicFilter.cpp \
+        src/TokenStreamHiddenTokenFilter.cpp \
+        src/TokenStreamSelector.cpp \
+        src/TreeParser.cpp
+
+EXTRA_DIST = \
+        Makefile \
+        antlr.dsp \
+        antlr.dsw \
+        doxygen.cfg \
+        antlr/Makefile \
+        contrib/bcb4/README \
+        contrib/bcb4/antlr.cpp \
+        contrib/bcb4/antlr.bpr \
+        contrib/MSCV6/README \
+        contrib/MSCV6/libcpp.dsp \
+        contrib/MSCV6/libcpp.dsw \
+        contrib/MSCV6-dll/README \
+        contrib/MSCV6-dll/antlr.dsw \
+        contrib/MSCV6-dll/dll.cpp \
+        contrib/MSCV6-dll/dll.dsp \
+        contrib/MSCV6-dll/lib.dsp \
+        scripts/cr_stripper.sh \
+        scripts/make_change_log.tcl \
+        src/Makefile \
+        src/dll.cpp
+
+DISTCLEANFILES = GNUmakefile

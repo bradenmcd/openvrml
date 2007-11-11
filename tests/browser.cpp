@@ -21,13 +21,12 @@
 # define BOOST_TEST_MODULE browser
 
 # include <fstream>
-# include <iostream>
 # include <sstream>
 # include <boost/filesystem/operations.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/thread.hpp>
 # include <boost/test/unit_test.hpp>
-# include "test_resource_fetcher.h"
+# include "test_browser.h"
 
 using namespace std;
 using namespace openvrml;
@@ -36,8 +35,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 BOOST_AUTO_TEST_CASE(create_vrml_from_stream)
 {
-    test_resource_fetcher fetcher;
-    browser b(fetcher, std::cout, std::cerr);
+    test_browser b;
 
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
@@ -65,8 +63,7 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_stream_with_externproto)
     const char vrmlstring[] = "EXTERNPROTO Node [] [ \"test.wrl\" ] Node {}";
     stringstream vrmlstream(vrmlstring);
 
-    test_resource_fetcher fetcher;
-    browser b(fetcher, std::cout, std::cerr);
+    test_browser b;
 
     vector<boost::intrusive_ptr<node> > nodes =
         b.create_vrml_from_stream(vrmlstream);
@@ -115,8 +112,7 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_url)
                    boost::filesystem::path("test.wrl"));
     boost::ignore_unused_variable_warning(test_file_guard);
 
-    test_resource_fetcher fetcher;
-    browser b(fetcher, std::cout, std::cerr);
+    test_browser b;
     const char vrmlstring[] = "Group {}";
     stringstream vrmlstream(vrmlstring);
     vector<boost::intrusive_ptr<node> > nodes =

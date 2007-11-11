@@ -29,7 +29,7 @@ using namespace openvrml;
 
 BOOST_AUTO_TEST_CASE(stream_extraction_without_commas)
 {
-    color c1 = make_color(1.0, 1.0, 1.0), c2 = make_color(0.5, 0.5, 0.5), c3, c4;
+    color c1(1.0, 1.0, 1.0), c2(0.5, 0.5, 0.5), c3, c4;
     string color_str = "1.0 1.0 1.0 0.5 0.5 0.5";
     istringstream in(color_str);
     in >> c3 >> c4;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(stream_extraction_without_commas)
 
 BOOST_AUTO_TEST_CASE(stream_extraction_with_commas)
 {
-    color c1 = make_color(1.0, 1.0, 1.0), c2 = make_color(0.5, 0.5, 0.5), c3, c4;
+    color c1(1.0, 1.0, 1.0), c2(0.5, 0.5, 0.5), c3, c4;
     string color_str = "1.0, 1.0, 1.0, 0.5, 0.5, 0.5";
     istringstream in(color_str);
     in >> c3 >> c4;
