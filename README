@@ -252,9 +252,6 @@ to compile OpenVRML without the GNU build tools.
      Include support for Java scripts in the Script node.  Requires the
      Sun Java Development Kit.
 
- HAVE_APPLE_OPENGL_FRAMEWORK
-     Use Apple's OpenGL framework.  Mac OS X only.
-
 
 Installation
 ============
