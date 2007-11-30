@@ -1,5 +1,22 @@
 2007-11-30 Braden McDaniel  <braden@endoframe.com>
 
+	Updated AX_CHECK_GL and AX_CHECK_GLU macros to provide more robust
+	support for Mac OS X; particularly Mac OS X 10.5.
+
+	* README: Removed documentation for --with-apple-opengl-framework.
+	AX_CHECK_GL no longer provides this option.
+	* m4/acx_pthread.m4: Updated to latest ACX_PTHREAD.
+	* m4/ax_check_gl.m4: Updated to AX_CHECK_GL 2.0.  Includes changes
+	to provide the proper linker flags when building with X11 on Mac
+	OS X 10.5.
+	* m4/ax_check_glu.m4: Updated to AX_CHECK_GLU 2.1.  Includes
+	changes to accommodate building on Mac OS X 10.5.
+	* m4/ax_lang_compiler_ms.m4: Added license information.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Replaces uses of
+	HAVE_APPLE_OPENGL_FRAMEWORK.
+
+2007-11-30 Braden McDaniel  <braden@endoframe.com>
+
 	* examples/Makefile.am (all-local): Depend on sdl-viewer.
 
 2007-11-11 Braden McDaniel  <braden@endoframe.com>

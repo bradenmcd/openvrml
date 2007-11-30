@@ -213,9 +213,6 @@ depends on.
      platforms where X is available alongside another windowing system
      (e.g., Cygwin or Mac OS X with X installed).
 
- --with-apple-opengl-framework
-     Use Apple's OpenGL framework on Mac OS X.
-
  --with-libjs
      Use the stand-alone SpiderMonkey distribution.  By default,
      "configure" looks for SpiderMonkey as it is distributed with a
