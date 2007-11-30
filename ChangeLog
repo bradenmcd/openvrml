@@ -1,5 +1,11 @@
 2007-11-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am (openvrml_xembed_openvrml_xembed_LDFLAGS):
+	Explicitly add GLU_LIBS here because libtool will not propagate
+	the -dylib_file flag needed by Mac OS X 10.5.
+
+2007-11-30 Braden McDaniel  <braden@endoframe.com>
+
 	Use AX_CHECK_GLU to establish GL_CFLAGS, GL_LIBS when configuring
 	gtkglext.
 
