@@ -12,10 +12,10 @@ noinst_PROGRAMS = sdl-viewer
 
 if WITH_REZ
 if ENABLE_SHARED
-all-local:
+all-local: sdl-viewer
 	$(REZ) -d __DARWIN__ Carbon.r -t APPL -o .libs/sdl-viewer
 else
-all-local:
+all-local: sdl-viewer
 	$(REZ) -d __DARWIN__ Carbon.r -t APPL -o sdl-viewer
 endif # ENABLE_SHARED
 endif # WITH_REZ
