@@ -1,5 +1,15 @@
 2007-11-30 Braden McDaniel  <braden@endoframe.com>
 
+	Use AX_CHECK_GLU to establish GL_CFLAGS, GL_LIBS when configuring
+	gtkglext.
+
+	* lib/gtkglext/Makefile.am (ACLOCAL_AMFLAGS): Look in openvrml's
+	macro subdirectory.
+	* lib/gtkglext/configure.in: Replaced OpenGL detection for X11 with
+	AX_CHECK_GLU.
+
+2007-11-30 Braden McDaniel  <braden@endoframe.com>
+
 	Updated AX_CHECK_GL and AX_CHECK_GLU macros to provide more robust
 	support for Mac OS X; particularly Mac OS X 10.5.
 
@@ -12,7 +22,7 @@
 	* m4/ax_check_glu.m4: Updated to AX_CHECK_GLU 2.1.  Includes
 	changes to accommodate building on Mac OS X 10.5.
 	* m4/ax_lang_compiler_ms.m4: Added license information.
-	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Replaces uses of
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Replaced uses of
 	HAVE_APPLE_OPENGL_FRAMEWORK.
 
 2007-11-30 Braden McDaniel  <braden@endoframe.com>
