@@ -206,7 +206,7 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
 openvrml_xembed_openvrml_xembed_LDFLAGS = \
         $(OPENVRML_RPATH) \
         $(GTK_LIBS) \
-        $(GLU_LIBS)
+        $(GL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
         libopenvrml-gl/libopenvrml-gl.la \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
