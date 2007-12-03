@@ -1,5 +1,11 @@
 2007-12-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::resolve_against(const uri &) const): Initialize the path to
+	"/" if it is empty.
+
+2007-12-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp: Some minor code cleanup.
 
 2007-12-03 Braden McDaniel  <braden@endoframe.com>

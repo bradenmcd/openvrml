@@ -3406,7 +3406,8 @@ namespace {
             result << "//" << absolute_uri.authority();
         }
 
-        const string abs_uri_path = absolute_uri.path();
+        string abs_uri_path = absolute_uri.path();
+        if (abs_uri_path.empty()) { abs_uri_path = "/"; }
         const string::size_type last_slash_index =
             abs_uri_path.find_last_of('/');
 
