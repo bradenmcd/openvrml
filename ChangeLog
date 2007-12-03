@@ -1,5 +1,9 @@
 2007-12-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp: Some minor code cleanup.
+
+2007-12-03 Braden McDaniel  <braden@endoframe.com>
+
 	Prefer Phoenix forms to Spirit actors.
 
 	* src/libopenvrml/openvrml/basetypes.cpp

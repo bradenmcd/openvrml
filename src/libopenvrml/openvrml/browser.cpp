@@ -73,7 +73,8 @@ namespace openvrml {
 
     class OPENVRML_LOCAL null_node_metatype : public node_metatype {
     public:
-        explicit null_node_metatype(openvrml::browser & browser) OPENVRML_NOTHROW;
+        explicit null_node_metatype(openvrml::browser & browser)
+            OPENVRML_NOTHROW;
         virtual ~null_node_metatype() OPENVRML_NOTHROW;
 
     private:
@@ -86,7 +87,8 @@ namespace openvrml {
 
     class OPENVRML_LOCAL null_node_type : public node_type {
     public:
-        explicit null_node_type(null_node_metatype & nodeClass) OPENVRML_NOTHROW;
+        explicit null_node_type(null_node_metatype & nodeClass)
+            OPENVRML_NOTHROW;
         virtual ~null_node_type() OPENVRML_NOTHROW;
 
     private:
@@ -429,9 +431,7 @@ namespace openvrml {
 
     abstract_proto_node::~abstract_proto_node() OPENVRML_NOTHROW
     {}
-} // namespace openvrml
 
-namespace openvrml {
 
     class externproto_node;
 
@@ -1069,15 +1069,15 @@ namespace openvrml {
     /**
      * @brief Construct.
      *
-     * @param[in] from      event source node.
+     * @param[in] from      event source @c node.
      * @param[in] eventout  @c eventOut of @p from.
-     * @param[in] to        event destination node.
+     * @param[in] to        event destination @c node.
      * @param[in] eventin   @c eventIn of @p to.
      */
     proto_node_metatype::route::route(node & from,
-                                   const std::string & eventout,
-                                   node & to,
-                                   const std::string & eventin):
+                                      const std::string & eventout,
+                                      node & to,
+                                      const std::string & eventin):
         from(&from),
         eventout(eventout),
         to(&to),
