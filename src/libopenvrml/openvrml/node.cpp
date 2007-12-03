@@ -27,7 +27,6 @@
 # include <algorithm>
 # include <sstream>
 # include <boost/array.hpp>
-# include <boost/bind.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/mpl/for_each.hpp>
 # include "private.h"
@@ -229,19 +228,14 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
+ * @fn openvrml::node_interface::node_interface(type_id type, field_value::type_id field_type, const std::string & id)
+ *
  * @brief Constructor.
  *
  * @param[in] type       the type of interface.
  * @param[in] field_type the field data type handled by the interface.
  * @param[in] id         the name of the interface.
  */
-openvrml::node_interface::node_interface(const type_id type,
-                                         const field_value::type_id field_type,
-                                         const std::string & id):
-    type(type),
-    field_type(field_type),
-    id(id)
-{}
 
 /**
  * @relatesalso openvrml::node_interface
@@ -508,6 +502,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  */
 
 /**
+ * @fn const openvrml::node_interface_set::const_iterator openvrml::find_interface(const node_interface_set & interfaces, const std::string & id)
+ *
  * @brief Find an interface matching @p id.
  *
  * If no interface is found with an interface identifier that is an exact
@@ -523,26 +519,6 @@ std::istream & openvrml::operator>>(std::istream & in,
  * @return a @c const_iterator to the interface, or @c node_interface_set::end
  *         if no interface is found.
  */
-const openvrml::node_interface_set::const_iterator
-openvrml::find_interface(const node_interface_set & interfaces,
-                         const std::string & id)
-    OPENVRML_NOTHROW
-{
-    using std::find_if;
-    using boost::bind;
-    node_interface_set::const_iterator pos =
-        find_if(interfaces.begin(), interfaces.end(),
-                bind(node_interface_matches_field(), _1, id));
-    if (pos == interfaces.end()) {
-        using std::logical_or;
-
-        pos = find_if(interfaces.begin(), interfaces.end(),
-                      bind(logical_or<bool>(),
-                           bind(node_interface_matches_eventin(), _1, id),
-                           bind(node_interface_matches_eventout(), _1, id)));
-    }
-    return pos;
-}
 
 
 /**
@@ -2765,13 +2741,13 @@ namespace {
  *         the route already existed).
  *
  * @exception std::bad_alloc            if memory allocation fails.
- * @exception unsupported_interface     if @p from has no eventOut
- *                                      @p eventout; or if @p to has no
- *                                      eventIn @p eventin.
+ * @exception unsupported_interface     if the node has no eventOut
+ *                                      @p eventout; or if @p to has no eventIn
+ *                                      @p eventin.
  * @exception field_value_type_mismatch if @p eventout and @p eventin have
  *                                      different field value types.
  *
- * @pre @p from and @p to are not null.
+ * @pre @p to_node is not null.
  */
 bool openvrml::add_route(node & from,
                          const std::string & eventout,
@@ -2826,8 +2802,10 @@ namespace {
 }
 
 /**
- * @brief Remove a route from an @c eventOut from a @c node to an @c eventIn
+ * @brief Remove a route from an @c eventOut of this @c node to an @c eventIn
  *        of another @c node.
+ *
+ * If no such route exists, this method has no effect.
  *
  * @param[in,out] from      source @c node.
  * @param[in]     eventout  an @c eventOut of @p from.

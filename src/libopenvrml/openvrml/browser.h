@@ -1,9 +1,9 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,13 @@ namespace openvrml {
     OPENVRML_API extern const char vrml_media_type[11];
     OPENVRML_API extern const char x_vrml_media_type[15];
     OPENVRML_API extern const char x3d_vrml_media_type[15];
+
+    std::auto_ptr<node_type_decls> profile(const std::string & profile_id)
+        OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+
+    void add_component(node_type_decls & node_types,
+                       const std::string & component_id, size_t level)
+        OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
     class OPENVRML_API resource_istream : public std::istream {
     public:
@@ -178,15 +185,19 @@ namespace openvrml {
     class scene;
     class null_node_metatype;
     class null_node_type;
+    class externproto_node;
 
     class OPENVRML_API browser : boost::noncopyable {
         friend class scene;
-        friend class Vrml97Parser;
-        friend class X3DVrmlParser;
+        friend class externproto_node;
         friend bool OPENVRML_API operator==(const node_type &, const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
+        class externproto_node_metatype;
+        class externproto_node_type;
+        struct vrml97_parse_actions;
+        struct x3d_vrml_parse_actions;
 
         class OPENVRML_LOCAL node_metatype_map {
             mutable read_write_mutex mutex_;
@@ -226,6 +237,15 @@ namespace openvrml {
             //
             node_metatype_map(const node_metatype_map & map);
         };
+
+        OPENVRML_LOCAL static void
+            parse_vrml(
+                std::istream & in,
+                const std::string & uri,
+                const std::string & type,
+                const openvrml::scene & scene,
+                std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+                std::map<std::string, std::string> & meta);
 
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
         const boost::scoped_ptr<null_node_type> null_node_type_;

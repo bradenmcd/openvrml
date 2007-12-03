@@ -26,6 +26,7 @@
 #   include <deque>
 #   include <set>
 #   include <utility>
+#   include <boost/bind.hpp>
 #   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
@@ -48,10 +49,24 @@ namespace openvrml {
         field_value::type_id field_type;
         std::string id;
 
+        node_interface();
         node_interface(type_id type,
                        field_value::type_id field_type,
                        const std::string & id);
     };
+
+    inline node_interface::node_interface():
+        type(invalid_type_id),
+        field_type(field_value::invalid_type_id)
+    {}
+
+    inline node_interface::node_interface(const type_id type,
+                                          const field_value::type_id field_type,
+                                          const std::string & id):
+        type(type),
+        field_type(field_type),
+        id(id)
+    {}
 
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            node_interface::type_id type);
@@ -173,10 +188,29 @@ namespace openvrml {
     typedef std::set<node_interface, node_interface_compare>
         node_interface_set;
 
-    OPENVRML_API const node_interface_set::const_iterator
+    inline const node_interface_set::const_iterator
     find_interface(const node_interface_set & interfaces,
                    const std::string & id)
-        OPENVRML_NOTHROW;
+        OPENVRML_NOTHROW
+    {
+        using std::find_if;
+        using boost::bind;
+        node_interface_set::const_iterator pos =
+            find_if(interfaces.begin(), interfaces.end(),
+                    bind(node_interface_matches_field(), _1, id));
+        if (pos == interfaces.end()) {
+            using std::logical_or;
+
+            pos = find_if(interfaces.begin(), interfaces.end(),
+                          bind(logical_or<bool>(),
+                               bind(node_interface_matches_eventin(), _1, id),
+                               bind(node_interface_matches_eventout(), _1, id)));
+        }
+        return pos;
+    }
+
+
+    typedef std::map<std::string, node_interface_set> node_type_decls;
 
 
     class OPENVRML_API node_metatype_id {

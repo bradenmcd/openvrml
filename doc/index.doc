@@ -11,7 +11,8 @@
  * <table>
  * <tr><td>@ref intro</td></tr>
  * <tr><td>@ref history</td></tr>
- * <tr><td>@ref getting_started</td></tr>
+ * <tr><td>@ref parsing</td></tr>
+ * <tr><td>@ref libopenvrml</td></tr>
  * <tr><td>@ref resource_fetching</td></tr>
  * <tr><td>@ref resource_fetching_rationale</td></tr>
  * <tr><td>@ref resource_istream</td></tr>
@@ -22,20 +23,39 @@
  *
  * @section intro 1 Introduction
  *
- * OpenVRML is a runtime library for VRML97 and X3D worlds.  OpenVRML parses
- * VRML/X3D directly into an in-memory scene graph format that can be further
- * manipulated through its API and/or rendered.
+ * The OpenVRML development toolkit consists of the following parts:
+ *
+ * - the VRML97 and X3D-VRML parsing interfaces
+ * - libopenvrml, a runtime library for VRML97 and X3D worlds
+ * - ibopenvrml-gl, an OpenGL renderer
  *
  * @subsection history 1.1 History
  *
  * OpenVRML was started as LibVRML97 by Chris Morley.  Since 2000 it has been
  * maintained by Braden McDaniel.
  *
- * @section getting_started 2 Getting started
+ * @section parsing 2 Parsing VRML97 and VRML-encoded X3D
  *
- * @subsection resource_fetching 2.1 Fetching network resources
+ * OpenVRML includes parsers for reading VRML97 and VRML-encoded X3D.  These
+ * parsers are implemented using the <a
+ * href="http://spirit.sourceforge.net">Spirit parsing framework</a> and have
+ * the following features:
  *
- * @subsubsection resource_fetching_rationale 2.1.1 Rationale
+ * - The parsers are node-independent.  A user-defined &ldquo;starting
+ *   set&rdquo; of nodes is provided to the parser at the beginning of
+ *   parsing.
+ * - The parsers are strict.  Invalid code gets rejected.  The parsers have
+ *   been constructed to be appropriate for ensuring syntactic and semantic
+ *   correctness of the parsed stream.
+ * - Using the parsers does not require linking with libopenvrml.  Spirit and
+ *   the grammars which make up the parsers consist of C++ templates, which
+ *   are implemented in header files.
+ *
+ * @section libopenvrml 3 libopenvrml - the run-time library
+ *
+ * @subsection resource_fetching 3.1 Fetching network resources
+ *
+ * @subsubsection resource_fetching_rationale 3.1.1 Rationale
  *
  * A VRML/X3D runtime must, of course, be able to fetch network resources
  * using URIs.  However, there is no standard mechanism in C++ for network
@@ -55,7 +75,7 @@
  * @c file URLs.  But in general it is desirable to support at least the schemes
  * supported by modern Web browsers (significantly, @c ftp and @c http).
  *
- * @subsubsection resource_istream 2.1.2 resource_istream and resource_fetcher
+ * @subsubsection resource_istream 3.1.2 resource_istream and resource_fetcher
  *
  * OpenVRML accomplishes this extensibility by extending the C++ IOStreams
  * framework.  @c openvrml::resource_istream inherits @c std::istream and adds
@@ -95,26 +115,26 @@
  * @c auto_ptr.  @c std::auto_ptr is used for ownership transfer; its use for
  * a return value signals that the caller is taking ownership of the resource.
  *
- * @subsubsection introducing_browser 2.1.3 Introducing browser
+ * @subsubsection introducing_browser 3.1.3 Introducing browser
  *
- * The centerpiece of the OpenVRML library is @c openvrml::browser.  This
- * class provides the interface for loading VRML/X3D worlds.  Most management
- * of the runtime will be handled through its member functions.  @c browser is
- * instantiated with a concrete subclass of @c resource_fetcher along with
- * @c std::ostream instances where normal console output and error console output
- * should be sent.
+ * The centerpiece of OpenVRML is @c openvrml::browser.  This class provides
+ * the interface for loading VRML/X3D worlds.  Most management of the runtime
+ * will be handled through its member functions.  @c browser is instantiated
+ * with a concrete subclass of @c resource_fetcher along with @c std::ostream
+ * instances where normal console output and error console output should be
+ * sent.
  *
- * @subsubsection resource_istream_impl_considerations 2.1.4 resource_istream implementation considerations
+ * @subsubsection resource_istream_impl_considerations 3.1.4 resource_istream implementation considerations
  *
  * OpenVRML supports a notion of data streaming.  In general, network
  * resources are read asynchronously with respect to the rendering thread.
  * User code that does not support data streaming (as in the example using
  * @c std::filebuf in the documentation for
- * @c openvrml::browser::do_get_resource) can remain largely oblivious to
- * synchronization issues.  However, user code that supports data streaming
- * must be mindful of the fact that OpenVRML uses separate threads to read the
- * data streams.  Care must be taken not to write to a buffer at the same time
- * OpenVRML's stream reading thread is reading the buffer.
+ * @c openvrml::resource_fetcher::do_get_resource) can remain largely
+ * oblivious to synchronization issues.  However, user code that supports data
+ * streaming must be mindful of the fact that OpenVRML uses separate threads
+ * to read the data streams.  Care must be taken not to write to a buffer at
+ * the same time OpenVRML's stream reading thread is reading the buffer.
  *
  * The IOStreams framework is typically extended by inheriting
  * @c std::streambuf to implement new sources and sinks for data.  (Full

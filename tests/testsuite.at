@@ -1,129 +1,300 @@
 AT_INIT
 
-AT_BANNER([VRML97 parse tests: code that should be accepted])
+AT_BANNER([openvrml::vrml97_grammar tests: code that should be accepted])
+
+AT_SETUP([Minimal world])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/minimal.wrl])
+AT_CLEANUP
 
 AT_SETUP([Ensure the line number is reported correctly for the last token on a line])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/line-number.wrl],
-         [0], [],
-         [urn:X-openvrml:stream:1:3:17: warning: axis component of a rotation must be a normalized vector
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/good/line-number.wrl], [0], [],
+[$abs_top_srcdir/tests/vrml97/good/line-number.wrl:3:17: warning: rotation axis should be a normalized vector
 ])
 AT_CLEANUP
 
 AT_SETUP([Trivial PROTO containment])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-containment-trivial.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/proto-containment-trivial.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO containment 2 levels deep])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-containment-2-deep.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/proto-containment-2-deep.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO instance as default PROTO field value])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-field-is-proto.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/proto-field-is-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Map PROTO eventIn, eventOut to an exposedField])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-impl-exposedfield-event-is.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/proto-impl-exposedfield-event-is.wrl])
 AT_CLEANUP
 
 AT_SETUP([ROUTE referring to the current node])
-AT_XFAIL_IF([true])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/route-referencing-current-node.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/route-referencing-current-node.wrl])
 AT_CLEANUP
 
 AT_SETUP([DEF/USE in a PROTO field default value])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/def-use-in-proto-default-value.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/def-use-in-proto-default-value.wrl])
 AT_CLEANUP
 
 AT_SETUP([PROTO in a PROTO field default value])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/proto-in-proto-default-value.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/proto-in-proto-default-value.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/self-referential-script.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/self-referential-script.wrl])
 AT_CLEANUP
 
 AT_SETUP([Self-referential Script node in a PROTO])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/self-referential-script-in-proto.wrl])
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/self-referential-script-in-proto.wrl])
 AT_CLEANUP
 
 AT_SETUP([Unrecognized EXTERNPROTO])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/unrecognized-externproto.wrl],
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/unrecognized-externproto.wrl],
          [0],
          [ignore],
          [ignore])
 AT_CLEANUP
 
 AT_SETUP([Unimplemented EXTERNPROTO])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/good/unimplemented-externproto.wrl],
+AT_CHECK([parse-vrml97 $abs_top_srcdir/tests/vrml97/good/unimplemented-externproto.wrl],
          [0],
          [ignore],
          [ignore])
 AT_CLEANUP
 
-AT_BANNER([VRML97 parse tests: code that should be rejected])
+AT_BANNER([openvrml::vrml97_grammar tests: code that should be rejected])
 
 AT_SETUP([Unrecognized node type])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/unrecognized-node.wrl], [1], [],
-[urn:X-openvrml:stream:1:2:0: error: unknown node type "UnrecognizedNode"
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/unrecognized-node.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/unrecognized-node.wrl:2:1: error: unknown node type identifier
+])
+AT_CLEANUP
+
+AT_SETUP([Unrecognized field])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/unrecognized-field.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/unrecognized-field.wrl:3:8: error: unknown node interface identifier
+])
+AT_CLEANUP
+
+AT_SETUP([Provide a value for an eventIn in a PROTO])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/value-for-eventin-in-proto.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/value-for-eventin-in-proto.wrl:3:24: error: expected IS
+])
+AT_CLEANUP
+
+AT_SETUP([Occurrence of IS outside a PROTO])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/is-outside-proto.wrl], [1], [],
+[$abs_top_srcdir/tests/vrml97/bad/is-outside-proto.wrl:3:12: error: expected a node or @<:@
+])
+AT_CLEANUP
+
+AT_SETUP([IS value type mismatch])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/is-value-type-mismatch.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/is-value-type-mismatch.wrl:3:26: error: incompatible PROTO interface
 ])
 AT_CLEANUP
 
 AT_SETUP([PROTO with a conflicting eventIn and exposedField])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/proto-eventin-conflict.wrl], [1], [],
-[urn:X-openvrml:stream:1:4:22: error: Interface "exposedField MFNode foo" conflicts with previous declaration
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/proto-eventin-conflict.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/proto-eventin-conflict.wrl:4:26: error: interface conflicts with previous declaration
 ])
 AT_CLEANUP
 
 AT_SETUP([PROTO with a conflicting eventOut and exposedField])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/proto-eventout-conflict.wrl], [1], [],
-[urn:X-openvrml:stream:1:4:19: error: Interface "eventOut SFColor foo_changed" conflicts with previous declaration
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/proto-eventout-conflict.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/proto-eventout-conflict.wrl:4:31: error: interface conflicts with previous declaration
 ])
 AT_CLEANUP
 
 AT_SETUP([USE a node DEFined in a different PROTO field default value])
-AT_CHECK([parse-vrml97 < $abs_top_srcdir/tests/vrml97/bad/use-def-in-different-proto-default-value.wrl], [1], [],
-[urn:X-openvrml:stream:1:4:43: error: node "G" has not been defined in this scope
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/use-def-in-different-proto-default-value.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/use-def-in-different-proto-default-value.wrl:4:44: error: unknown node name identifier
 ])
 AT_CLEANUP
 
-AT_BANNER([X3D VRML parse tests: code that should be accepted])
+AT_SETUP([ROUTE from a field])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/route-from-field.wrl], [1], [],
+[$abs_top_srcdir/tests/vrml97/bad/route-from-field.wrl:6:20: error: expected an eventOut identifier
+])
+AT_CLEANUP
+
+AT_SETUP([ROUTE to a field])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/route-to-field.wrl], [1], [],
+[$abs_top_srcdir/tests/vrml97/bad/route-to-field.wrl:6:35: error: expected an eventIn identifier
+])
+AT_CLEANUP
+
+AT_SETUP([ROUTE an SFInt32 to an SFBool])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/route-sfint32-to-sfbool.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/route-sfint32-to-sfbool.wrl:6:35: error: eventIn value type does not match eventOut value type
+])
+AT_CLEANUP
+
+AT_SETUP([exposedField declared in a Script node])
+AT_CHECK_NOESCAPE(
+[parse-vrml97 $abs_top_srcdir/tests/vrml97/bad/exposedfield-in-script.wrl],
+[1], [],
+[$abs_top_srcdir/tests/vrml97/bad/exposedfield-in-script.wrl:2:9: error: expected an interface declaration, a field declaration, PROTO, EXTERNPROTO, ROUTE, or }
+])
+AT_CLEANUP
+
+
+AT_BANNER([openvrml::x3d_vrml_grammar tests: code that should be accepted])
 
 AT_SETUP([Minimal world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal.x3dv])
+AT_CLEANUP
+
+AT_SETUP([Emit deprecation warning for "eventIn"])
+AT_CHECK_NOESCAPE(
+[parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/deprecated-eventin.x3dv],
+[0], [],
+[$abs_top_srcdir/tests/x3dv/good/deprecated-eventin.x3dv:3:21: warning: use of deprecated keyword \"eventIn\".  Use \"inputOnly\" instead.
+])
+AT_CLEANUP
+
+AT_SETUP([Emit deprecation warning for "eventOut"])
+AT_CHECK_NOESCAPE(
+[parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/deprecated-eventout.x3dv],
+[0], [],
+[$abs_top_srcdir/tests/x3dv/good/deprecated-eventout.x3dv:3:22: warning: use of deprecated keyword \"eventOut\".  Use \"outputOnly\" instead.
+])
+AT_CLEANUP
+
+AT_SETUP([Emit deprecation warning for "exposedField"])
+AT_CHECK_NOESCAPE(
+[parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/deprecated-exposedfield.x3dv],
+[0], [],
+[$abs_top_srcdir/tests/x3dv/good/deprecated-exposedfield.x3dv:3:26: warning: use of deprecated keyword \"exposedField\".  Use \"inputOutput\" instead.
+])
+AT_CLEANUP
+
+AT_SETUP([Emit deprecation warning for "field"])
+AT_CHECK_NOESCAPE(
+[parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/deprecated-field.x3dv],
+[0], [],
+[$abs_top_srcdir/tests/x3dv/good/deprecated-field.x3dv:3:19: warning: use of deprecated keyword \"field\".  Use \"initializeOnly\" instead.
+])
 AT_CLEANUP
 
 AT_SETUP([Core profile world plus Core component level 2])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/core+core2.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/core+core2.x3dv])
 AT_CLEANUP
 
 AT_SETUP([X3D Core plus VRML97 component])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/x3d+vrml97-component.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/x3d+vrml97-component.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Interchange world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-interchange.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal-interchange.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Interactive world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-interactive.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal-interactive.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal MPEG-4 Interactive world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-mpeg4.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal-mpeg4.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Immersive world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-immersive.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal-immersive.x3dv])
 AT_CLEANUP
 
 AT_SETUP([Minimal Full world])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/good/minimal-full.x3dv])
+AT_CHECK([parse-x3dvrml $abs_top_srcdir/tests/x3dv/good/minimal-full.x3dv])
 AT_CLEANUP
 
-AT_BANNER([X3D VRML parse tests: code that should be rejected])
+AT_BANNER([openvrml::x3d_vrml_grammar tests: code that should be rejected])
 
 AT_SETUP([Unsupported component level])
-AT_CHECK([parse-x3dvrml < $abs_top_srcdir/tests/x3dv/bad/unsupported-component-level.x3dv], [1], [],
-[urn:X-openvrml:stream:1:3:10: error: unsupported component level
+AT_CHECK_NOESCAPE(
+[parse-x3dvrml $abs_top_srcdir/tests/x3dv/bad/unsupported-component-level.x3dv],
+[1], [],
+[$abs_top_srcdir/tests/x3dv/bad/unsupported-component-level.x3dv:3:11: error: unrecognized component identifier or unsupported level
 ])
+AT_CLEANUP
+
+
+AT_BANNER([openvrml::browser::create_vrml_from_stream tests: VRML97 code that should be accepted])
+
+AT_SETUP([Minimal world])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/minimal.wrl])
+AT_CLEANUP
+
+AT_SETUP([Ensure the line number is reported correctly for the last token on a line])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/line-number.wrl],
+         [0], [],
+         [urn:X-openvrml:stream:1:3:17: warning: rotation axis should be a normalized vector
+])
+AT_CLEANUP
+
+AT_SETUP([Trivial PROTO containment])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/proto-containment-trivial.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO containment 2 levels deep])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/proto-containment-2-deep.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO instance as default PROTO field value])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/proto-field-is-proto.wrl])
+AT_CLEANUP
+
+AT_SETUP([Map PROTO eventIn, eventOut to an exposedField])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/proto-impl-exposedfield-event-is.wrl])
+AT_CLEANUP
+
+AT_SETUP([ROUTE referring to the current node])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/route-referencing-current-node.wrl])
+AT_CLEANUP
+
+AT_SETUP([DEF/USE in a PROTO field default value])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/def-use-in-proto-default-value.wrl])
+AT_CLEANUP
+
+AT_SETUP([PROTO in a PROTO field default value])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/proto-in-proto-default-value.wrl])
+AT_CLEANUP
+
+AT_SETUP([Self-referential Script node])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/self-referential-script.wrl])
+AT_CLEANUP
+
+AT_SETUP([Self-referential Script node in a PROTO])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/self-referential-script-in-proto.wrl])
+AT_CLEANUP
+
+AT_SETUP([Unrecognized EXTERNPROTO])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/unrecognized-externproto.wrl],
+         [0],
+         [ignore],
+         [ignore])
+AT_CLEANUP
+
+AT_SETUP([Unimplemented EXTERNPROTO])
+AT_CHECK([browser-parse-vrml $abs_top_srcdir/tests/vrml97/good/unimplemented-externproto.wrl],
+         [0],
+         [ignore],
+         [ignore])
 AT_CLEANUP

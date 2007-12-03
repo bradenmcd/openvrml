@@ -1,7 +1,7 @@
 ## -*- Makefile -*-
 ## Makefile.am for gtkglext
 
-ACLOCAL_AMFLAGS = -I m4macros -I ../../m4
+ACLOCAL_AMFLAGS = -I m4macros
 
 SUBDIRS = gdk gtk m4macros docs
 DIST_SUBDIRS = $(SUBDIRS) examples

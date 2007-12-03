@@ -1,0 +1,4 @@
+#VRML V2.0 utf8
+PROTO Node [ eventIn MFNode set_children ] {
+  Group { set_children [ Group {} ] }
+}

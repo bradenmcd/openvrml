@@ -1,4 +1,4 @@
-OpenVRML library version 0.16.7
+OpenVRML library version 0.16.6
 Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
 Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
    Braden McDaniel <braden@endoframe.com>
@@ -29,9 +29,6 @@ libraries are Free Software which may be used collectively according to
 the terms of the LGPL.  The full text of the LGPL can be found in the
 file "COPYING.LESSER".  Code used in these libararies under other terms
 (and available for reuse under the same terms) is as follows:
-
- * OpenVRML uses the ANTLR parser generator and C++ support library
-   which are in the public domain.
 
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
 
@@ -213,6 +210,9 @@ depends on.
      platforms where X is available alongside another windowing system
      (e.g., Cygwin or Mac OS X with X installed).
 
+ --with-apple-opengl-framework
+     Use Apple's OpenGL framework on Mac OS X.
+
  --with-libjs
      Use the stand-alone SpiderMonkey distribution.  By default,
      "configure" looks for SpiderMonkey as it is distributed with a
@@ -251,6 +251,9 @@ to compile OpenVRML without the GNU build tools.
  OPENVRML_ENABLE_SCRIPT_NODE_JAVA
      Include support for Java scripts in the Script node.  Requires the
      Sun Java Development Kit.
+
+ HAVE_APPLE_OPENGL_FRAMEWORK
+     Use Apple's OpenGL framework.  Mac OS X only.
 
 
 Installation

@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\openvrml;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="HAVE_WINDOWS_H;OPENVRML_USE_DLL;OPENVRML_GL_BUILD_DLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_WINDOWS_H;OPENVRML_USE_DLL;OPENVRML_GL_BUILD_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -125,7 +125,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml;..\openvrml;."
-				PreprocessorDefinitions="HAVE_WINDOWS_H;OPENVRML_GL_BUILD_DLL;OPENVRML_USE_DLL;NDEBUG"
+				PreprocessorDefinitions="WIN32;NDEBUG;HAVE_WINDOWS_H;OPENVRML_GL_BUILD_DLL;OPENVRML_USE_DLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -151,7 +151,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="GlU32.lib OpenGL32.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
-				GenerateDebugInformation="true"
 				LinkTimeCodeGeneration="1"
 				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
 			/>
@@ -203,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\openvrml-gl-config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File

@@ -1,0 +1,6 @@
+#VRML V2.0 utf8
+PROTO FromNode [ eventOut SFBool val_changed ] { Group {} }
+PROTO ToNode [ field SFBool val TRUE ] { Group {} }
+DEF FROM-NODE FromNode {}
+DEF TO-NODE ToNode {}
+ROUTE FROM-NODE.val TO TO-NODE.val

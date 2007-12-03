@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.16.7], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.16.6], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.53])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Braden McDaniel])
 AC_CONFIG_FILES([Makefile]
@@ -31,7 +31,6 @@ AM_CONFIG_HEADER([config.h])
 #
 REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_FREETYPE="freetype2"
-REQUIRE_XULRUNNER_JS="xulrunner-js"
 REQUIRE_FIREFOX_JS="firefox-js"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
@@ -45,11 +44,6 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-OV_PROG_ANTLR([2.7.7])
-AS_IF([test -z "$ANTLR"],
-      [AS_IF([test ! -f $srcdir/src/libopenvrml/openvrml/Vrml97Parser.cpp],
-             [AC_MSG_FAILURE([antlr 2.7.7 not found])],
-             [AC_MSG_WARN([antlr 2.7.7 not found; but generated files already exist])])])
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])
@@ -122,13 +116,11 @@ AC_LANG_POP])
 ])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [$REQUIRE_XULRUNNER_JS],
-                  [mozilla_js_pkg=$REQUIRE_XULRUNNER_JS],
-                  [PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
-                                     [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
-                                     [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
-                                                        [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
-                                                        [have_libmozjs=no])])])
+PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
+                  [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
+                  [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
+                                     [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
+                                     [have_libmozjs=no])])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 
 #
@@ -234,7 +226,6 @@ fi
 #
 # Script node JavaScript support
 #
-AC_ARG_VAR([GRE_PATH], [Path to Gecko runtime libraries])
 AC_ARG_ENABLE([script-node-javascript],
               [AC_HELP_STRING([--disable-script-node-javascript],
                               [disable Script node JavaScript support])])
@@ -259,9 +250,7 @@ else
     OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
     AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
             [Defined if Script node JavaScript support is enabled.])
-    if test -z "${GRE_PATH}"; then
-      GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
-    fi
+    GRE_PATH=`$PKG_CONFIG --libs-only-L ${mozilla_js_pkg%% *} | sed -e 's/^-L//' -e 's/ *$//'`
     if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
       openvrml_run_path=":${openvrml_run_path}"
     fi
@@ -283,6 +272,7 @@ else
 fi
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
+AC_SUBST([GRE_PATH])
 
 #
 # Script node Java support

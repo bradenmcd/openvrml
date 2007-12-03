@@ -36,7 +36,7 @@
 #   undef interface
 # endif
 
-# ifdef HAVE_OPENGL_GL_H
+# ifdef HAVE_APPLE_OPENGL_FRAMEWORK
 #   include <OpenGL/gl.h>
 #   include <OpenGL/glu.h>
 # else
@@ -1978,7 +1978,7 @@ extern "C" {
      * As the type of callback functions given to OpenGL, this type must have
      * C linkage.
      */
-# ifdef HAVE_VARARGS_GLU_TESSCB
+# ifdef HAVE_APPLE_OPENGL_FRAMEWORK
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(...);
 # else
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(GLvoid);
@@ -2171,7 +2171,7 @@ namespace {
              ++point) {
             result += (*(point + 1) - *point).length();
         }
-        return result == 0.0f ? 1.0f : result;
+        return result == 0.0 ? 1.0 : result;
     }
 
     /**
@@ -2203,7 +2203,7 @@ namespace {
              ++point) {
             result += (*(point + 1) - *point).length();
         }
-        return result == 0.0f ? 1.0f : result;
+        return result == 0.0 ? 1.0 : result;
     }
 
     /**

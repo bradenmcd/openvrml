@@ -1,11 +1,14 @@
 AM_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_SPIRIT_THREADSAFE \
+        -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
+        -DPHOENIX_LIMIT=6 \
         -DBOOST_TEST_DYN_LINK
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(OPENVRML_RPATH)
 
-TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=detailed
+TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=no
 TESTS = color \
         rotation \
         mat4f \
@@ -16,7 +19,7 @@ TESTS = color \
         node_interface_set
 
 check_LTLIBRARIES = libtest-openvrml.la
-check_PROGRAMS = $(TESTS) parse-vrml97 parse-x3dvrml
+check_PROGRAMS = $(TESTS) parse-vrml97 parse-x3dvrml browser-parse-vrml
 noinst_HEADERS = test_resource_fetcher.h
 
 libtest_openvrml_la_SOURCES = test_resource_fetcher.cpp
@@ -49,7 +52,8 @@ browser_LDADD = \
         -lboost_filesystem$(BOOST_LIB_SUFFIX)
 
 parse_anchor_SOURCES = parse_anchor.cpp
-parse_anchor_LDADD = libtest-openvrml.la
+parse_anchor_LDADD = \
+        libtest-openvrml.la
 
 node_interface_set_SOURCES = node_interface_set.cpp
 node_interface_set_LDADD = \
@@ -62,10 +66,13 @@ node_metatype_id_LDADD = \
         -lboost_unit_test_framework$(BOOST_LIB_SUFFIX)
 
 parse_vrml97_SOURCES = parse_vrml97.cpp
-parse_vrml97_LDADD = libtest-openvrml.la
+parse_vrml97_LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
 parse_x3dvrml_SOURCES = parse_x3dvrml.cpp
-parse_x3dvrml_LDADD = libtest-openvrml.la
+parse_x3dvrml_LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
+
+browser_parse_vrml_SOURCES = browser_parse_vrml.cpp
+browser_parse_vrml_LDADD = libtest-openvrml.la
 
 EXTRA_DIST = \
         package.m4 \
