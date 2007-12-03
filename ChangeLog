@@ -1,3 +1,29 @@
+2007-12-03 Braden McDaniel  <braden@endoframe.com>
+
+	Prefer Phoenix forms to Spirit actors.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::operator>>(std::istream &, color &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, color_rgba &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, vec2f &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, vec2d &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, vec3f &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, vec3d &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, rotation &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, mat4f &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, quatf &)): Use Phoenix
+	instead of actors.
+	(openvrml::operator>>(std::istream &, image &)): Use Phoenix
+	instead of actors.
+
 2007-11-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/Makefile.am (openvrml_xembed_openvrml_xembed_LDFLAGS):

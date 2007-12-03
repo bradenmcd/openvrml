@@ -396,7 +396,8 @@ std::istream & openvrml::operator>>(std::istream & in, color & c)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -407,9 +408,9 @@ std::istream & openvrml::operator>>(std::istream & in, color & c)
     scanner_t scan(first, last, policies);
 
     rule_t rule
-        =   intensity_p[assign_a(c.rgb[0])]
-            >> intensity_p[assign_a(c.rgb[1])]
-            >> intensity_p[assign_a(c.rgb[2])]
+        =   intensity_p[var(c.rgb[0]) = arg1]
+            >> intensity_p[var(c.rgb[1]) = arg1]
+            >> intensity_p[var(c.rgb[2]) = arg1]
         ;
 
     match<> m = rule.parse(scan);
@@ -678,7 +679,8 @@ std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -689,10 +691,10 @@ std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
     scanner_t scan(first, last, policies);
 
     rule_t rule
-        =   intensity_p[assign_a(c.rgba[0])]
-            >> intensity_p[assign_a(c.rgba[1])]
-            >> intensity_p[assign_a(c.rgba[2])]
-            >> intensity_p[assign_a(c.rgba[3])];
+        =   intensity_p[var(c.rgba[0]) = arg1]
+            >> intensity_p[var(c.rgba[1]) = arg1]
+            >> intensity_p[var(c.rgba[2]) = arg1]
+            >> intensity_p[var(c.rgba[3]) = arg1];
 
     match<> m = rule.parse(scan);
 
@@ -1094,7 +1096,8 @@ std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -1105,7 +1108,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[assign_a(v.vec[0])] >> real_p[assign_a(v.vec[1])]
+        =   real_p[var(v.vec[0]) = arg1] >> real_p[var(v.vec[1]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -1507,7 +1510,8 @@ std::istream & openvrml::operator>>(std::istream & in, vec2d & v)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -1518,7 +1522,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec2d & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[assign_a(v.vec[0])] >> real_p[assign_a(v.vec[1])]
+        =   real_p[var(v.vec[0]) = arg1] >> real_p[var(v.vec[1]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -2048,7 +2052,8 @@ std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -2059,9 +2064,9 @@ std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[assign_a(v.vec[0])]
-            >> real_p[assign_a(v.vec[1])]
-            >> real_p[assign_a(v.vec[2])]
+        =   real_p[var(v.vec[0]) = arg1]
+            >> real_p[var(v.vec[1]) = arg1]
+            >> real_p[var(v.vec[2]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -2591,7 +2596,8 @@ std::istream & openvrml::operator>>(std::istream & in, vec3d & v)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -2602,9 +2608,9 @@ std::istream & openvrml::operator>>(std::istream & in, vec3d & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[assign_a(v.vec[0])]
-            >> real_p[assign_a(v.vec[1])]
-            >> real_p[assign_a(v.vec[2])]
+        =   real_p[var(v.vec[0]) = arg1]
+            >> real_p[var(v.vec[1]) = arg1]
+            >> real_p[var(v.vec[2]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -3128,7 +3134,8 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
     using boost::spirit::match;
     using boost::spirit::eps_p;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -3140,9 +3147,11 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
 
     float x, y, z, angle;
     rule_t rule
-        =   real_p[assign_a(x)] >> real_p[assign_a(y)] >> real_p[assign_a(z)]
+        =   real_p[var(x) = arg1]
+            >> real_p[var(y) = arg1]
+            >> real_p[var(z) = arg1]
             >> eps_p(is_normalized(x, y, z))
-            >> real_p[assign_a(angle)]
+            >> real_p[var(angle) = arg1]
         ;
 
     match<> m = rule.parse(scan);
@@ -4020,9 +4029,8 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
     using boost::spirit::make_multi_pass;
     using boost::spirit::ch_p;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
-    using boost::spirit::increment_a;
-    using boost::spirit::decrement_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -4036,30 +4044,30 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
         row4_bracket_count = 0;
 
     rule_t r
-        =   !ch_p('[')[increment_a(row1_bracket_count)]
-                >> real_p[assign_a(m[0][0])]
-                >> real_p[assign_a(m[0][1])]
-                >> real_p[assign_a(m[0][2])]
-                >> real_p[assign_a(m[0][3])]
-            >> !ch_p(']')[decrement_a(row1_bracket_count)]
-            >> !ch_p('[')[increment_a(row2_bracket_count)]
-                >> real_p[assign_a(m[1][0])]
-                >> real_p[assign_a(m[1][1])]
-                >> real_p[assign_a(m[1][2])]
-                >> real_p[assign_a(m[1][3])]
-            >> !ch_p(']')[decrement_a(row2_bracket_count)]
-            >> !ch_p('[')[increment_a(row3_bracket_count)]
-                >> real_p[assign_a(m[2][0])]
-                >> real_p[assign_a(m[2][1])]
-                >> real_p[assign_a(m[2][2])]
-                >> real_p[assign_a(m[2][3])]
-            >> !ch_p(']')[decrement_a(row3_bracket_count)]
-            >> !ch_p('[')[increment_a(row4_bracket_count)]
-                >> real_p[assign_a(m[3][0])]
-                >> real_p[assign_a(m[3][1])]
-                >> real_p[assign_a(m[3][2])]
-                >> real_p[assign_a(m[3][3])]
-            >> !ch_p(']')[decrement_a(row4_bracket_count)]
+        =   !ch_p('[')[var(row1_bracket_count) += 1]
+                >> real_p[var(m[0][0]) = arg1]
+                >> real_p[var(m[0][1]) = arg1]
+                >> real_p[var(m[0][2]) = arg1]
+                >> real_p[var(m[0][3]) = arg1]
+            >> !ch_p(']')[var(row1_bracket_count) -= 1]
+            >> !ch_p('[')[var(row2_bracket_count) += 1]
+                >> real_p[var(m[1][0]) = arg1]
+                >> real_p[var(m[1][1]) = arg1]
+                >> real_p[var(m[1][2]) = arg1]
+                >> real_p[var(m[1][3]) = arg1]
+            >> !ch_p(']')[var(row2_bracket_count) -= 1]
+            >> !ch_p('[')[var(row3_bracket_count) += 1]
+                >> real_p[var(m[2][0]) = arg1]
+                >> real_p[var(m[2][1]) = arg1]
+                >> real_p[var(m[2][2]) = arg1]
+                >> real_p[var(m[2][3]) = arg1]
+            >> !ch_p(']')[var(row3_bracket_count) -= 1]
+            >> !ch_p('[')[var(row4_bracket_count) += 1]
+                >> real_p[var(m[3][0]) = arg1]
+                >> real_p[var(m[3][1]) = arg1]
+                >> real_p[var(m[3][2]) = arg1]
+                >> real_p[var(m[3][3]) = arg1]
+            >> !ch_p(']')[var(row4_bracket_count) -= 1]
         ;
 
     boost::spirit::match<> match = r.parse(scan);
@@ -4623,7 +4631,8 @@ std::istream & openvrml::operator>>(std::istream & in, quatf & q)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::real_p;
-    using boost::spirit::assign_a;
+    using phoenix::arg1;
+    using phoenix::var;
 
     iter_policy_t iter_policy(vrml97_space_p);
     scanner_policies_t policies(iter_policy);
@@ -4634,10 +4643,10 @@ std::istream & openvrml::operator>>(std::istream & in, quatf & q)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[assign_a(q.quat[0])]
-            >> real_p[assign_a(q.quat[1])]
-            >> real_p[assign_a(q.quat[2])]
-            >> real_p[assign_a(q.quat[3])]
+        =   real_p[var(q.quat[0]) = arg1]
+            >> real_p[var(q.quat[1]) = arg1]
+            >> real_p[var(q.quat[2]) = arg1]
+            >> real_p[var(q.quat[3]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -5113,8 +5122,6 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
     using boost::spirit::eps_p;
     using boost::spirit::int_p;
     using boost::spirit::repeat_p;
-    using boost::spirit::assign_a;
-    using boost::spirit::increment_a;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -5128,14 +5135,14 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
 
     size_t x = 0, y = 0, comp = 0, pixels = 0, index = 0;
     rule_t r
-        =   int32_p[var(pixels) = arg1][assign_a(x)]
-            >> int32_p[var(pixels) *= arg1][assign_a(y)]
-            >> int32_p[assign_a(comp)]
+        =   int32_p[var(pixels) = arg1][var(x) = arg1]
+            >> int32_p[var(pixels) *= arg1][var(y) = arg1]
+            >> int32_p[var(comp) = arg1]
             // Just resize the image once we have the x, y, and comp values to
             // avoid unnecessary reallocation.
             >> eps_p[resize_image(img, x, y, comp)]
             >> repeat_p(ref(pixels))[
-                int32_p[set_pixel(img, index)][increment_a(index)]
+                int32_p[set_pixel(img, index)][var(index) += 1]
             ]
         ;
 
