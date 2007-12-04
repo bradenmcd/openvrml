@@ -45,11 +45,6 @@ OV_PROG_JAVA
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
-OV_PROG_ANTLR([2.7.7])
-AS_IF([test -z "$ANTLR"],
-      [AS_IF([test ! -f $srcdir/src/libopenvrml/openvrml/Vrml97Parser.cpp],
-             [AC_MSG_FAILURE([antlr 2.7.7 not found])],
-             [AC_MSG_WARN([antlr 2.7.7 not found; but generated files already exist])])])
 
 AC_ARG_VAR([DOXYGEN], [Doxygen documentation generator])
 AC_PATH_PROG([DOXYGEN], [doxygen])

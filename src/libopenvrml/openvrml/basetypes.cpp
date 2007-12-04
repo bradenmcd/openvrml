@@ -23,12 +23,9 @@
 # include <cmath>
 # include <numeric>
 # include <ostream>
-# include <boost/spirit.hpp>
-# include <boost/spirit/actor.hpp>
-# include <boost/spirit/dynamic.hpp>
-# include <boost/spirit/phoenix.hpp>
 # include <private.h>
 # include "basetypes.h"
+# include "vrml97_grammar.h"
 
 /**
  * @file openvrml/basetypes.h
@@ -309,79 +306,27 @@ bool openvrml::operator!=(const color & lhs, const color & rhs)
 }
 
 namespace {
-    struct OPENVRML_LOCAL vrml97_space_parser :
-        boost::spirit::char_parser<vrml97_space_parser> {
-
-        typedef vrml97_space_parser self_t;
-
-        template <typename CharT>
-        bool test(const CharT & c) const
-        {
-            return isspace(c) || c == ',';
-        }
-    };
-
-    const vrml97_space_parser vrml97_space_p = vrml97_space_parser();
-
     typedef std::istream::char_type char_t;
     typedef boost::spirit::multi_pass<std::istreambuf_iterator<char_t> >
         iterator_t;
 
-    typedef boost::spirit::skip_parser_iteration_policy<vrml97_space_parser>
+    typedef boost::spirit::skip_parser_iteration_policy<openvrml::vrml97_space_parser>
         iter_policy_t;
     typedef boost::spirit::scanner_policies<iter_policy_t> scanner_policies_t;
     typedef boost::spirit::scanner<iterator_t, scanner_policies_t> scanner_t;
 
     typedef boost::spirit::rule<scanner_t> rule_t;
-
-
-    struct OPENVRML_LOCAL intensity_parser {
-
-        typedef double result_t;
-
-        struct valid {
-            explicit valid(result_t & value):
-                value_(value)
-            {}
-
-            bool operator()() const
-            {
-                return this->value_ >= 0.0 && this->value_ <= 1.0;
-            }
-
-        private:
-            result_t & value_;
-        };
-
-        template <typename ScannerT>
-        std::ptrdiff_t operator()(const ScannerT & scan,
-                                  result_t & result) const
-        {
-            using boost::spirit::assign_a;
-            using boost::spirit::eps_p;
-            using boost::spirit::real_p;
-            using boost::spirit::match_result;
-            typedef typename match_result<ScannerT, result_t>::type match_t;
-            typedef typename boost::spirit::rule<ScannerT> rule_t;
-
-            rule_t rule
-                =   real_p[assign_a(result)] >> eps_p(valid(result))
-                ;
-            match_t match = rule.parse(scan);
-            return match.length();
-        }
-    };
-
-    const boost::spirit::functor_parser<intensity_parser> intensity_p;
 }
 
 /**
+ * @relatesalso openvrml::color
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
  * input are treated as whitespace.
  *
- * If any of the color components are outside the the range [0.0, 1.0], the
+ * If any of the color components is outside the the range [0.0, 1.0], the
  * @c failbit will be set on @p in and @p c will be left in an arbitrary
  * state.
  *
@@ -395,7 +340,6 @@ std::istream & openvrml::operator>>(std::istream & in, color & c)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -659,12 +603,14 @@ bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs)
 }
 
 /**
+ * @relatesalso openvrml::color_rgba
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
  * input are treated as whitespace.
  *
- * If any of the color components are outside the the range [0.0, 1.0], the
+ * If any of the color components is outside the the range [0.0, 1.0], the
  * @c failbit will be set on @p in and @p c will be left in an arbitrary
  * state.
  *
@@ -678,7 +624,6 @@ std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -1080,6 +1025,8 @@ bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs)
 }
 
 /**
+ * @relatesalso openvrml::vec2f
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
@@ -1095,7 +1042,6 @@ std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -1108,7 +1054,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[var(v.vec[0]) = arg1] >> real_p[var(v.vec[1]) = arg1]
+        =   float_p[var(v.vec[0]) = arg1] >> float_p[var(v.vec[1]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -1494,6 +1440,8 @@ bool openvrml::operator!=(const vec2d & lhs, const vec2d & rhs)
 }
 
 /**
+ * @relatesalso openvrml::vec2d
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
@@ -2036,6 +1984,8 @@ bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs)
 }
 
 /**
+ * @relatesalso openvrml::vec3f
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
@@ -2051,7 +2001,6 @@ std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -2064,9 +2013,9 @@ std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[var(v.vec[0]) = arg1]
-            >> real_p[var(v.vec[1]) = arg1]
-            >> real_p[var(v.vec[2]) = arg1]
+        =   float_p[var(v.vec[0]) = arg1]
+            >> float_p[var(v.vec[1]) = arg1]
+            >> float_p[var(v.vec[2]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -2580,6 +2529,8 @@ bool openvrml::operator!=(const vec3d & lhs, const vec3d & rhs)
 }
 
 /**
+ * @relatesalso openvrml::vec3d
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
@@ -3133,7 +3084,6 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::eps_p;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -3147,11 +3097,11 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
 
     float x, y, z, angle;
     rule_t rule
-        =   real_p[var(x) = arg1]
-            >> real_p[var(y) = arg1]
-            >> real_p[var(z) = arg1]
+        =   float_p[var(x) = arg1]
+            >> float_p[var(y) = arg1]
+            >> float_p[var(z) = arg1]
             >> eps_p(is_normalized(x, y, z))
-            >> real_p[var(angle) = arg1]
+            >> float_p[var(angle) = arg1]
         ;
 
     match<> m = rule.parse(scan);
@@ -3161,10 +3111,10 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
         return in;
     }
 
-    rot.x(x);
-    rot.y(y);
-    rot.z(z);
-    rot.angle(angle);
+    rot.rot[0] = x;
+    rot.rot[1] = y;
+    rot.rot[2] = z;
+    rot.rot[3] = angle;
 
     return in;
 }
@@ -4028,7 +3978,6 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::ch_p;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -4040,33 +3989,33 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
 
     scanner_t scan(first, last, policies);
 
-    size_t row1_bracket_count = 0, row2_bracket_count = 0, row3_bracket_count = 0,
-        row4_bracket_count = 0;
+    size_t row1_bracket_count = 0, row2_bracket_count = 0,
+        row3_bracket_count = 0, row4_bracket_count = 0;
 
     rule_t r
         =   !ch_p('[')[var(row1_bracket_count) += 1]
-                >> real_p[var(m[0][0]) = arg1]
-                >> real_p[var(m[0][1]) = arg1]
-                >> real_p[var(m[0][2]) = arg1]
-                >> real_p[var(m[0][3]) = arg1]
+                >> float_p[var(m[0][0]) = arg1]
+                >> float_p[var(m[0][1]) = arg1]
+                >> float_p[var(m[0][2]) = arg1]
+                >> float_p[var(m[0][3]) = arg1]
             >> !ch_p(']')[var(row1_bracket_count) -= 1]
             >> !ch_p('[')[var(row2_bracket_count) += 1]
-                >> real_p[var(m[1][0]) = arg1]
-                >> real_p[var(m[1][1]) = arg1]
-                >> real_p[var(m[1][2]) = arg1]
-                >> real_p[var(m[1][3]) = arg1]
+                >> float_p[var(m[1][0]) = arg1]
+                >> float_p[var(m[1][1]) = arg1]
+                >> float_p[var(m[1][2]) = arg1]
+                >> float_p[var(m[1][3]) = arg1]
             >> !ch_p(']')[var(row2_bracket_count) -= 1]
             >> !ch_p('[')[var(row3_bracket_count) += 1]
-                >> real_p[var(m[2][0]) = arg1]
-                >> real_p[var(m[2][1]) = arg1]
-                >> real_p[var(m[2][2]) = arg1]
-                >> real_p[var(m[2][3]) = arg1]
+                >> float_p[var(m[2][0]) = arg1]
+                >> float_p[var(m[2][1]) = arg1]
+                >> float_p[var(m[2][2]) = arg1]
+                >> float_p[var(m[2][3]) = arg1]
             >> !ch_p(']')[var(row3_bracket_count) -= 1]
             >> !ch_p('[')[var(row4_bracket_count) += 1]
-                >> real_p[var(m[3][0]) = arg1]
-                >> real_p[var(m[3][1]) = arg1]
-                >> real_p[var(m[3][2]) = arg1]
-                >> real_p[var(m[3][3]) = arg1]
+                >> float_p[var(m[3][0]) = arg1]
+                >> float_p[var(m[3][1]) = arg1]
+                >> float_p[var(m[3][2]) = arg1]
+                >> float_p[var(m[3][3]) = arg1]
             >> !ch_p(']')[var(row4_bracket_count) -= 1]
         ;
 
@@ -4630,7 +4579,6 @@ std::istream & openvrml::operator>>(std::istream & in, quatf & q)
     using std::istreambuf_iterator;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
-    using boost::spirit::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -4643,10 +4591,10 @@ std::istream & openvrml::operator>>(std::istream & in, quatf & q)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[var(q.quat[0]) = arg1]
-            >> real_p[var(q.quat[1]) = arg1]
-            >> real_p[var(q.quat[2]) = arg1]
-            >> real_p[var(q.quat[3]) = arg1]
+        =   float_p[var(q.quat[0]) = arg1]
+            >> float_p[var(q.quat[1]) = arg1]
+            >> float_p[var(q.quat[2]) = arg1]
+            >> float_p[var(q.quat[3]) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -4759,30 +4707,20 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
  */
 
 /**
+ * @fn openvrml::image::image()
+ *
  * @brief Construct.
  */
-openvrml::image::image() OPENVRML_NOTHROW:
-    x_(0),
-    y_(0),
-    comp_(0)
-{}
 
 /**
+ * @fn openvrml::image::image(size_t x, size_t y, size_t comp)
+ *
  * @brief Construct.
  *
  * @param[in] x     pixels in the <var>x</var>-direction.
  * @param[in] y     pixels in the <var>y</var>-direction.
  * @param[in] comp  number of components.
  */
-openvrml::image::image(const size_t x,
-                       const size_t y,
-                       const size_t comp)
-    OPENVRML_THROW1(std::bad_alloc):
-    x_(x),
-    y_(y),
-    comp_(comp),
-    array_(x * y * comp)
-{}
 
 /**
  * @brief Construct.
@@ -4824,18 +4762,12 @@ openvrml::image::image(const size_t x,
  */
 
 /**
+ * @fn void openvrml::image::swap(image & img)
+ *
  * @brief Swap.
  *
  * @param[in,out] img   an image.
  */
-void openvrml::image::swap(image & img) OPENVRML_NOTHROW
-{
-    using std::swap;
-    swap(this->x_, img.x_);
-    swap(this->y_, img.y_);
-    swap(this->comp_, img.comp_);
-    swap(this->array_, img.array_);
-}
 
 /**
  * @fn size_t openvrml::image::x() const
@@ -5076,33 +5008,11 @@ namespace {
         openvrml::image * const img_;
         size_t * const x_, * const y_, * const comp_;
     };
-
-
-    struct OPENVRML_LOCAL int32_parser {
-        typedef openvrml::int32 result_t;
-
-        template <typename ScannerT>
-        std::ptrdiff_t operator()(const ScannerT & scan,
-                                  result_t & result) const
-        {
-            using namespace boost::spirit;
-            using namespace phoenix;
-            typedef typename match_result<ScannerT, result_t>::type match_t;
-            match_t match
-                =   (   lexeme_d[
-                            ch_p('0') >> chset_p("Xx")
-                            >> hex_p[assign_a(result)]
-                        ]
-                    |   int_p[assign_a(result)]
-                    ).parse(scan);
-            return match.length();
-        }
-    };
-
-    const boost::spirit::functor_parser<int32_parser> int32_p = int32_parser();
 }
 
 /**
+ * @relatesalso openvrml::image
+ *
  * @brief Stream input.
  *
  * Consistent with the VRML97 convention, commas (&ldquo;@c ,&rdquo;) in the
@@ -5120,7 +5030,6 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::eps_p;
-    using boost::spirit::int_p;
     using boost::spirit::repeat_p;
     using phoenix::arg1;
     using phoenix::var;
@@ -5135,8 +5044,8 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
 
     size_t x = 0, y = 0, comp = 0, pixels = 0, index = 0;
     rule_t r
-        =   int32_p[var(pixels) = arg1][var(x) = arg1]
-            >> int32_p[var(pixels) *= arg1][var(y) = arg1]
+        =   int32_p[var(pixels) = arg1, var(x) = arg1]
+            >> int32_p[var(pixels) *= arg1, var(y) = arg1]
             >> int32_p[var(comp) = arg1]
             // Just resize the image once we have the x, y, and comp values to
             // avoid unnecessary reallocation.

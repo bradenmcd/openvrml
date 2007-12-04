@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,12 +39,15 @@
 # include <boost/bind.hpp>
 # include <boost/enable_shared_from_this.hpp>
 # include <boost/functional.hpp>
+# include <boost/lexical_cast.hpp>
 # include <boost/mpl/for_each.hpp>
 # include <boost/ptr_container/ptr_map.hpp>
 # include <boost/thread/thread.hpp>
 # include <boost/utility.hpp>
 # include <private.h>
 # include "browser.h"
+# include "vrml97_grammar.h"
+# include "x3d_vrml_grammar.h"
 # include "vrml97node.h"
 # include "x3d_core.h"
 # include "x3d_networking.h"
@@ -432,8 +435,6 @@ namespace openvrml {
     abstract_proto_node::~abstract_proto_node() OPENVRML_NOTHROW
     {}
 
-
-    class externproto_node;
 
     /**
      * @internal
@@ -2292,241 +2293,236 @@ namespace openvrml {
     }
 } // namespace openvrml
 
-namespace {
 
-    class externproto_node_type;
+/**
+ * @brief @c node_metatype for @c EXTERNPROTO%s.
+ */
+class OPENVRML_LOCAL openvrml::browser::externproto_node_metatype :
+    public boost::enable_shared_from_this<externproto_node_metatype>,
+    public openvrml::node_metatype {
 
-    /**
-     * @brief @c node_metatype for @c EXTERNPROTO%s.
-     */
-    class OPENVRML_LOCAL externproto_node_metatype :
-        public boost::enable_shared_from_this<externproto_node_metatype>,
-        public openvrml::node_metatype {
+    friend class externproto_node_type;
 
-        friend class externproto_node_type;
+    struct load_proto;
 
-        struct load_proto;
+    mutable boost::mutex mutex_;
+    boost::weak_ptr<openvrml::proto_node_metatype> proto_node_metatype_;
 
-        mutable boost::mutex mutex_;
-        boost::weak_ptr<openvrml::proto_node_metatype> proto_node_metatype_;
+    typedef std::vector<boost::weak_ptr<externproto_node_type> >
+        externproto_node_types;
 
-        typedef std::vector<boost::weak_ptr<externproto_node_type> >
-            externproto_node_types;
+    mutable externproto_node_types externproto_node_types_;
+    bool externproto_node_types_cleared_;
 
-        mutable externproto_node_types externproto_node_types_;
-        bool externproto_node_types_cleared_;
+    boost::thread * const load_proto_thread_;
 
-        boost::thread * const load_proto_thread_;
+public:
+    externproto_node_metatype(
+        const openvrml::node_metatype_id & id,
+        const openvrml::scene & scene,
+        const std::vector<std::string> & uris,
+        boost::thread_group & load_proto_thread_group)
+        OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
+    virtual ~externproto_node_metatype() OPENVRML_NOTHROW;
 
-    public:
-        externproto_node_metatype(
-            const openvrml::node_metatype_id & id,
-            const openvrml::scene & scene,
-            const std::vector<std::string> & uris,
-            boost::thread_group & load_proto_thread_group)
-            OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc);
-        virtual ~externproto_node_metatype() OPENVRML_NOTHROW;
-
-    private:
-        virtual const boost::shared_ptr<openvrml::node_type>
+private:
+    virtual const boost::shared_ptr<openvrml::node_type>
         do_create_type(const std::string & id,
                        const openvrml::node_interface_set & interfaces) const
-            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
 
-        virtual void do_shutdown(double time) OPENVRML_NOTHROW;
+    virtual void do_shutdown(double time) OPENVRML_NOTHROW;
 
-        void set_proto_node_metatype(
-            const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype = boost::weak_ptr<openvrml::proto_node_metatype>())
-            OPENVRML_THROW1(std::bad_alloc);
+    void set_proto_node_metatype(
+        const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype = boost::weak_ptr<openvrml::proto_node_metatype>())
+        OPENVRML_THROW1(std::bad_alloc);
 
-        void clear_externproto_node_types() OPENVRML_NOTHROW;
-    };
+    void clear_externproto_node_types() OPENVRML_NOTHROW;
+};
 
 
-    class OPENVRML_LOCAL externproto_node_type : public openvrml::node_type {
-        const boost::shared_ptr<const externproto_node_metatype> node_metatype_;
+class OPENVRML_LOCAL openvrml::browser::externproto_node_type :
+    public openvrml::node_type {
 
-        openvrml::node_interface_set interfaces_;
+    const boost::shared_ptr<const externproto_node_metatype> node_metatype_;
 
-        mutable boost::mutex mutex_;
-        boost::shared_ptr<openvrml::proto_node_type> proto_node_type_;
+    openvrml::node_interface_set interfaces_;
 
-        typedef std::vector<boost::intrusive_ptr<openvrml::externproto_node> >
-            externproto_nodes;
+    mutable boost::mutex mutex_;
+    boost::shared_ptr<openvrml::proto_node_type> proto_node_type_;
 
-        mutable externproto_nodes externproto_nodes_;
+    typedef std::vector<boost::intrusive_ptr<externproto_node> >
+        externproto_nodes;
 
-    public:
-        externproto_node_type(
-            const boost::shared_ptr<const externproto_node_metatype> & c,
-            const std::string & id,
-            const openvrml::node_interface_set & interfaces)
-            OPENVRML_THROW1(std::bad_alloc);
+    mutable externproto_nodes externproto_nodes_;
 
-        virtual ~externproto_node_type() OPENVRML_NOTHROW;
+public:
+    externproto_node_type(
+        const boost::shared_ptr<const externproto_node_metatype> & c,
+        const std::string & id,
+        const openvrml::node_interface_set & interfaces)
+        OPENVRML_THROW1(std::bad_alloc);
 
-        void set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
-            OPENVRML_THROW1(std::bad_alloc);
+    virtual ~externproto_node_type() OPENVRML_NOTHROW;
 
-        void clear_externproto_nodes() OPENVRML_NOTHROW;
+    void set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
+        OPENVRML_THROW1(std::bad_alloc);
 
-    private:
-        virtual const openvrml::node_interface_set & do_interfaces() const
-            throw();
+    void clear_externproto_nodes() OPENVRML_NOTHROW;
 
-        virtual const boost::intrusive_ptr<openvrml::node>
+private:
+    virtual const openvrml::node_interface_set & do_interfaces() const
+        OPENVRML_NOTHROW;
+
+    virtual const boost::intrusive_ptr<openvrml::node>
         do_create_node(
             const boost::shared_ptr<openvrml::scope> & scope,
             const openvrml::initial_value_map & initial_values) const
-            OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
-                            std::bad_alloc);
-    };
-}
+        OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
+                        std::bad_alloc);
+};
 
-namespace openvrml {
 
-    class OPENVRML_LOCAL externproto_node :
-        public openvrml::abstract_proto_node {
+class OPENVRML_LOCAL openvrml::externproto_node :
+    public openvrml::abstract_proto_node {
 
-        template <typename FieldValue>
-        class externproto_exposedfield :
-            public FieldValue,
-            public proto_eventin<FieldValue>,
-            public proto_eventout<FieldValue> {
-        public:
-            explicit externproto_exposedfield(
-                externproto_node & node,
-                const FieldValue & initial_value = FieldValue())
-                OPENVRML_NOTHROW;
-            virtual ~externproto_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<openvrml::field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void do_process_event(const FieldValue & value,
-                                          double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
-        struct externproto_exposedfield_creator {
-            externproto_exposedfield_creator(
-                externproto_node & node,
-                const openvrml::field_value::type_id type,
-                boost::shared_ptr<openvrml::field_value> & exposedfield):
-                node_(&node),
-                type_(type),
-                exposedfield_(&exposedfield)
-            {}
-
-            template <typename T>
-            void operator()(T) const
-            {
-                if (T::field_value_type_id == this->type_) {
-                    this->exposedfield_->reset(
-                        new externproto_exposedfield<T>(*this->node_));
-                }
-            }
-
-        private:
-            externproto_node * node_;
-            openvrml::field_value::type_id type_;
-            boost::shared_ptr<openvrml::field_value> * exposedfield_;
-        };
-
-        static const boost::shared_ptr<openvrml::field_value>
-        create_exposedfield(externproto_node & node,
-                            openvrml::field_value::type_id type)
-            OPENVRML_THROW1(std::bad_alloc);
-
-        typedef std::map<std::string,
-                         boost::shared_ptr<openvrml::field_value> >
-            field_map;
-
-        struct externproto_field_equal_to :
-            std::unary_function<field_map::value_type, bool> {
-
-            explicit externproto_field_equal_to(
-                const openvrml::field_value & field_value):
-                field_value_(&field_value)
-            {}
-
-            bool operator()(const field_map::value_type & arg) const
-            {
-                return this->field_value_ == arg.second.get();
-            }
-
-        private:
-            const openvrml::field_value * field_value_;
-        };
-
-        field_map field_map_;
-
-        boost::intrusive_ptr<openvrml::proto_node> proto_node_;
-
+    template <typename FieldValue>
+    class externproto_exposedfield : public FieldValue,
+                                     public proto_eventin<FieldValue>,
+                                     public proto_eventout<FieldValue> {
     public:
-        externproto_node(const externproto_node_type & type,
-                         const boost::shared_ptr<openvrml::scope> & scope,
-                         const openvrml::initial_value_map & initial_values)
-            OPENVRML_THROW1(std::bad_alloc);
-
-        virtual ~externproto_node() OPENVRML_NOTHROW;
-
-        virtual bool modified() const;
-
-        void set_proto_node(openvrml::proto_node_type & node_type)
-            OPENVRML_THROW1(std::bad_alloc);
+        explicit externproto_exposedfield(
+            externproto_node & node,
+            const FieldValue & initial_value = FieldValue())
+            OPENVRML_NOTHROW;
+        virtual ~externproto_exposedfield() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp)
+        virtual std::auto_ptr<openvrml::field_value> do_clone() const
             OPENVRML_THROW1(std::bad_alloc);
-
-        virtual const openvrml::field_value &
-        do_field(const std::string & id) const
-            OPENVRML_THROW1(openvrml::unsupported_interface);
-
-        virtual openvrml::event_listener &
-        do_event_listener(const std::string & id)
-            OPENVRML_THROW1(openvrml::unsupported_interface);
-
-        virtual openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-            OPENVRML_THROW1(openvrml::unsupported_interface);
-
-        virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
-
-        virtual openvrml::script_node * to_script() OPENVRML_NOTHROW;
-        virtual openvrml::appearance_node * to_appearance() OPENVRML_NOTHROW;
-        virtual openvrml::bounded_volume_node * to_bounded_volume()
-            OPENVRML_NOTHROW;
-        virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
-        virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
-        virtual openvrml::color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
-        virtual openvrml::coordinate_node * to_coordinate() OPENVRML_NOTHROW;
-        virtual openvrml::font_style_node * to_font_style() OPENVRML_NOTHROW ;
-        virtual openvrml::geometry_node * to_geometry() OPENVRML_NOTHROW;
-        virtual openvrml::grouping_node * to_grouping() OPENVRML_NOTHROW;
-        virtual openvrml::light_node * to_light() OPENVRML_NOTHROW;
-        virtual openvrml::material_node * to_material() OPENVRML_NOTHROW;
-        virtual openvrml::navigation_info_node * to_navigation_info()
-            OPENVRML_NOTHROW;
-        virtual openvrml::normal_node * to_normal() OPENVRML_NOTHROW;
-        virtual openvrml::pointing_device_sensor_node *
-        to_pointing_device_sensor() OPENVRML_NOTHROW;
-        virtual openvrml::scoped_light_node * to_scoped_light()
-            OPENVRML_NOTHROW;
-        virtual openvrml::sound_source_node * to_sound_source()
-            OPENVRML_NOTHROW;
-        virtual openvrml::texture_node * to_texture() OPENVRML_NOTHROW;
-        virtual openvrml::texture_coordinate_node * to_texture_coordinate()
-            OPENVRML_NOTHROW;
-        virtual openvrml::texture_transform_node * to_texture_transform()
-            OPENVRML_NOTHROW;
-        virtual openvrml::time_dependent_node * to_time_dependent()
-            OPENVRML_NOTHROW;
-        virtual openvrml::transform_node * to_transform() OPENVRML_NOTHROW;
-        virtual openvrml::viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
+        virtual void do_process_event(const FieldValue & value,
+                                      double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
     };
-}
+
+    struct externproto_exposedfield_creator {
+        externproto_exposedfield_creator(
+            externproto_node & node,
+            const openvrml::field_value::type_id type,
+            boost::shared_ptr<openvrml::field_value> & exposedfield):
+            node_(&node),
+            type_(type),
+            exposedfield_(&exposedfield)
+        {}
+
+        template <typename T>
+        void operator()(T) const
+        {
+            if (T::field_value_type_id == this->type_) {
+                this->exposedfield_->reset(
+                    new externproto_exposedfield<T>(*this->node_));
+            }
+        }
+
+    private:
+        externproto_node * node_;
+        openvrml::field_value::type_id type_;
+        boost::shared_ptr<openvrml::field_value> * exposedfield_;
+    };
+
+    static const boost::shared_ptr<openvrml::field_value>
+        create_exposedfield(externproto_node & node,
+                            openvrml::field_value::type_id type)
+        OPENVRML_THROW1(std::bad_alloc);
+
+    typedef std::map<std::string,
+                     boost::shared_ptr<openvrml::field_value> >
+        field_map;
+
+    struct externproto_field_equal_to :
+        std::unary_function<field_map::value_type, bool> {
+
+        explicit externproto_field_equal_to(
+            const openvrml::field_value & field_value):
+            field_value_(&field_value)
+        {}
+
+        bool operator()(const field_map::value_type & arg) const
+        {
+            return this->field_value_ == arg.second.get();
+        }
+
+    private:
+        const openvrml::field_value * field_value_;
+    };
+
+    field_map field_map_;
+
+    boost::intrusive_ptr<openvrml::proto_node> proto_node_;
+
+public:
+    externproto_node(const browser::externproto_node_type & type,
+                     const boost::shared_ptr<openvrml::scope> & scope,
+                     const openvrml::initial_value_map & initial_values)
+        OPENVRML_THROW1(std::bad_alloc);
+
+    virtual ~externproto_node() OPENVRML_NOTHROW;
+
+    virtual bool modified() const;
+
+    void set_proto_node(openvrml::proto_node_type & node_type)
+        OPENVRML_THROW1(std::bad_alloc);
+
+private:
+    virtual void do_initialize(double timestamp)
+        OPENVRML_THROW1(std::bad_alloc);
+
+    virtual const openvrml::field_value &
+        do_field(const std::string & id) const
+        OPENVRML_THROW1(openvrml::unsupported_interface);
+
+    virtual openvrml::event_listener &
+        do_event_listener(const std::string & id)
+        OPENVRML_THROW1(openvrml::unsupported_interface);
+
+    virtual openvrml::event_emitter &
+        do_event_emitter(const std::string & id)
+        OPENVRML_THROW1(openvrml::unsupported_interface);
+
+    virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+
+    virtual openvrml::script_node * to_script() OPENVRML_NOTHROW;
+    virtual openvrml::appearance_node * to_appearance() OPENVRML_NOTHROW;
+    virtual openvrml::bounded_volume_node * to_bounded_volume()
+        OPENVRML_NOTHROW;
+    virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
+    virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
+    virtual openvrml::color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
+    virtual openvrml::coordinate_node * to_coordinate() OPENVRML_NOTHROW;
+    virtual openvrml::font_style_node * to_font_style() OPENVRML_NOTHROW ;
+    virtual openvrml::geometry_node * to_geometry() OPENVRML_NOTHROW;
+    virtual openvrml::grouping_node * to_grouping() OPENVRML_NOTHROW;
+    virtual openvrml::light_node * to_light() OPENVRML_NOTHROW;
+    virtual openvrml::material_node * to_material() OPENVRML_NOTHROW;
+    virtual openvrml::navigation_info_node * to_navigation_info()
+        OPENVRML_NOTHROW;
+    virtual openvrml::normal_node * to_normal() OPENVRML_NOTHROW;
+    virtual openvrml::pointing_device_sensor_node *
+        to_pointing_device_sensor() OPENVRML_NOTHROW;
+    virtual openvrml::scoped_light_node * to_scoped_light()
+        OPENVRML_NOTHROW;
+    virtual openvrml::sound_source_node * to_sound_source()
+        OPENVRML_NOTHROW;
+    virtual openvrml::texture_node * to_texture() OPENVRML_NOTHROW;
+    virtual openvrml::texture_coordinate_node * to_texture_coordinate()
+        OPENVRML_NOTHROW;
+    virtual openvrml::texture_transform_node * to_texture_transform()
+        OPENVRML_NOTHROW;
+    virtual openvrml::time_dependent_node * to_time_dependent()
+        OPENVRML_NOTHROW;
+    virtual openvrml::transform_node * to_transform() OPENVRML_NOTHROW;
+    virtual openvrml::viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
+};
 
 namespace {
 
@@ -3503,6 +3499,9 @@ namespace {
             create_root_scope(const openvrml::browser & browser,
                               const std::string & uri) const
             OPENVRML_THROW1(std::bad_alloc);
+        std::auto_ptr<openvrml::node_type_decls>
+            create_node_type_desc_map() const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
 
@@ -3571,8 +3570,17 @@ namespace {
                           openvrml::scope & scope,
                           size_t level) const
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+        void add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                       size_t level) const
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
     protected:
+        static bool
+            add_type_desc(openvrml::node_type_decls & type_descs,
+                          const std::string & node_type_id,
+                          const openvrml::node_interface_set & interfaces)
+            OPENVRML_THROW1(std::bad_alloc);
+
         void add_scope_entry(
             const openvrml::browser & b,
             const char * node_name,
@@ -3586,6 +3594,11 @@ namespace {
         virtual void do_add_to_scope(const openvrml::browser & b,
                                      openvrml::scope & scope,
                                      size_t level) const
+            OPENVRML_THROW1(std::bad_alloc) = 0;
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
             OPENVRML_THROW1(std::bad_alloc) = 0;
     };
 
@@ -3630,7 +3643,32 @@ namespace {
         succeeded = this->insert(key, new x3d_full_profile).second;
         assert(succeeded);
     }
+}
 
+/**
+ * @brief Get a @c node_type_decls map corresponding to a particular profile.
+ *
+ * @param[in] profile_id    a profile identifier.
+ *
+ * @return a @c node_type_decls map corresponding to @p profile_id.
+ *
+ * @exception std::invalid_argument if @p profile_id does not correspond to a
+ *                                  known profile.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+std::auto_ptr<openvrml::node_type_decls>
+openvrml::profile(const std::string & profile_id)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+{
+    try {
+        return ::profile_registry_.at(profile_id).create_node_type_desc_map();
+    } catch (boost::bad_ptr_container_operation &) {
+        throw std::invalid_argument("unknown profile identifier \""
+                                    + profile_id + '"');
+    }
+}
+
+namespace {
 
     const class OPENVRML_LOCAL component_registry : boost::ptr_map<std::string,
                                                                    component> {
@@ -3639,8 +3677,37 @@ namespace {
 
         using boost::ptr_map<std::string, component>::at;
     } component_registry_;
+}
 
+/**
+ * @brief Add the nodes corresponding to a component level to a
+ *        @c node_type_decls map.
+ *
+ * @param[in,out] node_types    a @c node_type_decls map.
+ * @param[in] component_id      a component identifier.
+ * @param[in] level             a component level.
+ *
+ * @exception std::invalid_argument if @p component_id is not a recognized
+ *                                  component identifier; or if @p level does
+ *                                  not correspond to a supported level of
+ *                                  @p component_id.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void openvrml::add_component(node_type_decls & node_types,
+                             const std::string & component_id,
+                             const size_t level)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+{
+    try {
+        const component & comp = ::component_registry_.at(component_id);
+        comp.add_to_node_type_desc_map(node_types, level);
+    } catch (boost::bad_ptr_container_operation &) {
+        throw std::invalid_argument("unknown component identifier \""
+                                    + component_id + '"');
+    }
+}
 
+namespace {
     /**
      * @internal
      *
@@ -3723,361 +3790,1798 @@ namespace {
     }
 } // namespace
 
-//
-// Including a .cpp file is strange, but it's exactly what we want to do here.
-// This usage lets us put the ANTLR parser in an unnamed namespace.
-//
-#   include "Vrml97Parser.cpp"
-} // Close "namespace openvrml", opened in Vrml97Parser.cpp.
-#   include "X3DVrmlParser.cpp"
-} // Close "namespace openvrml", opened in X3DVrmlParser.cpp.
 
-namespace {
+struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
+    vrml97_parse_actions(
+        const std::string & uri,
+        const openvrml::scene & scene,
+        std::vector<boost::intrusive_ptr<openvrml::node> > & nodes):
+        on_scene_start(*this),
+        on_scene_finish(*this),
+        on_externproto(*this),
+        on_proto_start(*this),
+        on_proto_interface(*this),
+        on_proto_default_value_start(*this),
+        on_proto_default_value_finish(*this),
+        on_proto_body_start(*this),
+        on_proto_finish(*this),
+        on_node_start(*this),
+        on_node_finish(*this),
+        on_script_interface_decl(*this),
+        on_route(*this),
+        on_use(*this),
+        on_is_mapping(*this),
+        on_field_start(*this),
+        on_sfnode(*this),
+        on_mfnode(*this),
+        on_sfbool(*this),
+        on_sfcolor(*this),
+        on_mfcolor(*this),
+        on_sffloat(*this),
+        on_mffloat(*this),
+        on_sfimage(*this),
+        on_sfint32(*this),
+        on_mfint32(*this),
+        on_sfrotation(*this),
+        on_mfrotation(*this),
+        on_sfstring(*this),
+        on_mfstring(*this),
+        on_sftime(*this),
+        on_mftime(*this),
+        on_sfvec2f(*this),
+        on_mfvec2f(*this),
+        on_sfvec3f(*this),
+        on_mfvec3f(*this),
+        uri_(uri),
+        scene_(scene),
+        nodes_(nodes)
+    {}
 
-    /**
-     * @brief Parse a VRML stream.
-     *
-     * @param[in,out] in    input stream.
-     * @param[in]     uri   URI associated with @p in.
-     * @param[in]     type  MIME media type of the data to be read from @p in.
-     * @param[in]     scene a @c scene.
-     * @param[out]    nodes the root @c node%s.
-     * @param[out]    meta  the @c scene metadata.
-     *
-     * @exception openvrml::bad_media_type
-     * @exception openvrml::invalid_vrml
-     */
-    OPENVRML_LOCAL void
-    parse_vrml(std::istream & in,
-               const std::string & uri,
-               const std::string & type,
-               const openvrml::scene & scene,
-               std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
-               std::map<std::string, std::string> & meta)
-    {
-        try {
-            using namespace openvrml;
-            using boost::algorithm::iequals;
-
-            if (iequals(type, vrml_media_type)
-                || iequals(type, x_vrml_media_type)) {
-                Vrml97Scanner scanner(in);
-                Vrml97Parser parser(scene.browser(), scanner, uri);
-                parser.vrmlScene(scene, nodes, meta);
-            } else if (iequals(type, x3d_vrml_media_type)) {
-                X3DVrmlScanner scanner(in);
-                X3DVrmlParser parser(scene.browser(), scanner, uri);
-                parser.vrmlScene(scene, nodes, meta);
-            } else {
-                throw bad_media_type(type);
-            }
-        } catch (antlr::RecognitionException & ex) {
-            throw openvrml::invalid_vrml(ex.getFilename(),
-                                         ex.getLine(),
-                                         ex.getColumn(),
-                                         ex.getMessage());
-        } catch (antlr::ANTLRException & ex) {
-            throw std::runtime_error(ex.getMessage());
-        }
-    }
-
-    struct OPENVRML_LOCAL externproto_node_metatype::load_proto {
-        load_proto(externproto_node_metatype & externproto_class,
-                   const openvrml::scene & scene,
-                   const std::vector<std::string> & alt_uris):
-            externproto_node_metatype_(&externproto_class),
-            scene_(&scene),
-            alt_uris_(alt_uris)
+    struct on_scene_start_t {
+        explicit on_scene_start_t(vrml97_parse_actions & actions):
+            actions_(actions)
         {}
 
-        void operator()() const OPENVRML_NOTHROW
+        void operator()() const
         {
-            try {
-                using openvrml::unreachable_url;
-                try {
-                    using namespace openvrml;
-                    using std::auto_ptr;
-                    using std::ostringstream;
-                    using std::string;
-                    using std::vector;
-                    using boost::dynamic_pointer_cast;
-                    using boost::shared_ptr;
-                    using openvrml_::scope_guard;
-                    using openvrml_::make_obj_guard;
+            using std::vector;
+            using boost::intrusive_ptr;
 
-                    scope_guard guard =
-                        make_obj_guard(
-                            *this->externproto_node_metatype_,
-                            &externproto_node_metatype::clear_externproto_node_types);
-                    boost::ignore_unused_variable_warning(guard);
+            this->actions_.ps.push(parse_scope());
 
-                    auto_ptr<resource_istream> in =
-                        this->scene_->get_resource(this->alt_uris_);
-                    if (!(*in)) { throw unreachable_url(); }
+            const ::profile & p = ::profile_registry_.at(vrml97_profile::id);
+            std::auto_ptr<scope>
+                root_scope(p.create_root_scope(this->actions_.scene_.browser(),
+                                               this->actions_.uri_));
+            this->actions_.ps.top().scope = root_scope;
+            this->actions_.ps.top().children.push(
+                parse_scope::children_t());
+        }
 
-                    //
-                    // We don't actually do anything with these; but the parser
-                    // wants them.
-                    //
-                    vector<boost::intrusive_ptr<node> > nodes;
-                    std::map<string, string> meta;
+    private:
+        vrml97_parse_actions & actions_;
+    } on_scene_start;
 
-                    parse_vrml(*in, in->url(), in->type(),
-                               *this->scene_, nodes, meta);
+    struct on_scene_finish_t {
+        explicit on_scene_finish_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
 
-                    shared_ptr<openvrml::proto_node_metatype>
-                        proto_node_metatype;
-                    for (vector<string>::const_iterator alt_uri =
-                             this->alt_uris_.begin();
-                         (alt_uri != this->alt_uris_.end())
-                             && !proto_node_metatype;
-                         ++alt_uri) {
-                        const uri absolute_uri = !relative(uri(*alt_uri))
-                            ? uri(*alt_uri)
-                            : this->scene_->url().empty()
-                                ? create_file_url(uri(*alt_uri))
-                                : uri(*alt_uri).resolve_against(
-                                    uri(this->scene_->url()));
+        void operator()() const
+        {
+            using std::vector;
 
-                        const shared_ptr<openvrml::node_metatype>
-                            node_metatype =
-                            this->scene_->browser()
-                            .node_metatype(node_metatype_id(absolute_uri));
+            assert(this->actions_.ps.top().children.size() == 1);
+            this->actions_.nodes_ =
+                this->actions_.ps.top().children.top();
+            this->actions_.ps.top().children.pop();
 
-                        proto_node_metatype =
-                            dynamic_pointer_cast<openvrml::proto_node_metatype>(
-                                node_metatype);
-                    }
+            assert(this->actions_.ps.size() == 1);
 
-                    if (!proto_node_metatype) {
-                        ostringstream err_msg;
-                        err_msg << "no PROTO definition at <" << in->url()
-                                << ">";
-                        this->scene_->browser().err(err_msg.str());
-                        return;
-                    }
+            parse_scope & ps = this->actions_.ps.top();
 
-                    this->externproto_node_metatype_
-                        ->set_proto_node_metatype(proto_node_metatype);
+            for (vector<route>::const_iterator r = ps.routes.begin();
+                 r != ps.routes.end();
+                 ++r) {
+                node * const from = ps.scope->find_node(r->from);
+                assert(from);
+                node * const to = ps.scope->find_node(r->to);
+                assert(to);
+                //
+                // Redundant routing is ignored (4.10.2), so we don't care if
+                // add_route returns false.
+                //
+                add_route(*from, r->eventout, *to, r->eventin);
+            }
+            this->actions_.ps.pop();
+        }
 
-                } catch (std::exception & ex) {
-                    this->scene_->browser().err(ex.what());
-                    throw unreachable_url();
-                } catch (...) {
-                    //
-                    // The implementation of resource_istream is provided by
-                    // the user; and unfortunately, operations on it could
-                    // throw anything.
-                    //
-                    throw unreachable_url();
+    private:
+        vrml97_parse_actions & actions_;
+    } on_scene_finish;
+
+    struct on_externproto_t {
+        explicit on_externproto_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & node_type_id,
+                        const node_interface_set & interfaces,
+                        const std::vector<std::string> & uri_list) const
+        {
+            using std::string;
+            using std::vector;
+            using boost::shared_ptr;
+
+            std::cout << node_type_id << std::endl;
+
+            //
+            // If we are parsing an "anonymous" stream--that is, one passed to
+            // browser::create_vrml_from_stream--we cannot use the URI
+            // associated with the stream to resolve relative URIs.  So in
+            // this instance, we get the base URI from browser::world_url.  If
+            // browser::world_url is an empty string, we call create_file_url
+            // with an empty (relative) uri.
+            //
+            const ::uri base_uri =
+                anonymous_stream_id(::uri(this->actions_.uri_))
+                ? this->actions_.scene_.browser().world_url().empty()
+                    ? create_file_url(::uri())
+                    : ::uri(this->actions_.scene_.browser().world_url())
+                : ::uri(this->actions_.uri_);
+
+            shared_ptr<node_type> node_type;
+            for (vector<string>::const_iterator resource_id = uri_list.begin();
+                 resource_id != uri_list.end();
+                 ++resource_id) {
+                const ::uri absolute_uri = relative(::uri(*resource_id))
+                    ? ::uri(*resource_id).resolve_against(base_uri)
+                    : ::uri(*resource_id);
+                const shared_ptr<openvrml::node_metatype> node_metatype =
+                    this->actions_.scene_.browser().node_metatype(
+                        node_metatype_id(absolute_uri));
+                if (node_metatype) {
+                    node_type = node_metatype->create_type(node_type_id,
+                                                           interfaces);
+                    break;
                 }
-            } catch (std::exception & ex) {
-                this->scene_->browser().err(ex.what());
+            }
+
+            if (!node_type) {
+                const std::string metatype_id =
+                    path(*this->actions_.ps.top().scope) + '#'
+                    + node_type_id;
+                const shared_ptr<openvrml::node_metatype>
+                    externproto_class(
+                        new externproto_node_metatype(
+                            metatype_id,
+                            this->actions_.scene_,
+                            uri_list,
+                            this->actions_.scene_.browser()
+                                .load_proto_thread_group_));
+
+                this->actions_.scene_.browser().add_node_metatype(
+                    externproto_class->id(),
+                    externproto_class);
+                for (vector<string>::const_iterator resource_id = uri_list.begin();
+                     resource_id != uri_list.end();
+                     ++resource_id) {
+                    const ::uri absolute_uri = relative(::uri(*resource_id))
+                        ? ::uri(*resource_id).resolve_against(base_uri)
+                        : ::uri(*resource_id);
+                    this->actions_.scene_.browser()
+                        .add_node_metatype(node_metatype_id(absolute_uri),
+                                           externproto_class);
+                }
+
+                node_type = externproto_class->create_type(node_type_id,
+                                                           interfaces);
+            }
+
+            assert(node_type);
+
+            const bool succeeded =
+                this->actions_.ps.top().scope->add_type(node_type)
+                .second;
+            assert(succeeded);
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_externproto;
+
+    struct on_proto_start_t {
+        explicit on_proto_start_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & node_type_id) const
+        {
+            const boost::shared_ptr<scope> outer_scope =
+                this->actions_.ps.top().scope;
+            assert(outer_scope);
+
+            this->actions_.ps.push(parse_scope());
+
+            parse_scope & ps = this->actions_.ps.top();
+
+            ps.proto_node_type_id = node_type_id;
+
+            //
+            // We don't want to create the new scope until we start the PROTO
+            // body.  So, for now we set the parse_scope::scope to the outer
+            // scope.
+            //
+            ps.scope = outer_scope;
+
+            //
+            // We push a node_data onto the stack to hold any field default
+            // values.
+            //
+            ps.node_data_.push(node_data());
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_proto_start;
+
+    struct on_proto_interface_t {
+        explicit on_proto_interface_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const node_interface & interface) const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+
+            const bool succeeded =
+                ps.proto_interfaces.insert(interface).second;
+            assert(succeeded);
+
+            assert(!ps.node_data_.empty());
+            node_data & nd = ps.node_data_.top();
+
+            if (interface.type == node_interface::field_id
+                || interface.type == node_interface::exposedfield_id) {
+                using std::auto_ptr;
+                using std::pair;
+                auto_ptr<field_value> value =
+                    field_value::create(interface.field_type);
+                pair<initial_value_map::iterator, bool> insert_result =
+                    nd.initial_values.insert(
+                        make_pair(interface.id,
+                                  boost::shared_ptr<field_value>(value)));
+                assert(insert_result.second);
+                nd.current_field_value = &(*insert_result.first);
             }
         }
 
     private:
-        externproto_node_metatype * externproto_node_metatype_;
-        const openvrml::scene * scene_;
-        std::vector<std::string> alt_uris_;
+        vrml97_parse_actions & actions_;
+    } on_proto_interface;
+
+    struct on_proto_default_value_start_t {
+        explicit on_proto_default_value_start_t(
+            vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+
+            boost::shared_ptr<scope> outer_scope = ps.scope;
+            const std::string & proto_node_type_id = ps.proto_node_type_id;
+            assert(!proto_node_type_id.empty());
+            const std::string & field_id =
+                ps.node_data_.top().current_field_value->first;
+            const field_value::type_id field_type =
+                ps.node_data_.top().current_field_value->second->type();
+
+            if (field_type == field_value::sfnode_id
+                || field_type == field_value::mfnode_id) {
+                using std::vector;
+                using boost::intrusive_ptr;
+
+                const node_data old_nd = ps.node_data_.top();
+
+                const std::string scope_id =
+                    proto_node_type_id + '.' + field_id;
+                actions_.ps.push(parse_scope());
+
+                parse_scope & new_ps = this->actions_.ps.top();
+
+                new_ps.scope.reset(new scope(scope_id, outer_scope));
+                new_ps.node_data_.push(old_nd);
+                new_ps.children.push(parse_scope::children_t());
+            }
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_proto_default_value_start;
+
+    struct on_proto_default_value_finish_t {
+        explicit on_proto_default_value_finish_t(
+            vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            assert(!actions_.ps.empty());
+
+            parse_scope & ps = this->actions_.ps.top();
+
+            const field_value::type_id field_type =
+                ps.node_data_.top().current_field_value->second->type();
+
+            if (field_type == field_value::sfnode_id
+                || field_type == field_value::mfnode_id) {
+                using std::vector;
+
+                assert(actions_.ps.size() > 1);
+
+                for (vector<route>::const_iterator r = ps.routes.begin();
+                     r != ps.routes.end();
+                     ++r) {
+                    node * const from = ps.scope->find_node(r->from);
+                    assert(from);
+                    node * const to = ps.scope->find_node(r->to);
+                    assert(to);
+                    //
+                    // Redundant routing is ignored (4.10.2), so we don't care
+                    // if add_route returns false.
+                    //
+                    add_route(*from, r->eventout, *to, r->eventin);
+                }
+
+                parse_scope old_ps = ps;
+                this->actions_.ps.pop();
+                parse_scope & new_ps = this->actions_.ps.top();
+                new_ps.node_data_.top().current_field_value->second->assign(
+                    *old_ps.node_data_.top().current_field_value->second);
+            }
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_proto_default_value_finish;
+
+    struct on_proto_body_start_t {
+        explicit on_proto_body_start_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            assert(!actions_.ps.empty());
+            const boost::shared_ptr<scope> parent =
+                actions_.ps.top().scope;
+            actions_.ps.top().scope
+                .reset(new scope(actions_.ps.top().proto_node_type_id,
+                                 parent));
+            actions_.ps.top().proto_default_values =
+                actions_.ps.top().node_data_.top().initial_values;
+            actions_.ps.top().node_data_.pop();
+            assert(actions_.ps.top().children.empty());
+            actions_.ps.top().children.push(
+                parse_scope::children_t());
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_proto_body_start;
+
+    struct on_proto_finish_t {
+        explicit on_proto_finish_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            using std::vector;
+            using boost::shared_ptr;
+            using boost::dynamic_pointer_cast;
+            parse_scope & ps = this->actions_.ps.top();
+            assert(ps.children.size() == 1);
+            assert(ps.node_data_.empty());
+            proto_node_metatype::routes_t proto_routes;
+            for (vector<route>::const_iterator r = ps.routes.begin();
+                 r != ps.routes.end();
+                 ++r) {
+                node * const from = ps.scope->find_node(r->from);
+                assert(from);
+                node * const to = ps.scope->find_node(r->to);
+                assert(to);
+                proto_routes.push_back(
+                    proto_node_metatype::route(*from, r->eventout,
+                                               *to, r->eventin));
+            }
+            const shared_ptr<openvrml::node_metatype> node_metatype(
+                new proto_node_metatype(
+                    path(*ps.scope),
+                    this->actions_.scene_.browser(),
+                    ps.proto_interfaces,
+                    ps.proto_default_values,
+                    ps.children.top(),
+                    ps.proto_is_map,
+                    proto_routes));
+
+            //
+            // Add the new node_metatype (prototype definition) to the
+            // browser's node_metatype_map.
+            //
+            this->actions_.scene_.browser()
+                .add_node_metatype(node_metatype->id(), node_metatype);
+
+            if (!dynamic_pointer_cast<proto_node_metatype>(
+                    this->actions_.scene_.browser().node_metatype(
+                        node_metatype_id(this->actions_.uri_)))) {
+                this->actions_.scene_.browser()
+                    .add_node_metatype(node_metatype_id(this->actions_.uri_),
+                                       node_metatype);
+            }
+
+            //
+            // PROTOs implicitly introduce a new node type as well.
+            //
+            const shared_ptr<node_type> node_type =
+                node_metatype->create_type(
+                    ps.proto_node_type_id,
+                    this->actions_.ps.top().proto_interfaces);
+            assert(node_type);
+
+            //
+            // We want to add the type to the PROTO's enclosing scope, so pop
+            // off the current scope.
+            //
+            assert(this->actions_.ps.size() > 1);
+            this->actions_.ps.pop();
+
+            const bool succeeded =
+                this->actions_.ps.top().scope->add_type(node_type)
+                .second;
+            assert(succeeded);
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_proto_finish;
+
+    struct on_node_start_t {
+        explicit on_node_start_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & node_name_id,
+                        const std::string & node_type_id) const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+
+            ps.node_data_.push(node_data());
+            ps.node_data_.top().node_name_id = node_name_id;
+
+            assert(ps.scope);
+            if (node_type_id != "Script") {
+                ps.node_data_.top().type = ps.scope->find_type(node_type_id);
+                assert(ps.node_data_.top().type);
+            }
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_node_start;
+
+    struct on_node_finish_t {
+        explicit on_node_finish_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            using boost::intrusive_ptr;
+
+            parse_scope & ps = this->actions_.ps.top();
+
+            assert(!ps.children.empty());
+            assert(!ps.node_data_.empty());
+
+            const node_data & nd = ps.node_data_.top();
+
+            const intrusive_ptr<node> n = nd.type
+                ? nd.type->create_node(ps.scope, nd.initial_values)
+                : intrusive_ptr<node>(
+                    new script_node(
+                        this->actions_.scene_.browser().script_node_metatype_,
+                        ps.scope,
+                        nd.script_interfaces,
+                        nd.initial_values));
+
+            if (!nd.node_name_id.empty()) { n->id(nd.node_name_id); }
+
+            for (node_data::is_map_t::const_iterator entry = nd.is_map.begin();
+                 entry != nd.is_map.end();
+                 ++entry) {
+                ps.proto_is_map.insert(
+                    make_pair(entry->second,
+                              proto_node_metatype::is_target(
+                                  *n, entry->first)));
+            }
+
+            ps.children.top().push_back(n);
+            ps.node_data_.pop();
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_node_finish;
+
+    struct on_script_interface_decl_t {
+        explicit on_script_interface_decl_t(
+            vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const node_interface & interface) const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+
+            assert(!ps.node_data_.empty());
+
+            node_data & nd = ps.node_data_.top();
+
+            const bool succeeded =
+                nd.script_interfaces.insert(interface).second;
+            assert(succeeded);
+
+            this->actions_.on_field_start(interface.id, interface.field_type);
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_script_interface_decl;
+
+    struct on_route_t {
+        explicit on_route_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & from_node_name_id,
+                        const node_interface & from_node_interface,
+                        const std::string & to_node_name_id,
+                        const node_interface & to_node_interface) const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+            const route r(from_node_name_id, from_node_interface.id,
+                          to_node_name_id, to_node_interface.id);
+            ps.routes.push_back(r);
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_route;
+
+    struct on_use_t {
+        explicit on_use_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & node_name_id) const
+        {
+            using boost::intrusive_ptr;
+            parse_scope & ps = this->actions_.ps.top();
+            node_data & nd = ps.node_data_.top();
+
+            //
+            // Check for self-reference.  This is legitimate in Script nodes.
+            //
+            node * const n = (node_name_id == nd.node_name_id)
+                           ? node::self_tag.get()
+                           : ps.scope->find_node(node_name_id);
+            assert(n);
+            assert(!ps.children.empty());
+            ps.children.top().push_back(intrusive_ptr<node>(n));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_use;
+
+    struct on_is_mapping_t {
+        explicit on_is_mapping_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & proto_interface_id) const
+        {
+            node_data & nd =
+                this->actions_.ps.top().node_data_.top();
+            assert(nd.current_field_value);
+            bool succeeded =
+                nd.is_map.insert(make_pair(nd.current_field_value->first,
+                                           proto_interface_id))
+                .second;
+            assert(succeeded);
+
+            const field_value::type_id field_type =
+                nd.current_field_value->second->type();
+            if (field_type == field_value::sfnode_id
+                || field_type == field_value::mfnode_id) {
+                this->actions_.ps.top().children.pop();
+            }
+
+            //
+            // We need to leave this around for Script nodes.
+            //
+            if (nd.type) {
+                const initial_value_map::size_type erased =
+                    nd.initial_values.erase(nd.current_field_value->first);
+                assert(erased != 0);
+            }
+            nd.current_field_value = 0;
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_is_mapping;
+
+    struct on_field_start_t {
+        explicit on_field_start_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & field_name_id,
+                        const field_value::type_id field_type) const
+        {
+            parse_scope & ps = this->actions_.ps.top();
+            node_data & nd = ps.node_data_.top();
+
+            using boost::shared_ptr;
+            using std::pair;
+            std::auto_ptr<field_value> value = field_value::create(field_type);
+            pair<initial_value_map::iterator, bool> insert_result =
+                nd.initial_values.insert(
+                    make_pair(field_name_id, shared_ptr<field_value>(value)));
+            assert(insert_result.second);
+            nd.current_field_value = &(*insert_result.first);
+
+            if (field_type == field_value::sfnode_id
+                || field_type == field_value::mfnode_id) {
+                ps.children.push(parse_scope::children_t());
+            }
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_field_start;
+
+    struct on_sfnode_t {
+        explicit on_sfnode_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(bool null) const
+        {
+            assert(!actions_.ps.empty());
+            parse_scope & ps = this->actions_.ps.top();
+
+            if (!null) {
+                assert(!ps.node_data_.empty());
+                assert(!ps.children.top().empty());
+                ps.node_data_.top()
+                    .current_field_value->second->assign(
+                        sfnode(ps.children.top().front()));
+            }
+            actions_.ps.top().children.pop();
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfnode;
+
+    struct on_mfnode_t {
+        explicit on_mfnode_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()() const
+        {
+            assert(!this->actions_.ps.empty());
+            assert(!this->actions_.ps.top().node_data_.empty());
+            assert(!this->actions_.ps.top().children.empty());
+            this->actions_.ps.top().node_data_.top()
+                .current_field_value->second
+                ->assign(mfnode(this->actions_.ps.top().children.top()));
+            this->actions_.ps.top().children.pop();
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfnode;
+
+    struct on_sfbool_t {
+        explicit on_sfbool_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const bool val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfbool(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfbool;
+
+    struct on_sfcolor_t {
+        explicit on_sfcolor_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const color & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfcolor(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfcolor;
+
+    struct on_mfcolor_t {
+        explicit on_mfcolor_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<color> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfcolor(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfcolor;
+
+    struct on_sffloat_t {
+        explicit on_sffloat_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const float val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sffloat(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sffloat;
+
+    struct on_mffloat_t {
+        explicit on_mffloat_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<float> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mffloat(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mffloat;
+
+    struct on_sfimage_t {
+        explicit on_sfimage_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const image & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfimage(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfimage;
+
+    struct on_sfint32_t {
+        explicit on_sfint32_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const int32 val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfint32(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfint32;
+
+    struct on_mfint32_t {
+        explicit on_mfint32_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<int32> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfint32(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfint32;
+
+    struct on_sfrotation_t {
+        explicit on_sfrotation_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const rotation & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfrotation(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfrotation;
+
+    struct on_mfrotation_t {
+        explicit on_mfrotation_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<rotation> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfrotation(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfrotation;
+
+    struct on_sfstring_t {
+        explicit on_sfstring_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfstring(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfstring;
+
+    struct on_mfstring_t {
+        explicit on_mfstring_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<std::string> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfstring(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfstring;
+
+    struct on_sftime_t {
+        explicit on_sftime_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const double val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sftime(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sftime;
+
+    struct on_mftime_t {
+        explicit on_mftime_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<double> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mftime(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mftime;
+
+    struct on_sfvec2f_t {
+        explicit on_sfvec2f_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const vec2f & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfvec2f(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfvec2f;
+
+    struct on_mfvec2f_t {
+        explicit on_mfvec2f_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<vec2f> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfvec2f(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfvec2f;
+
+    struct on_sfvec3f_t {
+        explicit on_sfvec3f_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const vec3f & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfvec3f(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfvec3f;
+
+    struct on_mfvec3f_t {
+        explicit on_mfvec3f_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<vec3f> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfvec3f(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfvec3f;
+
+    struct route {
+        std::string from;
+        std::string eventout;
+        std::string to;
+        std::string eventin;
+
+        route(const std::string & from, const std::string & eventout,
+              const std::string & to, const std::string & eventin):
+            from(from),
+            eventout(eventout),
+            to(to),
+            eventin(eventin)
+        {}
     };
 
-    /**
-     * @brief Construct.
-     *
-     * @param[in] scene the @c scene in which the @c EXTERNPROTO occurs.
-     * @param[in] uris  the list of alternative implementation identifiers.
-     *
-     * @exception boost::thread_resource_error  if a new thread of execution
-     *                                          cannot be started.
-     * @exception std::bad_alloc                if memory allocation fails.
-     */
-    externproto_node_metatype::
-    externproto_node_metatype(const openvrml::node_metatype_id & id,
-                              const openvrml::scene & scene,
-                              const std::vector<std::string> & uris,
-                              boost::thread_group & load_proto_thread_group)
-        OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
-        node_metatype(id, scene.browser()),
-        externproto_node_types_cleared_(false),
-        load_proto_thread_(
-            load_proto_thread_group.create_thread(
-                boost::function0<void>(load_proto(*this, scene, uris))))
+    struct node_data {
+        typedef std::map<std::string, std::string> is_map_t;
+
+        boost::shared_ptr<node_type> type;
+        std::string node_name_id;
+        initial_value_map initial_values;
+        initial_value_map::value_type * current_field_value;
+        node_interface_set script_interfaces;
+        is_map_t is_map;
+
+        node_data():
+            current_field_value(0)
+        {}
+
+        node_data(const node_data & nd):
+            type(nd.type),
+            node_name_id(nd.node_name_id),
+            initial_values(nd.initial_values),
+            current_field_value(0),
+            script_interfaces(nd.script_interfaces),
+            is_map(nd.is_map)
+        {
+            if (nd.current_field_value) {
+                initial_value_map::iterator pos =
+                    this->initial_values.find(nd.current_field_value->first);
+                assert(pos != this->initial_values.end());
+                this->current_field_value = &(*pos);
+            }
+        }
+
+        node_data & operator=(const node_data & nd)
+        {
+            node_data temp(nd);
+            this->swap(temp);
+            return *this;
+        }
+
+        void swap(node_data & nd) OPENVRML_NOTHROW
+        {
+            this->type.swap(nd.type);
+            this->node_name_id.swap(nd.node_name_id);
+            this->initial_values.swap(nd.initial_values);
+            std::swap(this->current_field_value, nd.current_field_value);
+            this->script_interfaces.swap(nd.script_interfaces);
+            this->is_map.swap(nd.is_map);
+        }
+    };
+
+    struct parse_scope {
+        typedef std::vector<boost::intrusive_ptr<node> > children_t;
+
+        std::string proto_node_type_id;
+        boost::shared_ptr<openvrml::scope> scope;
+        node_interface_set proto_interfaces;
+        proto_node_metatype::default_value_map_t proto_default_values;
+        proto_node_metatype::is_map_t proto_is_map;
+        std::vector<route> routes;
+        std::stack<children_t> children;
+        std::stack<node_data> node_data_;
+    };
+
+    //
+    // We push a parse_scope onto the stack
+    // * at the scene root
+    std::stack<parse_scope> ps;
+
+private:
+    const std::string uri_;
+    const openvrml::scene & scene_;
+    std::vector<boost::intrusive_ptr<openvrml::node> > & nodes_;
+};
+
+struct OPENVRML_LOCAL openvrml::browser::x3d_vrml_parse_actions :
+    openvrml::browser::vrml97_parse_actions {
+
+    x3d_vrml_parse_actions(
+        const std::string & uri,
+        const openvrml::scene & scene,
+        std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+        std::map<std::string, std::string> & meta):
+        openvrml::browser::vrml97_parse_actions(uri, scene, nodes),
+        on_profile_statement(*this),
+        on_component_statement(*this),
+        on_meta_statement(*this),
+        on_sfcolorrgba(*this),
+        on_sfdouble(*this),
+        on_sfvec2d(*this),
+        on_sfvec3d(*this),
+        on_mfbool(*this),
+        on_mfcolorrgba(*this),
+        on_mfimage(*this),
+        on_mfvec2d(*this),
+        on_mfvec3d(*this),
+        meta_(meta)
     {}
 
-    /**
-     * @brief Destroy.
-     */
-    externproto_node_metatype::~externproto_node_metatype() OPENVRML_NOTHROW
+    struct on_profile_statement_t {
+        explicit on_profile_statement_t(x3d_vrml_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & /* profile_id */) const
+        {}
+
+    private:
+        x3d_vrml_parse_actions & actions_;
+    } on_profile_statement;
+
+    struct on_component_statement_t {
+        explicit on_component_statement_t(x3d_vrml_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & /* component_id */,
+                        int32 /* level */) const
+        {}
+
+    private:
+        x3d_vrml_parse_actions & actions_;
+    } on_component_statement;
+
+    struct on_meta_statement_t {
+        explicit on_meta_statement_t(x3d_vrml_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::string & name,
+                        const std::string & value) const
+        {
+            this->actions_.meta_[name] = value;
+        }
+
+    private:
+        x3d_vrml_parse_actions & actions_;
+    } on_meta_statement;
+
+    struct on_sfcolorrgba_t {
+        explicit on_sfcolorrgba_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const color_rgba & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfcolorrgba(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfcolorrgba;
+
+    struct on_sfdouble_t {
+        explicit on_sfdouble_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const double val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfdouble(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfdouble;
+
+    struct on_sfvec2d_t {
+        explicit on_sfvec2d_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const vec2d & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfvec2d(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfvec2d;
+
+    struct on_sfvec3d_t {
+        explicit on_sfvec3d_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const vec3d & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(sfvec3d(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_sfvec3d;
+
+    struct on_mfbool_t {
+        explicit on_mfbool_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<bool> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfbool(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfbool;
+
+    struct on_mfcolorrgba_t {
+        explicit on_mfcolorrgba_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<color_rgba> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfcolorrgba(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfcolorrgba;
+
+    struct on_mfimage_t {
+        explicit on_mfimage_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<image> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfimage(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfimage;
+
+    struct on_mfvec2d_t {
+        explicit on_mfvec2d_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<vec2d> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfvec2d(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfvec2d;
+
+    struct on_mfvec3d_t {
+        explicit on_mfvec3d_t(vrml97_parse_actions & actions):
+            actions_(actions)
+        {}
+
+        void operator()(const std::vector<vec3d> & val) const
+        {
+            assert(!actions_.ps.empty());
+            assert(!actions_.ps.top().node_data_.empty());
+            actions_.ps.top().node_data_.top()
+                .current_field_value->second->assign(mfvec3d(val));
+        }
+
+    private:
+        vrml97_parse_actions & actions_;
+    } on_mfvec3d;
+
+private:
+    std::map<std::string, std::string> & meta_;
+};
+
+namespace {
+
+    struct OPENVRML_LOCAL parse_error {
+        size_t line, column;
+        std::string message;
+
+        parse_error(): line(0), column(0) {}
+    };
+
+    struct OPENVRML_LOCAL error_handler {
+        error_handler(openvrml::browser & b, parse_error & error):
+            browser_(b),
+            error_(error)
+        {}
+
+        template <typename ScannerT, typename ErrorT>
+        boost::spirit::error_status<> operator()(const ScannerT & scan,
+                                                 const ErrorT & err) const
+        {
+            using std::endl;
+            using std::string;
+            using boost::lexical_cast;
+            using boost::spirit::error_status;
+            using boost::spirit::file_position;
+
+            const file_position fpos = err.where.get_position();
+
+            //
+            // Warnings we want to spew directly to the browser.
+            //
+            if (err.descriptor == openvrml::rotation_axis_not_normalized) {
+                std::ostringstream warn;
+                warn << fpos.file << ':' << fpos.line << ':'
+                     << fpos.column << ": warning: " << err.descriptor;
+                this->browser_.err(warn.str());
+                scan.first = err.where;
+                return error_status<>(error_status<>::accept, 0);
+            }
+
+            //
+            // Errors presumably halt parsing and result in a failure.  We
+            // need enough information to create an invalid_vrml exception in
+            // parse_vrml.
+            //
+            this->error_.line = fpos.line;
+            this->error_.column = fpos.column;
+            this->error_.message = lexical_cast<string>(err.descriptor);
+
+            return error_status<>(error_status<>::fail);
+        }
+
+    private:
+        openvrml::browser & browser_;
+        parse_error & error_;
+    };
+}
+
+/**
+ * @internal
+ *
+ * @brief Parse a VRML stream.
+ *
+ * @param[in,out] in    input stream.
+ * @param[in]     uri   URI associated with @p in.
+ * @param[in]     type  MIME media type of the data to be read from @p in.
+ * @param[in]     scene a @c scene.
+ * @param[out]    nodes the root @c node%s.
+ * @param[out]    meta  the @c scene metadata.
+ *
+ * @exception openvrml::bad_media_type
+ * @exception openvrml::invalid_vrml
+ */
+OPENVRML_LOCAL void
+openvrml::browser::
+parse_vrml(std::istream & in,
+           const std::string & uri,
+           const std::string & type,
+           const openvrml::scene & scene,
+           std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+           std::map<std::string, std::string> & meta)
+{
+    using std::istream;
+    using std::istreambuf_iterator;
+    using boost::algorithm::iequals;
+    using boost::spirit::skip_parser_iteration_policy;
+    using boost::spirit::multi_pass;
+    using boost::spirit::make_multi_pass;
+    using boost::spirit::scanner;
+    using boost::spirit::position_iterator;
+    using boost::spirit::guard;
+
+    typedef skip_parser_iteration_policy<vrml97_skip_grammar>
+        iterator_policy_t;
+    typedef boost::spirit::scanner_policies<iterator_policy_t>
+        scanner_policies_t;
+    typedef multi_pass<istreambuf_iterator<char> >
+        multi_pass_iterator_t;
+    typedef scanner<multi_pass_iterator_t, scanner_policies_t> scanner_t;
+    typedef istream::char_type char_t;
+
+    vrml97_skip_grammar skip_g;
+    iterator_policy_t iterator_policy(skip_g);
+    scanner_policies_t scanner_policies(iterator_policy);
+
+    if (iequals(type, vrml_media_type) || iequals(type, x_vrml_media_type)) {
+        multi_pass_iterator_t
+            in_begin(make_multi_pass(istreambuf_iterator<char_t>(in))),
+            in_end(make_multi_pass(istreambuf_iterator<char_t>()));
+
+        typedef position_iterator<multi_pass_iterator_t> iterator_t;
+
+        iterator_t first(in_begin, in_end, uri), last;
+
+        parse_error error;
+        error_handler handler(scene.browser(), error);
+        vrml97_parse_actions actions(uri, scene, nodes);
+        vrml97_grammar<error_handler, vrml97_parse_actions>
+            g(actions, handler);
+
+        BOOST_SPIRIT_DEBUG_NODE(skip_g);
+        BOOST_SPIRIT_DEBUG_NODE(g);
+
+        guard<vrml_parse_error> guard;
+
+        if (!parse(first, last, guard(g)[handler], skip_g).full) {
+            throw openvrml::invalid_vrml(uri,
+                                         error.line,
+                                         error.column,
+                                         error.message);
+        }
+    } else if (iequals(type, x3d_vrml_media_type)) {
+        multi_pass_iterator_t
+            in_begin(make_multi_pass(istreambuf_iterator<char_t>(in))),
+            in_end(make_multi_pass(istreambuf_iterator<char_t>()));
+
+        typedef position_iterator<multi_pass_iterator_t> iterator_t;
+
+        iterator_t first(in_begin, in_end, uri), last;
+
+        parse_error error;
+        error_handler handler(scene.browser(), error);
+        x3d_vrml_parse_actions actions(uri, scene, nodes, meta);
+        x3d_vrml_grammar<error_handler, x3d_vrml_parse_actions>
+            g(actions, handler);
+
+        BOOST_SPIRIT_DEBUG_NODE(skip_g);
+        BOOST_SPIRIT_DEBUG_NODE(g);
+
+        guard<vrml_parse_error> guard;
+
+        if (!parse(first, last, guard(g)[handler], skip_g).full) {
+            throw openvrml::invalid_vrml(uri,
+                                         error.line,
+                                         error.column,
+                                         error.message);
+        }
+    } else {
+        throw bad_media_type(type);
+    }
+}
+
+struct OPENVRML_LOCAL openvrml::browser::externproto_node_metatype::load_proto {
+    load_proto(externproto_node_metatype & externproto_class,
+               const openvrml::scene & scene,
+               const std::vector<std::string> & alt_uris):
+        externproto_node_metatype_(&externproto_class),
+        scene_(&scene),
+        alt_uris_(alt_uris)
     {}
 
-    const boost::shared_ptr<openvrml::node_type>
-    externproto_node_metatype::
-    do_create_type(const std::string & id,
-                   const openvrml::node_interface_set & interfaces) const
-        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
+    void operator()() const OPENVRML_NOTHROW
     {
-        boost::mutex::scoped_lock lock(this->mutex_);
+        try {
+            using openvrml::unreachable_url;
+            try {
+                using namespace openvrml;
+                using std::auto_ptr;
+                using std::ostringstream;
+                using std::string;
+                using std::vector;
+                using boost::dynamic_pointer_cast;
+                using boost::shared_ptr;
+                using openvrml_::scope_guard;
+                using openvrml_::make_obj_guard;
 
-        using boost::shared_ptr;
+                scope_guard guard =
+                    make_obj_guard(
+                        *this->externproto_node_metatype_,
+                        &externproto_node_metatype::clear_externproto_node_types);
+                boost::ignore_unused_variable_warning(guard);
 
-        shared_ptr<openvrml::proto_node_metatype> shared;
-        if ((shared = this->proto_node_metatype_.lock())) {
-            return shared->create_type(id, interfaces);
-        }
+                auto_ptr<resource_istream> in =
+                    this->scene_->get_resource(this->alt_uris_);
+                if (!(*in)) { throw unreachable_url(); }
 
-        const shared_ptr<externproto_node_type> node_type(
-            new externproto_node_type(this->shared_from_this(),
-                                      id,
-                                      interfaces));
+                //
+                // We don't actually do anything with these; but the parser
+                // wants them.
+                //
+                vector<boost::intrusive_ptr<node> > nodes;
+                std::map<string, string> meta;
 
-        this->externproto_node_types_.push_back(node_type);
+                parse_vrml(*in, in->url(), in->type(),
+                           *this->scene_, nodes, meta);
 
-        return node_type;
-    }
+                shared_ptr<openvrml::proto_node_metatype>
+                    proto_node_metatype;
+                for (vector<string>::const_iterator alt_uri =
+                         this->alt_uris_.begin();
+                     (alt_uri != this->alt_uris_.end())
+                         && !proto_node_metatype;
+                     ++alt_uri) {
+                    const uri absolute_uri = !relative(uri(*alt_uri))
+                        ? uri(*alt_uri)
+                        : this->scene_->url().empty()
+                            ? create_file_url(uri(*alt_uri))
+                            : uri(*alt_uri).resolve_against(
+                                uri(this->scene_->url()));
 
-    void externproto_node_metatype::do_shutdown(double) OPENVRML_NOTHROW
-    {
-        this->load_proto_thread_->join();
-    }
+                    const shared_ptr<openvrml::node_metatype> node_metatype =
+                        this->scene_->browser().node_metatype(
+                            node_metatype_id(absolute_uri));
 
-    void externproto_node_metatype::set_proto_node_metatype(
-        const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
+                    proto_node_metatype =
+                        dynamic_pointer_cast<openvrml::proto_node_metatype>(
+                            node_metatype);
+                }
 
-        using boost::shared_ptr;
-        using boost::static_pointer_cast;
+                if (!proto_node_metatype) {
+                    ostringstream err_msg;
+                    err_msg << "no PROTO definition at <" << in->url()
+                            << ">";
+                    this->scene_->browser().err(err_msg.str());
+                    return;
+                }
 
-        this->proto_node_metatype_ = proto_node_metatype;
+                this->externproto_node_metatype_
+                    ->set_proto_node_metatype(proto_node_metatype);
 
-        //
-        // Now that we have a proto_node_metatype, we need to tell all the
-        // externproto_node_types we've created so that they can in turn
-        // tell the externproto_nodes they've created.
-        //
-        const shared_ptr<openvrml::proto_node_metatype> shared_proto_node_metatype =
-            proto_node_metatype.lock();
-        assert(shared_proto_node_metatype);
-        for (externproto_node_types::const_iterator node_type =
-                 this->externproto_node_types_.begin();
-             node_type != this->externproto_node_types_.end();
-             ++node_type) {
-            assert(!node_type->expired());
-            node_type->lock()->set_proto_node_type(*shared_proto_node_metatype);
-        }
-    }
-
-    void externproto_node_metatype::clear_externproto_node_types()
-        OPENVRML_NOTHROW
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
-
-        using boost::shared_ptr;
-
-        for (externproto_node_types::const_iterator node_type =
-                 this->externproto_node_types_.begin();
-             node_type != this->externproto_node_types_.end();
-             ++node_type) {
-            assert(!node_type->expired());
-            node_type->lock()->clear_externproto_nodes();
-        }
-
-        this->externproto_node_types_.clear();
-        this->externproto_node_types_cleared_ = true;
-    }
-
-
-    externproto_node_type::externproto_node_type(
-        const boost::shared_ptr<const externproto_node_metatype> & c,
-        const std::string & id,
-        const openvrml::node_interface_set & interfaces)
-        OPENVRML_THROW1(std::bad_alloc):
-        node_type(*c, id),
-        node_metatype_(c),
-        interfaces_(interfaces)
-    {}
-
-    externproto_node_type::~externproto_node_type() OPENVRML_NOTHROW
-    {}
-
-    void
-    externproto_node_type::
-    set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
-
-        assert(!this->proto_node_type_);
-
-        using boost::static_pointer_cast;
-
-        this->proto_node_type_ =
-            static_pointer_cast<openvrml::proto_node_type>(
-                proto_node_metatype.create_type(this->id(), this->interfaces_));
-
-        for (externproto_nodes::const_iterator node =
-                 this->externproto_nodes_.begin();
-             node != this->externproto_nodes_.end();
-             ++node) {
-            (*node)->set_proto_node(*this->proto_node_type_);
+            } catch (std::exception & ex) {
+                this->scene_->browser().err(ex.what());
+                throw unreachable_url();
+            } catch (...) {
+                //
+                // The implementation of resource_istream is provided by
+                // the user; and unfortunately, operations on it could
+                // throw anything.
+                //
+                throw unreachable_url();
+            }
+        } catch (std::exception & ex) {
+            this->scene_->browser().err(ex.what());
         }
     }
 
-    void externproto_node_type::clear_externproto_nodes() OPENVRML_NOTHROW
-    {
-        boost::mutex::scoped_lock lock(this->mutex_);
-        this->externproto_nodes_.clear();
+private:
+    externproto_node_metatype * externproto_node_metatype_;
+    const openvrml::scene * scene_;
+    std::vector<std::string> alt_uris_;
+};
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] id                            the @c node_metatype_id for the
+ *                                          @c EXTERNPROTO.
+ * @param[in] scene                         the @c scene in which the
+ *                                          @c EXTERNPROTO occurs.
+ * @param[in] uris                          the list of alternative
+ *                                          implementation identifiers.
+ * @param[in,out] load_proto_thread_group   the thread group used for loading
+ *                                          @c EXTERNPROTO implementations.
+ *
+ * @exception boost::thread_resource_error  if a new thread of execution
+ *                                          cannot be started.
+ * @exception std::bad_alloc                if memory allocation fails.
+ */
+openvrml::browser::externproto_node_metatype::
+externproto_node_metatype(const openvrml::node_metatype_id & id,
+                          const openvrml::scene & scene,
+                          const std::vector<std::string> & uris,
+                          boost::thread_group & load_proto_thread_group)
+    OPENVRML_THROW2(boost::thread_resource_error, std::bad_alloc):
+    node_metatype(id, scene.browser()),
+                  externproto_node_types_cleared_(false),
+                  load_proto_thread_(
+                      load_proto_thread_group.create_thread(
+                          boost::function0<void>(
+                              load_proto(*this, scene, uris))))
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::browser::externproto_node_metatype::~externproto_node_metatype()
+    OPENVRML_NOTHROW
+{}
+
+const boost::shared_ptr<openvrml::node_type>
+openvrml::browser::externproto_node_metatype::
+do_create_type(const std::string & id,
+               const openvrml::node_interface_set & interfaces) const
+    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+
+    using boost::shared_ptr;
+
+    shared_ptr<openvrml::proto_node_metatype> shared;
+    if ((shared = this->proto_node_metatype_.lock())) {
+        return shared->create_type(id, interfaces);
     }
 
-    const openvrml::node_interface_set &
-    externproto_node_type::do_interfaces() const throw()
-    {
-        return this->interfaces_;
+    const shared_ptr<externproto_node_type> node_type(
+        new externproto_node_type(this->shared_from_this(),
+                                  id,
+                                  interfaces));
+
+    this->externproto_node_types_.push_back(node_type);
+
+    return node_type;
+}
+
+void openvrml::browser::externproto_node_metatype::do_shutdown(double)
+    OPENVRML_NOTHROW
+{
+    this->load_proto_thread_->join();
+}
+
+void
+openvrml::browser::externproto_node_metatype::
+set_proto_node_metatype(
+    const boost::weak_ptr<openvrml::proto_node_metatype> & proto_node_metatype)
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+
+    using boost::shared_ptr;
+    using boost::static_pointer_cast;
+
+    this->proto_node_metatype_ = proto_node_metatype;
+
+    //
+    // Now that we have a proto_node_metatype, we need to tell all the
+    // externproto_node_types we've created so that they can in turn
+    // tell the externproto_nodes they've created.
+    //
+    const shared_ptr<openvrml::proto_node_metatype> shared_proto_node_metatype =
+        proto_node_metatype.lock();
+    assert(shared_proto_node_metatype);
+    for (externproto_node_types::const_iterator node_type =
+             this->externproto_node_types_.begin();
+         node_type != this->externproto_node_types_.end();
+         ++node_type) {
+        assert(!node_type->expired());
+        node_type->lock()->set_proto_node_type(*shared_proto_node_metatype);
+    }
+}
+
+void openvrml::browser::externproto_node_metatype::clear_externproto_node_types()
+    OPENVRML_NOTHROW
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+
+    using boost::shared_ptr;
+
+    for (externproto_node_types::const_iterator node_type =
+             this->externproto_node_types_.begin();
+         node_type != this->externproto_node_types_.end();
+         ++node_type) {
+        assert(!node_type->expired());
+        node_type->lock()->clear_externproto_nodes();
     }
 
-    const boost::intrusive_ptr<openvrml::node>
-    externproto_node_type::do_create_node(
-        const boost::shared_ptr<openvrml::scope> & scope,
-        const openvrml::initial_value_map & initial_values) const
-        OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
-                        std::bad_alloc)
-    {
-        //
-        // externproto_node_metatype::mutex_ must be locked first.
-        // externproto_node_metatype::clear_externproto_node_types must not be
-        // initiated while we're doing this.
-        // externproto_node_metatype::externproto_node_types_cleared_ is checked
-        // later in this function and attempting to lock
-        // externproto_node_metatype::mutex_ at that point creates a race
-        // condition.
-        //
-        boost::mutex::scoped_lock
-            lock_externproto_node_metatype(
-                static_cast<const externproto_node_metatype &>(this->metatype())
-                .mutex_),
-            lock(this->mutex_);
+    this->externproto_node_types_.clear();
+    this->externproto_node_types_cleared_ = true;
+}
 
-        if (this->proto_node_type_) {
-            return this->proto_node_type_->create_node(scope, initial_values);
-        }
 
-        using openvrml::externproto_node;
-        const boost::intrusive_ptr<externproto_node> result(
-            new externproto_node(*this, scope, initial_values));
+openvrml::browser::externproto_node_type::externproto_node_type(
+    const boost::shared_ptr<const externproto_node_metatype> & c,
+    const std::string & id,
+    const openvrml::node_interface_set & interfaces)
+    OPENVRML_THROW1(std::bad_alloc):
+    node_type(*c, id),
+    node_metatype_(c),
+    interfaces_(interfaces)
+{}
 
-        const externproto_node_metatype & node_metatype =
-            static_cast<const externproto_node_metatype &>(this->metatype());
-        if (!node_metatype.externproto_node_types_cleared_) {
-            this->externproto_nodes_.push_back(result);
-        } else {
-            assert(this->externproto_nodes_.empty());
-        }
+openvrml::browser::externproto_node_type::~externproto_node_type()
+    OPENVRML_NOTHROW
+{}
 
-        return result;
+void
+openvrml::browser::externproto_node_type::
+set_proto_node_type(openvrml::proto_node_metatype & proto_node_metatype)
+    OPENVRML_THROW1(std::bad_alloc)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+
+    assert(!this->proto_node_type_);
+
+    using boost::static_pointer_cast;
+
+    this->proto_node_type_ =
+        static_pointer_cast<openvrml::proto_node_type>(
+            proto_node_metatype.create_type(this->id(), this->interfaces_));
+
+    for (externproto_nodes::const_iterator node =
+             this->externproto_nodes_.begin();
+         node != this->externproto_nodes_.end();
+         ++node) {
+        (*node)->set_proto_node(*this->proto_node_type_);
     }
-} // namespace
+}
+
+void openvrml::browser::externproto_node_type::clear_externproto_nodes()
+    OPENVRML_NOTHROW
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    this->externproto_nodes_.clear();
+}
+
+const openvrml::node_interface_set &
+openvrml::browser::externproto_node_type::do_interfaces() const throw()
+{
+    return this->interfaces_;
+}
+
+const boost::intrusive_ptr<openvrml::node>
+openvrml::browser::externproto_node_type::do_create_node(
+    const boost::shared_ptr<openvrml::scope> & scope,
+    const openvrml::initial_value_map & initial_values) const
+    OPENVRML_THROW3(openvrml::unsupported_interface, std::bad_cast,
+                    std::bad_alloc)
+{
+    //
+    // externproto_node_metatype::mutex_ must be locked first.
+    // externproto_node_metatype::clear_externproto_node_types must not be
+    // initiated while we're doing this.
+    // externproto_node_metatype::externproto_node_types_cleared_ is checked
+    // later in this function and attempting to lock
+    // externproto_node_metatype::mutex_ at that point creates a race
+    // condition.
+    //
+    boost::mutex::scoped_lock
+        lock_externproto_node_metatype(
+            static_cast<const externproto_node_metatype &>(this->metatype())
+            .mutex_),
+        lock(this->mutex_);
+
+    if (this->proto_node_type_) {
+        return this->proto_node_type_->create_node(scope, initial_values);
+    }
+
+    const boost::intrusive_ptr<externproto_node> result(
+        new externproto_node(*this, scope, initial_values));
+
+    const externproto_node_metatype & node_metatype =
+        static_cast<const externproto_node_metatype &>(this->metatype());
+    if (!node_metatype.externproto_node_types_cleared_) {
+        this->externproto_nodes_.push_back(result);
+    } else {
+        assert(this->externproto_nodes_.empty());
+    }
+
+    return result;
+}
 
 
 template <typename FieldValue>
@@ -4139,7 +5643,7 @@ create_exposedfield(externproto_node & node, field_value::type_id type)
 }
 
 openvrml::externproto_node::externproto_node(
-    const externproto_node_type & type,
+    const browser::externproto_node_type & type,
     const boost::shared_ptr<openvrml::scope> & scope,
     const initial_value_map & initial_values)
     OPENVRML_THROW1(std::bad_alloc):
@@ -4384,7 +5888,8 @@ openvrml::externproto_node::to_appearance() OPENVRML_NOTHROW
  * @return a pointer to the first node in the implementation if that node
  *         is a @c bounded_volume_node, or 0 otherwise.
  */
-openvrml::bounded_volume_node * openvrml::externproto_node::to_bounded_volume()
+openvrml::bounded_volume_node *
+openvrml::externproto_node::to_bounded_volume()
     OPENVRML_NOTHROW
 {
     return node_cast<bounded_volume_node *>(this->proto_node_.get());
@@ -4396,7 +5901,8 @@ openvrml::bounded_volume_node * openvrml::externproto_node::to_bounded_volume()
  * @return a pointer to the first node in the implementation if that node
  *         is a @c child_node, or 0 otherwise.
  */
-openvrml::child_node * openvrml::externproto_node::to_child() OPENVRML_NOTHROW
+openvrml::child_node *
+openvrml::externproto_node::to_child() OPENVRML_NOTHROW
 {
     return node_cast<child_node *>(this->proto_node_.get());
 }
@@ -4407,7 +5913,8 @@ openvrml::child_node * openvrml::externproto_node::to_child() OPENVRML_NOTHROW
  * @return a pointer to the first node in the implementation if that node
  *         is a @c color_node, or 0 otherwise.
  */
-openvrml::color_node * openvrml::externproto_node::to_color() OPENVRML_NOTHROW
+openvrml::color_node *
+openvrml::externproto_node::to_color() OPENVRML_NOTHROW
 {
     return node_cast<color_node *>(this->proto_node_.get());
 }
@@ -4418,7 +5925,8 @@ openvrml::color_node * openvrml::externproto_node::to_color() OPENVRML_NOTHROW
  * @return a pointer to the first node in the implementation if that node
  *         is a @c color_rgba_node, or 0 otherwise.
  */
-openvrml::color_rgba_node * openvrml::externproto_node::to_color_rgba()
+openvrml::color_rgba_node *
+openvrml::externproto_node::to_color_rgba()
     OPENVRML_NOTHROW
 {
     return node_cast<color_rgba_node *>(this->proto_node_.get());
@@ -4478,7 +5986,8 @@ openvrml::grouping_node * openvrml::externproto_node::to_grouping()
  * @return a pointer to the first node in the implementation if that node
  *         is a @c light_node, or 0 otherwise.
  */
-openvrml::light_node * openvrml::externproto_node::to_light() OPENVRML_NOTHROW
+openvrml::light_node * openvrml::externproto_node::to_light()
+    OPENVRML_NOTHROW
 {
     return node_cast<light_node *>(this->proto_node_.get());
 }
@@ -4601,7 +6110,8 @@ openvrml::externproto_node::to_texture_transform()
  * @return a pointer to the first node in the implementation if that node
  *         is a @c time_dependent_node, or 0 otherwise.
  */
-openvrml::time_dependent_node * openvrml::externproto_node::to_time_dependent()
+openvrml::time_dependent_node *
+openvrml::externproto_node::to_time_dependent()
     OPENVRML_NOTHROW
 {
     return node_cast<time_dependent_node *>(this->proto_node_.get());
@@ -4796,8 +6306,8 @@ openvrml::resource_fetcher::get_resource(const std::string & uri)
  *
  * Called by @c #get_resource, clients of OpenVRML are required to provide an
  * implementation for this function.  OpenVRML depends on the implementation
- * of this function for all of its input needs.  As such, what kind of
- * resources OpenVRML is capable of resolving is entirely dependent on code
+ * of this function for all of its input needs.  As such, what kinds of
+ * resources OpenVRML is capable of resolving are entirely dependent on code
  * provided by the application.
  *
  * Implementations should throw @c std::invalid_argument if @p uri is
@@ -5207,18 +6717,6 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  * @var class openvrml::browser::scene
  *
  * @brief The scene.
- */
-
-/**
- * @var class openvrml::browser::Vrml97Parser
- *
- * @brief VRML97 parser generated by ANTLR.
- */
-
-/**
- * @var class openvrml::browser::X3DVrmlParser
- *
- * @brief X3D VRML parser generated by ANTLR.
  */
 
 /**
@@ -6412,8 +7910,6 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
                 }
                 if (!(*in)) { throw unreachable_url(); }
                 browser.set_world(*in);
-            } catch (antlr::ANTLRException & ex) {
-                browser.err(ex.getMessage());
             } catch (invalid_vrml & ex) {
                 std::ostringstream out;
                 out << ex.url << ':' << ex.line << ':' << ex.column
@@ -7220,7 +8716,12 @@ void openvrml::scene::load(resource_istream & in)
         this->nodes_.clear();
         this->meta_.clear();
         this->url_ = in.url();
-        parse_vrml(in, in.url(), in.type(), *this, this->nodes_, this->meta_);
+        browser::parse_vrml(in,
+                            in.url(),
+                            in.type(),
+                            *this,
+                            this->nodes_,
+                            this->meta_);
     }
     this->scene_loaded();
 }
@@ -7753,6 +9254,15 @@ namespace {
     component::~component() OPENVRML_NOTHROW
     {}
 
+    bool
+    component::add_type_desc(openvrml::node_type_decls & type_descs,
+                             const std::string & node_type_id,
+                             const openvrml::node_interface_set & interfaces)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        return type_descs.insert(make_pair(node_type_id, interfaces)).second;
+    }
+
     void component::add_scope_entry(
         const openvrml::browser & b,
         const char * node_name,
@@ -7812,8 +9322,127 @@ namespace {
         this->do_add_to_scope(b, scope, level);
     }
 
+    void
+    component::
+    add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                              const size_t level) const
+        OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+    {
+        if (level == 0 || level > this->support_level()) {
+            throw std::invalid_argument("unsupported component level");
+        }
+        this->do_add_to_node_type_desc_map(type_descs, level);
+    }
+
 
     class OPENVRML_LOCAL vrml97_component : public component {
+        static const boost::array<openvrml::node_interface, 8>
+            anchor_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            appearance_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            audio_clip_interfaces_;
+        static const boost::array<openvrml::node_interface, 12>
+            background_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            billboard_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            box_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            collision_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            color_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            color_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            cone_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            coordinate_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            cylinder_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            cylinder_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            directional_light_interfaces_;
+        static const boost::array<openvrml::node_interface, 14>
+            elevation_grid_interfaces_;
+        static const boost::array<openvrml::node_interface, 14>
+            extrusion_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            fog_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            font_style_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            group_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            image_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 18>
+            indexed_face_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            indexed_line_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            inline_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            lod_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            material_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            movie_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            navigation_info_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            normal_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            normal_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            orientation_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            pixel_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            plane_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            point_light_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            point_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            position_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            proximity_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            scalar_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            shape_interfaces_;
+        static const boost::array<openvrml::node_interface, 10>
+            sound_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            sphere_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            sphere_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 10>
+            spot_light_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            switch_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            text_interfaces_;
+        static const boost::array<openvrml::node_interface, 1>
+            texture_coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            texture_transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            time_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            touch_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 10>
+            transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            viewpoint_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            visibility_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            world_info_interfaces_;
+
     public:
         static const char * const id;
 
@@ -7824,8 +9453,1155 @@ namespace {
                                      openvrml::scope & root_scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
     };
 
+    using openvrml::node_interface;
+    using openvrml::field_value;
+
+    const boost::array<node_interface, 8>
+    vrml97_component::anchor_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "parameter"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<node_interface, 3>
+    vrml97_component::appearance_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "material"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "textureTransform")
+    };
+
+    const boost::array<node_interface, 8>
+    vrml97_component::audio_clip_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "pitch"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "duration_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
+    };
+
+    const boost::array<node_interface, 12>
+    vrml97_component::background_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "groundAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "groundColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "backUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "bottomUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "frontUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "leftUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "rightUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "topUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "skyAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "skyColor"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<node_interface, 6>
+    vrml97_component::billboard_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "axisOfRotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::box_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "size")
+    };
+
+    const boost::array<node_interface, 8>
+    vrml97_component::collision_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "collide"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "proxy"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "collideTime")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::color_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "color")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::color_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfcolor_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::cone_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "bottomRadius"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "side"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "bottom")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "point")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::coordinate_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 5>
+    vrml97_component::cylinder_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "bottom"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "side"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "top")
+    };
+
+    const boost::array<node_interface, 9>
+    vrml97_component::cylinder_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "diskAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "rotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed")
+    };
+
+    const boost::array<node_interface, 5>
+    vrml97_component::directional_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on")
+    };
+
+    const boost::array<node_interface, 14>
+    vrml97_component::elevation_grid_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mffloat_id,
+                       "set_height"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "xDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "xSpacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "zDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "zSpacing")
+    };
+
+    const boost::array<node_interface, 14>
+    vrml97_component::extrusion_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_crossSection"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfrotation_id,
+                       "set_orientation"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_scale"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec3f_id,
+                       "set_spine"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "beginCap"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "crossSection"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "endCap"),
+        node_interface(node_interface::field_id,
+                       field_value::mfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec3f_id,
+                       "spine")
+    };
+
+    const boost::array<node_interface, 5>
+    vrml97_component::fog_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "fogType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityRange"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<node_interface, 9>
+    vrml97_component::font_style_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "family"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "horizontal"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "justify"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "language"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "leftToRight"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "size"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "spacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "style"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "topToBottom")
+    };
+
+    const boost::array<node_interface, 5>
+    vrml97_component::group_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<node_interface, 3>
+    vrml97_component::image_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
+    };
+
+    const boost::array<node_interface, 18>
+    vrml97_component::indexed_face_set_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_colorIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_coordIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_normalIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_texCoordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "colorIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "coordIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "normalIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "texCoordIndex")
+    };
+
+    const boost::array<node_interface, 7>
+    vrml97_component::indexed_line_set_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_colorIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_coordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "colorIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "coordIndex")
+    };
+
+    const boost::array<node_interface, 3>
+    vrml97_component::inline_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<node_interface, 3>
+    vrml97_component::lod_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "level"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "range")
+    };
+
+    const boost::array<node_interface, 6>
+    vrml97_component::material_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "diffuseColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "emissiveColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "shininess"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "specularColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "transparency")
+    };
+
+    const boost::array<node_interface, 9>
+    vrml97_component::movie_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "speed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "duration_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
+    };
+
+    const boost::array<node_interface, 7>
+    vrml97_component::navigation_info_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "avatarSize"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "headlight"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "speed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "type"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityLimit"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::normal_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "vector")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::normal_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::orientation_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfrotation_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 3>
+    vrml97_component::pixel_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfimage_id,
+                       "image"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
+    };
+
+    const boost::array<node_interface, 8>
+    vrml97_component::plane_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "maxPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "minPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "translation_changed")
+    };
+
+    const boost::array<node_interface, 7>
+    vrml97_component::point_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "attenuation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "radius")
+    };
+
+    const boost::array<node_interface, 2>
+    vrml97_component::point_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::position_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 8>
+    vrml97_component::proximity_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "position_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "orientation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::scalar_interpolator_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "value_changed")
+    };
+
+    const boost::array<node_interface, 2>
+    vrml97_component::shape_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "appearance"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "geometry")
+    };
+
+    const boost::array<node_interface, 10>
+    vrml97_component::sound_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "priority"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "source"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "spatialize")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::sphere_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius")
+    };
+
+    const boost::array<node_interface, 6>
+    vrml97_component::sphere_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "rotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed")
+    };
+
+    const boost::array<node_interface, 10>
+    vrml97_component::spot_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "attenuation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "beamWidth"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "cutOffAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "radius")
+    };
+
+    const boost::array<node_interface, 2>
+    vrml97_component::switch_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "choice"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "whichChoice")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::text_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "string"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "fontStyle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "length"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxExtent")
+    };
+
+    const boost::array<node_interface, 1>
+    vrml97_component::texture_coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "point")
+    };
+
+    const boost::array<node_interface, 4>
+    vrml97_component::texture_transform_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "translation")
+    };
+
+    const boost::array<node_interface, 9>
+    vrml97_component::time_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "cycleInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "cycleTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "fraction_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "time")
+    };
+
+    const boost::array<node_interface, 7>
+    vrml97_component::touch_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitNormal_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec2f_id,
+                       "hitTexCoord_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "touchTime")
+    };
+
+    const boost::array<node_interface, 10>
+    vrml97_component::transform_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<node_interface, 8>
+    vrml97_component::viewpoint_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "fieldOfView"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "jump"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "position"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<node_interface, 6>
+    vrml97_component::visibility_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
+    };
+
+    const boost::array<node_interface, 2>
+    vrml97_component::world_info_interfaces_ = {
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "info"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "title")
+    };
+    
     const char * const vrml97_component::id = "VRML97";
 
     size_t vrml97_component::support_level() const OPENVRML_NOTHROW
@@ -7844,34 +10620,9 @@ namespace {
         // Anchor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "description"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "parameter"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "url"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 8);
+            static const node_interface_set
+                interface_set(vrml97_component::anchor_interfaces_.begin(),
+                              vrml97_component::anchor_interfaces_.end());
 
             add_scope_entry(b,
                             "Anchor",
@@ -7884,19 +10635,9 @@ namespace {
         // Appearance node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "material"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "texture"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "textureTransform")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 3);
+            static const node_interface_set
+                interface_set(vrml97_component::appearance_interfaces_.begin(),
+                              vrml97_component::appearance_interfaces_.end());
             add_scope_entry(b,
                             "Appearance",
                             interface_set,
@@ -7908,34 +10649,9 @@ namespace {
         // AudioClip node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "description"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "loop"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "pitch"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "startTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "stopTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "url"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "duration_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 8);
+            static const node_interface_set
+                interface_set(vrml97_component::audio_clip_interfaces_.begin(),
+                              vrml97_component::audio_clip_interfaces_.end());
             add_scope_entry(b,
                             "AudioClip",
                             interface_set,
@@ -7947,46 +10663,9 @@ namespace {
         // Background node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sfbool_id,
-                               "set_bind"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "groundAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfcolor_id,
-                               "groundColor"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "backUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "bottomUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "frontUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "leftUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "rightUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "topUrl"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "skyAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfcolor_id,
-                               "skyColor"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isBound")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 12);
+            static const node_interface_set
+                interface_set(vrml97_component::background_interfaces_.begin(),
+                              vrml97_component::background_interfaces_.end());
             add_scope_entry(b,
                             "Background",
                             interface_set,
@@ -7998,28 +10677,9 @@ namespace {
         // Billboard node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "axisOfRotation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 6);
+            static const node_interface_set
+                interface_set(vrml97_component::billboard_interfaces_.begin(),
+                              vrml97_component::billboard_interfaces_.end());
             add_scope_entry(b,
                             "Billboard",
                             interface_set,
@@ -8031,12 +10691,9 @@ namespace {
         // Box node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "size");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(vrml97_component::box_interfaces_.begin(),
+                              vrml97_component::box_interfaces_.end());
             add_scope_entry(b,
                             "Box",
                             interface_set,
@@ -8048,34 +10705,9 @@ namespace {
         // Collision node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "collide"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize"),
-                node_interface(node_interface::field_id,
-                               field_value::sfnode_id,
-                               "proxy"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "collideTime")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 8);
+            static const node_interface_set
+                interface_set(vrml97_component::collision_interfaces_.begin(),
+                              vrml97_component::collision_interfaces_.end());
             add_scope_entry(b,
                             "Collision",
                             interface_set,
@@ -8087,12 +10719,9 @@ namespace {
         // Color node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfcolor_id,
-                               "color");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(vrml97_component::color_interfaces_.begin(),
+                              vrml97_component::color_interfaces_.end());
             add_scope_entry(b,
                             "Color",
                             interface_set,
@@ -8104,22 +10733,9 @@ namespace {
         // ColorInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfcolor_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfcolor_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(vrml97_component::color_interpolator_interfaces_.begin(),
+                              vrml97_component::color_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "ColorInterpolator",
                             interface_set,
@@ -8131,22 +10747,9 @@ namespace {
         // Cone node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "bottomRadius"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "height"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "side"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "bottom")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(vrml97_component::cone_interfaces_.begin(),
+                              vrml97_component::cone_interfaces_.end());
             add_scope_entry(b,
                             "Cone",
                             interface_set,
@@ -8158,12 +10761,9 @@ namespace {
         // Coordinate node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec3f_id,
-                               "point");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(vrml97_component::coordinate_interfaces_.begin(),
+                              vrml97_component::coordinate_interfaces_.end());
             add_scope_entry(b,
                             "Coordinate",
                             interface_set,
@@ -8175,22 +10775,9 @@ namespace {
         // CoordinateInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec3f_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::mfvec3f_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(vrml97_component::coordinate_interpolator_interfaces_.begin(),
+                              vrml97_component::coordinate_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "CoordinateInterpolator",
                             interface_set,
@@ -8202,25 +10789,9 @@ namespace {
         // Cylinder node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "bottom"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "height"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "radius"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "side"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "top")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 5);
+            static const node_interface_set
+                interface_set(vrml97_component::cylinder_interfaces_.begin(),
+                              vrml97_component::cylinder_interfaces_.end());
             add_scope_entry(b,
                             "Cylinder",
                             interface_set,
@@ -8232,37 +10803,9 @@ namespace {
         // CylinderSensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "autoOffset"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "diskAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "maxAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "minAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "offset"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfrotation_id,
-                               "rotation_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "trackPoint_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 9);
+            static const node_interface_set
+                interface_set(vrml97_component::cylinder_sensor_interfaces_.begin(),
+                              vrml97_component::cylinder_sensor_interfaces_.end());
             add_scope_entry(b,
                             "CylinderSensor",
                             interface_set,
@@ -8274,25 +10817,9 @@ namespace {
         // DirectionalLight node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                                field_value::sffloat_id,
-                                "ambientIntensity"),
-                node_interface(node_interface::exposedfield_id,
-                                field_value::sfcolor_id,
-                                "color"),
-                node_interface(node_interface::exposedfield_id,
-                                field_value::sfvec3f_id,
-                                "direction"),
-                node_interface(node_interface::exposedfield_id,
-                                field_value::sffloat_id,
-                                "intensity"),
-                node_interface(node_interface::exposedfield_id,
-                                field_value::sfbool_id,
-                                "on")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 5);
+            static const node_interface_set
+                interface_set(vrml97_component::directional_light_interfaces_.begin(),
+                              vrml97_component::directional_light_interfaces_.end());
             add_scope_entry(b,
                             "DirectionalLight",
                             interface_set,
@@ -8304,52 +10831,9 @@ namespace {
         // ElevationGrid node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mffloat_id,
-                               "set_height"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "normal"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "texCoord"),
-                node_interface(node_interface::field_id,
-                               field_value::mffloat_id,
-                               "height"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "ccw"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "colorPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "creaseAngle"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "normalPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "solid"),
-                node_interface(node_interface::field_id,
-                               field_value::sfint32_id,
-                               "xDimension"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "xSpacing"),
-                node_interface(node_interface::field_id,
-                               field_value::sfint32_id,
-                               "zDimension"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "zSpacing")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 14);
+            static const node_interface_set
+                interface_set(vrml97_component::elevation_grid_interfaces_.begin(),
+                              vrml97_component::elevation_grid_interfaces_.end());
             add_scope_entry(b,
                             "ElevationGrid",
                             interface_set,
@@ -8361,52 +10845,9 @@ namespace {
         // Extrusion node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfvec2f_id,
-                               "set_crossSection"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfrotation_id,
-                               "set_orientation"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfvec2f_id,
-                               "set_scale"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfvec3f_id,
-                               "set_spine"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "beginCap"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "ccw"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "convex"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "creaseAngle"),
-                node_interface(node_interface::field_id,
-                               field_value::mfvec2f_id,
-                               "crossSection"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "endCap"),
-                node_interface(node_interface::field_id,
-                               field_value::mfrotation_id,
-                               "orientation"),
-                node_interface(node_interface::field_id,
-                               field_value::mfvec2f_id,
-                               "scale"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "solid"),
-                node_interface(node_interface::field_id,
-                               field_value::mfvec3f_id,
-                               "spine")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 14);
+            static const node_interface_set
+                interface_set(vrml97_component::extrusion_interfaces_.begin(),
+                              vrml97_component::extrusion_interfaces_.end());
             add_scope_entry(b,
                             "Extrusion",
                             interface_set,
@@ -8418,25 +10859,9 @@ namespace {
         // Fog node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sfbool_id,
-                               "set_bind"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "fogType"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "visibilityRange"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isBound")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 5);
+            static const node_interface_set
+                interface_set(vrml97_component::fog_interfaces_.begin(),
+                              vrml97_component::fog_interfaces_.end());
             add_scope_entry(b,
                             "Fog",
                             interface_set,
@@ -8448,37 +10873,9 @@ namespace {
         // FontStyle node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::field_id,
-                               field_value::mfstring_id,
-                               "family"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "horizontal"),
-                node_interface(node_interface::field_id,
-                               field_value::mfstring_id,
-                               "justify"),
-                node_interface(node_interface::field_id,
-                               field_value::sfstring_id,
-                               "language"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "leftToRight"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "size"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "spacing"),
-                node_interface(node_interface::field_id,
-                               field_value::sfstring_id,
-                               "style"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "topToBottom")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 9);
+            static const node_interface_set
+                interface_set(vrml97_component::font_style_interfaces_.begin(),
+                              vrml97_component::font_style_interfaces_.end());
             add_scope_entry(b,
                             "FontStyle",
                             interface_set,
@@ -8490,25 +10887,9 @@ namespace {
         // Group node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 5);
+            static const node_interface_set
+                interface_set(vrml97_component::group_interfaces_.begin(),
+                              vrml97_component::group_interfaces_.end());
             add_scope_entry(b,
                             "Group",
                             interface_set,
@@ -8520,19 +10901,9 @@ namespace {
         // ImageTexture node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "url"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatS"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatT")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 3);
+            static const node_interface_set
+                interface_set(vrml97_component::image_texture_interfaces_.begin(),
+                              vrml97_component::image_texture_interfaces_.end());
             add_scope_entry(b,
                             "ImageTexture",
                             interface_set,
@@ -8544,64 +10915,9 @@ namespace {
         // IndexedFaceSet node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_colorIndex"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_coordIndex"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_normalIndex"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_texCoordIndex"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "coord"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "normal"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "texCoord"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "ccw"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "colorIndex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "colorPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "convex"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "coordIndex"),
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "creaseAngle"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "normalIndex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "normalPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "solid"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "texCoordIndex")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 18);
+            static const node_interface_set
+                interface_set(vrml97_component::indexed_face_set_interfaces_.begin(),
+                              vrml97_component::indexed_face_set_interfaces_.end());
             add_scope_entry(b,
                             "IndexedFaceSet",
                             interface_set,
@@ -8613,31 +10929,9 @@ namespace {
         // IndexedLineSet node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_colorIndex"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_coordIndex"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "coord"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "colorIndex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "colorPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "coordIndex")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 7);
+            static const node_interface_set
+                interface_set(vrml97_component::indexed_line_set_interfaces_.begin(),
+                              vrml97_component::indexed_line_set_interfaces_.end());
             add_scope_entry(b,
                             "IndexedLineSet",
                             interface_set,
@@ -8649,19 +10943,9 @@ namespace {
         // Inline node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "url"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 3);
+            static const node_interface_set
+                interface_set(vrml97_component::inline_interfaces_.begin(),
+                              vrml97_component::inline_interfaces_.end());
             add_scope_entry(b,
                             "Inline",
                             interface_set,
@@ -8673,19 +10957,9 @@ namespace {
         // LOD node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "level"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "center"),
-                node_interface(node_interface::field_id,
-                               field_value::mffloat_id,
-                               "range")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 3);
+            static const node_interface_set
+                interface_set(vrml97_component::lod_interfaces_.begin(),
+                              vrml97_component::lod_interfaces_.end());
             add_scope_entry(b,
                             "LOD",
                             interface_set,
@@ -8697,28 +10971,9 @@ namespace {
         // Material node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "ambientIntensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "diffuseColor"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "emissiveColor"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "shininess"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "specularColor"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "transparency")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 6);
+            static const node_interface_set
+                interface_set(vrml97_component::material_interfaces_.begin(),
+                              vrml97_component::material_interfaces_.end());
             add_scope_entry(b,
                             "Material",
                             interface_set,
@@ -8730,37 +10985,10 @@ namespace {
         // MovieTexture node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "loop"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "speed"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "startTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "stopTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "url"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatS"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatT"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "duration_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 9);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::movie_texture_interfaces_.begin(),
+                    vrml97_component::movie_texture_interfaces_.end());
             add_scope_entry(b,
                             "MovieTexture",
                             interface_set,
@@ -8772,31 +11000,10 @@ namespace {
         // NavigationInfo node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sfbool_id,
-                               "set_bind"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "avatarSize"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "headlight"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "speed"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "type"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "visibilityLimit"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isBound")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 7);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::navigation_info_interfaces_.begin(),
+                    vrml97_component::navigation_info_interfaces_.end());
             add_scope_entry(b,
                             "NavigationInfo",
                             interface_set,
@@ -8808,12 +11015,9 @@ namespace {
         // Normal node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec3f_id,
-                               "vector");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(vrml97_component::normal_interfaces_.begin(),
+                              vrml97_component::normal_interfaces_.end());
             add_scope_entry(b,
                             "Normal",
                             interface_set,
@@ -8825,22 +11029,10 @@ namespace {
         // NormalInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec3f_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::mfvec3f_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::normal_interpolator_interfaces_.begin(),
+                    vrml97_component::normal_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "NormalInterpolator",
                             interface_set,
@@ -8852,22 +11044,9 @@ namespace {
         // OrientationInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfrotation_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfrotation_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(vrml97_component::orientation_interpolator_interfaces_.begin(),
+                              vrml97_component::orientation_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "OrientationInterpolator",
                             interface_set,
@@ -8879,19 +11058,9 @@ namespace {
         // PixelTexture node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfimage_id,
-                               "image"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatS"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "repeatT")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 3);
+            static const node_interface_set
+                interface_set(vrml97_component::pixel_texture_interfaces_.begin(),
+                              vrml97_component::pixel_texture_interfaces_.end());
             add_scope_entry(b,
                             "PixelTexture",
                             interface_set,
@@ -8903,34 +11072,9 @@ namespace {
         // PlaneSensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "autoOffset"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec2f_id,
-                               "maxPosition"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec2f_id,
-                               "minPosition"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "offset"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "trackPoint_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "translation_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 8);
+            static const node_interface_set
+                interface_set(vrml97_component::plane_sensor_interfaces_.begin(),
+                              vrml97_component::plane_sensor_interfaces_.end());
             add_scope_entry(b,
                             "PlaneSensor",
                             interface_set,
@@ -8942,31 +11086,9 @@ namespace {
         // PointLight node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "ambientIntensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "attenuation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "intensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "location"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "on"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "radius")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 7);
+            static const node_interface_set
+                interface_set(vrml97_component::point_light_interfaces_.begin(),
+                              vrml97_component::point_light_interfaces_.end());
             add_scope_entry(b,
                             "PointLight",
                             interface_set,
@@ -8978,16 +11100,9 @@ namespace {
         // PointSet node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "coord")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 2);
+            static const node_interface_set
+                interface_set(vrml97_component::point_set_interfaces_.begin(),
+                              vrml97_component::point_set_interfaces_.end());
             add_scope_entry(b,
                             "PointSet",
                             interface_set,
@@ -8999,22 +11114,10 @@ namespace {
         // PositionInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec3f_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::position_interpolator_interfaces_.begin(),
+                    vrml97_component::position_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "PositionInterpolator",
                             interface_set,
@@ -9026,34 +11129,10 @@ namespace {
         // ProximitySensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "center"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "size"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "position_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfrotation_id,
-                               "orientation_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "enterTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "exitTime")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 8);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::proximity_sensor_interfaces_.begin(),
+                    vrml97_component::proximity_sensor_interfaces_.end());
             add_scope_entry(b,
                             "ProximitySensor",
                             interface_set,
@@ -9065,22 +11144,10 @@ namespace {
         // ScalarInterpolator node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sffloat_id,
-                               "set_fraction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "key"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "keyValue"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sffloat_id,
-                               "value_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::scalar_interpolator_interfaces_.begin(),
+                    vrml97_component::scalar_interpolator_interfaces_.end());
             add_scope_entry(b,
                             "ScalarInterpolator",
                             interface_set,
@@ -9092,16 +11159,9 @@ namespace {
         // Shape node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "appearance"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "geometry")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 2);
+            static const node_interface_set
+                interface_set(vrml97_component::shape_interfaces_.begin(),
+                              vrml97_component::shape_interfaces_.end());
             add_scope_entry(b,
                             "Shape",
                             interface_set,
@@ -9113,40 +11173,9 @@ namespace {
         // Sound node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "direction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "intensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "location"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "maxBack"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "maxFront"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "minBack"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "minFront"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "priority"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "source"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "spatialize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 10);
+            static const node_interface_set
+                interface_set(vrml97_component::sound_interfaces_.begin(),
+                              vrml97_component::sound_interfaces_.end());
             add_scope_entry(b,
                             "Sound",
                             interface_set,
@@ -9158,12 +11187,9 @@ namespace {
         // Sphere node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::field_id,
-                               field_value::sffloat_id,
-                               "radius");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(vrml97_component::sphere_interfaces_.begin(),
+                              vrml97_component::sphere_interfaces_.end());
             add_scope_entry(b,
                             "Sphere",
                             interface_set,
@@ -9175,28 +11201,10 @@ namespace {
         // SphereSensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "autoOffset"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "offset"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfrotation_id,
-                               "rotation_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "trackPoint_changed")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 6);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::sphere_sensor_interfaces_.begin(),
+                    vrml97_component::sphere_sensor_interfaces_.end());
             add_scope_entry(b,
                             "SphereSensor",
                             interface_set,
@@ -9208,40 +11216,9 @@ namespace {
         // SpotLight node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "ambientIntensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "attenuation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "beamWidth"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfcolor_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "cutOffAngle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "direction"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "intensity"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "location"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "on"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "radius")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 10);
+            static const node_interface_set
+                interface_set(vrml97_component::spot_light_interfaces_.begin(),
+                              vrml97_component::spot_light_interfaces_.end());
             add_scope_entry(b,
                             "SpotLight",
                             interface_set,
@@ -9253,16 +11230,9 @@ namespace {
         // Switch node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "choice"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfint32_id,
-                               "whichChoice")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 2);
+            static const node_interface_set
+                interface_set(vrml97_component::switch_interfaces_.begin(),
+                              vrml97_component::switch_interfaces_.end());
             add_scope_entry(b,
                             "Switch",
                             interface_set,
@@ -9274,22 +11244,9 @@ namespace {
         // Text node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfstring_id,
-                               "string"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "fontStyle"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mffloat_id,
-                               "length"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "maxExtent")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(vrml97_component::text_interfaces_.begin(),
+                              vrml97_component::text_interfaces_.end());
             add_scope_entry(b,
                             "Text",
                             interface_set,
@@ -9301,12 +11258,10 @@ namespace {
         // TextureCoordinate node
         //
         {
-            static const node_interface interface =
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfvec2f_id,
-                               "point");
-            static const node_interface_set interface_set(&interface,
-                                                          &interface + 1);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::texture_coordinate_interfaces_.begin(),
+                    vrml97_component::texture_coordinate_interfaces_.end());
             add_scope_entry(b,
                             "TextureCoordinate",
                             interface_set,
@@ -9318,22 +11273,10 @@ namespace {
         // TextureTransform node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec2f_id,
-                               "center"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "rotation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec2f_id,
-                               "scale"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec2f_id,
-                               "translation")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::texture_transform_interfaces_.begin(),
+                    vrml97_component::texture_transform_interfaces_.end());
             add_scope_entry(b,
                             "TextureTransform",
                             interface_set,
@@ -9345,37 +11288,10 @@ namespace {
         // TimeSensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "cycleInterval"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "loop"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "startTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "stopTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "cycleTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sffloat_id,
-                               "fraction_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "time")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 9);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::time_sensor_interfaces_.begin(),
+                    vrml97_component::time_sensor_interfaces_.end());
             add_scope_entry(b,
                             "TimeSensor",
                             interface_set,
@@ -9387,31 +11303,10 @@ namespace {
         // TouchSensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "hitNormal_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec3f_id,
-                               "hitPoint_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfvec2f_id,
-                               "hitTexCoord_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isOver"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "touchTime")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 7);
+            static const node_interface_set
+                interface_set(
+                    vrml97_component::touch_sensor_interfaces_.begin(),
+                    vrml97_component::touch_sensor_interfaces_.end());
             add_scope_entry(b,
                             "TouchSensor",
                             interface_set,
@@ -9423,40 +11318,9 @@ namespace {
         // Transform node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "center"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "rotation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "scale"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "scaleOrientation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "translation"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 10);
+            static const node_interface_set
+                interface_set(vrml97_component::transform_interfaces_.begin(),
+                              vrml97_component::transform_interfaces_.end());
             add_scope_entry(b,
                             "Transform",
                             interface_set,
@@ -9468,34 +11332,9 @@ namespace {
         // Viewpoint node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::sfbool_id,
-                               "set_bind"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sffloat_id,
-                               "fieldOfView"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "jump"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "orientation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "position"),
-                node_interface(node_interface::field_id,
-                               field_value::sfstring_id,
-                               "description"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "bindTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isBound")
-            };
             static const node_interface_set
-                interface_set(interfaces, interfaces + 8);
+                interface_set(vrml97_component::viewpoint_interfaces_.begin(),
+                              vrml97_component::viewpoint_interfaces_.end());
             add_scope_entry(b,
                             "Viewpoint",
                             interface_set,
@@ -9507,28 +11346,9 @@ namespace {
         // VisibilitySensor node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "center"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "size"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "enterTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "exitTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 6);
+            static const node_interface_set
+                interface_set(vrml97_component::visibility_sensor_interfaces_.begin(),
+                              vrml97_component::visibility_sensor_interfaces_.end());
             add_scope_entry(b,
                             "VisibilitySensor",
                             interface_set,
@@ -9540,16 +11360,9 @@ namespace {
         // WorldInfo node
         //
         {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::field_id,
-                               field_value::mfstring_id,
-                               "info"),
-                node_interface(node_interface::field_id,
-                               field_value::sfstring_id,
-                               "title")
-            };
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 2);
+            static const node_interface_set
+                interface_set(vrml97_component::world_info_interfaces_.begin(),
+                              vrml97_component::world_info_interfaces_.end());
             add_scope_entry(b,
                             "WorldInfo",
                             interface_set,
@@ -9558,8 +11371,323 @@ namespace {
         }
     }
 
+    void
+    vrml97_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Anchor",
+            node_interface_set(vrml97_component::anchor_interfaces_.begin(),
+                               vrml97_component::anchor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Appearance",
+            node_interface_set(
+                vrml97_component::appearance_interfaces_.begin(),
+                vrml97_component::appearance_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "AudioClip",
+            node_interface_set(
+                vrml97_component::audio_clip_interfaces_.begin(),
+                vrml97_component::audio_clip_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Background",
+            node_interface_set(
+                vrml97_component::background_interfaces_.begin(),
+                vrml97_component::background_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Billboard",
+            node_interface_set(vrml97_component::billboard_interfaces_.begin(),
+                               vrml97_component::billboard_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Box",
+            node_interface_set(vrml97_component::box_interfaces_.begin(),
+                               vrml97_component::box_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Collision",
+            node_interface_set(vrml97_component::collision_interfaces_.begin(),
+                               vrml97_component::collision_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Color",
+            node_interface_set(vrml97_component::color_interfaces_.begin(),
+                               vrml97_component::color_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ColorInterpolator",
+            node_interface_set(
+                vrml97_component::color_interpolator_interfaces_.begin(),
+                vrml97_component::color_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Cone",
+            node_interface_set(vrml97_component::cone_interfaces_.begin(),
+                               vrml97_component::cone_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Coordinate",
+            node_interface_set(
+                vrml97_component::coordinate_interfaces_.begin(),
+                vrml97_component::coordinate_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "CoordinateInterpolator",
+            node_interface_set(
+                vrml97_component::coordinate_interpolator_interfaces_.begin(),
+                vrml97_component::coordinate_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Cylinder",
+            node_interface_set(
+                vrml97_component::cylinder_interfaces_.begin(),
+                vrml97_component::cylinder_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "CylinderSensor",
+            node_interface_set(
+                vrml97_component::cylinder_sensor_interfaces_.begin(),
+                vrml97_component::cylinder_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "DirectionalLight",
+            node_interface_set(
+                vrml97_component::directional_light_interfaces_.begin(),
+                vrml97_component::directional_light_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ElevationGrid",
+            node_interface_set(
+                vrml97_component::elevation_grid_interfaces_.begin(),
+                vrml97_component::elevation_grid_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Extrusion",
+            node_interface_set(
+                vrml97_component::extrusion_interfaces_.begin(),
+                vrml97_component::extrusion_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Fog",
+            node_interface_set(
+                vrml97_component::fog_interfaces_.begin(),
+                vrml97_component::fog_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "FontStyle",
+            node_interface_set(
+                vrml97_component::font_style_interfaces_.begin(),
+                vrml97_component::font_style_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Group",
+            node_interface_set(vrml97_component::group_interfaces_.begin(),
+                               vrml97_component::group_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ImageTexture",
+            node_interface_set(
+                vrml97_component::image_texture_interfaces_.begin(),
+                vrml97_component::image_texture_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "IndexedFaceSet",
+            node_interface_set(
+                vrml97_component::indexed_face_set_interfaces_.begin(),
+                vrml97_component::indexed_face_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "IndexedLineSet",
+            node_interface_set(
+                vrml97_component::indexed_line_set_interfaces_.begin(),
+                vrml97_component::indexed_line_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Inline",
+            node_interface_set(
+                vrml97_component::inline_interfaces_.begin(),
+                vrml97_component::inline_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "LOD",
+            node_interface_set(
+                vrml97_component::lod_interfaces_.begin(),
+                vrml97_component::lod_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Material",
+            node_interface_set(
+                vrml97_component::material_interfaces_.begin(),
+                vrml97_component::material_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "MovieTexture",
+            node_interface_set(
+                vrml97_component::movie_texture_interfaces_.begin(),
+                vrml97_component::movie_texture_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NavigationInfo",
+            node_interface_set(
+                vrml97_component::navigation_info_interfaces_.begin(),
+                vrml97_component::navigation_info_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Normal",
+            node_interface_set(vrml97_component::normal_interfaces_.begin(),
+                               vrml97_component::normal_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NormalInterpolator",
+            node_interface_set(
+                vrml97_component::normal_interpolator_interfaces_.begin(),
+                vrml97_component::normal_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "OrientationInterpolator",
+            node_interface_set(
+                vrml97_component::orientation_interpolator_interfaces_.begin(),
+                vrml97_component::orientation_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PixelTexture",
+            node_interface_set(
+                vrml97_component::pixel_texture_interfaces_.begin(),
+                vrml97_component::pixel_texture_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PlaneSensor",
+            node_interface_set(
+                vrml97_component::plane_sensor_interfaces_.begin(),
+                vrml97_component::plane_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PointLight",
+            node_interface_set(
+                vrml97_component::point_light_interfaces_.begin(),
+                vrml97_component::point_light_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PointSet",
+            node_interface_set(
+                vrml97_component::point_set_interfaces_.begin(),
+                vrml97_component::point_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PositionInterpolator",
+            node_interface_set(
+                vrml97_component::position_interpolator_interfaces_.begin(),
+                vrml97_component::position_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ProximitySensor",
+            node_interface_set(
+                vrml97_component::proximity_sensor_interfaces_.begin(),
+                vrml97_component::proximity_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ScalarInterpolator",
+            node_interface_set(
+                vrml97_component::scalar_interpolator_interfaces_.begin(),
+                vrml97_component::scalar_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Shape",
+            node_interface_set(vrml97_component::shape_interfaces_.begin(),
+                               vrml97_component::shape_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Sound",
+            node_interface_set(vrml97_component::sound_interfaces_.begin(),
+                               vrml97_component::sound_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Sphere",
+            node_interface_set(vrml97_component::sphere_interfaces_.begin(),
+                               vrml97_component::sphere_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "SphereSensor",
+            node_interface_set(vrml97_component::sphere_sensor_interfaces_.begin(),
+                               vrml97_component::sphere_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "SpotLight",
+            node_interface_set(vrml97_component::spot_light_interfaces_.begin(),
+                               vrml97_component::spot_light_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Switch",
+            node_interface_set(vrml97_component::switch_interfaces_.begin(),
+                               vrml97_component::switch_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Text",
+            node_interface_set(vrml97_component::text_interfaces_.begin(),
+                               vrml97_component::text_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TextureCoordinate",
+            node_interface_set(vrml97_component::texture_coordinate_interfaces_.begin(),
+                               vrml97_component::texture_coordinate_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TextureTransform",
+            node_interface_set(vrml97_component::texture_transform_interfaces_.begin(),
+                               vrml97_component::texture_transform_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TimeSensor",
+            node_interface_set(vrml97_component::time_sensor_interfaces_.begin(),
+                               vrml97_component::time_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TouchSensor",
+            node_interface_set(vrml97_component::touch_sensor_interfaces_.begin(),
+                               vrml97_component::touch_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Transform",
+            node_interface_set(vrml97_component::transform_interfaces_.begin(),
+                               vrml97_component::transform_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Viewpoint",
+            node_interface_set(vrml97_component::viewpoint_interfaces_.begin(),
+                               vrml97_component::viewpoint_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "VisibilitySensor",
+            node_interface_set(vrml97_component::visibility_sensor_interfaces_.begin(),
+                               vrml97_component::visibility_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "WorldInfo",
+            node_interface_set(vrml97_component::world_info_interfaces_.begin(),
+                               vrml97_component::world_info_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_core_component : public component {
+        static const boost::array<openvrml::node_interface, 4>
+            metadata_double_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            metadata_float_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            metadata_integer_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            metadata_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            metadata_string_interfaces_;
+
     public:
         static const char * const id;
 
@@ -9570,6 +11698,92 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs,
+                size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_core_component::metadata_double_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "reference"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "value")
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_core_component::metadata_float_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "reference"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "value")
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_core_component::metadata_integer_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "reference"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "value")
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_core_component::metadata_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "reference"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "value")
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_core_component::metadata_string_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "reference"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "value")
     };
 
     const char * const x3d_core_component::id = "Core";
@@ -9588,22 +11802,10 @@ namespace {
 
         if (level >= 1) {
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "reference"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "value")
-                };
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_core_component::metadata_double_interfaces_.begin(),
+                        x3d_core_component::metadata_double_interfaces_.end());
                 add_scope_entry(b,
                                 "MetadataDouble",
                                 interface_set,
@@ -9612,22 +11814,10 @@ namespace {
             }
 
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "reference"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "value")
-                };
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_core_component::metadata_float_interfaces_.begin(),
+                        x3d_core_component::metadata_float_interfaces_.end());
                 add_scope_entry(b,
                                 "MetadataFloat",
                                 interface_set,
@@ -9636,22 +11826,10 @@ namespace {
             }
 
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "reference"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "value")
-                };
-                static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_core_component::metadata_integer_interfaces_.begin(),
+                        x3d_core_component::metadata_integer_interfaces_.end());
                 add_scope_entry(b,
                                 "MetadataInteger",
                                 interface_set,
@@ -9661,22 +11839,10 @@ namespace {
 
 
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "reference"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "value")
-                };
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_core_component::metadata_set_interfaces_.begin(),
+                        x3d_core_component::metadata_set_interfaces_.end());
                 add_scope_entry(b,
                                 "MetadataSet",
                                 interface_set,
@@ -9685,23 +11851,10 @@ namespace {
             }
 
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "reference"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "value")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_core_component::metadata_string_interfaces_.begin(),
+                        x3d_core_component::metadata_string_interfaces_.end());
                 add_scope_entry(b,
                                 "MetadataString",
                                 interface_set,
@@ -9711,8 +11864,50 @@ namespace {
         }
     }
 
+    void
+    x3d_core_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "MetadataDouble",
+            node_interface_set(
+                x3d_core_component::metadata_double_interfaces_.begin(),
+                x3d_core_component::metadata_double_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "MetadataFloat",
+            node_interface_set(
+                x3d_core_component::metadata_float_interfaces_.begin(),
+                x3d_core_component::metadata_float_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "MetadataInteger",
+            node_interface_set(
+                x3d_core_component::metadata_integer_interfaces_.begin(),
+                x3d_core_component::metadata_integer_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "MetadataSet",
+            node_interface_set(
+                x3d_core_component::metadata_set_interfaces_.begin(),
+                x3d_core_component::metadata_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "MetadataString",
+            node_interface_set(
+                x3d_core_component::metadata_string_interfaces_.begin(),
+                x3d_core_component::metadata_string_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_time_component : public component {
+        static const boost::array<openvrml::node_interface, 14>
+            time_sensor_interfaces_;
+
     public:
         static const char * const id;
 
@@ -9723,6 +11918,57 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<node_interface, 14>
+    x3d_time_component::time_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "cycleInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "pauseTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "resumeTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "cycleTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "elapsedTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "fraction_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isPaused"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "time")
     };
 
     const char * const x3d_time_component::id = "Time";
@@ -9743,53 +11989,10 @@ namespace {
         // TimeSensor node
         //
         if (level >= 1) {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "cycleInterval"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "enabled"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfbool_id,
-                               "loop"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "pauseTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "resumeTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "startTime"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sftime_id,
-                               "stopTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "cycleTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "elapsedTime"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sffloat_id,
-                               "fraction_changed"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isActive"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sfbool_id,
-                               "isPaused"),
-                node_interface(node_interface::eventout_id,
-                               field_value::sftime_id,
-                               "time")
-            };
-
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 14);
+            static const node_interface_set
+                interface_set(
+                    x3d_time_component::time_sensor_interfaces_.begin(),
+                    x3d_time_component::time_sensor_interfaces_.end());
             add_scope_entry(b,
                             "TimeSensor",
                             interface_set,
@@ -9798,8 +12001,30 @@ namespace {
         }
     }
 
+    void
+    x3d_time_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "TimeSensor",
+            node_interface_set(
+                x3d_time_component::time_sensor_interfaces_.begin(),
+                x3d_time_component::time_sensor_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_networking_component : public component {
+        static const boost::array<openvrml::node_interface, 9>
+            anchor_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            inline_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            load_sensor_interfaces_;
+
     public:
         static const char * const id;
 
@@ -9810,6 +12035,89 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_networking_component::anchor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "parameter"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_networking_component::inline_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "load"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 8>
+    x3d_networking_component::load_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "timeout"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "watchList"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isLoaded"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "loadTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "progress")
     };
 
     const char * const x3d_networking_component::id = "Networking";
@@ -9832,38 +12140,9 @@ namespace {
             // Anchor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "parameter"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(x3d_networking_component::anchor_interfaces_.begin(),
+                                  x3d_networking_component::anchor_interfaces_.end());
                 add_scope_entry(b,
                                 "Anchor",
                                 interface_set,
@@ -9875,26 +12154,9 @@ namespace {
             // Inline node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "load"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(x3d_networking_component::anchor_interfaces_.begin(),
+                                  x3d_networking_component::anchor_interfaces_.end());
                 add_scope_entry(b,
                                 "Inline",
                                 interface_set,
@@ -9908,34 +12170,10 @@ namespace {
             // LoadSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "timeout"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "watchList"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isLoaded"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "loadTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "progress")
-                };
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 8);
+                static const node_interface_set
+                    interface_set(
+                        x3d_networking_component::load_sensor_interfaces_.begin(),
+                        x3d_networking_component::load_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "LoadSensor",
                                 interface_set,
@@ -9945,8 +12183,52 @@ namespace {
         }
     }
 
+    void
+    x3d_networking_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Anchor",
+                node_interface_set(
+                    x3d_networking_component::anchor_interfaces_.begin(),
+                    x3d_networking_component::anchor_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "Inline",
+                node_interface_set(
+                    x3d_networking_component::inline_interfaces_.begin(),
+                    x3d_networking_component::inline_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "LoadSensor",
+                node_interface_set(
+                    x3d_networking_component::load_sensor_interfaces_.begin(),
+                    x3d_networking_component::load_sensor_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_grouping_component : public component {
+        static const boost::array<openvrml::node_interface, 6>
+            group_interfaces_;
+        static const boost::array<openvrml::node_interface, 11>
+            transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            world_info_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            switch_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            static_group_interfaces_;
+
     public:
         static const char * const id;
 
@@ -9957,6 +12239,124 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_grouping_component::group_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_grouping_component::transform_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_grouping_component::world_info_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "info"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "title")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_grouping_component::switch_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "whichChoice"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_grouping_component::static_group_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
 
     const char * const x3d_grouping_component::id = "Grouping";
@@ -9979,29 +12379,9 @@ namespace {
             // Group node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(x3d_grouping_component::group_interfaces_.begin(),
+                                  x3d_grouping_component::group_interfaces_.end());
                 add_scope_entry(b,
                                 "Group",
                                 interface_set,
@@ -10013,44 +12393,9 @@ namespace {
             // Transform node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "scaleOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "translation"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(x3d_grouping_component::transform_interfaces_.begin(),
+                                  x3d_grouping_component::transform_interfaces_.end());
                 add_scope_entry(b,
                                 "Transform",
                                 interface_set,
@@ -10062,20 +12407,9 @@ namespace {
             // WorldInfo node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "info"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfstring_id,
-                                   "title")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(x3d_grouping_component::world_info_interfaces_.begin(),
+                                  x3d_grouping_component::world_info_interfaces_.end());
                 add_scope_entry(b,
                                 "WorldInfo",
                                 interface_set,
@@ -10089,32 +12423,9 @@ namespace {
             // Switch node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "whichChoice"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(x3d_grouping_component::switch_interfaces_.begin(),
+                                  x3d_grouping_component::switch_interfaces_.end());
                 add_scope_entry(b,
                                 "Switch",
                                 interface_set,
@@ -10128,23 +12439,9 @@ namespace {
             // StaticGroup node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(x3d_grouping_component::static_group_interfaces_.begin(),
+                                  x3d_grouping_component::static_group_interfaces_.end());
                 add_scope_entry(b,
                                 "StaticGroup",
                                 interface_set,
@@ -10154,8 +12451,80 @@ namespace {
         }
     }
 
+    void
+    x3d_grouping_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Group",
+            node_interface_set(
+                x3d_grouping_component::group_interfaces_.begin(),
+                x3d_grouping_component::group_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Transform",
+            node_interface_set(
+                x3d_grouping_component::transform_interfaces_.begin(),
+                x3d_grouping_component::transform_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "WorldInfo",
+            node_interface_set(
+                x3d_grouping_component::world_info_interfaces_.begin(),
+                x3d_grouping_component::world_info_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Switch",
+                node_interface_set(
+                    x3d_grouping_component::switch_interfaces_.begin(),
+                    x3d_grouping_component::switch_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "StaticGroup",
+                node_interface_set(
+                    x3d_grouping_component::static_group_interfaces_.begin(),
+                    x3d_grouping_component::static_group_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_rendering_component : public component {
+        static const boost::array<node_interface, 2>
+            color_interfaces_;
+        static const boost::array<node_interface, 2>
+            color_rgba_interfaces_;
+        static const boost::array<node_interface, 2>
+            coordinate_interfaces_;
+        static const boost::array<node_interface, 8>
+            indexed_line_set_interfaces_;
+        static const boost::array<node_interface, 4>
+            line_set_interfaces_;
+        static const boost::array<node_interface, 3>
+            point_set_interfaces_;
+        static const boost::array<node_interface, 2>
+            normal_interfaces_;
+        static const boost::array<node_interface, 11>
+            indexed_triangle_fan_set_interfaces_;
+        static const boost::array<node_interface, 11>
+            indexed_triangle_set_interfaces_;
+        static const boost::array<node_interface, 12>
+            indexed_triangle_strip_set_interfaces_;
+        static const boost::array<node_interface, 10>
+            triangle_fan_set_interfaces_;
+        static const boost::array<node_interface, 9>
+            triangle_set_interfaces_;
+        static const boost::array<node_interface, 10>
+            triangle_strip_set_interfaces_;
+
     public:
         static const char * const id;
 
@@ -10166,6 +12535,321 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<node_interface, 2>
+    x3d_rendering_component::color_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "color")
+    };
+
+    const boost::array<node_interface, 2>
+    x3d_rendering_component::color_rgba_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolorrgba_id,
+                       "color")
+    };
+
+    const boost::array<node_interface, 2>
+    x3d_rendering_component::coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "point")
+    };
+
+    const boost::array<node_interface, 8>
+    x3d_rendering_component::indexed_line_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_colorIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_coordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "colorIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "coordIndex")
+    };
+
+    const boost::array<node_interface, 4>
+    x3d_rendering_component::line_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "vertexCount")
+    };
+
+    const boost::array<node_interface, 3>
+    x3d_rendering_component::point_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord")
+    };
+
+    const boost::array<node_interface, 2>
+    x3d_rendering_component::normal_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "vector")
+    };
+
+    const boost::array<node_interface, 11>
+    x3d_rendering_component::indexed_triangle_fan_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_index"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "index")
+    };
+
+    const boost::array<node_interface, 11>
+    x3d_rendering_component::indexed_triangle_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_index"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "index")
+    };
+
+    const boost::array<node_interface, 12>
+    x3d_rendering_component::indexed_triangle_strip_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_index"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "index")
+    };
+
+    const boost::array<node_interface, 10>
+    x3d_rendering_component::triangle_fan_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "fanCount"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<node_interface, 9>
+    x3d_rendering_component::triangle_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<node_interface, 10>
+    x3d_rendering_component::triangle_strip_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "stripCount"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
     };
 
     const char * const x3d_rendering_component::id = "Rendering";
@@ -10188,17 +12872,9 @@ namespace {
             // Color node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "color")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::color_interfaces_.begin(),
+                                  x3d_rendering_component::color_interfaces_.end());
                 add_scope_entry(b,
                                 "Color",
                                 interface_set,
@@ -10210,17 +12886,9 @@ namespace {
             // ColorRGBA node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolorrgba_id,
-                                   "color")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::color_rgba_interfaces_.begin(),
+                                  x3d_rendering_component::color_rgba_interfaces_.end());
                 add_scope_entry(b,
                                 "ColorRGBA",
                                 interface_set,
@@ -10232,17 +12900,9 @@ namespace {
             // Coordinate node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "point")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::coordinate_interfaces_.begin(),
+                                  x3d_rendering_component::coordinate_interfaces_.end());
                 add_scope_entry(b,
                                 "Coordinate",
                                 interface_set,
@@ -10254,35 +12914,9 @@ namespace {
             // IndexedLineSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_colorIndex"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_coordIndex"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "colorIndex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "coordIndex")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 8);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::indexed_line_set_interfaces_.begin(),
+                                  x3d_rendering_component::indexed_line_set_interfaces_.end());
                 add_scope_entry(b,
                                 "IndexedLineSet",
                                 interface_set,
@@ -10294,23 +12928,9 @@ namespace {
             // LineSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "vertexCount")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::line_set_interfaces_.begin(),
+                                  x3d_rendering_component::line_set_interfaces_.end());
                 add_scope_entry(b,
                                 "LineSet",
                                 interface_set,
@@ -10322,20 +12942,9 @@ namespace {
             // PointSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::point_set_interfaces_.begin(),
+                                  x3d_rendering_component::point_set_interfaces_.end());
                 add_scope_entry(b,
                                 "PointSet",
                                 interface_set,
@@ -10349,17 +12958,9 @@ namespace {
             // Normal node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "vector")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::normal_interfaces_.begin(),
+                                  x3d_rendering_component::normal_interfaces_.end());
                 add_scope_entry(b,
                                 "Normal",
                                 interface_set,
@@ -10373,44 +12974,9 @@ namespace {
             // IndexedTriangleFanSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_index"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "index")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::indexed_triangle_fan_set_interfaces_.begin(),
+                                  x3d_rendering_component::indexed_triangle_fan_set_interfaces_.end());
                 add_scope_entry(b,
                                 "IndexedTriangleFanSet",
                                 interface_set,
@@ -10422,44 +12988,9 @@ namespace {
             // IndexedTriangleSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_index"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "index")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::indexed_triangle_set_interfaces_.begin(),
+                                  x3d_rendering_component::indexed_triangle_set_interfaces_.end());
                 add_scope_entry(b,
                                 "IndexedTriangleSet",
                                 interface_set,
@@ -10471,47 +13002,9 @@ namespace {
             // IndexedTriangleStripSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_index"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "creaseAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "index")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 12);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::indexed_triangle_strip_set_interfaces_.begin(),
+                                  x3d_rendering_component::indexed_triangle_strip_set_interfaces_.end());
                 add_scope_entry(b,
                                 "IndexedTriangleStripSet",
                                 interface_set,
@@ -10523,41 +13016,9 @@ namespace {
             // TriangleFanSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "fanCount"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::triangle_fan_set_interfaces_.begin(),
+                                  x3d_rendering_component::triangle_fan_set_interfaces_.end());
                 add_scope_entry(b,
                                 "TriangleFanSet",
                                 interface_set,
@@ -10569,38 +13030,9 @@ namespace {
             // TriangleSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::triangle_set_interfaces_.begin(),
+                                  x3d_rendering_component::triangle_set_interfaces_.end());
                 add_scope_entry(b,
                                 "TriangleSet",
                                 interface_set,
@@ -10612,41 +13044,9 @@ namespace {
             // TriangleStripSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "stripCount"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(x3d_rendering_component::triangle_strip_set_interfaces_.begin(),
+                                  x3d_rendering_component::triangle_strip_set_interfaces_.end());
                 add_scope_entry(b,
                                 "TriangleStripSet",
                                 interface_set,
@@ -10656,8 +13056,112 @@ namespace {
         }
     }
 
+    void
+    x3d_rendering_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Color",
+            node_interface_set(
+                x3d_rendering_component::color_interfaces_.begin(),
+                x3d_rendering_component::color_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ColorRGBA",
+            node_interface_set(
+                x3d_rendering_component::color_interfaces_.begin(),
+                x3d_rendering_component::color_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Coordinate",
+            node_interface_set(
+                x3d_rendering_component::coordinate_interfaces_.begin(),
+                x3d_rendering_component::coordinate_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "IndexedLineSet",
+            node_interface_set(
+                x3d_rendering_component::indexed_line_set_interfaces_.begin(),
+                x3d_rendering_component::indexed_line_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "LineSet",
+            node_interface_set(
+                x3d_rendering_component::line_set_interfaces_.begin(),
+                x3d_rendering_component::line_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PointSet",
+            node_interface_set(
+                x3d_rendering_component::point_set_interfaces_.begin(),
+                x3d_rendering_component::point_set_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Normal",
+                node_interface_set(
+                    x3d_rendering_component::normal_interfaces_.begin(),
+                    x3d_rendering_component::normal_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "IndexedTriangleFanSet",
+                node_interface_set(
+                    x3d_rendering_component::indexed_triangle_fan_set_interfaces_.begin(),
+                    x3d_rendering_component::indexed_triangle_fan_set_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "IndexedTriangleSet",
+                node_interface_set(
+                    x3d_rendering_component::indexed_triangle_set_interfaces_.begin(),
+                    x3d_rendering_component::indexed_triangle_set_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "IndexedTriangleStripSet",
+                node_interface_set(
+                    x3d_rendering_component::indexed_triangle_strip_set_interfaces_.begin(),
+                    x3d_rendering_component::indexed_triangle_strip_set_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "TriangleFanSet",
+                node_interface_set(
+                    x3d_rendering_component::triangle_fan_set_interfaces_.begin(),
+                    x3d_rendering_component::triangle_fan_set_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "TriangleSet",
+                node_interface_set(
+                    x3d_rendering_component::triangle_set_interfaces_.begin(),
+                    x3d_rendering_component::triangle_set_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "TriangleStripSet",
+                node_interface_set(
+                    x3d_rendering_component::triangle_strip_set_interfaces_.begin(),
+                    x3d_rendering_component::triangle_strip_set_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_shape_component : public component {
+        static const boost::array<openvrml::node_interface, 6>
+            appearance_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            material_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            shape_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            line_properties_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            fill_properties_interfaces_;
+
     public:
         static const char * const id;
 
@@ -10668,6 +13172,112 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_shape_component::appearance_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "fillProperties"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "lineProperties"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "material"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "textureTransform")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_shape_component::material_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "diffuseColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "emissiveColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "shininess"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "specularColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "transparency")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_shape_component::shape_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "appearance"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "geometry"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_shape_component::line_properties_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "applied"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "lineType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "linewidthScaleFactor")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_shape_component::fill_properties_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "filled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "hatchColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "hatched"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "hatchStyle")
     };
 
     const char * const x3d_shape_component::id = "Shape";
@@ -10689,29 +13299,9 @@ namespace {
             // Appearance node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "fillProperties"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "lineProperties"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "material"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "textureTransform")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(x3d_shape_component::appearance_interfaces_.begin(),
+                                  x3d_shape_component::appearance_interfaces_.end());
                 add_scope_entry(b,
                                 "Appearance",
                                 interface_set,
@@ -10723,32 +13313,9 @@ namespace {
             // Material node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "ambientIntensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "diffuseColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "emissiveColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "shininess"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "specularColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "transparency")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(x3d_shape_component::material_interfaces_.begin(),
+                                  x3d_shape_component::material_interfaces_.end());
                 add_scope_entry(b,
                                 "Material",
                                 interface_set,
@@ -10760,26 +13327,9 @@ namespace {
             // Shape node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "appearance"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "geometry"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(x3d_shape_component::shape_interfaces_.begin(),
+                                  x3d_shape_component::shape_interfaces_.end());
                 add_scope_entry(b,
                                 "Shape",
                                 interface_set,
@@ -10793,23 +13343,9 @@ namespace {
             // LineProperties node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "applied"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "lineType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "linewidthScaleFactor")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(x3d_shape_component::line_properties_interfaces_.begin(),
+                                  x3d_shape_component::line_properties_interfaces_.end());
                 add_scope_entry(b,
                                 "LineProperties",
                                 interface_set,
@@ -10823,26 +13359,9 @@ namespace {
             // FillProperties node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "filled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "hatchColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "hatched"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "hatchStyle")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(x3d_shape_component::fill_properties_interfaces_.begin(),
+                                  x3d_shape_component::fill_properties_interfaces_.end());
                 add_scope_entry(b,
                                 "FillProperties",
                                 interface_set,
@@ -10852,8 +13371,67 @@ namespace {
         }
     }
 
+    void
+    x3d_shape_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Appearance",
+            node_interface_set(
+                x3d_shape_component::appearance_interfaces_.begin(),
+                x3d_shape_component::appearance_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Material",
+            node_interface_set(
+                x3d_shape_component::material_interfaces_.begin(),
+                x3d_shape_component::material_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Shape",
+            node_interface_set(
+                x3d_shape_component::shape_interfaces_.begin(),
+                x3d_shape_component::shape_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "LineProperties",
+                node_interface_set(
+                    x3d_shape_component::line_properties_interfaces_.begin(),
+                    x3d_shape_component::line_properties_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "FillProperties",
+                node_interface_set(
+                    x3d_shape_component::fill_properties_interfaces_.begin(),
+                    x3d_shape_component::fill_properties_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_geometry3d_component : public component {
+        static const boost::array<openvrml::node_interface, 3> box_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            cone_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            cylinder_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            sphere_interfaces_;
+        static const boost::array<openvrml::node_interface, 19>
+            indexed_face_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 15>
+            elevation_grid_interfaces_;
+        static const boost::array<openvrml::node_interface, 15>
+            extrusion_interfaces_;
+
     public:
         static const char * const id;
 
@@ -10864,6 +13442,243 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_geometry3d_component::box_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_geometry3d_component::cone_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "bottom"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "bottomRadius"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "side"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_geometry3d_component::cylinder_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "bottom"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "side"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "top")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_geometry3d_component::sphere_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 19>
+    x3d_geometry3d_component::indexed_face_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_colorIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_coordIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_normalIndex"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_texCoordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "colorIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "coordIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "normalIndex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "texCoordIndex")
+    };
+
+    const boost::array<openvrml::node_interface, 15>
+    x3d_geometry3d_component::elevation_grid_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mffloat_id,
+                       "set_height"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "xDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "xSpacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "zDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "zSpacing")
+    };
+
+    const boost::array<openvrml::node_interface, 15>
+    x3d_geometry3d_component::extrusion_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_crossSection"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfrotation_id,
+                       "set_orientation"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec2f_id,
+                       "set_scale"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfvec3f_id,
+                       "set_spine"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "beginCap"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "convex"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "crossSection"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "endCap"),
+        node_interface(node_interface::field_id,
+                       field_value::mfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec3f_id,
+                       "spine")
     };
 
     const char * const x3d_geometry3d_component::id = "Geometry3D";
@@ -10886,20 +13701,9 @@ namespace {
             // Box node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "size"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::box_interfaces_.begin(),
+                                  x3d_geometry3d_component::box_interfaces_.end());
                 add_scope_entry(b,
                                 "Box",
                                 interface_set,
@@ -10911,29 +13715,9 @@ namespace {
             // Cone node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "bottom"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "bottomRadius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "height"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "side"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::cone_interfaces_.begin(),
+                                  x3d_geometry3d_component::cone_interfaces_.end());
                 add_scope_entry(b,
                                 "Cone",
                                 interface_set,
@@ -10945,32 +13729,9 @@ namespace {
             // Cylinder node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "bottom"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "height"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "radius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "side"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "top")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::cylinder_interfaces_.begin(),
+                                  x3d_geometry3d_component::cylinder_interfaces_.end());
                 add_scope_entry(b,
                                 "Cylinder",
                                 interface_set,
@@ -10982,20 +13743,9 @@ namespace {
             // Sphere node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "radius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::sphere_interfaces_.begin(),
+                                  x3d_geometry3d_component::sphere_interfaces_.end());
                 add_scope_entry(b,
                                 "Sphere",
                                 interface_set,
@@ -11009,68 +13759,9 @@ namespace {
             // IndexedFaceSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_colorIndex"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_coordIndex"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_normalIndex"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfint32_id,
-                                   "set_texCoordIndex"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "colorIndex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "convex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "coordIndex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "creaseAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "normalIndex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfint32_id,
-                                   "texCoordIndex")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 19);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::indexed_face_set_interfaces_.begin(),
+                                  x3d_geometry3d_component::indexed_face_set_interfaces_.end());
                 add_scope_entry(b,
                                 "IndexedFaceSet",
                                 interface_set,
@@ -11084,56 +13775,9 @@ namespace {
             // ElevationGrid node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mffloat_id,
-                                   "set_height"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "creaseAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mffloat_id,
-                                   "height"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "xDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "xSpacing"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "zDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "zSpacing")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 15);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::elevation_grid_interfaces_.begin(),
+                                  x3d_geometry3d_component::elevation_grid_interfaces_.end());
                 add_scope_entry(b,
                                 "ElevationGrid",
                                 interface_set,
@@ -11147,56 +13791,9 @@ namespace {
             // Extrusion node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfvec2f_id,
-                                   "set_crossSection"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfrotation_id,
-                                   "set_orientation"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfvec2f_id,
-                                   "set_scale"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfvec3f_id,
-                                   "set_spine"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "beginCap"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "convex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "creaseAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfvec2f_id,
-                                   "crossSection"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "endCap"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfrotation_id,
-                                   "orientation"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfvec2f_id,
-                                   "scale"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfvec3f_id,
-                                   "spine")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 15);
+                static const node_interface_set
+                    interface_set(x3d_geometry3d_component::extrusion_interfaces_.begin(),
+                                  x3d_geometry3d_component::extrusion_interfaces_.end());
                 add_scope_entry(b,
                                 "Extrusion",
                                 interface_set,
@@ -11206,8 +13803,85 @@ namespace {
         }
     }
 
+    void
+    x3d_geometry3d_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Box",
+            node_interface_set(
+                x3d_geometry3d_component::box_interfaces_.begin(),
+                x3d_geometry3d_component::box_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Cone",
+            node_interface_set(
+                x3d_geometry3d_component::cone_interfaces_.begin(),
+                x3d_geometry3d_component::cone_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Cylinder",
+            node_interface_set(
+                x3d_geometry3d_component::cylinder_interfaces_.begin(),
+                x3d_geometry3d_component::cylinder_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Sphere",
+            node_interface_set(
+                x3d_geometry3d_component::sphere_interfaces_.begin(),
+                x3d_geometry3d_component::sphere_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "IndexedFaceSet",
+                node_interface_set(
+                    x3d_geometry3d_component::indexed_face_set_interfaces_.begin(),
+                    x3d_geometry3d_component::indexed_face_set_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "ElevationGrid",
+                node_interface_set(
+                    x3d_geometry3d_component::elevation_grid_interfaces_.begin(),
+                    x3d_geometry3d_component::elevation_grid_interfaces_.end()));
+        }
+
+        if (level >= 4) {
+            component::add_type_desc(
+                type_descs,
+                "Extrusion",
+                node_interface_set(
+                    x3d_geometry3d_component::extrusion_interfaces_.begin(),
+                    x3d_geometry3d_component::extrusion_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_geometry2d_component : public component {
+        static const boost::array<openvrml::node_interface, 2>
+            polyline2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            polypoint2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            rectangle2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            triangle_set2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            arc2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            arc_close2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            circle2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            disk2d_interfaces_;
+
     public:
         static const char * const id;
 
@@ -11218,6 +13892,121 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_geometry2d_component::polyline2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "lineSegments")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_geometry2d_component::polypoint2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::mfvec2f_id,
+                       "point")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_geometry2d_component::rectangle2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec2f_id,
+                       "size"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_geometry2d_component::triangle_set2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "vertices"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_geometry2d_component::arc2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "endAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "startAngle")
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_geometry2d_component::arc_close2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "closureType"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "endAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "startAngle")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_geometry2d_component::circle2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "radius")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_geometry2d_component::disk2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "innerRadius"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "outerRadius"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
     };
 
     const char * const x3d_geometry2d_component::id = "Geometry2D";
@@ -11240,17 +14029,10 @@ namespace {
             // Polyline2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfvec2f_id,
-                                   "lineSegments")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::polyline2d_interfaces_.begin(),
+                        x3d_geometry2d_component::polyline2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Polyline2D",
                                 interface_set,
@@ -11262,17 +14044,10 @@ namespace {
             // Polypoint2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfvec2f_id,
-                                   "point")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::polypoint2d_interfaces_.begin(),
+                        x3d_geometry2d_component::polypoint2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Polypoint2D",
                                 interface_set,
@@ -11284,20 +14059,10 @@ namespace {
             // Rectangle2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec2f_id,
-                                   "size"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::rectangle2d_interfaces_.begin(),
+                        x3d_geometry2d_component::rectangle2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Rectangle2D",
                                 interface_set,
@@ -11309,20 +14074,10 @@ namespace {
             // TriangleSet2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "vertices"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::triangle_set2d_interfaces_.begin(),
+                        x3d_geometry2d_component::triangle_set2d_interfaces_.end());
                 add_scope_entry(b,
                                 "TriangleSet2D",
                                 interface_set,
@@ -11336,23 +14091,9 @@ namespace {
             // Arc2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "endAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "radius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "startAngle")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(x3d_geometry2d_component::arc2d_interfaces_.begin(),
+                                  x3d_geometry2d_component::arc2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Arc2D",
                                 interface_set,
@@ -11364,29 +14105,10 @@ namespace {
             // ArcClose2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfstring_id,
-                                   "closureType"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "endAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "radius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "startAngle")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::arc_close2d_interfaces_.begin(),
+                        x3d_geometry2d_component::arc_close2d_interfaces_.end());
                 add_scope_entry(b,
                                 "ArcClose2D",
                                 interface_set,
@@ -11398,17 +14120,10 @@ namespace {
             // Circle2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "radius")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::circle2d_interfaces_.begin(),
+                        x3d_geometry2d_component::circle2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Circle2D",
                                 interface_set,
@@ -11420,23 +14135,10 @@ namespace {
             // Disk2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "innerRadius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "outerRadius"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geometry2d_component::disk2d_interfaces_.begin(),
+                        x3d_geometry2d_component::disk2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Disk2D",
                                 interface_set,
@@ -11446,8 +14148,73 @@ namespace {
         }
     }
 
+    void
+    x3d_geometry2d_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Polyline2D",
+            node_interface_set(
+                x3d_geometry2d_component::polyline2d_interfaces_.begin(),
+                x3d_geometry2d_component::polyline2d_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Polypoint2D",
+            node_interface_set(
+                x3d_geometry2d_component::polypoint2d_interfaces_.begin(),
+                x3d_geometry2d_component::polypoint2d_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Rectangle2D",
+            node_interface_set(
+                x3d_geometry2d_component::rectangle2d_interfaces_.begin(),
+                x3d_geometry2d_component::rectangle2d_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TriangleSet2D",
+            node_interface_set(
+                x3d_geometry2d_component::triangle_set2d_interfaces_.begin(),
+                x3d_geometry2d_component::triangle_set2d_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Arc2D",
+                node_interface_set(
+                    x3d_geometry2d_component::arc2d_interfaces_.begin(),
+                    x3d_geometry2d_component::arc2d_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "ArcClose2D",
+                node_interface_set(
+                    x3d_geometry2d_component::arc_close2d_interfaces_.begin(),
+                    x3d_geometry2d_component::arc_close2d_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "Circle2D",
+                node_interface_set(
+                    x3d_geometry2d_component::circle2d_interfaces_.begin(),
+                    x3d_geometry2d_component::circle2d_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "Disk2D",
+                node_interface_set(
+                    x3d_geometry2d_component::disk2d_interfaces_.begin(),
+                    x3d_geometry2d_component::disk2d_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_text_component : public component {
+        static const boost::array<openvrml::node_interface, 10>
+            font_style_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            text_interfaces_;
+
     public:
         static const char * const id;
 
@@ -11458,6 +14225,67 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_text_component::font_style_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "family"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "horizontal"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "justify"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "language"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "leftToRight"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "size"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "spacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfstring_id,
+                       "style"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "topToBottom")
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_text_component::text_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "fontStyle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "length"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxExtent"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "string"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
     };
 
     const char * const x3d_text_component::id = "Text";
@@ -11479,41 +14307,9 @@ namespace {
             // FontStyle node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "family"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "horizontal"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "justify"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfstring_id,
-                                   "language"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "leftToRight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "size"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "spacing"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfstring_id,
-                                   "style"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "topToBottom")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(x3d_text_component::font_style_interfaces_.begin(),
+                                  x3d_text_component::font_style_interfaces_.end());
                 add_scope_entry(b,
                                 "FontStyle",
                                 interface_set,
@@ -11525,29 +14321,9 @@ namespace {
             // Text node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "fontStyle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "length"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "maxExtent"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "string"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(x3d_text_component::text_interfaces_.begin(),
+                                  x3d_text_component::text_interfaces_.end());
                 add_scope_entry(b,
                                 "Text",
                                 interface_set,
@@ -11557,8 +14333,34 @@ namespace {
         }
     }
 
+    void
+    x3d_text_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "FontStyle",
+            node_interface_set(
+                x3d_text_component::font_style_interfaces_.begin(),
+                x3d_text_component::font_style_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Text",
+            node_interface_set(
+                x3d_text_component::text_interfaces_.begin(),
+                x3d_text_component::text_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_sound_component : public component {
+        static const boost::array<openvrml::node_interface, 13>
+            audio_clip_interfaces_;
+        static const boost::array<openvrml::node_interface, 11>
+            sound_interfaces_;
+
     public:
         static const char * const id;
 
@@ -11569,6 +14371,91 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 13>
+    x3d_sound_component::audio_clip_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "pauseTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "pitch"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "resumeTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "duration_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "elapsedTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isPaused")
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_sound_component::sound_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minBack"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minFront"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "priority"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "source"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "spatialize")
     };
 
     const char * const x3d_sound_component::id = "Sound";
@@ -11590,50 +14477,9 @@ namespace {
             // AudioClip node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "loop"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "pauseTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "pitch"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "resumeTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "startTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "stopTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "duration_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "elapsedTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isPaused")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 13);
+                static const node_interface_set
+                    interface_set(x3d_sound_component::audio_clip_interfaces_.begin(),
+                                  x3d_sound_component::audio_clip_interfaces_.end());
                 add_scope_entry(b,
                                 "AudioClip",
                                 interface_set,
@@ -11645,44 +14491,9 @@ namespace {
             // Sound node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "direction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "intensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "location"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "maxBack"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "maxFront"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "minBack"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "minFront"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "priority"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "source"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "spatialize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(x3d_sound_component::sound_interfaces_.begin(),
+                                  x3d_sound_component::sound_interfaces_.end());
                 add_scope_entry(b,
                                 "Sound",
                                 interface_set,
@@ -11692,8 +14503,36 @@ namespace {
         }
     }
 
+    void
+    x3d_sound_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "AudioClip",
+            node_interface_set(
+                x3d_sound_component::audio_clip_interfaces_.begin(),
+                x3d_sound_component::audio_clip_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Sound",
+            node_interface_set(
+                x3d_sound_component::sound_interfaces_.begin(),
+                x3d_sound_component::sound_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_lighting_component : public component {
+        static const boost::array<openvrml::node_interface, 6>
+            directional_light_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            point_light_interfaces_;
+        static const boost::array<openvrml::node_interface, 11>
+            spot_light_interfaces_;
+
     public:
         static const char * const id;
 
@@ -11704,6 +14543,98 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_lighting_component::directional_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on")
+    };
+
+    const boost::array<openvrml::node_interface, 8>
+    x3d_lighting_component::point_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "attenuation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "radius")
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_lighting_component::spot_light_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "ambientIntensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "attenuation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "beamWidth"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "cutOffAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "direction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "intensity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "location"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "on"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "radius")
     };
 
     const char * const x3d_lighting_component::id = "Lighting";
@@ -11726,29 +14657,10 @@ namespace {
             // DirectionalLight node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "ambientIntensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "direction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "intensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "on")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(
+                        x3d_lighting_component::directional_light_interfaces_.begin(),
+                        x3d_lighting_component::directional_light_interfaces_.end());
                 add_scope_entry(b,
                                 "DirectionalLight",
                                 interface_set,
@@ -11762,35 +14674,10 @@ namespace {
             // PointLight node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "ambientIntensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "attenuation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "intensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "location"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "on"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "radius")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 8);
+                static const node_interface_set
+                    interface_set(
+                        x3d_lighting_component::point_light_interfaces_.begin(),
+                        x3d_lighting_component::point_light_interfaces_.end());
                 add_scope_entry(b,
                                 "PointLight",
                                 interface_set,
@@ -11802,44 +14689,10 @@ namespace {
             // SpotLight node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "ambientIntensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "attenuation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "beamWidth"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "cutOffAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "direction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "intensity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "location"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "on"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "radius")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(
+                        x3d_lighting_component::spot_light_interfaces_.begin(),
+                        x3d_lighting_component::spot_light_interfaces_.end());
                 add_scope_entry(b,
                                 "SpotLight",
                                 interface_set,
@@ -11849,8 +14702,57 @@ namespace {
         }
     }
 
+    void
+    x3d_lighting_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "DirectionalLight",
+            node_interface_set(
+                x3d_lighting_component::directional_light_interfaces_.begin(),
+                x3d_lighting_component::directional_light_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "PointLight",
+                node_interface_set(
+                    x3d_lighting_component::point_light_interfaces_.begin(),
+                    x3d_lighting_component::point_light_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "SpotLight",
+                node_interface_set(
+                    x3d_lighting_component::spot_light_interfaces_.begin(),
+                    x3d_lighting_component::spot_light_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_texturing_component : public component {
+        static const boost::array<openvrml::node_interface, 4>
+            image_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            pixel_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            texture_coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            texture_transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            multi_texture_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            multi_texture_coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            multi_texture_transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            texture_coordinate_generator_interfaces_;
+        static const boost::array<openvrml::node_interface, 14>
+            movie_texture_interfaces_;
+
     public:
         static const char * const id;
 
@@ -11861,6 +14763,176 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_texturing_component::image_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_texturing_component::pixel_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfimage_id,
+                       "image"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_texturing_component::texture_coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "point")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_texturing_component::texture_transform_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "translation")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_texturing_component::multi_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "alpha"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "function"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "mode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "source"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "texture")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_texturing_component::multi_texture_coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "texCoord")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_texturing_component::multi_texture_transform_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "textureTransform")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_texturing_component::texture_coordinate_generator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "mode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "parameter")
+    };
+
+    const boost::array<openvrml::node_interface, 14>
+    x3d_texturing_component::movie_texture_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "loop"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "resumeTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "pauseTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "speed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "startTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "stopTime"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "duration_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "elapsedTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isPaused"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatS"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "repeatT")
     };
 
     const char * const x3d_texturing_component::id = "Texturing";
@@ -11883,23 +14955,10 @@ namespace {
             // ImageTexture node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatS"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatT")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::image_texture_interfaces_.begin(),
+                        x3d_texturing_component::image_texture_interfaces_.end());
                 add_scope_entry(b,
                                 "ImageTexture",
                                 interface_set,
@@ -11911,23 +14970,10 @@ namespace {
             // PixelTexture node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfimage_id,
-                                   "image"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatS"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatT")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::pixel_texture_interfaces_.begin(),
+                        x3d_texturing_component::pixel_texture_interfaces_.end());
                 add_scope_entry(b,
                                 "PixelTexture",
                                 interface_set,
@@ -11939,17 +14985,10 @@ namespace {
             // TextureCoordinate node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "point")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::texture_coordinate_interfaces_.begin(),
+                        x3d_texturing_component::texture_coordinate_interfaces_.end());
                 add_scope_entry(b,
                                 "TextureCoordinate",
                                 interface_set,
@@ -11961,26 +15000,10 @@ namespace {
             // TextureTransform node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec2f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec2f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec2f_id,
-                                   "translation")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::texture_transform_interfaces_.begin(),
+                        x3d_texturing_component::texture_transform_interfaces_.end());
                 add_scope_entry(b,
                                 "TextureTransform",
                                 interface_set,
@@ -11994,32 +15017,10 @@ namespace {
             // MultiTexture node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "alpha"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "function"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "mode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "source"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "texture")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::multi_texture_interfaces_.begin(),
+                        x3d_texturing_component::multi_texture_interfaces_.end());
                 add_scope_entry(b,
                                 "MultiTexture",
                                 interface_set,
@@ -12031,17 +15032,10 @@ namespace {
             // MultiTextureCoordinate node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "texCoord")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::multi_texture_coordinate_interfaces_.begin(),
+                        x3d_texturing_component::multi_texture_coordinate_interfaces_.end());
                 add_scope_entry(b,
                                 "MultiTextureCoordinate",
                                 interface_set,
@@ -12053,17 +15047,10 @@ namespace {
             // MultiTextureTransform node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "textureTransform")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::multi_texture_transform_interfaces_.begin(),
+                        x3d_texturing_component::multi_texture_transform_interfaces_.end());
                 add_scope_entry(b,
                                 "MultiTextureTransform",
                                 interface_set,
@@ -12075,20 +15062,10 @@ namespace {
             // TextureCoordinateGenerator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "mode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "parameter")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::texture_coordinate_generator_interfaces_.begin(),
+                        x3d_texturing_component::texture_coordinate_generator_interfaces_.end());
                 add_scope_entry(b,
                                 "TextureCoordinateGenerator",
                                 interface_set,
@@ -12102,53 +15079,10 @@ namespace {
             // MovieTexture node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "loop"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "resumeTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "pauseTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "speed"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "startTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "stopTime"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "duration_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "elapsedTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isPaused"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatS"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "repeatT")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 14);
+                static const node_interface_set
+                    interface_set(
+                        x3d_texturing_component::movie_texture_interfaces_.begin(),
+                        x3d_texturing_component::movie_texture_interfaces_.end());
                 add_scope_entry(b,
                                 "MovieTexture",
                                 interface_set,
@@ -12158,8 +15092,94 @@ namespace {
         }
     }
 
+    void
+    x3d_texturing_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "ImageTexture",
+            node_interface_set(
+                x3d_texturing_component::image_texture_interfaces_.begin(),
+                x3d_texturing_component::image_texture_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PixelTexture",
+            node_interface_set(
+                x3d_texturing_component::pixel_texture_interfaces_.begin(),
+                x3d_texturing_component::pixel_texture_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TextureCoordinate",
+            node_interface_set(
+                x3d_texturing_component::texture_coordinate_interfaces_.begin(),
+                x3d_texturing_component::texture_coordinate_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TextureTransform",
+            node_interface_set(
+                x3d_texturing_component::texture_transform_interfaces_.begin(),
+                x3d_texturing_component::texture_transform_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "MultiTexture",
+                node_interface_set(
+                    x3d_texturing_component::multi_texture_interfaces_.begin(),
+                    x3d_texturing_component::multi_texture_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "MultiTextureCoordinate",
+                node_interface_set(
+                    x3d_texturing_component::multi_texture_coordinate_interfaces_.begin(),
+                    x3d_texturing_component::multi_texture_coordinate_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "MultiTextureTransform",
+                node_interface_set(
+                    x3d_texturing_component::multi_texture_transform_interfaces_.begin(),
+                    x3d_texturing_component::multi_texture_transform_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "TextureCoordinateGenerator",
+                node_interface_set(
+                    x3d_texturing_component::texture_coordinate_generator_interfaces_.begin(),
+                    x3d_texturing_component::texture_coordinate_generator_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "MovieTexture",
+                node_interface_set(
+                    x3d_texturing_component::movie_texture_interfaces_.begin(),
+                    x3d_texturing_component::movie_texture_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_interpolation_component : public component {
+        static const boost::array<openvrml::node_interface, 5>
+            coordinate_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            orientation_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            position_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            scalar_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            color_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            normal_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            coordinate_interpolator2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            position_interpolator2d_interfaces_;
+
     public:
         static const char * const id;
 
@@ -12170,6 +15190,163 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::coordinate_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::orientation_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfrotation_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::position_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::scalar_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::color_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfcolor_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::normal_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::coordinate_interpolator2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfvec2f_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_interpolation_component::position_interpolator2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec2f_id,
+                       "value_changed")
     };
 
     const char * const x3d_interpolation_component::id = "Interpolation";
@@ -12193,26 +15370,10 @@ namespace {
             // CoordinateInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::mfvec3f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::coordinate_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::coordinate_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "CoordinateInterpolator",
                                 interface_set,
@@ -12224,26 +15385,10 @@ namespace {
             // OrientationInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfrotation_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfrotation_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::orientation_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::orientation_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "OrientationInterpolator",
                                 interface_set,
@@ -12255,26 +15400,10 @@ namespace {
             // PositionInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::position_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::position_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "PositionInterpolator",
                                 interface_set,
@@ -12286,26 +15415,10 @@ namespace {
             // ScalarInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::scalar_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::scalar_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "ScalarInterpolator",
                                 interface_set,
@@ -12319,26 +15432,10 @@ namespace {
             // ColorInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfcolor_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::color_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::color_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "ColorInterpolator",
                                 interface_set,
@@ -12350,26 +15447,10 @@ namespace {
             // NormalInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::mfvec3f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::normal_interpolator_interfaces_.begin(),
+                        x3d_interpolation_component::normal_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "NormalInterpolator",
                                 interface_set,
@@ -12383,26 +15464,10 @@ namespace {
             // CoordinateInterpolator2D
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::mfvec2f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::coordinate_interpolator2d_interfaces_.begin(),
+                        x3d_interpolation_component::coordinate_interpolator2d_interfaces_.end());
                 add_scope_entry(b,
                                 "CoordinateInterpolator2D",
                                 interface_set,
@@ -12414,26 +15479,10 @@ namespace {
             // PositionInterpolator2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec2f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_interpolation_component::position_interpolator2d_interfaces_.begin(),
+                        x3d_interpolation_component::position_interpolator2d_interfaces_.end());
                 add_scope_entry(b,
                                 "PositionInterpolator2D",
                                 interface_set,
@@ -12443,9 +15492,81 @@ namespace {
         }
     }
 
+    void
+    x3d_interpolation_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "CoordinateInterpolator",
+            node_interface_set(
+                x3d_interpolation_component::coordinate_interpolator_interfaces_.begin(),
+                x3d_interpolation_component::coordinate_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "OrientationInterpolator",
+            node_interface_set(
+                x3d_interpolation_component::orientation_interpolator_interfaces_.begin(),
+                x3d_interpolation_component::orientation_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PositionInterpolator",
+            node_interface_set(
+                x3d_interpolation_component::position_interpolator_interfaces_.begin(),
+                x3d_interpolation_component::position_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ScalarInterpolator",
+            node_interface_set(
+                x3d_interpolation_component::scalar_interpolator_interfaces_.begin(),
+                x3d_interpolation_component::scalar_interpolator_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "ColorInterpolator",
+                node_interface_set(
+                    x3d_interpolation_component::color_interpolator_interfaces_.begin(),
+                    x3d_interpolation_component::color_interpolator_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "NormalInterpolator",
+                node_interface_set(
+                    x3d_interpolation_component::normal_interpolator_interfaces_.begin(),
+                    x3d_interpolation_component::normal_interpolator_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "CoordinateInterpolator2D",
+                node_interface_set(
+                    x3d_interpolation_component::coordinate_interpolator2d_interfaces_.begin(),
+                    x3d_interpolation_component::coordinate_interpolator2d_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "PositionInterpolator2D",
+                node_interface_set(
+                    x3d_interpolation_component::position_interpolator2d_interfaces_.begin(),
+                    x3d_interpolation_component::position_interpolator2d_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_pointing_device_sensor_component :
         public component {
+        static const boost::array<openvrml::node_interface, 12>
+            cylinder_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 11>
+            plane_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            sphere_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            touch_sensor_interfaces_;
+
     public:
         static const char * const id;
 
@@ -12456,6 +15577,150 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 12>
+    x3d_pointing_device_sensor_component::cylinder_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "diskAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "minAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "rotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_pointing_device_sensor_component::plane_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "maxPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec2f_id,
+                       "minPosition"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "translation_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_pointing_device_sensor_component::sphere_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "autoOffset"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "offset"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "rotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "trackPoint_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_pointing_device_sensor_component::touch_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitNormal_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec2f_id,
+                       "hitTexCoord_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "touchTime")
     };
 
     const char * const x3d_pointing_device_sensor_component::id =
@@ -12481,47 +15746,10 @@ namespace {
             // CylinderSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "autoOffset"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "diskAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "maxAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "minAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "offset"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isOver"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfrotation_id,
-                                   "rotation_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "trackPoint_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 12);
+                static const node_interface_set
+                    interface_set(
+                        x3d_pointing_device_sensor_component::cylinder_sensor_interfaces_.begin(),
+                        x3d_pointing_device_sensor_component::cylinder_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "CylinderSensor",
                                 interface_set,
@@ -12533,44 +15761,10 @@ namespace {
             // PlaneSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "autoOffset"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec2f_id,
-                                   "maxPosition"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec2f_id,
-                                   "minPosition"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "offset"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isOver"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "trackPoint_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "translation_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(
+                        x3d_pointing_device_sensor_component::plane_sensor_interfaces_.begin(),
+                        x3d_pointing_device_sensor_component::plane_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "PlaneSensor",
                                 interface_set,
@@ -12582,38 +15776,10 @@ namespace {
             // SphereSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "autoOffset"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "offset"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isOver"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfrotation_id,
-                                   "rotation_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "trackPoint_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(
+                        x3d_pointing_device_sensor_component::sphere_sensor_interfaces_.begin(),
+                        x3d_pointing_device_sensor_component::sphere_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "SphereSensor",
                                 interface_set,
@@ -12625,38 +15791,10 @@ namespace {
             // TouchSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "hitNormal_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "hitPoint_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec2f_id,
-                                   "hitTexCoord_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isOver"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "touchTime")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(
+                        x3d_pointing_device_sensor_component::touch_sensor_interfaces_.begin(),
+                        x3d_pointing_device_sensor_component::touch_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "TouchSensor",
                                 interface_set,
@@ -12666,8 +15804,46 @@ namespace {
         }
     }
 
+    void
+    x3d_pointing_device_sensor_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "CylinderSensor",
+            node_interface_set(
+                x3d_pointing_device_sensor_component::cylinder_sensor_interfaces_.begin(),
+                x3d_pointing_device_sensor_component::cylinder_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "PlaneSensor",
+            node_interface_set(
+                x3d_pointing_device_sensor_component::plane_sensor_interfaces_.begin(),
+                x3d_pointing_device_sensor_component::plane_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "SphereSensor",
+            node_interface_set(
+                x3d_pointing_device_sensor_component::sphere_sensor_interfaces_.begin(),
+                x3d_pointing_device_sensor_component::sphere_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TouchSensor",
+            node_interface_set(
+                x3d_pointing_device_sensor_component::touch_sensor_interfaces_.begin(),
+                x3d_pointing_device_sensor_component::touch_sensor_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_key_device_sensor_component : public component {
+        static const boost::array<openvrml::node_interface, 10>
+            key_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 6>
+            string_sensor_interfaces_;
+
     public:
         static const char * const id;
 
@@ -12678,6 +15854,67 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_key_device_sensor_component::key_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfint32_id,
+                       "actionKeyPress"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfint32_id,
+                       "actionKeyRelease"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "altKey"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "controlKey"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfstring_id,
+                       "keyPress"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfstring_id,
+                       "keyRelease"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "shiftKey")
+    };
+
+    const boost::array<openvrml::node_interface, 6>
+    x3d_key_device_sensor_component::string_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "deletionAllowed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfstring_id,
+                       "enteredText"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfstring_id,
+                       "finalText"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
     };
 
     const char * const x3d_key_device_sensor_component::id = "KeyDeviceSensor";
@@ -12702,41 +15939,10 @@ namespace {
             // KeySensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfint32_id,
-                                   "actionKeyPress"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfint32_id,
-                                   "actionKeyRelease"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "altKey"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "controlKey"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfstring_id,
-                                   "keyPress"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfstring_id,
-                                   "keyRelease"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "shiftKey")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(
+                        x3d_key_device_sensor_component::key_sensor_interfaces_.begin(),
+                        x3d_key_device_sensor_component::key_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "KeySensor",
                                 interface_set,
@@ -12750,29 +15956,10 @@ namespace {
             // StringSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "deletionAllowed"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfstring_id,
-                                   "enteredText"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfstring_id,
-                                   "finalText"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 6);
+                static const node_interface_set
+                    interface_set(
+                        x3d_key_device_sensor_component::string_sensor_interfaces_.begin(),
+                        x3d_key_device_sensor_component::string_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "StringSensor",
                                 interface_set,
@@ -12782,9 +15969,38 @@ namespace {
         }
     }
 
+    void
+    x3d_key_device_sensor_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "KeySensor",
+            node_interface_set(
+                x3d_key_device_sensor_component::key_sensor_interfaces_.begin(),
+                x3d_key_device_sensor_component::key_sensor_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "StringSensor",
+                node_interface_set(
+                    x3d_key_device_sensor_component::string_sensor_interfaces_.begin(),
+                    x3d_key_device_sensor_component::string_sensor_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_environmental_sensor_component :
         public component {
+        static const boost::array<openvrml::node_interface, 10>
+            proximity_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            visibility_sensor_interfaces_;
+
     public:
         static const char * const id;
 
@@ -12795,6 +16011,70 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_environmental_sensor_component::proximity_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "centerOfRotation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "orientation_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "position_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_environmental_sensor_component::visibility_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "size"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "enterTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "exitTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive")
     };
 
     const char * const x3d_environmental_sensor_component::id =
@@ -12820,41 +16100,10 @@ namespace {
             // ProximitySensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "size"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "enterTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "exitTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "centerOfRotation_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfrotation_id,
-                                   "orientation_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "position_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(
+                        x3d_environmental_sensor_component::proximity_sensor_interfaces_.begin(),
+                        x3d_environmental_sensor_component::proximity_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "ProximitySensor",
                                 interface_set,
@@ -12868,32 +16117,10 @@ namespace {
             // VisibilitySensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "size"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "enterTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "exitTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_environmental_sensor_component::visibility_sensor_interfaces_.begin(),
+                        x3d_environmental_sensor_component::visibility_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "VisibilitySensor",
                                 interface_set,
@@ -12903,8 +16130,43 @@ namespace {
         }
     }
 
+    void
+    x3d_environmental_sensor_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "ProximitySensor",
+            node_interface_set(
+                x3d_environmental_sensor_component::proximity_sensor_interfaces_.begin(),
+                x3d_environmental_sensor_component::proximity_sensor_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "VisibilitySensor",
+                node_interface_set(
+                    x3d_environmental_sensor_component::visibility_sensor_interfaces_.begin(),
+                    x3d_environmental_sensor_component::visibility_sensor_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_navigation_component : public component {
+        static const boost::array<openvrml::node_interface, 10>
+            navigation_info_interfaces_;
+        static const boost::array<openvrml::node_interface, 10>
+            viewpoint_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            billboard_interfaces_;
+        static const boost::array<openvrml::node_interface, 10>
+            collision_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            lod_interfaces_;
+
     public:
         static const char * const id;
 
@@ -12915,6 +16177,166 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_navigation_component::navigation_info_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "avatarSize"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "headlight"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "speed"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "transitionType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "type"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityLimit"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_navigation_component::viewpoint_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "centerOfRotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "fieldOfView"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "jump"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "position"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_navigation_component::billboard_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "axisOfRotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 10>
+    x3d_navigation_component::collision_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "collideTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "proxy")
+    };
+
+    const boost::array<openvrml::node_interface, 8>
+    x3d_navigation_component::lod_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::field_id,
+                       field_value::mffloat_id,
+                       "range")
     };
 
     const char * const x3d_navigation_component::id = "Navigation";
@@ -12937,41 +16359,10 @@ namespace {
             // NavigationInfo node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "avatarSize"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "headlight"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "speed"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "transitionType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "type"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "visibilityLimit"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(
+                        x3d_navigation_component::navigation_info_interfaces_.begin(),
+                        x3d_navigation_component::navigation_info_interfaces_.end());
                 add_scope_entry(b,
                                 "NavigationInfo",
                                 interface_set,
@@ -12983,41 +16374,10 @@ namespace {
             // Viewpoint node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "centerOfRotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "fieldOfView"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "jump"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "orientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "position"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(
+                        x3d_navigation_component::viewpoint_interfaces_.begin(),
+                        x3d_navigation_component::viewpoint_interfaces_.end());
                 add_scope_entry(b,
                                 "Viewpoint",
                                 interface_set,
@@ -13031,32 +16391,10 @@ namespace {
             // Billboard node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "axisOfRotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_navigation_component::billboard_interfaces_.begin(),
+                        x3d_navigation_component::billboard_interfaces_.end());
                 add_scope_entry(b,
                                 "Billboard",
                                 interface_set,
@@ -13068,41 +16406,10 @@ namespace {
             // Collision node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "collideTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "proxy")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 10);
+                static const node_interface_set
+                    interface_set(
+                        x3d_navigation_component::collision_interfaces_.begin(),
+                        x3d_navigation_component::collision_interfaces_.end());
                 add_scope_entry(b,
                                 "Collision",
                                 interface_set,
@@ -13114,35 +16421,10 @@ namespace {
             // LOD node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mffloat_id,
-                                   "range")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 8);
+                static const node_interface_set
+                    interface_set(
+                        x3d_navigation_component::lod_interfaces_.begin(),
+                        x3d_navigation_component::lod_interfaces_.end());
                 add_scope_entry(b,
                                 "LOD",
                                 interface_set,
@@ -13152,9 +16434,58 @@ namespace {
         }
     }
 
+    void
+    x3d_navigation_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "NavigationInfo",
+            node_interface_set(
+                x3d_navigation_component::navigation_info_interfaces_.begin(),
+                x3d_navigation_component::navigation_info_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "Viewpoint",
+            node_interface_set(
+                x3d_navigation_component::viewpoint_interfaces_.begin(),
+                x3d_navigation_component::viewpoint_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Billboard",
+                node_interface_set(
+                    x3d_navigation_component::billboard_interfaces_.begin(),
+                    x3d_navigation_component::billboard_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "Collision",
+                node_interface_set(
+                    x3d_navigation_component::collision_interfaces_.begin(),
+                    x3d_navigation_component::collision_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "LOD",
+                node_interface_set(
+                    x3d_navigation_component::lod_interfaces_.begin(),
+                    x3d_navigation_component::lod_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_environmental_effects_component :
         public component {
+        static const boost::array<openvrml::node_interface, 14>
+            background_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            fog_interfaces_;
+        static const boost::array<openvrml::node_interface, 15>
+            texture_background_interfaces_;
+
     public:
         static const char * const id;
 
@@ -13165,6 +16496,131 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 14>
+    x3d_environmental_effects_component::background_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "groundAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "groundColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "backUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "bottomUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "frontUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "leftUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "rightUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "topUrl"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "skyAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "skyColor"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_environmental_effects_component::fog_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfcolor_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "fogType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "visibilityRange"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
+    };
+
+    const boost::array<openvrml::node_interface, 15>
+    x3d_environmental_effects_component::texture_background_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "groundAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "groundColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "backTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "bottomTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "frontTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "leftTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "rightTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "topTexture"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "skyAngle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfcolor_id,
+                       "skyColor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "transparency"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound")
     };
 
     const char * const x3d_environmental_effects_component::id =
@@ -13190,53 +16646,10 @@ namespace {
             // Background node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "groundAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "groundColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "backUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "bottomUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "frontUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "leftUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "rightUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "topUrl"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "skyAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "skyColor"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 14);
+                static const node_interface_set
+                    interface_set(
+                        x3d_environmental_effects_component::background_interfaces_.begin(),
+                        x3d_environmental_effects_component::background_interfaces_.end());
                 add_scope_entry(b,
                                 "Background",
                                 interface_set,
@@ -13250,32 +16663,10 @@ namespace {
             // Fog node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfcolor_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "fogType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "visibilityRange"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_environmental_effects_component::fog_interfaces_.begin(),
+                        x3d_environmental_effects_component::fog_interfaces_.end());
                 add_scope_entry(b,
                                 "Fog",
                                 interface_set,
@@ -13289,56 +16680,10 @@ namespace {
             // TextureBackground node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "groundAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "groundColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "backTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "bottomTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "frontTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "leftTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "rightTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "topTexture"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "skyAngle"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfcolor_id,
-                                   "skyColor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "transparency"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 15);
+                static const node_interface_set
+                    interface_set(
+                        x3d_environmental_effects_component::texture_background_interfaces_.begin(),
+                        x3d_environmental_effects_component::texture_background_interfaces_.end());
                 add_scope_entry(b,
                                 "TextureBackground",
                                 interface_set,
@@ -13348,8 +16693,54 @@ namespace {
         }
     }
 
+    void
+    x3d_environmental_effects_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "Background",
+            node_interface_set(
+                x3d_environmental_effects_component::background_interfaces_.begin(),
+                x3d_environmental_effects_component::background_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "Fog",
+                node_interface_set(
+                    x3d_environmental_effects_component::fog_interfaces_.begin(),
+                    x3d_environmental_effects_component::fog_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "TextureBackground",
+                node_interface_set(
+                    x3d_environmental_effects_component::texture_background_interfaces_.begin(),
+                    x3d_environmental_effects_component::texture_background_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_cad_geometry_component : public component {
+        static const boost::array<openvrml::node_interface, 11>
+            indexed_quad_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            quad_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            cad_assembly_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            cad_face_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            cad_layer_interfaces_;
+        static const boost::array<openvrml::node_interface, 12>
+            cad_part_interfaces_;
+
     public:
         static const char * const id;
 
@@ -13360,6 +16751,185 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_cad_geometry_component::indexed_quad_set_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfint32_id,
+                       "set_index"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::mfint32_id,
+                       "index")
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_cad_geometry_component::quad_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_cad_geometry_component::cad_assembly_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_cad_geometry_component::cad_face_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "shape")
+    };
+
+    const boost::array<openvrml::node_interface, 8>
+    x3d_cad_geometry_component::cad_layer_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfbool_id,
+                       "visible"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 12>
+    x3d_cad_geometry_component::cad_part_interfaces_ = {
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
 
     const char * const x3d_cad_geometry_component::id = "CADGeometry";
@@ -13376,223 +16946,152 @@ namespace {
     {
         using namespace openvrml;
 
-        // CADAssembly node
-        if (level >= 2)
-        {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "name"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-
-            static const node_interface_set interface_set(interfaces, interfaces + 7);
-            add_scope_entry(b, "CADAssembly", interface_set,
-                "urn:X-openvrml:node:CADAssembly", scope);
-        }
-        // CADFace node
-        if (level >= 2)
-        {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "name"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "shape")
-            };
-
-            static const node_interface_set interface_set(interfaces, interfaces + 3);
-            add_scope_entry(b, "CADFace", interface_set,
-                "urn:X-openvrml:node:CADFace", scope);
-        }
-        // CADLayer node
-        if (level >= 2)
-        {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "name"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfbool_id,
-                               "visible"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-
-            static const node_interface_set interface_set(interfaces, interfaces + 8);
-            add_scope_entry(b, "CADLayer", interface_set,
-                "urn:X-openvrml:node:CADLayer", scope);
-        }
-        // CADPart node
-        if (level >= 2)
-        {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "addChildren"),
-                node_interface(node_interface::eventin_id,
-                               field_value::mfnode_id,
-                               "removeChildren"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::mfnode_id,
-                               "children"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "center"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfstring_id,
-                               "name"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "rotation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "scale"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfrotation_id,
-                               "scaleOrientation"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfvec3f_id,
-                               "translation"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxCenter"),
-                node_interface(node_interface::field_id,
-                               field_value::sfvec3f_id,
-                               "bboxSize")
-            };
-
-            static const node_interface_set interface_set(interfaces, interfaces + 12);
-            add_scope_entry(b, "CADPart", interface_set,
-                "urn:X-openvrml:node:CADPart", scope);
-        }
-        // IndexedQuadSet node
-        if (level >= 1)
-        {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::eventin_id,
-                               field_value::mfint32_id,
-                               "set_index"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "coord"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "normal"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "texCoord"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "ccw"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "colorPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "normalPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "solid"),
-                node_interface(node_interface::field_id,
-                               field_value::mfint32_id,
-                               "index")
-            };
-
-            static const node_interface_set interface_set(interfaces, interfaces + 11);
-            add_scope_entry(b, "IndexedQuadSet", interface_set,
-                "urn:X-openvrml:node:IndexedQuadSet", scope);
-        }
-        // QuadSet node
         if (level >= 1) {
-            static const node_interface interfaces[] = {
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "color"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "coord"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "metadata"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "normal"),
-                node_interface(node_interface::exposedfield_id,
-                               field_value::sfnode_id,
-                               "texCoord"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "ccw"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "colorPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "normalPerVertex"),
-                node_interface(node_interface::field_id,
-                               field_value::sfbool_id,
-                               "solid")
-            };
+            // IndexedQuadSet node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::indexed_quad_set_interfaces_.begin(),
+                        x3d_cad_geometry_component::indexed_quad_set_interfaces_.end());
+                add_scope_entry(b,
+                                "IndexedQuadSet",
+                                interface_set,
+                                "urn:X-openvrml:node:IndexedQuadSet",
+                                scope);
+            }
 
-            static const node_interface_set interface_set(interfaces,
-                                                          interfaces + 9);
-            add_scope_entry(b,
-                            "QuadSet",
-                            interface_set,
-                            "urn:X-openvrml:node:IndexedQuadSet",
-                            scope);
+            // QuadSet node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::quad_set_interfaces_.begin(),
+                        x3d_cad_geometry_component::quad_set_interfaces_.end());
+                add_scope_entry(b,
+                                "QuadSet",
+                                interface_set,
+                                "urn:X-openvrml:node:IndexedQuadSet",
+                                scope);
+            }
+        }
+
+        if (level >= 2) {
+            // CADAssembly node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::cad_assembly_interfaces_.begin(),
+                        x3d_cad_geometry_component::cad_assembly_interfaces_.end());
+                add_scope_entry(b,
+                                "CADAssembly",
+                                interface_set,
+                                "urn:X-openvrml:node:CADAssembly",
+                                scope);
+            }
+            // CADFace node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::cad_face_interfaces_.begin(),
+                        x3d_cad_geometry_component::cad_face_interfaces_.end());
+                add_scope_entry(b,
+                                "CADFace",
+                                interface_set,
+                                "urn:X-openvrml:node:CADFace",
+                                scope);
+            }
+            // CADLayer node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::cad_layer_interfaces_.begin(),
+                        x3d_cad_geometry_component::cad_layer_interfaces_.end());
+                add_scope_entry(b,
+                                "CADLayer",
+                                interface_set,
+                                "urn:X-openvrml:node:CADLayer",
+                                scope);
+            }
+            // CADPart node
+            {
+                static const node_interface_set
+                    interface_set(
+                        x3d_cad_geometry_component::cad_part_interfaces_.begin(),
+                        x3d_cad_geometry_component::cad_part_interfaces_.end());
+                add_scope_entry(b, "CADPart", interface_set,
+                                "urn:X-openvrml:node:CADPart", scope);
+            }
+        }
+    }
+
+    void
+    x3d_cad_geometry_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "IndexedQuadSet",
+            node_interface_set(
+                x3d_cad_geometry_component::indexed_quad_set_interfaces_.begin(),
+                x3d_cad_geometry_component::indexed_quad_set_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "QuadSet",
+            node_interface_set(
+                x3d_cad_geometry_component::quad_set_interfaces_.begin(),
+                x3d_cad_geometry_component::quad_set_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "CADAssembly",
+                node_interface_set(
+                    x3d_cad_geometry_component::cad_assembly_interfaces_.begin(),
+                    x3d_cad_geometry_component::cad_assembly_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "CADFace",
+                node_interface_set(
+                    x3d_cad_geometry_component::cad_face_interfaces_.begin(),
+                    x3d_cad_geometry_component::cad_face_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "CADLayer",
+                node_interface_set(
+                    x3d_cad_geometry_component::cad_layer_interfaces_.begin(),
+                    x3d_cad_geometry_component::cad_layer_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "CADPart",
+                node_interface_set(
+                    x3d_cad_geometry_component::cad_part_interfaces_.begin(),
+                    x3d_cad_geometry_component::cad_part_interfaces_.end()));
         }
     }
 
 
     class OPENVRML_LOCAL x3d_geospatial_component : public component {
+        static const boost::array<openvrml::node_interface, 4>
+            geo_coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 19>
+            geo_elevation_grid_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            geo_location_interfaces_;
+        static const boost::array<openvrml::node_interface, 16>
+            geo_lod_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            geo_metadata_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            geo_origin_interfaces_;
+        static const boost::array<openvrml::node_interface, 8>
+            geo_position_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 11>
+            geo_touch_sensor_interfaces_;
+        static const boost::array<openvrml::node_interface, 16>
+            geo_viewpoint_interfaces_;
+
     public:
         static const char * const id;
 
@@ -13603,6 +17102,320 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_geospatial_component::geo_coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3d_id,
+                       "point"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem")
+    };
+
+    const boost::array<openvrml::node_interface, 19>
+    x3d_geospatial_component::geo_elevation_grid_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfdouble_id,
+                       "set_height"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "color"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "normal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "yScale"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "colorPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfdouble_id,
+                       "creaseAngle"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3d_id,
+                       "geoGridOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "height"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "normalPerVertex"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "xDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sfdouble_id,
+                       "xSpacing"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "zDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::sfdouble_id,
+                       "zSpacing")
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_geospatial_component::geo_location_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3d_id,
+                       "geoCoords"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 16>
+    x3d_geospatial_component::geo_lod_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::eventout_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3d_id,
+                       "center"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "child1Url"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "child2Url"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "child3Url"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "child4Url"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "range"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "rootUrl"),
+        node_interface(node_interface::field_id,
+                       field_value::mfnode_id,
+                       "rootNode"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_geospatial_component::geo_metadata_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "data"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "summary"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "url")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_geospatial_component::geo_origin_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3d_id,
+                       "geoCoords"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "geoSystem"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "rotateYUp")
+    };
+
+    const boost::array<openvrml::node_interface, 8>
+    x3d_geospatial_component::geo_position_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3d_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3d_id,
+                       "geovalue_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "value_changed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem")
+    };
+
+    const boost::array<openvrml::node_interface, 11>
+    x3d_geospatial_component::geo_touch_sensor_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "enabled"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitNormal_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "hitPoint_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec2f_id,
+                       "hitTexCoord_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3d_id,
+                       "hitGeoCoord_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isOver"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "touchTime"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem")
+    };
+
+    const boost::array<openvrml::node_interface, 16>
+    x3d_geospatial_component::geo_viewpoint_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_bind"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfrotation_id,
+                       "set_orientation"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfvec3d_id,
+                       "set_position"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "description"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "fieldOfView"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "headlight"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "jump"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "navType"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "bindTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isBound"),
+        node_interface(node_interface::field_id,
+                       field_value::sfnode_id,
+                       "geoOrigin"),
+        node_interface(node_interface::field_id,
+                       field_value::mfstring_id,
+                       "geoSystem"),
+        node_interface(node_interface::field_id,
+                       field_value::sfrotation_id,
+                       "orientation"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3d_id,
+                       "position"),
+        node_interface(node_interface::field_id,
+                       field_value::sffloat_id,
+                       "speedFactor")
     };
 
     const char * const x3d_geospatial_component::id = "Geospatial";
@@ -13625,23 +17438,10 @@ namespace {
             // GeoCoordinate node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3d_id,
-                                   "point"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_coordinate_interfaces_.begin(),
+                        x3d_geospatial_component::geo_coordinate_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoCoordinate",
                                 interface_set,
@@ -13653,68 +17453,10 @@ namespace {
             // GeoElevationGrid node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfdouble_id,
-                                   "set_height"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "color"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "normal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "yScale"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "colorPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfdouble_id,
-                                   "creaseAngle"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3d_id,
-                                   "geoGridOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "height"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "normalPerVertex"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "xDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfdouble_id,
-                                   "xSpacing"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "zDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfdouble_id,
-                                   "zSpacing")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 19);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_elevation_grid_interfaces_.begin(),
+                        x3d_geospatial_component::geo_elevation_grid_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoElevationGrid",
                                 interface_set,
@@ -13726,38 +17468,10 @@ namespace {
             // GeoLocation node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3d_id,
-                                   "geoCoords"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_location_interfaces_.begin(),
+                        x3d_geospatial_component::geo_location_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoLocation",
                                 interface_set,
@@ -13769,59 +17483,10 @@ namespace {
             // GeoLOD node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3d_id,
-                                   "center"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "child1Url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "child2Url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "child3Url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "child4Url"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "range"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "rootUrl"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfnode_id,
-                                   "rootNode"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 16);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_lod_interfaces_.begin(),
+                        x3d_geospatial_component::geo_lod_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoLOD",
                                 interface_set,
@@ -13833,23 +17498,10 @@ namespace {
             // GeoMetadata node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "data"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "summary"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "url")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_metadata_interfaces_.begin(),
+                        x3d_geospatial_component::geo_metadata_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoMetadata",
                                 interface_set,
@@ -13861,23 +17513,10 @@ namespace {
             // GeoOrigin node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3d_id,
-                                   "geoCoords"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "rotateYUp")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_origin_interfaces_.begin(),
+                        x3d_geospatial_component::geo_origin_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoOrigin",
                                 interface_set,
@@ -13889,35 +17528,10 @@ namespace {
             // GeoPositionInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3d_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3d_id,
-                                   "geovalue_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "value_changed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 8);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_position_interpolator_interfaces_.begin(),
+                        x3d_geospatial_component::geo_position_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoPositionInterpolator",
                                 interface_set,
@@ -13929,44 +17543,10 @@ namespace {
             // GeoTouchSensor node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "enabled"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "hitNormal_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "hitPoint_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec2f_id,
-                                   "hitTexCoord_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3d_id,
-                                   "hitGeoCoord_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isOver"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "touchTime"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 11);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_touch_sensor_interfaces_.begin(),
+                        x3d_geospatial_component::geo_touch_sensor_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoTouchSensor",
                                 interface_set,
@@ -13978,59 +17558,10 @@ namespace {
             // GeoViewpoint node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_bind"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfrotation_id,
-                                   "set_orientation"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfvec3d_id,
-                                   "set_position"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "description"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "fieldOfView"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "headlight"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "jump"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "navType"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "bindTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isBound"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfnode_id,
-                                   "geoOrigin"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfstring_id,
-                                   "geoSystem"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfrotation_id,
-                                   "orientation"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3d_id,
-                                   "position"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sffloat_id,
-                                   "speedFactor")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 16);
+                static const node_interface_set
+                    interface_set(
+                        x3d_geospatial_component::geo_viewpoint_interfaces_.begin(),
+                        x3d_geospatial_component::geo_viewpoint_interfaces_.end());
                 add_scope_entry(b,
                                 "GeoViewpoint",
                                 interface_set,
@@ -14040,17 +17571,318 @@ namespace {
         }
     }
 
+    void
+    x3d_geospatial_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "GeoCoordinate",
+            node_interface_set(
+                x3d_geospatial_component::geo_coordinate_interfaces_.begin(),
+                x3d_geospatial_component::geo_coordinate_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoElevationGrid",
+            node_interface_set(
+                x3d_geospatial_component::geo_elevation_grid_interfaces_.begin(),
+                x3d_geospatial_component::geo_elevation_grid_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoLocation",
+            node_interface_set(
+                x3d_geospatial_component::geo_location_interfaces_.begin(),
+                x3d_geospatial_component::geo_location_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoLOD",
+            node_interface_set(
+                x3d_geospatial_component::geo_lod_interfaces_.begin(),
+                x3d_geospatial_component::geo_lod_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoMetadata",
+            node_interface_set(
+                x3d_geospatial_component::geo_metadata_interfaces_.begin(),
+                x3d_geospatial_component::geo_metadata_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoOrigin",
+            node_interface_set(
+                x3d_geospatial_component::geo_origin_interfaces_.begin(),
+                x3d_geospatial_component::geo_origin_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoPositionInterpolator",
+            node_interface_set(
+                x3d_geospatial_component::geo_position_interpolator_interfaces_.begin(),
+                x3d_geospatial_component::geo_position_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoTouchSensor",
+            node_interface_set(
+                x3d_geospatial_component::geo_touch_sensor_interfaces_.begin(),
+                x3d_geospatial_component::geo_touch_sensor_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "GeoViewpoint",
+            node_interface_set(
+                x3d_geospatial_component::geo_viewpoint_interfaces_.begin(),
+                x3d_geospatial_component::geo_viewpoint_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_hanim_component : public component {
+        static const boost::array<openvrml::node_interface, 5>
+            hanim_displacer_interfaces_;
+        static const boost::array<openvrml::node_interface, 19>
+            hanim_humanoid_interfaces_;
+        static const boost::array<openvrml::node_interface, 19>
+            hanim_joint_interfaces_;
+        static const boost::array<openvrml::node_interface, 12>
+            hanim_segment_interfaces_;
+        static const boost::array<openvrml::node_interface, 12>
+            hanim_site_interfaces_;
+
     public:
         static const char * const id;
 
         virtual size_t support_level() const OPENVRML_NOTHROW;
 
+    private:
         virtual void do_add_to_scope(const openvrml::browser & b,
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_hanim_component::hanim_displacer_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "coordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3f_id,
+                       "displacements"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "weight")
+    };
+
+    const boost::array<openvrml::node_interface, 19>
+    x3d_hanim_component::hanim_humanoid_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "info"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "joints"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "segments"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "sites"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "skeleton"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "skin"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "skinCoord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "skinNormal"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "version"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "viewpoints"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 19>
+    x3d_hanim_component::hanim_joint_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "displacers"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "limitOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "llimit"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "skinCoordIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "skinCoordWeight"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "stiffness"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "ulimit"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 12>
+    x3d_hanim_component::hanim_segment_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "centerOfMass"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "coord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "displacers"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "mass"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "momentsOfInertia"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 12>
+    x3d_hanim_component::hanim_site_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "name"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
 
     const char * const x3d_hanim_component::id = "H-Anim";
@@ -14072,26 +17904,10 @@ namespace {
             // HAnimDisplacer node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "coordIndex"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3f_id,
-                                   "displacements"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "weight")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_hanim_component::hanim_displacer_interfaces_.begin(),
+                        x3d_hanim_component::hanim_displacer_interfaces_.end());
                 add_scope_entry(b,
                                 "HAnimDisplacer",
                                 interface_set,
@@ -14103,68 +17919,10 @@ namespace {
             // HAnimHumanoid node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfstring_id,
-                                   "info"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "joints"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "scaleOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "segments"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "sites"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "skeleton"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "skin"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "skinCoord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "skinNormal"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "translation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "version"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "viewpoints"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 19);
+                static const node_interface_set
+                    interface_set(
+                        x3d_hanim_component::hanim_humanoid_interfaces_.begin(),
+                        x3d_hanim_component::hanim_humanoid_interfaces_.end());
                 add_scope_entry(b,
                                 "HAnimHumanoid",
                                 interface_set,
@@ -14176,120 +17934,25 @@ namespace {
             // HAnimJoint node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "displacers"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "limitOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "llimit"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "scaleOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "skinCoordIndex"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "skinCoordWeight"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "stiffness"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "translation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "ulimit"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 19);
-            add_scope_entry(b,
-                            "HAnimJoint",
-                            interface_set,
-                            "urn:X-openvrml:node:HAnimJoint",
-                            scope);
+                static const node_interface_set
+                    interface_set(
+                        x3d_hanim_component::hanim_joint_interfaces_.begin(),
+                        x3d_hanim_component::hanim_joint_interfaces_.end());
+                add_scope_entry(b,
+                                "HAnimJoint",
+                                interface_set,
+                                "urn:X-openvrml:node:HAnimJoint",
+                                scope);
             }
 
             //
             // HAnimSegment node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "centerOfMass"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "coord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "displacers"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "mass"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "momentsOfInertia"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 12);
+                static const node_interface_set
+                    interface_set(
+                        x3d_hanim_component::hanim_segment_interfaces_.begin(),
+                        x3d_hanim_component::hanim_segment_interfaces_.end());
                 add_scope_entry(b,
                                 "HAnimSegment",
                                 interface_set,
@@ -14301,47 +17964,10 @@ namespace {
             // HAnimSite node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "name"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "scaleOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "translation"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 12);
+                static const node_interface_set
+                    interface_set(
+                        x3d_hanim_component::hanim_site_interfaces_.begin(),
+                        x3d_hanim_component::hanim_site_interfaces_.end());
                 add_scope_entry(b,
                                 "HAnimSite",
                                 interface_set,
@@ -14351,8 +17977,78 @@ namespace {
         }
     }
 
+    void
+    x3d_hanim_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "HAnimDisplacer",
+            node_interface_set(
+                x3d_hanim_component::hanim_displacer_interfaces_.begin(),
+                x3d_hanim_component::hanim_displacer_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "HAnimHumanoid",
+            node_interface_set(
+                x3d_hanim_component::hanim_humanoid_interfaces_.begin(),
+                x3d_hanim_component::hanim_humanoid_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "HAnimJoint",
+            node_interface_set(
+                x3d_hanim_component::hanim_joint_interfaces_.begin(),
+                x3d_hanim_component::hanim_joint_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "HAnimSegment",
+            node_interface_set(
+                x3d_hanim_component::hanim_segment_interfaces_.begin(),
+                x3d_hanim_component::hanim_segment_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "HAnimSite",
+            node_interface_set(
+                x3d_hanim_component::hanim_site_interfaces_.begin(),
+                x3d_hanim_component::hanim_site_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_nurbs_component : public component {
+        static const boost::array<openvrml::node_interface, 2>
+            coordinate_double_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            nurbs_curve_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            nurbs_orientation_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 15>
+            nurbs_patch_surface_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            nurbs_position_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 12>
+            nurbs_surface_interpolator_interfaces_;
+        static const boost::array<openvrml::node_interface, 9>
+            nurbs_texture_coordinate_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            nurbs_set_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            nurbs_curve2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            contour_polyline2d_3_0_interfaces_;
+        static const boost::array<openvrml::node_interface, 2>
+            contour_polyline2d_3_1_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            nurbs_swept_surface_interfaces_;
+        static const boost::array<openvrml::node_interface, 5>
+            nurbs_swung_surface_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            contour2d_interfaces_;
+        static const boost::array<openvrml::node_interface, 18>
+            nurbs_trimmed_surface_interfaces_;
+
     public:
         static const char * const id;
 
@@ -14363,6 +18059,398 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_nurbs_component::coordinate_double_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec3d_id,
+                       "point")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_nurbs_component::nurbs_curve_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "tessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "closed"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "knot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "order")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_nurbs_component::nurbs_orientation_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoints"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "knot"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "order"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfrotation_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 15>
+    x3d_nurbs_component::nurbs_patch_surface_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "uTessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "vTessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "uClosed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "uKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uOrder"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "vClosed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "vKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vOrder")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_nurbs_component::nurbs_position_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoints"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "knot"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "order"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 12>
+    x3d_nurbs_component::nurbs_surface_interpolator_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfvec2f_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoints"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "position_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfvec3f_id,
+                       "normal_changed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "uKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uOrder"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "vKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vOrder")
+    };
+
+    const boost::array<openvrml::node_interface, 9>
+    x3d_nurbs_component::nurbs_texture_coordinate_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2f_id,
+                       "controlPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "weight"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "uKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uOrder"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "vKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vOrder")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_nurbs_component::nurbs_set_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addGeometry"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeGeometry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "geometry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "tessellationScale"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_nurbs_component::nurbs_curve2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfvec2d_id,
+                       "controlPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "tessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "closed"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "knot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "order")
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_nurbs_component::contour_polyline2d_3_0_interfaces_ = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "point"),
+    };
+
+    const boost::array<openvrml::node_interface, 2>
+    x3d_nurbs_component::contour_polyline2d_3_1_interfaces_ = {
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::sfnode_id,
+                                   "metadata"),
+                    node_interface(node_interface::exposedfield_id,
+                                   field_value::mfvec2f_id,
+                                   "controlPoint")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_nurbs_component::nurbs_swept_surface_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "crossSectionCurve"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "trajectoryCurve"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_nurbs_component::nurbs_swung_surface_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "profileCurve"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "trajectoryCurve"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "ccw"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_nurbs_component::contour2d_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children")
+    };
+
+    const boost::array<openvrml::node_interface, 18>
+    x3d_nurbs_component::nurbs_trimmed_surface_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addTrimmingContour"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeTrimmingContour"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "controlPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "texCoord"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "trimmingContour"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "uTessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "vTessellation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfdouble_id,
+                       "weight"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "uClosed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "uKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "uOrder"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "vClosed"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vDimension"),
+        node_interface(node_interface::field_id,
+                       field_value::mfdouble_id,
+                       "vKnot"),
+        node_interface(node_interface::field_id,
+                       field_value::sfint32_id,
+                       "vOrder")
     };
 
     const char * const x3d_nurbs_component::id = "NURBS";
@@ -14384,17 +18472,10 @@ namespace {
             // CoordinateDouble node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec3d_id,
-                                   "point")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::coordinate_double_interfaces_.begin(),
+                        x3d_nurbs_component::coordinate_double_interfaces_.end());
                 add_scope_entry(b,
                                 "CoordinateDouble",
                                 interface_set,
@@ -14406,32 +18487,10 @@ namespace {
             // NurbsCurve node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "tessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "closed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "knot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "order")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_curve_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_curve_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsCurve",
                                 interface_set,
@@ -14443,32 +18502,10 @@ namespace {
             // NurbsOrientationInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoints"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "knot"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "order"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfrotation_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_orientation_interpolator_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_orientation_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsOrientationInterpolator",
                                 interface_set,
@@ -14480,56 +18517,10 @@ namespace {
             // NurbsPatchSurface node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "uTessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "vTessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "uClosed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "uKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uOrder"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "vClosed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "vKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vOrder")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 15);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_patch_surface_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_patch_surface_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsPatchSurface",
                                 interface_set,
@@ -14541,32 +18532,10 @@ namespace {
             // NurbsPositionInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoints"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "knot"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "order"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_position_interpolator_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_position_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsPositionInterpolator",
                                 interface_set,
@@ -14578,47 +18547,10 @@ namespace {
             // NurbsSurfaceInterpolator node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfvec2f_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoints"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "position_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfvec3f_id,
-                                   "normal_changed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "uKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uOrder"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "vKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vOrder")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 12);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_surface_interpolator_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_surface_interpolator_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsSurfaceInterpolator",
                                 interface_set,
@@ -14630,38 +18562,10 @@ namespace {
             // NurbsTextureCoordinate node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "controlPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "weight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "uKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uOrder"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "vKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vOrder")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 9);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_texture_coordinate_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_texture_coordinate_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsTextureCoordinate",
                                 interface_set,
@@ -14675,32 +18579,10 @@ namespace {
             // NurbsSet node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addGeometry"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeGeometry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "geometry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "tessellationScale"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_set_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_set_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsSet",
                                 interface_set,
@@ -14714,32 +18596,10 @@ namespace {
             // NurbsCurve2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2d_id,
-                                   "controlPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "tessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "closed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "knot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "order")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_curve2d_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_curve2d_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsCurve2D",
                                 interface_set,
@@ -14751,21 +18611,16 @@ namespace {
             // ContourPolyline2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "point"),
-                    //this is wrong in the spec, so we must support both aliases
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfvec2f_id,
-                                   "controlPoint")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 2);
+                // XXX
+                // XXX For now, just support the X3D 3.1 version.  When all
+                // XXX this gets replaced with something sane, it should take
+                // XXX the X3D version into account when determining the
+                // XXX component makeup.
+                // XXX
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::contour_polyline2d_3_1_interfaces_.begin(),
+                        x3d_nurbs_component::contour_polyline2d_3_1_interfaces_.end());
                 add_scope_entry(b,
                                 "ContourPolyline2D",
                                 interface_set,
@@ -14777,26 +18632,10 @@ namespace {
             // NurbsSweptSurface node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "crossSectionCurve"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "trajectoryCurve"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_swept_surface_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_swept_surface_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsSweptSurface",
                                 interface_set,
@@ -14808,26 +18647,10 @@ namespace {
             // NurbsSwungSurface node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "profileCurve"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "trajectoryCurve"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "ccw"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_swung_surface_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_swung_surface_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsSwungSurface",
                                 interface_set,
@@ -14841,23 +18664,10 @@ namespace {
             // Contour2D node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::contour2d_interfaces_.begin(),
+                        x3d_nurbs_component::contour2d_interfaces_.end());
                 add_scope_entry(b,
                                 "Contour2D",
                                 interface_set,
@@ -14869,65 +18679,10 @@ namespace {
             // NurbsTrimmedSurface node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addTrimmingContour"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeTrimmingContour"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "controlPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "texCoord"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "trimmingContour"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "uTessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "vTessellation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfdouble_id,
-                                   "weight"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "solid"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "uClosed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "uKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "uOrder"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "vClosed"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vDimension"),
-                    node_interface(node_interface::field_id,
-                                   field_value::mfdouble_id,
-                                   "vKnot"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfint32_id,
-                                   "vOrder")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 18);
+                static const node_interface_set
+                    interface_set(
+                        x3d_nurbs_component::nurbs_trimmed_surface_interfaces_.begin(),
+                        x3d_nurbs_component::nurbs_trimmed_surface_interfaces_.end());
                 add_scope_entry(b,
                                 "NurbsTrimmedSurface",
                                 interface_set,
@@ -14937,8 +18692,125 @@ namespace {
         }
     }
 
+    void
+    x3d_nurbs_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 const size_t level) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "CoordinateDouble",
+            node_interface_set(
+                x3d_nurbs_component::coordinate_double_interfaces_.begin(),
+                x3d_nurbs_component::coordinate_double_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsCurve",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_curve_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_curve_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsOrientationInterpolator",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_orientation_interpolator_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_orientation_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsPatchSurface",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_patch_surface_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_patch_surface_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsPositionInterpolator",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_position_interpolator_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_position_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsSurfaceInterpolator",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_surface_interpolator_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_surface_interpolator_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "NurbsTextureCoordinate",
+            node_interface_set(
+                x3d_nurbs_component::nurbs_texture_coordinate_interfaces_.begin(),
+                x3d_nurbs_component::nurbs_texture_coordinate_interfaces_.end()));
+
+        if (level >= 2) {
+            component::add_type_desc(
+                type_descs,
+                "NurbsSet",
+                node_interface_set(
+                    x3d_nurbs_component::nurbs_set_interfaces_.begin(),
+                    x3d_nurbs_component::nurbs_set_interfaces_.end()));
+        }
+
+        if (level >= 3) {
+            component::add_type_desc(
+                type_descs,
+                "NurbsCurve2D",
+                node_interface_set(
+                    x3d_nurbs_component::nurbs_curve2d_interfaces_.begin(),
+                    x3d_nurbs_component::nurbs_curve2d_interfaces_.end()));
+            // XXX
+            // XXX For now, just support the X3D 3.1 version.  When all
+            // XXX this gets replaced with something sane, it should take
+            // XXX the X3D version into account when determining the
+            // XXX component makeup.
+            // XXX
+            component::add_type_desc(
+                type_descs,
+                "ContourPolyline2D",
+                node_interface_set(
+                    x3d_nurbs_component::contour_polyline2d_3_1_interfaces_.begin(),
+                    x3d_nurbs_component::contour_polyline2d_3_1_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "NurbsSweptSurface",
+                node_interface_set(
+                    x3d_nurbs_component::nurbs_swept_surface_interfaces_.begin(),
+                    x3d_nurbs_component::nurbs_swept_surface_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "NurbsSwungSurface",
+                node_interface_set(
+                    x3d_nurbs_component::nurbs_swung_surface_interfaces_.begin(),
+                    x3d_nurbs_component::nurbs_swung_surface_interfaces_.end()));
+        }
+
+        if (level >= 4) {
+            component::add_type_desc(
+                type_descs,
+                "Contour2D",
+                node_interface_set(
+                    x3d_nurbs_component::contour2d_interfaces_.begin(),
+                    x3d_nurbs_component::contour2d_interfaces_.end()));
+            component::add_type_desc(
+                type_descs,
+                "NurbsTrimmedSurface",
+                node_interface_set(
+                    x3d_nurbs_component::nurbs_trimmed_surface_interfaces_.begin(),
+                    x3d_nurbs_component::nurbs_trimmed_surface_interfaces_.end()));
+        }
+    }
+
 
     class OPENVRML_LOCAL x3d_dis_component : public component {
+        static const boost::array<openvrml::node_interface, 88>
+            espdu_transform_interfaces_;
+        static const boost::array<openvrml::node_interface, 28>
+            receiver_pdu_interfaces_;
+        static const boost::array<openvrml::node_interface, 28>
+            signal_pdu_interfaces_;
+        static const boost::array<openvrml::node_interface, 44>
+            transmitter_pdu_interfaces_;
+
     public:
         static const char * const id;
 
@@ -14949,6 +18821,591 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 88>
+    x3d_dis_component::espdu_transform_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "addChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::mfnode_id,
+                       "removeChildren"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue0"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue1"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue2"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue3"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue4"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue5"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue6"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_articulationParameterValue7"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "address"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "applicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "articulationParameterCount"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "articulationParameterDesignatorArray"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "articulationParameterChangeIndicatorArray"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "articulationParameterIdPartAttachedToArray"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "articulationParameterTypeArray"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "articulationParameterArray"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "center"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfnode_id,
+                       "children"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "collisionType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "deadReckoning"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "detonationLocation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "detonationRelativeLocation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "detonationResult"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityCategory"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityCountry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityDomain"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityExtra"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityKind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entitySpecific"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entitySubCategory"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "eventApplicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "eventEntityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "eventNumber"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "eventSiteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "fired1"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "fired2"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "fireMissionIndex"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "firingRange"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "firingRate"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "forceID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "fuse"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "linearVelocity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "linearAcceleration"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "marking"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "multicastRelayHost"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "multicastRelayPort"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "munitionApplicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "munitionEndPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "munitionEntityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "munitionQuantity"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "munitionSiteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "munitionStartPoint"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "networkMode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "port"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "readInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "rotation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "scale"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfrotation_id,
+                       "scaleOrientation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "siteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "translation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "warhead"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sftime_id,
+                       "writeInterval"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue0_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue1_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue2_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue3_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue4_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue5_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue6_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sffloat_id,
+                       "articulationParameterValue7_changed"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "collideTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "detonateTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "firedTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isCollided"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isDetonated"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkReader"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkWriter"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isRtpHeaderHeard"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isStandAlone"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "timestamp"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "rtpHeaderExpected")
+    };
+
+    const boost::array<openvrml::node_interface, 28>
+    x3d_dis_component::receiver_pdu_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "address"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "applicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "multicastRelayHost"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "multicastRelayPort"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "networkMode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "port"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "readInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "receivedPower"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "receiverState"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "rtpHeaderExpected"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "siteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "transmitterApplicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "transmitterEntityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "transmitterRadioID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "transmitterSiteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "whichGeometry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "writeInterval"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkReader"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkWriter"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isRtpHeaderHeard"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isStandAlone"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "timestamp"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 28>
+    x3d_dis_component::signal_pdu_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "address"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "applicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "data"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "dataLength"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "encodingScheme"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "multicastRelayHost"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "multicastRelayPort"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "networkMode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "port"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "readInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "rtpHeaderExpected"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "sampleRate"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "samples"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "siteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "tdlType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "whichGeometry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "writeInterval"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkReader"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkWriter"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isRtpHeaderHeard"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isStandAlone"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "timestamp"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
+    };
+
+    const boost::array<openvrml::node_interface, 44>
+    x3d_dis_component::transmitter_pdu_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "address"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "antennaLocation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "antennaPatternLength"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "antennaPatternType"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "applicationID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "cryptoKeyID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "cryptoSystem"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "entityID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "frequency"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "inputSource"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "lengthOfModulationParameters"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "modulationTypeDetail"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "modulationTypeMajor"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "modulationTypeSpreadSpectrum"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "modulationTypeSystem"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "multicastRelayHost"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "multicastRelayPort"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfstring_id,
+                       "networkMode"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "port"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "power"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeCategory"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeCountry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeDomain"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeKind"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeNomenclature"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioEntityTypeNomenclatureVersion"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "radioID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "readInterval"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfvec3f_id,
+                       "relativeAntennaLocation"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "rtpHeaderExpected"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "siteID"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "transmitFrequencyBandwidth"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "transmitState"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfint32_id,
+                       "whichGeometry"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "writeInterval"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isActive"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkReader"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isNetworkWriter"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isRtpHeaderHeard"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "isStandAlone"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "timestamp"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxCenter"),
+        node_interface(node_interface::field_id,
+                       field_value::sfvec3f_id,
+                       "bboxSize")
     };
 
     const char * const x3d_dis_component::id = "DIS";
@@ -14970,275 +19427,10 @@ namespace {
             // EspduTransform node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "addChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::mfnode_id,
-                                   "removeChildren"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue0"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue1"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue2"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue3"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue4"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue5"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue6"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_articulationParameterValue7"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "address"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "applicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "articulationParameterCount"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "articulationParameterDesignatorArray"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "articulationParameterChangeIndicatorArray"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "articulationParameterIdPartAttachedToArray"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "articulationParameterTypeArray"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "articulationParameterArray"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "center"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfnode_id,
-                                   "children"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "collisionType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "deadReckoning"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "detonationLocation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "detonationRelativeLocation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "detonationResult"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityCategory"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityCountry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityDomain"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityExtra"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityKind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entitySpecific"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entitySubCategory"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "eventApplicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "eventEntityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "eventNumber"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "eventSiteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "fired1"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "fired2"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "fireMissionIndex"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "firingRange"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "firingRate"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "forceID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "fuse"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "linearVelocity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "linearAcceleration"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "marking"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "multicastRelayHost"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "multicastRelayPort"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "munitionApplicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "munitionEndPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "munitionEntityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "munitionQuantity"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "munitionSiteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "munitionStartPoint"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "networkMode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "port"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "readInterval"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "rotation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "scale"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfrotation_id,
-                                   "scaleOrientation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "siteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "translation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "warhead"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sftime_id,
-                                   "writeInterval"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue0_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue1_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue2_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue3_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue4_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue5_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue6_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sffloat_id,
-                                   "articulationParameterValue7_changed"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "collideTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "detonateTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "firedTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isCollided"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isDetonated"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkReader"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkWriter"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isRtpHeaderHeard"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isStandAlone"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "timestamp"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfbool_id,
-                                   "rtpHeaderExpected")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 88);
+                static const node_interface_set
+                    interface_set(
+                        x3d_dis_component::espdu_transform_interfaces_.begin(),
+                        x3d_dis_component::espdu_transform_interfaces_.end());
                 add_scope_entry(b,
                                 "EspduTransform",
                                 interface_set,
@@ -15250,95 +19442,10 @@ namespace {
             // ReceiverPdu node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "address"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "applicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "multicastRelayHost"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "multicastRelayPort"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "networkMode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "port"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "readInterval"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "receivedPower"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "receiverState"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "rtpHeaderExpected"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "siteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "transmitterApplicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "transmitterEntityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "transmitterRadioID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "transmitterSiteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "whichGeometry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "writeInterval"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkReader"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkWriter"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isRtpHeaderHeard"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isStandAlone"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "timestamp"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 28);
+                static const node_interface_set
+                    interface_set(
+                        x3d_dis_component::receiver_pdu_interfaces_.begin(),
+                        x3d_dis_component::receiver_pdu_interfaces_.end());
                 add_scope_entry(b,
                                 "ReceiverPdu",
                                 interface_set,
@@ -15350,95 +19457,10 @@ namespace {
             // SignalPdu node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "address"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "applicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "data"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "dataLength"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "encodingScheme"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "multicastRelayHost"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "multicastRelayPort"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "networkMode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "port"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "readInterval"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "rtpHeaderExpected"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "sampleRate"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "samples"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "siteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "tdlType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "whichGeometry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "writeInterval"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkReader"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkWriter"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isRtpHeaderHeard"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isStandAlone"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "timestamp"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 28);
+                static const node_interface_set
+                    interface_set(
+                        x3d_dis_component::signal_pdu_interfaces_.begin(),
+                        x3d_dis_component::signal_pdu_interfaces_.end());
                 add_scope_entry(b,
                                 "SignalPdu",
                                 interface_set,
@@ -15450,143 +19472,10 @@ namespace {
             // TransmitterPdu node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "address"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "antennaLocation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "antennaPatternLength"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "antennaPatternType"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "applicationID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "cryptoKeyID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "cryptoSystem"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "entityID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "frequency"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "inputSource"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "lengthOfModulationParameters"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "modulationTypeDetail"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "modulationTypeMajor"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "modulationTypeSpreadSpectrum"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "modulationTypeSystem"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "multicastRelayHost"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "multicastRelayPort"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfstring_id,
-                                   "networkMode"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "port"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "power"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeCategory"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeCountry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeDomain"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeKind"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeNomenclature"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioEntityTypeNomenclatureVersion"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "radioID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "readInterval"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfvec3f_id,
-                                   "relativeAntennaLocation"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "rtpHeaderExpected"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "siteID"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "transmitFrequencyBandwidth"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "transmitState"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfint32_id,
-                                   "whichGeometry"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sffloat_id,
-                                   "writeInterval"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isActive"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkReader"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isNetworkWriter"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isRtpHeaderHeard"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "isStandAlone"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "timestamp"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxCenter"),
-                    node_interface(node_interface::field_id,
-                                   field_value::sfvec3f_id,
-                                   "bboxSize")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 44);
+                static const node_interface_set
+                    interface_set(
+                        x3d_dis_component::transmitter_pdu_interfaces_.begin(),
+                        x3d_dis_component::transmitter_pdu_interfaces_.end());
                 add_scope_entry(b,
                                 "TransmitterPdu",
                                 interface_set,
@@ -15596,8 +19485,56 @@ namespace {
         }
     }
 
+    void
+    x3d_dis_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "EspduTransform",
+            node_interface_set(
+                x3d_dis_component::espdu_transform_interfaces_.begin(),
+                x3d_dis_component::espdu_transform_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "ReceiverPdu",
+            node_interface_set(
+                x3d_dis_component::receiver_pdu_interfaces_.begin(),
+                x3d_dis_component::receiver_pdu_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "SignalPdu",
+            node_interface_set(
+                x3d_dis_component::signal_pdu_interfaces_.begin(),
+                x3d_dis_component::signal_pdu_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TransmitterPdu",
+            node_interface_set(
+                x3d_dis_component::transmitter_pdu_interfaces_.begin(),
+                x3d_dis_component::transmitter_pdu_interfaces_.end()));
+    }
+
 
     class OPENVRML_LOCAL x3d_event_utilities_component : public component {
+        static const boost::array<openvrml::node_interface, 5>
+            boolean_filter_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            boolean_sequencer_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            boolean_toggle_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            boolean_trigger_interfaces_;
+        static const boost::array<openvrml::node_interface, 7>
+            integer_sequencer_interfaces_;
+        static const boost::array<openvrml::node_interface, 4>
+            integer_trigger_interfaces_;
+        static const boost::array<openvrml::node_interface, 3>
+            time_trigger_interfaces_;
+
     public:
         static const char * const id;
 
@@ -15608,6 +19545,135 @@ namespace {
                                      openvrml::scope & scope,
                                      size_t level) const
             OPENVRML_THROW1(std::bad_alloc);
+
+        virtual void
+            do_add_to_node_type_desc_map(
+                openvrml::node_type_decls & type_descs, size_t level) const
+            OPENVRML_THROW1(std::bad_alloc);
+    };
+
+    const boost::array<openvrml::node_interface, 5>
+    x3d_event_utilities_component::boolean_filter_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_boolean"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "inputFalse"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "inputNegate"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "inputTrue")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_event_utilities_component::boolean_sequencer_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "next"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "previous"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfbool_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_event_utilities_component::boolean_toggle_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_boolean"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfbool_id,
+                       "toggle")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_event_utilities_component::boolean_trigger_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sftime_id,
+                       "set_triggerTime"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfbool_id,
+                       "triggerTrue")
+    };
+
+    const boost::array<openvrml::node_interface, 7>
+    x3d_event_utilities_component::integer_sequencer_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "next"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "previous"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sffloat_id,
+                       "set_fraction"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "key"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "keyValue"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfint32_id,
+                       "value_changed")
+    };
+
+    const boost::array<openvrml::node_interface, 4>
+    x3d_event_utilities_component::integer_trigger_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_boolean"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfint32_id,
+                       "integerKey"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sfint32_id,
+                       "triggerValue")
+    };
+
+    const boost::array<openvrml::node_interface, 3>
+    x3d_event_utilities_component::time_trigger_interfaces_ = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::eventin_id,
+                       field_value::sfbool_id,
+                       "set_boolean"),
+        node_interface(node_interface::eventout_id,
+                       field_value::sftime_id,
+                       "triggerTime")
     };
 
     const char * const x3d_event_utilities_component::id = "EventUtilities";
@@ -15632,26 +19698,10 @@ namespace {
             // BooleanFilter node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_boolean"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "inputFalse"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "inputNegate"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "inputTrue")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 5);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::boolean_filter_interfaces_.begin(),
+                        x3d_event_utilities_component::boolean_filter_interfaces_.end());
                 add_scope_entry(b,
                                 "BooleanFilter",
                                 interface_set,
@@ -15663,32 +19713,10 @@ namespace {
             // BooleanSequencer node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "next"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "previous"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfbool_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::boolean_sequencer_interfaces_.begin(),
+                        x3d_event_utilities_component::boolean_sequencer_interfaces_.end());
                 add_scope_entry(b,
                                 "BooleanSequencer",
                                 interface_set,
@@ -15700,20 +19728,10 @@ namespace {
             // BooleanToggle node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_boolean"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfbool_id,
-                                   "toggle")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::boolean_toggle_interfaces_.begin(),
+                        x3d_event_utilities_component::boolean_toggle_interfaces_.end());
                 add_scope_entry(b,
                                 "BooleanToggle",
                                 interface_set,
@@ -15725,20 +19743,10 @@ namespace {
             // BooleanTrigger node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sftime_id,
-                                   "set_triggerTime"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfbool_id,
-                                   "triggerTrue")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::boolean_trigger_interfaces_.begin(),
+                        x3d_event_utilities_component::boolean_trigger_interfaces_.end());
                 add_scope_entry(b,
                                 "BooleanTrigger",
                                 interface_set,
@@ -15750,32 +19758,10 @@ namespace {
             // IntegerSequencer node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "next"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "previous"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sffloat_id,
-                                   "set_fraction"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mffloat_id,
-                                   "key"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "keyValue"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfint32_id,
-                                   "value_changed")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 7);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::integer_sequencer_interfaces_.begin(),
+                        x3d_event_utilities_component::integer_sequencer_interfaces_.end());
                 add_scope_entry(b,
                                 "IntegerSequencer",
                                 interface_set,
@@ -15787,23 +19773,10 @@ namespace {
             // IntegerTrigger node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_boolean"),
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::mfint32_id,
-                                   "integerKey"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sfint32_id,
-                                   "triggerValue")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 4);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::integer_trigger_interfaces_.begin(),
+                        x3d_event_utilities_component::integer_trigger_interfaces_.end());
                 add_scope_entry(b,
                                 "IntegerTrigger",
                                 interface_set,
@@ -15815,20 +19788,10 @@ namespace {
             // TimeTrigger node
             //
             {
-                static const node_interface interfaces[] = {
-                    node_interface(node_interface::exposedfield_id,
-                                   field_value::sfnode_id,
-                                   "metadata"),
-                    node_interface(node_interface::eventin_id,
-                                   field_value::sfbool_id,
-                                   "set_boolean"),
-                    node_interface(node_interface::eventout_id,
-                                   field_value::sftime_id,
-                                   "triggerTime")
-                };
-
-                static const node_interface_set interface_set(interfaces,
-                                                              interfaces + 3);
+                static const node_interface_set
+                    interface_set(
+                        x3d_event_utilities_component::time_trigger_interfaces_.begin(),
+                        x3d_event_utilities_component::time_trigger_interfaces_.end());
                 add_scope_entry(b,
                                 "TimeTrigger",
                                 interface_set,
@@ -15836,6 +19799,57 @@ namespace {
                                 scope);
             }
         }
+    }
+
+    void
+    x3d_event_utilities_component::
+    do_add_to_node_type_desc_map(openvrml::node_type_decls & type_descs,
+                                 size_t /* level */) const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_interface_set;
+        component::add_type_desc(
+            type_descs,
+            "BooleanFilter",
+            node_interface_set(
+                x3d_event_utilities_component::boolean_filter_interfaces_.begin(),
+                x3d_event_utilities_component::boolean_filter_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "BooleanSequencer",
+            node_interface_set(
+                x3d_event_utilities_component::boolean_sequencer_interfaces_.begin(),
+                x3d_event_utilities_component::boolean_sequencer_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "BooleanToggle",
+            node_interface_set(
+                x3d_event_utilities_component::boolean_toggle_interfaces_.begin(),
+                x3d_event_utilities_component::boolean_toggle_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "BooleanTrigger",
+            node_interface_set(
+                x3d_event_utilities_component::boolean_trigger_interfaces_.begin(),
+                x3d_event_utilities_component::boolean_trigger_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "IntegerSequencer",
+            node_interface_set(
+                x3d_event_utilities_component::integer_sequencer_interfaces_.begin(),
+                x3d_event_utilities_component::integer_sequencer_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "IntegerTrigger",
+            node_interface_set(
+                x3d_event_utilities_component::integer_trigger_interfaces_.begin(),
+                x3d_event_utilities_component::integer_trigger_interfaces_.end()));
+        component::add_type_desc(
+            type_descs,
+            "TimeTrigger",
+            node_interface_set(
+                x3d_event_utilities_component::time_trigger_interfaces_.begin(),
+                x3d_event_utilities_component::time_trigger_interfaces_.end()));
     }
 
 
@@ -15982,6 +19996,28 @@ namespace {
             }
         }
         return root_scope;
+    }
+
+    std::auto_ptr<openvrml::node_type_decls>
+    profile::create_node_type_desc_map() const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::node_type_decls;
+
+        std::auto_ptr<node_type_decls> node_type_descs(new node_type_decls);
+        for (map_t::const_iterator entry = this->components_.begin();
+             entry != this->components_.end();
+             ++entry) {
+            try {
+                const component & c = ::component_registry_.at(entry->first);
+                c.add_to_node_type_desc_map(*node_type_descs, entry->second);
+            } catch (boost::bad_ptr_container_operation & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            } catch (std::invalid_argument & ex) {
+                OPENVRML_PRINT_EXCEPTION_(ex);
+            }
+        }
+        return node_type_descs;
     }
 
 

@@ -913,6 +913,22 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const image & lhs, const image & rhs)
         OPENVRML_NOTHROW;
 
+    inline image::image() OPENVRML_NOTHROW:
+        x_(0),
+        y_(0),
+        comp_(0)
+    {}
+
+    inline image::image(const std::size_t x,
+                        const std::size_t y,
+                        const std::size_t comp)
+        OPENVRML_THROW1(std::bad_alloc):
+        x_(x),
+        y_(y),
+        comp_(comp),
+        array_(x * y * comp)
+    {}
+
     template <typename InputIterator>
     image::image(const size_t x,
                  const size_t y,
@@ -931,6 +947,15 @@ namespace openvrml {
             difference_type;
         assert(distance(array_begin, array_end)
                <= difference_type(x * y * comp));
+    }
+
+    inline void image::swap(image & img) OPENVRML_NOTHROW
+    {
+        using std::swap;
+        swap(this->x_, img.x_);
+        swap(this->y_, img.y_);
+        swap(this->comp_, img.comp_);
+        swap(this->array_, img.array_);
     }
 
     inline size_t image::x() const OPENVRML_NOTHROW

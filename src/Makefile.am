@@ -23,8 +23,10 @@ endif
 
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
-        libopenvrml/openvrml/read_write_mutex.h \
         libopenvrml/openvrml/basetypes.h \
+        libopenvrml/openvrml/vrml97_grammar.h \
+        libopenvrml/openvrml/x3d_vrml_grammar.h \
+        libopenvrml/openvrml/read_write_mutex.h \
         libopenvrml/openvrml/field_value.h \
         libopenvrml/openvrml/event.h \
         libopenvrml/openvrml/exposedfield.h \
@@ -60,31 +62,9 @@ openvrml_gl_includedir = $(pkgincludedir)/openvrml/gl
 openvrml_gl_include_HEADERS =  libopenvrml-gl/openvrml/gl/viewer.h
 endif
 
-VRML97PARSER_BUILT_SOURCEFILES = \
-        $(srcdir)/libopenvrml/openvrml/Vrml97Parser.cpp \
-        $(srcdir)/libopenvrml/openvrml/Vrml97Parser.hpp \
-        $(srcdir)/libopenvrml/openvrml/Vrml97ParserTokenTypes.hpp
-VRML97PARSER_BUILT_TEXTFILES = \
-        libopenvrml/openvrml/Vrml97ParserTokenTypes.txt
-VRML97PARSER_BUILT_FILES = \
-        $(VRML97PARSER_BUILT_SOURCEFILES) \
-        $(VRML97PARSER_BUILT_TEXTFILES)
-
-X3DVRMLPARSER_BUILT_SOURCEFILES = \
-        $(srcdir)/libopenvrml/openvrml/X3DVrmlParser.cpp \
-        $(srcdir)/libopenvrml/openvrml/X3DVrmlParser.hpp \
-        $(srcdir)/libopenvrml/openvrml/X3DVrmlParserTokenTypes.hpp
-X3DVRMLPARSER_BUILT_TEXTFILES = \
-        $(srcdir)/libopenvrml/openvrml/X3DVrmlParserTokenTypes.txt
-X3DVRMLPARSER_BUILT_FILES = \
-        $(X3DVRMLPARSER_BUILT_SOURCEFILES) \
-        $(X3DVRMLPARSER_BUILT_TEXTFILES)
-
 noinst_HEADERS = \
         libopenvrml/private.h \
         libopenvrml/openvrml/ScriptJDK.h \
-        $(VRML97PARSER_BUILT_SOURCEFILES) \
-        $(X3DVRMLPARSER_BUILT_SOURCEFILES) \
         openvrml-xembed/bounded_buffer.h \
         openvrml-xembed/command_istream.h \
         openvrml-xembed/plugin_streambuf.h \
@@ -114,9 +94,11 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DBOOST_SPIRIT_THREADSAFE \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
+        -DBOOST_SPIRIT_THREADSAFE \
+        -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
+        -DPHOENIX_LIMIT=6
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
         $(FONTCONFIG_CFLAGS) \
@@ -124,6 +106,7 @@ libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(JS_CFLAGS)
 
 libopenvrml_libopenvrml_la_SOURCES = \
+        libopenvrml/openvrml/vrml97_grammar.cpp \
         libopenvrml/openvrml/read_write_mutex.cpp \
         libopenvrml/openvrml/basetypes.cpp \
         libopenvrml/openvrml/field_value.cpp \
@@ -168,7 +151,6 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
         $(PTHREAD_LIBS)
 
 libopenvrml_libopenvrml_la_LIBADD = \
-        $(top_builddir)/lib/antlr/libantlr.la \
         -lboost_thread$(BOOST_LIB_SUFFIX)
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
@@ -241,41 +223,11 @@ openvrml_player_openvrml_player_SOURCES = \
 
 EXTRA_DIST = \
         libopenvrml/openvrml-config.h.in \
-        libopenvrml/openvrml/Vrml97TokenTypes.txt \
-        libopenvrml/openvrml/Vrml97Parser.g \
-        $(VRML97PARSER_BUILT_TEXTFILES) \
-        libopenvrml/openvrml/X3DVrmlTokenTypes.txt \
-        libopenvrml/openvrml/X3DVrmlParser.g \
-        $(X3DVRMLPARSER_BUILT_TEXTFILES) \
         libopenvrml-gl/openvrml-gl-config.h.in \
         $(openvrml_player_glade_DATA)
-
-BUILT_SOURCES = \
-        $(VRML97PARSER_BUILT_SOURCEFILES) \
-        $(X3DVRMLPARSER_BUILT_SOURCEFILES)
 
 #
 # Automake 1.10 seems to need this for distcheck to work.
 #
 CLEANFILES = \
         openvrml-xembed/.libs/openvrml-xembed
-
-#
-# Note that maintainer-clean cleans BUILT_SOURCES, too.
-#
-MAINTAINERCLEANFILES = \
-        $(VRML97PARSER_BUILT_TEXTFILES) \
-        $(srcdir)/libopenvrml/openvrml/expandedX3DVrml97Parser.g \
-        $(X3DVRMLPARSER_BUILT_TEXTFILES)
-
-#
-# antlr doesn't update timestamps correctly; so files are touched after being
-# generated.
-#
-$(VRML97PARSER_BUILT_FILES): $(srcdir)/libopenvrml/openvrml/Vrml97Parser.g $(srcdir)/libopenvrml/openvrml/Vrml97TokenTypes.txt
-	$(ANTLR) -o $(srcdir)/libopenvrml/openvrml $(srcdir)/libopenvrml/openvrml/Vrml97Parser.g \
-&& touch $(VRML97PARSER_BUILT_FILES)
-
-$(X3DVRMLPARSER_BUILT_FILES): $(srcdir)/libopenvrml/openvrml/Vrml97Parser.g $(srcdir)/libopenvrml/openvrml/X3DVrmlParser.g $(srcdir)/libopenvrml/openvrml/X3DVrmlTokenTypes.txt
-	$(ANTLR) -o $(srcdir)/libopenvrml/openvrml -glib $(srcdir)/libopenvrml/openvrml/Vrml97Parser.g $(srcdir)/libopenvrml/openvrml/X3DVrmlParser.g \
-&& touch $(X3DVRMLPARSER_BUILT_FILES)

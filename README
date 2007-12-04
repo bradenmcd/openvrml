@@ -30,9 +30,6 @@ the terms of the LGPL.  The full text of the LGPL can be found in the
 file "COPYING.LESSER".  Code used in these libararies under other terms
 (and available for reuse under the same terms) is as follows:
 
- * OpenVRML uses the ANTLR parser generator and C++ support library
-   which are in the public domain.
-
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
 
      (c) Copyright 1993, 1994, Silicon Graphics, Inc.

@@ -1,6 +1,6 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// Copyright 2004, 2005  Braden McDaniel
+// Copyright 2007  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,20 +18,54 @@
 //
 
 # include <iostream>
-# include "test_resource_fetcher.h"
+# include <fstream>
+# include <openvrml/vrml97_grammar.h>
 
 using namespace std;
+using namespace boost::spirit;
 using namespace openvrml;
 
-int main()
+int main(int argc, char * argv[])
 {
-    try {
-        test_resource_fetcher fetcher;
-        browser b(fetcher, std::cout, std::cerr);
-        b.create_vrml_from_stream(cin, vrml_media_type);
-    } catch (invalid_vrml & ex) {
-        cerr << ex.url << ':' << ex.line << ':' << ex.column << ": error: "
-             << ex.what() << endl;
+    ifstream infile;
+    if (argc > 1) {
+        infile.open(argv[1]);
+        if (!infile.is_open()) {
+            cerr << argv[0] << ": could not open file \"" << argv[1] << endl;
+            return EXIT_FAILURE;
+        }
+    }
+
+    istream & in(infile.is_open() ? infile : cin);
+    const string filename(infile.is_open() ? argv[1] : "<stdin>");
+
+    typedef skip_parser_iteration_policy<vrml97_skip_grammar> iterator_policy_t;
+    typedef scanner_policies<iterator_policy_t> scanner_policies_t;
+    typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
+    typedef scanner<multi_pass_iterator_t, scanner_policies_t> scanner_t;
+    typedef istream::char_type char_t;
+
+    vrml97_skip_grammar skip_g;
+    iterator_policy_t iterator_policy(skip_g);
+    scanner_policies_t scanner_policies(iterator_policy);
+    multi_pass_iterator_t
+        in_begin(make_multi_pass(istreambuf_iterator<char_t>(in))),
+        in_end(make_multi_pass(istreambuf_iterator<char_t>()));
+
+    typedef position_iterator<multi_pass_iterator_t> iterator_t;
+
+    iterator_t first(in_begin, in_end, filename), last;
+
+    vrml_parse_error_handler handler(std::cerr);
+    vrml97_grammar<vrml_parse_error_handler> g(null_vrml_parse_actions(),
+                                               handler);
+
+    BOOST_SPIRIT_DEBUG_NODE(skip_g);
+    BOOST_SPIRIT_DEBUG_NODE(g);
+
+    guard<vrml_parse_error> guard;
+
+    if (!parse(first, last, guard(g)[handler], skip_g).full) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

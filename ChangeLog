@@ -1,3 +1,291 @@
+2007-12-04 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced ANTLR-based parsers with Spirit-based ones.
+
+	* README: Removed references to ANTLR.
+	* THANKS: Removed references to ANTLR.
+	* configure.ac: No longer need to check for ANTLR.
+	* doc/index.doc: Added a starting point for documentation for the
+	new parsers.
+	* examples/Makefile.am: Added pretty-print example.
+	* examples/pretty_print.cpp: Added.
+	* lib/Makefile.am: Removed ANTLR C++ support library.
+	* lib/antlr: Removed ANTLR C++ support library.
+	* m4/antlr.m4: Removed.
+	* src/Makefile.am
+	(openvrml_include_HEADERS): Added headers for vrml97_grammar and
+	x3d_vrml_grammar.
+	(noinst_HEADERS): Removed references to ANTLR-generated files.
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Define
+	BOOST_SPIRIT_CLOSURE_LIMIT and PHOENIX_LIMIT to 6.
+	(libopenvrml_libopenvrml_la_SOURCES): Added vrml97_grammar.cpp.
+	(libopenvrml_libopenvrml_la_LIBADD): Removed reference to
+	libantlr.la.
+	(EXTRA_DIST): Removed references to ANTLR grammars and
+	ANTLR-generated files.
+	(MAINTAINERCLEANFILES): Don't need this anymore.
+	* src/libopenvrml/openvrml/Vrml97Parser.g: Removed.
+	* src/libopenvrml/openvrml/Vrml97TokenTypes.txt: Removed.
+	* src/libopenvrml/openvrml/X3DVrmlParser.g: Removed.
+	* src/libopenvrml/openvrml/X3DVrmlTokenTypes.txt: Removed.
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(vrml97_space_p): Moved to vrml97_grammar.h.
+	(intensity_p): Moved to vrml97_grammar.h.
+	(openvrml::operator>>(std::istream &, vec2f &)): Use
+	openvrml::float_p instead of boost::spirit::real_p.
+	(openvrml::operator>>(std::istream &, vec3f &)): Use
+	openvrml::float_p instead of boost::spirit::real_p.
+	(openvrml::operator>>(std::istream &, rotation &)): Use
+	openvrml::float_p instead of boost::spirit::real_p.
+	(openvrml::operator>>(std::istream &, mat4f &)): Use
+	openvrml::float_p instead of boost::spirit::real_p.
+	(openvrml::operator>>(std::istream &, quatf &)): Use
+	openvrml::float_p instead of boost::spirit::real_p.
+	(openvrml::image::image()): Moved to basetypes.h as inline.
+	(openvrml::image::image(size_t, size_t, size_t): Moved to
+	basetypes.h as inline.
+	(openvrml::image::swap(image &)): Moved to basetypes.h as inline.
+	(int32_p): Moved to vrml97_grammar.h.
+	* src/libopenvrml/openvrml/basetypes.h
+	(openvrml::image::image()): Moved from basetypes.cpp to be inline.
+	(openvrml::image::image(size_t, size_t, size_t): Moved from
+	basetypes.cpp to be inline.
+	(openvrml::image::swap(image &)): Moved from basetypes.cpp to be
+	inline.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::externproto_node_metatype): Moved to be a
+	member of openvrml::browser.
+	(openvrml::browser::externproto_node_type): Moved to be a member
+	of openvrml::browser.
+	(openvrml::externproto_node): Moved to be a member of openvrml.
+	(openvrml::profile(const std::string &)): Added function; get the
+	node types corresponding to a profile.
+	(openvrml::add_component(node_type_decls &, const std::string &,
+	size_t)): Add the node types corresponding to a component level to
+	node_type_decls map.
+	(openvrml::browser::vrml97_parse_actions): Semantic actions for
+	constructing a scene from VRML97.
+	(openvrml::browser::x3d_vrml_parse_actions): Semantic actions for
+	constructing a scene from X3D-VRML.
+	(openvrml::browser::parse_vrml(std::istream &, const std::string&,
+	const std::string &, const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &,
+	std::map<std::string, std::string> &)): Moved to be a member of
+	openvrml::browser; use the Spirit parsers instead of the ANTLR
+	ones.
+	(openvrml::browser::root_scene_loader::operator()() const):
+	browser::set_world can no longer throw antlr::ANTLRException.
+	(component::add_type_desc(openvrml::node_type_decls &, const
+	std::string &, const openvrml::node_interface_set &)): Added
+	function; insert an entry into a node_type_decls map.
+	(component::add_to_node_type_desc_map(openvrml::node_type_decls &,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(vrml97_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(vrml97_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_core_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_core_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_time_component::do_add_to_scope(const openvrml::browser &,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_time_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_networking_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_networking_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_grouping_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_grouping_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_rendering_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_rendering_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_shape_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_shape_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_geometry3d_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_geometry3d_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_geometry2d_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_geometry2d_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_text_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_text_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_sound_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_sound_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_lighting_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_lighting_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_texturing_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_texturing_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_interpolation_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_interpolation_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_pointing_device_sensor_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_pointing_device_sensor_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_key_device_sensor_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_key_device_sensor_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_environmental_sensor_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_environmental_sensor_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_navigation_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_navigation_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_environmental_effects_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_environmental_effects_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_cad_geometry_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_cad_geometry_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_geospatial_component::do_add_to_scope(const
+	openvrml::browser&, openvrml::scope &, size_t)): Construct
+	node_interface_sets from the member node_interface arrays.
+	(x3d_geospatial_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_hanim_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_hanim_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_nurbs_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_nurbs_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(x3d_dis_component::do_add_to_scope(const openvrml::browser&,
+	openvrml::scope &, size_t)): Construct node_interface_sets from
+	the member node_interface arrays.
+	(x3d_dis_component::do_add_to_node_type_desc_map(openvrml::node_type_decls&,
+	size_t)): Add the node types corresponding to a level of the
+	component to a node_type_decls map.
+	(profile::create_node_type_desc_map()): Create a node_type_decls
+	map corresponding to the profile.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::profile(const std::string &)): Added function.
+	(openvrml::add_component(node_type_decls &, const std::string &,
+	size_t)): Added function.
+	(openvrml::browser): Made parse_vrml function a private member.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_interface::node_interface(type_id,
+	field_value::type_id, const std::string &)): Moved definition to
+	node.h as inline.
+	(openvrml::find_interface(const node_interface_set &, const
+	std::string &)): Moved definition to node.h as inline.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node_interface): Added default constructor.
+	* src/libopenvrml/openvrml/vrml97_grammar.cpp: Doc-comments for
+	vrml97_grammar and associated classes.
+	* src/libopenvrml/openvrml/vrml97_grammar.h: VRML97 Spirit grammar
+	and associated classes.
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h: X3D-VRML Spirit
+	grammar and associated classes.
+	* tests/Makefile.am
+	(AM_CPPFLAGS): Added flags for compiling Spirit grammars.
+	(TESTS_ENVIRONMENT): Set BOOST_TEST_REPORT_LEVEL=no.
+	(check_PROGRAMS): Added browser-parse-vrml.
+	(parse_vrml97_LDADD): No longer needs libtest-openvrml.
+	(parse_x3dvrml_LDADD): No longer needs libtest-openvrml.
+	* tests/browser_parse_vrml.cpp: Added file.  Load test data into
+	an openvrml::browser instance to test the semantic actions
+	particular to openvrml::browser.
+	* tests/parse_vrml97.cpp: Modified to parse a file using the
+	default (null) semantic actions.
+	* tests/parse_x3dvrml.cpp: Modified to parse a file using the
+	default (null) semantic actions.
+	* tests/testsuite.at: Added various tests.
+	* tests/vrml97/bad/exposedfield-in-script.wrl: Ensure an
+	exposedField in a Script fails.
+	* tests/vrml97/bad/is-outside-proto.wrl: Ensure an occurrence of
+	IS outside a PROTO definition fails.
+	* tests/vrml97/bad/is-value-type-mismatch.wrl: Ensure an IS
+	statement whose types don't match fails.
+	* tests/vrml97/bad/route-from-field.wrl: Ensure an attempt to use
+	ROUTE with a field identifier fails.
+	* tests/vrml97/bad/route-sfint32-to-sfbool.wrl: Ensure a ROUTE
+	whose types don't match fails.
+	* tests/vrml97/bad/route-to-field.wrl: Ensure an attempt to ROUTE
+	to a field fails.
+	* tests/vrml97/bad/unrecognized-field.wrl: Ensure an unrecognized
+	field identifier fails.
+	* tests/vrml97/bad/value-for-eventin-in-proto.wrl: Ensure an
+	attempt to provide a value for an eventIn in a PROTO fails.
+	* tests/vrml97/good/minimal.wrl: A minimal VRML97 world.
+	* tests/x3dv/good/deprecated-eventin.x3dv: Ensure a deprecation
+	warning is emitted for "eventIn".
+	* tests/x3dv/good/deprecated-eventout.x3dv: Ensure a deprecation
+	warning is emitted for "eventOut".
+	* tests/x3dv/good/deprecated-exposedfield.x3dv: Ensure a
+	deprecation warning is emitted for "exposedField".
+	* tests/x3dv/good/deprecated-field.x3dv: Ensure a deprecation
+	warning is emitted for "field".
+
 2007-12-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
