@@ -1,5 +1,10 @@
 2007-12-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.h: Removed unnecessary inclusion
+	of <boost/thread/recursive_mutex.hpp>.
+
+2007-12-05 Braden McDaniel  <braden@endoframe.com>
+
 	Leverage the base type parsers in the stream insertion operator
 	implementations.
 
