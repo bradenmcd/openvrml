@@ -25,7 +25,7 @@
 # include <ostream>
 # include <private.h>
 # include "basetypes.h"
-# include "vrml97_grammar.h"
+# include "x3d_vrml_grammar.h"
 
 /**
  * @file openvrml/basetypes.h
@@ -352,9 +352,7 @@ std::istream & openvrml::operator>>(std::istream & in, color & c)
     scanner_t scan(first, last, policies);
 
     rule_t rule
-        =   intensity_p[var(c.rgb[0]) = arg1]
-            >> intensity_p[var(c.rgb[1]) = arg1]
-            >> intensity_p[var(c.rgb[2]) = arg1]
+        =   color_p[var(c) = arg1]
         ;
 
     match<> m = rule.parse(scan);
@@ -636,10 +634,8 @@ std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
     scanner_t scan(first, last, policies);
 
     rule_t rule
-        =   intensity_p[var(c.rgba[0]) = arg1]
-            >> intensity_p[var(c.rgba[1]) = arg1]
-            >> intensity_p[var(c.rgba[2]) = arg1]
-            >> intensity_p[var(c.rgba[3]) = arg1];
+        =   color_rgba_p[var(c) = arg1]
+        ;
 
     match<> m = rule.parse(scan);
 
@@ -1054,7 +1050,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   float_p[var(v.vec[0]) = arg1] >> float_p[var(v.vec[1]) = arg1]
+        =   vec2f_p[var(v) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -1470,7 +1466,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec2d & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[var(v.vec[0]) = arg1] >> real_p[var(v.vec[1]) = arg1]
+        =   vec2d_p[var(v) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -2013,9 +2009,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   float_p[var(v.vec[0]) = arg1]
-            >> float_p[var(v.vec[1]) = arg1]
-            >> float_p[var(v.vec[2]) = arg1]
+        =   vec3f_p[var(v) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -2559,9 +2553,7 @@ std::istream & openvrml::operator>>(std::istream & in, vec3d & v)
     scanner_t scan(first, last, policies);
 
     rule_t r
-        =   real_p[var(v.vec[0]) = arg1]
-            >> real_p[var(v.vec[1]) = arg1]
-            >> real_p[var(v.vec[2]) = arg1]
+        =   vec3d_p[var(v) = arg1]
         ;
 
     match<> m = r.parse(scan);
@@ -3061,6 +3053,22 @@ namespace {
     };
 }
 
+namespace {
+
+    struct null_error_handler {
+        template <typename ScannerT, typename ErrorT>
+        boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
+        {
+            using boost::spirit::error_status;
+            return error_status<>(error_status<>::fail);
+        }
+    } error_handler;
+
+    const boost::spirit::functor_parser<
+        openvrml::rotation_parser<null_error_handler> >
+        rotation_p(error_handler);
+}
+
 /**
  * @relatesalso openvrml::rotation
  *
@@ -3084,6 +3092,7 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::eps_p;
+    using boost::spirit::guard;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -3095,13 +3104,11 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
 
     scanner_t scan(first, last, policies);
 
+    guard<vrml_parse_error> g;
+
     float x, y, z, angle;
     rule_t rule
-        =   float_p[var(x) = arg1]
-            >> float_p[var(y) = arg1]
-            >> float_p[var(z) = arg1]
-            >> eps_p(is_normalized(x, y, z))
-            >> float_p[var(angle) = arg1]
+        =   g(rotation_p[var(rot) = arg1] >> eps_p)[error_handler]
         ;
 
     match<> m = rule.parse(scan);
@@ -3110,11 +3117,6 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
         in.setstate(std::ios_base::failbit);
         return in;
     }
-
-    rot.rot[0] = x;
-    rot.rot[1] = y;
-    rot.rot[2] = z;
-    rot.rot[3] = angle;
 
     return in;
 }
@@ -4969,47 +4971,6 @@ bool openvrml::operator!=(const image & lhs, const image & rhs)
     return !(lhs == rhs);
 }
 
-namespace {
-
-    struct OPENVRML_LOCAL set_pixel {
-        set_pixel(openvrml::image & img, size_t & index):
-            img_(&img),
-            index_(&index)
-        {}
-
-        template <typename NumT>
-        void operator()(NumT val) const
-        {
-            this->img_->pixel(*this->index_, val);
-        }
-
-    private:
-        openvrml::image * const img_;
-        size_t * const index_;
-    };
-
-    struct OPENVRML_LOCAL resize_image {
-        resize_image(openvrml::image & img,
-                     size_t & x, size_t & y, size_t & comp):
-            img_(&img),
-            x_(&x),
-            y_(&y),
-            comp_(&comp)
-        {}
-
-        template <typename IteratorT>
-        void operator()(IteratorT, IteratorT) const
-        {
-            openvrml::image temp(*this->x_, *this->y_, *this->comp_);
-            this->img_->swap(temp);
-        }
-
-    private:
-        openvrml::image * const img_;
-        size_t * const x_, * const y_, * const comp_;
-    };
-}
-
 /**
  * @relatesalso openvrml::image
  *
@@ -5026,11 +4987,10 @@ namespace {
 std::istream & openvrml::operator>>(std::istream & in, image & img)
 {
     using std::istreambuf_iterator;
-    using boost::ref;
     using boost::spirit::make_multi_pass;
     using boost::spirit::match;
     using boost::spirit::eps_p;
-    using boost::spirit::repeat_p;
+    using boost::spirit::guard;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -5042,17 +5002,10 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
 
     scanner_t scan(first, last, policies);
 
-    size_t x = 0, y = 0, comp = 0, pixels = 0, index = 0;
+    guard<vrml_parse_error> g;
+
     rule_t r
-        =   int32_p[var(pixels) = arg1, var(x) = arg1]
-            >> int32_p[var(pixels) *= arg1, var(y) = arg1]
-            >> int32_p[var(comp) = arg1]
-            // Just resize the image once we have the x, y, and comp values to
-            // avoid unnecessary reallocation.
-            >> eps_p[resize_image(img, x, y, comp)]
-            >> repeat_p(ref(pixels))[
-                int32_p[set_pixel(img, index)][var(index) += 1]
-            ]
+        =   g(image_p[var(img) = arg1] >> eps_p)[error_handler]
         ;
 
     match<> m = r.parse(scan);
@@ -5070,7 +5023,7 @@ std::istream & openvrml::operator>>(std::istream & in, image & img)
  * @brief Stream output.
  *
  * @param[in,out] out   output stream.
- * @param[in] img   image.
+ * @param[in] img       an @c image.
  */
 std::ostream & openvrml::operator<<(std::ostream & out, const image & img)
 {

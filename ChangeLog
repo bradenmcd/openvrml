@@ -1,3 +1,19 @@
+2007-12-05 Braden McDaniel  <braden@endoframe.com>
+
+	Leverage the base type parsers in the stream insertion operator
+	implementations.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::operator>>(std::istream &, color &)): Use color_p.
+	(openvrml::operator>>(std::istream &, color_rgba &)): Use
+	color_rgba_p.
+	(openvrml::operator>>(std::istream &, vec2f &)): Use vec2f_p.
+	(openvrml::operator>>(std::istream &, vec2d &)): Use vec2d_p.
+	(openvrml::operator>>(std::istream &, vec3f &)): Use vec3f_p.
+	(openvrml::operator>>(std::istream &, vec3d &)): Use vec3d_p.
+	(openvrml::operator>>(std::istream &, rotation &)): Use
+	rotation_parser.
+
 2007-12-04 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced ANTLR-based parsers with Spirit-based ones.
