@@ -13,6 +13,7 @@
 	(openvrml::operator>>(std::istream &, vec3d &)): Use vec3d_p.
 	(openvrml::operator>>(std::istream &, rotation &)): Use
 	rotation_parser.
+	(openvrml::operator>>(std::istream &, image &)): Use image_p.
 
 2007-12-04 Braden McDaniel  <braden@endoframe.com>
 
