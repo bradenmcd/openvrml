@@ -27,7 +27,6 @@
 #   include <set>
 #   include <utility>
 #   include <boost/bind.hpp>
-#   include <boost/thread/recursive_mutex.hpp>
 #   include <openvrml/field_value.h>
 #   include <openvrml/viewer.h>
 #   include <openvrml/rendering_context.h>
