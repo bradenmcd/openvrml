@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2004, 2005  Braden McDaniel
+// Copyright 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -395,14 +395,6 @@ const std::string openvrml::node_event_listener::eventin_id() const
 /**
  * @internal
  *
- * @var boost::recursive_mutex openvrml::event_emitter::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @internal
- *
  * @var const openvrml::field_value & openvrml::event_emitter::value_
  *
  * @brief A reference to the @c field_value for the @c event_emitter.
@@ -428,9 +420,25 @@ const std::string openvrml::node_event_listener::eventin_id() const
 /**
  * @internal
  *
+ * @var openvrml::read_write_mutex openvrml::event_emitter::listeners_mutex_
+ *
+ * @brief Mutex guarding @c #listeners_.
+ */
+
+/**
+ * @internal
+ *
  * @var double openvrml::event_emitter::last_time_
  *
  * @brief The timestamp of the last event emitted.
+ */
+
+/**
+ * @internal
+ *
+ * @var openvrml::read_write_mutex openvrml::event_emitter::last_time_mutex_
+ *
+ * @brief Mutex guarding @c #last_time_.
  */
 
 /**
@@ -449,17 +457,6 @@ openvrml::event_emitter::event_emitter(const field_value & value)
  */
 openvrml::event_emitter::~event_emitter() OPENVRML_NOTHROW
 {}
-
-/**
- * @brief Get the mutex for the @c event_emitter.
- *
- * @return a reference to the <code>event_emitter</code>'s mutex.
- */
-boost::recursive_mutex & openvrml::event_emitter::mutex() const
-    OPENVRML_NOTHROW
-{
-    return this->mutex_;
-}
 
 /**
  * @brief A reference to the @c field_value for the @c event_emitter.
@@ -496,48 +493,43 @@ const std::string openvrml::event_emitter::eventout_id() const
  */
 
 /**
- * @brief Registered listeners.
- *
- * @return the set of registered @c event_listener%s.
- */
-openvrml::event_emitter::listener_set & openvrml::event_emitter::listeners()
-    OPENVRML_NOTHROW
-{
-    return this->listeners_;
-}
-
-/**
- * @overload
- *
- * @return the set of registered @c event_listener%s.
- */
-const openvrml::event_emitter::listener_set &
-openvrml::event_emitter::listeners() const OPENVRML_NOTHROW
-{
-    return this->listeners_;
-}
-
-/**
  * @brief The timestamp of the last event emitted.
  *
  * @return the timestamp of the last event emitted.
  */
 double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
 {
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
+    read_write_mutex::scoped_read_lock lock(this->last_time_mutex_);
     return this->last_time_;
 }
 
 /**
- * @brief Set the timestamp of the last event emitted.
+ * @fn bool openvrml::event_emitter::add<FieldValue>(field_value_listener<FieldValue> & listener)
  *
- * @param[in] t the timestamp of the last event emitted.
+ * @brief Add an event listener.
+ *
+ * @param[in] listener  an event listener.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::event_emitter::last_time(const double t) OPENVRML_NOTHROW
-{
-    boost::recursive_mutex::scoped_lock lock(this->mutex_);
-    this->last_time_ = t;
-}
+
+/**
+ * @fn bool openvrml::event_emitter::remove<FieldValue>(field_value_listener<FieldValue> & listener)
+ *
+ * @brief Remove an event listener.
+ *
+ * @param[in] listener  an event listener.
+ */
+
+/**
+ * @fn void openvrml::event_emitter::emit_event<FieldValue>(double timestamp)
+ *
+ * @brief Emit an event.
+ *
+ * @param[in] timestamp the current time.
+ *
+ * @exception std::bad_alloc    if memory allocation fails.
+ */
 
 /**
  * @fn void openvrml::event_emitter::emit_event(double timestamp)

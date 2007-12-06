@@ -1,5 +1,35 @@
 2007-12-06 Braden McDaniel  <braden@endoframe.com>
 
+	Replaced holdout occurrence of boost::recursive_mutex in
+	openvrml::event_emitter with openvrml::read_write_mutex.
+
+	* src/libopenvrml/openvrml/event.h
+	(openvrml::event_emitter): Removed boost::recursive_mutex mutex_;
+	added read_write_mutexes listeners_mutex_ and last_time_mutex_.
+	Removed listeners accessor and mutator; removed last_time mutator.
+	Added template member functions add, remove, and emit_event.
+	(openvrml::event_emitter::add<FieldValue>(field_value_listener<FieldValue>&)):
+	Added function.  Moved listener addition logic here.
+	(openvrml::event_emitter::remove<FieldValue>(field_value_listener<FieldValue>&)):
+	Added function.  Moved listener removal logic here.
+	(openvrml::event_emitter::emit_event<FieldValue>(double)): Added
+	function.  Moved listener iteration logic here.
+	(openvrml::field_value_emitter<FieldValue>::emit_event(double)):
+	Delegate to event_emitter::emit_event<FieldValue>.
+	(openvrml::field_value_emitter<FieldValue>::add(field_value_listener<FieldValue>&)):
+	Delegate to event_emitter::add<FieldValue>.
+	(openvrml::field_value_emitter<FieldValue>::remove(field_value_listener<FieldValue>&)):
+	Delegate to event_emitter::remove<FieldValue>.
+	* src/libopenvrml/openvrml/event.cpp
+	(openvrml::event_emitter::mutex() const): Removed function.
+	(openvrml::event_emitter::last_time() const): Lock the
+	last_time_mutex_.
+	(openvrml::event_emitter::listeners()): Removed function.
+	(openvrml::event_emitter::listeners() const): Removed function.
+	(openvrml::event_emitter::last_time(double)): Removed function.
+
+2007-12-06 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.cpp
 	(openvrml::operator>>(std::istream & in, rotation & rot)): Removed
 	stray unused variables.
