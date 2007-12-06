@@ -3106,7 +3106,6 @@ std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
 
     guard<vrml_parse_error> g;
 
-    float x, y, z, angle;
     rule_t rule
         =   g(rotation_p[var(rot) = arg1] >> eps_p)[error_handler]
         ;

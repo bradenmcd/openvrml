@@ -1,3 +1,9 @@
+2007-12-06 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(openvrml::operator>>(std::istream & in, rotation & rot)): Removed
+	stray unused variables.
+
 2007-12-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.h: Removed unnecessary inclusion
