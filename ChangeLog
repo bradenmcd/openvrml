@@ -1,5 +1,19 @@
 2007-12-06 Braden McDaniel  <braden@endoframe.com>
 
+	Added Visual C++ 9.0 project files.
+
+	* ide-projects/Makefile.am
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl-config.h
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+
+2007-12-06 Braden McDaniel  <braden@endoframe.com>
+
 	Replaced holdout occurrence of boost::recursive_mutex in
 	openvrml::event_emitter with openvrml::read_write_mutex.
 
