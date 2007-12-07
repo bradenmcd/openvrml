@@ -724,7 +724,8 @@ namespace openvrml {
                                          construct_<string>(arg1, arg2))
                     ] >> expect_colon(ch_p(':'))
                     >> expect_int32(int32_p)[
-                        set_component_id(component_statement.component, arg1)
+                        set_component_level(component_statement.component,
+                                            arg1)
                     ]
                 )[load_component]
             ;

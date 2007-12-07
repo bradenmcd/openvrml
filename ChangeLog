@@ -1,3 +1,10 @@
+2007-12-07 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	(x3d_vrml_grammar<ErrorHandler,Actions>::definition<ScannerT>::definition(const
+	x3d_vrml_grammar &)): Call set_component_level when parsing the
+	component level.
+
 2007-12-06 Braden McDaniel  <braden@endoframe.com>
 
 	Added Visual C++ 9.0 project files.
