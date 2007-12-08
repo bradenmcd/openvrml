@@ -449,7 +449,7 @@ namespace openvrml {
                 explicit exposedfield(
                     openvrml::node & node,
                     const typename FieldValue::value_type & value =
-#   if defined(_MSC_VER) && (_MSC_VER == 1400)
+#   if defined(_MSC_VER) && (_MSC_VER == 1400 || _MSC_VER == 1500)
                     FieldValue::value_type()
 #   else
                     typename FieldValue::value_type()
@@ -783,10 +783,10 @@ namespace openvrml {
         {
             using openvrml::node_interface;
 
-            const node_interface interface(node_interface::eventin_id,
+            const node_interface interface_(node_interface::eventin_id,
                                            type,
                                            id);
-            bool succeeded = this->interfaces_.insert(interface).second;
+            bool succeeded = this->interfaces_.insert(interface_).second;
             if (!succeeded) {
                 throw std::invalid_argument("interface \"" + id + "\" already "
                                             "defined for " + this->id()
@@ -807,10 +807,10 @@ namespace openvrml {
         {
             using openvrml::node_interface;
 
-            const node_interface interface(node_interface::eventout_id,
+            const node_interface interface_(node_interface::eventout_id,
                                            type,
                                            id);
-            bool succeeded = this->interfaces_.insert(interface).second;
+            bool succeeded = this->interfaces_.insert(interface_).second;
             if (!succeeded) {
                 throw std::invalid_argument("interface \"" + id + "\" already "
                                             "defined for " + this->id()
@@ -833,10 +833,10 @@ namespace openvrml {
         {
             using openvrml::node_interface;
 
-            const node_interface interface(node_interface::exposedfield_id,
-                                           type,
-                                           id);
-            bool succeeded = this->interfaces_.insert(interface).second;
+            const node_interface interface_(node_interface::exposedfield_id,
+                                            type,
+                                            id);
+            bool succeeded = this->interfaces_.insert(interface_).second;
             if (!succeeded) {
                 throw std::invalid_argument("interface \"" + id + "\" already "
                                             "defined for " + this->id()
@@ -870,8 +870,8 @@ namespace openvrml {
         {
             using openvrml::node_interface;
 
-            const node_interface interface(node_interface::field_id, type, id);
-            bool succeeded = this->interfaces_.insert(interface).second;
+            const node_interface interface_(node_interface::field_id, type, id);
+            bool succeeded = this->interfaces_.insert(interface_).second;
             if (!succeeded) {
                 throw std::invalid_argument("interface \"" + id + "\" already "
                                             "defined for " + this->id()

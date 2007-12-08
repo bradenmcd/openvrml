@@ -571,10 +571,10 @@ openvrml::script_node::script_node_type::~script_node_type() OPENVRML_NOTHROW
  */
 void
 openvrml::script_node::script_node_type::
-add_interface(const node_interface & interface)
+add_interface(const node_interface & interface_)
     OPENVRML_THROW2(std::bad_alloc, std::invalid_argument)
 {
-    bool succeeded  = this->interfaces_.insert(interface).second;
+    bool succeeded  = this->interfaces_.insert(interface_).second;
     if (!succeeded) {
         throw std::invalid_argument("Interface conflicts with an interface "
                                     "already in this set.");
@@ -1598,9 +1598,9 @@ script_node(script_node_metatype & class_,
         openvrml_::make_obj_guard(*this, &script_node::remove_ref);
     boost::ignore_unused_variable_warning(guard);
 
-    for (node_interface_set::const_iterator interface = interfaces.begin();
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_ = interfaces.begin();
+         interface_ != interfaces.end();
+         ++interface_) {
         using std::invalid_argument;
         using std::auto_ptr;
         using std::pair;
@@ -1613,25 +1613,25 @@ script_node(script_node_metatype & class_,
         pair<string, shared_ptr<field_value> > field_value;
         auto_ptr<openvrml::field_value> cloned_field_value;
         bool succeeded;
-        switch (interface->type) {
+        switch (interface_->type) {
         case node_interface::eventin_id:
-            listener = create_listener(interface->field_type,
-                                       interface->id,
+            listener = create_listener(interface_->field_type,
+                                       interface_->id,
                                        *this);
             succeeded = this->event_listener_map
-                .insert(make_pair(interface->id, listener)).second;
+                .insert(make_pair(interface_->id, listener)).second;
             break;
         case node_interface::eventout_id:
-            eventout.reset(new script_node::eventout(interface->field_type,
+            eventout.reset(new script_node::eventout(interface_->field_type,
                                                      *this));
             succeeded = this->eventout_map_
-                .insert(make_pair(interface->id, eventout)).second;
+                .insert(make_pair(interface_->id, eventout)).second;
             break;
         case node_interface::field_id:
-            initial_value = initial_values.find(interface->id);
+            initial_value = initial_values.find(interface_->id);
             if (initial_value == initial_values.end()) {
                 throw invalid_argument("Missing initial value for field \""
-                                       + interface->id + "\".");
+                                       + interface_->id + "\".");
             }
             cloned_field_value = initial_value->second->clone();
             field_value = make_pair(initial_value->first,
@@ -1649,7 +1649,7 @@ script_node(script_node_metatype & class_,
             // for more information.
             //
             using boost::intrusive_ptr;
-            if (interface->field_type == openvrml::field_value::sfnode_id) {
+            if (interface_->field_type == openvrml::field_value::sfnode_id) {
                 sfnode & sfnode_field_value =
                     *polymorphic_downcast<sfnode *>(field_value.second.get());
                 if (sfnode_field_value.value() == node::self_tag) {
@@ -1657,7 +1657,7 @@ script_node(script_node_metatype & class_,
                     sfnode_field_value.value(self);
                     this->remove_ref();
                 }
-            } else if (interface->field_type
+            } else if (interface_->field_type
                        == openvrml::field_value::mfnode_id) {
                 mfnode & mfnode_field_value =
                     *polymorphic_downcast<mfnode *>(field_value.second.get());
@@ -1687,7 +1687,7 @@ script_node(script_node_metatype & class_,
             assert(false);
         }
         assert(succeeded);
-        this->type.add_interface(*interface); // Throws std::invalid_argument.
+        this->type.add_interface(*interface_); // Throws std::invalid_argument.
     }
 
     for (initial_value_map::const_iterator initial_value =
@@ -3659,16 +3659,16 @@ JSBool eventOut_setProperty(JSContext * const cx,
 
     const openvrml::node_interface_set & interfaces =
         scriptNode.node::type().interfaces();
-    const openvrml::node_interface_set::const_iterator interface =
+    const openvrml::node_interface_set::const_iterator interface_ =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(openvrml::node_interface_matches_eventout(), eventId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to an eventOut!
     //
-    assert(interface != interfaces.end());
+    assert(interface_ != interfaces.end());
 
-    const openvrml::field_value::type_id field_type_id = interface->field_type;
+    const openvrml::field_value::type_id field_type_id = interface_->field_type;
 
     //
     // Convert to an openvrml::field_value and set the eventOut value.
@@ -3713,16 +3713,16 @@ JSBool script::field_setProperty(JSContext * const cx,
 
     const openvrml::node_interface_set & interfaces =
         scriptNode.node::type().interfaces();
-    const openvrml::node_interface_set::const_iterator interface =
+    const openvrml::node_interface_set::const_iterator interface_ =
         find_if(interfaces.begin(), interfaces.end(),
                 bind2nd(openvrml::node_interface_matches_field(), fieldId));
     //
     // If this assertion is false, then we accidentally gave this
     // setter to an object that doesn't correspond to a field!
     //
-    assert(interface != interfaces.end());
+    assert(interface_ != interfaces.end());
 
-    const openvrml::field_value::type_id field_type_id = interface->field_type;
+    const openvrml::field_value::type_id field_type_id = interface_->field_type;
 
     //
     // Convert to an openvrml::FieldValue and set the field value.

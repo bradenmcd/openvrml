@@ -459,7 +459,7 @@ namespace openvrml {
                         add_component(this->scope_stack.top().node_body_repo,
                                       component_id,
                                       level);
-                    } catch (std::invalid_argument & ex) {
+                    } catch (std::invalid_argument &) {
                         boost::spirit::throw_(
                             first,
                             unrecognized_component_id_or_level);
@@ -626,55 +626,55 @@ namespace openvrml {
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::bool_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfbool_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfbool_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::bool_parser>
-         >)(bool_p));
+        >(bool_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::color_rgba_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolorrgba_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolorrgba_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::color_rgba_parser>
-         >)(color_rgba_p));
+        >(color_rgba_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::image_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfimage_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfimage_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::image_parser>
-         >)(image_p));
+        >(image_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::vec2d_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2d_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2d_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::vec2d_parser>
-         >)(vec2d_p));
+        >(vec2d_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::vec3d_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3d_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3d_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::vec3d_parser>
-         >)(vec3d_p));
+        >(vec3d_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>

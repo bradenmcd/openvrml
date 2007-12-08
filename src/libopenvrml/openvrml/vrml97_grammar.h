@@ -779,7 +779,7 @@ namespace openvrml {
     struct interface_decl_closure :
         boost::spirit::closure<interface_decl_closure,
                                node_interface> {
-        member1 interface;
+        member1 interface_;
     };
 
     struct set_node_interface_type_function {
@@ -789,10 +789,10 @@ namespace openvrml {
         };
 
         template <typename NodeInterface, typename NodeInterfaceType>
-        void operator()(NodeInterface & interface,
+        void operator()(NodeInterface & interface_,
                         NodeInterfaceType type) const
         {
-            interface.type = type;
+            interface_.type = type;
         }
     };
 
@@ -806,9 +806,9 @@ namespace openvrml {
         };
 
         template <typename NodeInterface, typename FieldType>
-        void operator()(NodeInterface & interface, FieldType field_type) const
+        void operator()(NodeInterface & interface_, FieldType field_type) const
         {
-            interface.field_type = field_type;
+            interface_.field_type = field_type;
         }
     };
 
@@ -822,9 +822,9 @@ namespace openvrml {
         };
 
         template <typename NodeInterface, typename String>
-        void operator()(NodeInterface & interface, String id) const
+        void operator()(NodeInterface & interface_, String id) const
         {
-            interface.id = id;
+            interface_.id = id;
         }
     };
 
@@ -861,7 +861,7 @@ namespace openvrml {
         boost::spirit::closure<script_interface_closure,
                                node_interface,
                                bool> {
-        member1 interface;
+        member1 interface_;
         member2 add_interface_succeeded;
     };
 
@@ -888,9 +888,9 @@ namespace openvrml {
         };
 
         template <typename NodeType, typename NodeInterface>
-        bool operator()(NodeType & node_type, NodeInterface interface) const
+        bool operator()(NodeType & node_type, NodeInterface interface_) const
         {
-            return node_type.second.insert(interface).second;
+            return node_type.second.insert(interface_).second;
         }
     };
 
@@ -920,9 +920,9 @@ namespace openvrml {
         };
 
         template <typename NodeInterface>
-        bool operator()(NodeInterface interface) const
+        bool operator()(NodeInterface interface_) const
         {
-            return interface.type != node_interface::invalid_type_id;
+            return interface_.type != node_interface::invalid_type_id;
         }
     };
 
@@ -1118,7 +1118,7 @@ namespace openvrml {
         } on_proto_start;
 
         struct on_proto_interface_t {
-            void operator()(const node_interface & /* interface */) const {}
+            void operator()(const node_interface & /* interface_ */) const {}
         } on_proto_interface;
 
         struct on_proto_default_value_start_t {
@@ -1533,22 +1533,22 @@ namespace openvrml {
 
                 template <typename NodeType, typename NodeInterface>
                 bool operator()(NodeType node_type,
-                                NodeInterface interface) const
+                                NodeInterface interface_) const
                 {
                     vrml97_grammar_def_t & d = this->vrml97_grammar_def_;
 
                     const bool succeeded =
-                        node_type->second.insert(interface).second;
+                        node_type->second.insert(interface_).second;
                     if (succeeded) {
                         d.field_value =
-                            (interface.type == node_interface::eventin_id
-                             || interface.type == node_interface::eventout_id)
+                            (interface_.type == node_interface::eventin_id
+                             || interface_.type == node_interface::eventout_id)
                             ? boost::spirit::eps_p
-                            : d.get_field_value_parser(interface.field_type);
+                            : d.get_field_value_parser(interface_.field_type);
 
                         if (in_proto_def(d.scope_stack)) {
                             d.field_value
-                                =   d.is_mapping(interface)
+                                =   d.is_mapping(interface_)
                                 |   d.field_value.copy()
                                 ;
                         }
@@ -1725,19 +1725,19 @@ namespace openvrml {
                     vrml97_grammar_def_(grammar_def)
                 {}
 
-                void operator()(const node_interface & interface) const
+                void operator()(const node_interface & interface_) const
                 {
                     using boost::spirit::eps_p;
 
                     vrml97_grammar_def_t & d = this->vrml97_grammar_def_;
 
-                    if (interface.type == node_interface::eventin_id
-                        || interface.type == node_interface::eventout_id) {
+                    if (interface_.type == node_interface::eventin_id
+                        || interface_.type == node_interface::eventout_id) {
                         d.field_value = eps_p;
                     } else {
                         d.field_value
                             =   d.get_field_value_parser(
-                                    interface.field_type)
+                                    interface_.field_type)
                             ;
                         d.field_value
                             =   eps_p[d.on_proto_default_value_start]
@@ -1997,9 +1997,9 @@ namespace openvrml {
                 {}
 
                 template <typename NodeInterface>
-                void operator()(NodeInterface & interface) const
+                void operator()(NodeInterface & interface_) const
                 {
-                    actions.on_proto_interface(interface);
+                    actions.on_proto_interface(interface_);
                 }
 
             private:
@@ -2182,9 +2182,9 @@ namespace openvrml {
                 {}
 
                 template <typename NodeInterface>
-                void operator()(NodeInterface interface) const
+                void operator()(NodeInterface interface_) const
                 {
-                    this->actions.on_script_interface_decl(interface);
+                    this->actions.on_script_interface_decl(interface_);
                 }
 
             private:
@@ -2316,9 +2316,9 @@ namespace openvrml {
                 {}
 
                 template <typename NodeInterface>
-                void operator()(NodeInterface interface) const
+                void operator()(NodeInterface interface_) const
                 {
-                    actions.on_is_mapping(interface.id);
+                    actions.on_is_mapping(interface_.id);
                 }
 
             private:
@@ -2400,11 +2400,11 @@ namespace openvrml {
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::color_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolor_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolor_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::functor_parser<openvrml::color_parser>
-         >)(color_p));
+         >(color_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
@@ -2415,14 +2415,14 @@ namespace openvrml {
                 float,
                 boost::spirit::real_parser_policies<float> > > >
     vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::
-    mffloat_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    mffloat_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::real_parser<
                float,
                boost::spirit::real_parser_policies<float>
             >
-         >)(float_p));
+        >(float_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
@@ -2433,54 +2433,54 @@ namespace openvrml {
                 double,
                 boost::spirit::real_parser_policies<double> > > >
     vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::
-    mftime_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<
+    mftime_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<
             boost::spirit::real_parser<
                double,
                boost::spirit::real_parser_policies<double>
             >
-         >)(boost::spirit::real_p));
+        >(boost::spirit::real_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<int32_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfint32_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser< boost::spirit::functor_parser<int32_parser> >)(
-             int32_p));
+    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfint32_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser< boost::spirit::functor_parser<int32_parser> >(
+            int32_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<string_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfstring_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<boost::spirit::functor_parser<string_parser> >)(
-            string_p));
+    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfstring_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<boost::spirit::functor_parser<string_parser> >(
+            string_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec2f_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2f_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<boost::spirit::functor_parser<vec2f_parser> >)(
-             vec2f_p));
+    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2f_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<boost::spirit::functor_parser<vec2f_parser> >(
+            vec2f_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
         typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec3f_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3f_p(
-        (typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
-         template mftype_parser<boost::spirit::functor_parser<vec3f_parser> >)(
-             vec3f_p));
+    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3f_p =
+        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        template mftype_parser<boost::spirit::functor_parser<vec3f_parser> >(
+            vec3f_p);
 
     template <typename ErrorHandler, typename Actions>
     template <typename ScannerT>
@@ -2605,7 +2605,7 @@ namespace openvrml {
 
         proto_interface
             =   (   interface_decl[
-                        proto_interface.interface = arg1
+                        proto_interface.interface_ = arg1
                     ][
                         proto.add_node_interface_succeeded =
                             add_node_interface(proto.node_type, arg1)
@@ -2617,7 +2617,7 @@ namespace openvrml {
                                 check(proto.add_node_interface_succeeded)
                             )
                         )
-                )[on_proto_interface(proto_interface.interface)]
+                )[on_proto_interface(proto_interface.interface_)]
                  [push_scope(this->scope_stack)]
                 >> field_value
                 >> eps_p[pop_scope(this->scope_stack)]
@@ -2625,31 +2625,31 @@ namespace openvrml {
 
         interface_decl
             =   interface_type[
-                    set_node_interface_type(interface_decl.interface,
+                    set_node_interface_type(interface_decl.interface_,
                                             arg1)
                 ]
                 >>  expect_field_type(field_type)[
-                    set_node_interface_field_type(interface_decl.interface,
+                    set_node_interface_field_type(interface_decl.interface_,
                                                   arg1)
                 ]
                 >>  expect_id(id)[
-                    set_node_interface_id(interface_decl.interface,
+                    set_node_interface_id(interface_decl.interface_,
                                           construct_<string>(arg1, arg2))
                 ]
             ;
 
         script_interface_decl
             =   script_interface_type[
-                    set_node_interface_type(script_interface_decl.interface,
+                    set_node_interface_type(script_interface_decl.interface_,
                                             arg1)
                 ]
                 >>  expect_field_type(field_type)[
                     set_node_interface_field_type(
-                        script_interface_decl.interface,
+                        script_interface_decl.interface_,
                         arg1)
                 ]
                 >>  expect_id(id)[
-                    set_node_interface_id(script_interface_decl.interface,
+                    set_node_interface_id(script_interface_decl.interface_,
                                           construct_<string>(arg1, arg2))
                 ]
             ;
@@ -2766,16 +2766,16 @@ namespace openvrml {
             ;
 
         script_interface
-            =   script_interface_decl[script_interface.interface = arg1]
+            =   script_interface_decl[script_interface.interface_ = arg1]
                 >>  eps_p[
                         // add_script_interface sets field_value as a
                         // side-effect.
                         script_interface.add_interface_succeeded =
                             add_script_interface(root_node_statement.node_type,
-                                                 script_interface.interface)
+                                                 script_interface.interface_)
                     ]
                 >>  eps_p(check(script_interface.add_interface_succeeded))
-                >>  eps_p[on_script_interface_decl(script_interface.interface)]
+                >>  eps_p[on_script_interface_decl(script_interface.interface_)]
                 >>  field_value
             ;
 

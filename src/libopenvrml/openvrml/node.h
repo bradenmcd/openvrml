@@ -80,15 +80,15 @@ namespace openvrml {
         OPENVRML_NOTHROW;
 
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
-                                           const node_interface & interface);
+                                           const node_interface & interface_);
     OPENVRML_API std::istream & operator>>(std::istream & in,
-                                           node_interface & interface);
+                                           node_interface & interface_);
 
     class node_type;
 
     class OPENVRML_API unsupported_interface : public std::logic_error {
     public:
-        explicit unsupported_interface(const node_interface & interface)
+        explicit unsupported_interface(const node_interface & interface_)
             OPENVRML_NOTHROW;
         unsupported_interface(const node_type & type,
                               const std::string & interface_id)
@@ -103,32 +103,32 @@ namespace openvrml {
 
     struct OPENVRML_API node_interface_matches_eventin :
         std::binary_function<node_interface, std::string, bool> {
-        result_type operator()(const first_argument_type & interface,
+        result_type operator()(const first_argument_type & interface_,
                                const second_argument_type & eventin_id) const
         {
             static const char eventin_prefix[] = "set_";
-            return (interface.type == node_interface::eventin_id
-                    && (eventin_id == interface.id
-                        || eventin_prefix + eventin_id == interface.id))
-                || (interface.type == node_interface::exposedfield_id
-                    && (eventin_id == interface.id
-                        || eventin_id == eventin_prefix + interface.id));
+            return (interface_.type == node_interface::eventin_id
+                    && (eventin_id == interface_.id
+                        || eventin_prefix + eventin_id == interface_.id))
+                || (interface_.type == node_interface::exposedfield_id
+                    && (eventin_id == interface_.id
+                        || eventin_id == eventin_prefix + interface_.id));
         }
     };
 
 
     struct OPENVRML_API node_interface_matches_eventout :
         std::binary_function<node_interface, std::string, bool> {
-        result_type operator()(const first_argument_type & interface,
+        result_type operator()(const first_argument_type & interface_,
                                const second_argument_type & eventout_id) const
         {
             static const char eventout_suffix[] = "_changed";
-            return (interface.type == node_interface::eventout_id
-                    && (eventout_id == interface.id
-                        || eventout_id + eventout_suffix == interface.id))
-                || (interface.type == node_interface::exposedfield_id
-                    && (eventout_id == interface.id
-                        || eventout_id == interface.id + eventout_suffix));
+            return (interface_.type == node_interface::eventout_id
+                    && (eventout_id == interface_.id
+                        || eventout_id + eventout_suffix == interface_.id))
+                || (interface_.type == node_interface::exposedfield_id
+                    && (eventout_id == interface_.id
+                        || eventout_id == interface_.id + eventout_suffix));
         }
     };
 
@@ -136,23 +136,23 @@ namespace openvrml {
     struct OPENVRML_API node_interface_matches_exposedfield :
         std::binary_function<node_interface, std::string, bool> {
         result_type
-        operator()(const first_argument_type & interface,
+        operator()(const first_argument_type & interface_,
                    const second_argument_type & exposedfield_id) const
         {
-            return interface.type == node_interface::exposedfield_id
-                && interface.id == exposedfield_id;
+            return interface_.type == node_interface::exposedfield_id
+                && interface_.id == exposedfield_id;
         }
     };
 
 
     struct OPENVRML_API node_interface_matches_field :
         std::binary_function<node_interface, std::string, bool> {
-        result_type operator()(const first_argument_type & interface,
+        result_type operator()(const first_argument_type & interface_,
                                const second_argument_type & field_id) const
         {
-            return (interface.type == node_interface::field_id
-                    || interface.type == node_interface::exposedfield_id)
-                && interface.id == field_id;
+            return (interface_.type == node_interface::field_id
+                    || interface_.type == node_interface::exposedfield_id)
+                && interface_.id == field_id;
         }
     };
 

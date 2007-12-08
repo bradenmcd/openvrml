@@ -212,12 +212,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -233,7 +233,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<key_sensor_node>::exposedfield<sfnode> >(
                             &key_sensor_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -249,7 +249,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<key_sensor_node>::exposedfield<sfbool> >(
                             &key_sensor_node::enabled_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -257,7 +257,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfint32_emitter>(
                             &key_sensor_node::action_key_press_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -265,7 +265,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfint32_emitter>(
                             &key_sensor_node::action_key_release_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -273,7 +273,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfbool_emitter>(
                             &key_sensor_node::alt_key_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -281,7 +281,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfbool_emitter>(
                             &key_sensor_node::control_key_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -289,7 +289,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfbool_emitter>(
                             &key_sensor_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -297,7 +297,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfstring_emitter>(
                             &key_sensor_node::key_press_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -305,7 +305,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         key_sensor_node::sfstring_emitter>(
                             &key_sensor_node::key_release_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -314,7 +314,7 @@ namespace {
                         key_sensor_node::sfbool_emitter>(
                             &key_sensor_node::shift_key_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -484,12 +484,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -505,7 +505,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<string_sensor_node>::exposedfield<sfnode> >(
                             &string_sensor_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -521,7 +521,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<string_sensor_node>::exposedfield<sfbool> >(
                             &string_sensor_node::deletion_allowed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -537,7 +537,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<string_sensor_node>::exposedfield<sfbool> >(
                             &string_sensor_node::enabled_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -545,7 +545,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         string_sensor_node::sfstring_emitter>(
                             &string_sensor_node::entered_text_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -553,7 +553,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         string_sensor_node::sfstring_emitter>(
                             &string_sensor_node::final_text_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -562,7 +562,7 @@ namespace {
                         string_sensor_node::sfbool_emitter>(
                             &string_sensor_node::is_active_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;

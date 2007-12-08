@@ -215,12 +215,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -236,7 +236,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_interpolator2d_node>::exposedfield<sfnode> >(
                             &coordinate_interpolator2d_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -244,7 +244,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         coordinate_interpolator2d_node::set_fraction_listener>(
                             &coordinate_interpolator2d_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -260,7 +260,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_interpolator2d_node>::exposedfield<mffloat> >(
                             &coordinate_interpolator2d_node::key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -276,7 +276,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_interpolator2d_node>::exposedfield<mfvec2f> >(
                             &coordinate_interpolator2d_node::key_value_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -285,7 +285,7 @@ namespace {
                         coordinate_interpolator2d_node::mfvec2f_emitter>(
                             &coordinate_interpolator2d_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -357,12 +357,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -378,7 +378,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<position_interpolator2d_node>::exposedfield<sfnode> >(
                             &position_interpolator2d_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -386,7 +386,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         position_interpolator2d_node::set_fraction_listener>(
                             &position_interpolator2d_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -402,7 +402,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<position_interpolator2d_node>::exposedfield<mffloat> >(
                             &position_interpolator2d_node::key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -418,7 +418,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<position_interpolator2d_node>::exposedfield<mfvec2f> >(
                             &position_interpolator2d_node::key_value_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -427,7 +427,7 @@ namespace {
                         position_interpolator2d_node::sfvec2f_emitter>(
                             &position_interpolator2d_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

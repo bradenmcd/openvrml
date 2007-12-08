@@ -660,26 +660,26 @@ namespace openvrml {
     {
         const node_interface_set & interfaces = n.type().interfaces();
         node_path_element & back = this->node_path.back();
-        for (node_interface_set::const_iterator interface = interfaces.begin();
-             !this->found && interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_ = interfaces.begin();
+             !this->found && interface_ != interfaces.end();
+             ++interface_) {
             assert(&back == &this->node_path.back());
-            if (interface->type == node_interface::field_id
-                || interface->type == node_interface::exposedfield_id) {
-                if (interface->field_type == field_value::sfnode_id) {
+            if (interface_->type == node_interface::field_id
+                || interface_->type == node_interface::exposedfield_id) {
+                if (interface_->field_type == field_value::sfnode_id) {
                     back.field_type = field_value::sfnode_id;
-                    back.field_id = interface->id;
+                    back.field_id = interface_->id;
                     try {
-                        const sfnode value = n.field<sfnode>(interface->id);
+                        const sfnode value = n.field<sfnode>(interface_->id);
                         this->get_path_from(value.value());
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
                     }
-                } else if (interface->field_type == field_value::mfnode_id) {
+                } else if (interface_->field_type == field_value::mfnode_id) {
                     back.field_type = field_value::mfnode_id;
-                    back.field_id = interface->id;
+                    back.field_id = interface_->id;
                     try {
-                        const mfnode value = n.field<mfnode>(interface->id);
+                        const mfnode value = n.field<mfnode>(interface_->id);
                         this->get_path_from(value.value());
                     } catch (unsupported_interface & ex) {
                         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -795,20 +795,20 @@ namespace openvrml {
                 initial_value_map initial_values;
                 const node_interface_set & interfaces =
                     n->type().interfaces();
-                for (node_interface_set::const_iterator interface =
+                for (node_interface_set::const_iterator interface_ =
                          interfaces.begin();
-                     interface != interfaces.end();
-                     ++interface) {
+                     interface_ != interfaces.end();
+                     ++interface_) {
                     using std::string;
-                    const node_interface::type_id type = interface->type;
-                    const string & id = interface->id;
+                    const node_interface::type_id type = interface_->type;
+                    const string & id = interface_->id;
                     if (type == node_interface::exposedfield_id
                         || type == node_interface::field_id) {
                         using std::auto_ptr;
                         using boost::shared_ptr;
                         auto_ptr<field_value> src = n->field(id);
                         auto_ptr<field_value> dest =
-                            field_value::create(interface->field_type);
+                            field_value::create(interface_->field_type);
                         assert(src->type() == dest->type());
                         this->clone_field_value(n, *src, *dest);
                         bool succeeded =
@@ -935,13 +935,13 @@ namespace openvrml {
                 initial_value_map initial_values;
                 const node_interface_set & interfaces =
                     n->type().interfaces();
-                for (node_interface_set::const_iterator interface =
+                for (node_interface_set::const_iterator interface_ =
                          interfaces.begin();
-                     interface != interfaces.end();
-                     ++interface) {
+                     interface_ != interfaces.end();
+                     ++interface_) {
                     using std::string;
-                    const node_interface::type_id type = interface->type;
-                    const string & id = interface->id;
+                    const node_interface::type_id type = interface_->type;
+                    const string & id = interface_->id;
                     if (type == node_interface::exposedfield_id
                         || type == node_interface::field_id) {
                         using std::auto_ptr;
@@ -949,7 +949,7 @@ namespace openvrml {
                         using boost::shared_ptr;
                         auto_ptr<const field_value> src_val;
                         auto_ptr<field_value> dest_val =
-                            field_value::create(interface->field_type);
+                            field_value::create(interface_->field_type);
 
                         //
                         // If the field/exposedField is IS'd, get the value
@@ -965,7 +965,7 @@ namespace openvrml {
                             find_if(this->node_metatype.is_map.begin(),
                                     this->node_metatype.is_map.end(),
                                     matches_is_target(
-                                        is_target(*n, interface->id)));
+                                        is_target(*n, interface_->id)));
                         if (is_mapping != this->node_metatype.is_map.end()) {
                             using boost::bind;
                             using std::logical_or;
@@ -1106,17 +1106,17 @@ namespace openvrml {
     {
         using std::find;
         using std::invalid_argument;
-        for (node_interface_set::const_iterator interface = interfaces.begin();
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_ = interfaces.begin();
+             interface_ != interfaces.end();
+             ++interface_) {
             node_interface_set::const_iterator pos =
                 find(node_metatype.interfaces.begin(),
                      node_metatype.interfaces.end(),
-                     *interface);
+                     *interface_);
             if (pos == node_metatype.interfaces.end()) {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
-            const bool succeeded = this->interfaces_.insert(*interface).second;
+            const bool succeeded = this->interfaces_.insert(*interface_).second;
             assert(succeeded);
         }
     }
@@ -1640,10 +1640,10 @@ namespace openvrml {
         //
         // Add eventIns, eventOuts, exposedFields.
         //
-        for (node_interface_set::const_iterator interface =
+        for (node_interface_set::const_iterator interface_ =
                  node_metatype.interfaces.begin();
-             interface != node_metatype.interfaces.end();
-             ++interface) {
+             interface_ != node_metatype.interfaces.end();
+             ++interface_) {
             using boost::shared_ptr;
             using boost::dynamic_pointer_cast;
             using std::pair;
@@ -1653,11 +1653,11 @@ namespace openvrml {
             typedef proto_node_metatype::is_map_t is_map_t;
             pair<is_map_t::const_iterator, is_map_t::const_iterator> is_range;
             initial_value_map::const_iterator initial_value;
-            switch (interface->type) {
+            switch (interface_->type) {
             case node_interface::eventin_id:
-                interface_eventin = create_eventin(interface->field_type,
+                interface_eventin = create_eventin(interface_->field_type,
                                                    *this);
-                is_range = node_metatype.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface_->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1678,7 +1678,7 @@ namespace openvrml {
                         openvrml::event_listener & impl_eventin =
                             impl_node->event_listener(impl_node_interface);
                         for_each<field_value_types>(
-                            eventin_is(interface->field_type,
+                            eventin_is(interface_->field_type,
                                        impl_eventin,
                                        *interface_eventin));
                     } catch (unsupported_interface & ex) {
@@ -1686,14 +1686,14 @@ namespace openvrml {
                     }
                 }
                 succeeded = this->eventin_map
-                    .insert(make_pair(interface->id, interface_eventin))
+                    .insert(make_pair(interface_->id, interface_eventin))
                     .second;
                 assert(succeeded);
                 break;
             case node_interface::eventout_id:
-                interface_eventout = create_eventout(interface->field_type,
+                interface_eventout = create_eventout(interface_->field_type,
                                                      *this);
-                is_range = node_metatype.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface_->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1714,7 +1714,7 @@ namespace openvrml {
                         openvrml::event_emitter & impl_eventout =
                             impl_node->event_emitter(impl_node_interface);
                         for_each<field_value_types>(
-                            eventout_is(interface->field_type,
+                            eventout_is(interface_->field_type,
                                         impl_eventout,
                                         *interface_eventout));
                     } catch (unsupported_interface & ex) {
@@ -1722,15 +1722,15 @@ namespace openvrml {
                     }
                 }
                 succeeded = this->eventout_map
-                    .insert(make_pair(interface->id, interface_eventout))
+                    .insert(make_pair(interface_->id, interface_eventout))
                     .second;
                 assert(succeeded);
                 break;
             case node_interface::exposedfield_id:
-                initial_value = initial_values.find(interface->id);
+                initial_value = initial_values.find(interface_->id);
                 if (initial_value == initial_values.end()) {
                     initial_value =
-                        node_metatype.default_value_map.find(interface->id);
+                        node_metatype.default_value_map.find(interface_->id);
                     assert(initial_value
                            != node_metatype.default_value_map.end());
                 }
@@ -1739,7 +1739,7 @@ namespace openvrml {
                 interface_eventout =
                     dynamic_pointer_cast<openvrml::event_emitter>(
                         interface_eventin);
-                is_range = node_metatype.is_map.equal_range(interface->id);
+                is_range = node_metatype.is_map.equal_range(interface_->id);
                 for (is_map_t::const_iterator is_mapping = is_range.first;
                      is_mapping != is_range.second;
                      ++is_mapping) {
@@ -1760,13 +1760,13 @@ namespace openvrml {
                         openvrml::event_listener & impl_eventin =
                             impl_node->event_listener(impl_node_interface);
                         for_each<field_value_types>(
-                            eventin_is(interface->field_type,
+                            eventin_is(interface_->field_type,
                                        impl_eventin,
                                        *interface_eventin));
                         openvrml::event_emitter & impl_eventout =
                             impl_node->event_emitter(impl_node_interface);
                         for_each<field_value_types>(
-                            eventout_is(interface->field_type,
+                            eventout_is(interface_->field_type,
                                         impl_eventout,
                                         *interface_eventout));
                     } catch (unsupported_interface & ex) {
@@ -1774,11 +1774,11 @@ namespace openvrml {
                     }
                 }
                 succeeded = this->eventin_map
-                    .insert(make_pair("set_" + interface->id,
+                    .insert(make_pair("set_" + interface_->id,
                                       interface_eventin)).second;
                 assert(succeeded);
                 succeeded = this->eventout_map
-                    .insert(make_pair(interface->id + "_changed",
+                    .insert(make_pair(interface_->id + "_changed",
                                       interface_eventout)).second;
                 assert(succeeded);
                 break;
@@ -4030,26 +4030,26 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             actions_(actions)
         {}
 
-        void operator()(const node_interface & interface) const
+        void operator()(const node_interface & interface_) const
         {
             parse_scope & ps = this->actions_.ps.top();
 
             const bool succeeded =
-                ps.proto_interfaces.insert(interface).second;
+                ps.proto_interfaces.insert(interface_).second;
             assert(succeeded);
 
             assert(!ps.node_data_.empty());
             node_data & nd = ps.node_data_.top();
 
-            if (interface.type == node_interface::field_id
-                || interface.type == node_interface::exposedfield_id) {
+            if (interface_.type == node_interface::field_id
+                || interface_.type == node_interface::exposedfield_id) {
                 using std::auto_ptr;
                 using std::pair;
                 auto_ptr<field_value> value =
-                    field_value::create(interface.field_type);
+                    field_value::create(interface_.field_type);
                 pair<initial_value_map::iterator, bool> insert_result =
                     nd.initial_values.insert(
-                        make_pair(interface.id,
+                        make_pair(interface_.id,
                                   boost::shared_ptr<field_value>(value)));
                 assert(insert_result.second);
                 nd.current_field_value = &(*insert_result.first);
@@ -4323,7 +4323,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             actions_(actions)
         {}
 
-        void operator()(const node_interface & interface) const
+        void operator()(const node_interface & interface_) const
         {
             parse_scope & ps = this->actions_.ps.top();
 
@@ -4332,10 +4332,10 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             node_data & nd = ps.node_data_.top();
 
             const bool succeeded =
-                nd.script_interfaces.insert(interface).second;
+                nd.script_interfaces.insert(interface_).second;
             assert(succeeded);
 
-            this->actions_.on_field_start(interface.id, interface.field_type);
+            this->actions_.on_field_start(interface_.id, interface_.field_type);
         }
 
     private:
@@ -5649,10 +5649,10 @@ openvrml::externproto_node::externproto_node(
     OPENVRML_THROW1(std::bad_alloc):
     abstract_proto_node(type, scope)
 {
-    for (node_interface_set::const_iterator interface =
+    for (node_interface_set::const_iterator interface_ =
              type.interfaces().begin();
-         interface != type.interfaces().end();
-         ++interface)
+         interface_ != type.interfaces().end();
+         ++interface_)
     {
         using boost::shared_ptr;
         using boost::dynamic_pointer_cast;
@@ -5662,33 +5662,33 @@ openvrml::externproto_node::externproto_node(
         shared_ptr<openvrml::event_listener> interface_eventin;
         shared_ptr<openvrml::event_emitter> interface_eventout;
         shared_ptr<openvrml::field_value> interface_field;
-        switch (interface->type) {
+        switch (interface_->type) {
         case node_interface::eventin_id:
             succeeded = this->eventin_map
-                .insert(make_pair(interface->id,
-                                  create_eventin(interface->field_type,
+                .insert(make_pair(interface_->id,
+                                  create_eventin(interface_->field_type,
                                                  *this)))
                 .second;
             break;
         case node_interface::eventout_id:
             succeeded = this->eventout_map
-                .insert(make_pair(interface->id,
-                                  create_eventout(interface->field_type,
+                .insert(make_pair(interface_->id,
+                                  create_eventout(interface_->field_type,
                                                   *this)))
                 .second;
             break;
         case node_interface::exposedfield_id:
             interface_field = create_exposedfield(*this,
-                                                  interface->field_type);
+                                                  interface_->field_type);
             succeeded = this->field_map_
-                .insert(make_pair(interface->id, interface_field)).second;
+                .insert(make_pair(interface_->id, interface_field)).second;
             assert(succeeded);
 
             interface_eventin =
                 dynamic_pointer_cast<openvrml::event_listener>(
                     interface_field);
             succeeded = this->eventin_map
-                .insert(make_pair("set_" + interface->id,
+                .insert(make_pair("set_" + interface_->id,
                                   interface_eventin))
                 .second;
             assert(succeeded);
@@ -5697,21 +5697,21 @@ openvrml::externproto_node::externproto_node(
                 dynamic_pointer_cast<openvrml::event_emitter>(
                     interface_eventin);
             succeeded = this->eventout_map
-                .insert(make_pair(interface->id + "_changed",
+                .insert(make_pair(interface_->id + "_changed",
                                   interface_eventout))
                 .second;
             break;
         case node_interface::field_id:
-            field_auto_ptr = field_value::create(interface->field_type);
+            field_auto_ptr = field_value::create(interface_->field_type);
             succeeded = this->field_map_
                 .insert(
-                    make_pair(interface->id,
+                    make_pair(interface_->id,
                               shared_ptr<field_value>(field_auto_ptr)))
                 .second;
             break;
         case node_interface::invalid_type_id:
             assert(false
-                   && "got node_interface::invalid_type_id for interface->type");
+                   && "got node_interface::invalid_type_id for interface_->type");
         }
         assert(succeeded);
     }

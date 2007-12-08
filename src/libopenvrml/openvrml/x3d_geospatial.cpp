@@ -619,12 +619,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -640,7 +640,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_coordinate_node>::exposedfield<sfnode> >(
                             &geo_coordinate_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -656,14 +656,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_coordinate_node>::exposedfield<mfvec3d> >(
                             &geo_coordinate_node::point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_coordinate_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -671,7 +671,7 @@ namespace {
                         new node_type_t::field_ptr<mfstring>(
                             &geo_coordinate_node::geo_system_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -784,12 +784,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -805,7 +805,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_elevation_grid_node>::exposedfield<sfnode> >(
                             &geo_elevation_grid_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -813,7 +813,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_elevation_grid_node::set_height_listener>(
                             &geo_elevation_grid_node::set_height_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -829,7 +829,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_elevation_grid_node>::exposedfield<sfnode> >(
                             &geo_elevation_grid_node::color_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -845,7 +845,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_elevation_grid_node>::exposedfield<sfnode> >(
                             &geo_elevation_grid_node::normal_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -861,7 +861,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_elevation_grid_node>::exposedfield<sfnode> >(
                             &geo_elevation_grid_node::tex_coord_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -877,91 +877,91 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_elevation_grid_node>::exposedfield<sffloat> >(
                             &geo_elevation_grid_node::y_scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &geo_elevation_grid_node::ccw_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &geo_elevation_grid_node::color_per_vertex_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfdouble>(
                             &geo_elevation_grid_node::crease_angle_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3d>(
                             &geo_elevation_grid_node::geo_grid_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_elevation_grid_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_elevation_grid_node::geo_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &geo_elevation_grid_node::height_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &geo_elevation_grid_node::normal_per_vertex_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &geo_elevation_grid_node::solid_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &geo_elevation_grid_node::x_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfdouble>(
                             &geo_elevation_grid_node::x_spacing_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &geo_elevation_grid_node::z_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -969,7 +969,7 @@ namespace {
                         new node_type_t::field_ptr<sfdouble>(
                             &geo_elevation_grid_node::z_spacing_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1051,12 +1051,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1072,7 +1072,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_location_node>::exposedfield<sfnode> >(
                             &geo_location_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1080,7 +1080,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_location_node::add_children_listener>(
                             &geo_location_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1088,7 +1088,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_location_node::remove_children_listener>(
                             &geo_location_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1104,7 +1104,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_location_node>::exposedfield<mfnode> >(
                             &geo_location_node::children_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1120,28 +1120,28 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_location_node>::exposedfield<sfvec3d> >(
                             &geo_location_node::geo_coords_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_location_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_location_node::geo_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &geo_location_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1149,7 +1149,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &geo_location_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1251,12 +1251,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1272,7 +1272,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_lod_node>::exposedfield<sfnode> >(
                             &geo_lod_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1280,7 +1280,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_lod_node::add_children_listener>(
                             &geo_lod_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1288,7 +1288,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_lod_node::remove_children_listener>(
                             &geo_lod_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1296,84 +1296,84 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_lod_node::mfnode_emitter>(
                             &geo_lod_node::children_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3d>(
                             &geo_lod_node::center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::child1url_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::child2url_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::child3url_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::child4url_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_lod_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::geo_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sffloat>(
                             &geo_lod_node::range_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_lod_node::root_url_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfnode>(
                             &geo_lod_node::root_node_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &geo_lod_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1381,7 +1381,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &geo_lod_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1448,12 +1448,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1469,7 +1469,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_metadata_node>::exposedfield<sfnode> >(
                             &geo_metadata_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1485,7 +1485,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_metadata_node>::exposedfield<mfnode> >(
                             &geo_metadata_node::data_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1501,7 +1501,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_metadata_node>::exposedfield<mfstring> >(
                             &geo_metadata_node::summary_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1518,7 +1518,7 @@ namespace {
                         abstract_node<geo_metadata_node>::exposedfield<mfstring> >(
                             &geo_metadata_node::url_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1584,12 +1584,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1605,7 +1605,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_origin_node>::exposedfield<sfnode> >(
                             &geo_origin_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1621,7 +1621,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_origin_node>::exposedfield<sfvec3d> >(
                             &geo_origin_node::geo_coords_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1637,7 +1637,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_origin_node>::exposedfield<mfstring> >(
                             &geo_origin_node::geo_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1645,7 +1645,7 @@ namespace {
                         new node_type_t::field_ptr<sfbool>(
                             &geo_origin_node::rotate_yup_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1725,12 +1725,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1746,7 +1746,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_position_interpolator_node>::exposedfield<sfnode> >(
                             &geo_position_interpolator_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1754,7 +1754,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_position_interpolator_node::set_fraction_listener>(
                             &geo_position_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1770,7 +1770,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_position_interpolator_node>::exposedfield<mffloat> >(
                             &geo_position_interpolator_node::key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1786,7 +1786,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_position_interpolator_node>::exposedfield<mfvec3d> >(
                             &geo_position_interpolator_node::key_value_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1794,7 +1794,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_position_interpolator_node::sfvec3d_emitter>(
                             &geo_position_interpolator_node::geovalue_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1802,14 +1802,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_position_interpolator_node::sfvec3f_emitter>(
                             &geo_position_interpolator_node::value_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_position_interpolator_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1817,7 +1817,7 @@ namespace {
                         new node_type_t::field_ptr<mfstring>(
                             &geo_position_interpolator_node::geo_system_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1905,12 +1905,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1926,7 +1926,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_touch_sensor_node>::exposedfield<sfnode> >(
                             &geo_touch_sensor_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1942,7 +1942,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_touch_sensor_node>::exposedfield<sfbool> >(
                             &geo_touch_sensor_node::enabled_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1950,7 +1950,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfvec3f_emitter>(
                             &geo_touch_sensor_node::hit_normal_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1958,7 +1958,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfvec3f_emitter>(
                             &geo_touch_sensor_node::hit_point_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1966,7 +1966,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfvec2f_emitter>(
                             &geo_touch_sensor_node::hit_tex_coord_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1974,7 +1974,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfvec3d_emitter>(
                             &geo_touch_sensor_node::hit_geo_coord_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1982,7 +1982,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfbool_emitter>(
                             &geo_touch_sensor_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1990,7 +1990,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sfbool_emitter>(
                             &geo_touch_sensor_node::is_over_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1998,14 +1998,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_touch_sensor_node::sftime_emitter>(
                             &geo_touch_sensor_node::touch_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_touch_sensor_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2013,7 +2013,7 @@ namespace {
                         new node_type_t::field_ptr<mfstring>(
                             &geo_touch_sensor_node::geo_system_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2115,12 +2115,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2136,7 +2136,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<sfnode> >(
                             &geo_viewpoint_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2144,7 +2144,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_viewpoint_node::set_bind_listener>(
                             &geo_viewpoint_node::set_bind_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2152,7 +2152,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_viewpoint_node::set_orientation_listener>(
                             &geo_viewpoint_node::set_orientation_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2160,7 +2160,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         geo_viewpoint_node::set_position_listener>(
                             &geo_viewpoint_node::set_position_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2176,7 +2176,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<sfstring> >(
                             &geo_viewpoint_node::description_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2192,7 +2192,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<sffloat> >(
                             &geo_viewpoint_node::field_of_view_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2208,7 +2208,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<sfbool> >(
                             &geo_viewpoint_node::headlight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2224,7 +2224,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<sfbool> >(
                             &geo_viewpoint_node::jump_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2240,7 +2240,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<geo_viewpoint_node>::exposedfield<mfstring> >(
                             &geo_viewpoint_node::nav_type_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2248,7 +2248,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_viewpoint_node::sftime_emitter>(
                             &geo_viewpoint_node::bind_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2256,35 +2256,35 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         geo_viewpoint_node::sfbool_emitter>(
                             &geo_viewpoint_node::is_bound_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfnode>(
                             &geo_viewpoint_node::geo_origin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfstring>(
                             &geo_viewpoint_node::geo_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfrotation>(
                             &geo_viewpoint_node::orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3d>(
                             &geo_viewpoint_node::position_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2292,7 +2292,7 @@ namespace {
                         new node_type_t::field_ptr<sffloat>(
                             &geo_viewpoint_node::speed_factor_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

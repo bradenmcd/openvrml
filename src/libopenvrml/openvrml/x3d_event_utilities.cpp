@@ -509,12 +509,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -530,7 +530,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_filter_node>::exposedfield<sfnode> >(
                             &boolean_filter_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -538,7 +538,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_filter_node::set_boolean_listener>(
                             &boolean_filter_node::set_boolean_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -546,7 +546,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         boolean_filter_node::sfbool_emitter>(
                             &boolean_filter_node::input_false_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -554,7 +554,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         boolean_filter_node::sfbool_emitter>(
                             &boolean_filter_node::input_negate_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -563,7 +563,7 @@ namespace {
                         boolean_filter_node::sfbool_emitter>(
                             &boolean_filter_node::input_true_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -639,12 +639,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -660,7 +660,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_sequencer_node>::exposedfield<sfnode> >(
                             &boolean_sequencer_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -668,7 +668,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_sequencer_node::next_listener>(
                             &boolean_sequencer_node::next_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -676,7 +676,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_sequencer_node::previous_listener>(
                             &boolean_sequencer_node::previous_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -684,7 +684,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_sequencer_node::set_fraction_listener>(
                             &boolean_sequencer_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -700,7 +700,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_sequencer_node>::exposedfield<mffloat> >(
                             &boolean_sequencer_node::key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -716,7 +716,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_sequencer_node>::exposedfield<mfbool> >(
                             &boolean_sequencer_node::key_value_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -725,7 +725,7 @@ namespace {
                         boolean_sequencer_node::sfbool_emitter>(
                             &boolean_sequencer_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -789,12 +789,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -810,7 +810,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_toggle_node>::exposedfield<sfnode> >(
                             &boolean_toggle_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -818,7 +818,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_toggle_node::set_boolean_listener>(
                             &boolean_toggle_node::set_boolean_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -835,7 +835,7 @@ namespace {
                         abstract_node<boolean_toggle_node>::exposedfield<sfbool> >(
                             &boolean_toggle_node::toggle_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -899,12 +899,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -920,7 +920,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<boolean_trigger_node>::exposedfield<sfnode> >(
                             &boolean_trigger_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -928,7 +928,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         boolean_trigger_node::set_trigger_time_listener>(
                             &boolean_trigger_node::set_trigger_time_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -937,7 +937,7 @@ namespace {
                         boolean_trigger_node::sfbool_emitter>(
                             &boolean_trigger_node::trigger_true_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1014,12 +1014,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1035,7 +1035,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<integer_sequencer_node>::exposedfield<sfnode> >(
                             &integer_sequencer_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1043,7 +1043,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         integer_sequencer_node::next_listener>(
                             &integer_sequencer_node::next_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1051,7 +1051,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         integer_sequencer_node::previous_listener>(
                             &integer_sequencer_node::previous_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1059,7 +1059,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         integer_sequencer_node::set_fraction_listener>(
                             &integer_sequencer_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1075,7 +1075,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<integer_sequencer_node>::exposedfield<mffloat> >(
                             &integer_sequencer_node::key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1091,7 +1091,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<integer_sequencer_node>::exposedfield<mfint32> >(
                             &integer_sequencer_node::key_value_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1100,7 +1100,7 @@ namespace {
                         integer_sequencer_node::sfint32_emitter>(
                             &integer_sequencer_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1167,12 +1167,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1188,7 +1188,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<integer_trigger_node>::exposedfield<sfnode> >(
                             &integer_trigger_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1196,7 +1196,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         integer_trigger_node::set_boolean_listener>(
                             &integer_trigger_node::set_boolean_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1212,7 +1212,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<integer_trigger_node>::exposedfield<mfint32> >(
                             &integer_trigger_node::integer_key_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1221,7 +1221,7 @@ namespace {
                         integer_trigger_node::sfint32_emitter>(
                             &integer_trigger_node::trigger_value_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1284,12 +1284,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1305,7 +1305,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<time_trigger_node>::exposedfield<sfnode> >(
                             &time_trigger_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1313,7 +1313,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         time_trigger_node::set_boolean_listener>(
                             &time_trigger_node::set_boolean_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1322,7 +1322,7 @@ namespace {
                         time_trigger_node::sftime_emitter>(
                             &time_trigger_node::trigger_time_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

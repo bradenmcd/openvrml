@@ -259,12 +259,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -280,7 +280,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<sfnode> >(
                             &multi_texture_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -296,7 +296,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<sffloat> >(
                             &multi_texture_node::alpha_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -312,7 +312,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<sfcolor> >(
                             &multi_texture_node::color_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -328,7 +328,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<mfstring> >(
                             &multi_texture_node::function_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -344,7 +344,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<mfstring> >(
                             &multi_texture_node::mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -360,7 +360,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_node>::exposedfield<mfstring> >(
                             &multi_texture_node::source_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -377,7 +377,7 @@ namespace {
                         abstract_node<multi_texture_node>::exposedfield<mfnode> >(
                             &multi_texture_node::texture_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -439,12 +439,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -460,7 +460,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_coordinate_node>::exposedfield<sfnode> >(
                             &multi_texture_coordinate_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -477,7 +477,7 @@ namespace {
                         abstract_node<multi_texture_coordinate_node>::exposedfield<mfnode> >(
                             &multi_texture_coordinate_node::tex_coord_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -539,12 +539,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -560,7 +560,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<multi_texture_transform_node>::exposedfield<sfnode> >(
                             &multi_texture_transform_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -577,7 +577,7 @@ namespace {
                         abstract_node<multi_texture_transform_node>::exposedfield<mfnode> >(
                             &multi_texture_transform_node::texture_transform_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -642,12 +642,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -663,7 +663,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_coordinate_generator_node>::exposedfield<sfnode> >(
                             &texture_coordinate_generator_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -679,7 +679,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_coordinate_generator_node>::exposedfield<sfstring> >(
                             &texture_coordinate_generator_node::mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -696,7 +696,7 @@ namespace {
                         abstract_node<texture_coordinate_generator_node>::exposedfield<mffloat> >(
                             &texture_coordinate_generator_node::parameter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

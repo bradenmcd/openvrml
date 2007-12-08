@@ -1,3 +1,38 @@
+2007-12-08 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for building with Microsoft C/C++ 15.00.21022.08 (Visual C++
+	9.0).  Also, it looks like Boost threads will pull in windows.h in
+	the forthcoming 1.35 release; that makes OpenVRML's widespread use
+	of the identifier "interface" problematic.  That has been
+	addressed.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
+	* src/libopenvrml/openvrml/x3d_core.cpp
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/libopenvrml/openvrml/x3d_networking.cpp
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+
 2007-12-07 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/x3d_vrml_grammar.h

@@ -826,12 +826,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -847,7 +847,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<contour2d_node>::exposedfield<sfnode> >(
                             &contour2d_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -855,7 +855,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         contour2d_node::add_children_listener>(
                             &contour2d_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -863,7 +863,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         contour2d_node::remove_children_listener>(
                             &contour2d_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -880,7 +880,7 @@ namespace {
                         abstract_node<contour2d_node>::exposedfield<mfnode> >(
                             &contour2d_node::children_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -946,12 +946,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -967,8 +967,8 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<contour_polyline2d_node>::exposedfield<sfnode> >(
                             &contour_polyline2d_node::metadata)));
-            } else if (*interface == *++supported_interface ||
-                       *interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface ||
+                       *interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -985,7 +985,7 @@ namespace {
                         abstract_node<contour_polyline2d_node>::exposedfield<mfvec2f> >(
                             &contour_polyline2d_node::point_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1047,12 +1047,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1068,7 +1068,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<coordinate_double_node>::exposedfield<sfnode> >(
                             &coordinate_double_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1085,7 +1085,7 @@ namespace {
                         abstract_node<coordinate_double_node>::exposedfield<mfvec3d> >(
                             &coordinate_double_node::point_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1160,12 +1160,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1181,7 +1181,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve_node>::exposedfield<sfnode> >(
                             &nurbs_curve_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1197,7 +1197,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve_node>::exposedfield<sfnode> >(
                             &nurbs_curve_node::control_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1213,7 +1213,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve_node>::exposedfield<sfint32> >(
                             &nurbs_curve_node::tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1229,21 +1229,21 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve_node>::exposedfield<mfdouble> >(
                             &nurbs_curve_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_curve_node::closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_curve_node::knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1251,7 +1251,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_curve_node::order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1327,12 +1327,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1348,7 +1348,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve2d_node>::exposedfield<sfnode> >(
                             &nurbs_curve2d_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1364,7 +1364,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve2d_node>::exposedfield<mfvec2d> >(
                             &nurbs_curve2d_node::control_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1380,7 +1380,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve2d_node>::exposedfield<sfint32> >(
                             &nurbs_curve2d_node::tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1396,21 +1396,21 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_curve2d_node>::exposedfield<mfdouble> >(
                             &nurbs_curve2d_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_curve2d_node::closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_curve2d_node::knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1418,7 +1418,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_curve2d_node::order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1496,12 +1496,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1517,7 +1517,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_orientation_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_orientation_interpolator_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1525,7 +1525,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_orientation_interpolator_node::set_fraction_listener>(
                             &nurbs_orientation_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1541,7 +1541,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_orientation_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_orientation_interpolator_node::control_points_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1557,7 +1557,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_orientation_interpolator_node>::exposedfield<mfdouble> >(
                             &nurbs_orientation_interpolator_node::knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1573,7 +1573,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_orientation_interpolator_node>::exposedfield<sfint32> >(
                             &nurbs_orientation_interpolator_node::order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1589,7 +1589,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_orientation_interpolator_node>::exposedfield<mfdouble> >(
                             &nurbs_orientation_interpolator_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1598,7 +1598,7 @@ namespace {
                         nurbs_orientation_interpolator_node::sfrotation_emitter>(
                             &nurbs_orientation_interpolator_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1699,12 +1699,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1720,7 +1720,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<sfnode> >(
                             &nurbs_patch_surface_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1736,7 +1736,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<sfnode> >(
                             &nurbs_patch_surface_node::control_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1752,7 +1752,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<sfnode> >(
                             &nurbs_patch_surface_node::tex_coord_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1768,7 +1768,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<sfint32> >(
                             &nurbs_patch_surface_node::u_tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1784,7 +1784,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<sfint32> >(
                             &nurbs_patch_surface_node::v_tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1800,63 +1800,63 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_patch_surface_node>::exposedfield<mfdouble> >(
                             &nurbs_patch_surface_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_patch_surface_node::solid_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_patch_surface_node::u_closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_patch_surface_node::u_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_patch_surface_node::u_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_patch_surface_node::u_order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_patch_surface_node::v_closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_patch_surface_node::v_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_patch_surface_node::v_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1864,7 +1864,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_patch_surface_node::v_order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1941,12 +1941,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1962,7 +1962,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_position_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_position_interpolator_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1970,7 +1970,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_position_interpolator_node::set_fraction_listener>(
                             &nurbs_position_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1986,7 +1986,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_position_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_position_interpolator_node::control_points_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2002,7 +2002,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_position_interpolator_node>::exposedfield<mfdouble> >(
                             &nurbs_position_interpolator_node::knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2018,7 +2018,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_position_interpolator_node>::exposedfield<sfint32> >(
                             &nurbs_position_interpolator_node::order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2034,7 +2034,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_position_interpolator_node>::exposedfield<mfdouble> >(
                             &nurbs_position_interpolator_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2043,7 +2043,7 @@ namespace {
                         nurbs_position_interpolator_node::sfvec3f_emitter>(
                             &nurbs_position_interpolator_node::value_changed_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2117,12 +2117,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2138,7 +2138,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_set_node>::exposedfield<sfnode> >(
                             &nurbs_set_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2146,7 +2146,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_set_node::add_geometry_listener>(
                             &nurbs_set_node::add_geometry_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2154,7 +2154,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_set_node::remove_geometry_listener>(
                             &nurbs_set_node::remove_geometry_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2170,7 +2170,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_set_node>::exposedfield<mfnode> >(
                             &nurbs_set_node::geometry_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2186,14 +2186,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_set_node>::exposedfield<sffloat> >(
                             &nurbs_set_node::tessellation_scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &nurbs_set_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2201,7 +2201,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &nurbs_set_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2293,12 +2293,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2314,7 +2314,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_surface_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_surface_interpolator_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2322,7 +2322,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_surface_interpolator_node::set_fraction_listener>(
                             &nurbs_surface_interpolator_node::set_fraction_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2338,7 +2338,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_surface_interpolator_node>::exposedfield<sfnode> >(
                             &nurbs_surface_interpolator_node::control_points_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2354,7 +2354,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_surface_interpolator_node>::exposedfield<mfdouble> >(
                             &nurbs_surface_interpolator_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2362,7 +2362,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         nurbs_surface_interpolator_node::sfvec3f_emitter>(
                             &nurbs_surface_interpolator_node::position_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2370,42 +2370,42 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         nurbs_surface_interpolator_node::sfvec3f_emitter>(
                             &nurbs_surface_interpolator_node::normal_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_surface_interpolator_node::u_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_surface_interpolator_node::u_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_surface_interpolator_node::u_order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_surface_interpolator_node::v_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_surface_interpolator_node::v_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2413,7 +2413,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_surface_interpolator_node::v_order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2484,12 +2484,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2505,7 +2505,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swept_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swept_surface_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2521,7 +2521,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swept_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swept_surface_node::cross_section_curve_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2537,14 +2537,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swept_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swept_surface_node::trajectory_curve_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_swept_surface_node::ccw_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2552,7 +2552,7 @@ namespace {
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_swept_surface_node::solid_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2623,12 +2623,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2644,7 +2644,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swung_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swung_surface_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2660,7 +2660,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swung_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swung_surface_node::componentcurve_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2676,14 +2676,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_swung_surface_node>::exposedfield<sfnode> >(
                             &nurbs_swung_surface_node::trajectory_curve_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_swung_surface_node::ccw_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2691,7 +2691,7 @@ namespace {
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_swung_surface_node::solid_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2774,12 +2774,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2795,7 +2795,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_texture_coordinate_node>::exposedfield<sfnode> >(
                             &nurbs_texture_coordinate_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2811,7 +2811,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_texture_coordinate_node>::exposedfield<mfvec2f> >(
                             &nurbs_texture_coordinate_node::control_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2827,42 +2827,42 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_texture_coordinate_node>::exposedfield<mffloat> >(
                             &nurbs_texture_coordinate_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_texture_coordinate_node::u_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_texture_coordinate_node::u_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_texture_coordinate_node::u_order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_texture_coordinate_node::v_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_texture_coordinate_node::v_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2870,7 +2870,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_texture_coordinate_node::v_order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2981,12 +2981,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3002,7 +3002,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<sfnode> >(
                             &nurbs_trimmed_surface_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3010,7 +3010,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_trimmed_surface_node::add_trimming_contour_listener>(
                             &nurbs_trimmed_surface_node::add_trimming_contour_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3018,7 +3018,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         nurbs_trimmed_surface_node::remove_trimming_contour_listener>(
                             &nurbs_trimmed_surface_node::remove_trimming_contour_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3034,7 +3034,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<sfnode> >(
                             &nurbs_trimmed_surface_node::control_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3050,7 +3050,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<sfnode> >(
                             &nurbs_trimmed_surface_node::tex_coord_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3066,7 +3066,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<mfnode> >(
                             &nurbs_trimmed_surface_node::trimming_contour_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3082,7 +3082,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<sfint32> >(
                             &nurbs_trimmed_surface_node::u_tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3098,7 +3098,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<sfint32> >(
                             &nurbs_trimmed_surface_node::v_tessellation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3114,63 +3114,63 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<nurbs_trimmed_surface_node>::exposedfield<mfdouble> >(
                             &nurbs_trimmed_surface_node::weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_trimmed_surface_node::solid_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_trimmed_surface_node::u_closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_trimmed_surface_node::u_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_trimmed_surface_node::u_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_trimmed_surface_node::u_order_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfbool>(
                             &nurbs_trimmed_surface_node::v_closed_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_trimmed_surface_node::v_dimension_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<mfdouble>(
                             &nurbs_trimmed_surface_node::v_knot_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3178,7 +3178,7 @@ namespace {
                         new node_type_t::field_ptr<sfint32>(
                             &nurbs_trimmed_surface_node::v_order_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

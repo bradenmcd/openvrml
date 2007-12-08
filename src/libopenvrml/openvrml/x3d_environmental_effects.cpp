@@ -201,12 +201,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -222,7 +222,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -230,7 +230,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         texture_background_node::set_bind_listener>(
                             &texture_background_node::set_bind_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -246,7 +246,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<mffloat> >(
                             &texture_background_node::ground_angle_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -262,7 +262,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<mfcolor> >(
                             &texture_background_node::ground_color_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -278,7 +278,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::back_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -294,7 +294,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::bottom_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -310,7 +310,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::front_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -326,7 +326,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::left_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -342,7 +342,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::right_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -358,7 +358,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<sfnode> >(
                             &texture_background_node::top_texture_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -374,7 +374,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<mffloat> >(
                             &texture_background_node::sky_angle_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -390,7 +390,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<mfcolor> >(
                             &texture_background_node::sky_color_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -406,7 +406,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<texture_background_node>::exposedfield<mffloat> >(
                             &texture_background_node::transparency_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -414,7 +414,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         texture_background_node::sftime_emitter>(
                             &texture_background_node::bind_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -423,7 +423,7 @@ namespace {
                         texture_background_node::sfbool_emitter>(
                             &texture_background_node::is_bound_emitter_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

@@ -124,7 +124,7 @@ namespace openvrml {
             explicit script_node_type(script_node_metatype & class_);
             virtual ~script_node_type() OPENVRML_NOTHROW;
 
-            void add_interface(const node_interface & interface)
+            void add_interface(const node_interface & interface_)
                 OPENVRML_THROW2(std::bad_alloc, std::invalid_argument);
 
         private:

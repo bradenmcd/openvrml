@@ -848,12 +848,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -869,7 +869,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfnode> >(
                             &espdu_transform_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -877,7 +877,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::add_children_listener>(
                             &espdu_transform_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -885,7 +885,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::remove_children_listener>(
                             &espdu_transform_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -893,7 +893,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value0_listener>(
                             &espdu_transform_node::set_articulation_parameter_value0_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -901,7 +901,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value1_listener>(
                             &espdu_transform_node::set_articulation_parameter_value1_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -909,7 +909,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value2_listener>(
                             &espdu_transform_node::set_articulation_parameter_value2_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -917,7 +917,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value3_listener>(
                             &espdu_transform_node::set_articulation_parameter_value3_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -925,7 +925,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value4_listener>(
                             &espdu_transform_node::set_articulation_parameter_value4_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -933,7 +933,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value5_listener>(
                             &espdu_transform_node::set_articulation_parameter_value5_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -941,7 +941,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value6_listener>(
                             &espdu_transform_node::set_articulation_parameter_value6_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -949,7 +949,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         espdu_transform_node::set_articulation_parameter_value7_listener>(
                             &espdu_transform_node::set_articulation_parameter_value7_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -965,7 +965,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfstring> >(
                             &espdu_transform_node::address_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -981,7 +981,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -997,7 +997,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::articulation_parameter_count_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1013,7 +1013,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mfint32> >(
                             &espdu_transform_node::articulation_parameter_designator_array_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1029,7 +1029,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mfint32> >(
                             &espdu_transform_node::articulation_parameter_change_indicator_array_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1045,7 +1045,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mfint32> >(
                             &espdu_transform_node::articulation_parameter_id_part_attached_to_array_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1061,7 +1061,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mfint32> >(
                             &espdu_transform_node::articulation_parameter_type_array_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1077,7 +1077,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mffloat> >(
                             &espdu_transform_node::articulation_parameter_array_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1093,7 +1093,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1109,7 +1109,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<mfnode> >(
                             &espdu_transform_node::children_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1125,7 +1125,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::collision_type_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1141,7 +1141,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::dead_reckoning_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1157,7 +1157,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::detonation_location_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1173,7 +1173,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::detonation_relative_location_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1189,7 +1189,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::detonation_result_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1205,7 +1205,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_category_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1221,7 +1221,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_country_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1237,7 +1237,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_domain_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1253,7 +1253,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_extra_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1269,7 +1269,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1285,7 +1285,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_kind_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1301,7 +1301,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_specific_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1317,7 +1317,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::entity_sub_category_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1333,7 +1333,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::event_application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1349,7 +1349,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::event_entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1365,7 +1365,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::event_number_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1381,7 +1381,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::event_site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1397,7 +1397,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfbool> >(
                             &espdu_transform_node::fired1_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1413,7 +1413,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfbool> >(
                             &espdu_transform_node::fired2_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1429,7 +1429,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::fire_mission_index_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1445,7 +1445,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sffloat> >(
                             &espdu_transform_node::firing_range_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1461,7 +1461,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::firing_rate_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1477,7 +1477,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::force_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1493,7 +1493,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::fuse_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1509,7 +1509,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::linear_velocity_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1525,7 +1525,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::linear_acceleration_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1541,7 +1541,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfstring> >(
                             &espdu_transform_node::marking_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1557,7 +1557,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfstring> >(
                             &espdu_transform_node::multicast_relay_host_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1573,7 +1573,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::multicast_relay_port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1589,7 +1589,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::munition_application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1605,7 +1605,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::munition_end_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1621,7 +1621,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::munition_entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1637,7 +1637,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::munition_quantity_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1653,7 +1653,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::munition_site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1669,7 +1669,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::munition_start_point_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1685,7 +1685,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfstring> >(
                             &espdu_transform_node::network_mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1701,7 +1701,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1717,7 +1717,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sftime> >(
                             &espdu_transform_node::read_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1733,7 +1733,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfrotation> >(
                             &espdu_transform_node::rotation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1749,7 +1749,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1765,7 +1765,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfrotation> >(
                             &espdu_transform_node::scale_orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1781,7 +1781,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1797,7 +1797,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfvec3f> >(
                             &espdu_transform_node::translation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1813,7 +1813,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sfint32> >(
                             &espdu_transform_node::warhead_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1829,7 +1829,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<espdu_transform_node>::exposedfield<sftime> >(
                             &espdu_transform_node::write_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1837,7 +1837,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value0_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1845,7 +1845,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value1_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1853,7 +1853,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value2_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1861,7 +1861,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value3_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1869,7 +1869,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value4_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1877,7 +1877,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value5_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1885,7 +1885,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value6_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1893,7 +1893,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sffloat_emitter>(
                             &espdu_transform_node::articulation_parameter_value7_changed_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1901,7 +1901,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sftime_emitter>(
                             &espdu_transform_node::collide_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1909,7 +1909,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sftime_emitter>(
                             &espdu_transform_node::detonate_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1917,7 +1917,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sftime_emitter>(
                             &espdu_transform_node::fired_time_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1925,7 +1925,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1933,7 +1933,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_collided_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1941,7 +1941,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_detonated_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1949,7 +1949,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_network_reader_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1957,7 +1957,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_network_writer_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1965,7 +1965,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_rtp_header_heard_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1973,7 +1973,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sfbool_emitter>(
                             &espdu_transform_node::is_stand_alone_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1981,21 +1981,21 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         espdu_transform_node::sftime_emitter>(
                             &espdu_transform_node::timestamp_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &espdu_transform_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &espdu_transform_node::bbox_size_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2003,7 +2003,7 @@ namespace {
                         new node_type_t::field_ptr<sfbool>(
                             &espdu_transform_node::rtp_header_expected_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2142,12 +2142,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2163,7 +2163,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfnode> >(
                             &receiver_pdu_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2179,7 +2179,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfstring> >(
                             &receiver_pdu_node::address_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2195,7 +2195,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2211,7 +2211,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2227,7 +2227,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfstring> >(
                             &receiver_pdu_node::multicast_relay_host_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2243,7 +2243,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::multicast_relay_port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2259,7 +2259,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfstring> >(
                             &receiver_pdu_node::network_mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2275,7 +2275,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2291,7 +2291,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::radio_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2307,7 +2307,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sffloat> >(
                             &receiver_pdu_node::read_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2323,7 +2323,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sffloat> >(
                             &receiver_pdu_node::received_power_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2339,7 +2339,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::receiver_state_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2355,7 +2355,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfbool> >(
                             &receiver_pdu_node::rtp_header_expected_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2371,7 +2371,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2387,7 +2387,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::transmitter_application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2403,7 +2403,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::transmitter_entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2419,7 +2419,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::transmitter_radio_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2435,7 +2435,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::transmitter_site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2451,7 +2451,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sfint32> >(
                             &receiver_pdu_node::which_geometry_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2467,7 +2467,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<receiver_pdu_node>::exposedfield<sffloat> >(
                             &receiver_pdu_node::write_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2475,7 +2475,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sfbool_emitter>(
                             &receiver_pdu_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2483,7 +2483,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sfbool_emitter>(
                             &receiver_pdu_node::is_network_reader_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2491,7 +2491,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sfbool_emitter>(
                             &receiver_pdu_node::is_network_writer_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2499,7 +2499,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sfbool_emitter>(
                             &receiver_pdu_node::is_rtp_header_heard_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2507,7 +2507,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sfbool_emitter>(
                             &receiver_pdu_node::is_stand_alone_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2515,14 +2515,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         receiver_pdu_node::sftime_emitter>(
                             &receiver_pdu_node::timestamp_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &receiver_pdu_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2530,7 +2530,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &receiver_pdu_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -2667,12 +2667,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2688,7 +2688,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfnode> >(
                             &signal_pdu_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2704,7 +2704,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfstring> >(
                             &signal_pdu_node::address_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2720,7 +2720,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2736,7 +2736,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<mfint32> >(
                             &signal_pdu_node::data_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2752,7 +2752,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::data_length_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2768,7 +2768,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::encoding_scheme_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2784,7 +2784,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2800,7 +2800,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfstring> >(
                             &signal_pdu_node::multicast_relay_host_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2816,7 +2816,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::multicast_relay_port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2832,7 +2832,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfstring> >(
                             &signal_pdu_node::network_mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2848,7 +2848,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2864,7 +2864,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::radio_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2880,7 +2880,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sffloat> >(
                             &signal_pdu_node::read_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2896,7 +2896,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfbool> >(
                             &signal_pdu_node::rtp_header_expected_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2912,7 +2912,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::sample_rate_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2928,7 +2928,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::samples_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2944,7 +2944,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2960,7 +2960,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::tdl_type_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2976,7 +2976,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sfint32> >(
                             &signal_pdu_node::which_geometry_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -2992,7 +2992,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<signal_pdu_node>::exposedfield<sffloat> >(
                             &signal_pdu_node::write_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3000,7 +3000,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sfbool_emitter>(
                             &signal_pdu_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3008,7 +3008,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sfbool_emitter>(
                             &signal_pdu_node::is_network_reader_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3016,7 +3016,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sfbool_emitter>(
                             &signal_pdu_node::is_network_writer_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3024,7 +3024,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sfbool_emitter>(
                             &signal_pdu_node::is_rtp_header_heard_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3032,7 +3032,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sfbool_emitter>(
                             &signal_pdu_node::is_stand_alone_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3040,14 +3040,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         signal_pdu_node::sftime_emitter>(
                             &signal_pdu_node::timestamp_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &signal_pdu_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3055,7 +3055,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &signal_pdu_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -3241,12 +3241,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3262,7 +3262,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfnode> >(
                             &transmitter_pdu_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3278,7 +3278,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfstring> >(
                             &transmitter_pdu_node::address_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3294,7 +3294,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfvec3f> >(
                             &transmitter_pdu_node::antenna_location_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3310,7 +3310,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::antenna_pattern_length_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3326,7 +3326,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::antenna_pattern_type_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3342,7 +3342,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::application_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3358,7 +3358,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::crypto_key_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3374,7 +3374,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::crypto_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3390,7 +3390,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::entity_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3406,7 +3406,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::frequency_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3422,7 +3422,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::input_source_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3438,7 +3438,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::length_of_modulation_parameters_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3454,7 +3454,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::modulation_type_detail_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3470,7 +3470,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::modulation_type_major_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3486,7 +3486,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::modulation_type_spread_spectrum_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3502,7 +3502,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<mfint32> >(
                             &transmitter_pdu_node::modulation_type_system_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3518,7 +3518,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfstring> >(
                             &transmitter_pdu_node::multicast_relay_host_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3534,7 +3534,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::multicast_relay_port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3550,7 +3550,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfstring> >(
                             &transmitter_pdu_node::network_mode_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3566,7 +3566,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::port_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3582,7 +3582,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::power_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3598,7 +3598,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_category_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3614,7 +3614,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_country_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3630,7 +3630,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_domain_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3646,7 +3646,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_kind_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3662,7 +3662,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_nomenclature_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3678,7 +3678,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_entity_type_nomenclature_version_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3694,7 +3694,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::radio_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3710,7 +3710,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sffloat> >(
                             &transmitter_pdu_node::read_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3726,7 +3726,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfvec3f> >(
                             &transmitter_pdu_node::relative_antenna_location_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3742,7 +3742,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfbool> >(
                             &transmitter_pdu_node::rtp_header_expected_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3758,7 +3758,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::site_id_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3774,7 +3774,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sffloat> >(
                             &transmitter_pdu_node::transmit_frequency_bandwidth_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3790,7 +3790,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::transmit_state_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3806,7 +3806,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sfint32> >(
                             &transmitter_pdu_node::which_geometry_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3822,7 +3822,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<transmitter_pdu_node>::exposedfield<sffloat> >(
                             &transmitter_pdu_node::write_interval_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3830,7 +3830,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sfbool_emitter>(
                             &transmitter_pdu_node::is_active_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3838,7 +3838,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sfbool_emitter>(
                             &transmitter_pdu_node::is_network_reader_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3846,7 +3846,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sfbool_emitter>(
                             &transmitter_pdu_node::is_network_writer_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3854,7 +3854,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sfbool_emitter>(
                             &transmitter_pdu_node::is_rtp_header_heard_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3862,7 +3862,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sfbool_emitter>(
                             &transmitter_pdu_node::is_stand_alone_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3870,14 +3870,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         transmitter_pdu_node::sftime_emitter>(
                             &transmitter_pdu_node::timestamp_emitter_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &transmitter_pdu_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -3885,7 +3885,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &transmitter_pdu_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

@@ -285,12 +285,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -306,7 +306,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_double_node>::exposedfield<sfnode> >(
                             &metadata_double_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -322,7 +322,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_double_node>::exposedfield<sfstring> >(
                             &metadata_double_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -338,7 +338,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_double_node>::exposedfield<sfstring> >(
                             &metadata_double_node::reference_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -355,7 +355,7 @@ namespace {
                         abstract_node<metadata_double_node>::exposedfield<mfdouble> >(
                             &metadata_double_node::value_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;
@@ -421,12 +421,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -442,7 +442,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_float_node>::exposedfield<sfnode> >(
                             &metadata_float_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -458,7 +458,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_float_node>::exposedfield<sfstring> >(
                             &metadata_float_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -474,7 +474,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_float_node>::exposedfield<sfstring> >(
                             &metadata_float_node::reference_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -491,7 +491,7 @@ namespace {
                         abstract_node<metadata_float_node>::exposedfield<mffloat> >(
                             &metadata_float_node::value_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;
@@ -559,12 +559,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -580,7 +580,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_integer_node>::exposedfield<sfnode> >(
                             &metadata_integer_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -596,7 +596,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_integer_node>::exposedfield<sfstring> >(
                             &metadata_integer_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -612,7 +612,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_integer_node>::exposedfield<sfstring> >(
                             &metadata_integer_node::reference_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -629,7 +629,7 @@ namespace {
                         abstract_node<metadata_integer_node>::exposedfield<mfint32> >(
                             &metadata_integer_node::value_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;
@@ -695,12 +695,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -716,7 +716,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_set_node>::exposedfield<sfnode> >(
                             &metadata_set_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -732,7 +732,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_set_node>::exposedfield<sfstring> >(
                             &metadata_set_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -748,7 +748,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_set_node>::exposedfield<sfstring> >(
                             &metadata_set_node::reference_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -765,7 +765,7 @@ namespace {
                         abstract_node<metadata_set_node>::exposedfield<mfnode> >(
                             &metadata_set_node::value_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;
@@ -832,12 +832,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
         
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -853,7 +853,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_string_node>::exposedfield<sfnode> >(
                             &metadata_string_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -869,7 +869,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_string_node>::exposedfield<sfstring> >(
                             &metadata_string_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -885,7 +885,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<metadata_string_node>::exposedfield<sfstring> >(
                             &metadata_string_node::reference_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -902,7 +902,7 @@ namespace {
                         abstract_node<metadata_string_node>::exposedfield<mfstring> >(
                             &metadata_string_node::value_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }        
         return type;

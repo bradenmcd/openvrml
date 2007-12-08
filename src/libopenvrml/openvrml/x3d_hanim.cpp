@@ -410,12 +410,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -431,7 +431,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_displacer_node>::exposedfield<sfnode> >(
                             &hanim_displacer_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -447,7 +447,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_displacer_node>::exposedfield<mfint32> >(
                             &hanim_displacer_node::coord_index_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -463,7 +463,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_displacer_node>::exposedfield<mfvec3f> >(
                             &hanim_displacer_node::displacements_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -479,7 +479,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_displacer_node>::exposedfield<sfstring> >(
                             &hanim_displacer_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -496,7 +496,7 @@ namespace {
                         abstract_node<hanim_displacer_node>::exposedfield<sffloat> >(
                             &hanim_displacer_node::weight_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -608,12 +608,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -629,7 +629,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfnode> >(
                             &hanim_humanoid_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -645,7 +645,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfvec3f> >(
                             &hanim_humanoid_node::center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -661,7 +661,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfstring> >(
                             &hanim_humanoid_node::info_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -677,7 +677,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::joints_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -693,7 +693,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfstring> >(
                             &hanim_humanoid_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -709,7 +709,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfrotation> >(
                             &hanim_humanoid_node::rotation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -725,7 +725,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfvec3f> >(
                             &hanim_humanoid_node::scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -741,7 +741,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfrotation> >(
                             &hanim_humanoid_node::scale_orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -757,7 +757,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::segments_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -773,7 +773,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::sites_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -789,7 +789,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::skeleton_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -805,7 +805,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::skin_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -821,7 +821,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfnode> >(
                             &hanim_humanoid_node::skin_coord_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -837,7 +837,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfnode> >(
                             &hanim_humanoid_node::skin_normal_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -853,7 +853,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfvec3f> >(
                             &hanim_humanoid_node::translation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -869,7 +869,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<sfstring> >(
                             &hanim_humanoid_node::version_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -885,14 +885,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_humanoid_node>::exposedfield<mfnode> >(
                             &hanim_humanoid_node::viewpoints_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_humanoid_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -900,7 +900,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_humanoid_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1011,12 +1011,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1032,7 +1032,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfnode> >(
                             &hanim_joint_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1040,7 +1040,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_joint_node::add_children_listener>(
                             &hanim_joint_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1048,7 +1048,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_joint_node::remove_children_listener>(
                             &hanim_joint_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1064,7 +1064,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfvec3f> >(
                             &hanim_joint_node::center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1080,7 +1080,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mfnode> >(
                             &hanim_joint_node::children_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1096,7 +1096,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mfnode> >(
                             &hanim_joint_node::displacers_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1112,7 +1112,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfrotation> >(
                             &hanim_joint_node::limit_orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1128,7 +1128,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mffloat> >(
                             &hanim_joint_node::llimit_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1144,7 +1144,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfstring> >(
                             &hanim_joint_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1160,7 +1160,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfrotation> >(
                             &hanim_joint_node::rotation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1176,7 +1176,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfvec3f> >(
                             &hanim_joint_node::scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1192,7 +1192,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfrotation> >(
                             &hanim_joint_node::scale_orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1208,7 +1208,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mfint32> >(
                             &hanim_joint_node::skin_coord_index_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1224,7 +1224,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mffloat> >(
                             &hanim_joint_node::skin_coord_weight_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1240,7 +1240,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mffloat> >(
                             &hanim_joint_node::stiffness_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1256,7 +1256,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<sfvec3f> >(
                             &hanim_joint_node::translation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1272,14 +1272,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_joint_node>::exposedfield<mffloat> >(
                             &hanim_joint_node::ulimit_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_joint_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1287,7 +1287,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_joint_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1378,12 +1378,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1399,7 +1399,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<sfnode> >(
                             &hanim_segment_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1407,7 +1407,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_segment_node::add_children_listener>(
                             &hanim_segment_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1415,7 +1415,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_segment_node::remove_children_listener>(
                             &hanim_segment_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1431,7 +1431,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<sfvec3f> >(
                             &hanim_segment_node::center_of_mass_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1447,7 +1447,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<mfnode> >(
                             &hanim_segment_node::children_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1463,7 +1463,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<sfnode> >(
                             &hanim_segment_node::coord_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1479,7 +1479,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<mfnode> >(
                             &hanim_segment_node::displacers_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1495,7 +1495,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<sffloat> >(
                             &hanim_segment_node::mass_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1511,7 +1511,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<mffloat> >(
                             &hanim_segment_node::moments_of_inertia_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1527,14 +1527,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_segment_node>::exposedfield<sfstring> >(
                             &hanim_segment_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_segment_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1542,7 +1542,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_segment_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;
@@ -1631,12 +1631,12 @@ namespace {
         const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
         node_type_t & the_node_type = static_cast<node_type_t &>(*type);
 
-        for (node_interface_set::const_iterator interface(interfaces.begin());
-             interface != interfaces.end();
-             ++interface) {
+        for (node_interface_set::const_iterator interface_(interfaces.begin());
+             interface_ != interfaces.end();
+             ++interface_) {
             supported_interfaces_t::const_iterator supported_interface =
                 supported_interfaces.begin() - 1;
-            if (*interface == *++supported_interface) {
+            if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1652,7 +1652,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfnode> >(
                             &hanim_site_node::metadata)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1660,7 +1660,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_site_node::add_children_listener>(
                             &hanim_site_node::add_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1668,7 +1668,7 @@ namespace {
                         new node_type_t::event_listener_ptr<
                         hanim_site_node::remove_children_listener>(
                             &hanim_site_node::remove_children_listener_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1684,7 +1684,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfvec3f> >(
                             &hanim_site_node::center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1700,7 +1700,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<mfnode> >(
                             &hanim_site_node::children_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1716,7 +1716,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfstring> >(
                             &hanim_site_node::name_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1732,7 +1732,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfrotation> >(
                             &hanim_site_node::rotation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1748,7 +1748,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfvec3f> >(
                             &hanim_site_node::scale_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1764,7 +1764,7 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfrotation> >(
                             &hanim_site_node::scale_orientation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1780,14 +1780,14 @@ namespace {
                         new node_type_t::event_emitter_ptr<
                         abstract_node<hanim_site_node>::exposedfield<sfvec3f> >(
                             &hanim_site_node::translation_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
                     node_type_t::field_ptr_ptr(
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_site_node::bbox_center_)));
-            } else if (*interface == *++supported_interface) {
+            } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
@@ -1795,7 +1795,7 @@ namespace {
                         new node_type_t::field_ptr<sfvec3f>(
                             &hanim_site_node::bbox_size_)));
             } else {
-                throw unsupported_interface(*interface);
+                throw unsupported_interface(*interface_);
             }
         }
         return type;

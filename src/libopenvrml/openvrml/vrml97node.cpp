@@ -1821,7 +1821,11 @@ namespace {
         };
 
         class children_exposedfield :
+# if defined(_MSC_VER) && _MSC_VER == 1500
+            public abstract_node<Derived>::exposedfield<mfnode> {
+# else
             public abstract_node<Derived>::template exposedfield<mfnode> {
+# endif
         public:
             explicit children_exposedfield(openvrml::node & node) OPENVRML_NOTHROW;
             children_exposedfield(const children_exposedfield & obj) OPENVRML_NOTHROW;
