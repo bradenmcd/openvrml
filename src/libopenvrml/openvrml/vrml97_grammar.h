@@ -246,7 +246,7 @@ namespace openvrml {
         rotation_axis_not_normalized);
 
     struct vrml_parse_error_handler {
-        explicit vrml_parse_error_handler(std::ostream & out):
+        explicit vrml_parse_error_handler(std::ostream & out = std::cerr):
             out_(out)
         {}
 
@@ -1258,7 +1258,7 @@ namespace openvrml {
         } on_mfvec3f;
     };
 
-    template <typename ErrorHandler,
+    template <typename ErrorHandler = vrml_parse_error_handler,
               typename Actions = null_vrml_parse_actions>
     struct vrml97_grammar :
         boost::spirit::grammar<vrml97_grammar<ErrorHandler, Actions> > {
@@ -2387,7 +2387,9 @@ namespace openvrml {
             const boost::spirit::rule<ScannerT> & start() const;
         };
 
-        vrml97_grammar(const Actions & actions, const ErrorHandler & handler):
+        explicit vrml97_grammar(
+            const Actions & actions = Actions(),
+            const ErrorHandler & handler = ErrorHandler()):
             rotation_p(rotation_parser<ErrorHandler>(handler)),
             actions(actions)
         {}

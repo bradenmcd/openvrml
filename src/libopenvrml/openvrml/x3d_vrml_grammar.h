@@ -81,7 +81,7 @@ namespace openvrml {
     }
 
     struct x3d_vrml_parse_error_handler {
-        explicit x3d_vrml_parse_error_handler(std::ostream & out):
+        explicit x3d_vrml_parse_error_handler(std::ostream & out = std::cerr):
             vrml_handler(out),
             out_(out)
         {}
@@ -389,7 +389,7 @@ namespace openvrml {
 
     const phoenix::function<set_meta_value_function> set_meta_value;
 
-    template <typename ErrorHandler,
+    template <typename ErrorHandler = x3d_vrml_parse_error_handler,
               typename Actions = null_x3d_vrml_parse_actions>
     struct x3d_vrml_grammar :
         boost::spirit::grammar<x3d_vrml_grammar<ErrorHandler, Actions> > {
@@ -610,8 +610,9 @@ namespace openvrml {
             }
         };
 
-        x3d_vrml_grammar(const Actions & actions,
-                         const ErrorHandler & handler):
+        explicit x3d_vrml_grammar(
+            const Actions & actions = Actions(),
+            const ErrorHandler & handler = ErrorHandler()):
             vrml97_g(actions, handler),
             error_handler(handler)
         {}

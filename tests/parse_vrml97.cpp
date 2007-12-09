@@ -56,9 +56,7 @@ int main(int argc, char * argv[])
 
     iterator_t first(in_begin, in_end, filename), last;
 
-    vrml_parse_error_handler handler(std::cerr);
-    vrml97_grammar<vrml_parse_error_handler> g(null_vrml_parse_actions(),
-                                               handler);
+    vrml97_grammar<> g;
 
     BOOST_SPIRIT_DEBUG_NODE(skip_g);
     BOOST_SPIRIT_DEBUG_NODE(g);

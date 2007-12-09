@@ -1,3 +1,27 @@
+2007-12-09 Braden McDaniel  <braden@endoframe.com>
+
+	Provide default parameter values for vrml97_grammar and
+	x3d_vrml_grammar.
+
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	(openvrml::vrml_parse_error_handler::vrml_parse_error_handler(std::ostream&):
+	Default argument to std::cerr.
+	(openvrml::vrml97_grammar<ErrorHandler,Actions>::vrml97_grammar(const
+	Actions &, const ErrorHandler &)): Provide default values for
+	parameters.
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	(openvrml::x3d_vrml_parse_error_handler::x3d_vrml_parse_error_handler(std::ostream&):
+	Default argument to std::cerr.
+	(openvrml::x3d_vrml_grammar<ErrorHandler,Actions>::x3d_vrml_grammar(const
+	Actions &, const ErrorHandler &)): Provide default values for
+	parameters.
+	* tests/parse_vrml97.cpp
+	(main(int, char *[])): Use default parameter values when
+	instantiating vrml97_grammar.
+	* tests/parse_x3dvrml.cpp
+	(main(int, char *[])): Use default parameter values when
+	instantiating x3d_vrml_grammar.
+
 2007-12-08 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for building with Microsoft C/C++ 15.00.21022.08 (Visual C++

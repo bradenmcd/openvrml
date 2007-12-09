@@ -56,9 +56,7 @@ int main(int argc, char * argv[])
 
     iterator_t first(in_begin, in_end, filename), last;
 
-    x3d_vrml_parse_error_handler handler(std::cerr);
-    x3d_vrml_grammar<x3d_vrml_parse_error_handler>
-        g(null_x3d_vrml_parse_actions(), handler);
+    x3d_vrml_grammar<> g;
 
     BOOST_SPIRIT_DEBUG_NODE(skip_g);
     BOOST_SPIRIT_DEBUG_NODE(g);
