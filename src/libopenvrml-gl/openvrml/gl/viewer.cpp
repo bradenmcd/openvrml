@@ -2996,7 +2996,7 @@ do_insert_shell(unsigned int mask,
 
     // Texture coordinate generation parameters.
     int texAxes[2] = { 0, 1 };         // Map s,t to x,y,z
-    float texParams[4];                // s0, 1/sSize, t0, 1/tSize
+    float texParams[4] = {};           // s0, 1/sSize, t0, 1/tSize
 
     // Compute bounding box for texture coord generation and lighting.
     if (tex_coord.empty()) { // || any positional lights are active...

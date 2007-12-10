@@ -1,5 +1,22 @@
 2007-12-09 Braden McDaniel  <braden@endoframe.com>
 
+	Quelled some compiler warnings.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_shell(unsigned int, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<color> &, const std::vector<int32> &, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<vec2f> &, const std::vector<int32> &)): Initialize
+	texParams array.
+	* src/openvrml-player/player.cpp
+	(curl_source_new(CURLM *)): Explicitly set last two GSourceFuncs
+	struct entries to 0.
+	* src/openvrml-xembed/main.cpp
+	(openvrml_xembed::event_listener_id_map_): Apply G_GNUC_INTERNAL.
+
+2007-12-09 Braden McDaniel  <braden@endoframe.com>
+
 	Pushed the top-level parser exception handler (i.e., guard) down
 	into the grammar definitions.  Also, changed the order of the
 	vrml97_grammar and x3d_vrml_grammar template parameters to match

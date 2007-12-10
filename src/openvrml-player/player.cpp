@@ -472,7 +472,9 @@ namespace {
             openvrml_player_curl_prepare,
             openvrml_player_curl_check,
             openvrml_player_curl_dispatch,
-            openvrml_player_curl_finalize
+            openvrml_player_curl_finalize,
+            GSourceFunc(0),
+            GSourceDummyMarshal(0)
         };
 
         CURLSource * const source =

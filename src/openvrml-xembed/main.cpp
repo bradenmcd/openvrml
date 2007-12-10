@@ -68,7 +68,9 @@ namespace openvrml_xembed {
     // Map a listener identifier from the client to a listener identifier
     // gotten from the GtkVrmlBrowser.
     //
-    class G_GNUC_INTERNAL event_listener_id_map : std::map<gulong, gulong> {
+    G_GNUC_INTERNAL class G_GNUC_INTERNAL event_listener_id_map :
+        std::map<gulong, gulong> {
+
         openvrml::read_write_mutex mutex_;
 
     public:
