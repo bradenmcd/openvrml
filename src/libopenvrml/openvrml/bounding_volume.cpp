@@ -333,6 +333,7 @@ void openvrml::bounding_volume::transform(const mat4f & M)
  * @brief Construct.
  */
 openvrml::bounding_sphere::bounding_sphere():
+    center_(make_vec3f()),
     radius_(-1.0)
 {}
 

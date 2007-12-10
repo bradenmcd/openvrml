@@ -1,3 +1,9 @@
+2007-12-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	(openvrml::bounding_sphere::bounding_sphere()): Initialize center_
+	with a default vec3f.
+
 2007-12-09 Braden McDaniel  <braden@endoframe.com>
 
 	Quelled some compiler warnings.
