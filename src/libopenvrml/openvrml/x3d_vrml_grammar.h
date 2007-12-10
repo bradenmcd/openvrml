@@ -389,17 +389,17 @@ namespace openvrml {
 
     const phoenix::function<set_meta_value_function> set_meta_value;
 
-    template <typename ErrorHandler = x3d_vrml_parse_error_handler,
-              typename Actions = null_x3d_vrml_parse_actions>
+    template <typename Actions = null_x3d_vrml_parse_actions,
+              typename ErrorHandler = x3d_vrml_parse_error_handler>
     struct x3d_vrml_grammar :
-        boost::spirit::grammar<x3d_vrml_grammar<ErrorHandler, Actions> > {
+        boost::spirit::grammar<x3d_vrml_grammar<Actions, ErrorHandler> > {
 
         template <typename ScannerT>
         struct definition :
-            vrml97_grammar<ErrorHandler, Actions>::
+            vrml97_grammar<Actions, ErrorHandler>::
             template definition<ScannerT> {
 
-            typedef typename vrml97_grammar<ErrorHandler, Actions>::
+            typedef typename vrml97_grammar<Actions, ErrorHandler>::
                 template definition<ScannerT>
                 base_t;
 
@@ -613,73 +613,71 @@ namespace openvrml {
         explicit x3d_vrml_grammar(
             const Actions & actions = Actions(),
             const ErrorHandler & handler = ErrorHandler()):
-            vrml97_g(actions, handler),
-            error_handler(handler)
+            vrml97_g(actions, handler)
         {}
 
     private:
-        vrml97_grammar<ErrorHandler, Actions> vrml97_g;
-        const ErrorHandler & error_handler;
+        vrml97_grammar<Actions, ErrorHandler> vrml97_g;
     };
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::bool_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfbool_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfbool_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::bool_parser>
         >(bool_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::color_rgba_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolorrgba_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfcolorrgba_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::color_rgba_parser>
         >(color_rgba_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::image_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfimage_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfimage_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::image_parser>
         >(image_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::vec2d_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2d_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec2d_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::vec2d_parser>
         >(vec2d_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::vec3d_parser> > >
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3d_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec3d_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::vec3d_parser>
         >(vec3d_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    x3d_vrml_grammar<ErrorHandler, Actions>::definition<ScannerT>::
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::
     definition(const x3d_vrml_grammar & self):
         base_t(self.vrml97_g),
         load_profile(base_t::scope_stack),
@@ -705,10 +703,12 @@ namespace openvrml {
             ("initializeOnly");
 
         vrml_scene
-            =   profile_statement[on_profile_statement]
-                >> *component_statement[on_component_statement]
-                >> *meta_statement[on_meta_statement]
-                >> *statement >> end_p
+            =  g(
+                    profile_statement[on_profile_statement]
+                    >> *component_statement[on_component_statement]
+                    >> *meta_statement[on_meta_statement]
+                    >> *statement >> end_p
+                )[self.vrml97_g.error_handler]
             ;
 
         profile_statement
@@ -769,25 +769,31 @@ namespace openvrml {
         eventin
             =   str_p("inputOnly")
             |   str_p("eventIn")
-                >> g(deprecated_eventin(nothing_p))[self.error_handler]
+                >> g(deprecated_eventin(nothing_p))[
+                    self.vrml97_g.error_handler
+                ]
             ;
 
         eventout
             =   str_p("outputOnly")
             |   str_p("eventOut")
-                >> g(deprecated_eventout(nothing_p))[self.error_handler]
+                >> g(deprecated_eventout(nothing_p))[
+                    self.vrml97_g.error_handler
+                ]
             ;
 
         exposedfield
             =   str_p("inputOutput")
             |   str_p("exposedField")
-                >> g(deprecated_exposedfield(nothing_p))[self.error_handler]
+                >> g(deprecated_exposedfield(nothing_p))[
+                    self.vrml97_g.error_handler
+                ]
             ;
 
         field
             =   str_p("initializeOnly")
             |   str_p("field")
-                >> g(deprecated_field(nothing_p))[self.error_handler]
+                >> g(deprecated_field(nothing_p))[self.vrml97_g.error_handler]
             ;
 
         field_type

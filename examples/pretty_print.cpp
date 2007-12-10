@@ -430,15 +430,12 @@ int main(int argc, char * argv[])
     iterator_t first(in_begin, in_end, filename), last;
 
     actions act(std::cout);
-    vrml_parse_error_handler handler(std::cerr);
-    vrml97_grammar<vrml_parse_error_handler, actions> g(act, handler);
+    vrml97_grammar<actions> g(act);
 
     BOOST_SPIRIT_DEBUG_NODE(skip_g);
     BOOST_SPIRIT_DEBUG_NODE(g);
 
-    guard<vrml_parse_error> guard;
-
-    if (!parse(first, last, guard(g)[handler], skip_g).full) {
+    if (!parse(first, last, g, skip_g).full) {
         return EXIT_FAILURE;
     }
 

@@ -61,9 +61,7 @@ int main(int argc, char * argv[])
     BOOST_SPIRIT_DEBUG_NODE(skip_g);
     BOOST_SPIRIT_DEBUG_NODE(g);
 
-    guard<vrml_parse_error> guard;
-
-    if (!parse(first, last, guard(g)[handler], skip_g).full) {
+    if (!parse(first, last, g, skip_g).full) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

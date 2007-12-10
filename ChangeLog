@@ -1,5 +1,36 @@
 2007-12-09 Braden McDaniel  <braden@endoframe.com>
 
+	Pushed the top-level parser exception handler (i.e., guard) down
+	into the grammar definitions.  Also, changed the order of the
+	vrml97_grammar and x3d_vrml_grammar template parameters to match
+	the order of the constructor arguments.
+
+	* examples/pretty_print.cpp
+	(main(int, char *[])): Use the default error handler.  Also,
+	removed the now-redundant guard.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::parse_vrml(std::istream &, const std::string&,
+	const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &,
+	std::map<std::string, std::string> &)): Changed template argument
+	order for vrml97_grammar and x3d_vrml_grammar; removed guards.
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	(vrml97_grammar<Actions,ErrorHandler>): Changed template argument
+	order to match the order of the constructor arguments.
+	(vrml97_grammar<Actions,ErrorHandler>::definition<ScannerT>::definition(const
+	vrml97_grammar &)): Added guard to vrml_scene production.
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	(x3d_vrml_grammar<Actions,ErrorHandler>): Changed template
+	argument order to match the order of the constructor arguments.
+	(x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::definition(const
+	x3d_vrml_grammar &)): Added guard to vrml_scene production.
+	* tests/parse_vrml97.cpp
+	(main(int, char *[])): Removed guard.
+	* tests/parse_x3dvrml.cpp
+	(main(int, char *[])): Removed guard.
+
+2007-12-09 Braden McDaniel  <braden@endoframe.com>
+
 	Provide default parameter values for vrml97_grammar and
 	x3d_vrml_grammar.
 

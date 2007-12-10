@@ -5230,15 +5230,13 @@ parse_vrml(std::istream & in,
         parse_error error;
         error_handler handler(scene.browser(), error);
         vrml97_parse_actions actions(uri, scene, nodes);
-        vrml97_grammar<error_handler, vrml97_parse_actions>
+        vrml97_grammar<vrml97_parse_actions, error_handler>
             g(actions, handler);
 
         BOOST_SPIRIT_DEBUG_NODE(skip_g);
         BOOST_SPIRIT_DEBUG_NODE(g);
 
-        guard<vrml_parse_error> guard;
-
-        if (!parse(first, last, guard(g)[handler], skip_g).full) {
+        if (!parse(first, last, g, skip_g).full) {
             throw openvrml::invalid_vrml(uri,
                                          error.line,
                                          error.column,
@@ -5256,15 +5254,13 @@ parse_vrml(std::istream & in,
         parse_error error;
         error_handler handler(scene.browser(), error);
         x3d_vrml_parse_actions actions(uri, scene, nodes, meta);
-        x3d_vrml_grammar<error_handler, x3d_vrml_parse_actions>
+        x3d_vrml_grammar<x3d_vrml_parse_actions, error_handler>
             g(actions, handler);
 
         BOOST_SPIRIT_DEBUG_NODE(skip_g);
         BOOST_SPIRIT_DEBUG_NODE(g);
 
-        guard<vrml_parse_error> guard;
-
-        if (!parse(first, last, guard(g)[handler], skip_g).full) {
+        if (!parse(first, last, g, skip_g).full) {
             throw openvrml::invalid_vrml(uri,
                                          error.line,
                                          error.column,

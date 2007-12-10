@@ -1258,10 +1258,10 @@ namespace openvrml {
         } on_mfvec3f;
     };
 
-    template <typename ErrorHandler = vrml_parse_error_handler,
-              typename Actions = null_vrml_parse_actions>
+    template <typename Actions = null_vrml_parse_actions,
+              typename ErrorHandler = vrml_parse_error_handler>
     struct vrml97_grammar :
-        boost::spirit::grammar<vrml97_grammar<ErrorHandler, Actions> > {
+        boost::spirit::grammar<vrml97_grammar<Actions, ErrorHandler> > {
 
         const boost::spirit::functor_parser<rotation_parser<ErrorHandler> >
             rotation_p;
@@ -1524,7 +1524,7 @@ namespace openvrml {
                     typedef bool type;
                 };
 
-                typedef typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>
+                typedef typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>
                     vrml97_grammar_def_t;
 
                 explicit add_script_interface_function(vrml97_grammar_def_t & d):
@@ -1717,7 +1717,7 @@ namespace openvrml {
 
 
             struct set_proto_decl_field_value_rule {
-                typedef typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>
+                typedef typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>
                     vrml97_grammar_def_t;
 
                 explicit set_proto_decl_field_value_rule(
@@ -1783,7 +1783,7 @@ namespace openvrml {
 
             template <typename NodeType>
             struct set_field_value_rule_t {
-                typedef typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>
+                typedef typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>
                     vrml97_grammar_def_t;
 
                 set_field_value_rule_t(NodeType & node_type,
@@ -2089,7 +2089,7 @@ namespace openvrml {
 
 
             struct push_field_value_rule {
-                typedef typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>
+                typedef typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>
                     vrml97_grammar_def_t;
 
                 explicit push_field_value_rule(
@@ -2110,7 +2110,7 @@ namespace openvrml {
 
 
             struct pop_field_value_rule {
-                typedef typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>
+                typedef typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>
                     vrml97_grammar_def_t;
 
                 explicit pop_field_value_rule(
@@ -2344,7 +2344,7 @@ namespace openvrml {
 
             const on_mfnode_t on_mfnode;
 
-            const vrml97_grammar<ErrorHandler, Actions> & self;
+            const vrml97_grammar<Actions, ErrorHandler> & self;
 
             std::string node_type_id;
             bool node_type_already_exists;
@@ -2391,34 +2391,36 @@ namespace openvrml {
             const Actions & actions = Actions(),
             const ErrorHandler & handler = ErrorHandler()):
             rotation_p(rotation_parser<ErrorHandler>(handler)),
-            actions(actions)
+            actions(actions),
+            error_handler(handler)
         {}
 
         const Actions & actions;
+        const ErrorHandler & error_handler;
     };
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<openvrml::color_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfcolor_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfcolor_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::functor_parser<openvrml::color_parser>
          >(color_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<
                 float,
                 boost::spirit::real_parser_policies<float> > > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::
     mffloat_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<
                float,
@@ -2426,17 +2428,17 @@ namespace openvrml {
             >
         >(float_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<
                 double,
                 boost::spirit::real_parser_policies<double> > > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::
     mftime_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<
                double,
@@ -2444,49 +2446,49 @@ namespace openvrml {
             >
         >(boost::spirit::real_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<int32_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfint32_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfint32_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser< boost::spirit::functor_parser<int32_parser> >(
             int32_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<string_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfstring_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfstring_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<string_parser> >(
             string_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec2f_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec2f_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec2f_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec2f_parser> >(
             vec2f_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::functor_parser<
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec3f_parser> > >
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::mfvec3f_p =
-        typename vrml97_grammar<ErrorHandler, Actions>::template definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec3f_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<boost::spirit::functor_parser<vec3f_parser> >(
             vec3f_p);
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::
     definition(const vrml97_grammar & self):
         mfrotation_p(
             mftype_parser<
@@ -2547,13 +2549,18 @@ namespace openvrml {
 
         this->scope_stack.push(parse_scope());
 
+        guard<vrml_parse_error> g;
+
         keywords =
             "DEF", "EXTERNPROTO", "FALSE", "IS", "NULL", "PROTO",
             "ROUTE", "TO", "TRUE", "USE", "eventIn", "eventOut",
             "field", "exposedField";
 
         vrml_scene
-            =   eps_p[on_scene_start] >> *statement >> eps_p[on_scene_finish]
+            =  g(
+                    eps_p[on_scene_start] >> *statement
+                    >> eps_p[on_scene_finish]
+                )[self.error_handler]
             ;
 
         statement
@@ -2868,10 +2875,10 @@ namespace openvrml {
             ;
     }
 
-    template <typename ErrorHandler, typename Actions>
+    template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
     const boost::spirit::rule<ScannerT> &
-    vrml97_grammar<ErrorHandler, Actions>::definition<ScannerT>::start() const
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::start() const
     {
         return this->vrml_scene;
     }
