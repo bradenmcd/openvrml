@@ -1,5 +1,14 @@
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
+	Changed openvrml::null_vrml_parse_actions to
+	openvrml::null_vrml97_parse_actions.
+
+	* examples/pretty_print.cpp
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unnecessary typedefs associated with
 	boost::spirit::multi_pass usage.
 

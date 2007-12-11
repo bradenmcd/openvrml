@@ -245,7 +245,7 @@ namespace openvrml {
     };
 
 
-    struct null_x3d_vrml_parse_actions : null_vrml_parse_actions {
+    struct null_x3d_vrml_parse_actions : null_vrml97_parse_actions {
         struct on_profile_statement_t {
             void operator()(const std::string & /* profile_id */) const
             {}

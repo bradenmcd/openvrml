@@ -93,7 +93,7 @@ private:
     actions & a;
 };
 
-struct actions : openvrml::null_vrml_parse_actions {
+struct actions : openvrml::null_vrml97_parse_actions {
 
     template <typename SFValueType>
     struct on_sfvalue {

@@ -1094,7 +1094,7 @@ namespace openvrml {
     const phoenix::function<is_script_node_function> is_script_node;
 
 
-    struct null_vrml_parse_actions {
+    struct null_vrml97_parse_actions {
 
         struct on_scene_start_t {
             void operator()() const
@@ -1258,7 +1258,7 @@ namespace openvrml {
         } on_mfvec3f;
     };
 
-    template <typename Actions = null_vrml_parse_actions,
+    template <typename Actions = null_vrml97_parse_actions,
               typename ErrorHandler = vrml_parse_error_handler>
     struct vrml97_grammar :
         boost::spirit::grammar<vrml97_grammar<Actions, ErrorHandler> > {
