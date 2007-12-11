@@ -5198,25 +5198,14 @@ parse_vrml(std::istream & in,
     using std::istream;
     using std::istreambuf_iterator;
     using boost::algorithm::iequals;
-    using boost::spirit::skip_parser_iteration_policy;
     using boost::spirit::multi_pass;
     using boost::spirit::make_multi_pass;
-    using boost::spirit::scanner;
     using boost::spirit::position_iterator;
-    using boost::spirit::guard;
 
-    typedef skip_parser_iteration_policy<vrml97_skip_grammar>
-        iterator_policy_t;
-    typedef boost::spirit::scanner_policies<iterator_policy_t>
-        scanner_policies_t;
-    typedef multi_pass<istreambuf_iterator<char> >
-        multi_pass_iterator_t;
-    typedef scanner<multi_pass_iterator_t, scanner_policies_t> scanner_t;
+    typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
     typedef istream::char_type char_t;
 
     vrml97_skip_grammar skip_g;
-    iterator_policy_t iterator_policy(skip_g);
-    scanner_policies_t scanner_policies(iterator_policy);
 
     if (iequals(type, vrml_media_type) || iequals(type, x_vrml_media_type)) {
         multi_pass_iterator_t

@@ -1,3 +1,19 @@
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
+	Removed unnecessary typedefs associated with
+	boost::spirit::multi_pass usage.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::parse_vrml(std::istream &, const std::string&,
+	const std::string &, const openvrml::scene &,
+	std::vector<boost::intrusive_ptr<openvrml::node> > &,
+	std::map<std::string, std::string> &)): Removed unnecessary
+	typedefs.
+	* tests/parse_vrml97.cpp
+	(main(int, char *[])): Removed unnecessary typedefs.
+	* tests/parse_x3dvrml.cpp
+	(main(int, char *[])): Removed unnecessary typedefs.
+
 2007-12-10 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/bounding_volume.cpp
