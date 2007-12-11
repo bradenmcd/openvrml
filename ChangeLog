@@ -1,5 +1,13 @@
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unnecessary typedefs associated with
+	boost::spirit::multi_pass usage.
+
+	* examples/pretty_print.cpp
+	(main(int, char *[])): Removed unnecessary typedefs.
+
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97_grammar.h: Cleaned up
 	unnecessary header inclusions.
 

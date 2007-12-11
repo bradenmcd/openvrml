@@ -412,15 +412,9 @@ int main(int argc, char * argv[])
     istream & in(infile.is_open() ? infile : cin);
     const string filename(infile.is_open() ? argv[1] : "<stdin>");
 
-    typedef skip_parser_iteration_policy<vrml97_skip_grammar> iterator_policy_t;
-    typedef scanner_policies<iterator_policy_t> scanner_policies_t;
     typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
-    typedef scanner<multi_pass_iterator_t, scanner_policies_t> scanner_t;
     typedef istream::char_type char_t;
 
-    vrml97_skip_grammar skip_g;
-    iterator_policy_t iterator_policy(skip_g);
-    scanner_policies_t scanner_policies(iterator_policy);
     multi_pass_iterator_t
         in_begin(make_multi_pass(istreambuf_iterator<char_t>(in))),
         in_end(make_multi_pass(istreambuf_iterator<char_t>()));
@@ -429,6 +423,7 @@ int main(int argc, char * argv[])
 
     iterator_t first(in_begin, in_end, filename), last;
 
+    vrml97_skip_grammar skip_g;
     actions act(std::cout);
     vrml97_grammar<actions> g(act);
 
