@@ -1,5 +1,10 @@
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97_grammar.h: Cleaned up
+	unnecessary header inclusions.
+
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
 	Changed openvrml::null_vrml_parse_actions to
 	openvrml::null_vrml97_parse_actions.
 

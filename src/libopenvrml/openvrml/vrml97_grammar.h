@@ -22,8 +22,6 @@
 # ifndef OPENVRML_VRML97_GRAMMAR_H
 #   define OPENVRML_VRML97_GRAMMAR_H
 
-#   include <iosfwd>
-#   include <map>
 #   include <stack>
 #   include <boost/spirit.hpp>
 #   include <boost/spirit/actor.hpp>
