@@ -105,12 +105,12 @@ a.el {
 a.elRef {
   font-weight: inherit
 }
-a.code {
+a.code:link, a.code:visited {
   text-decoration: inherit;
   font-weight: inherit;
   color: inherit;
 }
-a.codeRef {
+a.codeRef:link {
   font-weight: normal;
   color: inherit;
 }
@@ -137,11 +137,8 @@ div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
 
 td.memItemLeft, td.memItemRight,
 td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight,
-.memproto, .memproto td {
-  font-family: "Bitstream Vera Sans Mono",
-               "LucidaTypewriter",
-               "Lucida Console",
-               monospace;
+.memtemplate, .memname td {
+  font-family: Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Lucida Console", LucidaTypewriter, monospace;
 }
 
 td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
@@ -153,7 +150,7 @@ td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
 }
 
 .memproto td code {
-  font-family: sans-serif;
+  font-family: inherit;
   font-style: italic;
 }
 
@@ -204,6 +201,13 @@ div.tabs a:link, div.tabs a:visited, div.tabs a:active, div.tabs a:hover {
 table {
   border-collapse: collapse;
   border-spacing: 0;
+}
+
+.note {
+  border: 1px solid rgb(65%, 65%, 65%);
+  background-color: rgb(95%, 95%, 95%);
+  margin-left: 10%;
+  margin-right: 10%;
 }
 </style>
 </head>

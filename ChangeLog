@@ -1,5 +1,10 @@
 2007-12-12 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/doxygen-header: Style sheet changes to improve interaction
+	with the doxygen-generated style sheet.
+
+2007-12-12 Braden McDaniel  <braden@endoframe.com>
+
 	Changed openvrml::vrml_parse_error_handler to
 	openvrml::vrml97_parse_error_handler.
 
