@@ -2844,12 +2844,12 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
 
 namespace {
 
-    inline double length_(const float vec[3])
+    OPENVRML_LOCAL inline double length_(const float vec[3])
     {
         return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
 
-    inline void normalize_(float vec[3])
+    OPENVRML_LOCAL inline void normalize_(float vec[3])
     {
         using openvrml_::fequal;
         const float len = float(length_(vec));
@@ -2860,7 +2860,7 @@ namespace {
         }
     }
 
-    void normalize_axis_(float axis[3]) OPENVRML_NOTHROW
+    OPENVRML_LOCAL void normalize_axis_(float axis[3]) OPENVRML_NOTHROW
     {
         using openvrml_::fequal;
         const float axis_length = float(length_(axis));
@@ -3055,7 +3055,7 @@ namespace {
 
 namespace {
 
-    struct null_error_handler {
+    OPENVRML_LOCAL struct OPENVRML_LOCAL null_error_handler {
         template <typename ScannerT, typename ErrorT>
         boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
         {
@@ -3064,7 +3064,7 @@ namespace {
         }
     } error_handler;
 
-    const boost::spirit::functor_parser<
+    OPENVRML_LOCAL const boost::spirit::functor_parser<
         openvrml::rotation_parser<null_error_handler> >
         rotation_p(error_handler);
 }
@@ -3560,8 +3560,9 @@ const openvrml::mat4f openvrml::operator*(const mat4f & lhs, const mat4f & rhs)
 
 namespace {
 
-    float det3(const openvrml::mat4f & mat,
-               int r1, int r2, int r3, int c1, int c2, int c3) OPENVRML_NOTHROW
+    OPENVRML_LOCAL float det3(const openvrml::mat4f & mat,
+                              int r1, int r2, int r3, int c1, int c2, int c3)
+        OPENVRML_NOTHROW
     {
         return mat[r1][c1] * mat[r2][c2] * mat[r3][c3]
              - mat[r1][c1] * mat[r2][c3] * mat[r3][c2]
@@ -3823,7 +3824,8 @@ namespace {
      *
      * @param[out] out  inverse of 3D affine matrix.
      */
-    void get_affine_inverse(const openvrml::mat4f & in, openvrml::mat4f & out)
+    OPENVRML_LOCAL void get_affine_inverse(const openvrml::mat4f & in,
+                                           openvrml::mat4f & out)
     {
         // Check if it is an affine matrix
         assert(! ( in[0][3] != 0.0 || in[1][3] != 0.0 || in[2][3] != 0.0 ||

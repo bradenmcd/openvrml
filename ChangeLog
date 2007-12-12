@@ -1,5 +1,10 @@
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.cpp: Applied missing
+	OPENVRML_LOCAL.
+
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97_grammar.h
 	(vrml97_parse_error_msg(vrml_parse_error)): Don't overload
 	operator<< for vrml_parse_error because additions to the
