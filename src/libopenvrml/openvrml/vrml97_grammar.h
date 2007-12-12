@@ -151,8 +151,7 @@ namespace openvrml {
             float_or_rbracket_expected;
     };
 
-    inline std::ostream & operator<<(std::ostream & out,
-                                     const vrml_parse_error error)
+    inline const char * vrml97_parse_error_msg(const vrml_parse_error error)
     {
         static const char * msg[] = {
             "expected .",
@@ -202,7 +201,7 @@ namespace openvrml {
             "expected an interface declaration, a field declaration, PROTO, EXTERNPROTO, ROUTE, or }",
             "rotation axis should be a normalized vector"
         };
-        return out << msg[error];
+        return msg[error];
     }
 
     typedef boost::spirit::assertion<vrml_parse_error> vrml_parse_assertion;
@@ -259,14 +258,16 @@ namespace openvrml {
             const file_position fpos = err.where.get_position();
             if (err.descriptor == rotation_axis_not_normalized) {
                 this->out_ << fpos.file << ':' << fpos.line << ':'
-                           << fpos.column << ": warning: " << err.descriptor
+                           << fpos.column << ": warning: "
+                           << vrml97_parse_error_msg(err.descriptor)
                            << endl;
                 scan.first = err.where;
                 return error_status<>(error_status<>::accept, 0);
             }
 
             this->out_ << fpos.file << ':' << fpos.line << ':' << fpos.column
-                       << ": error: " << err.descriptor << endl;
+                       << ": error: "
+                       << vrml97_parse_error_msg(err.descriptor) << endl;
 
             return error_status<>(error_status<>::fail);
         }

@@ -1,5 +1,12 @@
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	(vrml97_parse_error_msg(vrml_parse_error)): Don't overload
+	operator<< for vrml_parse_error because additions to the
+	enumeration will need to be handled elsewhere.
+
+2007-12-11 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unnecessary typedefs associated with
 	boost::spirit::multi_pass usage.
 
