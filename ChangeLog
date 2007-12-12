@@ -1,5 +1,9 @@
 2007-12-12 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/index.doc: Added a user guide for the Spirit parsers.
+
+2007-12-12 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Style sheet changes to improve interaction
 	with the doxygen-generated style sheet.
 
