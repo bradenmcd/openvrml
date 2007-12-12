@@ -118,7 +118,7 @@ namespace openvrml {
         }
 
     private:
-        vrml_parse_error_handler vrml_handler;
+        vrml97_parse_error_handler vrml_handler;
         std::ostream & out_;
     };
 

@@ -1,3 +1,11 @@
+2007-12-12 Braden McDaniel  <braden@endoframe.com>
+
+	Changed openvrml::vrml_parse_error_handler to
+	openvrml::vrml97_parse_error_handler.
+
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+
 2007-12-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/basetypes.cpp: Applied missing

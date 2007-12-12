@@ -242,8 +242,8 @@ namespace openvrml {
     const vrml_parse_assertion expect_normalized_rotation(
         rotation_axis_not_normalized);
 
-    struct vrml_parse_error_handler {
-        explicit vrml_parse_error_handler(std::ostream & out = std::cerr):
+    struct vrml97_parse_error_handler {
+        explicit vrml97_parse_error_handler(std::ostream & out = std::cerr):
             out_(out)
         {}
 
@@ -1258,7 +1258,7 @@ namespace openvrml {
     };
 
     template <typename Actions = null_vrml97_parse_actions,
-              typename ErrorHandler = vrml_parse_error_handler>
+              typename ErrorHandler = vrml97_parse_error_handler>
     struct vrml97_grammar :
         boost::spirit::grammar<vrml97_grammar<Actions, ErrorHandler> > {
 
