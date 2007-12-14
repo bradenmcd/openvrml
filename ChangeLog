@@ -1,3 +1,26 @@
+2007-12-14 Braden McDaniel  <braden@endoframe.com>
+
+	Removed Visual C++ 8.0 project files.
+
+	* README: Changed Visual C++ 8.0 reference to 9.0.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/OpenVRML.sln: Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/antlr/antlr.vcproj:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml-config.h:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.rc:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl-config.h:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Removed.
+	* ide-projects/Windows/VisualC8_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Removed.
+
 2007-12-12 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes and improvements.
