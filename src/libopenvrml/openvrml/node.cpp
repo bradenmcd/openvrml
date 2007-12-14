@@ -278,8 +278,8 @@ bool openvrml::operator!=(const node_interface & lhs,
  *
  * @brief Stream output.
  *
- * @param[in,out] out       output stream.
- * @param[in]     interface @c node_interface.
+ * @param[in,out] out           output stream.
+ * @param[in]     interface_    @c node_interface.
  *
  * @return @p out.
  */
@@ -295,8 +295,8 @@ std::ostream & openvrml::operator<<(std::ostream & out,
  *
  * @brief Stream input.
  *
- * @param[in,out] in        input stream.
- * @param[out]    interface @c node_interface.
+ * @param[in,out] in            input stream.
+ * @param[out]    interface_    @c node_interface.
  *
  * @return @p in.
  */
@@ -339,7 +339,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *     &ldquo;set_&rdquo; prepended is lexicographically equal to the
  *     @c eventIn identifier.
  *
- * @param[in] interface_     @c node_interface.
+ * @param[in] interface_    @c node_interface.
  * @param[in] eventin_id    @c eventIn identifier.
  *
  * @return @c true if @p interface_ matches @p eventin_id; @c false otherwise.
@@ -379,7 +379,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  *     &ldquo;_changed&rdquo; appended is lexicographically equal to the
  *     @c eventOut identifier.
  *
- * @param[in] interface_     @c node_interface.
+ * @param[in] interface_    @c node_interface.
  * @param[in] eventout_id   @c eventOut identifier.
  *
  * @return @c true if @p interface_ matches @p eventout_id; @c false otherwise.
@@ -410,7 +410,7 @@ std::istream & openvrml::operator>>(std::istream & in,
  * and the <code>node_interface</code>'s @a id is lexicographically equal to
  * the @c exposedField identifier.
  *
- * @param[in] interface_         @c node_interface.
+ * @param[in] interface_        @c node_interface.
  * @param[in] exposedfield_id   @c exposedField identifier.
  *
  * @return @c true if @p interface_ matches @p exposedfield_id; @c false
@@ -441,8 +441,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  * and the @c node_interface's @a id is lexicographically equal to the field
  * identifier.
  *
- * @param[in] interface_ @c node_interface.
- * @param[in] field_id  field identifier.
+ * @param[in] interface_    @c node_interface.
+ * @param[in] field_id      field identifier.
  *
  * @return @c true if @p interface_ matches @p field_id; @c false otherwise.
  */

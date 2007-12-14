@@ -1,5 +1,21 @@
 2007-12-12 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes and improvements.
+
+	* src/Makefile.am
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/vrml97_grammar.cpp
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.cpp
+
+2007-12-12 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/index.doc: Added a user guide for the Spirit parsers.
 
 2007-12-12 Braden McDaniel  <braden@endoframe.com>

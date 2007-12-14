@@ -39,7 +39,7 @@ namespace openvrml {
     struct OPENVRML_API color {
         float rgb[3];
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         float r() const OPENVRML_NOTHROW;
         float g() const OPENVRML_NOTHROW;
@@ -67,7 +67,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color & c);
 
-    inline const float & color::operator[](const size_t index) const
+    inline const float & color::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 3);
@@ -108,7 +108,7 @@ namespace openvrml {
     struct OPENVRML_API color_rgba {
         float rgba[4];
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         float r() const OPENVRML_NOTHROW;
         float g() const OPENVRML_NOTHROW;
@@ -143,7 +143,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const color_rgba & c);
 
-    inline const float & color_rgba::operator[](const size_t index) const
+    inline const float & color_rgba::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 4);
@@ -201,7 +201,7 @@ namespace openvrml {
 
         const vec2f operator-() const OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         float x() const OPENVRML_NOTHROW;
         void x(float value) OPENVRML_NOTHROW;
@@ -238,7 +238,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2f & v);
 
-    inline const float & vec2f::operator[](const size_t index) const
+    inline const float & vec2f::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 2);
@@ -286,7 +286,7 @@ namespace openvrml {
 
         const vec2d operator-() const OPENVRML_NOTHROW;
 
-        const double & operator[](size_t index) const OPENVRML_NOTHROW;
+        const double & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         double x() const OPENVRML_NOTHROW;
         void x(double value) OPENVRML_NOTHROW;
@@ -323,7 +323,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const vec2d & v);
 
-    inline const double & vec2d::operator[](const size_t index) const
+    inline const double & vec2d::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 2);
@@ -375,7 +375,7 @@ namespace openvrml {
 
         const vec3f operator-() const OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         float x() const OPENVRML_NOTHROW;
         void x(float value) OPENVRML_NOTHROW;
@@ -423,7 +423,7 @@ namespace openvrml {
                                            const vec3f & v);
 
 
-    inline const float & vec3f::operator[](const size_t index) const
+    inline const float & vec3f::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 3);
@@ -488,7 +488,7 @@ namespace openvrml {
 
         const vec3d operator-() const OPENVRML_NOTHROW;
 
-        const double & operator[](size_t index) const OPENVRML_NOTHROW;
+        const double & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         double x() const OPENVRML_NOTHROW;
         void x(double value) OPENVRML_NOTHROW;
@@ -536,7 +536,7 @@ namespace openvrml {
                                            const vec3d & v);
 
 
-    inline const double & vec3d::operator[](const size_t index) const
+    inline const double & vec3d::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 3);
@@ -596,7 +596,7 @@ namespace openvrml {
 
         rotation & operator*=(const rotation & rot) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
 
         float x() const OPENVRML_NOTHROW;
         float y() const OPENVRML_NOTHROW;
@@ -642,7 +642,7 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const rotation & r);
 
-    inline const float & rotation::operator[](const size_t index) const
+    inline const float & rotation::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < 4);
@@ -686,8 +686,8 @@ namespace openvrml {
         mat4f & operator*=(float scalar) OPENVRML_NOTHROW;
         mat4f & operator*=(const mat4f & mat) OPENVRML_NOTHROW;
 
-        float (&operator[](const size_t index) OPENVRML_NOTHROW)[4];
-        const float (&operator[](const size_t index) const OPENVRML_NOTHROW)[4];
+        float (&operator[](const std::size_t index) OPENVRML_NOTHROW)[4];
+        const float (&operator[](const std::size_t index) const OPENVRML_NOTHROW)[4];
 
         void transformation(vec3f & t, rotation & r, vec3f & s) const
             OPENVRML_NOTHROW;
@@ -733,13 +733,13 @@ namespace openvrml {
     OPENVRML_API bool operator!=(const mat4f & lhs, const mat4f & rhs)
         OPENVRML_NOTHROW;
 
-    inline float (&mat4f::operator[](size_t index) OPENVRML_NOTHROW)[4]
+    inline float (&mat4f::operator[](std::size_t index) OPENVRML_NOTHROW)[4]
     {
         assert(index < 4);
         return this->mat[index];
     }
 
-    inline const float (&mat4f::operator[](size_t index) const OPENVRML_NOTHROW)[4]
+    inline const float (&mat4f::operator[](std::size_t index) const OPENVRML_NOTHROW)[4]
     {
         assert(index < 4);
         return this->mat[index];
@@ -765,8 +765,8 @@ namespace openvrml {
         quatf & operator+=(const quatf & quat) OPENVRML_NOTHROW;
         quatf & operator-=(const quatf & quat) OPENVRML_NOTHROW;
 
-        const float & operator[](size_t index) const OPENVRML_NOTHROW;
-        float & operator[](size_t index) OPENVRML_NOTHROW;
+        const float & operator[](std::size_t index) const OPENVRML_NOTHROW;
+        float & operator[](std::size_t index) OPENVRML_NOTHROW;
 
         float x() const OPENVRML_NOTHROW;
         float y() const OPENVRML_NOTHROW;
@@ -812,13 +812,13 @@ namespace openvrml {
     OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                            const quatf & quat);
 
-    inline const float & quatf::operator[](size_t index) const OPENVRML_NOTHROW
+    inline const float & quatf::operator[](std::size_t index) const OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->quat[index];
     }
 
-    inline float & quatf::operator[](size_t index) OPENVRML_NOTHROW
+    inline float & quatf::operator[](std::size_t index) OPENVRML_NOTHROW
     {
         assert(index < 4);
         return this->quat[index];
@@ -866,19 +866,19 @@ namespace openvrml {
 
 
     class OPENVRML_API image {
-        size_t x_;
-        size_t y_;
-        size_t comp_;
+        std::size_t x_;
+        std::size_t y_;
+        std::size_t comp_;
         std::vector<unsigned char> array_;
 
     public:
         image() OPENVRML_NOTHROW;
-        image(size_t x, size_t y, size_t comp) OPENVRML_THROW1(std::bad_alloc);
-        image(size_t x, size_t y, size_t comp,
+        image(std::size_t x, std::size_t y, std::size_t comp) OPENVRML_THROW1(std::bad_alloc);
+        image(std::size_t x, std::size_t y, std::size_t comp,
               const std::vector<unsigned char> & array)
             OPENVRML_THROW1(std::bad_alloc);
         template <typename InputIterator>
-        image(size_t x, size_t y, size_t comp,
+        image(std::size_t x, std::size_t y, std::size_t comp,
               InputIterator array_begin, InputIterator array_end)
             OPENVRML_THROW1(std::bad_alloc);
 
@@ -886,26 +886,26 @@ namespace openvrml {
 
         void swap(image & img) OPENVRML_NOTHROW;
 
-        size_t x() const OPENVRML_NOTHROW;
-        void x(size_t value) OPENVRML_THROW1(std::bad_alloc);
+        std::size_t x() const OPENVRML_NOTHROW;
+        void x(std::size_t value) OPENVRML_THROW1(std::bad_alloc);
 
-        size_t y() const OPENVRML_NOTHROW;
-        void y(size_t value) OPENVRML_THROW1(std::bad_alloc);
+        std::size_t y() const OPENVRML_NOTHROW;
+        void y(std::size_t value) OPENVRML_THROW1(std::bad_alloc);
 
-        void resize(size_t x, size_t y) OPENVRML_THROW1(std::bad_alloc);
+        void resize(std::size_t x, std::size_t y) OPENVRML_THROW1(std::bad_alloc);
 
-        size_t comp() const OPENVRML_NOTHROW;
-        void comp(size_t value) OPENVRML_THROW1(std::bad_alloc);
+        std::size_t comp() const OPENVRML_NOTHROW;
+        void comp(std::size_t value) OPENVRML_THROW1(std::bad_alloc);
 
         const std::vector<unsigned char> & array() const OPENVRML_NOTHROW;
         void array(const std::vector<unsigned char> & value) OPENVRML_NOTHROW;
         template <typename InputIterator>
         void array(InputIterator begin, InputIterator end) OPENVRML_NOTHROW;
 
-        int32 pixel(size_t index) const OPENVRML_NOTHROW;
-        void pixel(size_t index, int32 value) OPENVRML_NOTHROW;
-        int32 pixel(size_t x, size_t y) const OPENVRML_NOTHROW;
-        void pixel(size_t x, size_t y, int32 value) OPENVRML_NOTHROW;
+        int32 pixel(std::size_t index) const OPENVRML_NOTHROW;
+        void pixel(std::size_t index, int32 value) OPENVRML_NOTHROW;
+        int32 pixel(std::size_t x, std::size_t y) const OPENVRML_NOTHROW;
+        void pixel(std::size_t x, std::size_t y, int32 value) OPENVRML_NOTHROW;
     };
 
     OPENVRML_API bool operator==(const image & lhs, const image & rhs)
@@ -930,9 +930,9 @@ namespace openvrml {
     {}
 
     template <typename InputIterator>
-    image::image(const size_t x,
-                 const size_t y,
-                 const size_t comp,
+    image::image(const std::size_t x,
+                 const std::size_t y,
+                 const std::size_t comp,
                  InputIterator array_begin,
                  InputIterator array_end)
         OPENVRML_THROW1(std::bad_alloc):
@@ -958,17 +958,17 @@ namespace openvrml {
         swap(this->array_, img.array_);
     }
 
-    inline size_t image::x() const OPENVRML_NOTHROW
+    inline std::size_t image::x() const OPENVRML_NOTHROW
     {
         return this->x_;
     }
 
-    inline size_t image::y() const OPENVRML_NOTHROW
+    inline std::size_t image::y() const OPENVRML_NOTHROW
     {
         return this->y_;
     }
 
-    inline size_t image::comp() const OPENVRML_NOTHROW
+    inline std::size_t image::comp() const OPENVRML_NOTHROW
     {
         return this->comp_;
     }
@@ -993,12 +993,12 @@ namespace openvrml {
         std::copy(begin, end, this->array_.begin());
     }
 
-    inline int32 image::pixel(const size_t index) const
+    inline int32 image::pixel(const std::size_t index) const
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
         int32 retval = 0x00000000;
-        for (size_t component = this->comp_, i = index * this->comp_;
+        for (std::size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
             retval |=
@@ -1008,11 +1008,11 @@ namespace openvrml {
         return retval;
     }
 
-    inline void image::pixel(const size_t index, const int32 value)
+    inline void image::pixel(const std::size_t index, const int32 value)
         OPENVRML_NOTHROW
     {
         assert(index < this->x_ * this->y_);
-        for (size_t component = this->comp_, i = index * this->comp_;
+        for (std::size_t component = this->comp_, i = index * this->comp_;
              component > 0;
              --component, ++i) {
             this->array_[i] =
@@ -1021,15 +1021,15 @@ namespace openvrml {
         }
     }
 
-    inline int32 image::pixel(const size_t x, const size_t y) const
+    inline int32 image::pixel(const std::size_t x, const std::size_t y) const
         OPENVRML_NOTHROW
     {
         assert((x * y) < this->array_.size());
         return this->pixel(y * this->x_ + x);
     }
 
-    inline void image::pixel(const size_t x,
-                             const size_t y,
+    inline void image::pixel(const std::size_t x,
+                             const std::size_t y,
                              const int32 value)
         OPENVRML_NOTHROW
     {

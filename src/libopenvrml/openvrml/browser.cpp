@@ -8640,6 +8640,14 @@ openvrml::no_alternative_url::~no_alternative_url() throw ()
  */
 
 /**
+ * @internal
+ *
+ * @var boost::thread_group openvrml::scene::stream_reader_threads_
+ *
+ * @brief Stream reader thread group.
+ */
+
+/**
  * @brief Construct.
  *
  * @param[in] browser   the @c browser associated with the @c scene.

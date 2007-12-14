@@ -107,6 +107,7 @@ libopenvrml_libopenvrml_la_CXXFLAGS = \
 
 libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/vrml97_grammar.cpp \
+        libopenvrml/openvrml/x3d_vrml_grammar.cpp \
         libopenvrml/openvrml/read_write_mutex.cpp \
         libopenvrml/openvrml/basetypes.cpp \
         libopenvrml/openvrml/field_value.cpp \

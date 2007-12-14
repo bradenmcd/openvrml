@@ -186,7 +186,7 @@ const openvrml::color openvrml::make_color(const float r,
 }
 
 /**
- * @fn const float & openvrml::color::operator[](const size_t index) const
+ * @fn const float & openvrml::color::operator[](const std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -461,7 +461,7 @@ const openvrml::color_rgba openvrml::make_color_rgba(const float r,
 }
 
 /**
- * @fn const float & openvrml::color_rgba::operator[](const size_t index) const
+ * @fn const float & openvrml::color_rgba::operator[](const std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -900,7 +900,7 @@ const openvrml::vec2f openvrml::vec2f::operator-() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const float & openvrml::vec2f::operator[](const size_t index) const
+ * @fn const float & openvrml::vec2f::operator[](const std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -1315,7 +1315,7 @@ const openvrml::vec2d openvrml::vec2d::operator-() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const double & openvrml::vec2d::operator[](const size_t index) const
+ * @fn const double & openvrml::vec2d::operator[](const std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -1840,7 +1840,7 @@ const openvrml::vec3f openvrml::vec3f::operator-() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const float & openvrml::vec3f::operator[](size_t index) const
+ * @fn const float & openvrml::vec3f::operator[](std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -2383,7 +2383,7 @@ const openvrml::vec3d openvrml::vec3d::operator-() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const double & openvrml::vec3d::operator[](size_t index) const
+ * @fn const double & openvrml::vec3d::operator[](std::size_t index) const
  *
  * @brief Index-based component access.
  *
@@ -2794,7 +2794,7 @@ const openvrml::rotation openvrml::operator*(const rotation & lhs,
 
 
 /**
- * @fn const float & openvrml::rotation::operator[](const size_t index) const
+ * @fn const float & openvrml::rotation::operator[](const std::size_t index) const
  *
  * @brief Index-based element access.
  *
@@ -3605,7 +3605,7 @@ void openvrml::mat4f::transformation(vec3f & t,
     }
 
     mat4f tmp_matrix(*this);
-    size_t i, j;
+    std::size_t i, j;
 
     //
     // Ignore perspective.
@@ -3707,7 +3707,7 @@ void openvrml::mat4f::transformation(vec3f & t,
     }
 
     mat4f tmp_matrix(*this);
-    size_t i, j;
+    std::size_t i, j;
 
     //
     // Ignore perspective.
@@ -3938,7 +3938,7 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn float (&openvrml::mat4f::operator[](size_t index))[4]
+ * @fn float (&openvrml::mat4f::operator[](std::size_t index))[4]
  *
  * @brief Row access.
  *
@@ -3948,7 +3948,7 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
  */
 
 /**
- * @fn float (&openvrml::mat4f::operator[](size_t index) const)[4]
+ * @fn float (&openvrml::mat4f::operator[](std::size_t index) const)[4]
  *
  * @brief Row access.
  *
@@ -3992,7 +3992,7 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
 
     scanner_t scan(first, last, policies);
 
-    size_t row1_bracket_count = 0, row2_bracket_count = 0,
+    std::size_t row1_bracket_count = 0, row2_bracket_count = 0,
         row3_bracket_count = 0, row4_bracket_count = 0;
 
     rule_t r
@@ -4044,9 +4044,9 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
  */
 std::ostream & openvrml::operator<<(std::ostream & out, const mat4f & mat)
 {
-    for (size_t i = 0; i < 4; i++) {
+    for (std::size_t i = 0; i < 4; i++) {
         out << '[';
-        for (size_t j = 0; j < 4; j++) {
+        for (std::size_t j = 0; j < 4; j++) {
             out << mat[i][j];
             if (j != 3) { out << ", "; }
         }
@@ -4183,8 +4183,8 @@ const openvrml::quatf openvrml::make_quatf(const mat4f & mat) OPENVRML_NOTHROW
         q.quat[2] = (mat[0][1] - mat[1][0]) * s;
     } else {
         using openvrml_::fequal;
-        size_t i, j, k;
-        static const size_t next[3] = { 1, 2, 0 };
+        std::size_t i, j, k;
+        static const std::size_t next[3] = { 1, 2, 0 };
         // diagonal is negative
         i = 0;
         if (mat[1][1] > mat[0][0]) { i = 1; }
@@ -4425,7 +4425,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
 }
 
 /**
- * @fn float openvrml::quatf::operator[](size_t index) const
+ * @fn float openvrml::quatf::operator[](std::size_t index) const
  *
  * @brief Array element dereference operator (const version).
  *
@@ -4435,7 +4435,7 @@ const openvrml::quatf openvrml::operator-(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn float & openvrml::quatf::operator[](size_t index)
+ * @fn float & openvrml::quatf::operator[](std::size_t index)
  *
  * @brief Array element dereference operator (non-const version).
  *
@@ -4680,7 +4680,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 /**
  * @internal
  *
- * @var size_t openvrml::image::x_
+ * @var std::size_t openvrml::image::x_
  *
  * @brief Pixels in the <var>x</var>-dimension.
  */
@@ -4688,7 +4688,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 /**
  * @internal
  *
- * @var size_t openvrml::image::y_
+ * @var std::size_t openvrml::image::y_
  *
  * @brief Pixels in the <var>y</var>-dimension.
  */
@@ -4696,7 +4696,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
 /**
  * @internal
  *
- * @var size_t openvrml::image::comp_
+ * @var std::size_t openvrml::image::comp_
  *
  * @brief Number of components.
  */
@@ -4716,7 +4716,7 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
  */
 
 /**
- * @fn openvrml::image::image(size_t x, size_t y, size_t comp)
+ * @fn openvrml::image::image(std::size_t x, std::size_t y, std::size_t comp)
  *
  * @brief Construct.
  *
@@ -4735,9 +4735,9 @@ bool openvrml::operator!=(const quatf & lhs, const quatf & rhs)
  * @param[in] comp  number of components.
  * @param[in] array pixel data.
  */
-openvrml::image::image(const size_t x,
-                       const size_t y,
-                       const size_t comp,
+openvrml::image::image(const std::size_t x,
+                       const std::size_t y,
+                       const std::size_t comp,
                        const std::vector<unsigned char> & array)
     OPENVRML_THROW1(std::bad_alloc):
     x_(x),
@@ -4749,7 +4749,7 @@ openvrml::image::image(const size_t x,
 }
 
 /**
- * @fn template <typename InputIterator> openvrml::image::image(size_t x, size_t y, size_t comp, InputIterator array_begin, InputIterator array_end)
+ * @fn template <typename InputIterator> openvrml::image::image(std::size_t x, std::size_t y, std::size_t comp, InputIterator array_begin, InputIterator array_end)
  *
  * @brief Construct.
  *
@@ -4773,7 +4773,7 @@ openvrml::image::image(const size_t x,
  */
 
 /**
- * @fn size_t openvrml::image::x() const
+ * @fn std::size_t openvrml::image::x() const
  *
  * @brief Pixels in the <var>x</var>-dimension.
  *
@@ -4787,7 +4787,7 @@ openvrml::image::image(const size_t x,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::image::x(const size_t value) OPENVRML_THROW1(std::bad_alloc)
+void openvrml::image::x(const std::size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     //
     // Throws std::bad_alloc.
@@ -4797,7 +4797,7 @@ void openvrml::image::x(const size_t value) OPENVRML_THROW1(std::bad_alloc)
 }
 
 /**
- * @fn size_t openvrml::image::y() const
+ * @fn std::size_t openvrml::image::y() const
  *
  * @brief Pixels in the <var>y</var>-dimension.
  *
@@ -4811,7 +4811,7 @@ void openvrml::image::x(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::image::y(const size_t value) OPENVRML_THROW1(std::bad_alloc)
+void openvrml::image::y(const std::size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     //
     // Throws std::bad_alloc.
@@ -4828,7 +4828,7 @@ void openvrml::image::y(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::image::resize(const size_t x, const size_t y)
+void openvrml::image::resize(const std::size_t x, const std::size_t y)
     OPENVRML_THROW1(std::bad_alloc)
 {
     this->array_.resize(x * y * this->comp_); // Throws std::bad_alloc.
@@ -4837,7 +4837,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
 }
 
 /**
- * @fn size_t openvrml::image::comp() const
+ * @fn std::size_t openvrml::image::comp() const
  *
  * @brief Number of components.
  *
@@ -4851,7 +4851,7 @@ void openvrml::image::resize(const size_t x, const size_t y)
  *
  * @param[in] value number of components.
  */
-void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
+void openvrml::image::comp(const std::size_t value) OPENVRML_THROW1(std::bad_alloc)
 {
     assert(value <= 4);
     this->array_.resize(this->x_ * this->y_ * value);
@@ -4890,7 +4890,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t index) const
+ * @fn openvrml::int32 openvrml::image::pixel(std::size_t index) const
  *
  * @brief Pixel value.
  *
@@ -4902,7 +4902,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t index, int32 value)
+ * @fn void openvrml::image::pixel(std::size_t index, int32 value)
  *
  * @brief Set a pixel value.
  *
@@ -4913,7 +4913,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn openvrml::int32 openvrml::image::pixel(size_t x, size_t y) const
+ * @fn openvrml::int32 openvrml::image::pixel(std::size_t x, std::size_t y) const
  *
  * @brief Pixel value.
  *
@@ -4926,7 +4926,7 @@ void openvrml::image::comp(const size_t value) OPENVRML_THROW1(std::bad_alloc)
  */
 
 /**
- * @fn void openvrml::image::pixel(size_t x, size_t y, int32 value)
+ * @fn void openvrml::image::pixel(std::size_t x, std::size_t y, int32 value)
  *
  * @brief Set a pixel value.
  *
@@ -5035,7 +5035,7 @@ std::ostream & openvrml::operator<<(std::ostream & out, const image & img)
 
     const ios_base::fmtflags save_flags = out.flags();
     out << dec << img.x() << ' ' << img.y() << ' ' << img.comp() << hex;
-    for (size_t pixel_index = 0;
+    for (std::size_t pixel_index = 0;
          pixel_index < img.x() * img.y();
          ++pixel_index) {
         out << ' ' << "0x" << img.pixel(pixel_index);

@@ -568,6 +568,12 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @typedef openvrml::node_field_value_listener<openvrml::mfbool> openvrml::node_impl_util::abstract_node::mfbool_listener
+ *
+ * @brief @c openvrml::mfbool listener.  Provided for convenience.
+ */
+
+/**
  * @typedef openvrml::node_field_value_listener<openvrml::mfcolor> openvrml::node_impl_util::abstract_node::mfcolor_listener
  *
  * @brief @c openvrml::mfcolor listener.  Provided for convenience.

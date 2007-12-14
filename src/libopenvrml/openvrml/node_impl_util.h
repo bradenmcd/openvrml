@@ -101,7 +101,7 @@ namespace openvrml {
 
         protected:
             abstract_node_type(const openvrml::node_metatype & metatype,
-                             const std::string & id);
+                               const std::string & id);
         };
 
         template <typename Node> class event_listener_base;
@@ -393,6 +393,7 @@ namespace openvrml {
             typedef node_field_value_listener<sfvec2d> sfvec2d_listener;
             typedef node_field_value_listener<sfvec3f> sfvec3f_listener;
             typedef node_field_value_listener<sfvec3d> sfvec3d_listener;
+            typedef node_field_value_listener<mfbool> mfbool_listener;
             typedef node_field_value_listener<mfcolor> mfcolor_listener;
             typedef node_field_value_listener<mffloat> mffloat_listener;
             typedef node_field_value_listener<mfdouble> mfdouble_listener;

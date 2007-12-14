@@ -2417,8 +2417,7 @@ namespace openvrml {
             boost::spirit::real_parser<
                 float,
                 boost::spirit::real_parser_policies<float> > > >
-    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::
-    mffloat_p =
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mffloat_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<
@@ -2435,8 +2434,7 @@ namespace openvrml {
             boost::spirit::real_parser<
                 double,
                 boost::spirit::real_parser_policies<double> > > >
-    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::
-    mftime_p =
+    vrml97_grammar<Actions, ErrorHandler>::definition<ScannerT>::mftime_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
             boost::spirit::real_parser<

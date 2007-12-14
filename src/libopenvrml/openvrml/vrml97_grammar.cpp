@@ -1,5 +1,12 @@
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 /**
- * @class openvrml::vrml97_space_parser openvrml/vrml97_grammar.h
+ * @file openvrml/vrml97_grammar.h
+ *
+ * @brief VRML97 Spirit grammar and associated parsers.
+ */
+
+/**
+ * @struct openvrml::vrml97_space_parser openvrml/vrml97_grammar.h
  *
  * @brief A <a href="http://spirit.sourceforge.net">Spirit</a> space parser
  *        appropriate for use with VRML97 and VRML-encoded X3D.
@@ -31,7 +38,7 @@
 
 
 /**
- * @class openvrml::vrml97_skip_grammar openvrml/vrml97_grammar.h
+ * @struct openvrml::vrml97_skip_grammar openvrml/vrml97_grammar.h
  *
  * @brief A <a href="http://spirit.sourceforge.net">Spirit</a> grammar
  *        appropriate for use as a skip parser for VRML97 and VRML-encoded
@@ -41,7 +48,7 @@
 /**
  * @internal
  *
- * @struct openvrml::vrml97_skip_grammar::definition
+ * @struct openvrml::vrml97_skip_grammar::definition openvrml/vrml97_grammar.h
  *
  * @brief @c vrml97_skip_grammar definition.
  */
@@ -172,12 +179,6 @@
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::image_expected
- *
- * @brief An image value was expected.
- */
-
-/**
  * @var openvrml::vrml_parse_error openvrml::int32_expected
  *
  * @brief A integer value was expected.
@@ -232,39 +233,39 @@
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec2f_expected
+ * @var openvrml::vrml_parse_error openvrml::vec2_expected
  *
- * @brief A vec2f value was expected.
+ * @brief A 2-component vector value was expected.
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec2f_or_lbracket_expected
+ * @var openvrml::vrml_parse_error openvrml::vec2_or_lbracket_expected
  *
- * @brief A vec2f value or &ldquo;[&rdquo; was expected.
+ * @brief A 2-component vector value or &ldquo;[&rdquo; was expected.
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec2f_or_rbracket_expected
+ * @var openvrml::vrml_parse_error openvrml::vec2_or_rbracket_expected
  *
- * @brief A vec2f value or &ldquo;]&rdquo; was expected.
+ * @brief A 2-component vector value or &ldquo;]&rdquo; was expected.
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec3f_expected
+ * @var openvrml::vrml_parse_error openvrml::vec3_expected
  *
- * @brief A vec3f value was expected.
+ * @brief A 3-component vector value was expected.
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec3f_or_lbracket_expected
+ * @var openvrml::vrml_parse_error openvrml::vec3_or_lbracket_expected
  *
- * @brief A vec3f value or &ldquo;[&rdquo; was expected.
+ * @brief A 3-component vector value or &ldquo;[&rdquo; was expected.
  */
 
 /**
- * @var openvrml::vrml_parse_error openvrml::vec3f_or_rbracket_expected
+ * @var openvrml::vrml_parse_error openvrml::vec3_or_rbracket_expected
  *
- * @brief A vec3f value or &ldquo;]&rdquo; was expected.
+ * @brief A 3-component vector value or &ldquo;]&rdquo; was expected.
  */
 
 /**
@@ -298,21 +299,74 @@
  */
 
 /**
- * @fn std::ostream & openvrml::operator<<(std::ostream &, vrml_parse_error)
+ * @fn const char * openvrml::vrml97_parse_error_msg(vrml_parse_error error)
  *
- * @brief Stream output.
+ * @brief Get the error message associated with a @c vrml_parse_error.
  *
- * @param[in,out] out    output stream.
- * @param[in] error      error identifier.
+ * @param[in] error error identifier.
  *
- * @return @p out.
+ * @return the error message associated with @p error.
  */
 
 /**
- * @class openvrml::vrml97_grammar openvrml/vrml97_grammar.h
+ * @struct openvrml::vrml97_parse_error_handler openvrml/vrml97_grammar.h
+ *
+ * @brief A Spirit error handler that emits error and warning messages
+ *        to a @c std::ostream.
+ *
+ * @c rotation_axis_not_normalized is treated as a warning.  All other
+ * @c vrml_parse_error%s are treated as errors.
+ */
+
+/**
+ * @internal
+ *
+ * @var std::ostream & openvrml::vrml97_parse_error_handler::out_
+ *
+ * @brief Output stream.
+ */
+
+/**
+ * @fn openvrml::vrml97_parse_error_handler::vrml97_parse_error_handler(std::ostream & out)
+ *
+ * @brief Construct.
+ *
+ * @param[in] out   output stream.
+ */
+
+/**
+ * @fn boost::spirit::error_status<> openvrml::vrml97_parse_error_handler::operator()(const ScannerT & scan, const ErrorT & err) const
+ *
+ * @brief Handle a parser error.
+ *
+ * @param[in] scan  the scanner.
+ * @param[in] err   a @c boost::spirit::parser_error.
+ */
+
+/**
+ * @struct openvrml::null_vrml97_parse_actions openvrml/vrml97_grammar.h
+ *
+ * @brief No-op semantic actions for @c vrml97_grammar.
+ *
+ * This @c struct includes a no-op function for each semantic action
+ * called by @c vrml97_grammar.  It is the default value of
+ * @c vrml97_grammar%'s @c Actions template parameter.  It is generally
+ * convenient to inherit this @c struct when providing your own semantic
+ * actions, as doing so will provide a default no-op action where none has
+ * been implemented or none needs to occur.
+ */
+
+/**
+ * @struct openvrml::vrml97_grammar openvrml/vrml97_grammar.h
  *
  * @brief A <a href="http://spirit.sourceforge.net">Spirit</a> grammar for
  *        parsing VRML97.
+ */
+
+/**
+ * @struct openvrml::vrml97_grammar::definition openvrml/vrml97_grammar.h
+ *
+ * @brief VRML97 grammar definition.
  */
 
 /**
