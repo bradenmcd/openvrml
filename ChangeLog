@@ -1,5 +1,9 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Doxyfile: Removed references to ANTLR-generated files.
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	Partition the documentation into subpages.
 
 	* doc/Doxyfile
