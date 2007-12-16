@@ -34,7 +34,7 @@
  */
 
 /**
- * @class openvrml::frustum
+ * @class openvrml::frustum openvrml/frustum.h
  *
  * @brief A view frustum.
  *
@@ -44,8 +44,10 @@
  * the volume of virtual space visible through the on-screen window when using
  * a perspective projection.
  *
- * @see openvrml::node::render
- * @see openvrml::viewer
+ * @sa openvrml::appearance_node::render_appearance
+ * @sa openvrml::child_node::render_child
+ * @sa openvrml::geometry_node::render_geometry
+ * @sa openvrml::viewer
  */
 
 /**

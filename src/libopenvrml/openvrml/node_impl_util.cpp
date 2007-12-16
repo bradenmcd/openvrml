@@ -34,21 +34,21 @@
  *
  * While the API comprising the members of the @c openvrml namespace
  * provides everything @e necessary to implement nodes, node
- * implementation can be very verbose.  The members of the @c
- * openvrml::node_impl_util namespace can make node implementation
+ * implementation can be very verbose.  The members of the
+ * @c openvrml::node_impl_util namespace can make node implementation
  * more concise by abstracting and providing code that many node
  * implementations are likely to have in common.
  *
  * In particular, @c node_type_impl centralizes the logic for
  * generalized field access. By using an instance of this class
  * template for your @c openvrml::node_type implementation you can
- * avoid a lot of tedious and repetitive code to implement @c
- * openvrml::node::do_field, @c openvrml::node::do_event_listener, and
+ * avoid a lot of tedious and repetitive code to implement
+ * @c openvrml::node::do_field, @c openvrml::node::do_event_listener, and
  * @c openvrml::node::do_event_emitter.
  */
 
 /**
- * @class openvrml::node_impl_util::ptr_to_polymorphic_mem
+ * @class openvrml::node_impl_util::ptr_to_polymorphic_mem openvrml/node_impl_util.h
  *
  * @brief Abstract base class for a pointer-to-polymorphic-member type.
  *
@@ -82,7 +82,7 @@
 
 
 /**
- * @class openvrml::node_impl_util::ptr_to_polymorphic_mem_impl
+ * @class openvrml::node_impl_util::ptr_to_polymorphic_mem_impl openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-polymorphic-member type.
  *
@@ -125,7 +125,7 @@
 
 
 /**
- * @class openvrml::node_impl_util::abstract_node_type
+ * @class openvrml::node_impl_util::abstract_node_type openvrml/node_impl_util.h
  *
  * @brief Abstract base for @c openvrml::node_type subclasses.
  *
@@ -206,7 +206,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
- * @class openvrml::node_impl_util::node_type_impl
+ * @class openvrml::node_impl_util::node_type_impl openvrml/node_impl_util.h
  *
  * @brief A template for concrete @c node_types.
  */
@@ -297,7 +297,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
- * @class openvrml::node_impl_util::event_listener_base
+ * @class openvrml::node_impl_util::event_listener_base openvrml/node_impl_util.h
  *
  * @brief Abstract base for @c event_listener implementations.
  *
@@ -376,7 +376,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
- * @class openvrml::node_impl_util::event_emitter_base
+ * @class openvrml::node_impl_util::event_emitter_base openvrml/node_impl_util.h
  *
  * @brief Abstract base for @c event_emitter implementations.
  *
@@ -469,7 +469,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
- * @class openvrml::node_impl_util::abstract_node
+ * @class openvrml::node_impl_util::abstract_node openvrml/node_impl_util.h
  *
  * @brief Abstract base class for node implementations.
  *
@@ -646,7 +646,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @class openvrml::node_impl_util::abstract_node::event_emitter
+ * @class openvrml::node_impl_util::abstract_node::event_emitter openvrml/node_impl_util.h
  *
  * @brief Concrete event emitter class template.
  */
@@ -817,7 +817,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @class openvrml::node_impl_util::abstract_node::exposedfield
+ * @class openvrml::node_impl_util::abstract_node::exposedfield openvrml/node_impl_util.h
  *
  * @brief exposedField implementation.
  */
@@ -911,7 +911,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @class openvrml::node_impl_util::node_type_impl::field_ptr
+ * @class openvrml::node_impl_util::node_type_impl::field_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
  */
@@ -926,7 +926,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @class openvrml::node_impl_util::node_type_impl::event_listener_ptr
+ * @class openvrml::node_impl_util::node_type_impl::event_listener_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
  */
@@ -941,7 +941,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @class openvrml::node_impl_util::node_type_impl::event_emitter_ptr
+ * @class openvrml::node_impl_util::node_type_impl::event_emitter_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
  */
@@ -1183,7 +1183,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
- * @class openvrml::node_impl_util::bound_node_stack
+ * @class openvrml::node_impl_util::bound_node_stack openvrml/node_impl_util.h
  *
  * @brief A stack of bindable nodes.
  *

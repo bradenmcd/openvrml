@@ -32,7 +32,7 @@
  */
 
 /**
- * @class openvrml::rendering_context
+ * @class openvrml::rendering_context openvrml/rendering_context.h
  *
  * @brief Information needed during a render traversal.
  *
@@ -67,7 +67,7 @@
  */
 
 /**
- * @var openvrml::bounding_volume::Intersection openvrml::rendering_context::cull_flag
+ * @var openvrml::bounding_volume::intersection openvrml::rendering_context::cull_flag
  *
  * @brief Track the results of intersecting node bounds with the view volume.
  *

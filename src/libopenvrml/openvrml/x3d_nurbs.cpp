@@ -3198,19 +3198,19 @@ namespace {
      */
 
     /**
-     * @var contour2d_node::add_children_
+     * @var contour2d_node::add_children_listener contour2d_node::add_children_listener_
      *
-     * @brief add_children eventIn
+     * @brief add_children eventIn listener.
      */
 
     /**
-     * @var contour2d_node::remove_children_
+     * @var contour2d_node::remove_children_listener contour2d_node::remove_children_listener_
      *
-     * @brief remove_children eventIn
+     * @brief remove_children eventIn listener.
      */
 
     /**
-     * @var contour2d_node::children_
+     * @var openvrml::node_impl_util::abstract_node<contour2d_node>::exposedfield<openvrml::mfnode> contour2d_node::children_
      *
      * @brief children exposedField
      */
@@ -3288,7 +3288,7 @@ namespace {
      */
 
     /**
-     * @var contour_polyline2d_node::point_
+     * @var openvrml::node_impl_util::abstract_node<contour_polyline2d_node>::exposedfield<openvrml::mfvec2f> contour_polyline2d_node::point_
      *
      * @brief point exposedField
      */
@@ -3328,7 +3328,7 @@ namespace {
      */
 
     /**
-     * @var coordinate_double_node::point_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_double_node>::exposedfield<openvrml::mfvec3d> coordinate_double_node::point_
      *
      * @brief point exposedField
      */
@@ -3362,43 +3362,43 @@ namespace {
      */
 
     /**
-     * @var nurbs_curve_node::NurbsCurve_metatype
+     * @var nurbs_curve_node::nurbs_curve_metatype
      *
      * @brief Class object for NurbsCurve nodes.
      */
 
     /**
-     * @var nurbs_curve_node::control_point_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve_node>::exposedfield<openvrml::sfnode> nurbs_curve_node::control_point_
      *
      * @brief control_point exposedField
      */
 
     /**
-     * @var nurbs_curve_node::tessellation_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve_node>::exposedfield<openvrml::sfint32> nurbs_curve_node::tessellation_
      *
      * @brief tessellation exposedField
      */
 
     /**
-     * @var nurbs_curve_node::weight_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve_node>::exposedfield<openvrml::mfdouble> nurbs_curve_node::weight_
      *
      * @brief weight exposedField
      */
 
     /**
-     * @var nurbs_curve_node::closed_
+     * @var openvrml::sfbool nurbs_curve_node::closed_
      *
      * @brief closed field
      */
 
     /**
-     * @var nurbs_curve_node::knot_
+     * @var openvrml::mfdouble nurbs_curve_node::knot_
      *
      * @brief knot field
      */
 
     /**
-     * @var nurbs_curve_node::order_
+     * @var openvrml::sfint32 nurbs_curve_node::order_
      *
      * @brief order field
      */
@@ -3467,43 +3467,43 @@ namespace {
      */
 
     /**
-     * @var nurbs_curve2d_node::NurbsCurve2D_metatype
+     * @var nurbs_curve2d_node::nurbs_curve2d_metatype
      *
      * @brief Class object for NurbsCurve2D nodes.
      */
 
     /**
-     * @var nurbs_curve2d_node::control_point_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve2d_node>::exposedfield<openvrml::mfvec2d> nurbs_curve2d_node::control_point_
      *
      * @brief control_point exposedField
      */
 
     /**
-     * @var nurbs_curve2d_node::tessellation_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve2d_node>::exposedfield<openvrml::sfint32> nurbs_curve2d_node::tessellation_
      *
      * @brief tessellation exposedField
      */
 
     /**
-     * @var nurbs_curve2d_node::weight_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_curve2d_node>::exposedfield<openvrml::mfdouble> nurbs_curve2d_node::weight_
      *
      * @brief weight exposedField
      */
 
     /**
-     * @var nurbs_curve2d_node::closed_
+     * @var openvrml::sfbool nurbs_curve2d_node::closed_
      *
      * @brief closed field
      */
 
     /**
-     * @var nurbs_curve2d_node::knot_
+     * @var openvrml::mfdouble nurbs_curve2d_node::knot_
      *
      * @brief knot field
      */
 
     /**
-     * @var nurbs_curve2d_node::order_
+     * @var openvrml::sfint32 nurbs_curve2d_node::order_
      *
      * @brief order field
      */
@@ -3546,39 +3546,45 @@ namespace {
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::set_fraction_
+     * @var nurbs_orientation_interpolator_node::set_fraction_listener nurbs_orientation_interpolator_node::set_fraction_listener_
      *
-     * @brief set_fraction eventIn
+     * @brief set_fraction eventIn listener.
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::control_points_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_orientation_interpolator_node>::exposedfield<openvrml::sfnode> nurbs_orientation_interpolator_node::control_points_
      *
      * @brief control_points exposedField
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::knot_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_orientation_interpolator_node>::exposedfield<openvrml::mfdouble> nurbs_orientation_interpolator_node::knot_
      *
      * @brief knot exposedField
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::order_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_orientation_interpolator_node>::exposedfield<openvrml::sfint32> nurbs_orientation_interpolator_node::order_
      *
      * @brief order exposedField
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::weight_
+     * @var openvrml::node_impl_util::abstract_node<nurbs_orientation_interpolator_node>::exposedfield<openvrml::mfdouble> nurbs_orientation_interpolator_node::weight_
      *
      * @brief weight exposedField
      */
 
     /**
-     * @var nurbs_orientation_interpolator_node::value_changed_
+     * @var openvrml::sfrotation nurbs_orientation_interpolator_node::value_changed_
      *
      * @brief value_changed eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<nurbs_orientation_interpolator_node>::sfrotation_emitter nurbs_orientation_interpolator_node::value_changed_emitter_
+     *
+     * @brief value_changed eventOut emitter.
      */
 
     nurbs_orientation_interpolator_node::set_fraction_listener::

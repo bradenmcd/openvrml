@@ -37,7 +37,7 @@
 # include "viewer.h"
 
 /**
- * @class openvrml::viewer
+ * @class openvrml::viewer openvrml/viewer.h
  *
  * @brief Map the scene graph to the underlying graphics library.
  */

@@ -133,7 +133,7 @@
 /**
  * @struct openvrml::color_rgba_parser openvrml/x3d_vrml_grammar.h
  *
- * @brief The implementation of the @c color_rgba_p functor parser.
+ * @brief The implementation of the @c openvrml::color_rgba_p functor parser.
  */
 
 /**
@@ -160,7 +160,7 @@
 /**
  * @struct openvrml::vec2d_parser openvrml/x3d_vrml_grammar.h
  *
- *  @brief The implementation of the @c vec2d_p functor parser.
+ *  @brief The implementation of the @c openvrml::vec2d_p functor parser.
  */
 
 /**
@@ -182,6 +182,46 @@
  * @var const boost::spirit::functor_parser<openvrml::vec2d_parser> openvrml::vec2d_p
  *
  * @brief A Spirit parser for double-precision 2-component vector values.
+ */
+
+/**
+ * @struct openvrml::vec3d_parser openvrml/x3d_vrml_grammar.h
+ *
+ *  @brief The implementation of the @c openvrml::vec3d_p functor parser.
+ */
+
+/**
+ * @typedef openvrml::vec3d openvrml::vec3d_parser::result_t
+ *
+ * @brief Parse result.
+ */
+
+/**
+ * @fn std::ptrdiff_t openvrml::vec3d_parser::operator()(const ScannerT & scan, result_t & result) const
+ *
+ * @brief Parse a double-precision 3-component vector value.
+ *
+ * @param[in] scan      a scanner.
+ * @param[out] result   the parse result.
+ */
+
+/**
+ * @var const boost::spirit::functor_parser<openvrml::vec3d_parser> openvrml::vec3d_p
+ *
+ * @brief A Spirit parser for double-precision 3-component vector values.
+ */
+
+/**
+ * @struct openvrml::null_x3d_vrml_parse_actions openvrml/x3d_vrml_grammar.h
+ *
+ * @brief No-op semantic actions for @c x3d_vrml_grammar.
+ *
+ * This @c struct includes a no-op function for each semantic action
+ * called by @c x3d_vrml_grammar.  It is the default value of
+ * @c x3d_vrml_grammar%'s @c Actions template parameter.  It is generally
+ * convenient to inherit this @c struct when providing your own semantic
+ * actions, as doing so will provide a default no-op action where none has
+ * been implemented or none needs to occur.
  */
 
 /**

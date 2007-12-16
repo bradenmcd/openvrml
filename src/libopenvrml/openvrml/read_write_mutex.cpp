@@ -27,6 +27,12 @@
 #include <cassert>
 
 /**
+ * @file openvrml/read_write_mutex.h
+ *
+ * @brief A read/write mutex.
+ */
+
+/**
  * @class openvrml::read_write_mutex openvrml/read_write_mutex.h
  *
  * @brief A read/write mutex with an interface that follows the
@@ -65,7 +71,7 @@
 /**
  * @internal
  *
- * @var size_t openvrml::read_write_mutex::readers_active_
+ * @var std::size_t openvrml::read_write_mutex::readers_active_
  *
  * @brief The number of readers currently sharing the lock.
  */
@@ -73,7 +79,7 @@
 /**
  * @internal
  *
- * @var size_t openvrml::read_write_mutex::readers_waiting_
+ * @var std::size_t openvrml::read_write_mutex::readers_waiting_
  *
  * @brief The number of readers currently waiting for the lock.
  */
@@ -81,7 +87,7 @@
 /**
  * @internal
  *
- * @var size_t openvrml::read_write_mutex::writers_waiting_
+ * @var std::size_t openvrml::read_write_mutex::writers_waiting_
  *
  * @brief The number of writers currently waiting for the lock.
  */

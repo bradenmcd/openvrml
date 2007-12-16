@@ -32,7 +32,7 @@
  */
 
 /**
- * @class openvrml::bounding_volume
+ * @class openvrml::bounding_volume openvrml/bounding_volume.h
  *
  * @brief A bounding volume.
  *

@@ -2036,109 +2036,109 @@ namespace {
      */
 
     /**
-     * @var hanim_joint_node::add_children_
+     * @var hanim_joint_node::add_children_listener hanim_joint_node::add_children_listener_
      *
-     * @brief add_children eventIn
+     * @brief add_children eventIn listener.
      */
 
     /**
-     * @var hanim_joint_node::remove_children_
+     * @var hanim_joint_node::remove_children_listener hanim_joint_node::remove_children_listener_
      *
-     * @brief remove_children eventIn
+     * @brief remove_children eventIn listener.
      */
 
     /**
-     * @var hanim_joint_node::center_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfvec3f> hanim_joint_node::center_
      *
      * @brief center exposedField
      */
 
     /**
-     * @var hanim_joint_node::children_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mfnode> hanim_joint_node::children_
      *
      * @brief children exposedField
      */
 
     /**
-     * @var hanim_joint_node::displacers_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mfnode> hanim_joint_node::displacers_
      *
      * @brief displacers exposedField
      */
 
     /**
-     * @var hanim_joint_node::limit_orientation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfrotation> hanim_joint_node::limit_orientation_
      *
      * @brief limit_orientation exposedField
      */
 
     /**
-     * @var hanim_joint_node::llimit_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mffloat> hanim_joint_node::llimit_
      *
      * @brief llimit exposedField
      */
 
     /**
-     * @var hanim_joint_node::name_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfstring> hanim_joint_node::name_
      *
      * @brief name exposedField
      */
 
     /**
-     * @var hanim_joint_node::rotation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfrotation> hanim_joint_node::rotation_
      *
      * @brief rotation exposedField
      */
 
     /**
-     * @var hanim_joint_node::scale_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfvec3f> hanim_joint_node::scale_
      *
      * @brief scale exposedField
      */
 
     /**
-     * @var hanim_joint_node::scale_orientation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfrotation> hanim_joint_node::scale_orientation_
      *
      * @brief scale_orientation exposedField
      */
 
     /**
-     * @var hanim_joint_node::skin_coord_index_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mfint32> hanim_joint_node::skin_coord_index_
      *
      * @brief skin_coord_index exposedField
      */
 
     /**
-     * @var hanim_joint_node::skin_coord_weight_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mffloat> hanim_joint_node::skin_coord_weight_
      *
      * @brief skin_coord_weight exposedField
      */
 
     /**
-     * @var hanim_joint_node::stiffness_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mffloat> hanim_joint_node::stiffness_
      *
      * @brief stiffness exposedField
      */
 
     /**
-     * @var hanim_joint_node::translation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<sfvec3f> hanim_joint_node::translation_
      *
      * @brief translation exposedField
      */
 
     /**
-     * @var hanim_joint_node::ulimit_
+     * @var openvrml::node_impl_util::abstract_node<hanim_joint_node>::exposedfield<mffloat> hanim_joint_node::ulimit_
      *
      * @brief ulimit exposedField
      */
 
     /**
-     * @var hanim_joint_node::bbox_center_
+     * @var openvrml::sfvec3f hanim_joint_node::bbox_center_
      *
      * @brief bbox_center field
      */
 
     /**
-     * @var hanim_joint_node::bbox_size_
+     * @var openvrml::sfvec3f hanim_joint_node::bbox_size_
      *
      * @brief bbox_size field
      */
@@ -2232,67 +2232,67 @@ namespace {
      */
 
     /**
-     * @var hanim_segment_node::add_children_
+     * @var hanim_segment_node::add_children_listener hanim_segment_node::add_children_listener_
      *
-     * @brief add_children eventIn
+     * @brief add_children eventIn listener.
      */
 
     /**
-     * @var hanim_segment_node::remove_children_
+     * @var hanim_segment_node::remove_children_listener hanim_segment_node::remove_children_listener_
      *
-     * @brief remove_children eventIn
+     * @brief remove_children eventIn listener.
      */
 
     /**
-     * @var hanim_segment_node::center_of_mass_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<sfvec3f> hanim_segment_node::center_of_mass_
      *
      * @brief center_of_mass exposedField
      */
 
     /**
-     * @var hanim_segment_node::children_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<mfnode> hanim_segment_node::children_
      *
      * @brief children exposedField
      */
 
     /**
-     * @var hanim_segment_node::coord_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<sfnode> hanim_segment_node::coord_
      *
      * @brief coord exposedField
      */
 
     /**
-     * @var hanim_segment_node::displacers_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<mfnode> hanim_segment_node::displacers_
      *
      * @brief displacers exposedField
      */
 
     /**
-     * @var hanim_segment_node::mass_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<sffloat> hanim_segment_node::mass_
      *
      * @brief mass exposedField
      */
 
     /**
-     * @var hanim_segment_node::moments_of_inertia_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<mffloat> hanim_segment_node::moments_of_inertia_
      *
      * @brief moments_of_inertia exposedField
      */
 
     /**
-     * @var hanim_segment_node::name_
+     * @var openvrml::node_impl_util::abstract_node<hanim_segment_node>::exposedfield<sfstring> hanim_segment_node::name_
      *
      * @brief name exposedField
      */
 
     /**
-     * @var hanim_segment_node::bbox_center_
+     * @var openvrml::sfvec3f hanim_segment_node::bbox_center_
      *
      * @brief bbox_center field
      */
 
     /**
-     * @var hanim_segment_node::bbox_size_
+     * @var openvrml::sfvec3f hanim_segment_node::bbox_size_
      *
      * @brief bbox_size field
      */
@@ -2379,67 +2379,67 @@ namespace {
      */
 
     /**
-     * @var hanim_site_node::add_children_
+     * @var hanim_site_node::add_children_listener hanim_site_node::add_children_listener_
      *
-     * @brief add_children eventIn
+     * @brief add_children eventIn listener.
      */
 
     /**
-     * @var hanim_site_node::remove_children_
+     * @var hanim_site_node::remove_children_listener hanim_site_node::remove_children_listener_
      *
-     * @brief remove_children eventIn
+     * @brief remove_children eventIn listener.
      */
 
     /**
-     * @var hanim_site_node::center_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfvec3f> hanim_site_node::center_
      *
      * @brief center exposedField
      */
 
     /**
-     * @var hanim_site_node::children_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<mfnode> hanim_site_node::children_
      *
      * @brief children exposedField
      */
 
     /**
-     * @var hanim_site_node::name_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfstring> hanim_site_node::name_
      *
      * @brief name exposedField
      */
 
     /**
-     * @var hanim_site_node::rotation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfrotation> hanim_site_node::rotation_
      *
      * @brief rotation exposedField
      */
 
     /**
-     * @var hanim_site_node::scale_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfvec3f> hanim_site_node::scale_
      *
      * @brief scale exposedField
      */
 
     /**
-     * @var hanim_site_node::scale_orientation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfrotation> hanim_site_node::scale_orientation_
      *
      * @brief scale_orientation exposedField
      */
 
     /**
-     * @var hanim_site_node::translation_
+     * @var openvrml::node_impl_util::abstract_node<hanim_site_node>::exposedfield<sfvec3f> hanim_site_node::translation_
      *
      * @brief translation exposedField
      */
 
     /**
-     * @var hanim_site_node::bbox_center_
+     * @var openvrml::sfvec3f hanim_site_node::bbox_center_
      *
      * @brief bbox_center field
      */
 
     /**
-     * @var hanim_site_node::bbox_size_
+     * @var openvrml::sfvec3f hanim_site_node::bbox_size_
      *
      * @brief bbox_size field
      */

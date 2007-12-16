@@ -24,7 +24,7 @@
  * <tr><td>@ref resource_istream</td></tr>
  * <tr><td>@ref introducing_browser</td></tr>
  * <tr><td>@ref resource_istream_impl_considerations</td></tr>
- * <tr><td>@ref conformance</td><td>NIST VRML Test Suite results</td></tr>
+ * <tr><td>@subpage conformance</td><td>NIST VRML Test Suite results</td></tr>
  * </table>
  *
  * @section intro 1 Introduction
@@ -317,11 +317,11 @@
  *
  * @code
  * struct error_handler {
- *      template <typename ScannerT, typename ErrorT>
- *      boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
- *      {
- *      ...
- *      }
+ *     template <typename ScannerT, typename ErrorT>
+ *     boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
+ *     {
+ *     ...
+ *     }
  * };
  * @endcode
  *

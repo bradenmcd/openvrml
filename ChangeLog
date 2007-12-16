@@ -1,3 +1,23 @@
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment fixes and improvements.
+
+	* doc/index.doc
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	* src/libopenvrml/openvrml/read_write_mutex.h
+	* src/libopenvrml/openvrml/rendering_context.cpp
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.cpp
+
 2007-12-14 Braden McDaniel  <braden@endoframe.com>
 
 	Removed Visual C++ 8.0 project files.

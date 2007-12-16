@@ -4402,7 +4402,7 @@ namespace {
      *
      * @return a node_type_ptr to a node_type capable of creating Anchor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by anchor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -4698,7 +4698,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Appearance nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by appearance_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -5058,7 +5058,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating AudioClip nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by audio_clip_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -5670,7 +5670,7 @@ namespace {
      * @return a @c boost::shared_ptr<node_type> to a @c node_type capable of
      *         creating Background nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by @c background_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -7194,7 +7194,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Billboard nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by billboard_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -7525,7 +7525,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Box nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by box_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -7710,7 +7710,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Collision nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by collision_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -7995,7 +7995,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Color nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by color_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -8149,7 +8149,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating ColorInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  color_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -8468,7 +8468,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Cone nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by cone_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -8681,7 +8681,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Coordinate nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by coordinate_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -8835,7 +8835,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating CoordinateInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  coordinate_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -9151,7 +9151,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Cylinder nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by cylinder_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -9385,7 +9385,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating CylinderSensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by cylinder_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -9934,7 +9934,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating DirectionalLight nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  directional_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -10190,7 +10190,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating ElevationGrid nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by elevation_grid_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -10718,7 +10718,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Extrusion nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by extrusion_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -11456,7 +11456,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Fog nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by fog_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -11811,7 +11811,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating FontStyle nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by font_style_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -12183,7 +12183,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Group nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by group_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -12357,7 +12357,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating ImageTexture nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by image_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -12672,7 +12672,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating IndexedFaceSet nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  indexed_face_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -13353,7 +13353,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating IndexedLineSet nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  indexed_line_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -13636,7 +13636,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Inline nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by inline_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -13964,7 +13964,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating LOD nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by lod_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -14321,7 +14321,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Material nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by material_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -14656,7 +14656,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating MovieTexture nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by movie_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -15457,7 +15457,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating NavigationInfo nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by navigation_info_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -15965,7 +15965,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Normal nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by normal_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -16119,7 +16119,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating NormalInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  normal_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -16455,7 +16455,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating OrientationInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  orientation_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -16796,7 +16796,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating PixelTexture nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by pixel_texture_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -16985,7 +16985,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating PlaneSensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by plane_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -17475,7 +17475,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating PointLight nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by point_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -17802,7 +17802,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating PointSet nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by point_set_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -18087,7 +18087,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating PositionInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  position_interpolator_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -18388,7 +18388,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating ProximitySensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  proximity_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -18824,7 +18824,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating CoordinateInterpolator nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  CoordinateInterpolatorClass.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -19116,7 +19116,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Shape nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by shape_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -19449,7 +19449,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Sound nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by sound_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -19833,7 +19833,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Sphere nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by sphere_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -20018,7 +20018,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating SphereSensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by sphere_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -20461,7 +20461,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating SpotLight nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by spot_light_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -20868,7 +20868,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Switch nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by switch_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -21309,7 +21309,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Text nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by text_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -23526,7 +23526,7 @@ namespace {
     * @return a boost::shared_ptr<node_type> to a node_type capable of creating
     *         TextureCoordinate nodes.
     *
-    * @exception unsupported_interface if @p interfaces includes an interface
+    * @exception openvrml::unsupported_interface if @p interfaces includes an interface
     *                                  not supported by
     *                                  texture_coordinate_metatype.
     * @exception std::bad_alloc        if memory allocation fails.
@@ -23686,7 +23686,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating TextureTransform nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  texture_transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -23936,7 +23936,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating TimeSensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by time_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -24737,7 +24737,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating TouchSensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by touch_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -25077,7 +25077,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Transform nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by transform_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -26041,7 +26041,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Viewpoint nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by viewpoint_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -26836,7 +26836,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating VisibilitySensor nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by
      *                                  visibility_sensor_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
@@ -27191,7 +27191,7 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating WorldInfo nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by world_info_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -27384,7 +27384,7 @@ namespace {
      *
      * @return a node_type_ptr to a node_type capable of creating CADLayer nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface if @p interfaces includes an interface
      *                                  not supported by cad_layer_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */
@@ -27827,7 +27827,8 @@ namespace {
      * @return a boost::shared_ptr<node_type> to a node_type capable of
      *         creating Group nodes.
      *
-     * @exception unsupported_interface if @p interfaces includes an interface
+     * @exception openvrml::unsupported_interface
+     *                                  if @p interfaces includes an interface
      *                                  not supported by cad_assembly_metatype.
      * @exception std::bad_alloc        if memory allocation fails.
      */

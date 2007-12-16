@@ -447,27 +447,33 @@ namespace {
      */
 
     /**
-     * @var coordinate_interpolator2d_node::set_fraction_
+     * @var coordinate_interpolator2d_node::set_fraction_listener coordinate_interpolator2d_node::set_fraction_listener_
      *
-     * @brief set_fraction eventIn
+     * @brief set_fraction eventIn listener.
      */
 
     /**
-     * @var coordinate_interpolator2d_node::key_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_interpolator2d_node>::exposedfield<mffloat> coordinate_interpolator2d_node::key_
      *
      * @brief key exposedField
      */
 
     /**
-     * @var coordinate_interpolator2d_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<coordinate_interpolator2d_node>::exposedfield<mfvec2f> coordinate_interpolator2d_node::key_value_
      *
      * @brief key_value exposedField
      */
 
     /**
-     * @var coordinate_interpolator2d_node::value_changed_
+     * @var openvrml::mfvec2f coordinate_interpolator2d_node::value_changed_
      *
      * @brief value_changed eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<coordinate_interpolator2d_node>::mfvec2f_emitter coordinate_interpolator2d_node::value_changed_emitter_
+     *
+     * @brief value_changed eventOut emitter.
      */
 
     coordinate_interpolator2d_node::set_fraction_listener::
@@ -530,27 +536,33 @@ namespace {
      */
 
     /**
-     * @var position_interpolator2d_node::set_fraction_
+     * @var position_interpolator2d_node::set_fraction_listener position_interpolator2d_node::set_fraction_listener_
      *
-     * @brief set_fraction eventIn
+     * @brief set_fraction eventIn listener.
      */
 
     /**
-     * @var position_interpolator2d_node::key_
+     * @var openvrml::node_impl_utils::abstract_node<position_interpolator2d_node>::exposedfield<mffloat> position_interpolator2d_node::key_
      *
      * @brief key exposedField
      */
 
     /**
-     * @var position_interpolator2d_node::key_value_
+     * @var openvrml::node_impl_utils::abstract_node<position_interpolator2d_node>::exposedfield<mfvec2f> position_interpolator2d_node::key_value_
      *
      * @brief key_value exposedField
      */
 
     /**
-     * @var position_interpolator2d_node::value_changed_
+     * @var openvrml::sfvec2f position_interpolator2d_node::value_changed_
      *
      * @brief value_changed eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_utils::abstract_node<position_interpolator2d_node>::sfvec2f_emitter position_interpolator2d_node::value_changed_emitter_
+     *
+     * @brief value_changed eventOut emitter. 
      */
 
     position_interpolator2d_node::set_fraction_listener::

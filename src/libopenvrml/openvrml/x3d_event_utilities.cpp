@@ -29,16 +29,12 @@
 # include "node_impl_util.h"
 # include "x3d_event_utilities.h"
 
-using namespace openvrml;
-using namespace openvrml::node_impl_util;
-using namespace std;
-
 namespace {
 
     /**
      * @brief Class object for BooleanFilter nodes.
      */
-    class OPENVRML_LOCAL boolean_filter_metatype : public node_metatype {
+    class OPENVRML_LOCAL boolean_filter_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -46,17 +42,17 @@ namespace {
         virtual ~boolean_filter_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for BooleanSequencer nodes.
      */
-    class OPENVRML_LOCAL boolean_sequencer_metatype : public node_metatype {
+    class OPENVRML_LOCAL boolean_sequencer_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -64,17 +60,17 @@ namespace {
         virtual ~boolean_sequencer_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for BooleanToggle nodes.
      */
-    class OPENVRML_LOCAL boolean_toggle_metatype : public node_metatype {
+    class OPENVRML_LOCAL boolean_toggle_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -82,17 +78,17 @@ namespace {
         virtual ~boolean_toggle_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for BooleanTrigger nodes.
      */
-    class OPENVRML_LOCAL boolean_trigger_metatype : public node_metatype {
+    class OPENVRML_LOCAL boolean_trigger_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -100,17 +96,17 @@ namespace {
         virtual ~boolean_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for IntegerSequencer nodes.
      */
-    class OPENVRML_LOCAL integer_sequencer_metatype : public node_metatype {
+    class OPENVRML_LOCAL integer_sequencer_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -118,17 +114,17 @@ namespace {
         virtual ~integer_sequencer_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for IntegerTrigger nodes.
      */
-    class OPENVRML_LOCAL integer_trigger_metatype : public node_metatype {
+    class OPENVRML_LOCAL integer_trigger_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -136,17 +132,17 @@ namespace {
         virtual ~integer_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 
 
     /**
      * @brief Class object for TimeTrigger nodes.
      */
-    class OPENVRML_LOCAL time_trigger_metatype : public node_metatype {
+    class OPENVRML_LOCAL time_trigger_metatype : public openvrml::node_metatype {
     public:
         static const char * const id;
 
@@ -154,10 +150,10 @@ namespace {
         virtual ~time_trigger_metatype() OPENVRML_NOTHROW;
 
     private:
-        virtual const boost::shared_ptr<node_type>
+        virtual const boost::shared_ptr<openvrml::node_type>
             do_create_type(const std::string & id,
-                           const node_interface_set & interfaces) const
-            OPENVRML_THROW2(unsupported_interface, std::bad_alloc);
+                           const openvrml::node_interface_set & interfaces) const
+            OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc);
     };
 }
 
@@ -185,74 +181,80 @@ namespace {
 
     using namespace openvrml_;
 
-    class OPENVRML_LOCAL boolean_filter_node : public abstract_node<boolean_filter_node>,
-                                               public child_node {
+    class OPENVRML_LOCAL boolean_filter_node :
+        public openvrml::node_impl_util::abstract_node<boolean_filter_node>,
+        public openvrml::child_node {
+
         friend class boolean_filter_metatype;
 
-        class set_boolean_listener : public event_listener_base<self_t>,
-                                     public sfbool_listener {
+        class set_boolean_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
             virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
-        sfbool input_false_;
+        openvrml::sfbool input_false_;
         sfbool_emitter input_false_emitter_;
-        sfbool input_negate_;
+        openvrml::sfbool input_negate_;
         sfbool_emitter input_negate_emitter_;
-        sfbool input_true_;
+        openvrml::sfbool input_true_;
         sfbool_emitter input_true_emitter_;
 
     public:
-        boolean_filter_node(const node_type & type,
+        boolean_filter_node(const openvrml::node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~boolean_filter_node() OPENVRML_NOTHROW;
     };
 
     class OPENVRML_LOCAL boolean_sequencer_node :
-        public abstract_node<boolean_sequencer_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<boolean_sequencer_node>,
+        public openvrml::child_node {
 
         friend class boolean_sequencer_metatype;
 
-        class next_listener : public event_listener_base<self_t>,
-                              public sfbool_listener {
+        class next_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit next_listener(self_t & node);
             virtual ~next_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class previous_listener : public event_listener_base<self_t>,
-                                  public sfbool_listener {
+        class previous_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit previous_listener(self_t & node);
             virtual ~previous_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class set_fraction_listener : public event_listener_base<self_t>,
-                                      public sffloat_listener {
+        class set_fraction_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sffloat & fraction,
+            virtual void do_process_event(const openvrml::sffloat & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
@@ -260,113 +262,118 @@ namespace {
         next_listener next_listener_;
         previous_listener previous_listener_;
         set_fraction_listener set_fraction_listener_;
-        exposedfield<mffloat> key_;
-        exposedfield<mfbool> key_value_;
-        sfbool value_changed_;
+        exposedfield<openvrml::mffloat> key_;
+        exposedfield<openvrml::mfbool> key_value_;
+        openvrml::sfbool value_changed_;
         sfbool_emitter value_changed_emitter_;
 
     public:
-        boolean_sequencer_node(const node_type & type,
+        boolean_sequencer_node(const openvrml::node_type & type,
                                const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~boolean_sequencer_node() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL boolean_toggle_node :
-        public abstract_node<boolean_toggle_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<boolean_toggle_node>,
+        public openvrml::child_node {
 
         friend class boolean_toggle_metatype;
 
-        class set_boolean_listener : public event_listener_base<self_t>,
-                                     public sfbool_listener {
+        class set_boolean_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
             virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
-        exposedfield<sfbool> toggle_;
+        exposedfield<openvrml::sfbool> toggle_;
 
     public:
-        boolean_toggle_node(const node_type & type,
+        boolean_toggle_node(const openvrml::node_type & type,
                             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~boolean_toggle_node() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL boolean_trigger_node :
-        public abstract_node<boolean_trigger_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<boolean_trigger_node>,
+        public openvrml::child_node {
 
         friend class boolean_trigger_metatype;
 
-        class set_trigger_time_listener : public event_listener_base<self_t>,
-                                          public sftime_listener {
+        class set_trigger_time_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sftime_listener {
         public:
             explicit set_trigger_time_listener(self_t & node);
             virtual ~set_trigger_time_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sftime & fraction,
+            virtual void do_process_event(const openvrml::sftime & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_trigger_time_listener set_trigger_time_listener_;
-        sfbool trigger_true_;
+        openvrml::sfbool trigger_true_;
         sfbool_emitter trigger_true_emitter_;
 
     public:
-        boolean_trigger_node(const node_type & type,
+        boolean_trigger_node(const openvrml::node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~boolean_trigger_node() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL integer_sequencer_node :
-        public abstract_node<integer_sequencer_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<integer_sequencer_node>,
+        public openvrml::child_node {
 
         friend class integer_sequencer_metatype;
 
-        class next_listener : public event_listener_base<self_t>,
-                              public sfbool_listener {
+        class next_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit next_listener(self_t & node);
             virtual ~next_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class previous_listener : public event_listener_base<self_t>,
-                                  public sfbool_listener {
+        class previous_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit previous_listener(self_t & node);
             virtual ~previous_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class set_fraction_listener : public event_listener_base<self_t>,
-                                      public sffloat_listener {
+        class set_fraction_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sffloat_listener {
         public:
             explicit set_fraction_listener(self_t & node);
             virtual ~set_fraction_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sffloat & fraction,
+            virtual void do_process_event(const openvrml::sffloat & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
@@ -374,73 +381,75 @@ namespace {
         next_listener next_listener_;
         previous_listener previous_listener_;
         set_fraction_listener set_fraction_listener_;
-        exposedfield<mffloat> key_;
-        exposedfield<mfint32> key_value_;
-        sfint32 value_changed_;
+        exposedfield<openvrml::mffloat> key_;
+        exposedfield<openvrml::mfint32> key_value_;
+        openvrml::sfint32 value_changed_;
         sfint32_emitter value_changed_emitter_;
 
     public:
         integer_sequencer_node(
-            const node_type & type,
+            const openvrml::node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~integer_sequencer_node() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL integer_trigger_node :
-        public abstract_node<integer_trigger_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<integer_trigger_node>,
+        public openvrml::child_node {
 
         friend class integer_trigger_metatype;
 
-        class set_boolean_listener : public event_listener_base<self_t>,
-                                     public sfbool_listener {
+        class set_boolean_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
             virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
-        exposedfield<mfint32> integer_key_;
-        sfint32 trigger_value_;
+        exposedfield<openvrml::mfint32> integer_key_;
+        openvrml::sfint32 trigger_value_;
         sfint32_emitter trigger_value_emitter_;
 
     public:
-        integer_trigger_node(const node_type & type,
+        integer_trigger_node(const openvrml::node_type & type,
                              const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~integer_trigger_node() OPENVRML_NOTHROW;
     };
 
 
     class OPENVRML_LOCAL time_trigger_node :
-        public abstract_node<time_trigger_node>,
-        public child_node {
+        public openvrml::node_impl_util::abstract_node<time_trigger_node>,
+        public openvrml::child_node {
 
         friend class time_trigger_metatype;
 
-        class set_boolean_listener : public event_listener_base<self_t>,
-                                     public sfbool_listener {
+        class set_boolean_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit set_boolean_listener(self_t & node);
             virtual ~set_boolean_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const sfbool & fraction,
+            virtual void do_process_event(const openvrml::sfbool & fraction,
                                           double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         set_boolean_listener set_boolean_listener_;
-        sftime trigger_time_;
+        openvrml::sftime trigger_time_;
         sftime_emitter trigger_time_emitter_;
 
     public:
-        time_trigger_node(const node_type & type,
+        time_trigger_node(const openvrml::node_type & type,
                           const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~time_trigger_node() OPENVRML_NOTHROW;
     };
@@ -483,9 +492,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_filter_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 5> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -607,9 +619,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_sequencer_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -769,9 +784,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_toggle_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -879,9 +897,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     boolean_trigger_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -982,9 +1003,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     integer_sequencer_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 7> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -1144,9 +1168,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     integer_trigger_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 4> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -1264,9 +1291,12 @@ namespace {
     const boost::shared_ptr<openvrml::node_type>
     time_trigger_metatype::
     do_create_type(const std::string & id,
-                   const node_interface_set & interfaces) const
-        OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
+                   const openvrml::node_interface_set & interfaces) const
+        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
     {
+        using namespace openvrml;
+        using namespace openvrml::node_impl_util;
+
         typedef boost::array<node_interface, 3> supported_interfaces_t;
         static const supported_interfaces_t supported_interfaces = {
             node_interface(node_interface::exposedfield_id,
@@ -1342,33 +1372,51 @@ namespace {
      */
 
     /**
-     * @var boolean_filter_node::set_boolean_
+     * @var boolean_filter_node::set_boolean_listener boolean_filter_node::set_boolean_listener_
      *
-     * @brief set_boolean eventIn
+     * @brief set_boolean eventIn listener.
      */
 
     /**
-     * @var boolean_filter_node::input_false_
+     * @var openvrml::sfbool boolean_filter_node::input_false_
      *
      * @brief input_false eventOut
      */
 
     /**
-     * @var boolean_filter_node::input_negate_
+     * @var openvrml::node_impl_util::abstract_node<boolean_filter_node>::sfbool_emitter boolean_filter_node::input_false_emitter_
+     *
+     * @brief input_false eventOut emitter.
+     */
+
+    /**
+     * @var openvrml::sfbool boolean_filter_node::input_negate_
      *
      * @brief input_negate eventOut
      */
 
     /**
-     * @var boolean_filter_node::input_true_
+     * @var openvrml::node_impl_util::abstract_node<boolean_filter_node>::sfbool_emitter boolean_filter_node::input_negate_emitter_
+     *
+     * @brief input_negate eventOut emitter.
+     */
+
+    /**
+     * @var openvrml::sfbool boolean_filter_node::input_true_
      *
      * @brief input_true eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<boolean_filter_node>::sfbool_emitter boolean_filter_node::input_true_emitter_
+     *
+     * @brief input_true eventOut emitter.
      */
 
     boolean_filter_node::set_boolean_listener::
     set_boolean_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1377,7 +1425,8 @@ namespace {
     {}
 
     void boolean_filter_node::set_boolean_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1391,11 +1440,11 @@ namespace {
      * @param scope the scope to which the node belongs.
      */
     boolean_filter_node::
-    boolean_filter_node(const node_type & type,
+    boolean_filter_node(const openvrml::node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         set_boolean_listener_(*this),
         input_false_emitter_(*this, this->input_false_),
@@ -1423,45 +1472,51 @@ namespace {
      */
 
     /**
-     * @var boolean_sequencer_node::next_
+     * @var boolean_sequencer_node::next_listener boolean_sequencer_node::next_listener_
      *
-     * @brief next eventIn
+     * @brief next eventIn listener.
      */
 
     /**
-     * @var boolean_sequencer_node::previous_
+     * @var boolean_sequencer_node::previous_listener boolean_sequencer_node::previous_listener_
      *
-     * @brief previous eventIn
+     * @brief previous eventIn listener.
      */
 
     /**
-     * @var boolean_sequencer_node::set_fraction_
+     * @var boolean_sequencer_node::set_fraction_listener boolean_sequencer_node::set_fraction_listener_
      *
-     * @brief set_fraction eventIn
+     * @brief set_fraction eventIn listener.
      */
 
     /**
-     * @var boolean_sequencer_node::key_
+     * @var openvrml::node_impl_util::abstract_node<boolean_sequencer_node>::exposedfield<openvrml::mffloat> boolean_sequencer_node::key_
      *
      * @brief key exposedField
      */
 
     /**
-     * @var boolean_sequencer_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<boolean_sequencer_node>::exposedfield<openvrml::mfbool> boolean_sequencer_node::key_value_
      *
      * @brief key_value exposedField
      */
 
     /**
-     * @var boolean_sequencer_node::value_changed_
+     * @var openvrml::sfbool boolean_sequencer_node::value_changed_
      *
      * @brief value_changed eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<boolean_sequencer_node>::sfbool_emitter boolean_sequencer_node::value_changed_emitter_
+     *
+     * @brief value_changed eventOut emitter.
      */
 
     boolean_sequencer_node::next_listener::
     next_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1470,7 +1525,8 @@ namespace {
     {}
 
     void boolean_sequencer_node::next_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1479,7 +1535,7 @@ namespace {
     boolean_sequencer_node::previous_listener::
     previous_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1488,7 +1544,8 @@ namespace {
     {}
 
     void boolean_sequencer_node::previous_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1497,7 +1554,7 @@ namespace {
     boolean_sequencer_node::set_fraction_listener::
     set_fraction_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sffloat_listener(node)
     {}
 
@@ -1506,7 +1563,7 @@ namespace {
     {}
 
     void boolean_sequencer_node::set_fraction_listener::
-    do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sffloat & /* fraction */, const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1520,11 +1577,11 @@ namespace {
      * @param scope the scope to which the node belongs.
      */
     boolean_sequencer_node::
-    boolean_sequencer_node(const node_type & type,
+    boolean_sequencer_node(const openvrml::node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         next_listener_(*this),
         previous_listener_(*this),
@@ -1548,27 +1605,27 @@ namespace {
      */
 
     /**
-     * @var boolean_toggle_node::BooleanToggle_metatype
+     * @var boolean_toggle_node::boolean_toggle_metatype
      *
      * @brief Class object for BooleanToggle nodes.
      */
 
     /**
-     * @var boolean_toggle_node::set_boolean_
+     * @var boolean_toggle_node::set_boolean_listener boolean_toggle_node::set_boolean_listener_
      *
-     * @brief set_boolean eventIn
+     * @brief set_boolean eventIn listener.
      */
 
     /**
-     * @var boolean_toggle_node::toggle_
+     * @var openvrml::node_impl_util::abstract_node<boolean_sequencer_node>::exposedfield<openvrml::mfbool> boolean_toggle_node::toggle_
      *
-     * @brief toggle exposedField
+     * @brief toggle exposedField.
      */
 
     boolean_toggle_node::set_boolean_listener::
     set_boolean_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1577,7 +1634,8 @@ namespace {
     {}
 
     void boolean_toggle_node::set_boolean_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1591,11 +1649,11 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     boolean_toggle_node::
-    boolean_toggle_node(const node_type & type,
+    boolean_toggle_node(const openvrml::node_type & type,
                         const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         set_boolean_listener_(*this),
         toggle_(*this)
@@ -1621,21 +1679,27 @@ namespace {
      */
 
     /**
-     * @var boolean_trigger_node::set_trigger_time_
+     * @var boolean_trigger_node::set_trigger_time_listener boolean_trigger_node::set_trigger_time_listener_
      *
-     * @brief set_trigger_time eventIn
+     * @brief set_trigger_time eventIn listener.
      */
 
     /**
-     * @var boolean_trigger_node::trigger_true_
+     * @var openvrml::sfbool boolean_trigger_node::trigger_true_
      *
-     * @brief trigger_true eventOut
+     * @brief trigger_true eventOut.
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<boolean_trigger_node>::sfbool_emitter boolean_trigger_node::trigger_true_emitter_
+     *
+     * @brief trigger_true eventOut emitter.
      */
 
     boolean_trigger_node::set_trigger_time_listener::
     set_trigger_time_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sftime_listener(node)
     {}
 
@@ -1644,7 +1708,8 @@ namespace {
     {}
 
     void boolean_trigger_node::set_trigger_time_listener::
-    do_process_event(const sftime & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sftime & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1658,11 +1723,11 @@ namespace {
      * @param scope the scope to which the node belongs.
      */
     boolean_trigger_node::
-    boolean_trigger_node(const node_type & type,
+    boolean_trigger_node(const openvrml::node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         set_trigger_time_listener_(*this),
         trigger_true_emitter_(*this, this->trigger_true_)
@@ -1688,45 +1753,51 @@ namespace {
      */
 
     /**
-     * @var integer_sequencer_node::next_
+     * @var integer_sequencer_node::next_listener integer_sequencer_node::next_listener_
      *
-     * @brief next eventIn
+     * @brief next eventIn listener.
      */
 
     /**
-     * @var integer_sequencer_node::previous_
+     * @var integer_sequencer_node::previous_listener integer_sequencer_node::previous_listener_
      *
-     * @brief previous eventIn
+     * @brief previous eventIn listener.
      */
 
     /**
-     * @var integer_sequencer_node::set_fraction_
+     * @var integer_sequencer_node::set_fraction_listener integer_sequencer_node::set_fraction_listener_
      *
-     * @brief set_fraction eventIn
+     * @brief set_fraction eventIn listener.
      */
 
     /**
-     * @var integer_sequencer_node::key_
+     * @var openvrml::node_impl_util::abstract_node<integer_sequencer_node>::exposedfield<openvrml::mffloat> integer_sequencer_node::key_
      *
-     * @brief key exposedField
+     * @brief key exposedField.
      */
 
     /**
-     * @var integer_sequencer_node::key_value_
+     * @var openvrml::node_impl_util::abstract_node<integer_sequencer_node>::exposedfield<openvrml::mfint32> integer_sequencer_node::key_value_
      *
-     * @brief key_value exposedField
+     * @brief key_value exposedField.
      */
 
     /**
-     * @var integer_sequencer_node::value_changed_
+     * @var openvrml::sfint32 integer_sequencer_node::value_changed_
      *
      * @brief value_changed eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<integer_sequencer_node>::sfint32_emitter integer_sequencer_node::value_changed_emitter_
+     *
+     * @brief value_changed eventOut emitter.
      */
 
     integer_sequencer_node::next_listener::
     next_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1735,7 +1806,8 @@ namespace {
     {}
 
     void integer_sequencer_node::next_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1744,7 +1816,7 @@ namespace {
     integer_sequencer_node::previous_listener::
     previous_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1753,7 +1825,8 @@ namespace {
     {}
 
     void integer_sequencer_node::previous_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1762,7 +1835,7 @@ namespace {
     integer_sequencer_node::set_fraction_listener::
     set_fraction_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sffloat_listener(node)
     {}
 
@@ -1771,7 +1844,8 @@ namespace {
     {}
 
     void integer_sequencer_node::set_fraction_listener::
-    do_process_event(const sffloat & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sffloat & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1785,11 +1859,11 @@ namespace {
      * @param scope the scope to which the node belongs.
      */
     integer_sequencer_node::
-    integer_sequencer_node(const node_type & type,
+    integer_sequencer_node(const openvrml::node_type & type,
                            const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         next_listener_(*this),
         previous_listener_(*this),
@@ -1819,27 +1893,33 @@ namespace {
      */
 
     /**
-     * @var integer_trigger_node::set_boolean_
+     * @var integer_trigger_node::set_boolean_listener integer_trigger_node::set_boolean_listener_
      *
-     * @brief set_boolean eventIn
+     * @brief set_boolean eventIn listener.
      */
 
     /**
-     * @var integer_trigger_node::integer_key_
+     * @var openvrml::node_impl_util::abstract_node<integer_trigger_node>::exposedfield<openvrml::mfint32> integer_trigger_node::integer_key_
      *
      * @brief integer_key exposedField
      */
 
     /**
-     * @var integer_trigger_node::trigger_value_
+     * @var openvrml::sfint32 integer_trigger_node::trigger_value_
      *
      * @brief trigger_value eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<integer_trigger_node>::sfint32_emitter integer_trigger_node::trigger_value_emitter_
+     *
+     * @brief trigger_value eventOut emitter.
      */
 
     integer_trigger_node::set_boolean_listener::
     set_boolean_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1848,7 +1928,8 @@ namespace {
     {}
 
     void integer_trigger_node::set_boolean_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1862,11 +1943,11 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     integer_trigger_node::
-    integer_trigger_node(const node_type & type,
+    integer_trigger_node(const openvrml::node_type & type,
                          const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         set_boolean_listener_(*this),
         integer_key_(*this),
@@ -1893,21 +1974,27 @@ namespace {
      */
 
     /**
-     * @var time_trigger_node::set_boolean_
+     * @var time_trigger_node::set_boolean_listener time_trigger_node::set_boolean_listener_
      *
-     * @brief set_boolean eventIn
+     * @brief set_boolean eventIn listener.
      */
 
     /**
-     * @var time_trigger_node::trigger_time_
+     * @var openvrml::sftime time_trigger_node::trigger_time_
      *
      * @brief trigger_time eventOut
+     */
+
+    /**
+     * @var openvrml::node_impl_util::abstract_node<time_trigger_node>::sftime_emitter time_trigger_node::trigger_time_emitter_
+     *
+     * @brief trigger_time eventOut emitter.
      */
 
     time_trigger_node::set_boolean_listener::
     set_boolean_listener(self_t & node):
         node_event_listener(node),
-        event_listener_base<self_t>(node),
+        openvrml::node_impl_util::event_listener_base<self_t>(node),
         sfbool_listener(node)
     {}
 
@@ -1916,7 +2003,8 @@ namespace {
     {}
 
     void time_trigger_node::set_boolean_listener::
-    do_process_event(const sfbool & /* fraction */, const double /* timestamp */)
+    do_process_event(const openvrml::sfbool & /* fraction */,
+                     const double /* timestamp */)
         OPENVRML_THROW1(std::bad_alloc)
     {
         //TODO: add logic here
@@ -1930,11 +2018,11 @@ namespace {
      * @param scope     the scope to which the node belongs.
      */
     time_trigger_node::
-    time_trigger_node(const node_type & type,
+    time_trigger_node(const openvrml::node_type & type,
                       const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
+        openvrml::node_impl_util::abstract_node<self_t>(type, scope),
         child_node(type, scope),
         set_boolean_listener_(*this),
         trigger_time_emitter_(*this, this->trigger_time_)

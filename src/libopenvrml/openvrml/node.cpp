@@ -43,11 +43,12 @@
  *
  * @brief Exception to indicate that a @c node interface is not supported.
  *
- * This exception is thrown by @c node::event_listener and @c
- * node::event_emitter to indicate that the node doesn't support the interface
- * through which the caller is trying to modify the node.  It is also thrown
- * by @c node_metatype::create_type if the class object doesn't support an
- * interface specified in the @c node_interface_set given to that method.
+ * This exception is thrown by @c node::event_listener and
+ * @c node::event_emitter to indicate that the node doesn't support the
+ * interface through which the caller is trying to modify the node.  It is
+ * also thrown by @c node_metatype::create_type if the class object doesn't
+ * support an interface specified in the @c node_interface_set given to that
+ * method.
  */
 
 /**
@@ -3282,7 +3283,7 @@ openvrml::child_node::~child_node() OPENVRML_NOTHROW
  * @brief Called when the node is relocated to a new position in the scene
  *      graph.
  *
- * This function delegates to the virtual function do_relocate. relocate
+ * This function delegates to the virtual function @c #do_relocate. @c relocate
  * should be called by eventIn handlers that receive nodes.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -3319,12 +3320,7 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 /**
  * @brief Render the node.
  *
- * Actually, most of the rendering work is delegated to the viewer, but this
- * method is responsible for traversal to the node's renderable children,
- * including culling. Each node class needs to implement this routine
- * appropriately. It's not abstract since it doesn't make sense to call render
- * on some nodes. Alternative would be to break render out into a seperate
- * mixins class, but that's probably overkill.
+ * This function delegates to @c #do_render_child.
  *
  * @param[in,out] v         viewer implementation responsible for actually
  *                          doing the drawing.
@@ -3341,7 +3337,7 @@ void openvrml::child_node::render_child(viewer & v,
 /**
  * @brief @c #render_child implementation.
  *
- * Rendered child nodes should override this method.
+ * Rendered @c child_node%s should override this method.
  *
  * @param[in,out] v         viewer implementation responsible for actually
  *                          doing the drawing.
@@ -3352,9 +3348,9 @@ void openvrml::child_node::do_render_child(viewer &, rendering_context)
 {}
 
 /**
- * @brief Cast to a child_node.
+ * @brief Cast to a @c child_node.
  *
- * @return a pointer to this child_node.
+ * @return a pointer to this @c child_node.
  */
 openvrml::child_node * openvrml::child_node::to_child() OPENVRML_NOTHROW
 {
@@ -3362,12 +3358,12 @@ openvrml::child_node * openvrml::child_node::to_child() OPENVRML_NOTHROW
 }
 
 /**
- * @brief node subclass-specific relocation update.
+ * @brief @c child_node subclass-specific relocation update.
  *
- * This method is called by child_node::relocate. Subclasses of child_node
- * should override this method for any subclass-specific updates that need to
- * be performed following relocation of a node to a new position in the scene
- * graph (for example, updating a node_path).
+ * This method is called by @c #relocate.  Subclasses of @c child_node should
+ * override this function for any subclass-specific updates that need to be
+ * performed following relocation of a @c child_node to a new position in the
+ * scene graph (for example, updating a @c node_path).
  *
  * The default implementation of this method does nothing.
  */
@@ -3384,7 +3380,7 @@ void openvrml::child_node::do_relocate() OPENVRML_THROW1(std::bad_alloc)
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
+ * @param[in] type  the @c node_type associated with the node.
  * @param[in] scope the scope the node belongs to.
  */
 openvrml::color_node::
@@ -3401,9 +3397,9 @@ openvrml::color_node::~color_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a color_node.
+ * @brief Cast to a @c color_node.
  *
- * @return a pointer to this color_node.
+ * @return a pointer to this @c color_node.
  */
 openvrml::color_node * openvrml::color_node::to_color() OPENVRML_NOTHROW
 {
@@ -3518,8 +3514,8 @@ openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate()
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::font_style_node::
 font_style_node(const node_type & type,
@@ -3535,9 +3531,9 @@ openvrml::font_style_node::~font_style_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a font_style_node.
+ * @brief Cast to a @c font_style_node.
  *
- * @return a pointer to this font_style_node.
+ * @return a pointer to this @c font_style_node.
  */
 openvrml::font_style_node * openvrml::font_style_node::to_font_style()
     OPENVRML_NOTHROW
@@ -3672,9 +3668,9 @@ openvrml::geometry_node::~geometry_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a geometry_node.
+ * @brief Cast to a @c geometry_node.
  *
- * @return a pointer to this geometry_node.
+ * @return a pointer to this @c geometry_node.
  */
 openvrml::geometry_node * openvrml::geometry_node::to_geometry()
     OPENVRML_NOTHROW
@@ -3685,7 +3681,7 @@ openvrml::geometry_node * openvrml::geometry_node::to_geometry()
 /**
  * @brief Insert geometry into a viewer.
  *
- * @param[in,out] v         viewer.
+ * @param[in,out] v     viewer.
  * @param[in] context   rendering context.
  *
  * @return object identifier for the inserted geometry.
@@ -3726,7 +3722,7 @@ bool openvrml::geometry_node::emissive() const OPENVRML_NOTHROW
 /**
  * @brief @c #render_geometry implementation.
  *
- * @param[in,out] v         viewer.
+ * @param[in,out] v     viewer.
  * @param[in] context   rendering context.
  *
  * @return object identifier for the inserted geometry.
@@ -3750,7 +3746,7 @@ bool openvrml::geometry_node::do_emissive() const OPENVRML_NOTHROW
 /**
  * @brief Get the color node (if any) associated with this geometry.
  *
- * @return the color_node associated associated with this geometry, or 0 if
+ * @return the @c color_node associated associated with this geometry, or 0 if
  *      there is no such node.
  *
  * @todo Reevaluate the way the renderer visits geometry nodes; potentially
@@ -3772,8 +3768,8 @@ const openvrml::color_node * openvrml::geometry_node::color() const
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::grouping_node::
 grouping_node(const node_type & type,
@@ -3791,9 +3787,9 @@ openvrml::grouping_node::~grouping_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a grouping_node.
+ * @brief Cast to a @c grouping_node.
  *
- * @return a pointer to this grouping_node.
+ * @return a pointer to this @c grouping_node.
  */
 openvrml::grouping_node * openvrml::grouping_node::to_grouping()
     OPENVRML_NOTHROW
@@ -3804,7 +3800,7 @@ openvrml::grouping_node * openvrml::grouping_node::to_grouping()
 /**
  * @brief Get the children in the scene graph.
  *
- * This function delegates to @c node::do_children.
+ * This function delegates to @c #do_children.
  *
  * @return the children in the scene graph.
  *
@@ -3830,7 +3826,7 @@ openvrml::grouping_node::children() const OPENVRML_THROW1(std::bad_alloc)
  * @brief Called in response to user interaction to activate any child pointing
  *        device sensor nodes.
  *
- * Delegates to <code>grouping_node::do_activate</code>.
+ * Delegates to @c #do_activate.
  *
  * @param[in] timestamp the current time.
  * @param[in] over      whether the pointer is over sensitive geometry.
@@ -3872,8 +3868,8 @@ activate_pointing_device_sensors(const double timestamp,
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::light_node::
 light_node(const node_type & type,
@@ -3990,8 +3986,8 @@ const openvrml::color & openvrml::light_node::color() const OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::material_node::
 material_node(const node_type & type,
@@ -4075,8 +4071,8 @@ openvrml::material_node * openvrml::material_node::to_material()
 /**
  * @brief Construct.
  *
- * @param[in] t     the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] t     the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::navigation_info_node::
 navigation_info_node(const node_type & t,
@@ -4094,9 +4090,9 @@ openvrml::navigation_info_node::~navigation_info_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a navigation_info_node.
+ * @brief Cast to a @c navigation_info_node.
  *
- * @return a pointer to this navigation_info_node.
+ * @return a pointer to this @c navigation_info_node.
  */
 openvrml::navigation_info_node *
 openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
@@ -4154,8 +4150,8 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param[in] type  the node_type associated with the node.
- * @param[in] scope the scope the node belongs to.
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the @c scope the node belongs to.
  */
 openvrml::normal_node::
 normal_node(const node_type & type,
@@ -4171,9 +4167,9 @@ openvrml::normal_node::~normal_node() OPENVRML_NOTHROW
 {}
 
 /**
- * @brief Cast to a normal_node.
+ * @brief Cast to a @c normal_node.
  *
- * @return a pointer to this normal_node.
+ * @return a pointer to this @c normal_node.
  */
 openvrml::normal_node * openvrml::normal_node::to_normal() OPENVRML_NOTHROW
 {
@@ -4198,8 +4194,8 @@ openvrml::normal_node * openvrml::normal_node::to_normal() OPENVRML_NOTHROW
 /**
  * @brief Construct.
  *
- * @param[in] type  the <code>node_type</code>.
- * @param[in] scope the <code>scope</code> to which the node belongs.
+ * @param[in] type  the @c node_type.
+ * @param[in] scope the @c scope to which the node belongs.
  */
 openvrml::pointing_device_sensor_node::
 pointing_device_sensor_node(const node_type & type,
@@ -4223,9 +4219,9 @@ openvrml::pointing_device_sensor_node::~pointing_device_sensor_node()
  *
  * @param[in] timestamp the current time.
  * @param[in] over      whether the pointing device is over the geometry affected
- *                  by the pointing device sensor.
- * @param[in] active    whether the pointing device is "active"; e.g., whether
- *                  a mouse button is currently depressed.
+ *                      by the pointing device sensor.
+ * @param[in] active    whether the pointing device is &ldquo;active&rdquo;;
+ *                      e.g., whether a mouse button is currently depressed.
  * @param[in] point     the position of the pointer on the affected geometry.
  */
 void openvrml::pointing_device_sensor_node::activate(double timestamp,
@@ -4243,9 +4239,9 @@ void openvrml::pointing_device_sensor_node::activate(double timestamp,
  *
  * @param[in] timestamp the current time.
  * @param[in] over      whether the pointing device is over the geometry affected
- *                  by the pointing device sensor.
- * @param[in] active    whether the pointing device is "active"; e.g., whether
- *                  a mouse button is currently depressed.
+ *                      by the pointing device sensor.
+ * @param[in] active    whether the pointing device is &ldquo;active&rdquo;;
+ *                      e.g., whether a mouse button is currently depressed.
  * @param[in] point     the position of the pointer on the affected geometry.
  */
 
