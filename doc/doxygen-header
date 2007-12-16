@@ -24,6 +24,11 @@ p, center, td, th, ul, dl, div {
   font-family: inherit;
 }
 
+h2 {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
 div.nav {
   background-color: transparent;
   text-align: left;

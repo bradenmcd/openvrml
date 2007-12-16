@@ -1,0 +1,16 @@
+// -*- mode: c++; fill-column: 78 -*-
+
+/**
+ * @page intro 1. Introduction
+ *
+ * The OpenVRML development toolkit consists of the following parts:
+ *
+ * - the VRML97 and X3D-VRML parsing interfaces
+ * - libopenvrml, a runtime library for VRML97 and X3D worlds
+ * - libopenvrml-gl, an OpenGL renderer
+ *
+ * @section history 1.1 History
+ *
+ * OpenVRML was started as LibVRML97 by Chris Morley.  Since 2000 it has been
+ * maintained by Braden McDaniel.
+ */

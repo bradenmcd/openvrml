@@ -1,5 +1,16 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	Partition the documentation into subpages.
+
+	* doc/Doxyfile
+	* doc/doxygen-header
+	* doc/index.doc
+	* doc/intro.doc
+	* doc/libopenvrml.doc
+	* doc/parsing.doc
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment fixes and improvements.
 
 	* doc/index.doc

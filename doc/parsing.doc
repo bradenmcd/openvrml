@@ -1,0 +1,305 @@
+// -*- mode: c++; fill-column: 78 -*-
+
+/**
+ * @page parsing 2 Parsing VRML97 and VRML-encoded X3D
+ *
+ * OpenVRML includes parsers for reading VRML97 and VRML-encoded X3D.  Prior
+ * to version 0.17.0, users wanting to use OpenVRML to load VRML or X3D had to
+ * load the file into an @c openvrml::browser and traverse the runtime's scene
+ * hierarchy.  While this approach is still possible, OpenVRML now provides
+ * parsers that can be used separately from @c openvrml::browser.  Using these
+ * parsers directly is more efficient since the OpenVRML runtime machinery
+ * doesn't need to be started.  And it many cases, it will also be easier to
+ * implement.  These parsers are implemented using the <a
+ * href="http://spirit.sourceforge.net">Spirit parsing framework</a> and have
+ * the following features:
+ *
+ * - The parsers are largely self-contained.  They depend on libopenvrml for
+ *   node type definitions, but little else.  In the future it is likely that
+ *   the parsers' mechanism for getting node type information will be exposed
+ *   and made user-replaceable.
+ * - The parsers are strict.  Invalid code gets rejected.  The parsers have
+ *   been constructed to be appropriate for ensuring syntactic and semantic
+ *   correctness of the parsed stream.
+ * - The parsers work with arbitrary user-supplied semantic actions.
+ *
+ * @section using_spirit_parsers 2.1 Using Spirit parsers
+ *
+ * Spirit is a framework of C++ templates that facilitates parser creation
+ * directly in C++ using a <a
+ * href="http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">BNF</a>-like
+ * syntax.  Using Spirit, you can create simple parsers for fragments of
+ * syntax and combine them to create sophisticated parsers for complete
+ * grammars.  Such grammar parsers are typically packaged in a class (or class
+ * template) called a &ldquo;grammar capsule&rdquo;.
+ * @c openvrml::vrml97_grammar and @c openvrml::x3d_vrml_grammar are such
+ * grammar capsules.
+ *
+ * Grammar capsules are a particular form of Spirit parser.  A Spirit parser
+ * is a protocol (or &ldquo;concept&rdquo;); that is, it is a set of lexical
+ * requirements to which a type must conform.  Those requirements are detailed
+ * in the Spirit documentation; for our purposes, what's important is that
+ * Spirit parsers are things that can be used with Spirit's @c parse function
+ * template:
+ *
+ * @code
+ * namespace boost {
+ *   namespace spirit {
+ *     template <typename IteratorT, typename ParserT, typename SkipT>
+ *     parse_info<IteratorT>
+ *     parse(const IteratorT &       first,
+ *           const IteratorT &       last,
+ *           const parser<ParserT> & p,
+ *           const parser<SkipT> &   skip);
+ *   }
+ * }
+ * @endcode
+ *
+ * In a pattern that should be familiar to users of the C++ standard library,
+ * @c parse accepts a pair of iterators that denote the range of data to
+ * operate on.  This function is used as follows:
+ *
+ * @code
+ * using boost::spirit::parse;
+ *
+ * std::vector<char> my_data;
+ * my_skip_parser my_skip;
+ * my_grammar my_g;
+ *
+ * if (!parse(my_data.begin(), my_data.end(), my_g, my_skip).full) {
+ *     return EXIT_FAILURE;
+ * }
+ * @endcode
+ *
+ * In the above example, we are checking the @c full member of the
+ * @c parse_info<IteratorT> struct that @c parse returns; @c full is @c true
+ * in the case of a &ldquo;full match&rdquo;, and @c false otherwise.
+ *
+ * The other part of this example which we've glossed over until now is the
+ * &ldquo;skip parser&rdquo;, @c my_skip.  Spirit uses the skip parser to
+ * identify text that should be discarded prior to parsing: typically,
+ * whitespace and comments.  @c openvrml::vrml97_skip_grammar is a skip parser
+ * appropriate for use with VRML97 and Classic VRML X3D.
+ *
+ * @note X3D&nbsp;3.2 introduces a block comment syntax to the Classic VRML
+ * encoding.  OpenVRML does not yet include a skip parser capable of parsing
+ * these comments.
+ *
+ * @section position_iterator 2.2 position_iterator
+ *
+ * Substituting a few elements of the example, we're well on our way to
+ * something that actually parses VRML:
+ *
+ * @code
+ * using boost::spirit::parse;
+ *
+ * std::string my_data = "#VRML 2.0 utf8\n"
+ *                       "Group {}\n";
+ * openvrml::vrml97_skip_grammar my_skip;
+ * openvrml::vrml97_grammar<> my_g;
+ *
+ * if (!parse(my_data.begin(), my_data.end(), my_g, my_skip).full) {
+ *     return EXIT_FAILURE;
+ * }
+ * @endcode
+ *
+ * There's just one more critical thing missing from the above example.  This
+ * code is using the default error handler.  (Error handlers are covered in
+ * detail in @ref error_handling.)  The default error handler requires that
+ * the iterators used for parsing be @c position_iterator%s.
+ *
+ * The @c position_iterator keeps track of positional information; and the
+ * default error handler uses this information to emit error messages that
+ * include the file name and line and column numbers.  The
+ * @c position_iterator works as an adapter for an existing iterator type:
+ *
+ * @code
+ * # include <openvrml/vrml97_grammar.h>
+ *
+ * int main()
+ * {
+ *     using boost::spirit::parse;
+ *     using boost::spirit::position_iterator;
+ *
+ *     std::string my_data = "#VRML 2.0 utf8\n"
+ *                           "Group {}\n";
+ *     openvrml::vrml97_skip_grammar my_skip;
+ *     openvrml::vrml97_grammar<> my_g;
+ *
+ *     typedef position_iterator<std::string::iterator> iterator_t;
+ *
+ *     iterator_t first(my_data.begin(), my_data.end(), "vrmlstring"), last;
+ *
+ *     if (!parse(first, last, my_g, my_skip).full) {
+ *         return EXIT_FAILURE;
+ *     }
+ *     return EXIT_SUCCESS;
+ * }
+ * @endcode
+ *
+ * The beginning @c position_iterator takes three arguments: the first two are
+ * the beginning and ending underlying iterators; the last is a string that
+ * will be used as the file name.  Since we aren't parsing an actual file
+ * here, @c "vrmlstring" is used for the third argument.
+ *
+ * The ending @c position_iterator is simply a default-constructed one.
+ *
+ * @section parsing_streams 2.3 Parsing streams
+ *
+ * The previous examples demonstrated parsing text in a @c std::vector or a
+ * @c std::string; and while such an approach is sometimes useful, more
+ * commonly one is interested in parsing the contents of a stream.
+ *
+ * Due to Spirit's requirements to support backtracking, it is not possible
+ * simply to hand the @c parse function an input iterator like
+ * @c std::istreambuf_iterator.  Instead, Spirit provides an iterator adapter
+ * called @c multi_pass that can work with such iterators.
+ *
+ * @code
+ * # include <openvrml/vrml97_grammar.h>
+ *
+ * int main()
+ * {
+ *     using std::istreambuf_iterator;
+ *     using boost::spirit::parse;
+ *     using boost::spirit::position_iterator;
+ *     using boost::spirit::multi_pass;
+ *     using boost::spirit::make_multi_pass;
+ *
+ *     typedef multi_pass<std::istreambuf_iterator<char> >
+ *         multi_pass_iterator_t;
+ *
+ *     multi_pass_iterator_t
+ *         in_begin(make_multi_pass(istreambuf_iterator<char>(std::cin))),
+ *         in_end(make_multi_pass(istreambuf_iterator<char>()));
+ *
+ *     typedef position_iterator<multi_pass_iterator_t> iterator_t;
+ *
+ *     iterator_t first(in_begin, in_end, "<stdin>"), last;
+ *
+ *     openvrml::vrml97_skip_grammar my_skip;
+ *     openvrml::vrml97_grammar<> my_g;
+ *
+ *     if (!parse(first, last, my_g, my_skip).full) {
+ *         return EXIT_FAILURE;
+ *     }
+ *     return EXIT_SUCCESS;
+ * }
+ * @endcode
+ *
+ * Here, we wrap an @c istreambuf_iterator in a @c multi_pass iterator, and
+ * then wrap that in a @c position_iterator.  Once we have the
+ * @c position_iterator%s, we pass them to @c parse exactly as before.
+ *
+ * The above example, when compiled, will parse VRML97 from standard input.
+ *
+ * @section semantic_actions 2.4 Semantic actions
+ *
+ * Semantic actions are how the parsing process delivers data to user code.
+ *
+ * @c openvrml::vrml97_grammar and @c openvrml::x3d_vrml_grammar are in fact
+ * class templates; though in the examples up to now we've simply relied on
+ * the default values for their template arguments.  These templates take two
+ * arguments: @c Actions and @c ErrorHandler.  The second of these arguments
+ * is addressed in the next section, @ref error_handling.  The first is an
+ * object the bundles the semantic actions to be executed during the parse.
+ *
+ * @c Actions is a @c struct that contains semantic actions in the form of
+ * function objects.  The default value of the @c Actions template parameter
+ * is @c openvrml::null_vrml97_parse_actions for @c openvrml::vrml97_grammar,
+ * and @c openvrml::null_x3d_vrml_parse_actions for
+ * @c openvrml::x3d_vrml_grammar.  These &ldquo;null&rdquo; parse actions
+ * @c struct%s provide a no-op function for each semantic action invoked by
+ * the respective grammar.  You can inherit these in your own semantic actions
+ * @c struct to avoid having to define a function object for every action
+ * yourself.
+ *
+ * The following example expands on our existing one to add a semantic action
+ * that simply prints the node types of encountered nodes to the standard
+ * output.
+ *
+ * @code
+ * # include <iostream>
+ * # include <openvrml/vrml97_grammar.h>
+ *
+ * struct actions : openvrml::null_vrml97_parse_actions {
+ *     struct on_node_start_t {
+ *         void operator()(const std::string & node_name_id,
+ *                         const std::string & node_type_id) const
+ *         {
+ *             std::cout << node_type_id << std::endl;
+ *         }
+ *     } on_node_start;
+ * };
+ *
+ * int main()
+ * {
+ *     using std::istreambuf_iterator;
+ *     using boost::spirit::parse;
+ *     using boost::spirit::position_iterator;
+ *     using boost::spirit::multi_pass;
+ *     using boost::spirit::make_multi_pass;
+ *
+ *     typedef multi_pass<std::istreambuf_iterator<char> >
+ *         multi_pass_iterator_t;
+ *
+ *     multi_pass_iterator_t
+ *         in_begin(make_multi_pass(istreambuf_iterator<char>(std::cin))),
+ *         in_end(make_multi_pass(istreambuf_iterator<char>()));
+ *
+ *     typedef position_iterator<multi_pass_iterator_t> iterator_t;
+ *
+ *     iterator_t first(in_begin, in_end, "<stdin>"), last;
+ *
+ *     openvrml::vrml97_skip_grammar my_skip;
+ *     actions my_actions;
+ *     openvrml::vrml97_grammar<actions> my_g(my_actions);
+ *
+ *     if (!parse(first, last, my_g, my_skip).full) {
+ *         return EXIT_FAILURE;
+ *     }
+ *     return EXIT_SUCCESS;
+ * }
+ * @endcode
+ *
+ * The <code>@link pretty_print.cpp pretty_print.cpp@endlink</code> example
+ * program provides a more thorough demonstration of the semantic action
+ * facility.
+ *
+ * @section error_handling 2.5 Error handling
+ *
+ * By default, the parsers emit error and warning messages to @c stderr.
+ * Where messages are printed (if they are printed at all) and how the parsers
+ * respond to errors is controlled using a Spirit error handler.
+ *
+ * As mentioned in the previous section, the second template argument to the
+ * grammar class templates is an @c ErrorHandler.  The @c ErrorHandler is a
+ * function object of the form:
+ *
+ * @code
+ * struct error_handler {
+ *     template <typename ScannerT, typename ErrorT>
+ *     boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
+ *     {
+ *     ...
+ *     }
+ * };
+ * @endcode
+ *
+ * @c openvrml::vrml97_grammar defaults to using
+ * @c openvrml::vrml97_parse_error_handler; and @c openvrml::x3d_vrml_grammar
+ * defaults to using @c openvrml::x3d_vrml_parse_error_handler.  For most
+ * common cases, these types will be quite sufficient.  Their constructors
+ * take an @c std::ostream; so, to emit output somewhere other than @c stderr,
+ * one need only construct an instance of one of these error handlers with the
+ * desired @c std::ostream and pass that to the grammar capsule constructor.
+ *
+ * @section further_information_on_spirit 2.6 Further information
+ *
+ * The objective of this portion of OpenVRML's manual has been to provide a
+ * high-level view of parsing with the provided Spirit grammars.  There is a
+ * great deal of depth and flexibility built into the Spirit framework; and
+ * while exploring that is beyond the scope of this manual, the <a
+ * href="http://spirit.sourceforge.net/documentation.html">Spirit User's
+ * Guide</a> is an excellent resource.
+ */
