@@ -1,5 +1,14 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	Removed copyright attribution to Kumaran Santhanam.  Code
+	contributed by this person appears to have been removed as of
+	2003-06-05; yet this attribution was not removed.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.cpp
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am
 	(DOCUMENTED_SOURCE_FILES): Added vrml97_grammar.cpp,
 	vrml97_grammar.h, x3d_vrml_grammar.cpp, and x3d_vrml_grammar.h.
