@@ -1,5 +1,11 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am
+	(DOCUMENTED_SOURCE_FILES): Added vrml97_grammar.cpp,
+	vrml97_grammar.h, x3d_vrml_grammar.cpp, and x3d_vrml_grammar.h.
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Doxyfile: Removed references to ANTLR-generated files.
 
 2007-12-16 Braden McDaniel  <braden@endoframe.com>

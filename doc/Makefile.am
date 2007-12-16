@@ -47,6 +47,10 @@ DOCUMENTED_SOURCE_FILES = \
         $(top_srcdir)/src/libopenvrml/openvrml/viewer.h \
         $(top_srcdir)/src/libopenvrml/openvrml/vrml97node.cpp \
         $(top_srcdir)/src/libopenvrml/openvrml/vrml97node.h \
+        $(top_srcdir)/src/libopenvrml/openvrml/vrml97_grammar.cpp \
+        $(top_srcdir)/src/libopenvrml/openvrml/vrml97_grammar.h \
+        $(top_srcdir)/src/libopenvrml/openvrml/x3d_vrml_grammar.cpp \
+        $(top_srcdir)/src/libopenvrml/openvrml/x3d_vrml_grammar.h \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.cpp \
         $(top_srcdir)/src/libopenvrml-gl/openvrml/gl/viewer.h
 
