@@ -8,6 +8,9 @@ DOCUMENTATION_FILES = \
         doxygen-header \
         doxygen-footer \
         index.doc \
+        intro.doc \
+        parsing.doc \
+        libopenvrml.doc \
         conformance.doc
 
 DOCUMENTED_SOURCE_FILES = \

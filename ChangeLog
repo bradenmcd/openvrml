@@ -7,6 +7,9 @@
 	Partition the documentation into subpages.
 
 	* doc/Doxyfile
+	* doc/Makefile.am
+	(DOCUMENTATION_FILES): Added intro.doc, parsing.doc, and
+	libopenvrml.doc.
 	* doc/doxygen-header
 	* doc/index.doc
 	* doc/intro.doc
