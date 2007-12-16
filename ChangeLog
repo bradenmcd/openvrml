@@ -1,11 +1,17 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.h: Removed copyright
+	attribution to Chris Morley.  Code from Chris Morley or derived
+	therefrom has been moved to vrml97node.cpp.
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	Removed copyright attribution to Kumaran Santhanam.  Code
 	contributed by this person appears to have been removed as of
 	2003-06-05; yet this attribution was not removed.
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
-	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
 
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
