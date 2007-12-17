@@ -27,7 +27,7 @@ libraries incorporate some code that is available under "LGPL-
 compatible" licenses, which effectively means that the OpenVRML
 libraries are Free Software which may be used collectively according to
 the terms of the LGPL.  The full text of the LGPL can be found in the
-file "COPYING.LESSER".  Code used in these libararies under other terms
+file "COPYING.LESSER".  Code used in these libraries under other terms
 (and available for reuse under the same terms) is as follows:
 
  * OpenVRML's OpenGL renderer includes code from Silicon Graphics, Inc.:
