@@ -9,7 +9,19 @@
  * - libopenvrml, a runtime library for VRML97 and X3D worlds
  * - libopenvrml-gl, an OpenGL renderer
  *
- * @section history 1.1 History
+ * @section license 1.1 Terms of use
+ *
+ * The runtime library (libopenvrml), including its associated headers,
+ * including the VRML97 and Classic VRML X3D parsers, and the subordinate
+ * OpenGL rendering library (libopenvrml-gl) are available for use under the
+ * terms of the @ref lgpl, version 3.
+ *
+ * The associated test and example programs, the XEmbed control
+ * (openvrml-xembed), the stand-alone player (openvrml-player), and the
+ * Mozilla Gecko Web browser plug-in are available for use under the terms of
+ * the @ref gpl, version 3.
+ *
+ * @section history 1.2 History
  *
  * OpenVRML was started as LibVRML97 by Chris Morley.  Since 2000 it has been
  * maintained by Braden McDaniel.

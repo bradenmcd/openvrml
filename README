@@ -22,7 +22,7 @@ License terms
 
    The OpenVRML libraries comprising the VRML/X3D runtime ("libopenvrml")
 and the OpenGL renderer ("libopenvrml-gl") are available under the terms
-of the GNU Lesser General Public License (LGPL), version 2.1.  These
+of the GNU Lesser General Public License (LGPL), version 3.  These
 libraries incorporate some code that is available under "LGPL-
 compatible" licenses, which effectively means that the OpenVRML
 libraries are Free Software which may be used collectively according to
@@ -69,7 +69,7 @@ file "COPYING.LESSER".  Code used in these libraries under other terms
 
    The XEmbed control, OpenVRML Player, and the Mozilla plug-in as
 well as the included example programs are available under the terms of
-the GNU General Public License (GPL), version 2.  The full text of the
+the GNU General Public License (GPL), version 3.  The full text of the
 GPL can be found in the file "COPYING".
 
 

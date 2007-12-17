@@ -76,6 +76,8 @@ INPUT                  = index.doc \
                          intro.doc \
                          parsing.doc \
                          libopenvrml.doc \
+                         gpl.doc \
+                         lgpl.doc \
                          conformance.doc \
                          ../src/libopenvrml \
                          ../src/libopenvrml-gl

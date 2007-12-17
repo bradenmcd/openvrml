@@ -11,6 +11,7 @@
  * <center>
  * <table border="0">
  * <tr><td>@subpage intro</td></tr>
+ * <tr><td>@ref license</td></tr>
  * <tr><td>@ref history</td></tr>
  * <tr><td>@subpage parsing</td></tr>
  * <tr><td>@ref using_spirit_parsers</td></tr>
@@ -25,6 +26,8 @@
  * <tr><td>@ref resource_istream</td></tr>
  * <tr><td>@ref introducing_browser</td></tr>
  * <tr><td>@ref resource_istream_impl_considerations</td></tr>
+ * <tr><td>@subpage gpl</td></tr>
+ * <tr><td>@subpage lgpl</td></tr>
  * <tr><td>@subpage conformance</td><td>NIST VRML Test Suite results</td></tr>
  * </table>
  * </center>

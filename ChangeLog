@@ -1,5 +1,121 @@
 2007-12-17 Braden McDaniel  <braden@endoframe.com>
 
+	Update to GPL and LGPL version 3.
+
+	* COPYING
+	* COPYING.LESSER
+	* README
+	* doc/Doxyfile
+	* doc/gpl.doc: Added file.
+	* doc/index.doc
+	* doc/intro.doc
+	* doc/lgpl.doc: Added file.
+	* examples/pretty_print.cpp
+	* examples/sdl_viewer.cpp
+	* mozilla-plugin/src/openvrml.cpp
+	* src/libopenvrml/openvrml-common.h
+	* src/libopenvrml/openvrml-config.h.in
+	* src/libopenvrml/private.h
+	* src/libopenvrml/openvrml/ScriptJDK.cpp
+	* src/libopenvrml/openvrml/ScriptJDK.h
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/bounding_volume.h
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/exposedfield.cpp
+	* src/libopenvrml/openvrml/exposedfield.h
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/frustum.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	* src/libopenvrml/openvrml/read_write_mutex.h
+	* src/libopenvrml/openvrml/rendering_context.cpp
+	* src/libopenvrml/openvrml/rendering_context.h
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/scope.h
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/script.h
+	* src/libopenvrml/openvrml/viewer.cpp
+	* src/libopenvrml/openvrml/viewer.h
+	* src/libopenvrml/openvrml/vrml97_grammar.cpp
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
+	* src/libopenvrml/openvrml/x3d_cad_geometry.h
+	* src/libopenvrml/openvrml/x3d_core.cpp
+	* src/libopenvrml/openvrml/x3d_core.h
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	* src/libopenvrml/openvrml/x3d_dis.h
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.h
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_event_utilities.h
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_geometry2d.h
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	* src/libopenvrml/openvrml/x3d_geospatial.h
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	* src/libopenvrml/openvrml/x3d_grouping.h
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	* src/libopenvrml/openvrml/x3d_hanim.h
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp
+	* src/libopenvrml/openvrml/x3d_interpolation.h
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.h
+	* src/libopenvrml/openvrml/x3d_networking.cpp
+	* src/libopenvrml/openvrml/x3d_networking.h
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	* src/libopenvrml/openvrml/x3d_nurbs.h
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	* src/libopenvrml/openvrml/x3d_rendering.h
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	* src/libopenvrml/openvrml/x3d_shape.h
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	* src/libopenvrml/openvrml/x3d_texturing.h
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.cpp
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	* src/libopenvrml-gl/openvrml-gl-common.h
+	* src/libopenvrml-gl/openvrml-gl-config.h.in
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	* src/openvrml-player/filechooserdialog.cpp
+	* src/openvrml-player/filechooserdialog.h
+	* src/openvrml-player/player.cpp
+	* src/openvrml-xembed/bounded_buffer.h
+	* src/openvrml-xembed/command_istream.cpp
+	* src/openvrml-xembed/command_istream.h
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	* src/openvrml-xembed/gtkvrmlbrowser.h
+	* src/openvrml-xembed/main.cpp
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	* src/openvrml-xembed/plugin_streambuf.h
+	* src/openvrml-xembed/request_channel.h
+	* tests/browser.cpp
+	* tests/browser_parse_vrml.cpp
+	* tests/color.cpp
+	* tests/image.cpp
+	* tests/mat4f.cpp
+	* tests/node_interface_set.cpp
+	* tests/node_metatype_id.cpp
+	* tests/parse_anchor.cpp
+	* tests/parse_vrml97.cpp
+	* tests/parse_x3dvrml.cpp
+	* tests/rotation.cpp
+	* tests/test_resource_fetcher.cpp
+	* tests/test_resource_fetcher.h
+
+2007-12-17 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Fixed typographical error.
 
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
