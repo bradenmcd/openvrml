@@ -1,5 +1,14 @@
 2007-12-16 Braden McDaniel  <braden@endoframe.com>
 
+	Removed erroneously applied copyright attributions to Chris
+	Morley.
+
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.h
+	* src/libopenvrml/openvrml/x3d_interpolation.h
+
+2007-12-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.h: Removed copyright
 	attribution to Chris Morley.  Code from Chris Morley or derived
 	therefrom has been moved to vrml97node.cpp.
