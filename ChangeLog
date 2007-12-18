@@ -1,5 +1,10 @@
 2007-12-18 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/doxygen-header: Doxygen as of 1.5.4-20071217 uses the class
+	"navpath" instead of "nav".  For now, we'll do both.
+
+2007-12-18 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am (DOCUMENTATION_FILES): Added gpl.doc and
 	lgpl.doc.
 

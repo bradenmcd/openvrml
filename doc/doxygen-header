@@ -29,7 +29,13 @@ h2 {
   border-bottom-width: 1px;
 }
 
-div.nav {
+/*
+ * Doxygen as of 1.5.4-20071217 uses the class "navpath" instead of "nav".
+ * For now, we'll do both.
+ */
+
+div.nav,
+div.navpath {
   background-color: transparent;
   text-align: left;
   margin-top: 1em;
@@ -41,19 +47,22 @@ div.nav {
   padding-bottom: 0.5em;
 }
 
-div.nav a.el:link, div.nav a.el:visited {
+div.nav a.el:link, div.nav a.el:visited,
+div.navpath a.el:link, div.navpath a.el:visited {
   border-width: 1px;
   border-style: solid;
   border-color: silver;
   padding: 2px;
 }
 
-div.nav a.el:link:hover, div.nav a.el:visited:hover {
+div.nav a.el:link:hover, div.nav a.el:visited:hover,
+div.navpath a.el:link:hover, div.navpath a.el:visited:hover {
   border-style: outset;
   border-color: gray;
 }
 
-div.nav a.el:active {
+div.nav a.el:active,
+div.navpath a.el:active {
   border-style: inset;
   border-color: gray;
 }
