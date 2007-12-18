@@ -11,6 +11,8 @@ DOCUMENTATION_FILES = \
         intro.doc \
         parsing.doc \
         libopenvrml.doc \
+        gpl.doc \
+        lgpl.doc \
         conformance.doc
 
 DOCUMENTED_SOURCE_FILES = \

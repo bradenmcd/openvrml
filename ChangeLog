@@ -1,5 +1,10 @@
 2007-12-18 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am (DOCUMENTATION_FILES): Added gpl.doc and
+	lgpl.doc.
+
+2007-12-18 Braden McDaniel  <braden@endoframe.com>
+
 	Call semantic actions when parsing IMPORT and EXPORT statements.
 
 	* src/libopenvrml/openvrml/browser.cpp
