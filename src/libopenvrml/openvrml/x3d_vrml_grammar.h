@@ -262,6 +262,19 @@ namespace openvrml {
             {}
         } on_meta_statement;
 
+        struct on_import_statement_t {
+            void operator()(const std::string & /* inline_node_name_id */,
+                            const std::string & /* exported_node_name_id */,
+                            const std::string & /* imported_node_name_id */) const
+            {}
+        } on_import_statement;
+
+        struct on_export_statement_t {
+            void operator()(const std::string & /* node_name_id */,
+                            const std::string & /* exported_node_name_id */) const
+            {}
+        } on_export_statement;
+
         struct on_sfcolorrgba_t {
             void operator()(const color_rgba & /* val */) const
             {}
@@ -388,6 +401,24 @@ namespace openvrml {
 
     const phoenix::function<set_meta_value_function> set_meta_value;
 
+    struct import_statement_closure :
+        boost::spirit::closure<import_statement_closure,
+                               const defs_t::value_type *,
+                               std::string,
+                               std::string> {
+        member1 inline_node_name_id;
+        member2 exported_node_name_id;
+        member3 imported_node_name_id;
+    };
+
+    struct export_statement_closure :
+        boost::spirit::closure<export_statement_closure,
+                               const defs_t::value_type *,
+                               std::string> {
+        member1 node_name_id;
+        member2 exported_node_name_id;
+    };
+
     template <typename Actions = null_x3d_vrml_parse_actions,
               typename ErrorHandler = x3d_vrml_parse_error_handler>
     struct x3d_vrml_grammar :
@@ -416,6 +447,14 @@ namespace openvrml {
             typedef boost::spirit::rule<ScannerT,
                                         meta_statement_closure::context_t>
                 meta_statement_rule_type;
+
+            typedef boost::spirit::rule<ScannerT,
+                                        import_statement_closure::context_t>
+                import_statement_rule_type;
+
+            typedef boost::spirit::rule<ScannerT,
+                                        export_statement_closure::context_t>
+                export_statement_rule_type;
 
             struct load_profile_t {
                 explicit load_profile_t(scope_stack_t & scope_stack):
@@ -511,6 +550,64 @@ namespace openvrml {
                 const Actions & actions;
             } on_meta_statement;
 
+            struct on_import_statement_function {
+                template <typename DefEntryPtr,
+                          typename ExportedNodeNameId,
+                          typename ImportedNodeNameId>
+                struct result {
+                    typedef void type;
+                };
+
+                explicit on_import_statement_function(const Actions & actions):
+                    actions(actions)
+                {}
+
+                template <typename DefEntryPtr,
+                          typename ExportedNodeNameId,
+                          typename ImportedNodeNameId>
+                void operator()(DefEntryPtr inline_node,
+                                ExportedNodeNameId exported_node_name_id,
+                                ImportedNodeNameId imported_node_name_id) const
+                {
+                    actions.on_import_statement(inline_node->first,
+                                                exported_node_name_id,
+                                                imported_node_name_id);
+                }
+
+            private:
+                const Actions & actions;
+            };
+
+            phoenix::function<on_import_statement_function> on_import_statement;
+
+            struct on_export_statement_function {
+                template <typename DefEntryPtr,
+                          typename ExportedNodeNameId>
+                struct result {
+                    typedef void type;
+                };
+
+                explicit on_export_statement_function(const Actions & actions):
+                    actions(actions)
+                {}
+
+                template <typename DefEntryPtr,
+                          typename ExportedNodeNameId>
+                void operator()(DefEntryPtr node,
+                                ExportedNodeNameId exported_node_name_id) const
+                {
+                    actions.on_export_statement(node->first,
+                                                exported_node_name_id);
+                }
+
+            private:
+                const Actions & actions;
+            };
+
+            phoenix::function<on_export_statement_function> on_export_statement;
+
+            using base_t::node_name_id_p;
+
             using base_t::keywords;
             using base_t::vrml_scene;
             using base_t::statement;
@@ -527,8 +624,8 @@ namespace openvrml {
             profile_statement_rule_type profile_statement;
             component_statement_rule_type component_statement;
             meta_statement_rule_type meta_statement;
-            rule_type import_statement;
-            rule_type export_statement;
+            import_statement_rule_type import_statement;
+            export_statement_rule_type export_statement;
 
             chset invalid_id_rest_char, invalid_id_first_char;
 
@@ -684,6 +781,8 @@ namespace openvrml {
         on_profile_statement(self.vrml97_g.actions),
         on_component_statement(self.vrml97_g.actions),
         on_meta_statement(self.vrml97_g.actions),
+        on_import_statement(on_import_statement_function(self.vrml97_g.actions)),
+        on_export_statement(on_export_statement_function(self.vrml97_g.actions)),
         invalid_id_rest_char(base_t::invalid_id_rest_char | ':'),
         invalid_id_first_char(base_t::invalid_id_first_char | ':')
     {
@@ -748,11 +847,30 @@ namespace openvrml {
             ;
 
         import_statement
-            =   "IMPORT" >> id >> '.' >> id >> "AS" >> id
+            =   "IMPORT" >> node_name_id_p[
+                    import_statement.inline_node_name_id = arg1
+                ]
+                >> '.' >> id[
+                    import_statement.exported_node_name_id =
+                        construct_<string>(arg1, arg2)
+                ]
+                >> "AS" >> id[
+                    import_statement.imported_node_name_id =
+                        construct_<string>(arg1, arg2)
+                ]
+                >> eps_p[
+                    on_import_statement(import_statement.inline_node_name_id,
+                                        import_statement.exported_node_name_id,
+                                        import_statement.imported_node_name_id)
+                ]
             ;
 
         export_statement
-            =   "EXPORT" >> id >> "AS" >> id
+            =   "EXPORT" >> node_name_id_p[export_statement.node_name_id = arg1]
+                >> "AS" >> id[
+                    export_statement.exported_node_name_id =
+                        construct_<string>(arg1, arg2)
+                ]
             ;
 
         id

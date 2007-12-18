@@ -4956,6 +4956,19 @@ struct OPENVRML_LOCAL openvrml::browser::x3d_vrml_parse_actions :
         x3d_vrml_parse_actions & actions_;
     } on_meta_statement;
 
+    struct on_import_statement_t {
+        void operator()(const std::string & /* inline_node_name_id */,
+                        const std::string & /* exported_node_name_id */,
+                        const std::string & /* imported_node_name_id */) const
+        {}
+    } on_import_statement;
+
+    struct on_export_statement_t {
+        void operator()(const std::string & /* node_name_id */,
+                        const std::string & /* exported_node_name_id */) const
+        {}
+    } on_export_statement;
+
     struct on_sfcolorrgba_t {
         explicit on_sfcolorrgba_t(vrml97_parse_actions & actions):
             actions_(actions)

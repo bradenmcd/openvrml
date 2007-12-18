@@ -1,3 +1,34 @@
+2007-12-18 Braden McDaniel  <braden@endoframe.com>
+
+	Call semantic actions when parsing IMPORT and EXPORT statements.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(x3d_vrml_parse_actions): Added no-op semantic actions
+	on_import_statement and on_export_statement.
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	(openvrml::null_x3d_vrml_parse_actions): Added no-op semantic
+	actions on_import_statement and on_export_statement.
+	(openvrml::import_statement_closure): Spirit closure used when
+	parsing IMPORT statements.
+	(openvrml::export_statement_closure): Spirit closure used when
+	parsing EXPORT statements.
+	(openvrml::x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::import_statement_rule_type):
+	Rule type for import_statement incorporating
+	import_statement_closure.
+	(openvrml::x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::export_statement_rule_type):
+	Rule type for export_statement incorporating
+	export_statement_closure.
+	(openvrml::x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::on_import_statement):
+	Phoenix function for calling import_statement's associated
+	semantic action.
+	(openvrml::x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::on_export_statement):
+	Phoenix function for calling export_statement's associated
+	semantic action.
+	(openvrml::x3d_vrml_grammar<Actions,ErrorHandler>::definition<ScannerT>::definition(const
+	x3d_vrml_grammar &)): Call Actions.on_import_statement for
+	import_statement and Actions.on_export_statement for
+	export_statement.
+
 2007-12-17 Braden McDaniel  <braden@endoframe.com>
 
 	Update to GPL and LGPL version 3.
