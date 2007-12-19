@@ -128,9 +128,16 @@ a.codeRef:link {
   font-weight: normal;
   color: inherit;
 }
+a {
+  color: inherit;
+}
+a:visited {
+  color: silver;
+}
 a:hover {
+  color: inherit;
   text-decoration: inherit;
-  background-color: inherit;
+  background-color: transparent;
 }
 
 h1 {

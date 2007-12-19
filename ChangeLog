@@ -1,5 +1,9 @@
 2007-12-19 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/doxygen-header: Override styles from doxygen.css.
+
+2007-12-19 Braden McDaniel  <braden@endoframe.com>
+
 	Added OpenGL logo image and link to documentation footer.
 
 	* doc/Makefile.am (CUSTOMIZED_IMAGES): Added OGL_sm_wht.png.
