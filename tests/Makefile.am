@@ -78,10 +78,19 @@ EXTRA_DIST = \
         package.m4 \
         testsuite.at \
         testsuite \
+        vrml97/bad/unrecognized-node.wrl \
+        vrml97/bad/unrecognized-field.wrl \
+        vrml97/bad/value-for-eventin-in-proto.wrl \
+        vrml97/bad/is-outside-proto.wrl \
+        vrml97/bad/is-value-type-mismatch.wrl \
         vrml97/bad/proto-eventin-conflict.wrl \
         vrml97/bad/proto-eventout-conflict.wrl \
-        vrml97/bad/unrecognized-node.wrl \
         vrml97/bad/use-def-in-different-proto-default-value.wrl \
+        vrml97/bad/route-from-field.wrl \
+        vrml97/bad/route-to-field.wrl \
+        vrml97/bad/route-sfint32-to-sfbool.wrl \
+        vrml97/bad/exposedfield-in-script.wrl \
+        vrml97/good/minimal.wrl \
         vrml97/good/def-use-in-proto-default-value.wrl \
         vrml97/good/line-number.wrl \
         vrml97/good/proto-containment-2-deep.wrl \
@@ -97,6 +106,10 @@ EXTRA_DIST = \
         x3dv/bad/unsupported-component-level.x3dv \
         x3dv/good/core+core2.x3dv \
         x3dv/good/minimal.x3dv \
+        x3dv/good/deprecated-eventin.x3dv \
+        x3dv/good/deprecated-eventout.x3dv \
+        x3dv/good/deprecated-exposedfield.x3dv \
+        x3dv/good/deprecated-field.x3dv \
         x3dv/good/minimal-full.x3dv \
         x3dv/good/minimal-immersive.x3dv \
         x3dv/good/minimal-interactive.x3dv \

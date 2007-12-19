@@ -1,3 +1,7 @@
+2007-12-19 Braden McDaniel  <braden@endoframe.com>
+
+	* tests/Makefile.am (EXTRA_DIST): Added missing test input files.
+
 2007-12-18 Braden McDaniel  <braden@endoframe.com>
 
 	Call x3d_vrml_parse_error_msg in browser's error handler to get
@@ -268,7 +272,6 @@
 
 	Doc-comment fixes and improvements.
 
-	* src/Makefile.am
 	* src/libopenvrml/openvrml/basetypes.cpp
 	* src/libopenvrml/openvrml/basetypes.h
 	* src/libopenvrml/openvrml/browser.cpp
