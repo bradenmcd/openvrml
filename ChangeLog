@@ -1,5 +1,13 @@
 2007-12-19 Braden McDaniel  <braden@endoframe.com>
 
+	Added OpenGL logo image and link to documentation footer.
+
+	* doc/Makefile.am (CUSTOMIZED_IMAGES): Added OGL_sm_wht.png.
+	* doc/doxygen-footer: Added OpenGL logo image.
+	* doc/manual/OGL_sm_wht.png: Added file.
+
+2007-12-19 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am (EXTRA_DIST): Added missing test input files.
 
 2007-12-18 Braden McDaniel  <braden@endoframe.com>

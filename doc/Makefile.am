@@ -70,6 +70,7 @@ DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/tab_?.gif
 
 CUSTOMIZED_IMAGES = \
+        $(srcdir)/manual/OGL_sm_wht.png \
         $(srcdir)/manual/tab_b-openvrml.png \
         $(srcdir)/manual/tab_l-openvrml.png \
         $(srcdir)/manual/tab_r-openvrml.png

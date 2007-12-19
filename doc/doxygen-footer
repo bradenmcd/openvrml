@@ -1,5 +1,5 @@
 </div>
-<address class="footer"><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=7151&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"></a><a href="http://sourceforge.net/tracker/?func=add&amp;group_id=7151&amp;atid=107151">Report error</a><br>Generated $datetime by Doxygen $doxygenversion</address>
+<address class="footer"><span class="images"><a href="http://opengl.org"><img src="OGL_sm_wht.png" width="68" height="32" border="0" alt="OpenGL"></a><a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=7151&type=3" width="125" height="37" border="0" alt="SourceForge.net"></a></span><a href="http://sourceforge.net/tracker/?func=add&amp;group_id=7151&amp;atid=107151">Report error</a><br>Generated $datetime by Doxygen $doxygenversion</address>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
 <script type="text/javascript">_uacct = "UA-446379-2"; urchinTracker();</script>
 </body>
