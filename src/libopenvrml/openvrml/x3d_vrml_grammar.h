@@ -76,7 +76,9 @@ namespace openvrml {
             "use of deprecated keyword \"exposedField\".  Use \"inputOutput\" instead.",
             "use of deprecated keyword \"field\".  Use \"initializeOnly\" instead."
         };
-        return msg[error - vrml_parse_error_end];
+        return (error < vrml_parse_error_end)
+            ? vrml97_parse_error_msg(error)
+            : msg[error - vrml_parse_error_end];
     }
 
     struct x3d_vrml_parse_error_handler {

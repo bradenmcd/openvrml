@@ -1,5 +1,19 @@
 2007-12-18 Braden McDaniel  <braden@endoframe.com>
 
+	Call x3d_vrml_parse_error_msg in browser's error handler to get
+	the error message string.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(error_handler::operator()<ScannerT,ErrorT>(const ScannerT &,
+	const ErrorT &) const): Handle X3D-specific warnigns and call
+	x3d_vrml_parse_error_msg to get the error message string.
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	(openvrml::x3d_vrml_parse_error_message(vrml_parse_error)):
+	Delegate to openvrml::vrml97_parse_error_msg for vrml_parse_errors
+	that are not X3D-specific.
+
+2007-12-18 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Doxygen as of 1.5.4-20071217 uses the class
 	"navpath" instead of "nav".  For now, we'll do both.
 

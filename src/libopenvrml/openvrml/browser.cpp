@@ -5156,10 +5156,15 @@ namespace {
             //
             // Warnings we want to spew directly to the browser.
             //
-            if (err.descriptor == openvrml::rotation_axis_not_normalized) {
+            if (   err.descriptor == openvrml::rotation_axis_not_normalized
+                || err.descriptor == openvrml::eventin_deprecated
+                || err.descriptor == openvrml::eventout_deprecated
+                || err.descriptor == openvrml::exposedfield_deprecated
+                || err.descriptor == openvrml::field_deprecated) {
                 std::ostringstream warn;
-                warn << fpos.file << ':' << fpos.line << ':'
-                     << fpos.column << ": warning: " << err.descriptor;
+                warn << fpos.file << ':' << fpos.line << ':' << fpos.column
+                     << ": warning: "
+                     << x3d_vrml_parse_error_msg(err.descriptor);
                 this->browser_.err(warn.str());
                 scan.first = err.where;
                 return error_status<>(error_status<>::accept, 0);
@@ -5172,7 +5177,7 @@ namespace {
             //
             this->error_.line = fpos.line;
             this->error_.column = fpos.column;
-            this->error_.message = lexical_cast<string>(err.descriptor);
+            this->error_.message = x3d_vrml_parse_error_msg(err.descriptor);
 
             return error_status<>(error_status<>::fail);
         }
