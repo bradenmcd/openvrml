@@ -1,5 +1,10 @@
 2007-12-19 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Increased recommended minimum RAM for 32-bit build hosts
+	to 1.5 GB; 3 GB for 64-bit hosts. Sigh.
+
+2007-12-19 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Override styles from doxygen.css.
 
 2007-12-19 Braden McDaniel  <braden@endoframe.com>

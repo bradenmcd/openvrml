@@ -109,8 +109,10 @@ building OpenVRML with such binaries it will be necessary to set the
 variable BOOST_LIB_SUFFIX to match the suffix applied to the Boost
 binaries; refer to the output of "configure --help".
 
-   Building OpenVRML is fairly demanding of system resources.  It is
-recommended that build hosts have at least 768 MB of system memory.
+   Building OpenVRML is fairly demanding of system resources;
+especially, it seems, with modern versions of the GNU C++ compiler.  It
+is recommended that 32-bit build hosts have at least 1.5 GB of system
+memory; the recommended minimum for 64-bit build hosts is 3 GB.
 
 
 Optional dependencies
