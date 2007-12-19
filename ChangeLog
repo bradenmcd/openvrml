@@ -1,5 +1,20 @@
 2007-12-19 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.17.0 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:0:0; updated libopenvrml-gl libtool library version to 7:0:0.
+
+2007-12-19 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Increased recommended minimum RAM for 32-bit build hosts
 	to 1.5 GB; 3 GB for 64-bit hosts. Sigh.
 

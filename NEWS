@@ -1,3 +1,14 @@
+Changes new in version 0.17.0, 19 December, 2007
+========================================================================
+
+- New parsers using Spirit, including a new parsing interface that
+  accommodates hooking user code directly into the parsing process.
+
+- OpenVRML no longer uses ANTLR for parsing.
+
+- Numerous concurrency improvements and other bug fixes.
+
+
 Changes new in version 0.16.7, 11 November, 2007
 ========================================================================
 
