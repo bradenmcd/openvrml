@@ -3063,7 +3063,7 @@ namespace {
         }
     } error_handler;
 
-    OPENVRML_LOCAL const boost::spirit::functor_parser<
+    const boost::spirit::functor_parser<
         openvrml::rotation_parser<null_error_handler> >
         rotation_p(error_handler);
 }
