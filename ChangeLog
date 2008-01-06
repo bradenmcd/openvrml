@@ -1,5 +1,10 @@
 2008-01-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/basetypes.cpp (rotation_p): Removed
+	unnecessary application of OPENVRML_LOCAL.
+
+2008-01-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am (libopenvrml_libopenvrml_la_CPPFLAGS): Removed
 	obsolete reference to antlr subdirectory.
 
