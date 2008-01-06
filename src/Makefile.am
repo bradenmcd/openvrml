@@ -88,7 +88,6 @@ LIBOPENVRML_GL_LIBRARY_VERSION = 7:0:0
 #                            or changed
 
 libopenvrml_libopenvrml_la_CPPFLAGS = \
-        -I$(top_srcdir)/lib/antlr \
         -I$(top_builddir)/java \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \

@@ -1,3 +1,8 @@
+2008-01-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am (libopenvrml_libopenvrml_la_CPPFLAGS): Removed
+	obsolete reference to antlr subdirectory.
+
 2007-12-19 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.0 release.
