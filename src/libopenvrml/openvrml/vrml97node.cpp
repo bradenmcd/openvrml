@@ -22052,7 +22052,7 @@ namespace {
             }
     };
 
-    OPENVRML_LOCAL const std::vector<polygon_>
+    OPENVRML_LOCAL const std::vector<polygon_> &
     get_polygons_(const std::vector<std::vector<openvrml::vec2f> > & contours)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -22117,6 +22117,100 @@ namespace {
         }
         return -1;
     }
+
+    typedef std::multimap<const openvrml::vec2f *,
+                          const std::vector<openvrml::vec2f> *>
+        connection_map_t;
+
+    //
+    // Fill connection_map. For each interior contour, find the exterior
+    // vertex that is closest to the first vertex in the interior contour, and
+    // the put the pair in the map.
+    //
+    OPENVRML_LOCAL std::auto_ptr<connection_map_t>
+    get_connection_map(const polygon_ & p)
+    {
+        using std::vector;
+        using openvrml::vec2f;
+        std::auto_ptr<connection_map_t> connection_map(new connection_map_t);
+        for (vector<const vector<vec2f> *>::const_iterator interior =
+                 p.interiors.begin();
+             interior != p.interiors.end();
+             ++interior) {
+            assert(*interior);
+            assert(!(*interior)->empty());
+            long exterior_vertex_index =
+                get_exterior_connecting_vertex_index_(*p.exterior,
+                                                      p.interiors,
+                                                      (*interior)->front());
+            assert(exterior_vertex_index > -1);
+            const vec2f * const exterior_vertex =
+                &(*p.exterior)[exterior_vertex_index];
+            assert(exterior_vertex);
+            const connection_map_t::value_type value(exterior_vertex,
+                                                     *interior);
+            connection_map->insert(value);
+        }
+        return connection_map;
+    }
+
+    struct OPENVRML_LOCAL draw_glyph_polygon {
+        draw_glyph_polygon(std::vector<openvrml::vec2f> & coord,
+                           std::vector<openvrml::int32> & coord_index):
+            coord(coord),
+            coord_index(coord_index)
+        {}
+
+        void operator()(const polygon_ & p) const
+        {
+            using openvrml::vec2f;
+
+            //
+            // connectionMap is keyed on a pointer to a vertex on the exterior
+            // contour, and maps to a pointer to the interior contour whose
+            // first vertex is closest to the exterior vertex.
+            //
+            std::auto_ptr<connection_map_t> connection_map(get_connection_map(p));
+
+            assert(!p.exterior->empty());
+            for (size_t i = 0; i < p.exterior->size(); ++i) {
+                const vec2f & exterior_vertex = (*p.exterior)[i];
+                long exterior_index = get_vertex_index_(this->coord, exterior_vertex);
+                if (exterior_index > -1) {
+                    this->coord_index.push_back(exterior_index);
+                } else {
+                    this->coord.push_back(exterior_vertex);
+                    assert(!this->coord.empty());
+                    exterior_index = long(this->coord.size() - 1);
+                    coord_index.push_back(exterior_index);
+                }
+                connection_map_t::iterator pos;
+                while ((pos = connection_map->find(&exterior_vertex))
+                       != connection_map->end()) {
+                    for (int i = int(pos->second->size() - 1); i > -1; --i) {
+                        const vec2f & interior_vertex = (*pos->second)[i];
+                        const long interior_index =
+                            get_vertex_index_(this->coord, interior_vertex);
+                        if (interior_index > -1) {
+                            this->coord_index.push_back(interior_index);
+                        } else {
+                            using openvrml::int32;
+                            this->coord.push_back(interior_vertex);
+                            assert(!this->coord.empty());
+                            this->coord_index.push_back(int32(this->coord.size() - 1));
+                        }
+                    }
+                    this->coord_index.push_back(exterior_index);
+                    connection_map->erase(pos);
+                }
+            }
+            assert(connection_map->empty());
+            this->coord_index.push_back(-1);
+        }
+    private:
+        std::vector<openvrml::vec2f> & coord;
+        std::vector<openvrml::int32> & coord_index;
+    };
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
@@ -22141,85 +22235,10 @@ namespace {
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::vector;
-        using openvrml::vec2f;
 
-        const vector<polygon_> polygons = get_polygons_(contours);
-        for (vector<polygon_>::const_iterator polygon = polygons.begin();
-             polygon != polygons.end();
-             ++polygon) {
-            //
-            // connectionMap is keyed on a pointer to a vertex on the exterior
-            // contour, and maps to a pointer to the interior contour whose
-            // first vertex is closest to the exterior vertex.
-            //
-            typedef std::multimap<const vec2f *, const std::vector<vec2f> *>
-                connection_map_t;
-            connection_map_t connection_map;
-
-            //
-            // Fill connection_map. For each interior contour, find the exterior
-            // vertex that is closest to the first vertex in the interior contour,
-            // and the put the pair in the map.
-            //
-            for (vector<const vector<vec2f> *>::const_iterator interior =
-                     polygon->interiors.begin();
-                 interior != polygon->interiors.end();
-                 ++interior) {
-                assert(*interior);
-                assert(!(*interior)->empty());
-                long exterior_vertex_index =
-                    get_exterior_connecting_vertex_index_(*polygon->exterior,
-                                                          polygon->interiors,
-                                                          (*interior)->front());
-                assert(exterior_vertex_index > -1);
-                const vec2f * const exterior_vertex =
-                    &(*polygon->exterior)[exterior_vertex_index];
-                assert(exterior_vertex);
-                const connection_map_t::value_type value(exterior_vertex,
-                                                         *interior);
-                connection_map.insert(value);
-            }
-
-            //
-            // Finally, draw the polygon.
-            //
-            assert(!polygon->exterior->empty());
-            for (size_t i = 0; i < polygon->exterior->size(); ++i) {
-                const vec2f & exterior_vertex = (*polygon->exterior)[i];
-                long exterior_index = get_vertex_index_(this->coord,
-                                                        exterior_vertex);
-                if (exterior_index > -1) {
-                    this->coord_index.push_back(exterior_index);
-                } else {
-                    this->coord.push_back(exterior_vertex);
-                    assert(!this->coord.empty());
-                    exterior_index = long(this->coord.size() - 1);
-                    this->coord_index.push_back(exterior_index);
-                }
-                connection_map_t::iterator pos;
-                while ((pos = connection_map.find(&exterior_vertex))
-                       != connection_map.end()) {
-                    for (int i = int(pos->second->size() - 1); i > -1; --i) {
-                        const vec2f & interior_vertex = (*pos->second)[i];
-                        const long interior_index =
-                            get_vertex_index_(this->coord, interior_vertex);
-                        if (interior_index > -1) {
-                            this->coord_index.push_back(interior_index);
-                        } else {
-                            using openvrml::int32;
-                            this->coord.push_back(interior_vertex);
-                            assert(!this->coord.empty());
-                            this->coord_index
-                                .push_back(int32(this->coord.size() - 1));
-                        }
-                    }
-                    this->coord_index.push_back(exterior_index);
-                    connection_map.erase(pos);
-                }
-            }
-            assert(connection_map.empty());
-            this->coord_index.push_back(-1);
-        }
+        const vector<polygon_> & polygons = get_polygons_(contours);
+        std::for_each(polygons.begin(), polygons.end(),
+                      draw_glyph_polygon(this->coord, this->coord_index));
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
