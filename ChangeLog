@@ -1,5 +1,11 @@
 2008-01-06 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(get_polygons_(const std::vector<std::vector<openvrml::vec2f> >
+	&)): Don't return a reference.
+
+2008-01-06 Braden McDaniel  <braden@endoframe.com>
+
 	Refactored text_node::glyph_geometry constructor.
 
 	* src/libopenvrml/openvrml/vrml97node.cpp
