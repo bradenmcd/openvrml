@@ -22052,7 +22052,7 @@ namespace {
             }
     };
 
-    OPENVRML_LOCAL const std::vector<polygon_> &
+    OPENVRML_LOCAL const std::vector<polygon_>
     get_polygons_(const std::vector<std::vector<openvrml::vec2f> > & contours)
         OPENVRML_THROW1(std::bad_alloc)
     {
