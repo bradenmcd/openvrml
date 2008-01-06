@@ -4335,6 +4335,12 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             assert(succeeded);
 
             this->actions_.on_field_start(interface_.id, interface_.field_type);
+            if ((interface_.type == node_interface::eventin_id
+                 || interface_.type == node_interface::eventout_id)
+                && (interface_.field_type == field_value::sfnode_id
+                    || interface_.field_type == field_value::mfnode_id)) {
+                ps.children.pop();
+            }
         }
 
     private:

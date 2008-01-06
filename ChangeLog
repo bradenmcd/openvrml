@@ -1,5 +1,13 @@
 2008-01-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::vrml97_parse_actions::on_script_interface_decl_t::operator()(const
+	node_interface &) const): Pop the children stack for eventIns and
+	eventOuts after calling on_field_start since that doesn't get
+	handled in any field value parsing.
+
+2008-01-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp (TessCB): Cannot use a
 	typedef of "void" to denote an empty parameter list in C++.
 
