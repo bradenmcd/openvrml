@@ -1,3 +1,19 @@
+2008-01-06 Braden McDaniel  <braden@endoframe.com>
+
+	Refactored text_node::glyph_geometry constructor.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(get_polygons_(const std::vector<std::vector<openvrml::vec2f> >
+	&)): Return a reference (to const).
+	(get_connection_map(const polygon_ &)): Added function.  Get the
+	map of positions at which the interior and corresponding exterior
+	contours in a glyph are connected to form a polygon.
+	(draw_glyph_polygon): Function object to emit coordinates and
+	coordinate indices for polygons given a polygon_.
+	(text_node::glyph_geometry::glyph_geometry(const
+	std::vector<std::vector<openvrml::vec2f> > &, float, float)):
+	Delegate to draw_glyph_polygon.
+
 2008-01-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
