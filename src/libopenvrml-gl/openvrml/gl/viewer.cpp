@@ -1981,7 +1981,7 @@ extern "C" {
 # ifdef HAVE_VARARGS_GLU_TESSCB
     typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(...);
 # else
-    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)(GLvoid);
+    typedef GLvoid (OPENVRML_GL_CALLBACK_* TessCB)();
 # endif
 
     /**

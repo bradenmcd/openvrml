@@ -1,5 +1,10 @@
 2008-01-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp (TessCB): Cannot use a
+	typedef of "void" to denote an empty parameter list in C++.
+
+2008-01-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/basetypes.cpp (rotation_p): Removed
 	unnecessary application of OPENVRML_LOCAL.
 
