@@ -3459,20 +3459,28 @@ namespace {
         //
         // Remove any ".." segments along with the segment that precedes them.
         //
-        const list<string>::iterator begin(path_segments.begin());
-        list<string>::iterator pos;
-        for (pos = begin; pos != path_segments.end(); ++pos) {
-            if (pos != begin && *pos == "..") {
-                --(pos = path_segments.erase(pos));
-                --(pos = path_segments.erase(pos));
-            }
+        list<string>::iterator pos = path_segments.begin();
+        while (pos != path_segments.end()) {
+            if (*pos != "..") { ++pos; continue; }
+            //
+            // If pos == begin after the first erase operation, we're
+            // dealing with a bogus path.  The best we can do is Not
+            // Crash.  That means we'll emit *some* absolute URI from this
+            // function; but it may not be very useful.
+            //
+            pos = path_segments.erase(pos);
+            if (pos == path_segments.begin()) { continue; }
+            pos = path_segments.erase(--pos);
         }
 
         //
         // Reconstruct the path.
         //
+        path.clear();
         path.str(string());
-        for (pos = path_segments.begin(); pos != path_segments.end(); ++pos) {
+        for (list<string>::const_iterator pos = path_segments.begin();
+             pos != path_segments.end();
+             ++pos) {
             path << '/' << *pos;
         }
 

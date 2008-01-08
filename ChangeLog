@@ -1,3 +1,9 @@
+2008-01-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(uri::resolve_against(const uri &) const): Fixed crash in ".."
+	path segment processing.
+
 2008-01-07 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment fixes and improvements.
