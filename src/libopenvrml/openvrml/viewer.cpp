@@ -1082,7 +1082,7 @@ void openvrml::viewer::set_frustum(const float field_of_view,
 }
 
 /**
- * @fn void openvrml::viewer::set_frustum(float field_of_view, float avatar_size, float visibility_limit)
+ * @fn void openvrml::viewer::do_set_frustum(float field_of_view, float avatar_size, float visibility_limit)
  *
  * @brief Set the frustum.
  *

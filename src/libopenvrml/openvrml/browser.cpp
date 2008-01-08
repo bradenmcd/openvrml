@@ -688,6 +688,13 @@ namespace openvrml {
         }
     }
 
+    /**
+     * @internal
+     *
+     * @brief Get the path to a node.
+     *
+     * @return the path to a node.
+     */
     OPENVRML_LOCAL const node_path_t
     get_path(const std::vector<boost::intrusive_ptr<node> > & root,
              const node & objective)
@@ -698,6 +705,14 @@ namespace openvrml {
         return path;
     }
 
+    /**
+     * @internal
+     *
+     * @brief Resolve a node path against a node hierarchy.
+     *
+     * @return a pointer to the objective node in the node hierarchy
+     *         designated by @p root.
+     */
     OPENVRML_LOCAL node *
     resolve_node_path(const node_path_t & path,
                       const std::vector<boost::intrusive_ptr<node> > & root)
