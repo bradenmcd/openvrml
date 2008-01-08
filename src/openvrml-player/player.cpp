@@ -768,6 +768,10 @@ gboolean openvrml_player_request_data_available(GIOChannel * const source,
             OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
                                                           false);
             setopt_result = curl_easy_setopt(handle,
+                                             CURLOPT_ENCODING, "");
+            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
+                                                          false);
+            setopt_result = curl_easy_setopt(handle,
                                              CURLOPT_URL, stream_data.url());
             OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
                                                           false);

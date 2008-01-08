@@ -1,5 +1,11 @@
 2008-01-08 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp
+	(openvrml_player_request_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Accept any supported Content-Encoding.
+
+2008-01-08 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(uri::resolve_against(const uri &) const): Fixed crash in ".."
 	path segment processing.
