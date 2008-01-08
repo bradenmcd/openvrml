@@ -13,7 +13,8 @@ GTKDOC_CFLAGS = \
 
 GTKDOC_LIBS = \
 	$(top_builddir)/gdk/$(gdkglext_targetlib)	\
-	$(top_builddir)/gtk/$(gtkglext_targetlib)
+	$(top_builddir)/gtk/$(gtkglext_targetlib)	\
+	$(GL_LIBS)
 
 # The name of the module, e.g. 'glib'.
 DOC_MODULE = gtkglext
