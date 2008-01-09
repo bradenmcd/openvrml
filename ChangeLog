@@ -1,5 +1,9 @@
 2008-01-08 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fixed Automake conditional test for WITH_REZ.
+
+2008-01-08 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Apply Rez to sdl-viewer if "-framework" occurs in
 	GL_LIBS.
 

@@ -373,7 +373,7 @@ AM_CONDITIONAL([ENABLE_EXAMPLES],
 # OpenGL framework.)
 #
 AM_CONDITIONAL([WITH_REZ],
-               [test "X$GL_LIBS" != "X`echo $GL_LIBS | sed s/-framework//`" -a -n "$REZ"])
+               [test "X`echo $GL_LIBS`" != "X`echo $GL_LIBS | sed s/-framework//`" -a -n "$REZ"])
 AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 
 #
