@@ -1,3 +1,11 @@
+Changes new in version 0.17.2, 9 January, 2008
+========================================================================
+
+- Fixed a crash in relative URL resolution.
+
+- Added support for gzip-encoded resources to openvrml-player.
+
+
 Changes new in version 0.17.1, 6 January, 2008
 ========================================================================
 
