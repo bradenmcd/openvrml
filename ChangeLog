@@ -1,3 +1,18 @@
+2007-01-09 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.17.2 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:2:0.
+
 2008-01-08 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed Automake conditional test for WITH_REZ.
@@ -16,8 +31,8 @@
 2008-01-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp
-	(openvrml_player_request_data_available(GIOChannel *, GIOCondition, gpointer)):
-	Accept any supported Content-Encoding.
+	(openvrml_player_request_data_available(GIOChannel *,
+	GIOCondition, gpointer)): Accept any supported Content-Encoding.
 
 2008-01-08 Braden McDaniel  <braden@endoframe.com>
 
