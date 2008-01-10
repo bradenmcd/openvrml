@@ -1,5 +1,13 @@
 2007-01-09 Braden McDaniel  <braden@endoframe.com>
 
+	Added option to disable use of the Gecko runtime library directory
+	-rpath flag when building openvrml-xembed.
+
+	* README
+	* configure.ac
+
+2007-01-09 Braden McDaniel  <braden@endoframe.com>
+
 	Updates for 0.17.2 release.
 
 	* NEWS

@@ -150,6 +150,13 @@ depends on.
      Disable use of C++ exception specifications.  This is likely to
      improve performance.  Note that this changes the library ABI.
 
+ --disable-gecko-rpath
+     Disable use of the Gecko runtime library directory -rpath flag.  If
+     libopenvrml links with libmozjs, executables that link with
+     libopenvrml (i.e., openvrml-xembed) are, by default, built with an
+     -rpath flag pointing to the Gecko runtime library directory.  On
+     some systems, this is unnecessary.
+
  --disable-png-textures
      Disable support for rendering PNG images as textures.  OpenVRML
      uses libpng to read PNG images.

@@ -177,6 +177,13 @@ fi
 AC_SUBST([OPENVRML_ENABLE_EXCEPTION_SPECS])
 
 #
+# Disable use of the Gecko -rpath flag
+#
+AC_ARG_ENABLE([gecko-rpath],
+              [AC_HELP_STRING([--disable-gecko-rpath],
+                              [disable use of Gecko runtime library directory -rpath])])
+
+#
 # PNG texture support
 #
 AC_ARG_ENABLE([png-textures],
@@ -380,9 +387,8 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Optional dependencies (substituted in the pkg-config metadata files).
 #
 AC_SUBST([OPENVRML_PKG_REQUIRES])
-if test -n "${openvrml_run_path}"; then
-  OPENVRML_RPATH="-rpath ${openvrml_run_path}"
-fi
+AS_IF([test -n "${openvrml_run_path}" -a "X$enable_gecko_rpath" != Xno],
+      [OPENVRML_RPATH="-rpath ${openvrml_run_path}"])
 AC_SUBST([OPENVRML_RPATH])
 
 if test X$enable_xembed != Xno; then
