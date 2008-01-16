@@ -530,14 +530,6 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    command_istream command_in;
-
-    function0<void> command_channel_loop_func =
-        command_channel_loop(*command_channel,
-                             command_in,
-                             *GTK_VRML_BROWSER(vrml_browser));
-    threads.create_thread(command_channel_loop_func);
-
     if (initial_stream) {
         const shared_ptr<plugin_streambuf> initial_stream(
             new plugin_streambuf(::initial_stream_uri));
@@ -548,6 +540,14 @@ int main(int argc, char * argv[])
                                   *GTK_VRML_BROWSER(vrml_browser));
         threads.create_thread(initial_stream_reader_func);
     }
+
+    command_istream command_in;
+
+    function0<void> command_channel_loop_func =
+        command_channel_loop(*command_channel,
+                             command_in,
+                             *GTK_VRML_BROWSER(vrml_browser));
+    threads.create_thread(command_channel_loop_func);
 
     gtk_main();
 
