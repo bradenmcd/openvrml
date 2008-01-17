@@ -1,3 +1,13 @@
+Changes new in version 0.17.3, 17 January, 2008
+========================================================================
+
+- Fixed a crash in openvrml-xembed caused by a race during
+  initialization.
+
+- Fixed a bug in the Mozilla plug-in that prevented external resources
+  from loading.
+
+
 Changes new in version 0.17.2, 9 January, 2008
 ========================================================================
 
