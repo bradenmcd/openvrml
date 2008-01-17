@@ -1298,7 +1298,8 @@ namespace {
     {
         using std::string;
 
-        plugin_instance & pluginInstance = *static_cast<plugin_instance *>(data);
+        plugin_instance & pluginInstance =
+            *static_cast<plugin_instance *>(data);
 
         gchar c;
         do {
@@ -1343,6 +1344,8 @@ namespace {
                     // XXX
                 }
             }
+            pluginInstance.request_line.str(string());
+            pluginInstance.request_line.clear();
         }
 
         return true;
