@@ -1,5 +1,11 @@
 2007-01-16 Braden McDaniel  <braden@endoframe.com>
 
+	* mozilla-plugin/src/openvrml.cpp
+	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Clear the request_line stringstream between requests.
+
+2007-01-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/main.cpp
 	(main(int, char *[])): Seed the
 	uninitialized_plugin_streambuf_map_ with the initial stream's
