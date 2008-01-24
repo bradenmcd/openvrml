@@ -1,3 +1,9 @@
+2007-01-23 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp
+	(js_::Global::print(JSContext *, JSObject *, uintN, jsval *,
+	jsval *): Emit output using openvrml::browser::out.
+
 2007-01-17 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.3 release.

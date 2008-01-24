@@ -4181,17 +4181,17 @@ namespace Global {
 JSBool print(JSContext * const cx, JSObject *,
              const uintN argc, jsval * const argv, jsval *)
 {
-    using std::cout;
-    using std::flush;
+    js_::script * const script =
+        static_cast<js_::script *>(JS_GetContextPrivate(cx));
+    assert(script);
 
     for (uintN i = 0; i < argc; i++) {
         JSString * const str = JS_ValueToString(cx, argv[i]);
         if (!str) {
             return JS_FALSE;
         }
-        cout << JS_GetStringBytes(str) << "\n";
+        script->script_node().scene()->browser().out(JS_GetStringBytes(str));
     }
-    cout << flush;
     return JS_TRUE;
 }
 
