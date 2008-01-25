@@ -2449,8 +2449,7 @@ class OPENVRML_LOCAL openvrml::externproto_node :
                             openvrml::field_value::type_id type)
         OPENVRML_THROW1(std::bad_alloc);
 
-    typedef std::map<std::string,
-                     boost::shared_ptr<openvrml::field_value> >
+    typedef std::map<std::string, boost::shared_ptr<openvrml::field_value> >
         field_map;
 
     struct externproto_field_equal_to :
@@ -2470,6 +2469,8 @@ class OPENVRML_LOCAL openvrml::externproto_node :
         const openvrml::field_value * field_value_;
     };
 
+    initial_value_map initial_values_;
+    std::set<openvrml::field_value *> received_event_;
     field_map field_map_;
 
     boost::intrusive_ptr<openvrml::proto_node> proto_node_;
@@ -5644,13 +5645,13 @@ do_clone() const
             *this));
 }
 
-
 template <typename FieldValue>
 void
 openvrml::externproto_node::externproto_exposedfield<FieldValue>::
 do_process_event(const FieldValue & value, const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
+    static_cast<externproto_node &>(this->node()).received_event_.insert(this);
     static_cast<FieldValue &>(*this) = value;
     this->proto_eventin<FieldValue>::do_process_event(value, timestamp);
     this->node().modified(true);
@@ -5673,12 +5674,13 @@ create_exposedfield(externproto_node & node, field_value::type_id type)
     return result;
 }
 
-openvrml::externproto_node::externproto_node(
-    const browser::externproto_node_type & type,
-    const boost::shared_ptr<openvrml::scope> & scope,
-    const initial_value_map & initial_values)
+openvrml::externproto_node::
+externproto_node(const browser::externproto_node_type & type,
+                 const boost::shared_ptr<openvrml::scope> & scope,
+                 const initial_value_map & initial_values)
     OPENVRML_THROW1(std::bad_alloc):
-    abstract_proto_node(type, scope)
+    abstract_proto_node(type, scope),
+    initial_values_(initial_values)
 {
     for (node_interface_set::const_iterator interface_ =
              type.interfaces().begin();
@@ -5742,7 +5744,8 @@ openvrml::externproto_node::externproto_node(
             break;
         case node_interface::invalid_type_id:
             assert(false
-                   && "got node_interface::invalid_type_id for interface_->type");
+                   && "got node_interface::invalid_type_id for "
+                   "interface_->type");
         }
         assert(succeeded);
     }
@@ -5780,9 +5783,25 @@ set_proto_node(proto_node_type & node_type)
 {
     using boost::static_pointer_cast;
 
+    //
+    // Any exposedFields that received events add to/override what's in the
+    // initial_values_ map.
+    //
+    for (field_map::const_iterator field = this->field_map_.begin();
+         field != this->field_map_.end();
+         ++field) {
+        std::set<openvrml::field_value *>::const_iterator pos =
+            this->received_event_.find(field->second.get());
+        if (pos != this->received_event_.end()) {
+            this->initial_values_[field->first] = field->second;
+        }
+    }
+    this->received_event_.clear();
+
     this->proto_node_ =
         static_pointer_cast<proto_node>(
-            node_type.create_node(this->scope_, this->field_map_));
+            node_type.create_node(this->scope_, this->initial_values_));
+    this->initial_values_.clear(); // No longer need these.
 
     for (eventin_map_t::const_iterator map_entry =
              this->eventin_map.begin();
