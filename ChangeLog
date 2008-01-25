@@ -1,3 +1,20 @@
+2007-01-25 Braden McDaniel  <braden@endoframe.com>
+
+	Properly apply PROTO default values to EXTERNPROTO node instances.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::externproto_node): Added members initial_values_ and
+	received_event_.  initial_values_ stores the initial values used
+	when instantiating the EXTERNPROTO node; received_event_ is a set
+	of field values that have been updated in response to events sent
+	to the EXTERNPROTO's exposedFields.
+	(openvrml::externproto_node::externproto_exposedfield<FieldValue>::do_process_event(const
+	FieldValue &, double)): Add the field_value to the received_event_
+	set upon receiving an event.
+	(openvrml::externproto_node::set_proto_node(proto_node_type &)):
+	Use the initial values the EXTERNPROTO node was instantiated with,
+	updated with values received via any events to exposedFields.
+
 2007-01-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp
