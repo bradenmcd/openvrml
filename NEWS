@@ -1,3 +1,12 @@
+Changes new in version 0.17.4, 26 January, 2008
+========================================================================
+
+- Fixed a crash in the Mozilla plug-in.
+
+- Fixed EXTERNPROTO instances to apply default field values declared
+  in the PROTO definition.
+
+
 Changes new in version 0.17.3, 17 January, 2008
 ========================================================================
 

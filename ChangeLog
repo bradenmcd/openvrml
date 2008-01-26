@@ -1,5 +1,18 @@
 2007-01-26 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.17.4 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+
+2007-01-26 Braden McDaniel  <braden@endoframe.com>
+
 	* mozilla-plugin/src/openvrml.cpp
 	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
 	Fall out of the read loop upon receiving an EOL; otherwise we can
