@@ -1,3 +1,11 @@
+2007-01-26 Braden McDaniel  <braden@endoframe.com>
+
+	* mozilla-plugin/src/openvrml.cpp
+	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
+	Fall out of the read loop upon receiving an EOL; otherwise we can
+	end up with more than one request in the request_line (and end up
+	sending a bogus command to the XEmbed control).
+
 2007-01-25 Braden McDaniel  <braden@endoframe.com>
 
 	Properly apply PROTO default values to EXTERNPROTO node instances.

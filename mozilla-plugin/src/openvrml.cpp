@@ -1322,7 +1322,8 @@ namespace {
 
             if (c != '\n') { pluginInstance.request_line.put(c); }
 
-        } while (g_io_channel_get_buffer_condition(source) & G_IO_IN);
+        } while (g_io_channel_get_buffer_condition(source) & G_IO_IN
+                 && c != '\n');
 
         if (c == '\n') {
             string request_type;
