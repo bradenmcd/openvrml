@@ -1,5 +1,18 @@
 2007-01-28 Braden McDaniel  <braden@endoframe.com>
 
+	Since we aren't doing any ownership transfer, use a
+	boost::scoped_ptr for openvrml::field_value::counted_impl_.
+
+	* src/libopenvrml/openvrml/field_value.h
+	(openvrml::field_value::counted_impl_): Changed to
+	boost::scoped_ptr from std::auto_ptr.
+	(openvrml::field_value::operator=<FieldValue>(const FieldValue&)):
+	Reset the scoped_ptr.
+	(openvrml::field_value::swap<FieldValue>(FieldValue &)):
+	Delegate to boost::scoped_ptr::swap.
+
+2007-01-28 Braden McDaniel  <braden@endoframe.com>
+
 	Use a multimap for storing IS mappings in the parser.  This is
 	required to accommodate exposedFields that may be mapped to an
 	eventIn, a field, and/or an eventOut.
