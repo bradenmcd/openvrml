@@ -1,3 +1,16 @@
+2007-01-28 Braden McDaniel  <braden@endoframe.com>
+
+	Use a multimap for storing IS mappings in the parser.  This is
+	required to accommodate exposedFields that may be mapped to an
+	eventIn, a field, and/or an eventOut.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::vrml97_parse_actions::on_is_mapping_t::operator()(const
+	std::string &) const): Insertion into a multimap always
+	succeeds (or throws).
+	(openvrml::browser::vrml97_parse_actions::node_data::is_map_t):
+	Changed to a multimap.
+
 2007-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.4 release.
