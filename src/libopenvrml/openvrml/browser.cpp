@@ -4427,11 +4427,8 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             node_data & nd =
                 this->actions_.ps.top().node_data_.top();
             assert(nd.current_field_value);
-            bool succeeded =
-                nd.is_map.insert(make_pair(nd.current_field_value->first,
-                                           proto_interface_id))
-                .second;
-            assert(succeeded);
+            nd.is_map.insert(make_pair(nd.current_field_value->first,
+                                       proto_interface_id));
 
             const field_value::type_id field_type =
                 nd.current_field_value->second->type();
@@ -4851,7 +4848,11 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
     };
 
     struct node_data {
-        typedef std::map<std::string, std::string> is_map_t;
+        //
+        // This is a multimap because an exposedField might have multiple
+        // entries (i.e., for the corresponding eventIn, field, and eventOut).
+        //
+        typedef std::multimap<std::string, std::string> is_map_t;
 
         boost::shared_ptr<node_type> type;
         std::string node_name_id;
