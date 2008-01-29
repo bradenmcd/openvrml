@@ -177,11 +177,11 @@ fi
 AC_SUBST([OPENVRML_ENABLE_EXCEPTION_SPECS])
 
 #
-# Disable use of the Gecko -rpath flag
+# Enable use of the Gecko -rpath flag
 #
 AC_ARG_ENABLE([gecko-rpath],
-              [AC_HELP_STRING([--disable-gecko-rpath],
-                              [disable use of Gecko runtime library directory -rpath])])
+              [AC_HELP_STRING([--enable-gecko-rpath],
+                              [enable use of Gecko runtime library directory -rpath])])
 
 #
 # PNG texture support
@@ -243,46 +243,29 @@ AC_ARG_ENABLE([script-node-javascript],
 AC_ARG_WITH([libjs],
             [AC_HELP_STRING([--with-libjs],
                             [use libjs for JavaScript support])])
-if test "X$enable_script_node_javascript" = "Xno"; then
-  JS_CFLAGS=""
-  JS_LIBS=""
-else
-  if test X$with_libjs = Xyes; then
-    JS_CFLAGS=""
-    JS_LIBS="-ljs"
-  fi
-  if test X$have_libmozjs = Xno -a X$have_libjs = Xno; then
-    AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])
-  fi
-  if test X$with_libjs != Xyes; then
-    if test -n "${OPENVRML_PKG_REQUIRES}"; then
-      OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
-    fi
-    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"
-    AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
-            [Defined if Script node JavaScript support is enabled.])
-    if test -z "${GRE_PATH}"; then
-      GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
-    fi
-    if test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"; then
-      openvrml_run_path=":${openvrml_run_path}"
-    fi
-    openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
-
-    #
-    # Ugh.  libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the
-    # Cflags from the pkg-config metadata don't include it.  Check
-    # mozilla-config.h; if we find JS_THREADSAFE there, assume we need
-    # it.
-    #
-    AS_IF([test -n "$mozilla_js_pkg"],
-          [moz_includedir=`$PKG_CONFIG --variable=includedir $mozilla_js_pkg`
-           AS_IF([grep JS_THREADSAFE $moz_includedir/mozilla-config.h > /dev/null],
-                 [AS_IF([$PKG_CONFIG --cflags $mozilla_js_pkg | grep JS_THREADSAFE > /dev/null],
-                        ,
-                        [JS_CFLAGS="${JS_CFLAGS} -DJS_THREADSAFE"])])])
-  fi
-fi
+AS_IF([test "X$enable_script_node_javascript" = "Xno"],
+[JS_CFLAGS="" JS_LIBS=""],
+[AS_IF([test X$with_libjs = Xyes],
+       [JS_CFLAGS="" JS_LIBS="-ljs"])
+AS_IF([test X$have_libmozjs = Xno -a X$have_libjs = Xno],
+      [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])])
+AS_IF([test X$with_libjs != Xyes],
+      [AS_IF([test -n "${OPENVRML_PKG_REQUIRES}"],
+             [OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"])
+       OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"])
+AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
+          [Defined if Script node JavaScript support is enabled.])
+#
+# Ugh.  libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the
+# Cflags from the pkg-config metadata don't include it.  Check
+# mozilla-config.h; if we find JS_THREADSAFE there, assume we need
+# it.
+#
+moz_includedir=`$PKG_CONFIG --variable=includedir $mozilla_js_pkg`
+AS_IF([grep JS_THREADSAFE $moz_includedir/mozilla-config.h > /dev/null],
+      [AS_IF([$PKG_CONFIG --cflags $mozilla_js_pkg | grep JS_THREADSAFE > /dev/null], ,
+             [JS_CFLAGS="${JS_CFLAGS} -DJS_THREADSAFE"])])
+])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 
@@ -387,8 +370,21 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Optional dependencies (substituted in the pkg-config metadata files).
 #
 AC_SUBST([OPENVRML_PKG_REQUIRES])
-AS_IF([test -n "${openvrml_run_path}" -a "X$enable_gecko_rpath" != Xno],
-      [OPENVRML_RPATH="-rpath ${openvrml_run_path}"])
+
+#
+# Determine whether to apply the -rpath for the Gecko runtime libraries.
+#
+AS_IF([test "X$enable_gecko_rpath" = Xyes],
+[AS_IF([test -z "$GRE_PATH"],
+       [GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
+        AS_IF([test "X$GRE_PATH" = "X$JS_LIBS"],
+              [GRE_PATH=""
+               AC_MSG_ERROR([GRE_PATH could not be derived from JS_LIBS.  Set GRE_PATH if executables linking with libopenvrml should be built with an -rpath for the Gecko runtime libraries.])])])
+AS_IF([test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"],
+      [openvrml_run_path=":${openvrml_run_path}"])
+openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
+OPENVRML_RPATH="-rpath ${openvrml_run_path}"
+])
 AC_SUBST([OPENVRML_RPATH])
 
 if test X$enable_xembed != Xno; then
