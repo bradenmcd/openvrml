@@ -1742,7 +1742,7 @@ void openvrml::script_node::update(const double current_time)
     //
     // For each modified eventOut, send an event.
     //
-    for (eventout_map_t::iterator eventout = this->eventout_map_.begin();
+    for (eventout_map_t::const_iterator eventout = this->eventout_map_.begin();
          eventout != this->eventout_map_.end();
          ++eventout) {
         if (eventout->second->modified()) {
