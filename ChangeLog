@@ -1,3 +1,9 @@
+2007-01-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_node::update(double)): Use a const_iterator when
+	iterating over the eventout_map_.
+
 2007-01-28 Braden McDaniel  <braden@endoframe.com>
 
 	Use a multimap for storing IS mappings in the parser.  This is
