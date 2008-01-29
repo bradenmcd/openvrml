@@ -1,5 +1,13 @@
 2007-01-29 Braden McDaniel  <braden@endoframe.com>
 
+	Changed configure not to apply -rpath for the Gecko runtime
+	library directory by default.
+
+	* README
+	* configure.ac
+
+2007-01-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/script.cpp
 	(openvrml::script_node::update(double)): Use a const_iterator when
 	iterating over the eventout_map_.
