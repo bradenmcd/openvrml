@@ -1850,12 +1850,15 @@ openvrml::node::~node() OPENVRML_NOTHROW
 }
 
 /**
- * @fn void openvrml::node::add_ref() const
- *
  * @brief Increment the reference count.
  *
  * Add an owning reference.
  */
+void openvrml::node::add_ref() const OPENVRML_NOTHROW
+{
+    boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+    ++this->ref_count_;
+}
 
 /**
  * @fn void openvrml::intrusive_ptr_add_ref(const node * n)
@@ -1883,11 +1886,18 @@ openvrml::node::~node() OPENVRML_NOTHROW
  */
 
 /**
- * @fn void openvrml::node::release() const
- *
  * @brief Decrement the reference count; destroy the instance if the count
  *        drops to zero.
  */
+void openvrml::node::release() const OPENVRML_NOTHROW
+{
+    bool delete_me;
+    {
+        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+        delete_me = (--this->ref_count_ == 0);
+    }
+    if (delete_me) { delete this; }
+}
 
 /**
  * @fn void openvrml::intrusive_ptr_release(const node * n)

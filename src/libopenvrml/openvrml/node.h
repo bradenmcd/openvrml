@@ -589,12 +589,6 @@ namespace openvrml {
         virtual viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
     };
 
-    inline void node::add_ref() const OPENVRML_NOTHROW
-    {
-        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-        ++this->ref_count_;
-    }
-
     inline void intrusive_ptr_add_ref(const node * n) OPENVRML_NOTHROW
     {
         assert(n);
@@ -606,16 +600,6 @@ namespace openvrml {
         boost::mutex::scoped_lock lock(this->ref_count_mutex_);
         assert(this->ref_count_ > 0);
         --this->ref_count_;
-    }
-
-    inline void node::release() const OPENVRML_NOTHROW
-    {
-        bool delete_me;
-        {
-            boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-            delete_me = (--this->ref_count_ == 0);
-        }
-        if (delete_me) { delete this; }
     }
 
     inline void intrusive_ptr_release(const node * n) OPENVRML_NOTHROW

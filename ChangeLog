@@ -1,3 +1,14 @@
+2007-01-29 Braden McDaniel  <braden@endoframe.com>
+
+	Moved node::add_ref and node::release out-of-line.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::add_ref() const): Moved from node.h.
+	(openvrml::node::release() const): Moved from node.h.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node::add_ref() const): Moved to node.cpp.
+	(openvrml::node::release() const): Moved to node.cpp.
+
 2007-01-28 Braden McDaniel  <braden@endoframe.com>
 
 	Since we aren't doing any ownership transfer, use a
