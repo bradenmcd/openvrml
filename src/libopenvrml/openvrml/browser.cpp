@@ -905,23 +905,24 @@ namespace openvrml {
 
     private:
         struct matches_is_target :
-            std::unary_function<proto_node_metatype::is_map_t::value_type, bool> {
+            std::unary_function<proto_node_metatype::is_map_t::value_type,
+                                bool> {
 
             explicit matches_is_target(
                 const proto_node_metatype::is_target & is_target):
-                is_target(&is_target)
+                is_target(is_target)
             {}
 
             result_type operator()(const argument_type & is_map_value) const
             {
                 return (is_map_value.second.impl_node
-                        == this->is_target->impl_node)
+                        == this->is_target.impl_node)
                     && (is_map_value.second.impl_node_interface
-                        == this->is_target->impl_node_interface);
+                        == this->is_target.impl_node_interface);
             }
 
         private:
-            const proto_node_metatype::is_target * is_target;
+            const proto_node_metatype::is_target & is_target;
         };
 
         virtual const boost::intrusive_ptr<node>
@@ -962,8 +963,7 @@ namespace openvrml {
                         using std::find_if;
                         using boost::shared_ptr;
                         auto_ptr<const field_value> src_val;
-                        auto_ptr<field_value> dest_val =
-                            field_value::create(interface_->field_type);
+                        auto_ptr<field_value> dest_val;
 
                         //
                         // If the field/exposedField is IS'd, get the value
@@ -1011,7 +1011,7 @@ namespace openvrml {
                                         is_mapping->first);
                                 if (initial_value
                                     != this->initial_values_.end()) {
-                                    src_val = initial_value->second->clone();
+                                    dest_val = initial_value->second->clone();
                                 } else {
                                     default_value_map::const_iterator
                                         default_value =
@@ -1029,8 +1029,19 @@ namespace openvrml {
                             src_val = n->field(id);
                         }
 
-                        assert(src_val.get());
-                        this->clone_field_value(n, *src_val, *dest_val);
+                        //
+                        // See above logic; we don't clone subtrees from the
+                        // initial_values; just ones from the default values
+                        // and the PROTO definition body.
+                        //
+                        if (src_val.get()) {
+                            assert(!dest_val.get());
+                            dest_val =
+                                field_value::create(interface_->field_type);
+                            this->clone_field_value(n, *src_val, *dest_val);
+                        }
+
+                        assert(dest_val.get());
 
                         bool succeeded =
                             initial_values.insert(
