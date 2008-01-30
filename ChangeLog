@@ -1,5 +1,12 @@
 2007-01-29 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::proto_impl_cloner::clone_node(const
+	boost::intrusive_ptr<node> &)): Don't clone subtrees from the
+	initial_values map.
+
+2007-01-29 Braden McDaniel  <braden@endoframe.com>
+
 	Changed configure not to apply -rpath for the Gecko runtime
 	library directory by default.
 
