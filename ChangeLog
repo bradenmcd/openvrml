@@ -1,3 +1,18 @@
+2007-02-05 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.17.5 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:4:0.
+
 2007-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
@@ -68,6 +83,8 @@
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
 	* mozilla-plugin/configure.ac
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:3:0.
 
 2007-01-26 Braden McDaniel  <braden@endoframe.com>
 

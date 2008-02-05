@@ -1,3 +1,18 @@
+Changes new in version 0.17.5, 5 February, 2008
+========================================================================
+
+- Fixed PROTO instantiation not to clone non-default initial values.
+  In addition to improving performance, this fixes a crash that
+  occurred when an initial value was or contained a Script node.
+
+- Fixed parsing of PROTO definitions with multiple IS mappings from
+  different components of the same exposedField/inputOutput.
+
+- Changed the build configuration to default not to apply an -rpath
+  argument for the Gecko runtime library directory to executables that
+  link with libopenvrml.
+
+
 Changes new in version 0.17.4, 26 January, 2008
 ========================================================================
 
