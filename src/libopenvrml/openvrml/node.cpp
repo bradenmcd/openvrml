@@ -1132,6 +1132,8 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  *
  * @brief Downcast a @c node to one of the abstract @c node types.
  *
+ * @tparam To   an abstract @c node type.
+ *
  * @param[in] n a @c node.
  *
  * @return a pointer to the downcast @c node, or 0 if the cast fails.
@@ -2057,6 +2059,8 @@ openvrml::node::field(const std::string & id) const
  *
  * @brief Generalized field accessor.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] id    the name of the @c field.
  *
  * @return the field value.
@@ -2097,6 +2101,8 @@ openvrml::node::event_listener(const std::string & id)
  *
  * @brief Get an event listener.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] id    an @c eventIn identifier.
  *
  * @exception unsupported_interface if the @c node has no @c eventIn @p id.
@@ -2121,6 +2127,8 @@ openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
  * @fn openvrml::field_value_emitter<FieldValue> & openvrml::node::event_emitter(const std::string & id)
  *
  * @brief Get an event emitter.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] id    an @c eventOut identifier.
  *

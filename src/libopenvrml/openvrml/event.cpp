@@ -127,24 +127,32 @@ const std::string openvrml::node_event_listener::eventin_id() const
  * @class openvrml::field_value_listener openvrml/event.h
  *
  * @brief Concrete event listener template.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::field_value_listener::field_value_listener()
  *
  * @brief Construct.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::field_value_listener::~field_value_listener()
  *
  * @brief Destroy.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::field_value::type_id openvrml::field_value_listener::type() const
  *
  * @brief @c FieldValue::field_value_type_id.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @return @c FieldValue::field_value_type_id.
  */
@@ -153,6 +161,8 @@ const std::string openvrml::node_event_listener::eventin_id() const
  * @fn void openvrml::field_value_listener::process_event(const FieldValue & value, double timestamp)
  *
  * @brief Process an event.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] value     the event value.
  * @param[in] timestamp the current time.
@@ -166,6 +176,8 @@ const std::string openvrml::node_event_listener::eventin_id() const
  * @brief Called by @c field_value_listener<FieldValue>::do_process_event.
  *
  * Subclasses must implement this function.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] value     the event value.
  * @param[in] timestamp the current time.
@@ -359,12 +371,16 @@ const std::string openvrml::node_event_listener::eventin_id() const
  * @class openvrml::node_field_value_listener openvrml/event.h
  *
  * @brief Base class for @c field_value_listener%s that are members of nodes.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::node_field_value_listener::node_field_value_listener(openvrml::node & n)
  *
  * @brief Construct.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] n the @c node of which the listener is a member.
  */
@@ -373,6 +389,8 @@ const std::string openvrml::node_event_listener::eventin_id() const
  * @fn openvrml::node_field_value_listener::~node_field_value_listener()
  *
  * @brief Destroy.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 
@@ -507,6 +525,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  *
  * @brief Add an event listener.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] listener  an event listener.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -516,6 +536,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  * @fn bool openvrml::event_emitter::remove<FieldValue>(field_value_listener<FieldValue> & listener)
  *
  * @brief Remove an event listener.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] listener  an event listener.
  */
@@ -535,6 +557,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  *
  * @brief Emit an event.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -547,24 +571,34 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  * @class openvrml::field_value_emitter openvrml/event.h
  *
  * @brief Concrete event emitter template.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::field_value_emitter::field_value_emitter(const FieldValue & value)
  *
  * @brief Construct.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
+ * @param[in] value @c field_value associated with this emitter.
  */
 
 /**
  * @fn openvrml::field_value_emitter::~field_value_emitter()
  *
  * @brief Destroy.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn void openvrml::field_value_emitter::emit_event(double timestamp)
  *
  * @brief Emit an event.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] timestamp the current time.
  *
@@ -575,6 +609,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  * @fn bool openvrml::field_value_emitter::add(field_value_listener<FieldValue> & listener)
  *
  * @brief Add an event listener.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] listener  the listener to add.
  *
@@ -588,6 +624,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  * @fn bool openvrml::field_value_emitter::remove(field_value_listener<FieldValue> & listener)
  *
  * @brief Remove an event listener.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] listener  the listener to remove.
  *

@@ -56,6 +56,9 @@
  * types. That is, the type <code>Base Object::*</code> is not compatible with
  * the type <code>Derived Object::*</code>.
  *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Object       the type that contains the member.
+ *
  * @sa openvrml::node_impl_util::ptr_to_polymorphic_mem_impl
  */
 
@@ -63,6 +66,9 @@
  * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem<MemberBase, Object>::~ptr_to_polymorphic_mem()
  *
  * @brief Destroy.
+ *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Object       the type that contains the member.
  */
 
 /**
@@ -70,11 +76,17 @@
  *
  * @brief Dereference.
  *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Object       the type that contains the member.
+ *
  * @return a reference to the base type of the member.
  */
 
 /**
  * @overload const MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem::deref(const Object & obj)
+ *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Object       the type that contains the member.
  *
  * @return a @c const reference to the base type of the member.
  */
@@ -85,6 +97,10 @@
  *
  * @brief Concrete pointer-to-polymorphic-member type.
  *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Member       the concrete type of the member.
+ * @tparam Object       the type that contains the member.
+ *
  * @sa openvrml::node_impl_util::ptr_to_polymorphic_mem
  */
 
@@ -92,6 +108,10 @@
  * @var Member Object::* openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::ptr_to_mem
  *
  * @brief Pointer-to-member.
+ *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Member       the concrete type of the member.
+ * @tparam Object       the type that contains the member.
  */
 
 /**
@@ -106,12 +126,20 @@
  * @fn openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::~ptr_to_polymorphic_mem_impl()
  *
  * @brief Destroy.
+ *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Member       the concrete type of the member.
+ * @tparam Object       the type that contains the member.
  */
 
 /**
  * @fn MemberBase & openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::deref(Object & obj)
  *
  * @brief Dereference.
+ *
+ * @tparam MemberBase   the base type of the member.
+ * @tparam Member       the concrete type of the member.
+ * @tparam Object       the type that contains the member.
  *
  * @return a reference to the base type of the member.
  */
@@ -208,6 +236,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @class openvrml::node_impl_util::node_type_impl openvrml/node_impl_util.h
  *
  * @brief A template for concrete @c node_types.
+ *
+ * @tparam Node a concrete node type.
  */
 
 /**
@@ -302,6 +332,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @c event_listener_base implements
  * @c event_listener::do_eventin_id.
+ *
+ * @tparam Node a concrete node type.
  */
 
 /**
@@ -381,6 +413,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @c event_emitter_base implements
  * @c openvrml::event_emitter::do_eventout_id.
+ *
+ * @tparam Node a concrete node type.
  */
 
 /**
@@ -474,6 +508,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @c abstract_node encapsulates the mechanisms for field access and
  * mutation, event dispatch, and @c eventOut access.
+ *
+ * @tparam Derived  the type that inherits this class template.
  */
 
 /**
@@ -913,6 +949,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @class openvrml::node_impl_util::node_type_impl::field_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
+ *
+ * @tparam FieldMember  an @c field_value member of Node.
  */
 
 /**
@@ -928,6 +966,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @class openvrml::node_impl_util::node_type_impl::event_listener_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
+ *
+ * @tparam EventListenerMember  an @c event_listener member of Node.
  */
 
 /**
@@ -943,6 +983,9 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @class openvrml::node_impl_util::node_type_impl::event_emitter_ptr openvrml/node_impl_util.h
  *
  * @brief Concrete pointer-to-member wrapper.
+ *
+ * @tparam EventEmitterMember   the type of an @c openvrml::event_emitter
+ *                              member of Node.
  */
 
 /**
@@ -1182,6 +1225,56 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 
 
 /**
+ * @struct openvrml::node_impl_util::BindableNodeConcept openvrml/node_impl_util.h
+ *
+ * @brief Concept checking class to validate that a template parameter is a
+ *        model of the Bindable Node concept.
+ *
+ * A Bindable Node is a node that has a member function @c bind that takes a
+ * boolean value (the bind state) and a floating point value (the current
+ * time).
+ *
+ * @par Notation
+ * <table>
+ *   <tr>
+ *     <td>t</td>
+ *     <td>An object whose type is a model of Bindable Node</td>
+ *   </tr>
+ *   <tr><td>bind_state</td><td>A boolean</td></tr>
+ *   <tr><td>bind_time</td><td>A floating-point value</td></tr>
+ * </table>
+ *
+ * @par Valid expressions
+ * <table>
+ *   <tr>
+ *     <th>Name</th>
+ *     <th>Expression</th>
+ *     <th>Type requirements</th>
+ *     <th>Return type</th>
+ *   </tr>
+ *   <tr>
+ *     <td>Bind</td>
+ *     <td><code>t.bind(bind_state, bind_time)</code></td>
+ *     <td></td>
+ *     <td><code>void</code></td>
+ *   </tr>
+ * </table>
+ */
+
+/**
+ * @internal
+ *
+ * @var T * openvrml::node_impl_util::BindableNodeConcept::bindable_node
+ */
+
+/**
+ * @fn void openvrml::node_impl_util::BindableNodeConcept<T>::constraints()
+ *
+ * @brief Validate that T is a model of the Bindable Node concept.
+ */
+
+
+/**
  * @class openvrml::node_impl_util::bound_node_stack openvrml/node_impl_util.h
  *
  * @brief A stack of bindable nodes.
@@ -1192,6 +1285,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * removes it from the stack, regardless of its position in the stack.
  * See 4.6.10 of the VRML97 specification for further details of the
  * semantics.
+ *
+ * @tparam BindableNode a @link BindableNodeConcept Bindable Node@endlink.
  *
  * @sa http://www.web3d.org/x3d/specifications/vrml/ISO-IEC-14772-VRML97/part1/concepts.html#4.6.10
  */
@@ -1215,6 +1310,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @post @c top() == &n
  *
+ * @tparam BindableNode a @link BindableNodeConcept Bindable Node@endlink.
+ *
  * @param[in,out] n         the node to bind.
  * @param[in]     timestamp the current time.
  *
@@ -1231,6 +1328,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @c top()->bind(true).
  *
  * @post @c &n is not on the stack.
+ *
+ * @tparam BindableNode a @link BindableNodeConcept Bindable Node@endlink.
  *
  * @param[in,out] n         the node to unbind.
  * @param[in]     timestamp the current time.

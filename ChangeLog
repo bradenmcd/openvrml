@@ -1,3 +1,16 @@
+2007-02-11 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements; apply @tparam.
+
+	* doc/Doxyfile: Updated to Doxygen 1.5.5.
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/exposedfield.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+
 2007-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.5 release.

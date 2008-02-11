@@ -31,7 +31,7 @@
  */
 
 /**
- * @class openvrml::exposedfield
+ * @class openvrml::exposedfield openvrml/exposedfield.h
  *
  * @brief Class template to simplify implementation of @c exposedField%s.
  *
@@ -44,12 +44,16 @@
  * eventOut.  Nontrivial @c exposedField%s (i.e., those with side-effects) can
  * generally be implemented by inheriting an instance of this class template
  * and overriding @c exposedfield<FieldValue>::event_side_effect.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
  * @fn openvrml::exposedfield::exposedfield(openvrml::node & node, const typename FieldValue::value_type & value)
  *
  * @brief Construct.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] node  a reference to the @c node to which the @c exposedField
  *                  belongs.
@@ -61,6 +65,8 @@
  *
  * @brief Construct a copy.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] obj   the instance to copy.
  */
 
@@ -68,6 +74,8 @@
  * @fn openvrml::exposedfield::~exposedfield()
  *
  * @brief Destroy.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  */
 
 /**
@@ -86,6 +94,8 @@
  *          should override
  *          @c exposedfield<FieldValue>::event_side_effect instead.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] value     new value.
  * @param[in] timestamp the current time.
  *
@@ -100,6 +110,8 @@
  * Subclasses should override this method to implement event handling
  * functionality specific to a particular @c exposedField. The default
  * implementation of this function does nothing.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] value     new value.
  * @param[in] timestamp the current time.
