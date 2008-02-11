@@ -108,6 +108,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  * @class openvrml::field_value::counted_impl openvrml/field_value.h
  *
  * @brief Concrete reference-counted implementation.
+ *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
  */
 
 /**
@@ -130,6 +133,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Construct.
  *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
+ *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -140,6 +146,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Construct a copy.
  *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
+ *
  * @param[in] ci    the instance to copy.
  */
 
@@ -147,6 +156,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  * @fn openvrml::field_value::counted_impl::~counted_impl()
  *
  * @brief Destroy.
+ *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
  */
 
 /**
@@ -160,6 +172,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  *
  * @brief Access.
  *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
+ *
  * @return the value.
  */
 
@@ -167,6 +182,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  * @fn void openvrml::field_value::counted_impl::value(const ValueType & val)
  *
  * @brief Mutate.
+ *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
  *
  * @param[in] val   the new value.
  *
@@ -177,6 +195,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  * @fn std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl::do_clone() const
  *
  * @brief Polymorphically construct a copy.
+ *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
  *
  * @return a clone of the instance.
  *
@@ -441,6 +462,9 @@ openvrml::field_value::create(const type_id type)
  *
  * @brief Construct.
  *
+ * @tparam ValueType    a @link FieldValueConcept Field Value@endlink
+ *                      @c value_type.
+ *
  * @param[in] value initial value.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -469,7 +493,9 @@ openvrml::field_value::~field_value() OPENVRML_NOTHROW
  * @fn FieldValue & openvrml::field_value::operator=(const FieldValue & fv)
  *
  * @brief Assignment operator.
- *
+  *
+ * @tparam FieldValue a @link FieldValueConcept Field Value@endlink.
+*
  * @param[in] fv    field value to assign.
  */
 
@@ -539,6 +565,8 @@ openvrml::field_value::assign(const field_value & value)
  *
  * @brief Swap.
  *
+ * @tparam FieldValue a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in,out] val   the value to swap with this one.
  */
 
@@ -578,6 +606,8 @@ openvrml::field_value::type_id openvrml::field_value::type() const
  *
  * @brief Access.
  *
+ * @tparam FieldValue a @link FieldValueConcept Field Value@endlink.
+ *
  * @return the current value.
  */
 
@@ -585,6 +615,8 @@ openvrml::field_value::type_id openvrml::field_value::type() const
  * @fn void openvrml::field_value::value(const typename FieldValue::value_type & val)
  *
  * @brief Mutate.
+ *
+ * @tparam FieldValue a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] val   new value.
  *
@@ -775,6 +807,8 @@ std::istream & openvrml::operator>>(std::istream & in,
  * - @c mfvec2f
  * - @c mfvec3d
  * - @c mfvec3f
+ *
+ * @tparam T    the type to validate against this concept.
  */
 
 /**

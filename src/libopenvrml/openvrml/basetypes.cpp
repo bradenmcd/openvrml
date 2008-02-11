@@ -4754,6 +4754,8 @@ openvrml::image::image(const std::size_t x,
  *
  * @pre std::distance(@p array_begin, @p array_end) <= @p x * @p y * @p comp.
  *
+ * @tparam InputIterator    an <a href="http://www.boost.org/doc/html/InputIterator.html">Input Iterator</a>.
+ *
  * @param[in] x             pixels in the <var>x</var>-direction.
  * @param[in] y             pixels in the <var>y</var>-direction.
  * @param[in] comp          number of components.
@@ -4882,6 +4884,8 @@ void openvrml::image::comp(const std::size_t value) OPENVRML_THROW1(std::bad_all
  * @brief Set the pixel value array.
  *
  * @pre std::distance(@p begin, @p end) <= (x() * y() * comp())
+ *
+ * @tparam InputIterator    an <a href="http://www.boost.org/doc/html/InputIterator.html">Input Iterator</a>.
  *
  * @param[in] begin input iterator to the beginning of a sequence.
  * @param[in] end   input iterator to the end of the sequence (one past the last

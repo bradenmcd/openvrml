@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005, 2006, 2007  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2008  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -1016,8 +1016,23 @@ namespace openvrml {
         }
 
 
+        template <typename T>
+        struct BindableNodeConcept {
+            T * bindable_node;
+
+            void constraints()
+            {
+                bindable_node->bind(true, 0.0);
+            }
+        };
+
+
         template <typename BindableNode>
         class bound_node_stack : private std::stack<BindableNode *> {
+            BOOST_CLASS_REQUIRE(BindableNode,
+                                openvrml::node_impl_util,
+                                BindableNodeConcept);
+
             typedef typename std::stack<BindableNode *>::container_type
                 container_type;
 
