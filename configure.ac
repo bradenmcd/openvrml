@@ -33,6 +33,7 @@ REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_FREETYPE="freetype2"
 REQUIRE_XULRUNNER_JS="xulrunner-js"
 REQUIRE_FIREFOX_JS="firefox-js"
+REQUIRE_SEAMONKEY_JS="seamonkey-js"
 REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 
 #
@@ -121,9 +122,11 @@ PKG_CHECK_MODULES([JS], [$REQUIRE_XULRUNNER_JS],
                   [mozilla_js_pkg=$REQUIRE_XULRUNNER_JS],
                   [PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
                                      [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
-                                     [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
-                                                        [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
-                                                        [have_libmozjs=no])])])
+                                     [PKG_CHECK_MODULES([JS], [$REQUIRE_SEAMONKEY_JS],
+                                                        [mozilla_js_pkg=$REQUIRE_SEAMONKEY_JS],
+                                                        [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
+                                                                           [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
+                                                                           [have_libmozjs=no])])])])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 
 #
