@@ -1,5 +1,10 @@
 2007-02-17 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Ensure libjs only gets used when configuring
+	--with-libjs.
+
+2007-02-17 Braden McDaniel  <braden@endoframe.com>
+
 	Look for seamonkey-js.pc and seamonkey-plugin.pc.
 
 	* configure.ac
