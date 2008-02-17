@@ -248,9 +248,10 @@ AC_ARG_WITH([libjs],
                             [use libjs for JavaScript support])])
 AS_IF([test "X$enable_script_node_javascript" = "Xno"],
 [JS_CFLAGS="" JS_LIBS=""],
-[AS_IF([test X$with_libjs = Xyes],
-       [JS_CFLAGS="" JS_LIBS="-ljs"])
-AS_IF([test X$have_libmozjs = Xno -a X$have_libjs = Xno],
+[AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
+       [AS_IF([test -z "$JS_CFLAGS"], [JS_CFLAGS=""])
+        AS_IF([test -z "$JS_LIBS"], [JS_LIBS="-ljs"])])
+AS_IF([test X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs != Xyes \)],
       [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])])
 AS_IF([test X$with_libjs != Xyes],
       [AS_IF([test -n "${OPENVRML_PKG_REQUIRES}"],
