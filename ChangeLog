@@ -1,3 +1,14 @@
+2007-02-23 Braden McDaniel  <braden@endoframe.com>
+
+	Updates to build with the Microsoft compiler.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base<Derived>::children_exposedfield): Fully
+	qualify openvrml::mfnode.
+	(cad_layer_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): For some reason the Microsoft
+	compiler doesn't like "using openvrml::child_node;" here.
+
 2007-02-17 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Ensure libjs only gets used when configuring
