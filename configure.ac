@@ -8,13 +8,14 @@ AC_CONFIG_FILES([Makefile]
                 [models/audio/Makefile]
                 [models/textures/Makefile]
                 [lib/Makefile]
-                [java/Makefile]
-                [java/vrml/Makefile]
-                [java/vrml/node/Makefile]
-                [java/vrml/field/Makefile]
                 [src/Makefile]
                 [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
+                [src/script/Makefile]
+                [src/script/java/Makefile]
+                [src/script/java/vrml/Makefile]
+                [src/script/java/vrml/field/Makefile]
+                [src/script/java/vrml/node/Makefile]
                 [examples/Makefile]
                 [tests/Makefile]
                 [tests/atlocal]
@@ -31,10 +32,10 @@ AM_CONFIG_HEADER([config.h])
 #
 REQUIRE_FONTCONFIG="fontconfig"
 REQUIRE_FREETYPE="freetype2"
-REQUIRE_XULRUNNER_JS="xulrunner-js"
-REQUIRE_FIREFOX_JS="firefox-js"
-REQUIRE_SEAMONKEY_JS="seamonkey-js"
-REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
+require_xulrunner_js="xulrunner-js"
+require_firefox_js="firefox-js"
+require_seamonkey_js="seamonkey-js"
+require_mozilla_js="mozilla-js >= 1.2.1"
 
 #
 # Checks for programs.
@@ -42,7 +43,8 @@ REQUIRE_MOZILLA_JS="mozilla-js >= 1.2.1"
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
-OV_PROG_JAVA
+AM_PROG_GCJ
+
 OV_PROG_JAVAC
 OV_PROG_JAVAH
 OV_PROG_JAR
@@ -60,16 +62,30 @@ OV_CXX_VISIBILITY(
 [OPENVRML_API="__attribute__((visibility(\"default\")))"
 OPENVRML_LOCAL="__attribute__((visibility(\"hidden\")))"
 OPENVRML_GL_API="__attribute__((visibility(\"default\")))"
-OPENVRML_GL_LOCAL="__attribute__((visibility(\"hidden\")))"])
+OPENVRML_GL_LOCAL="__attribute__((visibility(\"hidden\")))"
+OPENVRML_JAVASCRIPT_API="__attribute__((visibility(\"default\")))"
+OPENVRML_JAVASCRIPT_LOCAL="__attribute__((visibility(\"hidden\")))"
+OPENVRML_JAVA_API="__attribute__((visibility(\"default\")))"
+OPENVRML_JAVA_LOCAL="__attribute__((visibility(\"hidden\")))"])
 AC_SUBST([OPENVRML_API])
 AC_SUBST([OPENVRML_LOCAL])
 AC_SUBST([OPENVRML_GL_API])
 AC_SUBST([OPENVRML_GL_LOCAL])
 
+AC_DEFINE_UNQUOTED([OPENVRML_JAVASCRIPT_API], [$OPENVRML_JAVASCRIPT_API],
+                   [Exported symbol])
+AC_DEFINE_UNQUOTED([OPENVRML_JAVASCRIPT_LOCAL], [$OPENVRML_JAVASCRIPT_LOCAL],
+                   [Library-local symbol])
+AC_DEFINE_UNQUOTED([OPENVRML_JAVA_API], [$OPENVRML_JAVA_API],
+                   [Exported symbol])
+AC_DEFINE_UNQUOTED([OPENVRML_JAVA_LOCAL], [$OPENVRML_JAVA_LOCAL],
+                   [Library-local symbol])
+
 #
 # Checks for libraries/headers.
 #
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
+AC_CHECK_HEADER([jni.h], [have_jni=yes])
 
 #
 # Allow users to specify any Boost library name suffix
@@ -118,14 +134,14 @@ AC_LANG_POP])
 ])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [$REQUIRE_XULRUNNER_JS],
-                  [mozilla_js_pkg=$REQUIRE_XULRUNNER_JS],
-                  [PKG_CHECK_MODULES([JS], [$REQUIRE_FIREFOX_JS],
-                                     [mozilla_js_pkg=$REQUIRE_FIREFOX_JS],
-                                     [PKG_CHECK_MODULES([JS], [$REQUIRE_SEAMONKEY_JS],
-                                                        [mozilla_js_pkg=$REQUIRE_SEAMONKEY_JS],
-                                                        [PKG_CHECK_MODULES([JS], [$REQUIRE_MOZILLA_JS],
-                                                                           [mozilla_js_pkg=$REQUIRE_MOZILLA_JS],
+PKG_CHECK_MODULES([JS], [$require_xulrunner_js],
+                  [mozilla_js_pkg=$require_xulrunner_js],
+                  [PKG_CHECK_MODULES([JS], [$require_firefox_js],
+                                     [mozilla_js_pkg=$require_firefox_js],
+                                     [PKG_CHECK_MODULES([JS], [$require_seamonkey_js],
+                                                        [mozilla_js_pkg=$require_seamonkey_js],
+                                                        [PKG_CHECK_MODULES([JS], [$require_mozilla_js],
+                                                                           [mozilla_js_pkg=$require_mozilla_js],
                                                                            [have_libmozjs=no])])])])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 
@@ -163,8 +179,6 @@ if test -n "${SDL_CONFIG}"; then
 fi
 AC_SUBST([SDL_CFLAGS])
 AC_SUBST([SDL_LIBS])
-
-OV_CHECK_JNI
 
 #
 # Use exception specifications?
@@ -273,21 +287,39 @@ AS_IF([grep JS_THREADSAFE $moz_includedir/mozilla-config.h > /dev/null],
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 
+AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVASCRIPT],
+  [test X$enable_script_node_javascript != Xno -a X$have_js != Xno])
+
 #
 # Script node Java support
 #
+AC_ARG_VAR([JAVA_HOME], [Java Runtime Environment (JRE) location])
 AC_ARG_ENABLE([script-node-java],
-              [AC_HELP_STRING([--enable-script-node-java],
-                              [enable Script node Java support])])
-if test "X$enable_script_node_java" = "Xyes"; then
-  if test "X$no_jni" = "Xyes"; then
-    AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])
-  fi
-  AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVA], [1],
-            [Defined if Script node Java support is enabled.])
-fi
+              [AC_HELP_STRING([--disable-script-node-java],
+                              [disable Script node Java support])])
+AC_ARG_VAR([JAVA_HOME], [Java Runtime Environment (JRE) location])
+case $target_cpu in
+     x86_64) OPENVRML_JVM_ARCH=amd64 ;;
+     i?86)   OPENVRML_JVM_ARCH=i386 ;;
+     *)      OPENVRML_JVM_ARCH=$target_cpu ;;
+esac
+AC_SUBST([OPENVRML_JVM_ARCH])
+AS_IF([test X$enable_script_node_java != Xno],
+[AS_IF([test X$have_jni != Xyes],
+       [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
+AS_IF([test -z "$JAVA_HOME"],
+[AC_MSG_WARN([JAVA_HOME has not been set.  JAVA_HOME must be set at run time to locate libjvm.])],
+[ov_save_LDFLAGS=$LDFLAGS
+LDFLAGS="-L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
+AC_CHECK_LIB([jvm], [JNI_CreateJavaVM], [LIBS=$LIBS],
+             [AC_MSG_WARN([no libjvm found at JAVA_HOME])])
+LDFLAGS=$ov_save_LDFLAGS
+])
+java_subdir=java])
+
+AC_SUBST([java_subdir])
 AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
-               [test "X$enable_script_node_java" = "Xyes"])
+               [test X$enable_script_node_java != Xno])
 
 #
 # build GL renderer
@@ -384,10 +416,10 @@ AS_IF([test "X$enable_gecko_rpath" = Xyes],
         AS_IF([test "X$GRE_PATH" = "X$JS_LIBS"],
               [GRE_PATH=""
                AC_MSG_ERROR([GRE_PATH could not be derived from JS_LIBS.  Set GRE_PATH if executables linking with libopenvrml should be built with an -rpath for the Gecko runtime libraries.])])])
-AS_IF([test -n "${openvrml_run_path}" -a -n "${GRE_PATH}"],
-      [openvrml_run_path=":${openvrml_run_path}"])
-openvrml_run_path="${GRE_PATH}${openvrml_run_path}"
-OPENVRML_RPATH="-rpath ${openvrml_run_path}"
+AS_IF([test -n "${openvrml_js_run_path}" -a -n "${GRE_PATH}"],
+      [openvrml_js_run_path=":${openvrml_js_run_path}"])
+openvrml_js_run_path="${GRE_PATH}${openvrml_js_run_path}"
+OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${openvrml_js_run_path}"
 ])
 AC_SUBST([OPENVRML_RPATH])
 

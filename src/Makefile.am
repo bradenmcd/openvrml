@@ -1,3 +1,5 @@
+SUBDIRS = script
+
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
@@ -64,7 +66,6 @@ endif
 
 noinst_HEADERS = \
         libopenvrml/private.h \
-        libopenvrml/openvrml/ScriptJDK.h \
         openvrml-xembed/bounded_buffer.h \
         openvrml-xembed/command_istream.h \
         openvrml-xembed/plugin_streambuf.h \
@@ -88,11 +89,11 @@ LIBOPENVRML_GL_LIBRARY_VERSION = 7:1:0
 #                            or changed
 
 libopenvrml_libopenvrml_la_CPPFLAGS = \
-        -I$(top_builddir)/java \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
+        -DOPENVRML_PKGLIBDIR_=\"$(pkglibdir)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
         -DBOOST_SPIRIT_THREADSAFE \
@@ -101,8 +102,7 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
         $(FONTCONFIG_CFLAGS) \
-        $(FREETYPE_CFLAGS) \
-        $(JS_CFLAGS)
+        $(FREETYPE_CFLAGS)
 
 libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/vrml97_grammar.cpp \
@@ -115,8 +115,6 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/scope.cpp \
         libopenvrml/openvrml/node.cpp \
         libopenvrml/openvrml/bounding_volume.cpp \
-        libopenvrml/openvrml/script.cpp \
-        libopenvrml/openvrml/ScriptJDK.cpp \
         libopenvrml/openvrml/browser.cpp \
         libopenvrml/openvrml/viewer.cpp \
         libopenvrml/openvrml/rendering_context.cpp \
@@ -146,12 +144,49 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
         $(PNG_LIBS) \
         $(FONTCONFIG_LIBS) \
         $(FREETYPE_LIBS) \
-        $(JS_LIBS) \
-        $(JNI_LIBS) \
         $(PTHREAD_LIBS)
 
 libopenvrml_libopenvrml_la_LIBADD = \
-        -lboost_thread$(BOOST_LIB_SUFFIX)
+        -lboost_thread$(BOOST_LIB_SUFFIX) \
+	-lltdl
+
+openvrmlscriptdir = $(pkglibdir)/script
+
+openvrmlscript_LTLIBRARIES =
+if ENABLE_SCRIPT_NODE_JAVASCRIPT
+openvrmlscript_LTLIBRARIES += script/javascript.la
+endif
+if ENABLE_SCRIPT_NODE_JAVA
+openvrmlscript_LTLIBRARIES += script/java.la
+endif
+
+script_javascript_la_SOURCES = script/javascript.cpp
+script_javascript_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+script_javascript_la_CXXFLAGS = $(JS_CFLAGS)
+script_javascript_la_LDFLAGS = \
+        -module \
+        -avoid-version \
+        $(OPENVRML_JAVASCRIPT_RPATH) \
+        $(JS_LIBS)
+
+script_java_la_SOURCES = script/java.cpp
+script_java_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -I$(top_builddir)/src/script/java \
+        -DOPENVRML_LIBDIR_=\"$(libdir)\" \
+        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
+        -DJAVA_HOME=\"$(JAVA_HOME)\" \
+        -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+script_java_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -186,7 +221,6 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/plugin_streambuf.cpp \
         openvrml-xembed/gtkvrmlbrowser.cpp
 openvrml_xembed_openvrml_xembed_LDFLAGS = \
-        $(OPENVRML_RPATH) \
         $(GTK_LIBS) \
         $(GL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \

@@ -74,6 +74,11 @@ parse_x3dvrml_LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 browser_parse_vrml_SOURCES = browser_parse_vrml.cpp
 browser_parse_vrml_LDADD = libtest-openvrml.la
 
+JAVAROOT = $(top_builddir)/tests
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/src/script/java/script.jar
+dist_noinst_JAVA = TestScript.java
+
+
 EXTRA_DIST = \
         package.m4 \
         testsuite.at \

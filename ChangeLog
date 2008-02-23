@@ -1,5 +1,229 @@
 2007-02-23 Braden McDaniel  <braden@endoframe.com>
 
+	Moved Script node scripting bindings to dynamically opened
+	modules; reenabled Java binding.
+
+	* Makefile.am (SUBDIRS): Removed reference to java subdirectory.
+	* README: Reflect changes to the directory layout; removed
+	obsolete references to OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT and
+	OPENVRML_ENABLE_SCRIPT_NODE_JAVA.
+	* configure.ac: Reflect changes to the directory layout in
+	AC_OUTPUT; invoke AM_PROG_GCJ; added symbol visibility macros for
+	JavaScript and Java scripting modules; simply check for jni.h
+	rather than attempting to link with libjvm (via OV_CHECK_JNI);
+	added ENABLE_SCRIPT_NODE_JAVASCRIPT and ENABLE_SCRIPT_NODE_JAVA
+	Automake conditionals; establish the location of libjvm using
+	JAVA_HOME; replaced OPENVRML_RPATH with OPENVRML_JAVASCRIPT_RPATH.
+	* openvrml.pc.in: Removed JNI_LIBS substitution.
+	* doc/Doxyfile: Removed reference to ScriptJDK.h.
+	* doc/Makefile.am: Create javadoc documentation for the Java
+	sources.
+	* examples/sdl_viewer.cpp: Apply MIME media types to JavaScript
+	and Java resources.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	projects ltdl and javascript.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/ltdl/ltdl.vcproj: Added
+	project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
+	Added project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed references to script.cpp, ScriptJDK.cpp, and ScriptJDK.h;
+	define OPENVRML_PKGLIBDIR_ to an empty string for now.
+	* java/vrml/BaseNode.java: Moved to src/script.
+	* java/vrml/Browser.java: Moved to src/script.
+	* java/vrml/ConstField.java: Moved to src/script.
+	* java/vrml/ConstMField.java: Moved to src/script.
+	* java/vrml/Event.java: Moved to src/script.
+	* java/vrml/Field.java: Moved to src/script.
+	* java/vrml/InvalidEventInException.java: Moved to src/script.
+	* java/vrml/InvalidEventOutException.java: Moved to src/script.
+	* java/vrml/InvalidExposedFieldException.java: Moved to
+	src/script.
+	* java/vrml/InvalidFieldChangeException.java: Moved to src/script.
+	* java/vrml/InvalidFieldException.java: Moved to src/script.
+	* java/vrml/InvalidRouteException.java: Moved to src/script.
+	* java/vrml/InvalidVRMLSyntaxException.java: Moved to src/script.
+	* java/vrml/MField.java: Moved to src/script.
+	* java/vrml/Makefile.am: Moved to src/script.
+	* java/vrml/field/ConstMFBool.java: Moved to src/script.
+	* java/vrml/field/ConstMFColor.java: Moved to src/script.
+	* java/vrml/field/ConstMFDouble.java: Moved to src/script.
+	* java/vrml/field/ConstMFFloat.java: Moved to src/script.
+	* java/vrml/field/ConstMFInt32.java: Moved to src/script.
+	* java/vrml/field/ConstMFNode.java: Moved to src/script.
+	* java/vrml/field/ConstMFRotation.java: Moved to src/script.
+	* java/vrml/field/ConstMFString.java: Moved to src/script.
+	* java/vrml/field/ConstMFTime.java: Moved to src/script.
+	* java/vrml/field/ConstMFVec2d.java: Moved to src/script.
+	* java/vrml/field/ConstMFVec2f.java: Moved to src/script.
+	* java/vrml/field/ConstMFVec3d.java: Moved to src/script.
+	* java/vrml/field/ConstMFVec3f.java: Moved to src/script.
+	* java/vrml/field/ConstSFBool.java: Moved to src/script.
+	* java/vrml/field/ConstSFColor.java: Moved to src/script.
+	* java/vrml/field/ConstSFDouble.java: Moved to src/script.
+	* java/vrml/field/ConstSFFloat.java: Moved to src/script.
+	* java/vrml/field/ConstSFImage.java: Moved to src/script.
+	* java/vrml/field/ConstSFInt32.java: Moved to src/script.
+	* java/vrml/field/ConstSFNode.java: Moved to src/script.
+	* java/vrml/field/ConstSFRotation.java: Moved to src/script.
+	* java/vrml/field/ConstSFString.java: Moved to src/script.
+	* java/vrml/field/ConstSFTime.java: Moved to src/script.
+	* java/vrml/field/ConstSFVec2d.java: Moved to src/script.
+	* java/vrml/field/ConstSFVec2f.java: Moved to src/script.
+	* java/vrml/field/ConstSFVec3d.java: Moved to src/script.
+	* java/vrml/field/ConstSFVec3f.java: Moved to src/script.
+	* java/vrml/field/MFBool.java: Moved to src/script.
+	* java/vrml/field/MFColor.java: Moved to src/script.
+	* java/vrml/field/MFDouble.java: Moved to src/script.
+	* java/vrml/field/MFFloat.java: Moved to src/script.
+	* java/vrml/field/MFInt32.java: Moved to src/script.
+	* java/vrml/field/MFNode.java: Moved to src/script.
+	* java/vrml/field/MFRotation.java: Moved to src/script.
+	* java/vrml/field/MFString.java: Moved to src/script.
+	* java/vrml/field/MFTime.java: Moved to src/script.
+	* java/vrml/field/MFVec2d.java: Moved to src/script.
+	* java/vrml/field/MFVec2f.java: Moved to src/script.
+	* java/vrml/field/MFVec3d.java: Moved to src/script.
+	* java/vrml/field/MFVec3f.java: Moved to src/script.
+	* java/vrml/field/Makefile.am: Moved to src/script.
+	* java/vrml/field/SFBool.java: Moved to src/script.
+	* java/vrml/field/SFColor.java: Moved to src/script.
+	* java/vrml/field/SFDouble.java: Moved to src/script.
+	* java/vrml/field/SFFloat.java: Moved to src/script.
+	* java/vrml/field/SFImage.java: Moved to src/script.
+	* java/vrml/field/SFInt32.java: Moved to src/script.
+	* java/vrml/field/SFNode.java: Moved to src/script.
+	* java/vrml/field/SFRotation.java: Moved to src/script.
+	* java/vrml/field/SFString.java: Moved to src/script.
+	* java/vrml/field/SFTime.java: Moved to src/script.
+	* java/vrml/field/SFVec2d.java: Moved to src/script.
+	* java/vrml/field/SFVec2f.java: Moved to src/script.
+	* java/vrml/field/SFVec3d.java: Moved to src/script.
+	* java/vrml/field/SFVec3f.java: Moved to src/script.
+	* java/vrml/node/Makefile.am: Moved to src/script.
+	* java/vrml/node/Node.java: Moved to src/script.
+	* java/vrml/node/Script.java: Moved to src/script.
+	* java/Makefile.am: Moved to src/script.
+	* models/TestJSAI.java: Formatting changes.
+	* src/Makefile.am
+	(SUBDIRS): Recurse into script to build the Java sources.
+	(noinst_HEADERS): Removed reference to ScriptJDK.h.
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Define OPENVRML_PKGLIBDIR_.
+	(libopenvrml_libopenvrml_la_CXXFLAGS): Removed JS_CFLAGS.
+	(libopenvrml_libopenvrml_la_SOURCES): Removed references to
+	script.cpp and ScriptJDK.cpp.
+	(libopenvrml_libopenvrml_la_LDFLAGS): Removed JS_LIBS and
+	JNI_LIBS.
+	(libopenvrml_libopenvrml_la_LIBADD): Added -lltdl.
+	(openvrmlscriptdir): Added.
+	(openvrmlscript_LTLIBRARIES): Add javascript.la and java.la based
+	on their respective Automake conditionals.
+	(script_javascript_la_SOURCES): Added.
+	(script_javascript_la_CPPFLAGS): Added.
+	(script_javascript_la_CXXFLAGS): Added.
+	(script_javascript_la_LDFLAGS): Added; apply
+	OPENVRML_JAVASCRIPT_RPATH.
+	(script_java_la_SOURCES): Added.
+	(script_java_la_CPPFLAGS): Added.
+	(script_java_la_LDFLAGS): Added.
+	(openvrml_xembed_openvrml_xembed_LDFLAGS): Removed OPENVRML_RPATH.
+	* src/libopenvrml/openvrml/script.cpp: Moved implementation of
+	openvrml::script_node to browser.cpp; moved implementation of
+	Script node JavaScript binding to src/script/javascript.cpp.
+	* src/libopenvrml/openvrml/script.h
+	(openvrml::script_factory): Added; an abstract factory for
+	openvrml::script instances.
+	(openvrml::script_node): Moved to browser.h.
+	(openvrml::script_factory_registry): Added; registry for
+	script_factory.
+	* src/libopenvrml/openvrml/browser.cpp: Moved implementation of openvrml::script_node here to share uri implementation.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::script_node): Moved here from script.h.
+	(openvrml::browser): Made openvrml::script_node a friend.
+	* src/libopenvrml/openvrml/ScriptJDK.cpp: Removed; moved contents to src/script/java.cpp.
+	* src/libopenvrml/openvrml/ScriptJDK.h: Removed file.
+	* src/script/Makefile.am: Added file.
+	* src/script/java.cpp: Added file; contents moved from ScriptJDK.cpp.
+	* src/script/javascript.cpp: Added file; contents moved from script.cpp.
+	* src/script/java/Makefile.am: Added file.
+	* src/script/java/vrml/BaseNode.java: Moved from java.
+	* src/script/java/vrml/Browser.java: Moved from java.
+	* src/script/java/vrml/ConstField.java: Moved from java.
+	* src/script/java/vrml/ConstMField.java: Moved from java.
+	* src/script/java/vrml/Event.java: Moved from java.
+	* src/script/java/vrml/Field.java: Moved from java.
+	* src/script/java/vrml/InvalidEventInException.java: Moved from java.
+	* src/script/java/vrml/InvalidEventOutException.java: Moved from java.
+	* src/script/java/vrml/InvalidExposedFieldException.java: Moved from java.
+	* src/script/java/vrml/InvalidFieldChangeException.java: Moved from java.
+	* src/script/java/vrml/InvalidFieldException.java: Moved from java.
+	* src/script/java/vrml/InvalidRouteException.java: Moved from java.
+	* src/script/java/vrml/InvalidVRMLSyntaxException.java: Moved from java.
+	* src/script/java/vrml/MField.java: Moved from java.
+	* src/script/java/vrml/Makefile.am: Moved from java.
+	* src/script/java/vrml/field/ConstMFBool.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFColor.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFDouble.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFFloat.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFInt32.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFNode.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFRotation.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFString.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFTime.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFVec2d.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFVec2f.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFVec3d.java: Moved from java.
+	* src/script/java/vrml/field/ConstMFVec3f.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFBool.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFColor.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFDouble.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFFloat.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFImage.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFInt32.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFNode.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFRotation.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFString.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFTime.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFVec2d.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFVec2f.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFVec3d.java: Moved from java.
+	* src/script/java/vrml/field/ConstSFVec3f.java: Moved from java.
+	* src/script/java/vrml/field/MFBool.java: Moved from java.
+	* src/script/java/vrml/field/MFColor.java: Moved from java.
+	* src/script/java/vrml/field/MFDouble.java: Moved from java.
+	* src/script/java/vrml/field/MFFloat.java: Moved from java.
+	* src/script/java/vrml/field/MFInt32.java: Moved from java.
+	* src/script/java/vrml/field/MFNode.java: Moved from java.
+	* src/script/java/vrml/field/MFRotation.java: Moved from java.
+	* src/script/java/vrml/field/MFString.java: Moved from java.
+	* src/script/java/vrml/field/MFTime.java: Moved from java.
+	* src/script/java/vrml/field/MFVec2d.java: Moved from java.
+	* src/script/java/vrml/field/MFVec2f.java: Moved from java.
+	* src/script/java/vrml/field/MFVec3d.java: Moved from java.
+	* src/script/java/vrml/field/MFVec3f.java: Moved from java.
+	* src/script/java/vrml/field/Makefile.am: Moved from java.
+	* src/script/java/vrml/field/SFBool.java: Moved from java.
+	* src/script/java/vrml/field/SFColor.java: Moved from java.
+	* src/script/java/vrml/field/SFDouble.java: Moved from java.
+	* src/script/java/vrml/field/SFFloat.java: Moved from java.
+	* src/script/java/vrml/field/SFImage.java: Moved from java.
+	* src/script/java/vrml/field/SFInt32.java: Moved from java.
+	* src/script/java/vrml/field/SFNode.java: Moved from java.
+	* src/script/java/vrml/field/SFRotation.java: Moved from java.
+	* src/script/java/vrml/field/SFString.java: Moved from java.
+	* src/script/java/vrml/field/SFTime.java: Moved from java.
+	* src/script/java/vrml/field/SFVec2d.java: Moved from java.
+	* src/script/java/vrml/field/SFVec2f.java: Moved from java.
+	* src/script/java/vrml/field/SFVec3d.java: Moved from java.
+	* src/script/java/vrml/field/SFVec3f.java: Moved from java.
+	* src/script/java/vrml/node/Makefile.am: Moved from java.
+	* src/script/java/vrml/node/Node.java: Moved from java.
+	* src/script/java/vrml/node/Script.java: Moved from java.
+	* tests/TestScript.java: Added file.
+	* tests/Makefile.am: Build TestScript.java.
+
+2007-02-23 Braden McDaniel  <braden@endoframe.com>
+
 	Updates to build with the Microsoft compiler.
 
 	* src/libopenvrml/openvrml/vrml97node.cpp

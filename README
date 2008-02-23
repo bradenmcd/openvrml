@@ -81,7 +81,6 @@ Package directory layout
    /ide-projects
      /Windows
        /VisualC9_0      :  Microsoft Visual C++ 9.0 project files.
-   /java                :  Java sources.
    /lib                 :  3rd party library sources.
    /m4                  :  m4 macros used by the GNU build system.
    /models              :  Sample VRML models.
@@ -91,6 +90,8 @@ Package directory layout
      /libopenvrml-gl    :  OpenGL renderer library sources.
      /openvrml-xembed   :  XEmbed control application sources.
      /openvrml-player   :  OpenVRML Player application sources.
+     /script            :  Scripting engine module sources.
+       /java            :  Script node Java API sources.
    /tests               :  Test programs.
 
 
@@ -249,14 +250,6 @@ to compile OpenVRML without the GNU build tools.
  OPENVRML_ENABLE_RENDER_TEXT_NODE
      Include support for rendering text using the Text node.  Requires
      fontconfig and FreeType.
-
- OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT
-     Include support for JavaScript scripts in the Script node.
-     Requires Mozilla SpiderMonkey.
-
- OPENVRML_ENABLE_SCRIPT_NODE_JAVA
-     Include support for Java scripts in the Script node.  Requires the
-     Sun Java Development Kit.
 
 
 Installation
