@@ -285,5 +285,8 @@ void openvrml::read_write_mutex::scoped_read_write_lock::demote()
 {
     this->lock_.lock();
     this->mutex_.writing_ = false;
+    if (this->mutex_.readers_waiting_ != 0) {
+        this->mutex_.read_.notify_all();
+    }
     this->lock_.unlock();
 }
