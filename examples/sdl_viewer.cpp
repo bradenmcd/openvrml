@@ -279,7 +279,7 @@ namespace {
         bool need_redraw = false;
         do {
             SDL_Event event = {};
-            sdl_viewer::event_info viewer_event_info;
+            sdl_viewer::event_info viewer_event_info = {};
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                 case SDL_VIDEOEXPOSE:
