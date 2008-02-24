@@ -1,5 +1,12 @@
 2007-02-24 Braden McDaniel  <braden@endoframe.com>
 
+	* src/script/javascript.cpp
+	(script::activate(double, const std::string &, size_t, const
+	openvrml::field_value * const[])): Call JS_MaybeGC to run the
+	garbage collector every so often.
+
+2007-02-24 Braden McDaniel  <braden@endoframe.com>
+
 	* examples/sdl_viewer.cpp (sdl_viewer::run()): Initialize the
 	event_info struct.
 

@@ -1277,6 +1277,7 @@ namespace {
         } catch (...) {
             assert(false);
         }
+        JS_MaybeGC(this->cx);
     }
 
     openvrml::script_node & script::script_node()
