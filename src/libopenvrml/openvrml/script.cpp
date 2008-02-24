@@ -3314,6 +3314,7 @@ void script::activate(const double timeStamp, const std::string & fname,
     } catch (...) {
         assert(false);
     }
+    JS_MaybeGC(this->cx);
 }
 
 openvrml::script_node & script::script_node()
