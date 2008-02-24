@@ -421,7 +421,7 @@ AS_IF([test -n "${openvrml_js_run_path}" -a -n "${GRE_PATH}"],
 openvrml_js_run_path="${GRE_PATH}${openvrml_js_run_path}"
 OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${openvrml_js_run_path}"
 ])
-AC_SUBST([OPENVRML_RPATH])
+AC_SUBST([OPENVRML_JAVASCRIPT_RPATH])
 
 if test X$enable_xembed != Xno; then
   gtkglext_subdir=gtkglext

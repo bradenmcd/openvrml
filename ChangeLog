@@ -1,3 +1,8 @@
+2007-02-24 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fixed merge error; need to substitute
+	OPENVRML_JAVASCRIPT_RPATH.
+
 2007-02-23 Braden McDaniel  <braden@endoframe.com>
 
 	Moved Script node scripting bindings to dynamically opened
