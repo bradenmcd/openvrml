@@ -256,7 +256,7 @@ namespace {
 
 } // namespace
 
-OPENVRML_JAVA_API void
+extern "C" OPENVRML_JAVA_API void
 openvrml_script_LTX_register_factory(
     openvrml::script_factory_registry & registry)
 {
