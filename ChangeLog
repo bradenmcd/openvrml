@@ -1,3 +1,9 @@
+2007-02-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
+	Notify waiting readers when demoting the lock.
+
 2007-02-17 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Ensure libjs only gets used when configuring
