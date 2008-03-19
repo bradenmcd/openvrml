@@ -1,3 +1,135 @@
+2007-03-19 Braden McDaniel  <braden@endoframe.com>
+
+	Partitioned vrml97node.cpp into multiple files.  For the most
+	part, there is now one translation unit per node implementation.
+	This alleviates performance issues in gcc related to large
+	translation units with lots of template instantiation; it also
+	parallelizes much better.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Added include directories
+	for VRML97 node implementation sources.
+	(libopenvrml_libopenvrml_la_SOURCES): Added VRML97 node
+	implementation source files.
+	* src/libopenvrml/openvrml/vrml97node.cpp: Moved node
+	implementations to individual files.
+	* src/node/vrml97/abstract_indexed_set.h
+	* src/node/vrml97/abstract_light.h
+	* src/node/vrml97/abstract_texture.h
+	* src/node/vrml97/anchor.cpp
+	* src/node/vrml97/anchor.h
+	* src/node/vrml97/appearance.cpp
+	* src/node/vrml97/appearance.h
+	* src/node/vrml97/audio_clip.cpp
+	* src/node/vrml97/audio_clip.h
+	* src/node/vrml97/background.cpp
+	* src/node/vrml97/background.h
+	* src/node/vrml97/billboard.cpp
+	* src/node/vrml97/billboard.h
+	* src/node/vrml97/box.cpp
+	* src/node/vrml97/box.h
+	* src/node/vrml97/cad_assembly.cpp
+	* src/node/vrml97/cad_assembly.h
+	* src/node/vrml97/cad_layer.cpp
+	* src/node/vrml97/cad_layer.h
+	* src/node/vrml97/collision.cpp
+	* src/node/vrml97/collision.h
+	* src/node/vrml97/color.cpp
+	* src/node/vrml97/color.h
+	* src/node/vrml97/color_interpolator.cpp
+	* src/node/vrml97/color_interpolator.h
+	* src/node/vrml97/cone.cpp
+	* src/node/vrml97/cone.h
+	* src/node/vrml97/coordinate.cpp
+	* src/node/vrml97/coordinate.h
+	* src/node/vrml97/coordinate_interpolator.cpp
+	* src/node/vrml97/coordinate_interpolator.h
+	* src/node/vrml97/cylinder.cpp
+	* src/node/vrml97/cylinder.h
+	* src/node/vrml97/cylinder_sensor.cpp
+	* src/node/vrml97/cylinder_sensor.h
+	* src/node/vrml97/directional_light.cpp
+	* src/node/vrml97/directional_light.h
+	* src/node/vrml97/elevation_grid.cpp
+	* src/node/vrml97/elevation_grid.h
+	* src/node/vrml97/extrusion.cpp
+	* src/node/vrml97/extrusion.h
+	* src/node/vrml97/fog.cpp
+	* src/node/vrml97/fog.h
+	* src/node/vrml97/font_style.cpp
+	* src/node/vrml97/font_style.h
+	* src/node/vrml97/group.cpp
+	* src/node/vrml97/group.h
+	* src/node/vrml97/grouping_node_base.h
+	* src/node/vrml97/image_stream_listener.cpp
+	* src/node/vrml97/image_stream_listener.h
+	* src/node/vrml97/image_texture.cpp
+	* src/node/vrml97/image_texture.h
+	* src/node/vrml97/indexed_face_set.cpp
+	* src/node/vrml97/indexed_face_set.h
+	* src/node/vrml97/indexed_line_set.cpp
+	* src/node/vrml97/indexed_line_set.h
+	* src/node/vrml97/inline.cpp
+	* src/node/vrml97/inline.h
+	* src/node/vrml97/lod.cpp
+	* src/node/vrml97/lod.h
+	* src/node/vrml97/material.cpp
+	* src/node/vrml97/material.h
+	* src/node/vrml97/movie_texture.cpp
+	* src/node/vrml97/movie_texture.h
+	* src/node/vrml97/navigation_info.cpp
+	* src/node/vrml97/navigation_info.h
+	* src/node/vrml97/normal.cpp
+	* src/node/vrml97/normal.h
+	* src/node/vrml97/normal_interpolator.cpp
+	* src/node/vrml97/normal_interpolator.h
+	* src/node/vrml97/orientation_interpolator.cpp
+	* src/node/vrml97/orientation_interpolator.h
+	* src/node/vrml97/pixel_texture.cpp
+	* src/node/vrml97/pixel_texture.h
+	* src/node/vrml97/plane_sensor.cpp
+	* src/node/vrml97/plane_sensor.h
+	* src/node/vrml97/point_light.cpp
+	* src/node/vrml97/point_light.h
+	* src/node/vrml97/point_set.cpp
+	* src/node/vrml97/point_set.h
+	* src/node/vrml97/position_interpolator.cpp
+	* src/node/vrml97/position_interpolator.h
+	* src/node/vrml97/proximity_sensor.cpp
+	* src/node/vrml97/proximity_sensor.h
+	* src/node/vrml97/scalar_interpolator.cpp
+	* src/node/vrml97/scalar_interpolator.h
+	* src/node/vrml97/shape.cpp
+	* src/node/vrml97/shape.h
+	* src/node/vrml97/sound.cpp
+	* src/node/vrml97/sound.h
+	* src/node/vrml97/sphere.cpp
+	* src/node/vrml97/sphere.h
+	* src/node/vrml97/sphere_sensor.cpp
+	* src/node/vrml97/sphere_sensor.h
+	* src/node/vrml97/spot_light.cpp
+	* src/node/vrml97/spot_light.h
+	* src/node/vrml97/switch.cpp
+	* src/node/vrml97/switch.h
+	* src/node/vrml97/text.cpp
+	* src/node/vrml97/text.h
+	* src/node/vrml97/texture_coordinate.cpp
+	* src/node/vrml97/texture_coordinate.h
+	* src/node/vrml97/texture_transform.cpp
+	* src/node/vrml97/texture_transform.h
+	* src/node/vrml97/time_sensor.cpp
+	* src/node/vrml97/time_sensor.h
+	* src/node/vrml97/touch_sensor.cpp
+	* src/node/vrml97/touch_sensor.h
+	* src/node/vrml97/transform.cpp
+	* src/node/vrml97/transform.h
+	* src/node/vrml97/viewpoint.cpp
+	* src/node/vrml97/viewpoint.h
+	* src/node/vrml97/visibility_sensor.cpp
+	* src/node/vrml97/visibility_sensor.h
+	* src/node/vrml97/world_info.cpp
+	* src/node/vrml97/world_info.h
+
 2007-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/script/javascript.cpp
