@@ -1,5 +1,11 @@
 2008-03-20 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Improved check to see if JS_THREADSAFE needs to be
+	defined.  This should now work with the stand-alone SpiderMonkey
+	distribution as well.
+
+2008-03-20 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Fixed check to see whether SpiderMonkey has been
 	found.
 
