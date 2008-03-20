@@ -3,7 +3,7 @@
 	* configure.ac: Fixed check to see whether SpiderMonkey has been
 	found.
 
-2007-03-19 Braden McDaniel  <braden@endoframe.com>
+2008-03-19 Braden McDaniel  <braden@endoframe.com>
 
 	Partitioned vrml97node.cpp into multiple files.  For the most
 	part, there is now one translation unit per node implementation.
@@ -135,35 +135,35 @@
 	* src/node/vrml97/world_info.cpp
 	* src/node/vrml97/world_info.h
 
-2007-02-24 Braden McDaniel  <braden@endoframe.com>
+2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/script/javascript.cpp
 	(script::activate(double, const std::string &, size_t, const
 	openvrml::field_value * const[])): Call JS_MaybeGC to run the
 	garbage collector every so often.
 
-2007-02-24 Braden McDaniel  <braden@endoframe.com>
+2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp (sdl_viewer::run()): Initialize the
 	event_info struct.
 
-2007-02-24 Braden McDaniel  <braden@endoframe.com>
+2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/read_write_mutex.cpp
 	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
 	Notify waiting readers when demoting the lock.
 
-2007-02-24 Braden McDaniel  <braden@endoframe.com>
+2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/script/java.cpp
 	(openvrml_script_LTX_register_factory): needs to be extern "C".
 
-2007-02-24 Braden McDaniel  <braden@endoframe.com>
+2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed merge error; need to substitute
 	OPENVRML_JAVASCRIPT_RPATH.
 
-2007-02-23 Braden McDaniel  <braden@endoframe.com>
+2008-02-23 Braden McDaniel  <braden@endoframe.com>
 
 	Moved Script node scripting bindings to dynamically opened
 	modules; reenabled Java binding.
@@ -387,7 +387,7 @@
 	* tests/TestScript.java: Added file.
 	* tests/Makefile.am: Build TestScript.java.
 
-2007-02-23 Braden McDaniel  <braden@endoframe.com>
+2008-02-23 Braden McDaniel  <braden@endoframe.com>
 
 	Updates to build with the Microsoft compiler.
 
@@ -398,19 +398,19 @@
 	openvrml::rendering_context)): For some reason the Microsoft
 	compiler doesn't like "using openvrml::child_node;" here.
 
-2007-02-17 Braden McDaniel  <braden@endoframe.com>
+2008-02-17 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Ensure libjs only gets used when configuring
 	--with-libjs.
 
-2007-02-17 Braden McDaniel  <braden@endoframe.com>
+2008-02-17 Braden McDaniel  <braden@endoframe.com>
 
 	Look for seamonkey-js.pc and seamonkey-plugin.pc.
 
 	* configure.ac
 	* mozilla-plugin/configure.ac
 
-2007-02-11 Braden McDaniel  <braden@endoframe.com>
+2008-02-11 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements; apply @tparam.
 
@@ -423,7 +423,7 @@
 	* src/libopenvrml/openvrml/node_impl_util.cpp
 	* src/libopenvrml/openvrml/node_impl_util.h
 
-2007-02-05 Braden McDaniel  <braden@endoframe.com>
+2008-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.5 release.
 
@@ -438,14 +438,14 @@
 	* src/Makefile.am: Updated libopenvrml libtool library version to
 	8:4:0.
 
-2007-01-29 Braden McDaniel  <braden@endoframe.com>
+2008-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::proto_impl_cloner::clone_node(const
 	boost::intrusive_ptr<node> &)): Don't clone subtrees from the
 	initial_values map.
 
-2007-01-29 Braden McDaniel  <braden@endoframe.com>
+2008-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	Changed configure not to apply -rpath for the Gecko runtime
 	library directory by default.
@@ -453,13 +453,13 @@
 	* README
 	* configure.ac
 
-2007-01-29 Braden McDaniel  <braden@endoframe.com>
+2008-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp
 	(openvrml::script_node::update(double)): Use a const_iterator when
 	iterating over the eventout_map_.
 
-2007-01-29 Braden McDaniel  <braden@endoframe.com>
+2008-01-29 Braden McDaniel  <braden@endoframe.com>
 
 	Moved node::add_ref and node::release out-of-line.
 
@@ -470,7 +470,7 @@
 	(openvrml::node::add_ref() const): Moved to node.cpp.
 	(openvrml::node::release() const): Moved to node.cpp.
 
-2007-01-28 Braden McDaniel  <braden@endoframe.com>
+2008-01-28 Braden McDaniel  <braden@endoframe.com>
 
 	Since we aren't doing any ownership transfer, use a
 	boost::scoped_ptr for openvrml::field_value::counted_impl_.
@@ -496,7 +496,7 @@
 	(openvrml::browser::vrml97_parse_actions::node_data::is_map_t):
 	Changed to a multimap.
 
-2007-01-26 Braden McDaniel  <braden@endoframe.com>
+2008-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.4 release.
 
@@ -511,7 +511,7 @@
 	* src/Makefile.am: Updated libopenvrml libtool library version to
 	8:3:0.
 
-2007-01-26 Braden McDaniel  <braden@endoframe.com>
+2008-01-26 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
 	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
@@ -519,7 +519,7 @@
 	end up with more than one request in the request_line (and end up
 	sending a bogus command to the XEmbed control).
 
-2007-01-25 Braden McDaniel  <braden@endoframe.com>
+2008-01-25 Braden McDaniel  <braden@endoframe.com>
 
 	Properly apply PROTO default values to EXTERNPROTO node instances.
 
@@ -536,13 +536,13 @@
 	Use the initial values the EXTERNPROTO node was instantiated with,
 	updated with values received via any events to exposedFields.
 
-2007-01-23 Braden McDaniel  <braden@endoframe.com>
+2008-01-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp
 	(js_::Global::print(JSContext *, JSObject *, uintN, jsval *,
 	jsval *): Emit output using openvrml::browser::out.
 
-2007-01-17 Braden McDaniel  <braden@endoframe.com>
+2008-01-17 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.3 release.
 
@@ -555,13 +555,13 @@
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
 	* mozilla-plugin/configure.ac
 
-2007-01-16 Braden McDaniel  <braden@endoframe.com>
+2008-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	* mozilla-plugin/src/openvrml.cpp
 	(request_data_available(GIOChannel *, GIOCondition, gpointer)):
 	Clear the request_line stringstream between requests.
 
-2007-01-16 Braden McDaniel  <braden@endoframe.com>
+2008-01-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-xembed/main.cpp
 	(main(int, char *[])): Seed the
@@ -569,7 +569,7 @@
 	streambuf before starting the command channel loop thread in order
 	to avoid a race (and a potential crash).
 
-2007-01-09 Braden McDaniel  <braden@endoframe.com>
+2008-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Added option to disable use of the Gecko runtime library directory
 	-rpath flag when building openvrml-xembed.
@@ -577,7 +577,7 @@
 	* README
 	* configure.ac
 
-2007-01-09 Braden McDaniel  <braden@endoframe.com>
+2008-01-09 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.2 release.
 
