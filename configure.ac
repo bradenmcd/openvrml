@@ -274,16 +274,23 @@ AS_IF([test X$with_libjs != Xyes],
 AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
           [Defined if Script node JavaScript support is enabled.])
 #
-# Ugh.  libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the
-# Cflags from the pkg-config metadata don't include it.  Check
-# mozilla-config.h; if we find JS_THREADSAFE there, assume we need
-# it.
+# Figure out whether we need to add -DJS_THREADSAFE to JS_CFLAGS.
 #
-moz_includedir=`$PKG_CONFIG --variable=includedir $mozilla_js_pkg`
-AS_IF([grep JS_THREADSAFE $moz_includedir/mozilla-config.h > /dev/null],
-      [AS_IF([$PKG_CONFIG --cflags $mozilla_js_pkg | grep JS_THREADSAFE > /dev/null], ,
-             [JS_CFLAGS="${JS_CFLAGS} -DJS_THREADSAFE"])])
-])
+# libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the Cflags from
+# the pkg-config metadata don't include it.  And if we're using the stand-
+# alone SpiderMonkey, we don't have any pkg-config metadata to go on.
+#
+# Fortunately, there are a few library symbols that should be defined
+# only if the installed binary was built with JS_THREADSAFE.  We'll
+# try to link with them.
+#
+AS_IF([test X"$JS_CFLAGS" = X`echo "$JS_CFLAGS" | sed s/JS_THREADSAFE//`],
+[ov_save_LDFLAGS=$LDFLAGS
+LDFLAGS="$JS_LIBS $LDFLAGS"
+AC_LINK_IFELSE([AC_LANG_CALL([], [JS_BeginRequest])],
+	       [JS_CFLAGS="$JS_CFLAGS -DJS_THREADSAFE"])
+LDFLAGS=$ov_save_LDFLAGS
+])])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 
