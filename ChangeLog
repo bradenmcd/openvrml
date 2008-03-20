@@ -1,3 +1,8 @@
+2008-03-20 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fixed check to see whether SpiderMonkey has been
+	found.
+
 2007-03-19 Braden McDaniel  <braden@endoframe.com>
 
 	Partitioned vrml97node.cpp into multiple files.  For the most
