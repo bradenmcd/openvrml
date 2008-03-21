@@ -144,6 +144,13 @@ PKG_CHECK_MODULES([JS], [$require_xulrunner_js],
                                                                            [mozilla_js_pkg=$require_mozilla_js],
                                                                            [have_libmozjs=no])])])])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
+#
+# Ensure that we can, in fact, find and use the SpiderMonkey headers.
+#
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_CHECK_HEADER([jsapi.h], [have_jsapi_h=yes], [have_jsapi_h=no])
+CPPFLAGS=$ov_save_CPPFLAGS
 
 #
 # openvrml-xembed and openvrml-player both use GOption, which was
@@ -265,7 +272,7 @@ AS_IF([test "X$enable_script_node_javascript" = "Xno"],
 [AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
        [AS_IF([test -z "$JS_CFLAGS"], [JS_CFLAGS=""])
         AS_IF([test -z "$JS_LIBS"], [JS_LIBS="-ljs"])])
-AS_IF([test X$have_libmozjs != Xyes -a \( X$with_libjs = Xyes -a X$have_libjs != Xyes \)],
+AS_IF([test X$have_libmozjs != Xyes -a \( X$with_libjs = Xyes -a X$have_libjs != Xyes \) -o X$have_jsapi_h != Xyes],
       [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])])
 AS_IF([test X$with_libjs != Xyes],
       [AS_IF([test -n "${OPENVRML_PKG_REQUIRES}"],
@@ -284,7 +291,7 @@ AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
 # only if the installed binary was built with JS_THREADSAFE.  We'll
 # try to link with them.
 #
-AS_IF([test X"$JS_CFLAGS" = X`echo "$JS_CFLAGS" | sed s/JS_THREADSAFE//`],
+AS_IF([test "X$JS_CFLAGS" = "X`echo "$JS_CFLAGS" | sed s/JS_THREADSAFE//`"],
 [ov_save_LDFLAGS=$LDFLAGS
 LDFLAGS="$JS_LIBS $LDFLAGS"
 AC_LINK_IFELSE([AC_LANG_CALL([], [JS_BeginRequest])],
