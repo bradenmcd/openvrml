@@ -1,3 +1,7 @@
+2008-03-21 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Ensure jsapi.h is usable.
+
 2008-03-20 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Improved check to see if JS_THREADSAFE needs to be
