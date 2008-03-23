@@ -1,5 +1,7 @@
 2008-03-23 Braden McDaniel  <braden@endoframe.com>
 
+	Applied missing OPENVRML_API.
+
 	* src/libopenvrml/openvrml/browser.h
 	(openvrml::profile(const std::string &)): Appled OPENVRML_API.
 	(openvrml::add_component(node_type_decls &, const std::string &,
