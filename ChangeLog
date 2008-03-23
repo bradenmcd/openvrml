@@ -1,5 +1,12 @@
 2008-03-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::profile(const std::string &)): Appled OPENVRML_API.
+	(openvrml::add_component(node_type_decls &, const std::string &,
+	size_t): Applied OPENVRML_API.
+
+2008-03-23 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Call AC_LIBTOOL_DLOPEN for good measure.
 
 2008-03-21 Braden McDaniel  <braden@endoframe.com>

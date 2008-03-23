@@ -32,9 +32,11 @@ namespace openvrml {
     OPENVRML_API extern const char x_vrml_media_type[15];
     OPENVRML_API extern const char x3d_vrml_media_type[15];
 
+    OPENVRML_API
     std::auto_ptr<node_type_decls> profile(const std::string & profile_id)
         OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
+    OPENVRML_API
     void add_component(node_type_decls & node_types,
                        const std::string & component_id, size_t level)
         OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
