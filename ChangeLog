@@ -1,3 +1,7 @@
+2008-03-23 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Call AC_LIBTOOL_DLOPEN for good measure.
+
 2008-03-21 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Ensure jsapi.h is usable.

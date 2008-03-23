@@ -40,6 +40,7 @@ require_mozilla_js="mozilla-js >= 1.2.1"
 #
 # Checks for programs.
 #
+AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CXXCPP
