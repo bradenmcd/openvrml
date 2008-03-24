@@ -143,13 +143,25 @@ openvrml::unsupported_interface::~unsupported_interface() throw ()
  */
 
 namespace {
+
     typedef boost::array<const char *, 5> node_interface_type_id;
-    const node_interface_type_id node_interface_type_id_ = {
+
+    OPENVRML_LOCAL
+    const node_interface_type_id vrml97_node_interface_type_id_ = {
         "<invalid interface type>",
         "eventIn",
         "eventOut",
         "exposedField",
         "field"
+    };
+
+    OPENVRML_LOCAL
+    const node_interface_type_id x3d_node_interface_type_id_ = {
+        "<invalid interface type>",
+        "inputOnly",
+        "outputOnly",
+        "inputOutput",
+        "initializeOnly"
     };
 }
 
@@ -172,7 +184,7 @@ std::ostream & openvrml::operator<<(std::ostream & out,
     if (type == node_interface::invalid_type_id) {
         out.setstate(std::ios_base::failbit);
     } else {
-        out << node_interface_type_id_[type];
+        out << vrml97_node_interface_type_id_[type];
     }
     return out;
 }
@@ -196,14 +208,23 @@ std::istream & openvrml::operator>>(std::istream & in,
     string interface_type_id;
     in >> interface_type_id;
 
-    const node_interface_type_id::const_iterator pos =
-        find(node_interface_type_id_.begin(),
-             node_interface_type_id_.end(),
+    node_interface_type_id::const_iterator pos =
+        find(vrml97_node_interface_type_id_.begin(),
+             vrml97_node_interface_type_id_.end(),
              interface_type_id);
-    if (pos != node_interface_type_id_.end()) {
-        type = node_interface::type_id(pos - node_interface_type_id_.begin());
+    if (pos != vrml97_node_interface_type_id_.end()) {
+        type = node_interface::type_id(
+            pos - vrml97_node_interface_type_id_.begin());
     } else {
-        in.setstate(std::ios_base::failbit);
+        pos = find(x3d_node_interface_type_id_.begin(),
+                   x3d_node_interface_type_id_.end(),
+                   interface_type_id);
+        if (pos != x3d_node_interface_type_id_.end()) {
+            type = node_interface::type_id(
+                pos - x3d_node_interface_type_id_.begin());
+        } else {
+            in.setstate(std::ios_base::failbit);
+        }
     }
     return in;
 }
