@@ -1,5 +1,11 @@
 2008-03-23 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::operator>>(std::istream &, node_interface::type_id &)):
+	Accept the X3D-style names for interface types as well.
+
+2008-03-23 Braden McDaniel  <braden@endoframe.com>
+
 	Applied missing OPENVRML_API.
 
 	* src/libopenvrml/openvrml/browser.h
