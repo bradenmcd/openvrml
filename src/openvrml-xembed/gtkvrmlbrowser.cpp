@@ -241,9 +241,6 @@ GtkWidget * gtk_vrml_browser_new()
     } catch (std::bad_alloc &) {
         g_return_val_if_reached(0);
     }
-    static_cast<GtkGLViewer *>(vrml_browser->viewer)
-        ->resize(GTK_WIDGET(vrml_browser)->allocation.width,
-                 GTK_WIDGET(vrml_browser)->allocation.height);
 
     return GTK_WIDGET(vrml_browser);
 }
