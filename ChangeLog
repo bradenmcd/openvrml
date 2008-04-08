@@ -1,3 +1,10 @@
+2007-04-08 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed a potential crash during creation of the Gtk widget.
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp (gtk_vrml_browser_new()):
+	Don't call resize here; we don't yet have a valid GL context.
+
 2008-03-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.cpp
