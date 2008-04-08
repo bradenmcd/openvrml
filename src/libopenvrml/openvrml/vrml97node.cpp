@@ -1828,7 +1828,7 @@ namespace {
 
         class children_exposedfield :
 # if defined(_MSC_VER) && _MSC_VER == 1500
-            public openvrml::node_impl_util::abstract_node<Derived>::exposedfield<mfnode> {
+            public openvrml::node_impl_util::abstract_node<Derived>::exposedfield<openvrml::mfnode> {
 # else
             public openvrml::node_impl_util::abstract_node<Derived>::template exposedfield<openvrml::mfnode> {
 # endif
@@ -27732,9 +27732,9 @@ namespace {
         openvrml::mfnode::value_type::const_iterator iter =
             current_children_.value().begin();
         for (; iter != current_children_.value().end(); ++iter) {
-            using openvrml::child_node;
             using openvrml::node_cast;
-            child_node * const child = node_cast<child_node *>(iter->get());
+            openvrml::child_node * const child =
+                node_cast<openvrml::child_node *>(iter->get());
             if (child) { child->render_child(viewer, context); }
         }
 
