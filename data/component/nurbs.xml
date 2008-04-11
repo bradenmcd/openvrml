@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="NURBS">
+  <level>
+    <node id="CoordinateDouble"
+          metatype-id="urn:X-openvrml:node:CoordinateDouble">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="point"    type="MFVec3d" access-type="inputOutput" />
+    </node>
+    <node id="NurbsCurve"
+          metatype-id="urn:X-openvrml:node:NurbsCurve">
+      <field id="metadata"     type="SFNode"   access-type="inputOutput" />
+      <field id="controlPoint" type="SFNode"   access-type="inputOutput" />
+      <field id="tessellation" type="SFInt32"  access-type="inputOutput" />
+      <field id="weight"       type="MFDouble" access-type="inputOutput" />
+      <field id="closed"       type="SFBool"   access-type="initializeOnly" />
+      <field id="knot"         type="MFDouble" access-type="initializeOnly" />
+      <field id="order"        type="SFInt32"  access-type="initializeOnly" />
+    </node>
+    <node id="NurbsOrientationInterpolator"
+          metatype-id="urn:X-openvrml:node:NurbsOrientationInterpolator">
+      <field id="metadata"      type="SFNode"     access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat"    access-type="inputOnly" />
+      <field id="controlPoints" type="SFNode"     access-type="inputOutput" />
+      <field id="knot"          type="MFDouble"   access-type="inputOutput" />
+      <field id="order"         type="SFInt32"    access-type="inputOutput" />
+      <field id="weight"        type="MFDouble"   access-type="inputOutput" />
+      <field id="value_changed" type="SFRotation" access-type="outputOnly" />
+    </node>
+    <node id="NurbsPatchSurface"
+          metatype-id="urn:X-openvrml:node:NurbsPatchSurface">
+      <field id="metadata"      type="SFNode"   access-type="inputOutput" />
+      <field id="controlPoint"  type="SFNode"   access-type="inputOutput" />
+      <field id="texCoord"      type="SFNode"   access-type="inputOutput" />
+      <field id="uTessellation" type="SFInt32"  access-type="inputOutput" />
+      <field id="vTessellation" type="SFInt32"  access-type="inputOutput" />
+      <field id="weight"        type="MFDouble" access-type="inputOutput" />
+      <field id="solid"         type="SFBool"   access-type="initializeOnly" />
+      <field id="uClosed"       type="SFBool"   access-type="initializeOnly" />
+      <field id="uDimension"    type="SFInt32"  access-type="initializeOnly" />
+      <field id="uKnot"         type="MFDouble" access-type="initializeOnly" />
+      <field id="uOrder"        type="SFInt32"  access-type="initializeOnly" />
+      <field id="vClosed"       type="SFBool"   access-type="initializeOnly" />
+      <field id="vDimension"    type="SFInt32"  access-type="initializeOnly" />
+      <field id="vKnot"         type="MFDouble" access-type="initializeOnly" />
+      <field id="vOrder"        type="SFInt32"  access-type="initializeOnly" />
+    </node>
+    <node id="NurbsPositionInterpolator"
+          metatype-id="urn:X-openvrml:node:NurbsPositionInterpolator">
+      <field id="metadata"      type="SFNode"   access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat"  access-type="inputOnly" />
+      <field id="controlPoints" type="SFNode"   access-type="inputOutput" />
+      <field id="knot"          type="MFDouble" access-type="inputOutput" />
+      <field id="order"         type="SFInt32"  access-type="inputOutput" />
+      <field id="weight"        type="MFDouble" access-type="inputOutput" />
+      <field id="value_changed" type="SFVec3f"  access-type="outputOnly" />
+    </node>
+    <node id="NurbsSurfaceInterpolator"
+          metatype-id="urn:X-openvrml:node:NurbsSurfaceInterpolator">
+      <field id="metadata"         type="SFNode"   access-type="inputOutput" />
+      <field id="set_fraction"     type="SFFloat"  access-type="inputOnly" />
+      <field id="controlPoints"    type="SFNode"   access-type="inputOutput" />
+      <field id="weight"           type="MFDouble" access-type="inputOutput" />
+      <field id="position_changed" type="SFVec3f" access-type="outputOnly" />
+      <field id="normal_changed"   type="SFVec3f" access-type="outputOnly" />
+      <field id="uDimension"       type="SFInt32"  access-type="initializeOnly" />
+      <field id="uKnot"            type="MFDouble" access-type="initializeOnly" />
+      <field id="uOrder"           type="SFInt32"  access-type="initializeOnly" />
+      <field id="vDimension"       type="SFInt32"  access-type="initializeOnly" />
+      <field id="vKnot"            type="MFDouble" access-type="initializeOnly" />
+      <field id="vOrder"           type="SFInt32"  access-type="initializeOnly" />
+    </node>
+    <node id="NurbsTextureCoordinate"
+          metatype-id="urn:X-openvrml:node:NurbsTextureCoordinate">
+      <field id="metadata"     type="SFNode"   access-type="inputOutput" />
+      <field id="controlPoint" type="MFVec2f"  access-type="inputOutput" />
+      <field id="weight"       type="MFFloat"  access-type="inputOutput" />
+      <field id="uDimension"   type="SFInt32"  access-type="initializeOnly" />
+      <field id="uKnot"        type="MFDouble" access-type="initializeOnly" />
+      <field id="uOrder"       type="SFInt32"  access-type="initializeOnly" />
+      <field id="vDimension"   type="SFInt32"  access-type="initializeOnly" />
+      <field id="vKnot"        type="MFDouble" access-type="initializeOnly" />
+      <field id="vOrder"       type="SFInt32"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="NurbsSet"
+          metatype-id="urn:X-openvrml:node:NurbsSet">
+      <field id="metadata"          type="SFNode"  access-type="inputOutput" />
+      <field id="addGeometry"       type="MFNode"  access-type="inputOnly" />
+      <field id="removeGeometry"    type="MFNode"  access-type="inputOnly" />
+      <field id="geometry"          type="MFNode"  access-type="inputOutput" />
+      <field id="tessellationScale" type="SFFloat" access-type="inputOutput" />
+      <field id="bboxCenter"        type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"          type="SFVec3f" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="NurbsCurve2D"
+          metatype-id="urn:X-openvrml:node:NurbsCurve2D">
+      <field id="metadata"     type="SFNode"   access-type="inputOutput" />
+      <field id="controlPoint" type="MFVec2d"  access-type="inputOutput" />
+      <field id="tessellation" type="SFInt32"  access-type="inputOutput" />
+      <field id="weight"       type="MFFloat"  access-type="inputOutput" />
+      <field id="closed"       type="SFBool"   access-type="initializeOnly" />
+      <field id="knot"         type="MFDouble" access-type="initializeOnly" />
+      <field id="order"        type="SFInt32"  access-type="initializeOnly" />
+    </node>
+    <node id="ContourPolyline2D"
+          metatype-id="urn:X-openvrml:node:ContourPolyline2D">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="point"    type="MFVec2f" access-type="inputOutput" />
+    </node>
+    <node id="NurbsSweptSurface"
+          metatype-id="urn:X-openvrml:node:NurbsSweptSurface">
+      <field id="metadata"          type="SFNode" access-type="inputOutput" />
+      <field id="crossSectionCurve" type="SFNode" access-type="inputOutput" />
+      <field id="trajectoryCurve"   type="SFNode" access-type="inputOutput" />
+      <field id="ccw"               type="SFBool" access-type="initializeOnly" />
+      <field id="solid"             type="SFBool" access-type="initializeOnly" />
+    </node>
+    <node id="NurbsSwungSurface"
+          metatype-id="urn:X-openvrml:node:NurbsSwungSurface">
+      <field id="metadata"        type="SFNode" access-type="inputOutput" />
+      <field id="profileCurve"    type="SFNode" access-type="inputOutput" />
+      <field id="trajectoryCurve" type="SFNode" access-type="inputOutput" />
+      <field id="ccw"             type="SFBool" access-type="initializeOnly" />
+      <field id="solid"           type="SFBool" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="Contour2D"
+          metatype-id="urn:X-openvrml:node:Contour2D">
+      <field id="metadata"       type="SFNode" access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode" access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode" access-type="inputOnly" />
+      <field id="children"       type="MFNode" access-type="inputOutput" />
+    </node>
+    <node id="NurbsTrimmedSurface"
+          metatype-id="urn:X-openvrml:node:NurbsTrimmedSurface">
+      <field id="metadata"              type="SFNode"   access-type="inputOutput" />
+      <field id="addTrimmingContour"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeTrimmingContour" type="MFNode"   access-type="inputOnly" />
+      <field id="controlPoint"          type="SFNode"   access-type="inputOutput" />
+      <field id="texCoord"              type="SFNode"   access-type="inputOutput" />
+      <field id="trimmingContour"       type="MFNode"   access-type="inputOutput" />
+      <field id="uTessellation"         type="SFInt32"  access-type="inputOutput" />
+      <field id="vTessellation"         type="SFInt32"  access-type="inputOutput" />
+      <field id="weight"                type="MFDouble" access-type="inputOutput" />
+      <field id="solid"                 type="SFBool"   access-type="initializeOnly" />
+      <field id="uClosed"               type="SFBool"   access-type="initializeOnly" />
+      <field id="uDimension"            type="SFInt32"  access-type="initializeOnly" />
+      <field id="uKnot"                 type="MFDouble" access-type="initializeOnly" />
+      <field id="uOrder"                type="SFInt32"  access-type="initializeOnly" />
+      <field id="vClosed"               type="SFBool"   access-type="initializeOnly" />
+      <field id="vDimension"            type="SFInt32"  access-type="initializeOnly" />
+      <field id="vKnot"                 type="MFDouble" access-type="initializeOnly" />
+      <field id="vOrder"                type="SFInt32"  access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

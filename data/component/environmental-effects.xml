@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="EnvironmentalEffects">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="Background"
+          metatype-id="urn:X-openvrml:node:Background">
+      <field id="metadata"    type="SFNode"   access-type="inputOutput" />
+      <field id="set_bind"    type="SFBool"   access-type="inputOnly" />
+      <field id="groundAngle" type="MFFloat"  access-type="inputOutput" />
+      <field id="groundColor" type="MFColor"  access-type="inputOutput" />
+      <field id="backUrl"     type="MFString" access-type="inputOutput" />
+      <field id="bottomUrl"   type="MFString" access-type="inputOutput" />
+      <field id="frontUrl"    type="MFString" access-type="inputOutput" />
+      <field id="leftUrl"     type="MFString" access-type="inputOutput" />
+      <field id="rightUrl"    type="MFString" access-type="inputOutput" />
+      <field id="topUrl"      type="MFString" access-type="inputOutput" />
+      <field id="skyAngle"    type="MFFloat"  access-type="inputOutput" />
+      <field id="skyColor"    type="MFColor"  access-type="inputOutput" />
+      <field id="bindTime"    type="SFTime"   access-type="outputOnly" />
+      <field id="isBound"     type="SFBool"   access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="Fog"
+          metatype-id="urn:X-openvrml:node:Fog">
+      <field id="metadata"        type="SFNode"   access-type="inputOutput" />
+      <field id="set_bind"        type="SFBool"   access-type="inputOnly" />
+      <field id="color"           type="SFColor"  access-type="inputOutput" />
+      <field id="fogType"         type="SFString" access-type="inputOutput" />
+      <field id="visibilityRange" type="SFFloat"  access-type="inputOutput" />
+      <field id="bindTime"        type="SFTime"   access-type="outputOnly" />
+      <field id="isBound"         type="SFBool"   access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <requires id="Texturing" level="1" />
+    <node id="TextureBackground"
+          metatype-id="urn:X-openvrml:node:TextureBackground">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_bind"      type="SFBool"  access-type="inputOnly" />
+      <field id="groundAngle"   type="MFFloat" access-type="inputOutput" />
+      <field id="groundColor"   type="MFColor" access-type="inputOutput" />
+      <field id="backTexture"   type="MFNode"  access-type="inputOutput" />
+      <field id="bottomTexture" type="MFNode"  access-type="inputOutput" />
+      <field id="frontTexture"  type="MFNode"  access-type="inputOutput" />
+      <field id="leftTexture"   type="MFNode"  access-type="inputOutput" />
+      <field id="rightTexture"  type="MFNode"  access-type="inputOutput" />
+      <field id="topTexture"    type="MFNode"  access-type="inputOutput" />
+      <field id="skyAngle"      type="MFFloat" access-type="inputOutput" />
+      <field id="skyColor"      type="MFColor" access-type="inputOutput" />
+      <field id="transparency"  type="MFFloat" access-type="inputOutput" />
+      <field id="bindTime"      type="SFTime"  access-type="outputOnly" />
+      <field id="isBound"       type="SFBool"  access-type="outputOnly" />
+    </node>
+  </level>
+</component>

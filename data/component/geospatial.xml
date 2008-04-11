@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Geospatial">
+  <level>
+    <requires id="Grouping" level="1" />
+    <requires id="PointingDeviceSensor" level="1" />
+    <requires id="Navigation" level="1" />
+    <node id="GeoCoordinate"
+          metatype-id="urn:X-openvrml:node:GeoCoordinate">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="point"     type="MFVec3d"  access-type="inputOutput" />
+      <field id="geoOrigin" type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem" type="MFString" access-type="initializeOnly" />
+    </node>
+    <node id="GeoElevationGrid"
+          metatype-id="urn:X-openvrml:node:GeoElevationGrid">
+      <field id="metadata"        type="SFNode"   access-type="inputOutput" />
+      <field id="set_height"      type="MFDouble" access-type="inputOnly" />
+      <field id="color"           type="SFNode"   access-type="inputOutput" />
+      <field id="normal"          type="SFNode"   access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"   access-type="inputOutput" />
+      <field id="yScale"          type="SFFloat"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"   access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"   access-type="initializeOnly" />
+      <field id="creaseAngle"     type="SFDouble" access-type="initializeOnly" />
+      <field id="geoGridOrigin"   type="SFVec3d"  access-type="initializeOnly" />
+      <field id="geoOrigin"       type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem"       type="MFString" access-type="initializeOnly" />
+      <field id="height"          type="MFDouble" access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"   access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"   access-type="initializeOnly" />
+      <field id="xDimension"      type="SFInt32"  access-type="initializeOnly" />
+      <field id="xSpacing"        type="SFDouble" access-type="initializeOnly" />
+      <field id="zDimension"      type="SFInt32"  access-type="initializeOnly" />
+      <field id="zSpacing"        type="SFDouble" access-type="initializeOnly" />
+    </node>
+    <node id="GeoLocation"
+          metatype-id="urn:X-openvrml:node:GeoLocation">
+      <field id="metadata"       type="SFNode"   access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="geoCoords"      type="SFVec3d"  access-type="inputOutput" />
+      <field id="geoOrigin"      type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem"      type="MFString" access-type="initializeOnly" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="GeoLOD"
+          metatype-id="urn:X-openvrml:node:GeoLOD">
+      <field id="metadata"       type="SFNode"   access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="center"         type="SFVec3d"  access-type="initializeOnly" />
+      <field id="child1Url"      type="MFString" access-type="initializeOnly" />
+      <field id="child2Url"      type="MFString" access-type="initializeOnly" />
+      <field id="child3Url"      type="MFString" access-type="initializeOnly" />
+      <field id="child4Url"      type="MFString" access-type="initializeOnly" />
+      <field id="geoOrigin"      type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem"      type="MFString" access-type="initializeOnly" />
+      <field id="range"          type="SFFloat"  access-type="initializeOnly" />
+      <field id="rootUrl"        type="MFString" access-type="initializeOnly" />
+      <field id="rootNode"       type="MFNode"   access-type="initializeOnly" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="GeoMetadata"
+          metatype-id="urn:X-openvrml:node:GeoMetadata">
+      <field id="metadata" type="SFNode"   access-type="inputOutput" />
+      <field id="data"     type="MFNode"   access-type="inputOutput" />
+      <field id="summary"  type="MFString" access-type="inputOutput" />
+      <field id="url"      type="MFString" access-type="inputOutput" />
+    </node>
+    <node id="GeoOrigin"
+          metatype-id="urn:X-openvrml:node:GeoOrigin">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="geoCoords" type="SFVec3d"  access-type="inputOutput" />
+      <field id="geoSystem" type="MFString" access-type="inputOutput" />
+      <field id="rotateYUp" type="SFBool"   access-type="initializeOnly" />
+    </node>
+    <node id="GeoPositionInterpolator"
+          metatype-id="urn:X-openvrml:node:GeoPositionInterpolator">
+      <field id="metadata"         type="SFNode"   access-type="inputOutput" />
+      <field id="set_fraction"     type="SFFloat"  access-type="inputOnly" />
+      <field id="key"              type="MFFloat"  access-type="inputOutput" />
+      <field id="keyValue"         type="MFVec3d"  access-type="inputOutput" />
+      <field id="geovalue_changed" type="SFVec3d"  access-type="outputOnly" />
+      <field id="value_changed"    type="SFVec3f"  access-type="outputOnly" />
+      <field id="geoOrigin"        type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem"        type="MFString" access-type="initializeOnly" />
+    </node>
+    <node id="GeoTouchSensor"
+          metatype-id="urn:X-openvrml:node:GeoTouchSensor">
+      <field id="metadata"            type="SFNode"   access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"   access-type="inputOutput" />
+      <field id="hitNormal_changed"   type="SFVec3f"  access-type="outputOnly" />
+      <field id="hitPoint_changed"    type="SFVec3f"  access-type="outputOnly" />
+      <field id="hitTexCoord_changed" type="SFVec2f"  access-type="outputOnly" />
+      <field id="hitGeoCoord_changed" type="SFVec2d"  access-type="outputOnly" />
+      <field id="isActive"            type="SFBool"   access-type="outputOnly" />
+      <field id="isOver"              type="SFBool"   access-type="outputOnly" />
+      <field id="touchTime"           type="SFTime"   access-type="outputOnly" />
+      <field id="geoOrigin"           type="SFNode"   access-type="initializeOnly" />
+      <field id="geoSystem"           type="MFString" access-type="initializeOnly" />
+    </node>
+    <node id="GeoViewpoint"
+          metatype-id="urn:X-openvrml:node:GeoViewpoint">
+      <field id="metadata"        type="SFNode"     access-type="inputOutput" />
+      <field id="set_bind"        type="SFBool"     access-type="inputOnly" />
+      <field id="set_orientation" type="SFRotation" access-type="inputOnly" />
+      <field id="set_position"    type="SFVec3d"    access-type="inputOnly" />
+      <field id="description"     type="SFString"   access-type="inputOutput" />
+      <field id="fieldOfView"     type="SFFloat"    access-type="inputOutput" />
+      <field id="headlight"       type="SFBool"     access-type="inputOutput" />
+      <field id="jump"            type="SFBool"     access-type="inputOutput" />
+      <field id="navType"         type="MFString"   access-type="inputOutput" />
+      <field id="bindTime"        type="SFTime"     access-type="outputOnly" />
+      <field id="isBound"         type="SFBool"     access-type="outputOnly" />
+      <field id="geoOrigin"       type="SFNode"     access-type="initializeOnly" />
+      <field id="geoSystem"       type="MFString"   access-type="initializeOnly" />
+      <field id="orientation"     type="SFRotation" access-type="initializeOnly" />
+      <field id="position"        type="SFVec3d"    access-type="initializeOnly" />
+      <Field id="speedFactor"     type="SFFloat"    access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

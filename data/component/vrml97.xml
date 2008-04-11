@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="VRML97">
+  <level>
+    <node id="Anchor"
+          metatype-id="urn:X-openvrml:node:Anchor">
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="description"    type="SFString" access-type="inputOutput" />
+      <field id="parameter"      type="MFString" access-type="inputOutput" />
+      <field id="url"            type="MFString" access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="Appearance"
+          metatype-id="urn:X-openvrml:node:Appearance">
+      <field id="material"         type="SFNode" access-type="inputOutput" />
+      <field id="texture"          type="SFNode" access-type="inputOutput" />
+      <field id="textureTransform" type="SFNode" access-type="inputOutput" />
+    </node>
+    <node id="AudioClip"
+          metatype-id="urn:X-openvrml:node:AudioClip">
+      <field id="description"      type="SFString" access-type="inputOutput" />
+      <field id="loop"             type="SFBool"   access-type="inputOutput" />
+      <field id="pitch"            type="SFFloat"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"   access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"   access-type="inputOutput" />
+      <field id="url"              type="MFString" access-type="inputOutput" />
+      <field id="duration_changed" type="SFTime"   access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="Background"
+          metatype-id="urn:X-openvrml:node:Background">
+      <field id="set_bind"    type="SFBool"   access-type="inputOnly" />
+      <field id="groundAngle" type="MFFloat"  access-type="inputOutput" />
+      <field id="groundColor" type="MFColor"  access-type="inputOutput" />
+      <field id="backUrl"     type="MFString" access-type="inputOutput" />
+      <field id="bottomUrl"   type="MFString" access-type="inputOutput" />
+      <field id="frontUrl"    type="MFString" access-type="inputOutput" />
+      <field id="leftUrl"     type="MFString" access-type="inputOutput" />
+      <field id="rightUrl"    type="MFString" access-type="inputOutput" />
+      <field id="topUrl"      type="MFString" access-type="inputOutput" />
+      <field id="skyAngle"    type="MFFloat"  access-type="inputOutput" />
+      <field id="skyColor"    type="MFColor"  access-type="inputOutput" />
+      <field id="isBound"     type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="Billboard"
+          metatype-id="urn:X-openvrml:node:Billboard">
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="axisOfRotation" type="SFVec3f" access-type="inputOutput" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="Box"
+          metatype-id="urn:X-openvrml:node:Box">
+      <field id="size" type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="Collision"
+          metatype-id="urn:X-openvrml:node:Collision">
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="collide"        type="SFBool"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+      <field id="proxy"          type="SFNode"  access-type="initializeOnly" />
+      <field id="collideTime"    type="SFTime"  access-type="outputOnly" />
+    </node>
+    <node id="Color"
+          metatype-id="urn:X-openvrml:node:Color">
+      <field id="color" type="MFColor" access-type="inputOutput" />
+    </node>
+    <node id="ColorInterpolator"
+          metatype-id="urn:X-openvrml:node:ColorInterpolator">
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFColor" access-type="inputOutput" />
+      <field id="value_changed" type="SFColor" access-type="outputOnly" />
+    </node>
+    <node id="Cone"
+          metatype-id="urn:X-openvrml:node:Cone">
+      <field id="bottomRadius" type="SFFloat" access-type="initializeOnly" />
+      <field id="height"       type="SFFloat" access-type="initializeOnly" />
+      <field id="side"         type="SFBool"  access-type="initializeOnly" />
+      <field id="bottom"       type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="Coordinate"
+          metatype-id="urn:X-openvrml:node:Coordinate">
+      <field id="point" type="MFVec3f" access-type="inputOutput" />
+    </node>
+    <node id="CoordinateInterpolator"
+          metatype-id="urn:X-openvrml:node:CoordinateInterpolator">
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="MFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="Cylinder"
+          metatype-id="urn:X-openvrml:node:Cylinder">
+      <field id="bottom" type="SFBool"  access-type="initializeOnly" />
+      <field id="height" type="SFFloat" access-type="initializeOnly" />
+      <field id="radius" type="SFFloat" access-type="initializeOnly" />
+      <field id="side"   type="SFBool"  access-type="initializeOnly" />
+      <field id="top"    type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="CylinderSensor"
+          metatype-id="urn:X-openvrml:node:CylinderSensor">
+      <field id="autoOffset"         type="SFBool"     access-type="inputOutput" />
+      <field id="diskAngle"          type="SFFloat"    access-type="inputOutput" />
+      <field id="enabled"            type="SFBool"     access-type="inputOutput" />
+      <field id="maxAngle"           type="SFFloat"    access-type="inputOutput" />
+      <field id="minAngle"           type="SFFloat"    access-type="inputOutput" />
+      <field id="offset"             type="SFFloat"    access-type="inputOutput" />
+      <field id="isActive"           type="SFBool"     access-type="outputOnly" />
+      <field id="rotation_changed"   type="SFRotation" access-type="outputOnly" />
+      <field id="trackPoint_changed" type="SFVec3f"    access-type="outputOnly" />
+    </node>
+    <node id="DirectionalLight"
+          metatype-id="urn:X-openvrml:node:DirectionalLight">
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="direction"        type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+    </node>
+    <node id="ElevationGrid"
+          metatype-id="urn:X-openvrml:node:ElevationGrid">
+      <field id="set_height"      type="MFFloat" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="height"          type="MFFloat" access-type="initializeOnly" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="creaseAngle"     type="SFFloat" access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="xDimension"      type="SFInt32" access-type="initializeOnly" />
+      <field id="xSpacing"        type="SFFloat" access-type="initializeOnly" />
+      <field id="zDimension"      type="SFInt32" access-type="initializeOnly" />
+      <field id="zSpacing"        type="SFFloat" access-type="initializeOnly" />
+    </node>
+    <node id="Extrusion"
+          metatype-id="urn:X-openvrml:node:Extrusion">
+      <field id="set_crossSection" type="MFVec2f"    access-type="inputOnly" />
+      <field id="set_orientation"  type="MFRotation" access-type="inputOnly" />
+      <field id="set_scale"        type="MFVec2f"    access-type="inputOnly" />
+      <field id="set_spine"        type="MFVec3f"    access-type="inputOnly" />
+      <field id="beginCap"         type="SFBool"     access-type="initializeOnly" />
+      <field id="ccw"              type="SFBool"     access-type="initializeOnly" />
+      <field id="convex"           type="SFBool"     access-type="initializeOnly" />
+      <field id="creaseAngle"      type="SFFloat"    access-type="initializeOnly" />
+      <field id="crossSection"     type="MFVec2f"    access-type="initializeOnly" />
+      <field id="endCap"           type="SFBool"     access-type="initializeOnly" />
+      <field id="orientation"      type="MFRotation" access-type="initializeOnly" />
+      <field id="scale"            type="MFVec2f"    access-type="initializeOnly" />
+      <field id="solid"            type="SFBool"     access-type="initializeOnly" />
+      <field id="spine"            type="MFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="Fog"
+          metatype-id="urn:X-openvrml:node:Fog">
+      <field id="set_bind"        type="SFBool"   access-type="inputOnly" />
+      <field id="color"           type="SFColor"  access-type="inputOutput" />
+      <field id="fogType"         type="SFString" access-type="inputOutput" />
+      <field id="visibilityRange" type="SFFloat"  access-type="inputOutput" />
+      <field id="isBound"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="FontStyle"
+          metatype-id="urn:X-openvrml:node:FontStyle">
+      <field id="family"      type="MFString" access-type="initializeOnly" />
+      <field id="horizontal"  type="SFBool"   access-type="initializeOnly" />
+      <field id="justify"     type="MFString" access-type="initializeOnly" />
+      <field id="language"    type="SFString" access-type="initializeOnly" />
+      <field id="leftToRight" type="SFBool"   access-type="initializeOnly" />
+      <field id="size"        type="SFFloat"  access-type="initializeOnly" />
+      <field id="spacing"     type="SFFloat"  access-type="initializeOnly" />
+      <field id="style"       type="SFString" access-type="initializeOnly" />
+      <field id="topToBottom" type="SFBool"   access-type="initializeOnly" />
+    </node>
+    <node id="Group"
+          metatype-id="urn:X-openvrml:node:Group">
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="ImageTexture"
+          metatype-id="urn:X-openvrml:node:ImageTexture">
+      <field id="url"     type="MFString" access-type="inputOutput" />
+      <field id="repeatS" type="SFBool"   access-type="initializeOnly" />
+      <field id="repeatT" type="SFBool"   access-type="initializeOnly" />
+    </node>
+    <node id="IndexedFaceSet"
+          metatype-id="urn:X-openvrml:node:IndexedFaceSet">
+      <field id="set_colorIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_coordIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_normalIndex"   type="MFInt32" access-type="inputOnly" />
+      <field id="set_texCoordIndex" type="MFInt32" access-type="inputOnly" />
+      <field id="color"             type="SFNode"  access-type="inputOutput" />
+      <field id="coord"             type="SFNode"  access-type="inputOutput" />
+      <field id="normal"            type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"          type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"               type="SFBool"  access-type="initializeOnly" />
+      <field id="colorIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="colorPerVertex"    type="SFBool"  access-type="initializeOnly" />
+      <field id="convex"            type="SFBool"  access-type="initializeOnly" />
+      <field id="coordIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="creaseAngle"       type="SFFloat" access-type="initializeOnly" />
+      <field id="normalIndex"       type="MFInt32" access-type="initializeOnly" />
+      <field id="normalPerVertex"   type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"             type="SFBool"  access-type="initializeOnly" />
+      <field id="texCoordIndex"     type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="IndexedLineSet"
+          metatype-id="urn:X-openvrml:node:IndexedLineSet">
+      <field id="set_colorIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_coordIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="color"             type="SFNode"  access-type="inputOutput" />
+      <field id="coord"             type="SFNode"  access-type="inputOutput" />
+      <field id="colorIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="colorPerVertex"    type="SFBool"  access-type="initializeOnly" />
+      <field id="coordIndex"        type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="Inline"
+          metatype-id="urn:X-openvrml:node:Inline">
+      <field id="url" type="MFString" access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="LOD"
+          metatype-id="urn:X-openvrml:node:LOD">
+      <field id="level"  type="MFNode"  access-type="inputOutput" />
+      <field id="center" type="SFVec3f" access-type="initializeOnly" />
+      <field id="range"  type="MFFloat" access-type="initializeOnly" />
+    </node>
+    <node id="Material"
+          metatype-id="urn:X-openvrml:node:Material">
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="diffuseColor"     type="SFColor" access-type="inputOutput" />
+      <field id="emissiveColor"    type="SFColor" access-type="inputOutput" />
+      <field id="shininess"        type="SFFloat" access-type="inputOutput" />
+      <field id="specularColor"    type="SFColor" access-type="inputOutput" />
+      <field id="transparency"     type="SFFloat" access-type="inputOutput" />
+    </node>
+    <node id="MovieTexture"
+          metatype-id="urn:X-openvrml:node:MovieTexture">
+      <field id="loop"             type="SFBool"   access-type="inputOutput" />
+      <field id="speed"            type="SFFloat"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"   access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"   access-type="inputOutput" />
+      <field id="url"              type="MFString" access-type="inputOutput" />
+      <field id="repeatS"          type="SFBool"   access-type="initializeOnly" />
+      <field id="repeatT"          type="SFBool"   access-type="initializeOnly" />
+      <field id="duration_changed" type="SFTime"   access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="NavigationInfo"
+          metatype-id="urn:X-openvrml:node:NavigationInfo">
+      <field id="set_bind"        type="SFBool"   access-type="inputOnly" />
+      <field id="avatarSize"      type="MFFloat"  access-type="inputOutput" />
+      <field id="headlight"       type="SFBool"   access-type="inputOutput" />
+      <field id="speed"           type="SFFloat"  access-type="inputOutput" />
+      <field id="type"            type="MFString" access-type="inputOutput" />
+      <field id="visibilityLimit" type="SFFloat"  access-type="inputOutput" />
+      <field id="isBound"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="Normal"
+          metatype-id="urn:X-openvrml:node:Normal">
+      <field id="vector" type="MFVec3f" access-type="inputOutput" />
+    </node>
+    <node id="NormalInterpolator"
+          metatype-id="urn:X-openvrml:node:NormalInterpolator">
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="MFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="OrientationInterpolator"
+          metatype-id="urn:X-openvrml:node:OrientationInterpolator">
+      <field id="set_fraction"  type="SFFloat"    access-type="inputOnly" />
+      <field id="key"           type="MFFloat"    access-type="inputOutput" />
+      <field id="keyValue"      type="MFRotation" access-type="inputOutput" />
+      <field id="value_changed" type="SFRotation" access-type="outputOnly" />
+    </node>
+    <node id="PixelTexture"
+          metatype-id="urn:X-openvrml:node:PixelTexture">
+      <field id="image"   type="SFImage" access-type="inputOutput" />
+      <field id="repeatS" type="SFBool"  access-type="initializeOnly" />
+      <field id="repeatT" type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="PlaneSensor"
+          metatype-id="urn:X-openvrml:node:PlaneSensor">
+      <field id="autoOffset"          type="SFBool"  access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"  access-type="inputOutput" />
+      <field id="maxPosition"         type="SFVec2f" access-type="inputOutput" />
+      <field id="minPosition"         type="SFVec2f" access-type="inputOutput" />
+      <field id="offset"              type="SFVec3f" access-type="inputOutput" />
+      <field id="isActive"            type="SFBool"  access-type="outputOnly" />
+      <field id="trackPoint_changed"  type="SFVec3f" access-type="outputOnly" />
+      <field id="translation_changed" type="SFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="PointLight"
+          metatype-id="urn:X-openvrml:node:PointLight">
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="attenuation"      type="SFVec3f" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="location"         type="SFVec3f" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+      <field id="radius"           type="SFFloat" access-type="inputOutput" />
+    </node>
+    <node id="PointSet"
+          metatype-id="urn:X-openvrml:node:PointSet">
+      <field id="color" type="SFNode" access-type="inputOutput" />
+      <field id="coord" type="SFNode" access-type="inputOutput" />
+    </node>
+    <node id="PositionInterpolator"
+          metatype-id="urn:X-openvrml:node:PositionInterpolator">
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="SFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="ProximitySensor"
+          metatype-id="urn:X-openvrml:node:ProximitySensor">
+      <field id="center"              type="SFVec3f"    access-type="inputOutput" />
+      <field id="size"                type="SFVec3f"    access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"     access-type="inputOutput" />
+      <field id="isActive"            type="SFBool"     access-type="outputOnly" />
+      <field id="position_changed"    type="SFVec3f"    access-type="outputOnly" />
+      <field id="orientation_changed" type="SFRotation" access-type="outputOnly" />
+      <field id="enterTime"           type="SFTime"     access-type="outputOnly" />
+      <field id="exitTime"            type="SFTime"     access-type="outputOnly" />
+    </node>
+    <node id="ScalarInterpolator"
+          metatype-id="urn:X-openvrml:node:ScalarInterpolator">
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFFloat" access-type="inputOutput" />
+      <field id="value_changed" type="SFFloat" access-type="outputOnly" />
+    </node>
+    <node id="Shape"
+          metatype-id="urn:X-openvrml:node:Shape">
+      <field id="appearance" type="SFNode" access-type="inputOutput" />
+      <field id="geometry"   type="SFNode" access-type="inputOutput" />
+    </node>
+    <node id="Sound"
+          metatype-id="urn:X-openvrml:node:Sound">
+      <field id="direction"  type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"  type="SFFloat" access-type="inputOutput" />
+      <field id="location"   type="SFVec3f" access-type="inputOutput" />
+      <field id="maxBack"    type="SFFloat" access-type="inputOutput" />
+      <field id="maxFront"   type="SFFloat" access-type="inputOutput" />
+      <field id="minBack"    type="SFFloat" access-type="inputOutput" />
+      <field id="minFront"   type="SFFloat" access-type="inputOutput" />
+      <field id="priority"   type="SFFloat" access-type="inputOutput" />
+      <field id="source"     type="SFNode"  access-type="inputOutput" />
+      <field id="spatialize" type="SFBool" access-type="initializeOnly" />
+    </node>
+    <node id="Sphere"
+          metatype-id="urn:X-openvrml:node:Sphere">
+      <field id="radius" type="SFFloat" access-type="initializeOnly" />
+    </node>
+    <node id="SphereSensor"
+          metatype-id="urn:X-openvrml:node:SphereSensor">
+      <field id="autoOffset"         type="SFBool"     access-type="inputOutput" />
+      <field id="enabled"            type="SFBool"     access-type="inputOutput" />
+      <field id="offset"             type="SFRotation" access-type="inputOutput" />
+      <field id="isActive"           type="SFBool"     access-type="outputOnly" />
+      <field id="rotation_changed"   type="SFRotation" access-type="outputOnly" />
+      <field id="trackPoint_changed" type="SFVec3f"    access-type="outputOnly" />
+    </node>
+    <node id="SpotLight"
+          metatype-id="urn:X-openvrml:node:SpotLight">
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="attenuation"      type="SFVec3f" access-type="inputOutput" />
+      <field id="beamWidth"        type="SFFloat" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="cutOffAngle"      type="SFFloat" access-type="inputOutput" />
+      <field id="direction"        type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="location"         type="SFVec3f" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+      <field id="radius"           type="SFFloat" access-type="inputOutput" />
+    </node>
+    <node id="Switch"
+          metatype-id="urn:X-openvrml:node:Switch">
+      <field id="choice"      type="MFNode"  access-type="inputOutput" />
+      <field id="whichChoice" type="SFInt32" access-type="inputOutput" />
+    </node>
+    <node id="Text"
+          metatype-id="urn:X-openvrml:node:Text">
+      <field id="string"    type="MFString" access-type="inputOutput" />
+      <field id="fontStyle" type="SFNode"   access-type="inputOutput" />
+      <field id="length"    type="MFFloat"  access-type="inputOutput" />
+      <field id="maxExtent" type="SFFloat"  access-type="inputOutput" />
+    </node>
+    <node id="TextureCoordinate"
+          metatype-id="urn:X-openvrml:node:TextureCoordinate">
+      <field id="point" type="MFVec2f" access-type="inputOutput" />
+    </node>
+    <node id="TextureTransform"
+          metatype-id="urn:X-openvrml:node:TextureTransform">
+      <field id="center"           type="SFVec2f" access-type="inputOutput" />
+      <field id="rotation"         type="SFFloat" access-type="inputOutput" />
+      <field id="scale"            type="SFVec2f" access-type="inputOutput" />
+      <field id="translation"      type="SFVec2f" access-type="inputOutput" />
+    </node>
+    <node id="TimeSensor"
+          metatype-id="urn:X-openvrml:node:TimeSensor">
+      <field id="cycleInterval"    type="SFTime"  access-type="inputOutput" />
+      <field id="enabled"          type="SFBool"  access-type="inputOutput" />
+      <field id="loop"             type="SFBool"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"  access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"  access-type="inputOutput" />
+      <field id="cycleTime"        type="SFTime"  access-type="outputOnly" />
+      <field id="fraction_changed" type="SFFloat" access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"  access-type="outputOnly" />
+      <field id="time"             type="SFTime"  access-type="outputOnly" />
+    </node>
+    <node id="TouchSensor"
+          metatype-id="urn:X-openvrml:node:TouchSensor">
+      <field id="enabled"             type="SFBool"  access-type="inputOutput" />
+      <field id="hitNormal_changed"   type="SFVec3f" access-type="outputOnly" />
+      <field id="hitPoint_changed"    type="SFVec3f" access-type="outputOnly" />
+      <field id="hitTexCoord_changed" type="SFVec2f" access-type="outputOnly" />
+      <field id="isActive"            type="SFBool"  access-type="outputOnly" />
+      <field id="isOver"              type="SFBool"  access-type="outputOnly" />
+      <field id="touchTime"           type="SFTime"  access-type="outputOnly" />
+    </node>
+    <node id="Transform"
+          metatype-id="urn:X-openvrml:node:Transform">
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="Viewpoint"
+          metatype-id="urn:X-openvrml:node:Viewpoint">
+      <field id="set_bind"    type="SFBool"     access-type="inputOnly" />
+      <field id="fieldOfView" type="SFFloat"    access-type="inputOutput" />
+      <field id="jump"        type="SFBool"     access-type="inputOutput" />
+      <field id="orientation" type="SFRotation" access-type="inputOutput" />
+      <field id="position"    type="SFVec3f"    access-type="inputOutput" />
+      <field id="description" type="SFString"   access-type="initializeOnly" />
+      <field id="bindTime"    type="SFTime"     access-type="outputOnly" />
+      <field id="isBound"     type="SFBool"     access-type="outputOnly" />
+    </node>
+    <node id="VisibilitySensor"
+          metatype-id="urn:X-openvrml:node:VisibilitySensor">
+      <field id="center"              type="SFVec3f"    access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"     access-type="inputOutput" />
+      <field id="size"                type="SFVec3f"    access-type="inputOutput" />
+      <field id="enterTime"           type="SFTime"     access-type="outputOnly" />
+      <field id="exitTime"            type="SFTime"     access-type="outputOnly" />
+      <field id="isActive"            type="SFBool"     access-type="outputOnly" />
+    </node>
+    <node id="WorldInfo"
+          metatype-id="urn:X-openvrml:node:WorldInfo">
+      <field id="info"  type="MFString" access-type="initializeOnly" />
+      <field id="title" type="SFString" access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

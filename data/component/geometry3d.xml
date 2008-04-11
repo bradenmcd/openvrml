@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Geometry3D">
+  <level>
+    <requires id="Shape" level="1" />
+    <node id="Box"
+          metatype-id="urn:X-openvrml:node:Box">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="size"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="solid"    type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="Cone"
+          metatype-id="urn:X-openvrml:node:Cone">
+      <field id="metadata"     type="SFNode"  access-type="inputOutput" />
+      <field id="bottomRadius" type="SFFloat" access-type="initializeOnly" />
+      <field id="height"       type="SFFloat" access-type="initializeOnly" />
+      <field id="side"         type="SFBool"  access-type="initializeOnly" />
+      <field id="bottom"       type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"        type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="Cylinder"
+          metatype-id="urn:X-openvrml:node:Cylinder">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="bottom"   type="SFBool"  access-type="initializeOnly" />
+      <field id="height"   type="SFFloat" access-type="initializeOnly" />
+      <field id="radius"   type="SFFloat" access-type="initializeOnly" />
+      <field id="side"     type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"    type="SFBool"  access-type="initializeOnly" />
+      <field id="top"      type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="Sphere"
+          metatype-id="urn:X-openvrml:node:Sphere">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="radius"   type="SFFloat" access-type="initializeOnly" />
+      <field id="solid"    type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="IndexedFaceSet"
+          metatype-id="urn:X-openvrml:node:IndexedFaceSet">
+      <field id="metadata"          type="SFNode"  access-type="inputOutput" />
+      <field id="set_colorIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_coordIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_normalIndex"   type="MFInt32" access-type="inputOnly" />
+      <field id="set_texCoordIndex" type="MFInt32" access-type="inputOnly" />
+      <field id="color"             type="SFNode"  access-type="inputOutput" />
+      <field id="coord"             type="SFNode"  access-type="inputOutput" />
+      <field id="normal"            type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"          type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"               type="SFBool"  access-type="initializeOnly" />
+      <field id="colorIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="colorPerVertex"    type="SFBool"  access-type="initializeOnly" />
+      <field id="convex"            type="SFBool"  access-type="initializeOnly" />
+      <field id="coordIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="creaseAngle"       type="SFFloat" access-type="initializeOnly" />
+      <field id="normalIndex"       type="MFInt32" access-type="initializeOnly" />
+      <field id="normalPerVertex"   type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"             type="SFBool"  access-type="initializeOnly" />
+      <field id="texCoordIndex"     type="MFInt32" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="ElevationGrid"
+          metatype-id="urn:X-openvrml:node:ElevationGrid">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="set_height"      type="MFFloat" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="height"          type="MFFloat" access-type="initializeOnly" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="creaseAngle"     type="SFFloat" access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="xDimension"      type="SFInt32" access-type="initializeOnly" />
+      <field id="xSpacing"        type="SFFloat" access-type="initializeOnly" />
+      <field id="zDimension"      type="SFInt32" access-type="initializeOnly" />
+      <field id="zSpacing"        type="SFFloat" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="Extrusion"
+          metatype-id="urn:X-openvrml:node:Extrusion">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="set_crossSection" type="MFVec2f"    access-type="inputOnly" />
+      <field id="set_orientation"  type="MFRotation" access-type="inputOnly" />
+      <field id="set_scale"        type="MFVec2f"    access-type="inputOnly" />
+      <field id="set_spine"        type="MFVec3f"    access-type="inputOnly" />
+      <field id="beginCap"         type="SFBool"     access-type="initializeOnly" />
+      <field id="ccw"              type="SFBool"     access-type="initializeOnly" />
+      <field id="convex"           type="SFBool"     access-type="initializeOnly" />
+      <field id="creaseAngle"      type="SFFloat"    access-type="initializeOnly" />
+      <field id="crossSection"     type="MFVec2f"    access-type="initializeOnly" />
+      <field id="endCap"           type="SFBool"     access-type="initializeOnly" />
+      <field id="orientation"      type="MFRotation" access-type="initializeOnly" />
+      <field id="scale"            type="MFVec2f"    access-type="initializeOnly" />
+      <field id="solid"            type="SFBool"     access-type="initializeOnly" />
+      <field id="spine"            type="MFVec3f"    access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

@@ -103,6 +103,7 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -DPHOENIX_LIMIT=6
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
+        $(XML_CFLAGS) \
         $(FONTCONFIG_CFLAGS) \
         $(FREETYPE_CFLAGS)
 
@@ -258,6 +259,7 @@ libopenvrml_libopenvrml_la_SOURCES = \
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
+        $(XML_LIBS) \
         $(JPEG_LIBS) \
         $(PNG_LIBS) \
         $(FONTCONFIG_LIBS) \
@@ -266,6 +268,7 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
 
 libopenvrml_libopenvrml_la_LIBADD = \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
+        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
 
 openvrmlscriptdir = $(pkglibdir)/script

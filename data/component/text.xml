@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Text">
+  <level>
+    <requires id="Shape" level="1" />
+    <node id="FontStyle"
+          metatype-id="urn:X-openvrml:node:FontStyle">
+      <field id="metadata"    type="SFNode"   access-type="inputOutput" />
+      <field id="family"      type="MFString" access-type="initializeOnly" />
+      <field id="horizontal"  type="SFBool"   access-type="initializeOnly" />
+      <field id="justify"     type="MFString" access-type="initializeOnly" />
+      <field id="language"    type="SFString" access-type="initializeOnly" />
+      <field id="leftToRight" type="SFBool"   access-type="initializeOnly" />
+      <field id="size"        type="SFFloat"  access-type="initializeOnly" />
+      <field id="spacing"     type="SFFloat"  access-type="initializeOnly" />
+      <field id="style"       type="SFString" access-type="initializeOnly" />
+      <field id="topToBottom" type="SFBool"   access-type="initializeOnly" />
+    </node>
+    <node id="Text"
+          metatype-id="urn:X-openvrml:node:Text">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="string"    type="MFString" access-type="inputOutput" />
+      <field id="fontStyle" type="SFNode"   access-type="inputOutput" />
+      <field id="length"    type="MFFloat"  access-type="inputOutput" />
+      <field id="maxExtent" type="SFFloat"  access-type="inputOutput" />
+    </node>
+  </level>
+</component>

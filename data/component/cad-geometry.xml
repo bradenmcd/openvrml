@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="CADGeometry">
+  <level>
+    <node id="IndexedQuadSet"
+          metatype-id="urn:X-openvrml:node:IndexedQuadSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="set_index"       type="MFInt32" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="index"           type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="QuadSet"
+          metatype-id="urn:X-openvrml:node:QuadSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="CADAssembly"
+          metatype-id="urn:X-openvrml:node:CADAssembly">
+      <field id="metadata"       type="SFNode"   access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="name"           type="SFString" access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="CADFace"
+          metatype-id="urn:X-openvrml:node:CADFace">
+      <field id="metadata" type="SFNode"   access-type="inputOutput" />
+      <field id="name"     type="SFString" access-type="inputOutput" />
+      <field id="shape"    type="SFNode"   access-type="inputOutput" />
+    </node>
+    <node id="CADLayer"
+          metatype-id="urn:X-openvrml:node:CADLayer">
+      <field id="metadata"       type="SFNode"   access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="name"           type="SFString" access-type="inputOutput" />
+      <field id="visible"        type="MFBool"   access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="CADPart"
+          metatype-id="urn:X-openvrml:node:CADPart">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="name"             type="SFString"   access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

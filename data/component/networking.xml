@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Networking">
+  <level>
+    <requires id="Core" level="1" />
+    <!-- Level 1 has no nodes. -->
+  </level>
+  <level>
+    <requires id="Grouping" level="1" />
+    <node id="Anchor"
+          metatype-id="urn:X-openvrml:node:Anchor">
+      <field id="metadata"       type="SFNode"   access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"   access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"   access-type="inputOnly" />
+      <field id="children"       type="MFNode"   access-type="inputOutput" />
+      <field id="description"    type="SFString" access-type="inputOutput" />
+      <field id="parameter"      type="MFString" access-type="inputOutput" />
+      <field id="url"            type="MFString" access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+    <node id="Inline"
+          metatype-id="urn:X-openvrml:node:Inline">
+      <field id="metadata"   type="SFNode"   access-type="inputOutput" />
+      <field id="load"       type="SFBool"   access-type="inputOutput" />
+      <field id="url"        type="MFString" access-type="inputOutput" />
+      <field id="bboxCenter" type="SFVec3f"  access-type="initializeOnly" />
+      <field id="bboxSize"   type="SFVec3f"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="LoadSensor"
+          metatype-id="urn:X-openvrml:node:LoadSensor">
+      <field id="metadata"  type="SFNode"  access-type="inputOutput" />
+      <field id="enabled"   type="SFBool"  access-type="inputOutput" />
+      <field id="timeout"   type="SFTime"  access-type="inputOutput" />
+      <field id="watchList" type="MFNode"  access-type="inputOutput" />
+      <field id="isActive"  type="SFBool"  access-type="outputOnly" />
+      <field id="isLoaded"  type="SFBool"  access-type="outputOnly" />
+      <field id="loadTime"  type="SFTime"  access-type="outputOnly" />
+      <field id="progress"  type="SFFloat" access-type="outputOnly" />
+    </node>
+  </level>
+</component>

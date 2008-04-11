@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="H-Anim">
+  <level>
+    <requires id="Grouping" level="1" />
+    <requires id="Rendering" level="1" />
+    <requires id="Navigation" level="1" />
+    <node id="HAnimDisplacer"
+          metatype-id="urn:X-openvrml:node:HAnimDisplacer">
+      <field id="metadata"      type="SFNode"   access-type="inputOutput" />
+      <field id="coordIndex"    type="MFInt32"  access-type="inputOutput" />
+      <field id="displacements" type="MFVec3f"  access-type="inputOutput" />
+      <field id="name"          type="SFString" access-type="inputOutput" />
+      <field id="weight"        type="SFFloat"  access-type="inputOutput" />
+    </node>
+    <node id="HAnimHumanoid"
+          metatype-id="urn:X-openvrml:node:HAnimHumanoid">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="info"             type="MFString"   access-type="inputOutput" />
+      <field id="joints"           type="MFNode"     access-type="inputOutput" />
+      <field id="name"             type="SFString"   access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="segments"         type="MFNode"     access-type="inputOutput" />
+      <field id="sites"            type="MFNode"     access-type="inputOutput" />
+      <field id="skeleton"         type="MFNode"     access-type="inputOutput" />
+      <field id="skin"             type="MFNode"     access-type="inputOutput" />
+      <field id="skinCoord"        type="SFNode"     access-type="inputOutput" />
+      <field id="skinNormal"       type="SFNode"     access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="version"          type="SFString"   access-type="inputOutput" />
+      <field id="viewpoints"       type="MFNode"     access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="HAnimJoint"
+          metatype-id="urn:X-openvrml:node:HAnimJoint">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="displacers"       type="MFNode"     access-type="inputOutput" />
+      <field id="limitOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="llimit"           type="MFFloat"    access-type="inputOutput" />
+      <field id="name"             type="SFString"   access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="skinCoordIndex"   type="MFInt32"    access-type="inputOutput" />
+      <field id="skinCoordWeight"  type="MFFloat"    access-type="inputOutput" />
+      <field id="stiffness"        type="MFFloat"    access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="ulimit"           type="MFFloat"    access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="HAnimSegment"
+          metatype-id="urn:X-openvrml:node:HAnimSegment">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="centerOfMass"     type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="coord"            type="SFNode"     access-type="inputOutput" />
+      <field id="displacers"       type="MFNode"     access-type="inputOutput" />
+      <field id="mass"             type="SFFloat"    access-type="inputOutput" />
+      <field id="momentsOfInertia" type="MFFloat"    access-type="inputOutput" />
+      <field id="name"             type="SFString"   access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="HAnimSite"
+          metatype-id="urn:X-openvrml:node:HAnimSite">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="name"             type="SFString"   access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Grouping">
+  <level>
+    <requires id="Core" level="1"/>
+    <node id="Group"
+          metatype-id="urn:X-openvrml:node:Group">
+      <field id="metadata"       type="SFNode"  access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="Transform"
+          metatype-id="urn:X-openvrml:node:Transform">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="addChildren"      type="MFNode"     access-type="inputOnly" />
+      <field id="removeChildren"   type="MFNode"     access-type="inputOnly" />
+      <field id="center"           type="SFVec3f"    access-type="inputOutput" />
+      <field id="children"         type="MFNode"     access-type="inputOutput" />
+      <field id="rotation"         type="SFRotation" access-type="inputOutput" />
+      <field id="scale"            type="SFVec3f"    access-type="inputOutput" />
+      <field id="scaleOrientation" type="SFRotation" access-type="inputOutput" />
+      <field id="translation"      type="SFVec3f"    access-type="inputOutput" />
+      <field id="bboxCenter"       type="SFVec3f"    access-type="initializeOnly" />
+      <field id="bboxSize"         type="SFVec3f"    access-type="initializeOnly" />
+    </node>
+    <node id="WorldInfo"
+          metatype-id="urn:X-openvrml:node:WorldInfo">
+      <field id="metadata" type="SFNode"   access-type="inputOutput" />
+      <field id="info"     type="MFString" access-type="initializeOnly" />
+      <field id="title"    type="SFString" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="Switch"
+          metatype-id="urn:X-openvrml:node:Switch">
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="metadata"       type="SFNode"  access-type="inputOutput" />
+      <field id="whichChoice"    type="SFInt32" access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="StaticGroup"
+          metatype-id="urn:X-openvrml:node:StaticGroup">
+      <field id="metadata"   type="SFNode"  access-type="inputOutput" />
+      <field id="children"   type="MFNode"  access-type="initializeOnly" />
+      <field id="bboxCenter" type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"   type="SFVec3f" access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Sound">
+  <level>
+    <requires id="Time" level="1" />
+    <node id="AudioClip"
+          metatype-id="urn:X-openvrml:node:AudioClip">
+      <field id="metadata"         type="SFNode"   access-type="inputOutput" />
+      <field id="description"      type="SFString" access-type="inputOutput" />
+      <field id="loop"             type="SFBool"   access-type="inputOutput" />
+      <field id="pitch"            type="SFFloat"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"   access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"   access-type="inputOutput" />
+      <field id="url"              type="MFString" access-type="inputOutput" />
+      <field id="duration_changed" type="SFTime"   access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="Sound"
+          metatype-id="urn:X-openvrml:node:Sound">
+      <field id="metadata"   type="SFNode"  access-type="inputOutput" />
+      <field id="direction"  type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"  type="SFFloat" access-type="inputOutput" />
+      <field id="location"   type="SFVec3f" access-type="inputOutput" />
+      <field id="maxBack"    type="SFFloat" access-type="inputOutput" />
+      <field id="maxFront"   type="SFFloat" access-type="inputOutput" />
+      <field id="minBack"    type="SFFloat" access-type="inputOutput" />
+      <field id="minFront"   type="SFFloat" access-type="inputOutput" />
+      <field id="priority"   type="SFFloat" access-type="inputOutput" />
+      <field id="source"     type="SFNode"  access-type="inputOutput" />
+      <field id="spatialize" type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+</component>
+

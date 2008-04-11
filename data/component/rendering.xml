@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Rendering">
+  <level>
+    <requires id="Core" level="1"/>
+    <node id="Color"
+          metatype-id="urn:X-openvrml:node:Color">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="color"    type="MFColor" access-type="inputOutput" />
+    </node>
+    <node id="ColorRGBA"
+          metatype-id="urn:X-openvrml:node:ColorRGBA">
+      <field id="metadata" type="SFNode"      access-type="inputOutput" />
+      <field id="color"    type="MFColorRGBA" access-type="inputOutput" />
+    </node>
+    <node id="Coordinate"
+          metatype-id="urn:X-openvrml:node:Coordinate">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="point"    type="MFVec3f" access-type="inputOutput" />
+    </node>
+    <node id="IndexedLineSet"
+          metatype-id="urn:X-openvrml:node:IndexedLineSet">
+      <field id="metadata"          type="SFNode"  access-type="inputOutput" />
+      <field id="set_colorIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="set_coordIndex"    type="MFInt32" access-type="inputOnly" />
+      <field id="color"             type="SFNode"  access-type="inputOutput" />
+      <field id="coord"             type="SFNode"  access-type="inputOutput" />
+      <field id="colorIndex"        type="MFInt32" access-type="initializeOnly" />
+      <field id="colorPerVertex"    type="SFBool"  access-type="initializeOnly" />
+      <field id="coordIndex"        type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="LineSet"
+          metatype-id="urn:X-openvrml:node:LineSet">
+      <field id="metadata"    type="SFNode"  access-type="inputOutput" />
+      <field id="color"       type="SFNode"  access-type="inputOutput" />
+      <field id="coord"       type="SFNode"  access-type="inputOutput" />
+      <field id="vertexCount" type="MFInt32" access-type="inputOutput" />
+    </node>
+    <node id="PointSet"
+          metatype-id="urn:X-openvrml:node:PointSet">
+      <field id="metadata"    type="SFNode"  access-type="inputOutput" />
+      <field id="color"       type="SFNode"  access-type="inputOutput" />
+      <field id="coord"       type="SFNode"  access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="Normal"
+          metatype-id="urn:X-openvrml:node:Normal">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="vector"   type="MFVec3f" access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="IndexedTriangleFanSet"
+          metatype-id="urn:X-openvrml:node:IndexedTriangleFanSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="set_index"       type="MFInt32" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="index"           type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="IndexedTriangleSet"
+          metatype-id="urn:X-openvrml:node:IndexedTriangleSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="set_index"       type="MFInt32" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="index"           type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="IndexedTriangleStripSet"
+          metatype-id="urn:X-openvrml:node:IndexedTriangleStripSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="set_index"       type="MFInt32" access-type="inputOnly" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="creaseAngle"     type="SFFloat" access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+      <field id="index"           type="MFInt32" access-type="initializeOnly" />
+    </node>
+    <node id="TriangleFanSet"
+          metatype-id="urn:X-openvrml:node:TriangleFanSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="fanCount"        type="MFInt32" access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="TriangleSet"
+          metatype-id="urn:X-openvrml:node:TriangleSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="TriangleStripSet"
+          metatype-id="urn:X-openvrml:node:TriangleStripSet">
+      <field id="metadata"        type="SFNode"  access-type="inputOutput" />
+      <field id="color"           type="SFNode"  access-type="inputOutput" />
+      <field id="coord"           type="SFNode"  access-type="inputOutput" />
+      <field id="normal"          type="SFNode"  access-type="inputOutput" />
+      <field id="stripCount"      type="MFInt32" access-type="inputOutput" />
+      <field id="texCoord"        type="SFNode"  access-type="inputOutput" />
+      <field id="ccw"             type="SFBool"  access-type="initializeOnly" />
+      <field id="colorPerVertex"  type="SFBool"  access-type="initializeOnly" />
+      <field id="normalPerVertex" type="SFBool"  access-type="initializeOnly" />
+      <field id="solid"           type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level/> <!-- Level 4 has no additional nodes. -->
+</component>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Lighting">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="DirectionalLight"
+          metatype-id="urn:X-openvrml:node:DirectionalLight">
+      <field id="metadata"         type="SFNode"  access-type="inputOutput" />
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="direction"        type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="PointLight"
+          metatype-id="urn:X-openvrml:node:PointLight">
+      <field id="metadata"         type="SFNode"  access-type="inputOutput" />
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="attenuation"      type="SFVec3f" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="location"         type="SFVec3f" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+      <field id="radius"           type="SFFloat" access-type="inputOutput" />
+    </node>
+    <node id="SpotLight"
+          metatype-id="urn:X-openvrml:node:SpotLight">
+      <field id="metadata"         type="SFNode"  access-type="inputOutput" />
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="attenuation"      type="SFVec3f" access-type="inputOutput" />
+      <field id="beamWidth"        type="SFFloat" access-type="inputOutput" />
+      <field id="color"            type="SFColor" access-type="inputOutput" />
+      <field id="cutOffAngle"      type="SFFloat" access-type="inputOutput" />
+      <field id="direction"        type="SFVec3f" access-type="inputOutput" />
+      <field id="intensity"        type="SFFloat" access-type="inputOutput" />
+      <field id="location"         type="SFVec3f" access-type="inputOutput" />
+      <field id="on"               type="SFBool"  access-type="inputOutput" />
+      <field id="radius"           type="SFFloat" access-type="inputOutput" />
+    </node>
+  </level>
+  <level/> <!-- Level 3 has no additional nodes. -->
+</component>

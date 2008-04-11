@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Time">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="TimeSensor"
+          metatype-id="urn:X-openvrml:node:TimeSensor">
+      <field id="metadata"         type="SFNode"  access-type="inputOutput" />
+      <field id="cycleInterval"    type="SFTime"  access-type="inputOutput" />
+      <field id="enabled"          type="SFBool"  access-type="inputOutput" />
+      <field id="loop"             type="SFBool"  access-type="inputOutput" />
+      <field id="pauseTime"        type="SFTime"  access-type="inputOutput" />
+      <field id="resumeTime"       type="SFTime"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"  access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"  access-type="inputOutput" />
+      <field id="cycleTime"        type="SFTime"  access-type="outputOnly" />
+      <field id="elapsedTime"      type="SFTime"  access-type="outputOnly" />
+      <field id="fraction_changed" type="SFFloat" access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"  access-type="outputOnly" />
+      <field id="isPaused"         type="SFBool"  access-type="outputOnly" />
+      <field id="time"             type="SFTime"  access-type="outputOnly" />
+    </node>
+  </level>
+  <level/> <!-- No additional nodes in Level 2. -->
+</component>

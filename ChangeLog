@@ -1,3 +1,70 @@
+2007-04-11 Braden McDaniel  <braden@endoframe.com>
+
+	Moved component definitions to XML descriptor files.  Use libxml's
+	SAX interface for parsing.
+
+	* Makefile.am (SUBDIRS): Added "data".
+	* configure.ac: Added "data/Makefile" to AC_OUTPUT; use pkg-config
+	to find libxml.
+	* data/Makefile.am: Added file.
+	* data/component/cad-geometry.xml: Added file; CADGeometry
+	component descriptor.
+	* data/component/core.xml: Added file; Core component descriptor.
+	* data/component/dis.xml: Added file; DIS component descriptor.
+	* data/component/environmental-effects.xml: Added file;
+	EnvironmentalEffects component descriptor.
+	* data/component/environmental-sensor.xml: Added file;
+	EnvironmentalSensor component descriptor.
+	* data/component/event-utilities.xml: Added file; EventUtilities
+	component descriptor.
+	* data/component/geometry2d.xml: Added file; Geometry2D component
+	descriptor.
+	* data/component/geometry3d.xml: Added file; Geometry3D component
+	descriptor.
+	* data/component/geospatial.xml: Added file; Geospatial component
+	descriptor.
+	* data/component/grouping.xml: Added file; Grouping component
+	descriptor.
+	* data/component/h-anim.xml: Added file; H-Anim component
+	descriptor.
+	* data/component/interpolation.xml: Added file; Interpolation
+	component descriptor.
+	* data/component/key-device-sensor.xml: Added file;
+	KeyDeviceSensor component descriptor.
+	* data/component/lighting.xml: Added file; Lighting component
+	descriptor.
+	* data/component/navigation.xml: Added file; Navigation component
+	descriptor.
+	* data/component/networking.xml: Added file; Networking component
+	descriptor.
+	* data/component/nurbs.xml: Added file; NURBS component
+	descriptor.
+	* data/component/pointing-device-sensor.xml: Added file;
+	PointingDeviceSensor component descriptor.
+	* data/component/rendering.xml: Added file; Rendering component
+	descriptor.
+	* data/component/shape.xml: Added file; Shape component
+	descriptor.
+	* data/component/sound.xml: Added file; Sound component
+	descriptor.
+	* data/component/text.xml: Added file; Text component descriptor.
+	* data/component/texturing.xml: Added file; Texturing component
+	descriptor.
+	* data/component/time.xml: Added file; Time component descriptor.
+	* data/component/vrml97.xml: Added file; VRML97 component
+	descriptor.
+	* tests/Makefile.am
+	(TESTS_ENVIRONMENT): Set OPENVRML_DATADIR for the test execution
+	environment.
+	(check-local): Set OPENVRML_DATADIR for the test execution
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_CXXFLAGS): Added XML_CFLAGS.
+	(libopenvrml_libopenvrml_la_LDFLAGS): Added XML_LIBS.
+	(libopenvrml_libopenvrml_la_LIBADD): Added -lboost_filesystem.
+	* src/libopenvrml/openvrml/browser.cpp: Removed explicit component
+	definitions in code; instead, parse XML resource files to create
+	component definitions.
+
 2007-04-08 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed a potential crash during creation of the Gtk widget.

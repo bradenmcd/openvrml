@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="EventUtilities">
+  <level>
+    <node id="BooleanFilter"
+          metatype-id="urn:X-openvrml:node:BooleanFilter">
+      <field id="metadata"    type="SFNode" access-type="inputOutput" />
+      <field id="set_boolean" type="SFBool" access-type="inputOnly" />
+      <field id="inputFalse"  type="SFBool" access-type="outputOnly" />
+      <field id="inputNegate" type="SFBool" access-type="outputOnly" />
+      <field id="inputTrue"   type="SFBool" access-type="outputOnly" />
+    </node>
+    <node id="BooleanSequencer"
+          metatype-id="urn:X-openvrml:node:BooleanSequencer">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="next"          type="SFBool"  access-type="inputOnly" />
+      <field id="previous"      type="SFBool"  access-type="inputOnly" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFBool"  access-type="inputOutput" />
+      <field id="value_changed" type="SFBool"  access-type="outputOnly" />
+    </node>
+    <node id="BooleanToggle"
+          metatype-id="urn:X-openvrml:node:BooleanToggle">
+      <field id="metadata"    type="SFNode" access-type="inputOutput" />
+      <field id="set_boolean" type="SFBool" access-type="inputOnly" />
+      <field id="toggle"      type="SFBool" access-type="inputOutput" />
+    </node>
+    <node id="BooleanTrigger"
+          metatype-id="urn:X-openvrml:node:BooleanTrigger">
+      <field id="metadata"        type="SFNode" access-type="inputOutput" />
+      <field id="set_triggerTime" type="SFTime" access-type="inputOnly" />
+      <field id="triggerTrue"     type="SFBool" access-type="outputOnly" />
+    </node>
+    <node id="IntegerSequencer"
+          metatype-id="urn:X-openvrml:node:IntegerSequencer">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="next"          type="SFBool"  access-type="inputOnly" />
+      <field id="previous"      type="SFBool"  access-type="inputOnly" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFInt32" access-type="inputOutput" />
+      <field id="value_changed" type="SFInt32" access-type="outputOnly" />
+    </node>
+    <node id="IntegerTrigger"
+          metatype-id="urn:X-openvrml:node:IntegerTrigger">
+      <field id="metadata"     type="SFNode"  access-type="inputOutput" />
+      <field id="set_boolean"  type="SFBool"  access-type="inputOnly" />
+      <field id="integerKey"   type="MFInt32" access-type="inputOutput" />
+      <field id="triggerValue" type="SFInt32" access-type="outputOnly" />
+    </node>
+    <node id="TimeTrigger"
+          metatype-id="urn:X-openvrml:node:TimeTrigger">
+      <field id="metadata"    type="SFNode" access-type="inputOutput" />
+      <field id="set_boolean" type="SFBool" access-type="inputOnly" />
+      <field id="triggerTime" type="SFTime" access-type="outputOnly" />
+    </node>
+  </level>
+</component>

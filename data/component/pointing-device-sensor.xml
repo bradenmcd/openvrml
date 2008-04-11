@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="PointingDeviceSensor">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="CylinderSensor"
+          metatype-id="urn:X-openvrml:node:CylinderSensor">
+      <field id="metadata"           type="SFNode"     access-type="inputOutput" />
+      <field id="autoOffset"         type="SFBool"     access-type="inputOutput" />
+      <field id="diskAngle"          type="SFFloat"    access-type="inputOutput" />
+      <field id="enabled"            type="SFBool"     access-type="inputOutput" />
+      <field id="maxAngle"           type="SFFloat"    access-type="inputOutput" />
+      <field id="minAngle"           type="SFFloat"    access-type="inputOutput" />
+      <field id="offset"             type="SFFloat"    access-type="inputOutput" />
+      <field id="isActive"           type="SFBool"     access-type="outputOnly" />
+      <field id="rotation_changed"   type="SFRotation" access-type="outputOnly" />
+      <field id="trackPoint_changed" type="SFVec3f"    access-type="outputOnly" />
+    </node>
+    <node id="PlaneSensor"
+          metatype-id="urn:X-openvrml:node:PlaneSensor">
+      <field id="metadata"            type="SFNode"  access-type="inputOutput" />
+      <field id="autoOffset"          type="SFBool"  access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"  access-type="inputOutput" />
+      <field id="maxPosition"         type="SFVec2f" access-type="inputOutput" />
+      <field id="minPosition"         type="SFVec2f" access-type="inputOutput" />
+      <field id="offset"              type="SFVec3f" access-type="inputOutput" />
+      <field id="isActive"            type="SFBool"  access-type="outputOnly" />
+      <field id="trackPoint_changed"  type="SFVec3f" access-type="outputOnly" />
+      <field id="translation_changed" type="SFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="SphereSensor"
+          metatype-id="urn:X-openvrml:node:SphereSensor">
+      <field id="metadata"           type="SFNode"     access-type="inputOutput" />
+      <field id="autoOffset"         type="SFBool"     access-type="inputOutput" />
+      <field id="enabled"            type="SFBool"     access-type="inputOutput" />
+      <field id="offset"             type="SFRotation" access-type="inputOutput" />
+      <field id="isActive"           type="SFBool"     access-type="outputOnly" />
+      <field id="rotation_changed"   type="SFRotation" access-type="outputOnly" />
+      <field id="trackPoint_changed" type="SFVec3f"    access-type="outputOnly" />
+    </node>
+    <node id="TouchSensor"
+          metatype-id="urn:X-openvrml:node:TouchSensor">
+      <field id="metadata"            type="SFNode"  access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"  access-type="inputOutput" />
+      <field id="hitNormal_changed"   type="SFVec3f" access-type="outputOnly" />
+      <field id="hitPoint_changed"    type="SFVec3f" access-type="outputOnly" />
+      <field id="hitTexCoord_changed" type="SFVec2f" access-type="outputOnly" />
+      <field id="isActive"            type="SFBool"  access-type="outputOnly" />
+      <field id="isOver"              type="SFBool"  access-type="outputOnly" />
+      <field id="touchTime"           type="SFTime"  access-type="outputOnly" />
+    </node>
+  </level>
+</component>

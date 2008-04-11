@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="EnvironmentalSensor">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="ProximitySensor"
+          metatype-id="urn:X-openvrml:node:ProximitySensor">
+      <field id="metadata"            type="SFNode"     access-type="inputOutput" />
+      <field id="center"              type="SFVec3f"    access-type="inputOutput" />
+      <field id="size"                type="SFVec3f"    access-type="inputOutput" />
+      <field id="enabled"             type="SFBool"     access-type="inputOutput" />
+      <field id="isActive"            type="SFBool"     access-type="outputOnly" />
+      <field id="position_changed"    type="SFVec3f"    access-type="outputOnly" />
+      <field id="orientation_changed" type="SFRotation" access-type="outputOnly" />
+      <field id="enterTime"           type="SFTime"     access-type="outputOnly" />
+      <field id="exitTime"            type="SFTime"     access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="VisibilitySensor"
+          metatype-id="urn:X-openvrml:node:VisibilitySensor">
+      <field id="metadata"  type="SFNode"  access-type="inputOutput" />
+      <field id="center"    type="SFVec3f" access-type="inputOutput" />
+      <field id="enabled"   type="SFBool"  access-type="inputOutput" />
+      <field id="size"      type="SFVec3f" access-type="inputOutput" />
+      <field id="enterTime" type="SFTime"  access-type="outputOnly" />
+      <field id="exitTime"  type="SFTime"  access-type="outputOnly" />
+      <field id="isActive"  type="SFBool"  access-type="outputOnly" />
+    </node>
+  </level>
+</component>

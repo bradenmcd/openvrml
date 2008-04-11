@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Shape">
+  <level>
+    <requires id="Rendering" level="1" />
+    <requires id="Texturing" level="1" />
+    <node id="Appearance"
+          metatype-id="urn:X-openvrml:node:Appearance">
+      <field id="metadata"         type="SFNode" access-type="inputOutput" />
+      <field id="material"         type="SFNode" access-type="inputOutput" />
+      <field id="texture"          type="SFNode" access-type="inputOutput" />
+      <field id="textureTransform" type="SFNode" access-type="inputOutput" />
+    </node>
+    <node id="Material"
+          metatype-id="urn:X-openvrml:node:Material">
+      <field id="metadata"         type="SFNode" access-type="inputOutput" />
+      <field id="ambientIntensity" type="SFFloat" access-type="inputOutput" />
+      <field id="diffuseColor"     type="SFColor" access-type="inputOutput" />
+      <field id="emissiveColor"    type="SFColor" access-type="inputOutput" />
+      <field id="shininess"        type="SFFloat" access-type="inputOutput" />
+      <field id="specularColor"    type="SFColor" access-type="inputOutput" />
+      <field id="transparency"     type="SFFloat" access-type="inputOutput" />
+    </node>
+    <node id="Shape"
+          metatype-id="urn:X-openvrml:node:Shape">
+      <field id="metadata"   type="SFNode" access-type="inputOutput" />
+      <field id="appearance" type="SFNode" access-type="inputOutput" />
+      <field id="geometry"   type="SFNode" access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="Appearance"
+          metatype-id="urn:X-openvrml:node:Appearance">
+      <field id="metadata"         type="SFNode" access-type="inputOutput" />
+      <field id="lineProperties"   type="SFNode" access-type="inputOutput" />
+      <field id="material"         type="SFNode" access-type="inputOutput" />
+      <field id="texture"          type="SFNode" access-type="inputOutput" />
+      <field id="textureTransform" type="SFNode" access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="Appearance"
+          metatype-id="urn:X-openvrml:node:Appearance">
+      <field id="metadata"         type="SFNode" access-type="inputOutput" />
+      <field id="fillProperties"   type="SFNode" access-type="inputOutput" />
+      <field id="lineProperties"   type="SFNode" access-type="inputOutput" />
+      <field id="material"         type="SFNode" access-type="inputOutput" />
+      <field id="texture"          type="SFNode" access-type="inputOutput" />
+      <field id="textureTransform" type="SFNode" access-type="inputOutput" />
+    </node>
+  </level>
+</component>

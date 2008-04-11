@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Core">
+  <level>
+    <node id="MetadataDouble"
+          metatype-id="urn:X-openvrml:node:MetadataDouble">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="name"      type="SFString" access-type="inputOutput" />
+      <field id="reference" type="SFString" access-type="inputOutput" />
+      <field id="value"     type="MFDouble" access-type="inputOutput" />
+    </node>
+    <node id="MetadataFloat"
+          metatype-id="urn:X-openvrml:node:MetadataFloat">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="name"      type="SFString" access-type="inputOutput" />
+      <field id="reference" type="SFString" access-type="inputOutput" />
+      <field id="value"     type="MFFloat"  access-type="inputOutput" />
+    </node>
+    <node id="MetadataInteger"
+          metatype-id="urn:X-openvrml:node:MetadataInteger">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="name"      type="SFString" access-type="inputOutput" />
+      <field id="reference" type="SFString" access-type="inputOutput" />
+      <field id="value"     type="MFInt32"  access-type="inputOutput" />
+    </node>
+    <node id="MetadataSet"
+          metatype-id="urn:X-openvrml:node:MetadataSet">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="name"      type="SFString" access-type="inputOutput" />
+      <field id="reference" type="SFString" access-type="inputOutput" />
+      <field id="value"     type="MFNode"   access-type="inputOutput" />
+    </node>
+    <node id="MetadataString"
+          metatype-id="urn:X-openvrml:node:MetadataString">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="name"      type="SFString" access-type="inputOutput" />
+      <field id="reference" type="SFString" access-type="inputOutput" />
+      <field id="value"     type="MFString" access-type="inputOutput" />
+    </node>
+  </level>
+  <level/> <!-- No additional nodes in Level 2. -->
+</component>

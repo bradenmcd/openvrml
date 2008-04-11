@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Geometry2D">
+  <level>
+    <requires id="Shape" level="1" />
+    <node id="Polyline2D"
+          metatype-id="urn:X-openvrml:node:Polyline2D">
+      <field id="metadata"     type="SFNode"  access-type="inputOutput" />
+      <field id="lineSegments" type="MFVec2f" access-type="initializeOnly" />
+    </node>
+    <node id="Polypoint2D"
+          metatype-id="urn:X-openvrml:node:Polypoint2D">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="point"    type="MFVec2f" access-type="initializeOnly" />
+    </node>
+    <node id="Rectangle2D"
+          metatype-id="urn:X-openvrml:node:Rectangle2D">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="size"     type="SFVec2f" access-type="initializeOnly" />
+      <field id="solid"    type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="TriangleSet2D"
+          metatype-id="urn:X-openvrml:node:TriangleSet2D">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="vertices" type="MFVec2f" access-type="inputOutput" />
+      <field id="solid"    type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="Arc2D"
+          metatype-id="urn:X-openvrml:node:Arc2D">
+      <field id="metadata"   type="SFNode"  access-type="inputOutput" />
+      <field id="endAngle"   type="SFFloat" access-type="initializeOnly" />
+      <field id="radius"     type="SFFloat" access-type="initializeOnly" />
+      <field id="startAngle" type="SFFloat" access-type="initializeOnly" />
+    </node>
+    <node id="ArcClose2D"
+          metatype-id="urn:X-openvrml:node:ArcClose2D">
+      <field id="metadata"    type="SFNode"   access-type="inputOutput" />
+      <field id="closureType" type="SFString" access-type="initializeOnly" />
+      <field id="endAngle"    type="SFFloat"  access-type="initializeOnly" />
+      <field id="radius"      type="SFFloat"  access-type="initializeOnly" />
+      <field id="solid"       type="SFBool"   access-type="initializeOnly" />
+      <field id="startAngle"  type="SFFloat"  access-type="initializeOnly" />
+    </node>
+    <node id="Circle2D"
+          metatype-id="urn:X-openvrml:node:Circle2D">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="radius"   type="SFFloat" access-type="initializeOnly" />
+    </node>
+    <node id="Disk2D"
+          metatype-id="urn:X-openvrml:node:Disk2D">
+      <field id="metadata"    type="SFNode"  access-type="inputOutput" />
+      <field id="innerRadius" type="SFFloat" access-type="initializeOnly" />
+      <field id="outerRadius" type="SFFloat" access-type="initializeOnly" />
+      <field id="solid"       type="SFBool"  access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

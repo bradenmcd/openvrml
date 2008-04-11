@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Navigation">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="NavigationInfo"
+          metatype-id="urn:X-openvrml:node:NavigationInfo">
+      <field id="metadata"        type="SFNode"   access-type="inputOutput" />
+      <field id="set_bind"        type="SFBool"   access-type="inputOnly" />
+      <field id="avatarSize"      type="MFFloat"  access-type="inputOutput" />
+      <field id="headlight"       type="SFBool"   access-type="inputOutput" />
+      <field id="speed"           type="SFFloat"  access-type="inputOutput" />
+      <field id="transitionType"  type="MFString" access-type="inputOutput" />
+      <field id="type"            type="MFString" access-type="inputOutput" />
+      <field id="visibilityLimit" type="SFFloat"  access-type="inputOutput" />
+      <field id="bindTime"        type="SFTime"   access-type="outputOnly" />
+      <field id="isBound"         type="SFBool"   access-type="outputOnly" />
+    </node>
+    <node id="Viewpoint"
+          metatype-id="urn:X-openvrml:node:Viewpoint">
+      <field id="metadata"         type="SFNode"     access-type="inputOutput" />
+      <field id="set_bind"         type="SFBool"     access-type="inputOnly" />
+      <field id="description"      type="SFString"   access-type="inputOutput" />
+      <field id="centerOfRotation" type="SFVec3f"    access-type="inputOutput" />
+      <field id="fieldOfView"      type="SFFloat"    access-type="inputOutput" />
+      <field id="jump"             type="SFBool"     access-type="inputOutput" />
+      <field id="orientation"      type="SFRotation" access-type="inputOutput" />
+      <field id="position"         type="SFVec3f"    access-type="inputOutput" />
+      <field id="bindTime"         type="SFTime"     access-type="outputOnly" />
+      <field id="isBound"          type="SFBool"     access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <requires id="Grouping" level="1" />
+    <requires id="Shape" level="1" />
+    <node id="Billboard"
+          metatype-id="urn:X-openvrml:node:Billboard">
+      <field id="metadata"       type="SFNode"  access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="axisOfRotation" type="SFVec3f" access-type="inputOutput" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+    </node>
+    <node id="Collision"
+          metatype-id="urn:X-openvrml:node:Collision">
+      <field id="metadata"       type="SFNode"  access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="enabled"        type="SFBool"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+      <field id="proxy"          type="SFNode"  access-type="initializeOnly" />
+      <field id="collideTime"    type="SFTime"  access-type="outputOnly" />
+      <field id="isActive"       type="SFBool"  access-type="outputOnly" />
+    </node>
+    <node id="LOD"
+          metatype-id="urn:X-openvrml:node:LOD">
+      <field id="metadata"       type="SFNode"  access-type="inputOutput" />
+      <field id="addChildren"    type="MFNode"  access-type="inputOnly" />
+      <field id="removeChildren" type="MFNode"  access-type="inputOnly" />
+      <field id="children"       type="MFNode"  access-type="inputOutput" />
+      <field id="bboxCenter"     type="SFVec3f" access-type="initializeOnly" />
+      <field id="bboxSize"       type="SFVec3f" access-type="initializeOnly" />
+      <field id="center"         type="SFVec3f" access-type="initializeOnly" />
+      <field id="range"          type="MFFloat" access-type="initializeOnly" />
+    </node>
+  </level>
+</component>

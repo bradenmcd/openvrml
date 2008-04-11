@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Interpolation">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="CoordinateInterpolator"
+          metatype-id="urn:X-openvrml:node:CoordinateInterpolator">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="MFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="OrientationInterpolator"
+          metatype-id="urn:X-openvrml:node:OrientationInterpolator">
+      <field id="metadata"      type="SFNode"     access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat"    access-type="inputOnly" />
+      <field id="key"           type="MFFloat"    access-type="inputOutput" />
+      <field id="keyValue"      type="MFRotation" access-type="inputOutput" />
+      <field id="value_changed" type="SFRotation" access-type="outputOnly" />
+    </node>
+    <node id="PositionInterpolator"
+          metatype-id="urn:X-openvrml:node:PositionInterpolator">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="SFVec3f" access-type="outputOnly" />
+    </node>
+    <node id="ScalarInterpolator"
+          metatype-id="urn:X-openvrml:node:ScalarInterpolator">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFFloat" access-type="inputOutput" />
+      <field id="value_changed" type="SFFloat" access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="ColorInterpolator"
+          metatype-id="urn:X-openvrml:node:ColorInterpolator">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFColor" access-type="inputOutput" />
+      <field id="value_changed" type="SFColor" access-type="outputOnly" />
+    </node>
+    <node id="NormalInterpolator"
+          metatype-id="urn:X-openvrml:node:NormalInterpolator">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec3f" access-type="inputOutput" />
+      <field id="value_changed" type="MFVec3f" access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="CoordinateInterpolator2D"
+          metatype-id="urn:X-openvrml:node:CoordinateInterpolator2D">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec2f" access-type="inputOutput" />
+      <field id="value_changed" type="MFVec2f" access-type="outputOnly" />
+    </node>
+    <node id="PositionInterpolator2D"
+          metatype-id="urn:X-openvrml:node:PositionInterpolator2D">
+      <field id="metadata"      type="SFNode"  access-type="inputOutput" />
+      <field id="set_fraction"  type="SFFloat" access-type="inputOnly" />
+      <field id="key"           type="MFFloat" access-type="inputOutput" />
+      <field id="keyValue"      type="MFVec2f" access-type="inputOutput" />
+      <field id="value_changed" type="SFVec2f" access-type="outputOnly" />
+    </node>
+  </level>
+</component>

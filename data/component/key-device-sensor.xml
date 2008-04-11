@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="KeyDeviceSensor">
+  <level>
+    <requires id="Core" level="1" />
+    <node id="KeySensor"
+          metatype-id="urn:X-openvrml:node:KeySensor">
+      <field id="metadata"         type="SFNode"   access-type="inputOutput" />
+      <field id="enabled"          type="SFBool"   access-type="inputOutput" />
+      <field id="actionKeyPress"   type="SFInt32"  access-type="outputOnly" />
+      <field id="actionKeyRelease" type="SFInt32"  access-type="outputOnly" />
+      <field id="altKey"           type="SFBool"   access-type="outputOnly" />
+      <field id="controlKey"       type="SFBool"   access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"   access-type="outputOnly" />
+      <field id="keyPress"         type="SFString" access-type="outputOnly" />
+      <field id="keyRelease"       type="SFString" access-type="outputOnly" />
+      <field id="shiftKey"         type="SFBool"   access-type="outputOnly" />
+    </node>
+  </level>
+  <level>
+    <node id="StringSensor"
+          metatype-id="urn:X-openvrml:node:StringSensor">
+      <field id="metadata"        type="SFNode"   access-type="inputOutput" />
+      <field id="deletionAllowed" type="SFBool"   access-type="inputOutput" />
+      <field id="enabled"         type="SFBool"   access-type="inputOutput" />
+      <field id="enteredText"     type="SFString" access-type="outputOnly" />
+      <field id="finalText"       type="SFString" access-type="outputOnly" />
+      <field id="isActive"        type="SFBool"   access-type="outputOnly" />
+    </node>
+  </level>
+</component>

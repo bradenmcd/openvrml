@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="Texturing">
+  <level>
+    <requires id="Core" level="1"/>
+    <node id="ImageTexture"
+          metatype-id="urn:X-openvrml:node:ImageTexture">
+      <field id="metadata" type="SFNode"   access-type="inputOutput" />
+      <field id="url"      type="MFString" access-type="inputOutput" />
+      <field id="repeatS"  type="SFBool"   access-type="initializeOnly" />
+      <field id="repeatT"  type="SFBool"   access-type="initializeOnly" />
+    </node>
+    <node id="PixelTexture"
+          metatype-id="urn:X-openvrml:node:PixelTexture">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="image"    type="SFImage" access-type="inputOutput" />
+      <field id="repeatS"  type="SFBool"  access-type="initializeOnly" />
+      <field id="repeatT"  type="SFBool"  access-type="initializeOnly" />
+    </node>
+    <node id="TextureCoordinate"
+          metatype-id="urn:X-openvrml:node:TextureCoordinate">
+      <field id="metadata" type="SFNode"  access-type="inputOutput" />
+      <field id="point"    type="MFVec2f" access-type="inputOutput" />
+    </node>
+    <node id="TextureTransform"
+          metatype-id="urn:X-openvrml:node:TextureTransform">
+      <field id="metadata"    type="SFNode"  access-type="inputOutput" />
+      <field id="center"      type="SFVec2f" access-type="inputOutput" />
+      <field id="rotation"    type="SFFloat" access-type="inputOutput" />
+      <field id="scale"       type="SFVec2f" access-type="inputOutput" />
+      <field id="translation" type="SFVec2f" access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="MultiTexture"
+          metatype-id="urn:X-openvrml:node:MultiTexture">
+      <field id="metadata" type="SFNode"   access-type="inputOutput" />
+      <field id="alpha"    type="SFFloat"  access-type="inputOutput" />
+      <field id="color"    type="SFColor"  access-type="inputOutput" />
+      <field id="function" type="MFString" access-type="inputOutput" />
+      <field id="mode"     type="MFString" access-type="inputOutput" />
+      <field id="source"   type="MFString" access-type="inputOutput" />
+      <field id="texture"  type="MFNode"   access-type="inputOutput" />
+    </node>
+    <node id="MultiTextureCoordinate"
+          metatype-id="urn:X-openvrml:node:MultiTextureCoordinate">
+      <field id="metadata" type="SFNode" access-type="inputOutput" />
+      <field id="texCoord" type="MFNode" access-type="inputOutput" />
+    </node>
+    <node id="MultiTextureTransform"
+          metatype-id="urn:X-openvrml:node:MultiTextureTransform">
+      <field id="metadata"         type="SFNode" access-type="inputOutput" />
+      <field id="textureTransform" type="MFNode" access-type="inputOutput" />
+    </node>
+    <node id="TextureCoordinateGenerator"
+          metatype-id="urn:X-openvrml:node:TextureCoordinateGenerator">
+      <field id="metadata"  type="SFNode"   access-type="inputOutput" />
+      <field id="mode"      type="SFString" access-type="inputOutput" />
+      <field id="parameter" type="MFFloat"  access-type="inputOutput" />
+    </node>
+  </level>
+  <level>
+    <node id="MovieTexture"
+          metatype-id="urn:X-openvrml:node:MovieTexture">
+      <field id="metadata"         type="SFNode"   access-type="inputOutput" />
+      <field id="loop"             type="SFBool"   access-type="inputOutput" />
+      <field id="speed"            type="SFFloat"  access-type="inputOutput" />
+      <field id="startTime"        type="SFTime"   access-type="inputOutput" />
+      <field id="stopTime"         type="SFTime"   access-type="inputOutput" />
+      <field id="url"              type="MFString" access-type="inputOutput" />
+      <field id="repeatS"          type="SFBool"   access-type="initializeOnly" />
+      <field id="repeatT"          type="SFBool"   access-type="initializeOnly" />
+      <field id="duration_changed" type="SFTime"   access-type="outputOnly" />
+      <field id="isActive"         type="SFBool"   access-type="outputOnly" />
+    </node>
+  </level>
+</component>
