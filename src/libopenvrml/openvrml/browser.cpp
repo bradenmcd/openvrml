@@ -6172,10 +6172,12 @@ namespace {
 }
 
 extern "C"
+OPENVRML_LOCAL
 void openvrml_component_parser_startElement(void * ctx, 
                                             const xmlChar * name, 
                                             const xmlChar ** atts);
 extern "C"
+OPENVRML_LOCAL
 void openvrml_component_parser_endElement(void * ctx, 
                                           const xmlChar * name);
 

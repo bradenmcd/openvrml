@@ -1,3 +1,13 @@
+2007-04-12 Braden McDaniel  <braden@endoframe.com>
+
+	Applied OPENVRML_LOCAL to libxml callback functions.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml_component_parser_startElement(void *, const xmlChar *,
+	const xmlChar **)): Applied OPENVRML_LOCAL.
+	(openvrml_component_parser_endElement(void *, const xmlChar *)):
+	Applied OPENVRML_LOCAL.
+
 2007-04-11 Braden McDaniel  <braden@endoframe.com>
 
 	Moved component definitions to XML descriptor files.  Use libxml's
