@@ -6917,8 +6917,8 @@ openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
                                            const double timestamp)
 {
     read_write_mutex::scoped_read_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(),
-             init_node_metatype(initial_viewpoint, timestamp));
+    std::for_each(this->map_.begin(), this->map_.end(),
+                  init_node_metatype(initial_viewpoint, timestamp));
 }
 
 /**
@@ -7023,7 +7023,8 @@ namespace {
 void openvrml::browser::node_metatype_map::render(openvrml::viewer & v)
 {
     read_write_mutex::scoped_read_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(), render_node_metatype(v));
+    std::for_each(this->map_.begin(), this->map_.end(),
+                  render_node_metatype(v));
 }
 
 namespace {
@@ -7054,8 +7055,8 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
     OPENVRML_NOTHROW
 {
     read_write_mutex::scoped_read_lock lock(this->mutex_);
-    for_each(this->map_.begin(), this->map_.end(),
-             shutdown_node_metatype(timestamp));
+    std::for_each(this->map_.begin(), this->map_.end(),
+                  shutdown_node_metatype(timestamp));
 }
 
 /**
@@ -7843,10 +7844,10 @@ const std::string openvrml::browser::world_url() const
  */
 void openvrml::browser::set_world(resource_istream & in)
 {
+    using std::for_each;
     {
         read_write_mutex::scoped_read_write_lock scene_lock(this->scene_mutex_);
 
-        using std::for_each;
         using std::string;
 
         //
