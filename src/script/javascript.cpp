@@ -1606,6 +1606,8 @@ namespace {
                                 jsval * const val)
         OPENVRML_NOTHROW
     {
+        using std::find_if;
+
         JSString * const str = JS_ValueToString(cx, id);
         if (!str) { return JS_FALSE; }
         const char * const eventId = JS_GetStringBytes(str);
@@ -1659,6 +1661,8 @@ namespace {
                                      jsval * const val)
         OPENVRML_NOTHROW
     {
+        using std::find_if;
+
         JSString * const str = JS_ValueToString(cx, id);
         if (!str) { return JS_FALSE; }
         const char * const fieldId = JS_GetStringBytes(str);

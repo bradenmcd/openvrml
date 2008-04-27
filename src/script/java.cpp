@@ -2262,6 +2262,7 @@ void JNICALL Java_vrml_node_Script_emitEvent(JNIEnv * const env,
     boost::ignore_unused_variable_warning(id_chars_guard);
 
     try {
+        using std::find_if;
         using openvrml::field_value;
         script & s = get_Script_peer(*env, obj);
 

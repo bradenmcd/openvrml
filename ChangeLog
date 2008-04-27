@@ -1,3 +1,25 @@
+2007-04-26 Braden McDaniel  <braden@endoframe.com>
+
+	Qualification fixes to satisfy gcc 4.3 pickiness.
+
+	* src/script/java.cpp
+	(Java_vrml_node_Script_emitEvent(JNIEnv *, jobject, jstring,
+	jobject)): Import std::find_if.
+	* src/script/javascript.cpp
+	(eventOut_setProperty(JSContext *, JSObject *, jsval, jsval *)):
+	Import std::find_if.
+	(script::field_setProperty(JSContext *, JSObject *, jsval,
+	jsval *)): Import std::find_if.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
+	double)): Qualify std::for_each.
+	(openvrml::browser::node_metatype_map::render(openvrml::viewer&)):
+	Qualify std::for_each.
+	(openvrml::browser::node_metatype_map::shutdown(double)): Qualify
+	std::for_each.
+	(openvrml::browser::set_world(resource_istream &)): Import
+	std::for_each into the function's outermost scope.
+
 2007-04-12 Braden McDaniel  <braden@endoframe.com>
 
 	Applied OPENVRML_LOCAL to libxml callback functions.
