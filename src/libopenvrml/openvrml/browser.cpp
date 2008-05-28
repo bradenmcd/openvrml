@@ -11952,17 +11952,17 @@ void openvrml_component_parser_startElement(void * ctx,
         parser.state = component::parser::field;
         try {
             using openvrml::node_interface;
-            node_interface interface;
+            node_interface interface_;
             while (*atts) {
                 using boost::lexical_cast;
                 using openvrml::field_value;
                 if (xmlStrcmp(*atts, BAD_CAST("id")) == 0) {
                     ++atts;
-                    interface.id.assign(*atts, *atts + xmlStrlen(*atts));
+                    interface_.id.assign(*atts, *atts + xmlStrlen(*atts));
                 } else if (xmlStrcmp(*atts, BAD_CAST("type")) == 0) {
                     ++atts;
                     try {
-                        interface.field_type =
+                        interface_.field_type =
                             lexical_cast<field_value::type_id>(
                                 string(*atts, *atts + xmlStrlen(*atts)));
                     } catch (const boost::bad_lexical_cast &) {
@@ -11973,7 +11973,7 @@ void openvrml_component_parser_startElement(void * ctx,
                 } else if (xmlStrcmp(*atts, BAD_CAST("access-type")) == 0) {
                     ++atts;
                     try {
-                        interface.type =
+                        interface_.type =
                             lexical_cast<node_interface::type_id>(
                                 string(*atts, *atts + xmlStrlen(*atts)));
                     } catch (const boost::bad_lexical_cast &) {
@@ -11986,7 +11986,7 @@ void openvrml_component_parser_startElement(void * ctx,
                 }
                 ++atts;
             }
-            parser.current_node->second.interfaces.insert(interface);
+            parser.current_node->second.interfaces.insert(interface_);
         } catch (const boost::bad_lexical_cast &) {}
         break;
     case component::parser::field: default:
