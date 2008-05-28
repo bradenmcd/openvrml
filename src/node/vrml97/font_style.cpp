@@ -362,75 +362,75 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & fontStyleNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfstring>(
                         &font_style_node::family_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &font_style_node::horizontal_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfstring>(
                         &font_style_node::justify_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfstring>(
                         &font_style_node::language_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &font_style_node::leftToRight)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sffloat>(
                         &font_style_node::size_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sffloat>(
                         &font_style_node::spacing_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfstring>(
                         &font_style_node::style_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &font_style_node::topToBottom)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             fontStyleNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -447,7 +447,7 @@ do_create_type(const std::string & id,
                     abstract_node<font_style_node>::exposedfield<sfnode> >(
                         &font_style_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

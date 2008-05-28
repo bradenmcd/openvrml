@@ -389,12 +389,12 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & sphereSensorNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -410,7 +410,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
                         &sphere_sensor_node::auto_offset_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -426,7 +426,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
                         &sphere_sensor_node::enabled_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -442,7 +442,7 @@ do_create_type(const std::string & id,
                         new node_type_t::event_emitter_ptr<
                         abstract_node<sphere_sensor_node>::
                         exposedfield<sfrotation> >(&sphere_sensor_node::offset_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -450,7 +450,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::sfbool_emitter>(
                         &sphere_sensor_node::is_active_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -458,7 +458,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::sfrotation_emitter>(
                         &sphere_sensor_node::rotation_changed_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -466,7 +466,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::sfvec3f_emitter>(
                         &sphere_sensor_node::track_point_changed_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -482,7 +482,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
                         &sphere_sensor_node::metadata)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -498,7 +498,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
                         &sphere_sensor_node::description_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -507,7 +507,7 @@ do_create_type(const std::string & id,
                     abstract_node<sphere_sensor_node>::sfbool_emitter>(
                         &sphere_sensor_node::is_over_emitter_)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

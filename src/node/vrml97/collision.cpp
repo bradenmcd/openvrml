@@ -213,12 +213,12 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & collisionNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -226,7 +226,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     collision_node::add_children_listener>(
                         &collision_node::add_children_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -234,7 +234,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     collision_node::remove_children_listener>(
                         &collision_node::remove_children_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -250,7 +250,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     collision_node::children_exposedfield>(
                         &collision_node::children_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -266,28 +266,28 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<collision_node>::exposedfield<sfbool> >(
                         &collision_node::collide_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfvec3f>(
                         &collision_node::bbox_center_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfvec3f>(
                         &collision_node::bbox_size_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfnode>(
                         &collision_node::proxy_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -295,7 +295,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<collision_node>::sftime_emitter>(
                         &collision_node::collide_time_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -311,7 +311,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<collision_node>::exposedfield<sfnode> >(
                         &collision_node::metadata)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -327,7 +327,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<collision_node>::exposedfield<sfbool> >(
                         &collision_node::collide_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -336,7 +336,7 @@ do_create_type(const std::string & id,
                     abstract_node<collision_node>::sfbool_emitter>(
                         &collision_node::is_active_emitter_)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

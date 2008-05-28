@@ -573,12 +573,12 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & movieTextureNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -594,7 +594,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sfbool> >(
                         &movie_texture_node::loop_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -609,7 +609,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::sffloat_emitter>(
                         &movie_texture_node::speed_changed_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -625,7 +625,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sftime> >(
                         &movie_texture_node::start_time_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -641,7 +641,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sftime> >(
                         &movie_texture_node::stop_time_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -658,21 +658,21 @@ do_create_type(const std::string & id,
                         new node_type_t::event_emitter_ptr<
                         abstract_node<movie_texture_node>::
                         exposedfield<mfstring> >(&movie_texture_node::url_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &movie_texture_node::repeat_s_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &movie_texture_node::repeat_t_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -680,7 +680,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::sftime_emitter>(
                         &movie_texture_node::duration_changed_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -688,7 +688,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::sfbool_emitter>(
                         &movie_texture_node::is_active_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -704,7 +704,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sfnode> >(
                         &movie_texture_node::metadata)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -720,7 +720,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sftime> >(
                         &movie_texture_node::pause_time_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -736,7 +736,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::exposedfield<sftime> >(
                         &movie_texture_node::resume_time_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -744,7 +744,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<movie_texture_node>::sftime_emitter>(
                         &movie_texture_node::elapsed_time_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -753,7 +753,7 @@ do_create_type(const std::string & id,
                     abstract_node<movie_texture_node>::sfbool_emitter>(
                         &movie_texture_node::is_paused_emitter_)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
 }
     return type;

@@ -1,3 +1,63 @@
+2007-05-28 Braden McDaniel  <braden@endoframe.com>
+
+	Replaced "interface" with "interface_" for Windows-friendliness.
+
+	* src/node/vrml97/anchor.cpp
+	* src/node/vrml97/appearance.cpp
+	* src/node/vrml97/audio_clip.cpp
+	* src/node/vrml97/background.cpp
+	* src/node/vrml97/billboard.cpp
+	* src/node/vrml97/box.cpp
+	* src/node/vrml97/cad_assembly.cpp
+	* src/node/vrml97/cad_layer.cpp
+	* src/node/vrml97/collision.cpp
+	* src/node/vrml97/color.cpp
+	* src/node/vrml97/color_interpolator.cpp
+	* src/node/vrml97/cone.cpp
+	* src/node/vrml97/coordinate.cpp
+	* src/node/vrml97/coordinate_interpolator.cpp
+	* src/node/vrml97/cylinder.cpp
+	* src/node/vrml97/cylinder_sensor.cpp
+	* src/node/vrml97/directional_light.cpp
+	* src/node/vrml97/elevation_grid.cpp
+	* src/node/vrml97/extrusion.cpp
+	* src/node/vrml97/fog.cpp
+	* src/node/vrml97/font_style.cpp
+	* src/node/vrml97/group.cpp
+	* src/node/vrml97/image_texture.cpp
+	* src/node/vrml97/indexed_face_set.cpp
+	* src/node/vrml97/indexed_line_set.cpp
+	* src/node/vrml97/inline.cpp
+	* src/node/vrml97/lod.cpp
+	* src/node/vrml97/material.cpp
+	* src/node/vrml97/movie_texture.cpp
+	* src/node/vrml97/navigation_info.cpp
+	* src/node/vrml97/normal.cpp
+	* src/node/vrml97/normal_interpolator.cpp
+	* src/node/vrml97/orientation_interpolator.cpp
+	* src/node/vrml97/pixel_texture.cpp
+	* src/node/vrml97/plane_sensor.cpp
+	* src/node/vrml97/point_light.cpp
+	* src/node/vrml97/point_set.cpp
+	* src/node/vrml97/position_interpolator.cpp
+	* src/node/vrml97/proximity_sensor.cpp
+	* src/node/vrml97/scalar_interpolator.cpp
+	* src/node/vrml97/shape.cpp
+	* src/node/vrml97/sound.cpp
+	* src/node/vrml97/sphere.cpp
+	* src/node/vrml97/sphere_sensor.cpp
+	* src/node/vrml97/spot_light.cpp
+	* src/node/vrml97/switch.cpp
+	* src/node/vrml97/text.cpp
+	* src/node/vrml97/texture_coordinate.cpp
+	* src/node/vrml97/texture_transform.cpp
+	* src/node/vrml97/time_sensor.cpp
+	* src/node/vrml97/touch_sensor.cpp
+	* src/node/vrml97/transform.cpp
+	* src/node/vrml97/viewpoint.cpp
+	* src/node/vrml97/visibility_sensor.cpp
+	* src/node/vrml97/world_info.cpp
+
 2007-04-26 Braden McDaniel  <braden@endoframe.com>
 
 	Qualification fixes to satisfy gcc 4.3 pickiness.

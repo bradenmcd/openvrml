@@ -243,12 +243,12 @@ do_create_type(const std::string & id,
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & navigationInfoNodeType =
         static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -256,7 +256,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     navigation_info_node::set_bind_listener>(
                         &navigation_info_node::set_bind_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -275,7 +275,7 @@ do_create_type(const std::string & id,
                         abstract_node<navigation_info_node>::
                         exposedfield<mffloat> >(
                             &navigation_info_node::avatar_size_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -294,7 +294,7 @@ do_create_type(const std::string & id,
                         abstract_node<navigation_info_node>::
                         exposedfield<sfbool> >(
                             &navigation_info_node::headlight_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -313,7 +313,7 @@ do_create_type(const std::string & id,
                         abstract_node<navigation_info_node>::
                         exposedfield<sffloat> >(
                             &navigation_info_node::speed_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -332,7 +332,7 @@ do_create_type(const std::string & id,
                         abstract_node<navigation_info_node>::
                         exposedfield<mfstring> >(
                             &navigation_info_node::type_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -351,7 +351,7 @@ do_create_type(const std::string & id,
                         abstract_node<navigation_info_node>::
                         exposedfield<sffloat> >(
                             &navigation_info_node::visibility_limit_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -359,7 +359,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<navigation_info_node>::sfbool_emitter>(
                         &navigation_info_node::is_bound_emitter_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -375,7 +375,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<navigation_info_node>::exposedfield<sfnode> >(
                         &navigation_info_node::metadata)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -391,7 +391,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<navigation_info_node>::exposedfield<mfstring> >(
                         &navigation_info_node::transition_type_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -400,7 +400,7 @@ do_create_type(const std::string & id,
                     abstract_node<navigation_info_node>::sftime_emitter>(
                         &navigation_info_node::bind_time_emitter_)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

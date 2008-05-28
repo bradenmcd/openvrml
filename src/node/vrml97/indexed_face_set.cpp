@@ -573,12 +573,12 @@ do_create_type(const std::string & id,
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & indexedFaceSetNodeType =
         static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -586,7 +586,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     indexed_face_set_node::set_color_index_listener>(
                         &indexed_face_set_node::set_color_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -594,7 +594,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     indexed_face_set_node::set_coord_index_listener>(
                         &indexed_face_set_node::set_coord_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -602,7 +602,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     indexed_face_set_node::set_normal_index_listener>(
                         &indexed_face_set_node::set_normal_index_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -610,7 +610,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     indexed_face_set_node::set_tex_coord_index_listener>(
                         &indexed_face_set_node::set_tex_coord_index_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -629,7 +629,7 @@ do_create_type(const std::string & id,
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::color_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -648,7 +648,7 @@ do_create_type(const std::string & id,
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::coord_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -667,7 +667,7 @@ do_create_type(const std::string & id,
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::normal_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -686,77 +686,77 @@ do_create_type(const std::string & id,
                         abstract_node<indexed_face_set_node>::
                         exposedfield<sfnode> >(
                             &indexed_face_set_node::tex_coord_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &indexed_face_set_node::ccw_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_face_set_node::color_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &indexed_face_set_node::color_per_vertex_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &indexed_face_set_node::convex_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_face_set_node::coord_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sffloat>(
                         &indexed_face_set_node::crease_angle_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_face_set_node::normal_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &indexed_face_set_node::normal_per_vertex_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &indexed_face_set_node::solid_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<mfint32>(
                         &indexed_face_set_node::tex_coord_index_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -773,8 +773,8 @@ do_create_type(const std::string & id,
                     abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
                         &indexed_face_set_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
-}
+    }
     return type;
 }

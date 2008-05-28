@@ -1468,6 +1468,8 @@ namespace {
     {
         using std::vector;
 # ifdef _WIN32
+        using namespace boost::multi_index::detail;  // for scope_guard
+
         LOGFONT lf;
         lf.lfHeight =         0;
         lf.lfWidth =          0;

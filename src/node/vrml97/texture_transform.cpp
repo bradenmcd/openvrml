@@ -209,12 +209,12 @@ do_create_type(const std::string & id,
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & textureTransformNodeType =
         static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             textureTransformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -233,7 +233,7 @@ do_create_type(const std::string & id,
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::center_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             textureTransformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -252,7 +252,7 @@ do_create_type(const std::string & id,
                         abstract_node<texture_transform_node>::
                         exposedfield<sffloat> >(
                             &texture_transform_node::rotation_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             textureTransformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -271,7 +271,7 @@ do_create_type(const std::string & id,
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::scale_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             textureTransformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -290,7 +290,7 @@ do_create_type(const std::string & id,
                         abstract_node<texture_transform_node>::
                         exposedfield<sfvec2f> >(
                             &texture_transform_node::translation_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             textureTransformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -307,7 +307,7 @@ do_create_type(const std::string & id,
                     abstract_node<texture_transform_node>::exposedfield<sfnode> >(
                         &texture_transform_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
 }
     return type;

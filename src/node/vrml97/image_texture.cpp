@@ -331,12 +331,12 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & imageTextureNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -352,21 +352,21 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     image_texture_node::url_exposedfield>(
                         &image_texture_node::url_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &image_texture_node::repeat_s_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
                 node_type_t::field_ptr_ptr(
                     new node_type_t::field_ptr<sfbool>(
                         &image_texture_node::repeat_t_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -383,7 +383,7 @@ do_create_type(const std::string & id,
                     abstract_node<image_texture_node>::exposedfield<sfnode> >(
                         &image_texture_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

@@ -279,12 +279,12 @@ do_create_type(const std::string & id,
 
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & spotLightNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -300,7 +300,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sffloat> >(
                         &spot_light_node::ambient_intensity_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -316,7 +316,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                         &spot_light_node::attenuation_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -332,7 +332,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sffloat> >(
                         &spot_light_node::beam_width_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -348,7 +348,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sfcolor> >(
                         &spot_light_node::color_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -364,7 +364,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sffloat> >(
                         &spot_light_node::cut_off_angle_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -380,7 +380,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                         &spot_light_node::direction_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -396,7 +396,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sffloat> >(
                         &spot_light_node::intensity_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -412,7 +412,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
                         &spot_light_node::location_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -428,7 +428,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sfbool> >(
                         &spot_light_node::on_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -444,7 +444,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_emitter_ptr<
                     abstract_node<spot_light_node>::exposedfield<sffloat> >(
                         &spot_light_node::radius_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -461,7 +461,7 @@ do_create_type(const std::string & id,
                     abstract_node<spot_light_node>::exposedfield<sfnode> >(
                         &spot_light_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;

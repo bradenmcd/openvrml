@@ -323,12 +323,12 @@ do_create_type(const std::string & id,
     const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
     node_type_t & orientationInterpolatorNodeType =
         static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
+    for (node_interface_set::const_iterator interface_(interfaces.begin());
+         interface_ != interfaces.end();
+         ++interface_) {
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
+        if (*interface_ == *++supported_interface) {
             orientationInterpolatorNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -336,7 +336,7 @@ do_create_type(const std::string & id,
                     new node_type_t::event_listener_ptr<
                     orientation_interpolator_node::set_fraction_listener>(
                         &orientation_interpolator_node::set_fraction_listener_)));
-        } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             orientationInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -355,7 +355,7 @@ do_create_type(const std::string & id,
                         abstract_node<orientation_interpolator_node>::
                         exposedfield<mffloat> >(
                             &orientation_interpolator_node::key_)));
-    } else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             orientationInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -374,7 +374,7 @@ do_create_type(const std::string & id,
                         abstract_node<orientation_interpolator_node>::
                         exposedfield<mfrotation> >(
                             &orientation_interpolator_node::key_value_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             orientationInterpolatorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -383,7 +383,7 @@ do_create_type(const std::string & id,
                     abstract_node<orientation_interpolator_node>::
                     sfrotation_emitter>(
                         &orientation_interpolator_node::value_changed_emitter_)));
-} else if (*interface == *++supported_interface) {
+        } else if (*interface_ == *++supported_interface) {
             orientationInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
@@ -400,7 +400,7 @@ do_create_type(const std::string & id,
                     abstract_node<orientation_interpolator_node>::exposedfield<sfnode> >(
                         &orientation_interpolator_node::metadata)));
         } else {
-            throw unsupported_interface(*interface);
+            throw unsupported_interface(*interface_);
         }
     }
     return type;
