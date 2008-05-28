@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="__WIN32__;_DEBUG;_LIB;HAVE_STDIO_H;HAVE_STDLIB_H;HAVE_STRING_H;HAVE_CTYPE_H;HAVE_MEMORY_H;HAVE_ERRNO_H;HAVE_ASSERT_H;error_t=int;LTDL_OBJDIR=\&quot;.\&quot;"
+				PreprocessorDefinitions="__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;HAVE_STDIO_H;HAVE_STDLIB_H;HAVE_STRING_H;HAVE_CTYPE_H;HAVE_MEMORY_H;HAVE_ERRNO_H;HAVE_ASSERT_H;error_t=int;LTDL_OBJDIR=\&quot;.\&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -149,7 +149,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\..\..\..\..\..\usr\share\libtool\libltdl\ltdl.c"
+				RelativePath="..\..\..\..\..\libltdl\ltdl.c"
 				>
 			</File>
 		</Filter>
@@ -159,7 +159,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\..\..\..\..\..\..\usr\share\libtool\libltdl\ltdl.h"
+				RelativePath="..\..\..\..\..\libltdl\ltdl.h"
 				>
 			</File>
 		</Filter>
