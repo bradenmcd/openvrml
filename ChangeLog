@@ -1,5 +1,10 @@
 2007-05-28 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Added VRML97 node source files.
+
+2007-05-28 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h:
 	Define OPENVRML_JAVASCRIPT_LOCAL.
 
