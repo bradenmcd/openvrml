@@ -48,6 +48,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -104,12 +105,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="__WIN32__;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;HAVE_STDIO_H;HAVE_STDLIB_H;HAVE_STRING_H;HAVE_CTYPE_H;HAVE_MEMORY_H;HAVE_ERRNO_H;HAVE_ASSERT_H;error_t=int;LTDL_OBJDIR=\&quot;.\&quot;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CompileAs="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

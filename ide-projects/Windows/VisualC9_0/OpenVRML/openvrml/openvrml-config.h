@@ -36,7 +36,6 @@
 #   endif
 
 #   define OPENVRML_LOCAL
-#   define OPENVRML_JAVASCRIPT_LOCAL
 
 #   define OPENVRML_ENABLE_EXCEPTION_SPECS 0
 
