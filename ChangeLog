@@ -1,3 +1,9 @@
+2007-06-11 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
+	Notify any waiting writers.
+
 2007-05-31 Braden McDaniel  <braden@endoframe.com>
 
 	Visual C++ project file changes to get Release builds working.
