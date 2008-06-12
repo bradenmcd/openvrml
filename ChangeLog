@@ -1,3 +1,16 @@
+2007-06-12 Braden McDaniel  <braden@endoframe.com>
+
+	Increment read_write_mutex::readers_active_ on
+	scoped_read_write_lock promotion and decrement it on demotion.
+	Otherwise, the scoped_read_write_lock's thread may not get
+	notified on destruction of a scoped_read_lock.
+
+	* src/libopenvrml/openvrml/read_write_mutex.cpp
+	(openvrml::read_write_mutex::scoped_read_write_lock::promote()):
+	Decrement read_write_mutex::readers_active_.
+	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
+	Increment read_write_mutex::readers_active_.
+
 2007-06-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/read_write_mutex.cpp

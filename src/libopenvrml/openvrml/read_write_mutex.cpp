@@ -265,9 +265,10 @@ void openvrml::read_write_mutex::scoped_read_write_lock::promote()
 {
     this->lock_.lock();
     assert(!this->mutex_.writing_);
-    if (this->mutex_.readers_active_ != 1) {
+    --this->mutex_.readers_active_;
+    if (this->mutex_.readers_active_ != 0) {
         ++this->mutex_.writers_waiting_;
-        while (this->mutex_.readers_active_ != 1) {
+        while (this->mutex_.readers_active_ != 0) {
             this->mutex_.write_.wait(this->lock_);
         }
         --this->mutex_.writers_waiting_;
@@ -279,16 +280,19 @@ void openvrml::read_write_mutex::scoped_read_write_lock::promote()
 /**
  * @brief Demote the lock from a write lock back to a read lock.
  *
- * If the lock has not previously been promoted, this function has no effect.
+ * If the lock has not been promoted previously, this function has no effect.
  */
 void openvrml::read_write_mutex::scoped_read_write_lock::demote()
 {
     this->lock_.lock();
-    this->mutex_.writing_ = false;
-    if (this->mutex_.readers_waiting_ != 0) {
-        this->mutex_.read_.notify_all();
-    } else if (this->mutex_.writers_waiting_ != 0) {
-        this->mutex_.read_.notify_one();
+    if (this->mutex_.writing_) {
+        ++this->mutex_.readers_active_;
+        this->mutex_.writing_ = false;
+        if (this->mutex_.readers_waiting_ != 0) {
+            this->mutex_.read_.notify_all();
+        } else if (this->mutex_.writers_waiting_ != 0) {
+            this->mutex_.write_.notify_one();
+        }
     }
     this->lock_.unlock();
 }
