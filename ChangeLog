@@ -1,3 +1,9 @@
+2007-06-16 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp: Added missing namespace
+	qualification to openvrml::node uses.
+	From Steinar Hamre <steinarh@users.sourceforge.net>
+
 2007-06-13 Braden McDaniel  <braden@endoframe.com>
 
 	Increment read_write_mutex::readers_active_ on
