@@ -1,4 +1,20 @@
-2007-06-12 Braden McDaniel  <braden@endoframe.com>
+2008-06-16 Braden McDaniel  <braden@endoframe.com>
+
+	Added missing namespace qualification to openvrml::node uses.
+	From Steinar Hamre <steinarh@users.sourceforge.net>
+
+	* src/node/vrml97/grouping_node_base.h
+	* src/node/vrml97/lod.cpp
+	* src/node/vrml97/inline.cpp
+	* src/node/vrml97/cad_layer.cpp
+	* src/node/vrml97/switch.cpp
+
+2008-06-15 Braden McDaniel  <braden@endoframe.com>
+
+	* models/warbird.wrl: Changed 'vrmlscript' references to
+	'javascript'.
+
+2008-06-12 Braden McDaniel  <braden@endoframe.com>
 
 	Increment read_write_mutex::readers_active_ on
 	scoped_read_write_lock promotion and decrement it on demotion.
@@ -11,13 +27,13 @@
 	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
 	Increment read_write_mutex::readers_active_.
 
-2007-06-11 Braden McDaniel  <braden@endoframe.com>
+2008-06-11 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/read_write_mutex.cpp
 	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
 	Notify any waiting writers.
 
-2007-05-31 Braden McDaniel  <braden@endoframe.com>
+2008-05-31 Braden McDaniel  <braden@endoframe.com>
 
 	Visual C++ project file changes to get Release builds working.
 
@@ -26,27 +42,27 @@
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h
 	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
 
-2007-05-28 Braden McDaniel  <braden@endoframe.com>
+2008-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
 	Added VRML97 node source files.
 
-2007-05-28 Braden McDaniel  <braden@endoframe.com>
+2008-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h:
 	Define OPENVRML_JAVASCRIPT_LOCAL.
 
-2007-05-28 Braden McDaniel  <braden@endoframe.com>
+2008-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp: Replaced "interface" with
 	"interface_" for Windows-friendliness.
 
-2007-05-28 Braden McDaniel  <braden@endoframe.com>
+2008-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/ltdl/ltdl.vcproj: Refer
 	to the local libltdl copy.
 
-2007-05-28 Braden McDaniel  <braden@endoframe.com>
+2008-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	Replaced "interface" with "interface_" for Windows-friendliness.
 
@@ -106,7 +122,7 @@
 	* src/node/vrml97/visibility_sensor.cpp
 	* src/node/vrml97/world_info.cpp
 
-2007-04-26 Braden McDaniel  <braden@endoframe.com>
+2008-04-26 Braden McDaniel  <braden@endoframe.com>
 
 	Qualification fixes to satisfy gcc 4.3 pickiness.
 
@@ -128,7 +144,7 @@
 	(openvrml::browser::set_world(resource_istream &)): Import
 	std::for_each into the function's outermost scope.
 
-2007-04-12 Braden McDaniel  <braden@endoframe.com>
+2008-04-12 Braden McDaniel  <braden@endoframe.com>
 
 	Applied OPENVRML_LOCAL to libxml callback functions.
 
@@ -138,7 +154,7 @@
 	(openvrml_component_parser_endElement(void *, const xmlChar *)):
 	Applied OPENVRML_LOCAL.
 
-2007-04-11 Braden McDaniel  <braden@endoframe.com>
+2008-04-11 Braden McDaniel  <braden@endoframe.com>
 
 	Moved component definitions to XML descriptor files.  Use libxml's
 	SAX interface for parsing.
@@ -205,7 +221,7 @@
 	definitions in code; instead, parse XML resource files to create
 	component definitions.
 
-2007-04-08 Braden McDaniel  <braden@endoframe.com>
+2008-04-08 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed a potential crash during creation of the Gtk widget.
 

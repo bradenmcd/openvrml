@@ -67,7 +67,7 @@ namespace {
 
         virtual void do_render_child(openvrml::viewer & viewer,
                                      openvrml::rendering_context context);
-        virtual const std::vector<boost::intrusive_ptr<node> >
+        virtual const std::vector<boost::intrusive_ptr<openvrml::node> >
             do_children() const OPENVRML_THROW1(std::bad_alloc);
         virtual void recalc_bsphere();
     };
