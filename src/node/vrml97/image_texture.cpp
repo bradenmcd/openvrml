@@ -242,8 +242,13 @@ namespace {
      */
     void image_texture_node::update_texture()
     {
-        using openvrml_node_vrml97::image_stream_listener;
+        //
+        // If the node hasn't been initialized yet, bail.
+        //
+        if (!this->scene()) { return; }
+
         if (this->texture_needs_update) {
+            using openvrml_node_vrml97::image_stream_listener;
             try {
                 if (!this->url_.mfstring::value().empty()) {
                     using std::auto_ptr;

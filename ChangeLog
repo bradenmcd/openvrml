@@ -1,5 +1,18 @@
 2008-06-16 Braden McDaniel  <braden@endoframe.com>
 
+	If the node hasn't been initialized, we can't use the scene
+	pointer.  Modified update_textures functions to return without
+	doing anything if the node hasn't yet been initialized.
+
+	* src/node/vrml97/background.cpp
+	(openvrml_node_vrml97::background_node::update_textures()): Return
+	without doing anything if the node has not been initialized.
+	* src/node/vrml97/image_texture.cpp
+	(image_texture_node::update_texture()): Return without doing
+	anything if the node has not been initialized.
+
+2008-06-16 Braden McDaniel  <braden@endoframe.com>
+
 	Added missing namespace qualification to openvrml::node uses.
 	From Steinar Hamre <steinarh@users.sourceforge.net>
 

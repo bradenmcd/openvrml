@@ -997,6 +997,11 @@ namespace {
 void openvrml_node_vrml97::background_node::update_textures()
     OPENVRML_THROW1(std::bad_alloc)
 {
+    //
+    // If the node hasn't been initialized yet, bail.
+    //
+    if (!this->scene()) { return; }
+
     if (this->front_needs_update) {
         update_texture(*this,
                        this->front_mutex_,
