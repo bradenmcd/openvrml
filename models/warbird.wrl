@@ -70,7 +70,7 @@ Billboard
       eventIn SFBool   isactive_in
       eventOut SFBool  fire 
       field SFBool old_isactive FALSE
-      url "vrmlscript:            
+      url "javascript:            
       function initialize()            
          {            
          fire=FALSE;
@@ -111,7 +111,7 @@ Billboard
          field SFFloat leng 1
          field SFFloat winkelkorrektur 0
 
-         url "vrmlscript:
+         url "javascript:
          function initialize()
             {
             translation_out[0]=0;
@@ -288,7 +288,7 @@ Transform
       field SFInt32 deleted 0
       field SFVec3f box 10000 10000 10000
       field SFFloat boxsize 1.5
-      url "vrmlscript:
+      url "javascript:
       function initialize()
          {
          choice_out=0;
@@ -327,7 +327,7 @@ Transform
       eventOut SFVec3f  translation_out            
       field SFVec3f     step_translation 0 0 0
       field SFInt32 step 0
-      url "vrmlscript:
+      url "javascript:
       function nextsteps()
          {
          step_translation[0]=(Math.random()-0.5)*0.04;
@@ -364,7 +364,7 @@ DEF HIDE_SCRIPT Script
    {
    eventIn SFBool isover_in
    eventOut SFVec3f hide_out
-   url "vrmlscript:
+   url "javascript:
    function isover_in(val)            
       {            
       if (val)
@@ -1387,7 +1387,7 @@ DEF ROLL_TURN Script
    {
    eventIn SFFloat  xvalue_in
    eventOut SFRotation rotation_out
-   url "vrmlscript:
+   url "javascript:
    function initialize()            
       {            
       rotation_out[0]=1;            
@@ -1411,7 +1411,7 @@ DEF UP_DOWN_TURN Script
    {
    eventIn SFFloat  yvalue_in
    eventOut SFRotation rotation_out
-   url "vrmlscript:
+   url "javascript:
    function initialize()            
       {            
       rotation_out[0]=0;            
@@ -1437,7 +1437,7 @@ DEF FLY_FORWARD Script
    eventIn  SFTime  time_in
    eventOut SFVec3f translation_out            
    eventOut  SFTime time_out
-   url "vrmlscript:
+   url "javascript:
    function initialize()
       {
       translation_out[0]=0;
@@ -1477,7 +1477,7 @@ DEF FLY_ON Script
    field SFFloat bulletway_length 0 
    field  SFFloat old_time 0
    field SFFloat factor 1000
-   url "vrmlscript:
+   url "javascript:
    function initialize()
       {
       bullet_choice_out=-1;
@@ -1569,7 +1569,7 @@ DEF STEER Script
    eventOut SFFloat xvalue
    eventOut SFFloat yvalue
    field SFVec3f wall_xy 0 0 0
-   url "vrmlscript:
+   url "javascript:
    function initialize()
       {
       }
@@ -1602,7 +1602,7 @@ DEF THING_SCRIPT Script
    eventIn SFBool isover_in
    eventIn SFBool fire_in
    eventOut SFVec3f hide_out
-   url "vrmlscript:
+   url "javascript:
    function isover_in(val)            
       {            
       if (val)
@@ -1643,7 +1643,7 @@ DEF LOAD_NEW_WORLD Script
    field SFInt32 deleted 0 
    field SFInt32 waitticks 300
    field SFBool victory FALSE
-   url "vrmlscript:
+   url "javascript:
    function initialize()
       {
       // insert your url at game end here 
