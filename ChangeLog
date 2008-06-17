@@ -1,10 +1,10 @@
-2007-06-16 Braden McDaniel  <braden@endoframe.com>
+2008-06-16 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/vrml97node.cpp: Added missing namespace
 	qualification to openvrml::node uses.
 	From Steinar Hamre <steinarh@users.sourceforge.net>
 
-2007-06-13 Braden McDaniel  <braden@endoframe.com>
+2008-06-13 Braden McDaniel  <braden@endoframe.com>
 
 	Increment read_write_mutex::readers_active_ on
 	scoped_read_write_lock promotion and decrement it on demotion.
@@ -18,7 +18,7 @@
 	Increment read_write_mutex::readers_active_; notify any waiting
 	writers.
 
-2007-04-26 Braden McDaniel  <braden@endoframe.com>
+2008-04-26 Braden McDaniel  <braden@endoframe.com>
 
 	Qualification fixes to satisfy gcc 4.3 pickiness.
 
@@ -37,14 +37,14 @@
 	(script::field_setProperty(JSContext *, JSObject *, jsval,
 	jsval *)): Import std::find_if.
 
-2007-04-08 Braden McDaniel  <braden@endoframe.com>
+2008-04-08 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed a potential crash during creation of the Gtk widget.
 
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp (gtk_vrml_browser_new()):
 	Don't call resize here; we don't yet have a valid GL context.
 
-2007-04-08 Braden McDaniel  <braden@endoframe.com>
+2008-04-08 Braden McDaniel  <braden@endoframe.com>
 
 	Updates to build with the Microsoft compiler.
 
