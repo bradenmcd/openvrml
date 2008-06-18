@@ -1,3 +1,20 @@
+Changes new in version 0.17.6, 17 June, 2008
+========================================================================
+
+- Fixed a crash in initialization of openvrml-xembed (on some OpenGL
+  implementations).
+
+- Fixes to avoid arbitrary memory growth when running JavaScript.
+
+- Fixes to OpenVRML's read_write_mutex that resolve some deadlocks.
+
+- Build configuration improvements to better support building against
+  Seamonkey.
+
+- Build configuration improvements to better support building against
+  the stand-alone SpiderMonkey distribution.
+
+
 Changes new in version 0.17.5, 5 February, 2008
 ========================================================================
 
