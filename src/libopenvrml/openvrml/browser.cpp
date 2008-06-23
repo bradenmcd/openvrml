@@ -32,8 +32,8 @@
 #   include <time.h>
 # else
 #   include <sys/time.h>
+#   include <ltdl.h>
 # endif
-# include <ltdl.h>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
 # include <boost/bind.hpp>
@@ -45,6 +45,7 @@
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ptr_container/ptr_map.hpp>
 # include <boost/thread/thread.hpp>
+# include <boost/tokenizer.hpp>
 # include <boost/utility.hpp>
 # include <libxml/parser.h>
 # include <private.h>
@@ -606,7 +607,141 @@ openvrml::script_factory::~script_factory() OPENVRML_NOTHROW
  *        instantiate @c script_factory_registry.
  */
 
-extern "C" int openvrml_get_script_factory(const char * filename, lt_ptr data);
+namespace {
+
+# ifdef _WIN32
+    const char pathsep_char = ';';
+# else
+    const char pathsep_char = ':';
+# endif
+
+    OPENVRML_LOCAL int openvrml_dlinit()
+    {
+# ifdef _WIN32
+        return 0;
+# else
+        return lt_dlinit();
+# endif
+    }
+
+    OPENVRML_LOCAL int openvrml_dlexit()
+    {
+# ifdef _WIN32
+        return 0;
+# else
+        return lt_dlexit();
+# endif
+    }
+
+    struct OPENVRML_LOCAL win32_search_path_tokenizer {
+        win32_search_path_tokenizer()
+        {}
+
+        template <typename Iterator, typename Token>
+        bool operator()(Iterator & next, Iterator end, Token & tok)
+        {
+            while (next != end) {
+                if (*next == ';') {
+                    ++next;
+                    break;
+                }
+                this->tok_.push_back(*next);
+                ++next;
+            }
+            if (!this->tok_.empty()) {
+                tok = this->tok_;
+                this->tok_.clear();
+                return true;
+            }
+            return false;
+        }
+
+        void reset()
+        {
+            this->tok_.clear();
+        }
+
+    private:
+        std::string tok_;
+    };
+
+    OPENVRML_LOCAL
+    int
+    openvrml_dlforeachfile(const char * search_path,
+                           int (*func)(const char * filename, void * data),
+                           void * data)
+    {
+# ifdef _WIN32
+        using boost::filesystem::path;
+        using boost::filesystem::directory_iterator;
+        typedef boost::tokenizer<win32_search_path_tokenizer> tokenizer_t;
+
+        std::vector<path> search_dirs;
+        win32_search_path_tokenizer tokenizer_func;
+        std::string search_path_str(search_path);
+        tokenizer_t tokenizer(search_path_str, tokenizer_func);
+        for (tokenizer_t::const_iterator token = tokenizer.begin();
+             token != tokenizer.end();
+             ++token) {
+             search_dirs.push_back(path(*token));
+        }
+
+        int result = 0;
+        for (std::vector<path>::const_iterator dir = search_dirs.begin();
+             dir != search_dirs.end();
+             ++dir) try {
+            for (directory_iterator entry(*dir);
+                 entry != directory_iterator();
+                 ++entry) {
+                result = (func)(entry->path().external_file_string().c_str(),
+                                data);
+                if (result != 0) { return result; }
+            }
+        } catch (boost::filesystem::filesystem_error &) {}
+        return result;
+# else
+        return lt_dlforeachfile(search_path, func, data);
+# endif
+    }
+
+# ifdef _WIN32
+    typedef HMODULE openvrml_dlhandle;
+# else
+    typedef lt_dlhandle openvrml_dlhandle;
+# endif
+
+    OPENVRML_LOCAL openvrml_dlhandle openvrml_dlopen(const char * filename)
+    {
+# ifdef _WIN32
+        const char * last_dot = strrchr(filename, '.');
+        if (strcmp(last_dot, ".dll") != 0) { return 0; }
+        return LoadLibrary(filename);
+# else
+        return lt_dlopenext(filename);
+# endif
+    }
+
+    OPENVRML_LOCAL int openvrml_dlclose(openvrml_dlhandle handle)
+    {
+# ifdef _WIN32
+        return FreeLibrary(handle);
+# else
+        return lt_dlclose(handle);
+# endif
+    }
+
+    OPENVRML_LOCAL void * openvrml_dlsym(openvrml_dlhandle handle,
+                                         const char * name)
+    {
+# ifdef _WIN32
+        return GetProcAddress(handle, name);
+# else
+        return lt_dlsym(handle, name);
+# endif
+    }
+}
+
+extern "C" int openvrml_get_script_factory(const char * filename, void * data);
 
 /**
  * @internal
@@ -619,9 +754,9 @@ class openvrml::script_factory_registry::impl :
     boost::noncopyable {
 
     friend int (::openvrml_get_script_factory)(const char * filename,
-                                               lt_ptr data);
+                                               void * data);
 
-    typedef std::set<lt_dlhandle> module_handle_set;
+    typedef std::set<openvrml_dlhandle> module_handle_set;
     module_handle_set module_handles_;
 
     typedef std::map<std::string, boost::shared_ptr<script_factory> >
@@ -648,7 +783,7 @@ public:
     find_using_uri_scheme(const std::string & uri_scheme) const;
 };
 
-int openvrml_get_script_factory(const char * const filename, lt_ptr data)
+int openvrml_get_script_factory(const char * const filename, void * data)
 {
     assert(data);
 
@@ -657,15 +792,15 @@ int openvrml_get_script_factory(const char * const filename, lt_ptr data)
     script_factory_registry::impl & registry =
         *static_cast<script_factory_registry::impl *>(data);
 
-    const lt_dlhandle handle = lt_dlopenext(filename);
+    const openvrml_dlhandle handle = openvrml_dlopen(filename);
     if (!handle) { return 0; } // Ignore things we can't open.
-    scope_guard handle_guard = make_guard(lt_dlclose, handle);
+    scope_guard handle_guard = make_guard(openvrml_dlclose, handle);
 
     //
     // Make sure the module has what we're looking for.
     //
-    const lt_ptr sym = lt_dlsym(handle,
-                                "openvrml_script_LTX_register_factory");
+    const void * sym = openvrml_dlsym(handle,
+                                      "openvrml_script_LTX_register_factory");
     if (!sym) { return 0; } // handle_guard will close the module.
 
     const bool succeeded = registry.module_handles_.insert(handle).second;
@@ -681,21 +816,21 @@ int openvrml_get_script_factory(const char * const filename, lt_ptr data)
  */
 openvrml::script_factory_registry::impl::impl()
 {
-    int result = lt_dlinit();
+    int result = openvrml_dlinit();
     if (result != 0) {
-        throw std::runtime_error("lt_dlinit failure");
+        throw std::runtime_error("dlinit failure");
     }
 
     std::ostringstream script_path;
     script_path << OPENVRML_PKGLIBDIR_ "/script";
     const char * const script_path_env = getenv("OPENVRML_SCRIPT_PATH");
     if (script_path_env) {
-        script_path << ':' << script_path_env;
+        script_path << pathsep_char << script_path_env;
     }
 
-    result = lt_dlforeachfile(script_path.str().c_str(),
-                              openvrml_get_script_factory,
-                              this);
+    result = openvrml_dlforeachfile(script_path.str().c_str(),
+                                    openvrml_get_script_factory,
+                                    this);
     assert(result == 0); // We always return 0 from the callback.
 }
 
@@ -707,8 +842,8 @@ openvrml::script_factory_registry::impl::impl()
 openvrml::script_factory_registry::impl::~impl() OPENVRML_NOTHROW
 {
     std::for_each(this->module_handles_.begin(), this->module_handles_.end(),
-                  lt_dlclose);
-    lt_dlexit(); // Don't care if this fails.  What would we do?
+                  openvrml_dlclose);
+    openvrml_dlexit(); // Don't care if this fails.  What would we do?
 }
 
 void
@@ -719,7 +854,8 @@ register_factories(script_factory_registry & registry)
              this->module_handles_.begin());
          handle != this->module_handles_.end();
          ++handle) {
-        lt_ptr sym = lt_dlsym(*handle, "openvrml_script_LTX_register_factory");
+        void * sym = openvrml_dlsym(*handle,
+                                    "openvrml_script_LTX_register_factory");
         assert(sym); // We already made sure this would work.
         void (* const register_factory)(script_factory_registry &) =
             reinterpret_cast<void (*)(script_factory_registry &)>(sym);
