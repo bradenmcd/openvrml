@@ -1,6 +1,10 @@
-2008-06-23 Braden McDaniel  <braden@endoframe.com>
+2008-06-24 Braden McDaniel  <braden@endoframe.com>
 
-	
+	Use native DLL loading facilities on Windows instead of libltdl.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
 
 2008-06-18 Braden McDaniel  <braden@endoframe.com>
 
