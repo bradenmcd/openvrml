@@ -880,8 +880,8 @@ namespace openvrml {
                     ((anychar_p - vrml97_space_p - invalid_id_first_char)
                      >> *(anychar_p - vrml97_space_p - invalid_id_rest_char))
                     - (keywords
-                       >> anychar_p - (anychar_p - vrml97_space_p
-                                       - invalid_id_rest_char))
+                       >> (anychar_p - (anychar_p - vrml97_space_p
+                                        - invalid_id_rest_char)))
                 ]
             ;
 

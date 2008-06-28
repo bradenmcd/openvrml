@@ -1,5 +1,12 @@
 2008-06-27 Braden McDaniel  <braden@endoframe.com>
 
+	Added parentheses to quell warnings from gcc 4.3.
+
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+
+2008-06-27 Braden McDaniel  <braden@endoframe.com>
+
 	Factored platform-specifc getcwd logic out of create_file_url.
 
 	* src/libopenvrml/openvrml/browser.cpp

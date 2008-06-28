@@ -669,7 +669,7 @@ namespace openvrml {
             rule_t rule
                 =   lexeme_d[
                     chlit<>('"') >> *(strlit<>("\\\"")
-                                      | anychar_p - chlit<>('"'))
+                                      | (anychar_p - chlit<>('"')))
                         >> chlit<>('"')
                     ][var(result) = get_string_content(arg1, arg2)]
                 ;
@@ -2805,8 +2805,8 @@ namespace openvrml {
             =   lexeme_d[
                     ((anychar_p - vrml97_space_p - invalid_id_first_char)
                      >> *(anychar_p - vrml97_space_p - invalid_id_rest_char))
-                    - (keywords >> anychar_p - (anychar_p - vrml97_space_p
-                                                - invalid_id_rest_char))
+                    - (keywords >> (anychar_p - (anychar_p - vrml97_space_p
+                                                 - invalid_id_rest_char)))
                 ]
             ;
 
