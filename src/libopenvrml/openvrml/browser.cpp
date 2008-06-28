@@ -2820,6 +2820,89 @@ namespace {
     /**
      * @internal
      *
+     * @brief Get the current directory.
+     *
+     * This function wraps @c getcwd on POSIX and @c GetCurrentDirectory on
+     * Windows.
+     *
+     * @return the current directory.
+     *
+     * @exception std::runtime_error   if getcwd or GetCurrentDirectory raise
+     *                                 some arbitrary error.
+     * @exception std::bad_alloc       if memory allocation fails.
+     */
+    OPENVRML_LOCAL const std::string openvrml_getcwd()
+        OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
+    {
+# ifdef _WIN32
+        std::vector<char> curdir_buf(MAX_PATH);
+        DWORD result = 0;
+        while ((result = GetCurrentDirectory(curdir_buf.size(),
+                                             &curdir_buf.front()))
+               > curdir_buf.size()) {
+            curdir_buf.resize(result);
+        }
+        if (result == 0) {
+            using boost::ref;
+            DWORD error = GetLastError();
+            void * msgBuf = 0;
+            scope_guard msgBuf_guard = make_guard(LocalFree, ref(msgBuf));
+            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                          | FORMAT_MESSAGE_FROM_SYSTEM
+                          | FORMAT_MESSAGE_IGNORE_INSERTS,
+                          NULL,
+                          error,
+                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                          reinterpret_cast<LPSTR>(&msgBuf),
+                          0, NULL);
+            throw std::runtime_error(static_cast<char *>(msgBuf));
+        }
+        //
+        // GetCurrentDirectory isn't guaranteed to include a drive letter.
+        //
+        std::vector<char> buf(MAX_PATH);
+        while ((result = GetFullPathName(&curdir_buf.front(),
+                                         buf.size(),
+                                         &buf.front(),
+                                         NULL))
+               > buf.size()) {
+            buf.resize(result);
+        }
+        if (result == 0) {
+            using boost::ref;
+            DWORD error = GetLastError();
+            void * msgBuf = 0;
+            scope_guard msgBuf_guard = make_guard(LocalFree, ref(msgBuf));
+            FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                          | FORMAT_MESSAGE_FROM_SYSTEM
+                          | FORMAT_MESSAGE_IGNORE_INSERTS,
+                          NULL,
+                          error,
+                          MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                          reinterpret_cast<LPSTR>(&msgBuf),
+                          0, NULL);
+            throw std::runtime_error(static_cast<char *>(msgBuf));
+        }
+# else
+        char * result = 0;
+        std::vector<char> buf(PATH_MAX);
+        while (!(result = getcwd(&buf.front(), buf.size()))
+               && (errno == ERANGE)) {
+            buf.resize(buf.size() * 2);
+        }
+        if (result == 0) {
+            assert(errno != 0);
+            assert(errno != EFAULT);
+            assert(errno != EINVAL);
+            throw std::runtime_error(strerror(errno));
+        }
+# endif
+        return std::string(&buf.front());
+    }
+
+    /**
+     * @internal
+     *
      * @brief Create an absolute &ldquo;file&rdquo; URL from a relative path.
      *
      * This function constructs a syntactically valid &ldquo;file&rdquo; URL;
@@ -2855,36 +2938,21 @@ namespace {
             return uri(base_uri.str());
         }
 
-        char * getcwd_result = 0;
+        std::string cwd = openvrml_getcwd();
 # ifdef _WIN32
-        std::vector<char> cwd_buf(_MAX_PATH);
         //
-        // Path must begin with a slash.  _getcwd returns something that
-        // begins with a drive letter.
+        // Path must begin with a slash.  openvrml_getcwd returns something
+        // that begins with a drive letter on Windows.
         //
-        cwd_buf[0] = '/';
-        while (!(getcwd_result = _getcwd(&cwd_buf[1], int(cwd_buf.size())))
-               && (errno == ERANGE)) {
-            cwd_buf.resize(cwd_buf.size() * 2);
-        }
-        std::replace_if(cwd_buf.begin() + 1,
-                        cwd_buf.begin() + strlen(&cwd_buf.front()) + 1,
-                        std::bind2nd(std::equal_to<char>(), '\\'), '/');
-# else
-        std::vector<char> cwd_buf(PATH_MAX);
-        while (!(getcwd_result = getcwd(&cwd_buf.front(), cwd_buf.size()))
-               && (errno == ERANGE)) {
-            cwd_buf.resize(cwd_buf.size() * 2);
-        }
-# endif
-        if (getcwd_result == 0) {
-            assert(errno != 0);
-            assert(errno != EFAULT);
-            assert(errno != EINVAL);
-            throw std::runtime_error(strerror(errno));
-        }
+        cwd = '/' + cwd;
 
-        base_uri << &cwd_buf.front();
+        //
+        // Replace backslashes with (forward) slashes.
+        //
+        std::replace_if(cwd.begin() + 1, cwd.end(),
+                        std::bind2nd(std::equal_to<char>(), '\\'), '/');
+# endif
+        base_uri << cwd;
 
         //
         // Don't trust getcwd implementations not to vary on this--add a

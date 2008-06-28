@@ -1,3 +1,12 @@
+2008-06-27 Braden McDaniel  <braden@endoframe.com>
+
+	Factored platform-specifc getcwd logic out of create_file_url.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml_getcwd()): Wrapper function for getcwd on POSIX and
+	GetCurrentDirectory on Windows.
+	(create_file_url(const uri &)): Delegate to openvrml_getcwd.
+
 2008-06-24 Braden McDaniel  <braden@endoframe.com>
 
 	Use native DLL loading facilities on Windows instead of libltdl.
