@@ -1,3 +1,9 @@
+2008-07-16 Braden McDaniel  <braden@endoframe.com>
+
+	* examples/sdl_viewer.cpp (resource_fetcher::do_get_resource(const
+	std::string &)): Added a comment to note that no translation of
+	URI-encoded characters is being done.
+
 2008-06-27 Braden McDaniel  <braden@endoframe.com>
 
 	Added parentheses to quell warnings from gcc 4.3.

@@ -221,6 +221,10 @@ namespace {
         // should confirm that it is localhost, the machine name, or zero
         // length.
         //
+        // We also don't do any translation of URI-encoded characters here.
+        // That means that things like paths with spaces in them aren't going
+        // to work.  Oh, well.
+        //
         string::size_type path_start_index =
 # ifdef _WIN32
             uri.find_first_of('/', authority_start_index) + 1;
