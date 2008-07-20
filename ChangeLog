@@ -1,3 +1,8 @@
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-player/player.cpp: Apply OPENVRML_API to symbols
+	that libglade needs.
+
 2008-07-16 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp (resource_fetcher::do_get_resource(const

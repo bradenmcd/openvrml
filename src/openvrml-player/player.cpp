@@ -46,14 +46,16 @@ extern "C" {
     // GTK+ signal handlers; libglade needs them to have external linkage in
     // order to connect them.
     //
-    void openvrml_player_on_about_activated(GtkWindow * window);
-    void openvrml_player_on_file_open_activated(
+    OPENVRML_API void openvrml_player_on_about_activated(GtkWindow * window);
+    OPENVRML_API void openvrml_player_on_file_open_activated(
         OpenvrmlPlayerFileChooserDialog * dialog);
-    void openvrml_player_on_locationentry_activated(GtkEntry * entry);
-    void openvrml_player_on_filechooserdialog_response(GtkDialog * dialog,
-                                                       gint arg1,
-                                                       gpointer user_data);
-    void openvrml_player_quit();
+    OPENVRML_API void
+    openvrml_player_on_locationentry_activated(GtkEntry * entry);
+    OPENVRML_API void
+    openvrml_player_on_filechooserdialog_response(GtkDialog * dialog,
+                                                  gint arg1,
+                                                  gpointer user_data);
+    OPENVRML_API void openvrml_player_quit();
 
     //
     // The following functions are 'extern "C"' because they get passed as
