@@ -1,5 +1,11 @@
 2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
+	* examples/sdl_viewer.cpp (resource_fetcher::do_get_resource(const
+	std::string &)): Added a comment to note that no translation of
+	URI-encoded characters is being done.
+
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
+
 	Added parentheses to quell warnings from gcc 4.3.
 
 	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
