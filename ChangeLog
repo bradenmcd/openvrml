@@ -1,5 +1,12 @@
 2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
+	Added parentheses to quell warnings from gcc 4.3.
+
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
 	Updated FreeType dependency to 2.3.6; ignore default library
 	"msvcrt" in the Debug configuration.
