@@ -1,3 +1,56 @@
+2008-07-23 Braden McDaniel  <braden@endoframe.com>
+
+	Use GtkBuilder in openvrml-player instead of libglade.  Note that
+	this changes the environment variable used to locate the UI
+	definition from OPENVRML_PLAYER_GLADEDIR to OPENVRML_PLAYER_UIDIR.
+
+	* configure.ac: Removed check for libglade; require gtk+-2.0 >=
+	2.12.
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CXXFLAGS): Removed GLADE_CFLAGS.
+	(openvrml_player_openvrml_player_LDFLAGS): Removed GLADE_LIBS.
+	(openvrml_player_gladedir): Removed; replaced with
+	openvrml_player_uidir.
+	(openvrml_player_glade_DATA): Removed; replaced with
+	openvrml_player_ui_DATA.
+	(openvrml_player_uidir): Added.
+	(openvrml_player_ui_DATA): Added.
+	(EXTRA_DIST): Distribute openvrml_player_ui_DATA files.
+	* src/openvrml-player/filechooserdialog.cpp
+	(openvrml_player_file_chooser_dialog_get_type()): Removed; use
+	definition provided by G_DEFINE_TYPE instead.
+	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed;
+	logic moved to constructor.
+	(constructor(GType, guint, GObjectConstructParam *)): Moved dialog
+	setup logic here.
+	(class_init(gpointer, gpointer)): Moved to
+	openvrml_player_file_chooser_dialog_class_init (because
+	G_DEFINE_TYPE wants the long name).
+	(init(GTypeInstance *, gpointer)): Moved to
+	openvrml_player_file_chooser_dialog_init (because G_DEFINE_TYPE
+	wants the long name).
+	(openvrml_player_file_chooser_dialog_class_init(OpenvrmlPlayerFileChooserDialogClass *)):
+	Specify the constructor function.
+	(openvrml_player_file_chooser_dialog_init(OpenvrmlPlayerFileChooserDialog *)):
+	Added.
+	* src/openvrml-player/filechooserdialog.h
+	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed.
+	* src/openvrml-player/openvrml-player.glade: Removed.
+	* src/openvrml-player/openvrml-player.ui: Added.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Removed calls to glade_init and
+	glade_register_widget; create a GtkBuilder instead of GladeXML;
+	call gtk_builder_connect_signals instead of
+	glade_xml_signal_autoconnect; call gtk_builder_get_object instead
+	of glade_xml_get_widget.
+	(xml_new(GnomeProgram &)): Removed; replaced with builder_new.
+	(builder_new(GnomeProgram &, GError **)): Create a GtkBuilder from
+	openvrml-player.ui.  Use the environment variable
+	OPENVRML_PLAYER_UIDIR to locate this file if it is not in a known
+	location.
+	(openvrml_player_build_file_chooser_dialog(GladeXML *, GType,
+	GladeWidgetInfo *)): Removed.
+
 2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp: Apply OPENVRML_API to symbols

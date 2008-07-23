@@ -29,8 +29,7 @@
 # include <curl/curl.h>
 # include <libgnomevfs/gnome-vfs.h>
 # include <libgnomeui/libgnomeui.h>
-# include <glade/glade.h>
-# include <glade/glade-build.h>
+# include <gtk/gtkbuilder.h>
 # include <openvrml/browser.h>
 
 # include "filechooserdialog.h"
@@ -43,7 +42,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
     //
-    // GTK+ signal handlers; libglade needs them to have external linkage in
+    // GTK+ signal handlers; GtkBuilder needs them to have external linkage in
     // order to connect them.
     //
     OPENVRML_API void openvrml_player_on_about_activated(GtkWindow * window);
@@ -82,11 +81,6 @@ extern "C" {
     G_GNUC_INTERNAL void openvrml_player_watch_child(GPid pid,
                                                      gint status,
                                                      gpointer data);
-    G_GNUC_INTERNAL
-    GtkWidget *
-    openvrml_player_build_file_chooser_dialog(GladeXML * xml,
-                                              GType widget_type,
-                                              GladeWidgetInfo * info);
 }
 
 namespace {
@@ -103,7 +97,8 @@ namespace {
                                                gint & out_fd);
     G_GNUC_INTERNAL ssize_t write_command(const std::string & command);
     G_GNUC_INTERNAL GSource * curl_source_new(CURLM * multi_handle);
-    G_GNUC_INTERNAL GladeXML * xml_new(GnomeProgram & program);
+    G_GNUC_INTERNAL GtkBuilder * builder_new(GnomeProgram & program,
+                                             GError ** error);
     G_GNUC_INTERNAL void set_locationentry_text(const gchar * text);
     G_GNUC_INTERNAL void load_url(const gchar * url);
 
@@ -214,29 +209,32 @@ int main(int argc, char * argv[])
             GNOME_PARAM_APP_DATADIR, OPENVRML_PLAYER_PKGDATADIR_,
             GNOME_PARAM_NONE);
 
-    glade_init();
-    glade_register_widget(OPENVRML_PLAYER_TYPE_FILE_CHOOSER_DIALOG,
-                          openvrml_player_build_file_chooser_dialog,
-                          0,
-                          0);
+    GError * error = 0;
+    scope_guard error_guard = make_guard(g_error_free, ref(error));
+    GtkBuilder * const builder = builder_new(*program, &error);
+    if (!builder) {
+        g_critical("Failed to create UI builder: %s", error->message);
+        return EXIT_FAILURE;
+    }
+    gtk_builder_connect_signals(builder, 0);
 
-    GladeXML * const xml = xml_new(*program);
-    glade_xml_signal_autoconnect(xml);
-
-    GtkWidget * const app_window = glade_xml_get_widget(xml, "window");
+    GtkWidget * const app_window =
+        GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     GtkWidget * const file_chooser_dialog =
-        glade_xml_get_widget(xml, "filechooserdialog");
+        GTK_WIDGET(gtk_builder_get_object(builder, "filechooserdialog"));
     gtk_window_set_transient_for(GTK_WINDOW(file_chooser_dialog),
                                  GTK_WINDOW(app_window));
 
-    ::location_entry = glade_xml_get_widget(xml, "locationentry");
+    ::location_entry =
+        GTK_WIDGET(gtk_builder_get_object(builder, "locationentry"));
     g_signal_connect(file_chooser_dialog,
                      "response",
                      G_CALLBACK(openvrml_player_on_filechooserdialog_response),
                      location_entry);
 
     gint standard_input, standard_output;
-    GtkWidget * const socket = glade_xml_get_widget(xml, "socket");
+    GtkWidget * const socket =
+        GTK_WIDGET(gtk_builder_get_object(builder, "socket"));
     const GPid child_pid =
         spawn_openvrml_xembed(gtk_socket_get_id(GTK_SOCKET(socket)),
                               standard_input,
@@ -246,8 +244,6 @@ int main(int argc, char * argv[])
 
     ::command_channel = g_io_channel_unix_new(standard_input);
     if (!::command_channel) { throw std::bad_alloc(); }
-    GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, ref(error));
     GIOStatus status = g_io_channel_set_encoding(::command_channel,
                                                  0, // binary (no encoding)
                                                  &error);
@@ -413,31 +409,36 @@ namespace {
         return child_pid;
     }
 
-    GladeXML * xml_new(GnomeProgram & program)
+    GtkBuilder * builder_new(GnomeProgram & program, GError ** error)
     {
         using std::string;
 
-        const gchar * const gladedir = g_getenv("OPENVRML_PLAYER_GLADEDIR");
-        string glade_file_str;
-        const gchar * glade_file = 0;
-        if (gladedir) {
-            glade_file_str = string(gladedir) + "/openvrml-player.glade";
-            glade_file = glade_file_str.c_str();
+        const gchar * const uidir = g_getenv("OPENVRML_PLAYER_UIDIR");
+        string ui_file_str;
+        const gchar * ui_file = 0;
+        if (uidir) {
+            ui_file_str = string(uidir) + "/openvrml-player.ui";
+            ui_file = ui_file_str.c_str();
         }
 
-        if (!glade_file) {
+        if (!ui_file) {
             static const gboolean only_if_exists = true;
-            glade_file =
+            ui_file =
                 gnome_program_locate_file(&program,
                                           GNOME_FILE_DOMAIN_APP_DATADIR,
-                                          "/glade/openvrml-player.glade",
+                                          "/ui/openvrml-player.ui",
                                           only_if_exists,
                                           0);
         }
 
-        g_return_val_if_fail(glade_file, 0);
+        g_return_val_if_fail(ui_file, 0);
 
-        return glade_xml_new(glade_file, 0, 0);
+        GtkBuilder * builder = gtk_builder_new();
+        if (!gtk_builder_add_from_file(builder, ui_file, error)) {
+            return 0;
+        }
+
+        return builder;
     }
 
     void set_locationentry_text(const gchar * const text)
@@ -1018,15 +1019,6 @@ void openvrml_player_watch_child(const GPid pid,
 {
     g_spawn_close_pid(pid);
     gtk_main_quit();
-}
-
-GtkWidget *
-openvrml_player_build_file_chooser_dialog(GladeXML * /* xml */,
-                                          GType /* widget_type */,
-                                          GladeWidgetInfo * /* info */)
-{
-    GtkWidget * widget = openvrml_player_file_chooser_dialog_new(0);
-    return widget;
 }
 
 namespace {

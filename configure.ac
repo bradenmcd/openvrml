@@ -160,9 +160,10 @@ CPPFLAGS=$ov_save_CPPFLAGS
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
+# openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
+#
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
                   [have_gtk=no])
-PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
 #
 # openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
 # introduced in libgnome 2.14.

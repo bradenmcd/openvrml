@@ -360,16 +360,14 @@ openvrml_player_openvrml_player_CPPFLAGS = \
         -I$(srcdir)/libopenvrml
 openvrml_player_openvrml_player_CXXFLAGS = \
         $(GNOMEUI_CFLAGS) \
-        $(GLADE_CFLAGS) \
         $(CURL_CFLAGS)
 openvrml_player_openvrml_player_LDFLAGS = \
         -export-dynamic \
         $(GNOMEUI_LIBS) \
-        $(GLADE_LIBS) \
         $(CURL_LIBS)
 
-openvrml_player_gladedir = $(datadir)/openvrml-player/glade
-openvrml_player_glade_DATA = openvrml-player/openvrml-player.glade
+openvrml_player_uidir = $(datadir)/openvrml-player/ui
+openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \
@@ -379,7 +377,7 @@ openvrml_player_openvrml_player_SOURCES = \
 EXTRA_DIST = \
         libopenvrml/openvrml-config.h.in \
         libopenvrml-gl/openvrml-gl-config.h.in \
-        $(openvrml_player_glade_DATA)
+        $(openvrml_player_ui_DATA)
 
 #
 # Automake 1.10 seems to need this for distcheck to work.
