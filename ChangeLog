@@ -1,3 +1,24 @@
+2008-07-26 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed some potential crashes when processing coordinate, color,
+	and normal indices.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(insertShellTess(GLUtesselator &, const std::vector<vertex_data>&,
+	const std::vector<openvrml::int32> &, bool, const
+	std::vector<openvrml::color> &, const
+	std::vector<openvrml::int32>&, bool, const
+	std::vector<openvrml::vec3f> &, const
+	std::vector<openvrml::int32>&)): Advance past invalid coordinate
+	indices.
+	(openvrml::gl::viewer::do_insert_shell(unsigned int, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<color> &, const std::vector<int32> &, const
+	std::vector<vec3f> & const std::vector<int32> &, const
+	std::vector<vec2f> &, const std::vector<int32> &)): Advance past
+	-1 entries and invalid coordinate indices in the colorIndex and
+	normalIndex fields.
+
 2008-07-23 Braden McDaniel  <braden@endoframe.com>
 
 	Use GtkBuilder in openvrml-player instead of libglade.  Note that
