@@ -2939,7 +2939,14 @@ namespace {
         for (vector<openvrml::int32>::size_type i = 0;
              i < coord_index.size();
              ++i) {
-            if (coord_index[i] != -1) {
+            using openvrml::int32;
+            if (!(coord_index[i] < int32(vertices.size()))) {
+                //
+                // We've encountered an invalid coordinate index.  Advance to
+                // the next polygon.
+                //
+                while (coord_index[i + 1] != -1) { ++i; }
+            } else if (coord_index[i] != -1) {
                 gluTessVertex(&tessobj,
                               const_cast<GLdouble *>(
                                   vertices[coord_index[i]].coord),
@@ -3060,11 +3067,13 @@ do_insert_shell(unsigned int mask,
                      ++i) {
                     vertices[i].color = &color[i];
                 }
-            } else {
+            } else if (color_index.size() == coord_index.size()) {
                 for (vector<int32>::size_type i = 0;
                      i < color_index.size();
                      ++i) {
-                    vertices[i].color = &color[color_index[i]];
+                    if (color_index[i] < 0) { continue; }
+                    if (!(coord_index[i] < coord.size())) { continue; }
+                    vertices[coord_index[i]].color = &color[color_index[i]];
                 }
             }
         }
@@ -3075,11 +3084,13 @@ do_insert_shell(unsigned int mask,
                      ++i) {
                     vertices[i].normal = &normal[i];
                 }
-            } else {
+            } else if (normal_index.size() == coord_index.size()) {
                 for (vector<int32>::size_type i = 0;
                      i < normal_index.size();
                      ++i) {
-                    vertices[i].normal = &normal[normal_index[i]];
+                    if (normal_index[i] < 0) { continue; }
+                    if (!(coord_index[i] < coord.size())) { continue; }
+                    vertices[coord_index[i]].normal = &normal[normal_index[i]];
                 }
             }
         }
@@ -3094,6 +3105,7 @@ do_insert_shell(unsigned int mask,
             for (vector<int32>::size_type i = 0;
                  i < tex_coord_index.size();
                  ++i) {
+                if (tex_coord_index[i] < 0) { continue; }
                 vertices[tex_coord_index[i]].tex_coord =
                     &tex_coord[tex_coord_index[i]];
             }
