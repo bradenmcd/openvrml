@@ -76,8 +76,9 @@ browser_parse_vrml_LDADD = libtest-openvrml.la
 
 JAVAROOT = $(top_builddir)/tests
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/src/script/java/script.jar
+if ENABLE_SCRIPT_NODE_JAVA
 dist_noinst_JAVA = TestScript.java
-
+endif
 
 EXTRA_DIST = \
         package.m4 \

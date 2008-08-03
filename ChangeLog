@@ -1,3 +1,8 @@
+2008-08-03 Braden McDaniel  <braden@endoframe.com>
+
+	* tests/Makefile.am: Only compile Java test programs if Script
+	node Java support was enabled.
+
 2008-07-26 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed some potential crashes when processing coordinate, color,
