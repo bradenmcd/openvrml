@@ -1,5 +1,29 @@
 2008-08-12 Braden McDaniel  <braden@endoframe.com>
 
+	Consistently use size_t when inserting stream handles into
+	IOStreams.  ptrdiff_t is signed; so mixing this with size_t can
+	lead to badness.
+
+	* src/openvrml-player/player.cpp
+	(openvrml_player_curl_source_callback(gpointer)): Cast the
+	easy_handle to size_t instead of ptrdiff_t before inserting into
+	the command stream.
+	(openvrml_player_curl_write(void *, size_t, size_t, void *)): Cast
+	the easy_handle to size_t instead of ptrdiff_t before inserting
+	into the command stream.
+	* mozilla-plugin/src/openvrml.cpp
+	(NPP_NewStream(NPP, NPMIMEType, NPStream *, NPBool, uint16 *)):
+	Cast the stream handle to size_t instead of ptrdiff_t before
+	inserting into the command stream.
+	(NPP_DestroyStream(NPP, NPStream *, NPError)): Cast the stream
+	handle to size_t instead of ptrdiff_t before inserting into the
+	command stream.
+	(NPP_Write(NPP, NPStream *, int32, int32, void *)): Cast the stream
+	handle to size_t instead of ptrdiff_t before inserting into the
+	command stream.
+
+2008-08-12 Braden McDaniel  <braden@endoframe.com>
+
 	Use G_DEFINE_TYPE for custom GTK+ widgets.
 
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
