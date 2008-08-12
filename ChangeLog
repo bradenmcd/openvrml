@@ -1,3 +1,10 @@
+2008-08-12 Braden McDaniel  <braden@endoframe.com>
+
+	Use G_DEFINE_TYPE for custom GTK+ widgets.
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp
+	* src/openvrml-player/filechooserdialog.cpp
+
 2008-08-03 Braden McDaniel  <braden@endoframe.com>
 
 	* tests/Makefile.am: Only compile Java test programs if Script

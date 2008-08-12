@@ -24,8 +24,8 @@
 using namespace boost::multi_index::detail; // for scope_guard
 
 G_DEFINE_TYPE(OpenvrmlPlayerFileChooserDialog,
-                        openvrml_player_file_chooser_dialog,
-                        GTK_TYPE_FILE_CHOOSER_DIALOG)
+              openvrml_player_file_chooser_dialog,
+              GTK_TYPE_FILE_CHOOSER_DIALOG)
 
 namespace {
 
