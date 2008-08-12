@@ -1,3 +1,13 @@
+Changes new in version 0.17.7, 12 August, 2008
+========================================================================
+
+- Fixed potential crashes when processing coordinate, color, and
+  normal indices.
+
+- Fixed potential failure in the Mozilla plug-in and openvrml-player
+  due to inconsistent handling of stream handles.
+
+
 Changes new in version 0.17.6, 17 June, 2008
 ========================================================================
 
