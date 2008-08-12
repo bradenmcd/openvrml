@@ -1,5 +1,20 @@
 2008-08-12 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.17.7 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:6:0; updated libopenvrml-gl libtool library version to 7:2:0.
+
+2008-08-12 Braden McDaniel  <braden@endoframe.com>
+
 	Consistently use size_t when inserting stream handles into
 	IOStreams.  ptrdiff_t is signed; so mixing this with size_t can
 	lead to badness.
