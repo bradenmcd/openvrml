@@ -34,10 +34,11 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
-extern "C" {
-    void gtk_vrml_browser_class_init(GtkVrmlBrowserClass * klass);
-    void gtk_vrml_browser_init(GtkVrmlBrowser * vrml_browser);
+G_DEFINE_TYPE(GtkVrmlBrowser,
+              gtk_vrml_browser,
+              GTK_TYPE_VRML_BROWSER)
 
+extern "C" {
     G_GNUC_INTERNAL gboolean gtk_vrml_browser_destroy(GtkWidget * widget,
                                                       GdkEvent * event,
                                                       gpointer data);
@@ -70,32 +71,6 @@ extern "C" {
                                          gpointer data);
 
     G_GNUC_INTERNAL gint gtk_vrml_browser_timeout_callback(gpointer ptr);
-}
-
-GType gtk_vrml_browser_get_type()
-{
-    static GType type = 0;
-
-    if (!type) {
-        static const GTypeInfo info = {
-            sizeof (GtkVrmlBrowserClass),
-            0, // base_init
-            0, // base_finalize
-            reinterpret_cast<GClassInitFunc>(gtk_vrml_browser_class_init),
-            0, // class_finalize
-            0, // class_data
-            sizeof (GtkVrmlBrowser),
-            0, // n_preallocs
-            reinterpret_cast<GInstanceInitFunc>(gtk_vrml_browser_init),
-            0  // value_table
-        };
-
-        type = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-                                      "GtkVrmlBrowser",
-                                      &info,
-                                      GTypeFlags(0));
-    }
-    return type;
 }
 
 namespace {

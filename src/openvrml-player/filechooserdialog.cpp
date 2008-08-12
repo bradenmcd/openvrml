@@ -23,28 +23,9 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
-namespace {
-    G_GNUC_INTERNAL void class_init(gpointer g_class, gpointer class_data);
-    G_GNUC_INTERNAL void init(GTypeInstance * instance, gpointer g_class);
-}
-
-GtkType openvrml_player_file_chooser_dialog_get_type()
-{
-    static GtkType type = 0;
-
-    if (G_UNLIKELY(!type)) {
-        type =
-            g_type_register_static_simple(
-                GTK_TYPE_FILE_CHOOSER_DIALOG,
-                "OpenvrmlPlayerFileChooserDialog",
-                sizeof (OpenvrmlPlayerFileChooserDialogClass),
-                class_init,
-                sizeof (OpenvrmlPlayerFileChooserDialog),
-                init,
-                GTypeFlags(0));
-    }
-    return type;
-}
+G_DEFINE_TYPE(OpenvrmlPlayerFileChooserDialog,
+              openvrml_player_file_chooser_dialog,
+              GTK_TYPE_FILE_CHOOSER_DIALOG)
 
 GtkWidget * openvrml_player_file_chooser_dialog_new(GtkWindow * parent)
 {
@@ -96,17 +77,11 @@ GtkWidget * openvrml_player_file_chooser_dialog_new(GtkWindow * parent)
     return dialog;
 }
 
-namespace {
+void
+openvrml_player_file_chooser_dialog_class_init(
+    OpenvrmlPlayerFileChooserDialogClass *)
+{}
 
-    G_GNUC_INTERNAL GtkWidgetClass * parent_class;
-
-    void class_init(const gpointer g_class, gpointer /* class_data */)
-    {
-        ::parent_class =
-            static_cast<GtkWidgetClass *>(
-                g_type_class_peek_parent(G_OBJECT_CLASS(g_class)));
-    }
-
-    void init(GTypeInstance * /* instance */, gpointer /* g_class */)
-    {}
-}
+void openvrml_player_file_chooser_dialog_init(
+    OpenvrmlPlayerFileChooserDialog *)
+{}
