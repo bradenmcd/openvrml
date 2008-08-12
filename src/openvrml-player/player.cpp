@@ -669,7 +669,7 @@ gboolean openvrml_player_curl_source_callback(const gpointer data)
             //
             if (entry->second.initialized()) {
                 std::ostringstream command;
-                command << "destroy-stream " << ptrdiff_t(msg->easy_handle)
+                command << "destroy-stream " << size_t(msg->easy_handle)
                         << '\n';
                 const ssize_t bytes_written = ::write_command(command.str());
                 g_return_val_if_fail(
@@ -882,7 +882,7 @@ size_t openvrml_player_curl_write(void * const ptr,
 
         std::ostringstream new_stream_command;
         new_stream_command
-            << "new-stream " << ptrdiff_t(stream_data.handle()) << ' '
+            << "new-stream " << size_t(stream_data.handle()) << ' '
             << (type ? type : "application/octet-stream") << ' '
             << stream_data.url() << '\n';
         ::write_command(new_stream_command.str());
@@ -890,7 +890,7 @@ size_t openvrml_player_curl_write(void * const ptr,
     }
 
     std::ostringstream write_command;
-    write_command << "write " << ptrdiff_t(stream_data.handle()) << ' '
+    write_command << "write " << size_t(stream_data.handle()) << ' '
                   << size * nmemb << '\n';
     const char * data = static_cast<char *>(ptr);
     for (; data != static_cast<char *>(ptr) + size * nmemb;
