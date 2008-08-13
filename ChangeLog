@@ -1,3 +1,8 @@
+2008-08-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/gtkvrmlbrowser.cpp: Fixed invocation of
+	G_DEFINE_TYPE to point at the parent type.
+
 2008-08-12 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.7 release.
