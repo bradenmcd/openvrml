@@ -2,7 +2,6 @@ info_TEXINFOS = openvrml-xembed.texi
 openvrml_xembed_TEXINFOS = fdl.texi
 
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
-javadocdir = $(datadir)/javadoc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 DOCUMENTATION_FILES = \
         Doxyfile \
@@ -76,28 +75,21 @@ CUSTOMIZED_IMAGES = \
         $(srcdir)/manual/tab_l-openvrml.png \
         $(srcdir)/manual/tab_r-openvrml.png
 
-EXTRA_DIST = $(DOCUMENTATION_FILES) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) javadoc
+EXTRA_DIST = $(DOCUMENTATION_FILES) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES)
 
 MAINTAINERCLEANFILES = $(DOXYGEN_OUTPUT_FILES)
 
-.PHONY: html-local doxygen-html javadoc-html
+.PHONY: html-local
 
-doxygen-html:
+html-local:
 	for x in $(DOXYGEN_OUTPUT_FILES); do rm -f $$x; done
 	cd $(srcdir) && $(DOXYGEN)
 
-javadoc-html:
-	rm -rf $(srcdir)/javadoc
-	cd $(srcdir) && javadoc -sourcepath ../src/script/java -link $(datadir)/javadoc/java -d javadoc vrml vrml.field vrml.node
-
-html-local: doxygen-html javadoc-html
-
 installdirs-local:
-	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual $(DESTDIR)$(javadocdir)/vrml/node $(DESTDIR)$(javadocdir)/vrml/field
+	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual
 
 install-data-local: installdirs-local
 	$(INSTALL_DATA) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) $(DESTDIR)$(docdir)/manual
-	$(INSTALL_DATA) $(srcdir)/javadoc/* $(DESTDIR)$(javadocdir)
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/manual

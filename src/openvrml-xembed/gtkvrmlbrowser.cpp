@@ -36,7 +36,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 G_DEFINE_TYPE(GtkVrmlBrowser,
               gtk_vrml_browser,
-              GTK_TYPE_VRML_BROWSER)
+              GTK_TYPE_DRAWING_AREA)
 
 extern "C" {
     G_GNUC_INTERNAL gboolean gtk_vrml_browser_destroy(GtkWidget * widget,

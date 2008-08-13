@@ -1,5 +1,3 @@
-SUBDIRS = script
-
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
@@ -66,6 +64,7 @@ endif
 
 noinst_HEADERS = \
         libopenvrml/private.h \
+        libopenvrml/openvrml/ScriptJDK.h \
         openvrml-xembed/bounded_buffer.h \
         openvrml-xembed/command_istream.h \
         openvrml-xembed/plugin_streambuf.h \
@@ -89,13 +88,11 @@ LIBOPENVRML_GL_LIBRARY_VERSION = 7:2:0
 #                            or changed
 
 libopenvrml_libopenvrml_la_CPPFLAGS = \
+        -I$(top_builddir)/java \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
-        -I$(srcdir)/node \
-        -I$(srcdir)/node/vrml97 \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DOPENVRML_PKGLIBDIR_=\"$(pkglibdir)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
         -DBOOST_SPIRIT_THREADSAFE \
@@ -103,127 +100,11 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -DPHOENIX_LIMIT=6
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
-        $(XML_CFLAGS) \
         $(FONTCONFIG_CFLAGS) \
-        $(FREETYPE_CFLAGS)
+        $(FREETYPE_CFLAGS) \
+        $(JS_CFLAGS)
 
 libopenvrml_libopenvrml_la_SOURCES = \
-        node/vrml97/image_stream_listener.h \
-        node/vrml97/image_stream_listener.cpp \
-        node/vrml97/abstract_light.h \
-        node/vrml97/abstract_texture.h \
-        node/vrml97/abstract_indexed_set.h \
-        node/vrml97/grouping_node_base.h \
-        node/vrml97/anchor.h \
-        node/vrml97/anchor.cpp \
-        node/vrml97/appearance.h \
-        node/vrml97/appearance.cpp \
-        node/vrml97/audio_clip.h \
-        node/vrml97/audio_clip.cpp \
-        node/vrml97/background.h \
-        node/vrml97/background.cpp \
-        node/vrml97/billboard.h \
-        node/vrml97/billboard.cpp \
-        node/vrml97/box.h \
-        node/vrml97/box.cpp \
-        node/vrml97/collision.h \
-        node/vrml97/collision.cpp \
-        node/vrml97/color.h \
-        node/vrml97/color.cpp \
-        node/vrml97/color_interpolator.h \
-        node/vrml97/color_interpolator.cpp \
-        node/vrml97/cone.h \
-        node/vrml97/cone.cpp \
-        node/vrml97/coordinate.h \
-        node/vrml97/coordinate.cpp \
-        node/vrml97/coordinate_interpolator.h \
-        node/vrml97/coordinate_interpolator.cpp \
-        node/vrml97/cylinder.h \
-        node/vrml97/cylinder.cpp \
-        node/vrml97/cylinder_sensor.h \
-        node/vrml97/cylinder_sensor.cpp \
-        node/vrml97/directional_light.h \
-        node/vrml97/directional_light.cpp \
-        node/vrml97/elevation_grid.h \
-        node/vrml97/elevation_grid.cpp \
-        node/vrml97/extrusion.h \
-        node/vrml97/extrusion.cpp \
-        node/vrml97/fog.h \
-        node/vrml97/fog.cpp \
-        node/vrml97/font_style.h \
-        node/vrml97/font_style.cpp \
-        node/vrml97/group.h \
-        node/vrml97/group.cpp \
-        node/vrml97/image_texture.h \
-        node/vrml97/image_texture.cpp \
-        node/vrml97/indexed_face_set.h \
-        node/vrml97/indexed_face_set.cpp \
-        node/vrml97/indexed_line_set.h \
-        node/vrml97/indexed_line_set.cpp \
-        node/vrml97/inline.h \
-        node/vrml97/inline.cpp \
-        node/vrml97/lod.h \
-        node/vrml97/lod.cpp \
-        node/vrml97/material.h \
-        node/vrml97/material.cpp \
-        node/vrml97/movie_texture.h \
-        node/vrml97/movie_texture.cpp \
-        node/vrml97/navigation_info.h \
-        node/vrml97/navigation_info.cpp \
-        node/vrml97/normal.h \
-        node/vrml97/normal.cpp \
-        node/vrml97/normal_interpolator.h \
-        node/vrml97/normal_interpolator.cpp \
-        node/vrml97/orientation_interpolator.h \
-        node/vrml97/orientation_interpolator.cpp \
-        node/vrml97/pixel_texture.h \
-        node/vrml97/pixel_texture.cpp \
-        node/vrml97/plane_sensor.h \
-        node/vrml97/plane_sensor.cpp \
-        node/vrml97/point_light.h \
-        node/vrml97/point_light.cpp \
-        node/vrml97/point_set.h \
-        node/vrml97/point_set.cpp \
-        node/vrml97/position_interpolator.h \
-        node/vrml97/position_interpolator.cpp \
-        node/vrml97/proximity_sensor.h \
-        node/vrml97/proximity_sensor.cpp \
-        node/vrml97/scalar_interpolator.h \
-        node/vrml97/scalar_interpolator.cpp \
-        node/vrml97/shape.h \
-        node/vrml97/shape.cpp \
-        node/vrml97/sound.h \
-        node/vrml97/sound.cpp \
-        node/vrml97/sphere.h \
-        node/vrml97/sphere.cpp \
-        node/vrml97/sphere_sensor.h \
-        node/vrml97/sphere_sensor.cpp \
-        node/vrml97/spot_light.h \
-        node/vrml97/spot_light.cpp \
-        node/vrml97/switch.h \
-        node/vrml97/switch.cpp \
-        node/vrml97/text.h \
-        node/vrml97/text.cpp \
-        node/vrml97/texture_coordinate.h \
-        node/vrml97/texture_coordinate.cpp \
-        node/vrml97/texture_transform.h \
-        node/vrml97/texture_transform.cpp \
-        node/vrml97/time_sensor.h \
-        node/vrml97/time_sensor.cpp \
-        node/vrml97/touch_sensor.h \
-        node/vrml97/touch_sensor.cpp \
-        node/vrml97/transform.h \
-        node/vrml97/transform.cpp \
-        node/vrml97/viewpoint.h \
-        node/vrml97/viewpoint.cpp \
-        node/vrml97/visibility_sensor.h \
-        node/vrml97/visibility_sensor.cpp \
-        node/vrml97/world_info.h \
-        node/vrml97/world_info.cpp \
-        node/vrml97/cad_layer.h \
-        node/vrml97/cad_layer.cpp \
-        node/vrml97/cad_assembly.h \
-        node/vrml97/cad_assembly.cpp \
         libopenvrml/openvrml/vrml97_grammar.cpp \
         libopenvrml/openvrml/x3d_vrml_grammar.cpp \
         libopenvrml/openvrml/read_write_mutex.cpp \
@@ -234,6 +115,8 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/scope.cpp \
         libopenvrml/openvrml/node.cpp \
         libopenvrml/openvrml/bounding_volume.cpp \
+        libopenvrml/openvrml/script.cpp \
+        libopenvrml/openvrml/ScriptJDK.cpp \
         libopenvrml/openvrml/browser.cpp \
         libopenvrml/openvrml/viewer.cpp \
         libopenvrml/openvrml/rendering_context.cpp \
@@ -259,55 +142,16 @@ libopenvrml_libopenvrml_la_SOURCES = \
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
-        $(XML_LIBS) \
         $(JPEG_LIBS) \
         $(PNG_LIBS) \
         $(FONTCONFIG_LIBS) \
         $(FREETYPE_LIBS) \
+        $(JS_LIBS) \
+        $(JNI_LIBS) \
         $(PTHREAD_LIBS)
 
 libopenvrml_libopenvrml_la_LIBADD = \
-        -lboost_thread$(BOOST_LIB_SUFFIX) \
-        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
-	-lltdl
-
-openvrmlscriptdir = $(pkglibdir)/script
-
-openvrmlscript_LTLIBRARIES =
-if ENABLE_SCRIPT_NODE_JAVASCRIPT
-openvrmlscript_LTLIBRARIES += script/javascript.la
-endif
-if ENABLE_SCRIPT_NODE_JAVA
-openvrmlscript_LTLIBRARIES += script/java.la
-endif
-
-script_javascript_la_SOURCES = script/javascript.cpp
-script_javascript_la_CPPFLAGS = \
-        -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml \
-        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-script_javascript_la_CXXFLAGS = $(JS_CFLAGS)
-script_javascript_la_LDFLAGS = \
-        -module \
-        -avoid-version \
-        $(OPENVRML_JAVASCRIPT_RPATH) \
-        $(JS_LIBS)
-
-script_java_la_SOURCES = script/java.cpp
-script_java_la_CPPFLAGS = \
-        -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml \
-        -I$(top_builddir)/src/script/java \
-        -DOPENVRML_LIBDIR_=\"$(libdir)\" \
-        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DJAVA_HOME=\"$(JAVA_HOME)\" \
-        -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
-        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-script_java_la_LDFLAGS = \
-        -module \
-        -avoid-version
+        -lboost_thread$(BOOST_LIB_SUFFIX)
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -342,6 +186,7 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/plugin_streambuf.cpp \
         openvrml-xembed/gtkvrmlbrowser.cpp
 openvrml_xembed_openvrml_xembed_LDFLAGS = \
+        $(OPENVRML_RPATH) \
         $(GTK_LIBS) \
         $(GL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
@@ -360,14 +205,16 @@ openvrml_player_openvrml_player_CPPFLAGS = \
         -I$(srcdir)/libopenvrml
 openvrml_player_openvrml_player_CXXFLAGS = \
         $(GNOMEUI_CFLAGS) \
+        $(GLADE_CFLAGS) \
         $(CURL_CFLAGS)
 openvrml_player_openvrml_player_LDFLAGS = \
         -export-dynamic \
         $(GNOMEUI_LIBS) \
+        $(GLADE_LIBS) \
         $(CURL_LIBS)
 
-openvrml_player_uidir = $(datadir)/openvrml-player/ui
-openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
+openvrml_player_gladedir = $(datadir)/openvrml-player/glade
+openvrml_player_glade_DATA = openvrml-player/openvrml-player.glade
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \
@@ -377,7 +224,7 @@ openvrml_player_openvrml_player_SOURCES = \
 EXTRA_DIST = \
         libopenvrml/openvrml-config.h.in \
         libopenvrml-gl/openvrml-gl-config.h.in \
-        $(openvrml_player_ui_DATA)
+        $(openvrml_player_glade_DATA)
 
 #
 # Automake 1.10 seems to need this for distcheck to work.
