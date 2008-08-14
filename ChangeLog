@@ -1,5 +1,10 @@
 2008-08-13 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-player/player.cpp: Updated "About" dialog license
+	text to reflect GPLv3 licensing.
+
+2008-08-13 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp: Fixed invocation of
 	G_DEFINE_TYPE to point at the parent type.
 
