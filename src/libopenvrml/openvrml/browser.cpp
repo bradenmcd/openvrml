@@ -10757,13 +10757,21 @@ private:
 };
 
 /**
- * @brief Load a VRML world into the browser.
+ * @brief Asynchronously load a VRML world into the @c browser.
+ *
+ * This function takes an alternative URI list consistent with such lists as
+ * they appear in VRML nodes.  @c openvrml::browser_event::initialized will be
+ * emitted once the world has been loaded and initialized.
+ *
+ * For synchronously loading a world, see @c #set_world.
  *
  * @param[in] url       a URI.
  * @param[in] parameter parameters for @p url.
  *
  * @exception std::bad_alloc                if memory allocation fails.
  * @exception boost::thread_resource_error  if thread creation fails.
+ *
+ * @sa #set_world
  */
 void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
