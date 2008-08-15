@@ -146,7 +146,6 @@ namespace {
 
     typedef boost::array<const char *, 5> node_interface_type_id;
 
-    OPENVRML_LOCAL
     const node_interface_type_id vrml97_node_interface_type_id_ = {
         "<invalid interface type>",
         "eventIn",
@@ -155,7 +154,6 @@ namespace {
         "field"
     };
 
-    OPENVRML_LOCAL
     const node_interface_type_id x3d_node_interface_type_id_ = {
         "<invalid interface type>",
         "inputOnly",

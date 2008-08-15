@@ -1,3 +1,8 @@
+2008-08-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.cpp: Symbols with internal linkage
+	don't need visibility attributes.
+
 2008-08-13 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.8 release.
