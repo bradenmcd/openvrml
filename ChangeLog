@@ -7,7 +7,8 @@
 	std::vector<int32> & color_index, const std::vector<vec3f> &
 	normal, const std::vector<int32> & normal_index, const
 	std::vector<vec2f> & tex_coord, const std::vector<int32> &
-	tex_coord_index)): Quell some warnings from gcc.
+	tex_coord_index)): Quell some warnings from gcc about comparing
+	signed and unsigned types.
 
 2008-08-15 Braden McDaniel  <braden@endoframe.com>
 
