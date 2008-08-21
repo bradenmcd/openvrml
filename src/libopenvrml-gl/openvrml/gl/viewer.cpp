@@ -3072,7 +3072,7 @@ do_insert_shell(unsigned int mask,
                      i < color_index.size();
                      ++i) {
                     if (color_index[i] < 0) { continue; }
-                    if (!(coord_index[i] < coord.size())) { continue; }
+                    if (!(size_t(coord_index[i]) < coord.size())) { continue; }
                     vertices[coord_index[i]].color = &color[color_index[i]];
                 }
             }
@@ -3089,7 +3089,7 @@ do_insert_shell(unsigned int mask,
                      i < normal_index.size();
                      ++i) {
                     if (normal_index[i] < 0) { continue; }
-                    if (!(coord_index[i] < coord.size())) { continue; }
+                    if (!(size_t(coord_index[i]) < coord.size())) { continue; }
                     vertices[coord_index[i]].normal = &normal[normal_index[i]];
                 }
             }
