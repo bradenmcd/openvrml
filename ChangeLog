@@ -1,3 +1,14 @@
+2008-08-21 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_shell(unsigned int, const
+	std::vector<vec3f> & coord, const std::vector<int32> &
+	coord_index, const std::vector<color> & color, const
+	std::vector<int32> & color_index, const std::vector<vec3f> &
+	normal, const std::vector<int32> & normal_index, const
+	std::vector<vec2f> & tex_coord, const std::vector<int32> &
+	tex_coord_index)): Quell some warnings from gcc.
+
 2008-08-15 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
