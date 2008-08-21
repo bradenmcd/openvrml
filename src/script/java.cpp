@@ -107,9 +107,9 @@ using namespace boost::multi_index::detail;  // for scope_guard
 namespace {
 
     OPENVRML_JAVA_LOCAL lt_dlhandle libjvm_handle;
-    jint (OPENVRML_JAVA_LOCAL * CreateJavaVM)(JavaVM **, void **, void *);
+    OPENVRML_JAVA_LOCAL jint (*CreateJavaVM)(JavaVM **, void **, void *);
 
-    JavaVM * vm;
+    OPENVRML_JAVA_LOCAL JavaVM * vm;
 
     OPENVRML_JAVA_LOCAL class OPENVRML_JAVA_LOCAL load_libjvm {
     public:
@@ -319,7 +319,8 @@ namespace {
         JavaVMOption options[2] = {};
         options[0].optionString =
             const_cast<char *>(classpath_option_str.c_str());
-        options[1].optionString = "-verbose:class,jni";
+        options[1].optionString =
+            const_cast<char *>("-verbose:class,jni");
 
         JavaVMInitArgs args;
         args.version = JNI_VERSION_1_2;
