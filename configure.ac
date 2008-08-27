@@ -1,6 +1,7 @@
 AC_INIT([OpenVRML], [0.17.8], [openvrml-develop@lists.sourceforge.net])
-AC_PREREQ([2.53])
+AC_PREREQ([2.59])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Braden McDaniel])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([Makefile]
                 [doc/Makefile]
                 [ide-projects/Makefile]
