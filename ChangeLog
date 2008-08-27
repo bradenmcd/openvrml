@@ -1,5 +1,11 @@
 2008-08-27 Braden McDaniel  <braden@endoframe.com>
 
+	* data/Makefile.am
+	(dist_component_DATA): Add component XML descriptors to the
+	distribution.
+
+2008-08-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am
 	(dist_openvrml_player_ui_DATA): Applied dist_ prefix.
 	(EXTRA_DIST): Removed openvrml_player_ui_DATA.

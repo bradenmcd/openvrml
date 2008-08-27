@@ -1,5 +1,5 @@
 componentdir = $(pkgdatadir)/component
-component_DATA = \
+dist_component_DATA = \
         component/vrml97.xml \
         component/core.xml \
         component/time.xml \
