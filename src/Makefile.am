@@ -367,7 +367,7 @@ openvrml_player_openvrml_player_LDFLAGS = \
         $(CURL_LIBS)
 
 openvrml_player_uidir = $(datadir)/openvrml-player/ui
-openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
+dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \
@@ -376,8 +376,7 @@ openvrml_player_openvrml_player_SOURCES = \
 
 EXTRA_DIST = \
         libopenvrml/openvrml-config.h.in \
-        libopenvrml-gl/openvrml-gl-config.h.in \
-        $(openvrml_player_ui_DATA)
+        libopenvrml-gl/openvrml-gl-config.h.in
 
 #
 # Automake 1.10 seems to need this for distcheck to work.
