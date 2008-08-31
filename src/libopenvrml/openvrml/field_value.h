@@ -30,7 +30,6 @@
 #   include <boost/intrusive_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
-#   include <boost/thread/mutex.hpp>
 #   include <openvrml/basetypes.h>
 #   include <openvrml/read_write_mutex.h>
 

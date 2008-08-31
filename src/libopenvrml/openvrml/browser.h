@@ -23,7 +23,6 @@
 #   define OPENVRML_BROWSER_H
 
 #   include <boost/thread.hpp>
-#   include <openvrml/read_write_mutex.h>
 #   include <openvrml/script.h>
 
 namespace openvrml {
