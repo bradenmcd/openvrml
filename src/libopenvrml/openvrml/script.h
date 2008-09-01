@@ -22,7 +22,6 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
-#   include <boost/scoped_ptr.hpp>
 #   include <openvrml/node.h>
 #   include <openvrml/event.h>
 
