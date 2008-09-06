@@ -4,7 +4,7 @@
 
 	* src/libopenvrml/openvrml/browser.h: Don't need to include
 	read_write_mutex.h here.
-	* src/libopenvrml/openvrml/script.h: Don't need to include
+	* src/libopenvrml/openvrml/field_value.h: Don't need to include
 	boost/thread/mutex.hpp here.
 
 2008-08-21 Braden McDaniel  <braden@endoframe.com>
