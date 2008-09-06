@@ -1,5 +1,11 @@
 2008-09-06 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am
+	(dist_openvrml_player_ui_DATA): Applied dist_ prefix.
+	(EXTRA_DIST): Removed openvrml_player_ui_DATA.
+
+2008-09-06 Braden McDaniel  <braden@endoframe.com>
+
 	Use GtkBuilder in openvrml-player instead of libglade.  Note that
 	this changes the environment variable used to locate the UI
 	definition from OPENVRML_PLAYER_GLADEDIR to OPENVRML_PLAYER_UIDIR.
