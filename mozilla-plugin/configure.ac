@@ -29,17 +29,15 @@ PKG_CHECK_MODULES([MOZILLA_PLUGIN], [xulrunner-plugin],
                                                         [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
                                                                            [mozilla_plugin_pkg=mozilla-plugin],
                                                                            [have_mozilla_plugin=no])])])])
-PKG_CHECK_MODULES([GTK], [gtk+-2.0], , [have_gtk=no])
+PKG_CHECK_MODULES([DBUS_G], [dbus-glib-1], , [have_dbus_glib=no])
+AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 
-if test "X$enable_mozilla_plugin" != "Xno"; then
-  if test "X$have_mozilla_plugin" = "Xno"; then
-    AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])
-  fi
-  if test "X$have_gtk" = "Xno"; then
-    AC_MSG_FAILURE([GTK+ is required to build the Mozilla plug-in])
-  fi
-fi
+AS_IF([test "X$enable_mozilla_plugin" != "Xno"],
+      [AS_IF([test "X$have_mozilla_plugin" = "Xno"],
+             [AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])])
+       AS_IF([test "X$have_dbus_glib" = "Xno"],
+             [AC_MSG_FAILURE([The D-Bus GLib binding is required to build the Mozilla plug-in])])])
 AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
-  [test "X$enable_mozilla_plugin" != "Xno" -a "X$have_gtk" != "Xno"])
+  [test "X$enable_mozilla_plugin" != "Xno" -a "X$have_dbus_glib" != "Xno"])
 
 AC_OUTPUT

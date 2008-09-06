@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/org/openvrml/BrowserHost">
+  <interface name="org.openvrml.BrowserHost">
+    <method name="GetUrl">
+      <arg type="s" name="url" direction="in"/>
+      <arg type="i" direction="out">
+        <annotation name="org.freedesktop.DBus.GLib.ReturnVal" value="error"/>
+      </arg>
+    </method>
+    <method name="SetWorldUrl">
+      <arg type="s" name="url" direction="in"/>
+    </method>
+    <signal name="Shutdown"/>
+  </interface>
+</node>

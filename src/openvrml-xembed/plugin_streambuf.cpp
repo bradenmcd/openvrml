@@ -2,7 +2,7 @@
 //
 // OpenVRML XEmbed Control
 //
-// Copyright 2004, 2005, 2006, 2007  Braden N. McDaniel
+// Copyright 2004, 2005, 2006, 2007, 2008  Braden N. McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -22,12 +22,17 @@
 # include "plugin_streambuf.h"
 
 openvrml_xembed::plugin_streambuf::
-plugin_streambuf(const std::string & requested_url):
+plugin_streambuf(const std::string & requested_url,
+                 uninitialized_plugin_streambuf_map & uninitialized_map,
+                 plugin_streambuf_map & map):
+    state_(requested),
     get_url_result_(-1),
     initialized_(false),
     url_(requested_url),
     i_(0),
-    c_('\0')
+    c_('\0'),
+    uninitialized_map_(uninitialized_map),
+    map_(map)
 {
     //
     // This is really just here to emphasize that c_ must not be EOF.
@@ -40,15 +45,22 @@ plugin_streambuf(const std::string & requested_url):
     this->setg(&this->c_, &this->c_, &this->c_);
 }
 
+openvrml_xembed::plugin_streambuf::state_id
+openvrml_xembed::plugin_streambuf::state() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->state_;
+}
+
 void openvrml_xembed::plugin_streambuf::set_get_url_result(const int result)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
     g_assert(this->get_url_result_ == -1);
     this->get_url_result_ = result;
-    const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
-    requested_plugin_streambuf_map_.erase(*this);
     if (result == 0) {
-        uninitialized_plugin_streambuf_map_.insert(this->url_, this_);
+        this->state_ = uninitialized;
+    } else {
+        this->uninitialized_map_.erase(*this);
     }
     this->received_get_url_result_.notify_all();
 }
@@ -69,14 +81,18 @@ void openvrml_xembed::plugin_streambuf::init(const size_t stream_id,
     g_assert(stream_id);
     g_assert(!received_url.empty());
     g_assert(!type.empty());
+
+    g_assert(this->state_ == uninitialized);
+
     boost::mutex::scoped_lock lock(this->mutex_);
-    bool succeeded = uninitialized_plugin_streambuf_map_.erase(*this);
+    bool succeeded = this->uninitialized_map_.erase(*this);
     g_assert(succeeded);
     this->url_ = received_url;
     this->type_ = type;
+    this->state_ = initialized;
     this->initialized_ = true;
     const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
-    succeeded = plugin_streambuf_map_.insert(stream_id, this_);
+    succeeded = this->map_.insert(stream_id, this_);
     g_assert(succeeded);
     this->streambuf_initialized_or_failed_.notify_all();
 }
@@ -84,8 +100,7 @@ void openvrml_xembed::plugin_streambuf::init(const size_t stream_id,
 void openvrml_xembed::plugin_streambuf::fail()
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    const bool succeeded =
-        uninitialized_plugin_streambuf_map_.erase(*this);
+    const bool succeeded = this->uninitialized_map_.erase(*this);
     g_assert(succeeded);
     this->buf_.set_eof();
     this->streambuf_initialized_or_failed_.notify_all();
@@ -141,60 +156,6 @@ openvrml_xembed::plugin_streambuf::underflow()
     this->setg(&this->c_, &this->c_, &this->c_ + 1);
     return traits_type::to_int_type(*this->gptr());
 }
-
-const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
-openvrml_xembed::requested_plugin_streambuf_map::
-find(const std::string & url) const
-{
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
-    const base_t::const_iterator pos = this->base_t::find(url);
-    return pos == this->end()
-        ? boost::shared_ptr<plugin_streambuf>()
-        : pos->second;
-}
-
-void
-openvrml_xembed::requested_plugin_streambuf_map::
-insert(const std::string & url,
-       const boost::shared_ptr<plugin_streambuf> & streambuf)
-{
-    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
-    this->base_t::insert(make_pair(url, streambuf));
-}
-
-struct
-openvrml_xembed::requested_plugin_streambuf_map::map_entry_matches_streambuf :
-    std::unary_function<bool, value_type> {
-
-    explicit map_entry_matches_streambuf(const plugin_streambuf * streambuf):
-        streambuf_(streambuf)
-    {}
-
-    bool operator()(const value_type & entry) const
-    {
-        return this->streambuf_ == entry.second.get();
-    }
-
-private:
-    const plugin_streambuf * const streambuf_;
-};
-
-bool
-openvrml_xembed::requested_plugin_streambuf_map::
-erase(const plugin_streambuf & streambuf)
-{
-    openvrml::read_write_mutex::scoped_read_write_lock lock(this->mutex_);
-    const base_t::iterator pos =
-        std::find_if(this->begin(), this->end(),
-                     map_entry_matches_streambuf(&streambuf));
-    if (pos == this->end()) { return false; }
-    lock.promote();
-    this->base_t::erase(pos);
-    return true;
-}
-
-openvrml_xembed::requested_plugin_streambuf_map
-openvrml_xembed::requested_plugin_streambuf_map_;
 
 const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::uninitialized_plugin_streambuf_map::
@@ -266,9 +227,6 @@ openvrml_xembed::uninitialized_plugin_streambuf_map::front() const
     return this->map_.begin()->second;
 }
 
-openvrml_xembed::uninitialized_plugin_streambuf_map
-openvrml_xembed::uninitialized_plugin_streambuf_map_;
-
 
 const boost::shared_ptr<openvrml_xembed::plugin_streambuf>
 openvrml_xembed::plugin_streambuf_map::find(const size_t id) const
@@ -299,6 +257,3 @@ bool openvrml_xembed::plugin_streambuf_map::erase(const size_t id)
     openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
     return this->map_.erase(id) > 0;
 }
-
-openvrml_xembed::plugin_streambuf_map
-openvrml_xembed::plugin_streambuf_map_;

@@ -101,5 +101,5 @@ openvrml_player_file_chooser_dialog_class_init(
 
 void
 openvrml_player_file_chooser_dialog_init(
-    OpenvrmlPlayerFileChooserDialog * dialog)
+    OpenvrmlPlayerFileChooserDialog * /* dialog */)
 {}

@@ -16,22 +16,20 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include <map>
-# include <memory>
-# include <list>
-# include <stdexcept>
+# include <curl/curl.h>
 # include <string>
 # include <vector>
 # include <boost/concept_check.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
-# include <curl/curl.h>
+# include <dbus/dbus-glib.h>
 # include <libgnomevfs/gnome-vfs.h>
 # include <libgnomeui/libgnomeui.h>
 # include <gtk/gtkbuilder.h>
-# include <openvrml/browser.h>
+# include <openvrml-config.h>
 
+# include "curlbrowserhost.h"
 # include "filechooserdialog.h"
 
 # ifdef HAVE_CONFIG_H
@@ -46,115 +44,36 @@ extern "C" {
     // order to connect them.
     //
     OPENVRML_API void openvrml_player_on_about_activated(GtkWindow * window);
-    OPENVRML_API void openvrml_player_on_file_open_activated(
-        OpenvrmlPlayerFileChooserDialog * dialog);
     OPENVRML_API void
-    openvrml_player_on_locationentry_activated(GtkEntry * entry);
+    openvrml_player_on_file_open_activated(GtkAction * action,
+                                           gpointer user_data);
+    OPENVRML_API void
+    openvrml_player_on_locationentry_activated(GtkEntry * entry,
+                                               gpointer user_data);
     OPENVRML_API void
     openvrml_player_on_filechooserdialog_response(GtkDialog * dialog,
                                                   gint arg1,
                                                   gpointer user_data);
     OPENVRML_API void openvrml_player_quit();
 
-    //
-    // The following functions are 'extern "C"' because they get passed as
-    // callbacks to C APIs; however, their symbols don't need to be exposed.
-    //
     G_GNUC_INTERNAL
-    gboolean openvrml_player_request_data_available(GIOChannel * source,
-                                                    GIOCondition condition,
-                                                    gpointer data);
-    G_GNUC_INTERNAL gboolean openvrml_player_curl_prepare(GSource * source,
-                                                          gint * timeout);
-    G_GNUC_INTERNAL gboolean openvrml_player_curl_check(GSource * source);
-    G_GNUC_INTERNAL
-    gboolean openvrml_player_curl_dispatch(GSource * source,
-                                           GSourceFunc callback,
-                                           gpointer user_data);
-    G_GNUC_INTERNAL void openvrml_player_curl_finalize(GSource * source);
-    G_GNUC_INTERNAL
-    gboolean openvrml_player_curl_source_callback(gpointer data);
-    G_GNUC_INTERNAL size_t openvrml_player_curl_write(void * ptr,
-                                                      size_t size,
-                                                      size_t nmemb,
-                                                      void * stream);
-    G_GNUC_INTERNAL void openvrml_player_watch_child(GPid pid,
-                                                     gint status,
-                                                     gpointer data);
+    void openvrml_player_on_browserhost_realize(GtkWidget * widget,
+                                                gpointer user_data);
 }
 
 namespace {
     const char app_name[] = "OpenVRML Player";
     const char app_id[] = "openvrml-player";
 
-    G_GNUC_INTERNAL GIOChannel * command_channel;
-    G_GNUC_INTERNAL GIOChannel * request_channel;
-    G_GNUC_INTERNAL guint request_channel_watch_id;
+    struct signal_data {
+        OpenvrmlPlayerCurlBrowserHost * browser_host;
+        GtkWidget * location_entry;
+        OpenvrmlPlayerFileChooserDialog * file_chooser;
+    };
 
-    G_GNUC_INTERNAL void get_openvrml_xembed_cmd(gint & argc, gchar ** & argv);
-    G_GNUC_INTERNAL GPid spawn_openvrml_xembed(GdkNativeWindow socket_id,
-                                               gint & in_fd,
-                                               gint & out_fd);
-    G_GNUC_INTERNAL ssize_t write_command(const std::string & command);
-    G_GNUC_INTERNAL GSource * curl_source_new(CURLM * multi_handle);
     G_GNUC_INTERNAL GtkBuilder * builder_new(GnomeProgram & program,
                                              GError ** error);
-    G_GNUC_INTERNAL void set_locationentry_text(const gchar * text);
-    G_GNUC_INTERNAL void load_url(const gchar * url);
-
-
-    class G_GNUC_INTERNAL curl_stream_data {
-        CURL * const handle_;
-        std::vector<char> url_;
-        bool initialized_;
-
-    public:
-        curl_stream_data(CURL * handle, const char * url);
-
-        CURL * handle() const;
-        const char * url() const;
-        void initialize();
-        bool initialized() const;
-    };
-
-    typedef std::map<CURL *, curl_stream_data> stream_data_map_t;
-
-    struct curl_source_callback_data {
-        GSource * curl_source;
-        stream_data_map_t stream_data_map;
-    };
-
-    struct request_data {
-        std::stringstream request_line;
-        curl_source_callback_data * source_callback_data;
-    };
-
-    GtkWidget * location_entry;
 }
-
-# define OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(code, val) \
-    if G_LIKELY((code) == CURLE_OK) {} else {                     \
-        g_return_if_fail_warning(G_LOG_DOMAIN,                    \
-                                 __PRETTY_FUNCTION__,             \
-                                 curl_easy_strerror(code));       \
-        return (val);                                             \
-    }
-
-# define OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR(code)    \
-    if G_LIKELY((code) == CURLM_OK) {} else {                \
-        g_return_if_fail_warning(G_LOG_DOMAIN,               \
-                                 __PRETTY_FUNCTION__,        \
-                                 curl_multi_strerror(code)); \
-        return;                                              \
-    }
-
-# define OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(code, val) \
-    if G_LIKELY((code) == CURLM_OK) {} else {                      \
-        g_return_if_fail_warning(G_LOG_DOMAIN,                     \
-                                 __PRETTY_FUNCTION__,              \
-                                 curl_multi_strerror(code));       \
-        return (val);                                              \
-    }
 
 int main(int argc, char * argv[])
 {
@@ -216,198 +135,49 @@ int main(int argc, char * argv[])
         g_critical("Failed to create UI builder: %s", error->message);
         return EXIT_FAILURE;
     }
-    gtk_builder_connect_signals(builder, 0);
 
     GtkWidget * const app_window =
         GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+
     GtkWidget * const file_chooser_dialog =
         GTK_WIDGET(gtk_builder_get_object(builder, "filechooserdialog"));
-    gtk_window_set_transient_for(GTK_WINDOW(file_chooser_dialog),
+
+    signal_data data = {};
+    data.browser_host =
+        OPENVRML_PLAYER_CURL_BROWSER_HOST(
+            gtk_builder_get_object(builder, "browserhost"));
+    g_assert(OPENVRML_PLAYER_IS_CURL_BROWSER_HOST(data.browser_host));
+    data.location_entry =
+        GTK_WIDGET(gtk_builder_get_object(builder, "locationentry"));
+    data.file_chooser =
+        OPENVRML_PLAYER_FILE_CHOOSER_DIALOG(
+            gtk_builder_get_object(builder, "filechooserdialog"));
+
+    gtk_window_set_transient_for(GTK_WINDOW(data.file_chooser),
                                  GTK_WINDOW(app_window));
 
-    ::location_entry =
-        GTK_WIDGET(gtk_builder_get_object(builder, "locationentry"));
+    gtk_builder_connect_signals(builder, &data);
+
     g_signal_connect(file_chooser_dialog,
                      "response",
                      G_CALLBACK(openvrml_player_on_filechooserdialog_response),
-                     location_entry);
-
-    gint standard_input, standard_output;
-    GtkWidget * const socket =
-        GTK_WIDGET(gtk_builder_get_object(builder, "socket"));
-    const GPid child_pid =
-        spawn_openvrml_xembed(gtk_socket_get_id(GTK_SOCKET(socket)),
-                              standard_input,
-                              standard_output);
-
-    g_child_watch_add(child_pid, openvrml_player_watch_child, 0);
-
-    ::command_channel = g_io_channel_unix_new(standard_input);
-    if (!::command_channel) { throw std::bad_alloc(); }
-    GIOStatus status = g_io_channel_set_encoding(::command_channel,
-                                                 0, // binary (no encoding)
-                                                 &error);
-    if (status != G_IO_STATUS_NORMAL) {
-        throw std::runtime_error(error
-                                 ? error->message
-                                 : "g_io_channel_set_encoding failure");
-    }
-
-    ::request_channel = g_io_channel_unix_new(standard_output);
-    if (!::request_channel) { throw std::bad_alloc(); }
-    status = g_io_channel_set_encoding(::command_channel,
-                                       0, // binary (no encoding)
-                                       &error);
-    if (status != G_IO_STATUS_NORMAL) {
-        throw std::runtime_error(error
-                                 ? error->message
-                                 : "g_io_channel_set_encoding failure");
-    }
-    error_guard.dismiss();
-
-    CURLM * const multi_handle = curl_multi_init();
-    g_return_val_if_fail(multi_handle, EXIT_FAILURE);
-    scope_guard multi_handle_guard = make_guard(curl_multi_cleanup,
-                                                multi_handle);
-    boost::ignore_unused_variable_warning(multi_handle_guard);
-
-    GSource * const curl_source = curl_source_new(multi_handle);
-    scope_guard curl_source_guard = make_guard(g_source_unref, curl_source);
-    boost::ignore_unused_variable_warning(curl_source_guard);
-
-    curl_source_callback_data callback_data;
-    callback_data.curl_source = curl_source;
-    g_source_set_callback(curl_source,
-                          openvrml_player_curl_source_callback,
-                          &callback_data,
-                          0);
-    g_source_attach(curl_source, 0);
-
-    request_data req_data;
-    req_data.source_callback_data = &callback_data;
-    ::request_channel_watch_id =
-        g_io_add_watch(::request_channel,
-                       G_IO_IN,
-                       openvrml_player_request_data_available,
-                       &req_data);
-
-    ::write_command("add-browser-event-listener "
-                    + lexical_cast<string>(getpid()) + "\n");
+                     data.location_entry);
 
     if (remaining_args && remaining_args[0]) {
-        ::load_url(remaining_args[0]);
+        g_signal_connect(data.browser_host,
+                         "realize",
+                         G_CALLBACK(openvrml_player_on_browserhost_realize),
+                         remaining_args[0]);
     }
 
-    gtk_widget_show(app_window);
+    gtk_widget_show_all(app_window);
 
     gtk_main();
+
+    error_guard.dismiss();
 }
 
 namespace {
-
-    void get_openvrml_xembed_cmd(gint & argc, gchar ** & argv)
-    {
-        using boost::ref;
-
-        const gchar * const openvrml_xembed_cmd = g_getenv("OPENVRML_XEMBED");
-
-        if (!openvrml_xembed_cmd) {
-            argc = 1;
-            argv = static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-            if (!argv) { throw std::bad_alloc(); }
-            argv[0] = g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-xembed");
-            scope_guard argv_guard = make_guard(g_strfreev, ref(argv));
-            boost::ignore_unused_variable_warning(argv_guard);
-            if (!argv[0]) { throw std::bad_alloc(); }
-            argv_guard.dismiss();
-            return;
-        }
-
-        GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, ref(error));
-        const gboolean succeeded =
-            g_shell_parse_argv(openvrml_xembed_cmd, &argc, &argv, &error);
-        if (!succeeded) {
-            throw std::runtime_error(error
-                                     ? error->message
-                                     : "g_shell_parse_argv failure");
-        }
-        error_guard.dismiss();
-    }
-
-    GPid spawn_openvrml_xembed(const GdkNativeWindow socket_id,
-                               gint & in_fd,
-                               gint & out_fd)
-    {
-        using std::string;
-        using std::vector;
-        using boost::lexical_cast;
-        using boost::ref;
-
-        //
-        // The OPENVRML_XEMBED environment variable overrides the default path
-        // to the child process executable.  To allow OPENVRML_XEMBED to
-        // include arguments (rather than just be a path to an executable), it
-        // is parsed with g_shell_parse_argv.  This is particularly useful in
-        // case we want to run the child process in a harness like valgrind.
-        //
-        gint openvrml_xembed_cmd_argc = 0;
-        gchar ** openvrml_xembed_cmd_argv = 0;
-        get_openvrml_xembed_cmd(openvrml_xembed_cmd_argc,
-                                openvrml_xembed_cmd_argv);
-
-        const string socket_id_arg = lexical_cast<string>(socket_id);
-        const char * socket_id_arg_c_str = socket_id_arg.c_str();
-        vector<char> socket_id_arg_vec(
-            socket_id_arg_c_str,
-            socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-        const gint child_argv_size = openvrml_xembed_cmd_argc + 2;
-        gchar ** const child_argv =
-            static_cast<gchar **>(g_malloc(sizeof (gchar *) * child_argv_size));
-        if (!child_argv) { throw std::bad_alloc(); }
-        scope_guard child_argv_guard = make_guard(g_free, child_argv);
-        boost::ignore_unused_variable_warning(child_argv_guard);
-        gint i;
-        for (i = 0; i < openvrml_xembed_cmd_argc; ++i) {
-            child_argv[i] = openvrml_xembed_cmd_argv[i];
-        }
-        child_argv[i++] = &socket_id_arg_vec.front();
-        child_argv[i]   = 0;
-
-        gchar * const working_dir = g_get_current_dir();
-        if (!working_dir) { throw std::bad_alloc(); };
-        scope_guard working_dir_guard = make_guard(g_free, working_dir);
-        boost::ignore_unused_variable_warning(working_dir_guard);
-
-        gchar ** envp = 0;
-        GPid child_pid;
-        gint * const standard_error = 0;
-        GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, ref(error));
-        boost::ignore_unused_variable_warning(error_guard);
-        gboolean succeeded =
-            g_spawn_async_with_pipes(working_dir,
-                                     child_argv,
-                                     envp,
-                                     G_SPAWN_DO_NOT_REAP_CHILD,
-                                     0,
-                                     0,
-                                     &child_pid,
-                                     &in_fd,
-                                     &out_fd,
-                                     standard_error,
-                                     &error);
-        if (!succeeded) {
-            throw std::runtime_error(error
-                                     ? error->message
-                                     : "g_spawn_async_with_pipes failure");
-        }
-
-        error_guard.dismiss();
-
-        return child_pid;
-    }
 
     GtkBuilder * builder_new(GnomeProgram & program, GError ** error)
     {
@@ -440,468 +210,6 @@ namespace {
 
         return builder;
     }
-
-    void set_locationentry_text(const gchar * const text)
-    {
-        gtk_entry_set_text(GTK_ENTRY(::location_entry), text);
-    }
-
-    void load_url(const gchar * url)
-    {
-        std::ostringstream command;
-        command << "load-url " << url << std::endl;
-        ::write_command(command.str());
-    }
-
-    typedef std::list<GPollFD> poll_fds_t;
-
-    struct CURLSource {
-        GSource source;
-        CURLM * multi_handle;
-        size_t outstanding_handles;
-        fd_set read_fds;
-        fd_set write_fds;
-        fd_set exc_fds;
-        int max_fd;
-        poll_fds_t * poll_fds;
-    };
-
-    GSource * curl_source_new(CURLM * const multi_handle)
-    {
-        g_return_val_if_fail(multi_handle, 0);
-
-        static GSourceFuncs curl_source_funcs = {
-            openvrml_player_curl_prepare,
-            openvrml_player_curl_check,
-            openvrml_player_curl_dispatch,
-            openvrml_player_curl_finalize,
-            GSourceFunc(0),
-            GSourceDummyMarshal(0)
-        };
-
-        CURLSource * const source =
-            static_cast<CURLSource *>(
-                static_cast<void *>(
-                    g_source_new(&curl_source_funcs, sizeof (CURLSource))));
-
-        source->multi_handle        = multi_handle;
-        source->outstanding_handles = 0;
-        FD_ZERO(&source->read_fds);
-        FD_ZERO(&source->write_fds);
-        FD_ZERO(&source->exc_fds);
-        source->max_fd              = -1;
-        source->poll_fds            = new poll_fds_t;
-
-        return static_cast<GSource *>(static_cast<void *>(source));
-    }
-
-    G_GNUC_INTERNAL void reset_fds(CURLSource & curl_source)
-    {
-        FD_ZERO(&curl_source.read_fds);
-        FD_ZERO(&curl_source.write_fds);
-        FD_ZERO(&curl_source.exc_fds);
-        curl_source.max_fd = -1;
-
-        const CURLMcode result = curl_multi_fdset(curl_source.multi_handle,
-                                                  &curl_source.read_fds,
-                                                  &curl_source.write_fds,
-                                                  &curl_source.exc_fds,
-                                                  &curl_source.max_fd);
-        OPENVRML_PLAYER_CURL_MULTI_RETURN_IF_ERROR(result);
-
-        if (curl_source.max_fd >= 0) {
-            //
-            // Resize the list of fds to be polled; initialize any new
-            // entries.
-            //
-            const poll_fds_t::size_type prev_size =
-                curl_source.poll_fds->size();
-            curl_source.poll_fds->resize(curl_source.max_fd + 1);
-            if (curl_source.poll_fds->size() > prev_size) {
-                poll_fds_t::iterator pos = curl_source.poll_fds->begin();
-                std::advance(pos, prev_size);
-                for (gint fd = prev_size; pos != curl_source.poll_fds->end();
-                     ++pos, ++fd) {
-                    pos->fd      = fd;
-                    pos->events  = 0;
-                    pos->revents = 0;
-                }
-            }
-        }
-
-        for (poll_fds_t::iterator pos = curl_source.poll_fds->begin();
-             pos != curl_source.poll_fds->end();
-             ++pos) {
-            gushort events = 0;
-            if (FD_ISSET(pos->fd, &curl_source.read_fds)) {
-                events |= G_IO_IN | G_IO_HUP | G_IO_ERR;
-            }
-            if (FD_ISSET(pos->fd, &curl_source.write_fds)) {
-                events |= G_IO_OUT | G_IO_ERR;
-            }
-            if (FD_ISSET(pos->fd, &curl_source.exc_fds)) {
-                events |= G_IO_ERR;
-            }
-
-            //
-            // No change.
-            //
-            if (events == pos->events) { continue; }
-
-            //
-            // Changed; but already in the list of fds to poll.  Just update
-            // the event flags.
-            //
-            if (events && pos->events) {
-                pos->events = events;
-                continue;
-            }
-
-            pos->events = events;
-
-            if (events) {
-                g_source_add_poll(&curl_source.source, &(*pos));
-            } else {
-                g_source_remove_poll(&curl_source.source, &(*pos));
-                pos->revents = 0;
-            }
-        }
-    }
-}
-
-gboolean openvrml_player_curl_prepare(GSource * const source,
-                                      gint * const timeout_)
-{
-    CURLSource * const curl_source =
-        static_cast<CURLSource *>(static_cast<void *>(source));
-
-    reset_fds(*curl_source);
-
-    long t;
-    *timeout_ = (curl_multi_timeout(curl_source->multi_handle, &t) == CURLM_OK)
-              ? gint(t)
-              : -1;
-    return *timeout_ != -1;
-}
-
-gboolean openvrml_player_curl_check(GSource * const source)
-{
-    CURLSource * const curl_source =
-        static_cast<CURLSource *>(static_cast<void *>(source));
-
-    FD_ZERO(&curl_source->read_fds);
-    FD_ZERO(&curl_source->write_fds);
-    FD_ZERO(&curl_source->exc_fds);
-
-    bool events_pending = false;
-    for (poll_fds_t::const_iterator pos = curl_source->poll_fds->begin();
-         pos != curl_source->poll_fds->end();
-         ++pos) {
-        gushort revents = pos->revents;
-        if (revents == 0) { continue; }
-
-        events_pending = true;
-
-        if (revents & (G_IO_IN | G_IO_PRI)) {
-            FD_SET(pos->fd, &curl_source->read_fds);
-        }
-        if (revents & G_IO_OUT) {
-            FD_SET(pos->fd, &curl_source->write_fds);
-        }
-        if (revents & (G_IO_ERR | G_IO_HUP)) {
-            FD_SET(pos->fd, &curl_source->exc_fds);
-        }
-    }
-
-    const bool ready_for_dispatch =
-        events_pending || curl_source->outstanding_handles > 0;
-    return ready_for_dispatch;
-}
-
-gboolean openvrml_player_curl_dispatch(GSource * const source,
-                                       const GSourceFunc callback,
-                                       const gpointer user_data)
-{
-    CURLSource * const curl_source =
-        static_cast<CURLSource *>(static_cast<void *>(source));
-    int running_handles;
-    CURLMcode perform_result;
-    do {
-        perform_result = curl_multi_perform(curl_source->multi_handle,
-                                            &running_handles);
-    } while (perform_result == CURLM_CALL_MULTI_PERFORM);
-
-    if (running_handles == 0) { reset_fds(*curl_source); }
-
-    if (callback) { (*callback)(user_data); }
-
-    return true;
-}
-
-void openvrml_player_curl_finalize(GSource * const source)
-{
-    CURLSource * const curl_source =
-        static_cast<CURLSource *>(static_cast<void *>(source));
-    reset_fds(*curl_source);
-    delete curl_source->poll_fds;
-}
-
-gboolean openvrml_player_curl_source_callback(const gpointer data)
-{
-    curl_source_callback_data * const callback_data =
-        static_cast<curl_source_callback_data *>(data);
-    CURLSource * const curl_source =
-        static_cast<CURLSource *>(
-            static_cast<void *>(callback_data->curl_source));
-
-    CURLMsg * msg;
-    int msgs_in_queue;
-    while ((msg = curl_multi_info_read(curl_source->multi_handle,
-                                       &msgs_in_queue))) {
-        if (msg->msg == CURLMSG_DONE) {
-            const stream_data_map_t::iterator entry =
-                callback_data->stream_data_map.find(msg->easy_handle);
-            g_assert(entry != callback_data->stream_data_map.end());
-            //
-            // If the stream data was never initialized, then new-stream was
-            // never sent for it.  In that case, we shouldn't send
-            // destroy-stream.
-            //
-            if (entry->second.initialized()) {
-                std::ostringstream command;
-                command << "destroy-stream " << size_t(msg->easy_handle)
-                        << '\n';
-                const ssize_t bytes_written = ::write_command(command.str());
-                g_return_val_if_fail(
-                    bytes_written == ssize_t(command.str().length()),
-                    false);
-            } else {
-                const char * url = 0;
-                const CURLcode getinfo_result =
-                    curl_easy_getinfo(msg->easy_handle,
-                                      CURLINFO_EFFECTIVE_URL, &url);
-                OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result,
-                                                              false);
-                std::ostringstream command;
-                command << "get-url-result " << url << ' ' << 1 << '\n';
-                const ssize_t bytes_written = write_command(command.str());
-                g_return_val_if_fail(
-                    bytes_written == ssize_t(command.str().length()),
-                    false);
-            }
-
-            callback_data->stream_data_map.erase(entry);
-            g_assert(curl_source->outstanding_handles > 0);
-            --curl_source->outstanding_handles;
-
-            //
-            // Note that the call to curl_multi_remove_handle invalidates the
-            // data pointed to by msg.  Save the easy_handle in a temporary
-            // variable so we can use it with curl_easy_cleanup below.
-            //
-            CURL * const easy_handle = msg->easy_handle;
-            const CURLMcode multi_remove_result =
-                curl_multi_remove_handle(curl_source->multi_handle,
-                                         easy_handle);
-            OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(multi_remove_result,
-                                                           false);
-            //
-            // If we get an error from curl_multi_remove_handle, the cleanup
-            // won't happen; but that's probably safer than trying to go ahead
-            // and do the cleanup in that case.
-            //
-            curl_easy_cleanup(easy_handle);
-        }
-    }
-    return true;
-}
-
-gboolean openvrml_player_request_data_available(GIOChannel * const source,
-                                                GIOCondition,
-                                                const gpointer data)
-{
-    using std::string;
-    using std::vector;
-    using boost::ref;
-
-    request_data & req_data = *static_cast<request_data *>(data);
-
-    gchar c;
-    do {
-        gsize bytes_read;
-        GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, ref(error));
-        const GIOStatus status =
-            g_io_channel_read_chars(source, &c, 1, &bytes_read, &error);
-        if (status == G_IO_STATUS_ERROR) {
-            if (error) { g_warning(error->message); }
-            return false;
-        }
-        if (status == G_IO_STATUS_EOF) { return false; }
-        if (status == G_IO_STATUS_AGAIN) { continue; }
-        g_return_val_if_fail(status == G_IO_STATUS_NORMAL, false);
-
-        g_assert(bytes_read == 1);
-
-        if (c != '\n') { req_data.request_line.put(c); }
-        error_guard.dismiss();
-    } while (g_io_channel_get_buffer_condition(source) & G_IO_IN
-             && c != '\n');
-
-    if (c == '\n') {
-        string request_type;
-        req_data.request_line >> request_type;
-        if (request_type == "get-url") {
-            typedef std::map<CURL *, curl_stream_data> stream_data_map_t;
-            string url, target;
-            req_data.request_line >> url >> target;
-            CURL * const handle = curl_easy_init();
-            g_assert(req_data.source_callback_data);
-            stream_data_map_t::iterator pos =
-                req_data.source_callback_data->stream_data_map.insert(
-                    std::make_pair(handle,
-                                   curl_stream_data(handle, url.c_str())))
-                .first;
-            g_assert(
-                pos != req_data.source_callback_data->stream_data_map.end());
-            curl_stream_data & stream_data = pos->second;
-            CURLcode setopt_result;
-            setopt_result = curl_easy_setopt(handle,
-                                             CURLOPT_FAILONERROR, true);
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
-                                                          false);
-            setopt_result = curl_easy_setopt(handle,
-                                             CURLOPT_ENCODING, "");
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
-                                                          false);
-            setopt_result = curl_easy_setopt(handle,
-                                             CURLOPT_URL, stream_data.url());
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
-                                                          false);
-
-            setopt_result = curl_easy_setopt(handle,
-                                             CURLOPT_WRITEFUNCTION,
-                                             openvrml_player_curl_write);
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
-                                                          false);
-
-            setopt_result = curl_easy_setopt(handle,
-                                             CURLOPT_WRITEDATA, &stream_data);
-            OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result,
-                                                          false);
-
-            CURLSource * const curl_source =
-                static_cast<CURLSource *>(
-                    static_cast<void *>(
-                        req_data.source_callback_data->curl_source));
-
-            const CURLMcode add_handle_result =
-                curl_multi_add_handle(curl_source->multi_handle, handle);
-            OPENVRML_PLAYER_CURL_MULTI_RETURN_VAL_IF_ERROR(add_handle_result,
-                                                           false);
-            ++curl_source->outstanding_handles;
-            if (req_data.source_callback_data->stream_data_map.size() == 1) {
-                int running_handles;
-                CURLMcode perform_result;
-                do {
-                    perform_result =
-                        curl_multi_perform(curl_source->multi_handle,
-                                           &running_handles);
-                } while (perform_result == CURLM_CALL_MULTI_PERFORM);
-            }
-        } else if (request_type == "browser-event") {
-            pid_t listener_id;
-            long event;
-            req_data.request_line >> listener_id >> event;
-
-            if (event == openvrml::browser_event::initialized) {
-                ::write_command("get-world-url\n");
-            }
-        } else if (request_type == "world-url") {
-            std::string url;
-            req_data.request_line >> url;
-            ::set_locationentry_text(url.c_str());
-        }
-
-        req_data.request_line.str(string());
-        req_data.request_line.clear();
-    }
-
-    return true;
-}
-
-size_t openvrml_player_curl_write(void * const ptr,
-                                  const size_t size,
-                                  const size_t nmemb,
-                                  void * const stream)
-{
-    curl_stream_data & stream_data = *static_cast<curl_stream_data *>(stream);
-
-    if (!stream_data.initialized()) {
-        using boost::ref;
-
-        //
-        // If we're writing data, we send 0 for get-url-result.
-        //
-        const char * url = 0;
-        CURLcode getinfo_result =
-            curl_easy_getinfo(stream_data.handle(),
-                              CURLINFO_EFFECTIVE_URL, &url);
-        OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
-
-        std::ostringstream get_url_result_command;
-        get_url_result_command << "get-url-result " << url << ' ' << 0 << '\n';
-        const ssize_t bytes_written =
-            ::write_command(get_url_result_command.str());
-        g_return_val_if_fail(
-            bytes_written == ssize_t(get_url_result_command.str().length()),
-            false);
-
-        const char * type = 0;
-        getinfo_result = curl_easy_getinfo(stream_data.handle(),
-                                           CURLINFO_CONTENT_TYPE, &type);
-        OPENVRML_PLAYER_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
-
-        GnomeVFSFileInfo * info = 0;
-        scope_guard info_guard = make_guard(gnome_vfs_file_info_unref,
-                                            ref(info));
-        if (!type) {
-            info = gnome_vfs_file_info_new();
-            GnomeVFSResult get_file_info_result =
-                gnome_vfs_get_file_info(stream_data.url(),
-                                        info,
-                                        GNOME_VFS_FILE_INFO_GET_MIME_TYPE);
-            if (get_file_info_result != GNOME_VFS_OK) {
-                g_critical("%s",
-                           gnome_vfs_result_to_string(get_file_info_result));
-            }
-            type = gnome_vfs_file_info_get_mime_type(info);
-        } else {
-            info_guard.dismiss();
-        }
-
-        std::ostringstream new_stream_command;
-        new_stream_command
-            << "new-stream " << size_t(stream_data.handle()) << ' '
-            << (type ? type : "application/octet-stream") << ' '
-            << stream_data.url() << '\n';
-        ::write_command(new_stream_command.str());
-        stream_data.initialize();
-    }
-
-    std::ostringstream write_command;
-    write_command << "write " << size_t(stream_data.handle()) << ' '
-                  << size * nmemb << '\n';
-    const char * data = static_cast<char *>(ptr);
-    for (; data != static_cast<char *>(ptr) + size * nmemb;
-         ++data) {
-        write_command.put(*data);
-    }
-
-    const ssize_t bytes_written = ::write_command(write_command.str());
-    g_assert(bytes_written == ssize_t(write_command.str().length()));
-
-    return size_t(data - static_cast<char *>(ptr));
 }
 
 void openvrml_player_on_about_activated(GtkWindow * const parent)
@@ -911,7 +219,7 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
         "Braden McDaniel <braden@endoframe.com>",
         0
     };
-    const gchar copyright[] = "Copyright 2006";
+    const gchar copyright[] = "Copyright 2008";
     const gchar license[] =
         "This program is free software; you can redistribute it and/or modify "
         "it under the terms of the GNU General Public License as published by "
@@ -938,26 +246,32 @@ void openvrml_player_on_about_activated(GtkWindow * const parent)
 }
 
 void
-openvrml_player_on_file_open_activated(
-    OpenvrmlPlayerFileChooserDialog * const dialog)
+openvrml_player_on_file_open_activated(GtkAction * /* action */,
+                                       const gpointer user_data)
 {
-    const gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+    const signal_data * const data = static_cast<signal_data *>(user_data);
+    g_assert(OPENVRML_PLAYER_IS_CURL_BROWSER_HOST(data->browser_host));
+
+    const gint response = gtk_dialog_run(GTK_DIALOG(data->file_chooser));
     if (response == GTK_RESPONSE_ACCEPT) {
-        gchar * uri = 0;
-        uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
+        gchar * uri =
+            gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(data->file_chooser));
         g_return_if_fail(uri);
         scope_guard uri_guard = make_guard(g_free, uri);
         boost::ignore_unused_variable_warning(uri_guard);
-        ::load_url(uri);
+        openvrml_player_curl_browser_host_load_url(data->browser_host, uri);
     }
 
-    gtk_widget_hide(GTK_WIDGET(dialog));
+    gtk_widget_hide(GTK_WIDGET(data->file_chooser));
 }
 
-void openvrml_player_on_locationentry_activated(GtkEntry * const entry)
+void openvrml_player_on_locationentry_activated(GtkEntry * const entry,
+                                                const gpointer user_data)
 {
+    const signal_data * const data = static_cast<signal_data *>(user_data);
+    g_assert(OPENVRML_PLAYER_IS_CURL_BROWSER_HOST(data->browser_host));
     const gchar * const uri = gtk_entry_get_text(entry);
-    ::load_url(uri);
+    openvrml_player_curl_browser_host_load_url(data->browser_host, uri);
 }
 
 void openvrml_player_on_filechooserdialog_response(GtkDialog * const dialog,
@@ -975,110 +289,15 @@ void openvrml_player_on_filechooserdialog_response(GtkDialog * const dialog,
     }
 }
 
-//
-// Start the quit dance.  We just shut down the I/O channels here.  When the
-// child process gets EOF on the request_channel, it will shut down.  The
-// openvrml-player process (us) ultimately shuts down in the watch_child
-// callback.
-//
 void openvrml_player_quit()
 {
-    gboolean succeeded = g_source_remove(::request_channel_watch_id);
-    g_assert(succeeded);
-
-    GError * error = 0;
-    const gboolean flush = false;
-    GIOStatus status = g_io_channel_shutdown(::request_channel, flush, &error);
-    if (status != G_IO_STATUS_NORMAL) {
-        if (error) {
-            g_critical(error->message);
-            g_error_free(error);
-        }
-    }
-    g_io_channel_unref(::request_channel);
-
-    error = 0;
-    status = g_io_channel_shutdown(::command_channel, flush, &error);
-    if (status != G_IO_STATUS_NORMAL) {
-        if (error) {
-            g_critical(error->message);
-            g_error_free(error);
-        }
-    }
-    g_io_channel_unref(::command_channel);
-}
-
-//
-// Once the child process has terminated, it's time for us to go.
-//
-void openvrml_player_watch_child(const GPid pid,
-                                 gint /* status */,
-                                 gpointer /* data */)
-{
-    g_spawn_close_pid(pid);
     gtk_main_quit();
 }
 
-namespace {
-
-    ssize_t write_command(const std::string & command)
-    {
-        g_assert(::command_channel);
-
-        gsize bytes_written;
-        GError * error = 0;
-        GIOStatus status = g_io_channel_write_chars(::command_channel,
-                                                    command.data(),
-                                                    command.length(),
-                                                    &bytes_written,
-                                                    &error);
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            return -1;
-        }
-
-        do {
-            status = g_io_channel_flush(::command_channel, &error);
-        } while (status == G_IO_STATUS_AGAIN);
-
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                g_critical(error->message);
-                g_error_free(error);
-            }
-            return -1;
-        }
-
-        return bytes_written;
-    }
-
-    curl_stream_data::curl_stream_data(CURL * const handle,
-                                       const char * const url):
-        handle_(handle),
-        url_(url, url + strlen(url) + 1), // Get the trailing null.
-        initialized_(false)
-    {}
-
-    CURL * curl_stream_data::handle() const
-    {
-        return this->handle_;
-    }
-
-    const char * curl_stream_data::url() const
-    {
-        return &this->url_.front();
-    }
-
-    void curl_stream_data::initialize()
-    {
-        this->initialized_ = true;
-    }
-
-    bool curl_stream_data::initialized() const
-    {
-        return this->initialized_;
-    }
-} // namespace
+void openvrml_player_on_browserhost_realize(GtkWidget * const widget,
+                                            const gpointer user_data)
+{
+    openvrml_player_curl_browser_host_load_url(
+        OPENVRML_PLAYER_CURL_BROWSER_HOST(widget),
+        static_cast<const char *>(user_data));
+}

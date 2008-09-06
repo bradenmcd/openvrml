@@ -107,9 +107,8 @@ _gdk_gl_context_destroy (GdkGLContext *glcontext)
 
   if (impl->gldrawable != NULL)
     {
-      gpointer gldrawable_location = impl->gldrawable;
       g_object_remove_weak_pointer (G_OBJECT (impl->gldrawable),
-                                    &gldrawable_location);
+                                    (gpointer *) &impl->gldrawable);
       impl->gldrawable = NULL;
     }
 
@@ -361,18 +360,16 @@ _gdk_gl_context_set_gl_drawable (GdkGLContext  *glcontext,
 
   if (impl->gldrawable != NULL)
     {
-      gpointer gldrawable_location = impl->gldrawable;
       g_object_remove_weak_pointer (G_OBJECT (impl->gldrawable),
-                                    &gldrawable_location);
+                                    (gpointer *) &impl->gldrawable);
       impl->gldrawable = NULL;
     }
 
   if (gldrawable != NULL && GDK_IS_GL_DRAWABLE (gldrawable))
     {
       impl->gldrawable = gldrawable;
-      gpointer gldrawable_location = impl->gldrawable;
-      g_object_add_weak_pointer (G_OBJECT (impl->gldrawable),
-                                 &gldrawable_location);
+      g_object_add_weak_pointer (G_OBJECT (gldrawable),
+                                 (gpointer *) &impl->gldrawable);
     }
 }
 

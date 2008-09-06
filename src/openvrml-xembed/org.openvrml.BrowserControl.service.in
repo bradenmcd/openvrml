@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.openvrml.BrowserControl
+Exec=@libexecdir@/openvrml-xembed

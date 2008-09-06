@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/org/openvrml/Browser">
+  <interface name="org.openvrml.Browser">
+    <method name="GetId">
+      <arg type="t" name="window_id" direction="out">
+        <annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
+      </arg>
+    </method>
+    <method name="NewStream">
+      <arg type="t" name="stream_id" direction="in" />
+      <arg type="s" name="type" direction="in" />
+      <arg type="s" name="url" direction="in" />
+    </method>
+    <method name="DestroyStream">
+      <arg type="t" name="stream_id" direction="in" />
+    </method>
+    <method name="Write">
+      <arg type="t" name="stream_id" direction="in" />
+      <arg type="ay" name="data" direction="in" />
+    </method>
+    <method name="LoadUrl">
+      <arg type="as" name="url" direction="in" />
+      <arg type="as" name="parameter" direction="in" />
+    </method>
+    <method name="GetWorldUrl">
+      <arg type="s" name="url" direction="out">
+        <annotation name="org.freedesktop.DBus.GLib.ReturnVal" value="error"/>
+      </arg>
+    </method>
+    <signal name="Initialized"/>
+    <signal name="Shutdown"/>
+  </interface>
+</node>

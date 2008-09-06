@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/org/openvrml/BrowserFactory">
+  <interface name="org.openvrml.BrowserFactory">
+    <method name="CreateControl">
+      <arg type="s" name="host_name" direction="in" />
+      <arg type="o" name="host_object_path" direction="in" />
+      <arg type="t" name="host_id" direction="in" />
+      <arg type="b" name="expect_initial_stream" direction="in" />
+      <arg type="o" direction="out">
+        <annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
+      </arg>
+    </method>
+  </interface>
+</node>
