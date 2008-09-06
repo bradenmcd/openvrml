@@ -273,11 +273,12 @@ in the browser.  Entering "about:plugins" in the URL entry bar of a
 Mozilla-based browser will show a listing of successfully installed
 plug-ins.
 
-   It is possible, for testing or other convenience, to run the
-plug-in from the build directories.  A symbolic link to the plug-in
-module "openvrml.so" must be made in the Mozilla plug-in directory and
-the environment variable "OPENVRML_XEMBED" must be set to the full
-path name of the "openvrml-xembed" executable.
+   To run openvrml-player or the Mozilla plug-in from the build
+directories, you must first start an openvrml-xembed process.  Once
+openvrml-xembed has been installed, D-Bus will start it automatically
+as needed.  Additionally, to run the plug-in from the build
+directories, a symbolic link to the plug-in module "openvrml.so" must
+be made in the Mozilla plug-in directory.
 
 
 Conformance

@@ -7,6 +7,7 @@ endif
 
 if ENABLE_XEMBED
 libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
+session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
 endif
 
 if ENABLE_PLAYER
@@ -67,10 +68,7 @@ endif
 noinst_HEADERS = \
         libopenvrml/private.h \
         openvrml-xembed/bounded_buffer.h \
-        openvrml-xembed/command_istream.h \
         openvrml-xembed/plugin_streambuf.h \
-        openvrml-xembed/request_channel.h \
-        openvrml-xembed/gtkvrmlbrowser.h \
         openvrml-player/filechooserdialog.h
 
 LIBOPENVRML_LIBRARY_VERSION =    8:6:0
@@ -323,6 +321,7 @@ libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
+        -I$(top_builddir)/src/openvrml-xembed \
         -I$(top_srcdir)/lib/gtkglext \
         -I$(top_builddir)/lib/gtkglext \
         -I$(top_builddir)/lib/gtkglext/gdk \
@@ -334,14 +333,20 @@ openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -DGTK_DISABLE_DEPRECATED
 openvrml_xembed_openvrml_xembed_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
+        $(DBUS_G_CFLAGS) \
         $(GTK_CFLAGS) \
         $(GL_CFLAGS)
 openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/main.cpp \
-        openvrml-xembed/command_istream.cpp \
+        openvrml-xembed/browserfactory.cpp \
+        openvrml-xembed/browserfactory.h \
         openvrml-xembed/plugin_streambuf.cpp \
-        openvrml-xembed/gtkvrmlbrowser.cpp
+        openvrml-xembed/browser.cpp \
+        openvrml-xembed/browser.h \
+        openvrml-xembed/streamclient.cpp \
+        openvrml-xembed/streamclient.h
 openvrml_xembed_openvrml_xembed_LDFLAGS = \
+        $(DBUS_G_LIBS) \
         $(GTK_LIBS) \
         $(GL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
@@ -349,6 +354,31 @@ openvrml_xembed_openvrml_xembed_LDADD = \
         $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
         $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
 
+openvrml_xembed_datadir = $(datadir)/openvrml-xembed
+openvrml_xembed_dbusdir = $(openvrml_xembed_datadir)/dbus-1
+dist_openvrml_xembed_dbus_DATA = \
+        openvrml-xembed/browser.xml \
+        openvrml-xembed/browser-factory.xml \
+        openvrml-xembed/browser-host.xml
+
+BUILT_SOURCES = \
+        openvrml-xembed/browser-server-glue.h \
+        openvrml-xembed/browser-factory-server-glue.h \
+        openvrml-player/browser-host-server-glue.h
+
+openvrml-xembed/browser-server-glue.h: $(srcdir)/openvrml-xembed/browser.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --prefix=openvrml_xembed_browser    \
+                   --mode=glib-server                  \
+                   --output=$@                         \
+                   $?
+
+openvrml-xembed/browser-factory-server-glue.h: $(srcdir)/openvrml-xembed/browser-factory.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL)      \
+                   --prefix=openvrml_xembed_browser_factory \
+                   --mode=glib-server                       \
+                   --output=$@                              \
+                   $?
 
 openvrml_player_openvrml_player_CPPFLAGS = \
         -DG_DISABLE_DEPRECATED \
@@ -356,14 +386,17 @@ openvrml_player_openvrml_player_CPPFLAGS = \
         -DGNOME_DISABLE_DEPRECATED \
         -DOPENVRML_PLAYER_PKGDATADIR_=\"$(datadir)/openvrml-player\" \
         -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
+        -I$(builddir)/openvrml-player \
         -I$(builddir)/libopenvrml \
         -I$(srcdir)/libopenvrml
 openvrml_player_openvrml_player_CXXFLAGS = \
+        $(DBUS_G_CFLAGS) \
         $(GNOMEUI_CFLAGS) \
         $(CURL_CFLAGS)
 openvrml_player_openvrml_player_LDFLAGS = \
         -export-dynamic \
         $(GNOMEUI_LIBS) \
+        $(DBUS_G_LIBS) \
         $(CURL_LIBS)
 
 openvrml_player_uidir = $(datadir)/openvrml-player/ui
@@ -371,15 +404,30 @@ dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \
-        openvrml-player/player.cpp
+        openvrml-player/player.cpp \
+        openvrml-player/curlbrowserhost.cpp \
+        openvrml-player/curlbrowserhost.h
 
+openvrml-player/browser-host-server-glue.h: $(srcdir)/openvrml-xembed/browser-host.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --prefix=openvrml_player_curl_browser_host   \
+                   --mode=glib-server                  \
+                   --output=$@                         \
+                   $?
 
 EXTRA_DIST = \
         libopenvrml/openvrml-config.h.in \
-        libopenvrml-gl/openvrml-gl-config.h.in
+        libopenvrml-gl/openvrml-gl-config.h.in \
+        openvrml-xembed/org.openvrml.BrowserControl.service.in
 
 #
 # Automake 1.10 seems to need this for distcheck to work.
 #
 CLEANFILES = \
+        $(BUILT_SOURCES) \
         openvrml-xembed/.libs/openvrml-xembed
+
+DISTCLEANFILES = \
+        libopenvrml/openvrml-config.h \
+        libopenvrml-gl/openvrml-gl-config.h \
+        $(session_bus_services_DATA)

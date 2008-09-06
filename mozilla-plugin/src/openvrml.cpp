@@ -2,7 +2,7 @@
 //
 // OpenVRML Mozilla plug-in
 //
-// Copyright 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2004, 2005, 2006, 2007, 2008  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -33,11 +33,43 @@
 # include <boost/scoped_ptr.hpp>
 # include <npupp.h>
 # if defined MOZ_X11
-#   include <fcntl.h>
-#   include <gdk/gdkx.h>
+#   include <dbus/dbus-glib-bindings.h>
 # else
 #   error Unsupported toolkit.
 # endif
+
+# define OPENVRML_NP_TYPE_BROWSER_HOST (openvrml_np_browser_host_get_type())
+# define OPENVRML_NP_BROWSER_HOST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENVRML_NP_TYPE_BROWSER_HOST, OpenvrmlNpBrowserHost))
+# define OPENVRML_NP_BROWSER_HOST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), OPENVRML_NP_TYPE_BROWSER_HOST, OpenvrmlNpBrowserHostClass))
+
+G_BEGIN_DECLS
+
+typedef struct OpenvrmlNpBrowserHost_ OpenvrmlNpBrowserHost;
+typedef struct OpenvrmlNpBrowserHostClass_ OpenvrmlNpBrowserHostClass;
+
+struct OpenvrmlNpBrowserHost_ {
+    GObject parent;
+    gchar * path;
+    NPP npp;
+};
+
+struct OpenvrmlNpBrowserHostClass_ {
+    GObjectClass parent;
+    DBusGConnection * connection;
+    gchar * host_name;
+};
+
+GType openvrml_np_browser_host_get_type();
+
+int
+openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost * host, const char * url,
+                                 GError ** error);
+void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * host,
+                                            const char * url, GError ** error);
+
+G_END_DECLS
+
+# include "browser-host-server-glue.h"
 
 using namespace boost::multi_index::detail;  // for scope_guard
 
@@ -45,9 +77,6 @@ namespace {
 
     void printerr(const char * str);
 
-    extern "C" gboolean request_data_available(GIOChannel * source,
-                                               GIOCondition condition,
-                                               gpointer data);
     class plugin_instance;
 
     typedef bool (plugin_instance::*script_callback_t)(const NPVariant *,
@@ -71,18 +100,12 @@ namespace {
 
 
     class plugin_instance : boost::noncopyable {
-        friend gboolean request_data_available(GIOChannel * source,
-                                               GIOCondition condition,
-                                               gpointer data);
-
         const NPP npp;
-        GdkNativeWindow window;
+        void * window;
         int x, y;
         int width, height;
-        GIOChannel * command_channel;
-        GIOChannel * request_channel;
-        guint request_channel_watch_id;
-        std::stringstream request_line;
+        OpenvrmlNpBrowserHost * browser_host;
+        DBusGProxy * browser;
 
     public:
         NPObject * const npobj;
@@ -93,7 +116,10 @@ namespace {
         void set_window(NPWindow & window)
             throw (std::bad_alloc, std::runtime_error);
         void HandleEvent(void * event) throw ();
-        ssize_t write_command(const std::string & command);
+
+        NPError new_stream(NPMIMEType type, NPStream * stream);
+        NPError destroy_stream(NPStream * stream);
+        int32 write(NPStream * stream, int32 len, void * buffer);
 
         //
         // Scripting API method implementations.
@@ -104,6 +130,87 @@ namespace {
                          NPVariant * result);
     };
 } // namespace
+
+G_DEFINE_TYPE(OpenvrmlNpBrowserHost, openvrml_np_browser_host, G_TYPE_OBJECT)
+
+void openvrml_np_browser_host_init(OpenvrmlNpBrowserHost * const host)
+{
+    static size_t count = 0;
+    host->path = g_strdup_printf("/org/openvrml/BrowserHost/%u/%lu",
+                                 getpid(), count++);
+    dbus_g_connection_register_g_object(
+        OPENVRML_NP_BROWSER_HOST_GET_CLASS(host)->connection,
+        host->path,
+        G_OBJECT(host));
+}
+
+namespace {
+    enum np_host_signal_id {
+        shutdown_id,
+        last_signal_id
+    };
+
+    G_GNUC_INTERNAL guint signals[last_signal_id];
+}
+
+void openvrml_np_browser_host_class_init(OpenvrmlNpBrowserHostClass * klass)
+{
+    signals[shutdown_id] =
+        g_signal_new("shutdown",
+                     G_OBJECT_CLASS_TYPE(klass),
+                     GSignalFlags(G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED),
+                     0,
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
+    GError * error = 0;
+    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+    klass->connection = dbus_g_bus_get(DBUS_BUS_SESSION, &error);
+    if (!klass->connection) {
+        g_critical("Failed to open connection to bus: %s", error->message);
+        return;
+    }
+
+    klass->host_name = g_strdup_printf("org.openvrml.BrowserHost-%u",
+                                       getpid());
+
+    DBusGProxy * driver_proxy =
+        dbus_g_proxy_new_for_name(klass->connection,
+                                  DBUS_SERVICE_DBUS,
+                                  DBUS_PATH_DBUS,
+                                  DBUS_INTERFACE_DBUS);
+    scope_guard driver_proxy_guard = make_guard(g_object_unref, driver_proxy);
+    boost::ignore_unused_variable_warning(driver_proxy_guard);
+
+    guint request_ret;
+    if (!org_freedesktop_DBus_request_name(driver_proxy,
+                                           klass->host_name,
+                                           0, &request_ret,
+                                           &error)) {
+        g_critical("Request for name \"%s\" failed: %s",
+                   klass->host_name, error->message);
+        return;
+    }
+
+    dbus_g_object_type_install_info(
+        OPENVRML_NP_TYPE_BROWSER_HOST,
+        &dbus_glib_openvrml_np_browser_host_object_info);
+    error_guard.dismiss();
+}
+
+int openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost * const host,
+                                     const char * const url,
+                                     GError ** /* error */)
+{
+    return NPN_GetURL(host->npp, url, 0);
+}
+
+void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
+                                            const char * /* url */,
+                                            GError ** /* error */)
+{
+}
 
 char * NP_GetMIMEDescription()
 {
@@ -279,9 +386,11 @@ NPError NP_GetValue(void *, NPPVariable variable, void * value)
 
 char * NPP_GetMIMEDescription()
 {
-    return "model/x3d+vrml:x3dv:X3D world;"
-           "model/vrml:wrl:VRML world;"
-           "x-world/x-vrml:wrl:VRML world";
+    static const char mimeDescription[] =
+        "model/x3d+vrml:x3dv:X3D world;"
+        "model/vrml:wrl:VRML world;"
+        "x-world/x-vrml:wrl:VRML world";
+    return const_cast<char *>(&mimeDescription[0]);
 }
 
 NPError NPP_Initialize()
@@ -431,20 +540,14 @@ NPError NPP_NewStream(const NPP instance,
                       NPBool /* seekable */,
                       uint16 * const stype)
 {
-    if (!instance) { return NPERR_INVALID_INSTANCE_ERROR; }
+    if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
+
     *stype = NP_NORMAL;
 
-    assert(instance->pdata);
     plugin_instance & pluginInstance =
         *static_cast<plugin_instance *>(instance->pdata);
 
-    std::ostringstream command;
-    command << "new-stream " << size_t(stream) << ' ' << type << ' '
-            << stream->url << '\n';
-    const ssize_t bytes_written = pluginInstance.write_command(command.str());
-    return (bytes_written < 0)
-        ? NPERR_GENERIC_ERROR
-        : NPERR_NO_ERROR;
+    return pluginInstance.new_stream(type, stream);
 }
 
 NPError NPP_DestroyStream(const NPP instance,
@@ -456,12 +559,7 @@ NPError NPP_DestroyStream(const NPP instance,
     plugin_instance & pluginInstance =
         *static_cast<plugin_instance *>(instance->pdata);
 
-    std::ostringstream command;
-    command << "destroy-stream " << size_t(stream) << '\n';
-    const ssize_t bytes_written = pluginInstance.write_command(command.str());
-    return (bytes_written < 0)
-        ? NPERR_GENERIC_ERROR
-        : NPERR_NO_ERROR;
+    return pluginInstance.destroy_stream(stream);
 }
 
 /* PLUGIN DEVELOPERS:
@@ -499,14 +597,7 @@ int32 NPP_Write(const NPP instance,
     plugin_instance & pluginInstance =
         *static_cast<plugin_instance *>(instance->pdata);
 
-    std::ostringstream command;
-    command << "write " << size_t(stream) << ' ' << ' ' << len << '\n';
-    for (int32 i = 0; i < len; ++i) {
-        command.put(static_cast<char *>(buffer)[i]);
-    }
-    const ssize_t bytes_written = pluginInstance.write_command(command.str());
-
-    return bytes_written; // The number of bytes accepted.
+    return pluginInstance.write(stream, len, buffer);
 }
 
 void NPP_StreamAsFile(const NPP instance,
@@ -1043,55 +1134,62 @@ namespace {
         y(0),
         width(0),
         height(0),
-        command_channel(0),
-        request_channel(0),
-        request_channel_watch_id(0),
+        browser_host(
+            OPENVRML_NP_BROWSER_HOST(
+                g_object_new(OPENVRML_NP_TYPE_BROWSER_HOST, 0))),
+        browser(0),
         npobj(NPN_CreateObject(this->npp, &npclass))
     {
+        if (!this->browser_host) { throw std::bad_alloc(); }
         if (!this->npobj) { throw std::bad_alloc(); }
+
+        browser_host->npp = npp;
     }
 
     plugin_instance::~plugin_instance() throw ()
     {
-        if (this->request_channel_watch_id) {
-            const gboolean succeeded =
-                g_source_remove(this->request_channel_watch_id);
-            g_assert(succeeded);
-        }
-
-        if (this->request_channel) {
-            GError * error = 0;
-            const gboolean flush = false;
-            GIOStatus status = g_io_channel_shutdown(this->request_channel,
-                                                     flush,
-                                                     &error);
-            if (status != G_IO_STATUS_NORMAL) {
-                if (error) {
-                    printerr(error->message);
-                    g_error_free(error);
-                }
-            }
-
-            g_io_channel_unref(this->request_channel);
-        }
-
-        if (this->command_channel) {
-            GError * error = 0;
-            const gboolean flush = false;
-            GIOStatus status = g_io_channel_shutdown(this->command_channel,
-                                                     flush,
-                                                     &error);
-            if (status != G_IO_STATUS_NORMAL) {
-                if (error) {
-                    printerr(error->message);
-                    g_error_free(error);
-                }
-            }
-
-            g_io_channel_unref(this->command_channel);
-        }
-
         NPN_ReleaseObject(this->npobj);
+        g_signal_emit(this->browser_host, signals[shutdown_id], 0);
+    }
+
+    DBusGProxy * get_browser(DBusGConnection * const connection,
+                             const char * const host_name,
+                             const char * const host_path,
+                             const guint64 host_id,
+                             GError ** const error)
+        throw ()
+    {
+        DBusGProxy * browser_factory =
+            dbus_g_proxy_new_for_name_owner(connection,
+                                            "org.openvrml.BrowserControl",
+                                            "/BrowserFactory",
+                                            "org.openvrml.BrowserFactory",
+                                            error);
+        g_return_val_if_fail(browser_factory, 0);
+        scope_guard browser_factory_guard =
+            make_guard(g_object_unref, G_OBJECT(browser_factory));
+        boost::ignore_unused_variable_warning(browser_factory_guard);
+
+        char * browser_path = 0;
+        if (!dbus_g_proxy_call(browser_factory,
+                               "CreateControl",
+                               error,
+                               G_TYPE_STRING, host_name,
+                               DBUS_TYPE_G_OBJECT_PATH, host_path,
+                               G_TYPE_UINT64, host_id,
+                               G_TYPE_BOOLEAN, true,
+                               G_TYPE_INVALID,
+                               DBUS_TYPE_G_OBJECT_PATH, &browser_path,
+                               G_TYPE_INVALID)) {
+            return 0;
+        }
+
+        DBusGProxy * browser =
+            dbus_g_proxy_new_for_name(connection,
+                                      "org.openvrml.BrowserControl",
+                                      browser_path,
+                                      "org.openvrml.Browser");
+        return browser;
     }
 
     void plugin_instance::set_window(NPWindow & window)
@@ -1100,7 +1198,7 @@ namespace {
         assert(window.window);
         if (this->window) {
             //
-            // The plug-in window is unchanged. Resize the window and exit.
+            // The plug-in window is unchanged.  Resize the window and exit.
             //
             return;
         }
@@ -1110,163 +1208,82 @@ namespace {
         using boost::lexical_cast;
         using boost::ref;
 
-        this->window = GdkNativeWindow(ptrdiff_t(window.window));
+        this->window = window.window;
 
-        //
-        // The OPENVRML_XEMBED environment variable overrides the default path
-        // to the child process executable.  To allow OPENVRML_XEMBED to
-        // include arguments (rather than just be a path to an executable), it
-        // is parsed with g_shell_parse_argv.  This is particularly useful in
-        // case we want to run the child process in a harness like valgrind.
-        //
-        gint openvrml_xembed_cmd_argc = 0;
-        gchar ** openvrml_xembed_cmd_argv = 0;
-        scope_guard openvrml_xembed_cmd_argv_guard =
-            make_guard(g_strfreev, ref(openvrml_xembed_cmd_argv));
-        boost::ignore_unused_variable_warning(openvrml_xembed_cmd_argv_guard);
-        const gchar * const openvrml_xembed_cmd =
-            g_getenv("OPENVRML_XEMBED");
-        if (!openvrml_xembed_cmd) {
-            openvrml_xembed_cmd_argc = 1;
-            openvrml_xembed_cmd_argv =
-                static_cast<gchar **>(g_malloc0(sizeof (gchar *) * 2));
-            if (!openvrml_xembed_cmd_argv) { throw std::bad_alloc(); }
-            openvrml_xembed_cmd_argv[0] =
-                g_strdup(OPENVRML_LIBEXECDIR_ "/openvrml-xembed");
-            if (!openvrml_xembed_cmd_argv[0]) { throw std::bad_alloc(); }
-        } else {
-            GError * error = 0;
-            scope_guard error_guard = make_guard(g_error_free, ref(error));
-            gboolean succeeded =
-                g_shell_parse_argv(openvrml_xembed_cmd,
-                                   &openvrml_xembed_cmd_argc,
-                                   &openvrml_xembed_cmd_argv,
-                                   &error);
-            if (!succeeded) {
-                throw std::runtime_error(error
-                                         ? error->message
-                                         : "g_shell_parse_argv failure");
-            }
-            error_guard.dismiss();
-        }
+        OpenvrmlNpBrowserHostClass * const browser_host_class =
+            OPENVRML_NP_BROWSER_HOST_GET_CLASS(this->browser_host);
 
-        static const char initial_stream_arg_c_str[] = "--initial-stream";
-        static const size_t initial_stream_arg_c_str_size =
-            sizeof initial_stream_arg_c_str / sizeof (gchar);
-        vector<gchar> initial_stream_arg_vec(
-            initial_stream_arg_c_str,
-            initial_stream_arg_c_str + initial_stream_arg_c_str_size);
-
-        const string socket_id_arg = lexical_cast<string>(this->window);
-        const char * const socket_id_arg_c_str = socket_id_arg.c_str();
-        vector<gchar> socket_id_arg_vec(
-            socket_id_arg_c_str,
-            socket_id_arg_c_str + socket_id_arg.length() + 1);
-
-        const gint argv_size = openvrml_xembed_cmd_argc + 3;
-        gchar ** const argv =
-            static_cast<gchar **>(g_malloc(sizeof (gchar *) * argv_size));
-        if (!argv) { throw std::bad_alloc(); }
-        scope_guard argv_guard = make_guard(g_free, argv);
-        boost::ignore_unused_variable_warning(argv_guard);
-        gint i;
-        for (i = 0; i < openvrml_xembed_cmd_argc; ++i) {
-            argv[i] = openvrml_xembed_cmd_argv[i];
-        }
-        argv[i++] = &initial_stream_arg_vec.front();
-        argv[i++] = &socket_id_arg_vec.front();
-        argv[i]   = 0;
-
-        gchar * const working_dir = g_get_current_dir();
-        if (!working_dir) { throw std::bad_alloc(); };
-        scope_guard working_dir_guard = make_guard(g_free, working_dir);
-        boost::ignore_unused_variable_warning(working_dir_guard);
-
-        gchar ** envp = 0;
-        GPid * const child_pid = 0;
-        gint standard_input, standard_output;
-        gint * const standard_error = 0;
         GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, ref(error));
-        gboolean succeeded = g_spawn_async_with_pipes(working_dir,
-                                                      argv,
-                                                      envp,
-                                                      GSpawnFlags(0),
-                                                      0,
-                                                      0,
-                                                      child_pid,
-                                                      &standard_input,
-                                                      &standard_output,
-                                                      standard_error,
-                                                      &error);
-        if (!succeeded) {
-            throw std::runtime_error(error
-                                     ? error->message
-                                     : "g_spawn_async_with_pipes failure");
+        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+
+        this->browser = get_browser(browser_host_class->connection,
+                                    browser_host_class->host_name,
+                                    this->browser_host->path,
+                                    guint64(this->window),
+                                    &error);
+        if (!this->browser) {
+            g_critical("Browser creation failed: %s", error->message);
+            return;
         }
 
-        //
-        // Don't dismiss "error_guard" yet; we reuse "error" below.
-        //
+        error_guard.dismiss();
+    }
 
-        this->command_channel = g_io_channel_unix_new(standard_input);
-        if (!this->command_channel) { throw std::bad_alloc(); }
-        const GIOStatus status =
-            g_io_channel_set_encoding(this->command_channel,
-                                      0, // binary (no encoding)
-                                      &error);
-        if (status != G_IO_STATUS_NORMAL) {
-            throw std::runtime_error(error
-                                     ? error->message
-                                     : "g_io_channel_set_encoding failure");
+    NPError plugin_instance::new_stream(const NPMIMEType type,
+                                        NPStream * const stream)
+    {
+        if (!this->browser) { return NPERR_INVALID_INSTANCE_ERROR; }
+
+        GError * error = 0;
+        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+        gboolean result = dbus_g_proxy_call(this->browser,
+                                            "NewStream",
+                                            &error,
+                                            G_TYPE_UINT64, stream,
+                                            G_TYPE_STRING, type,
+                                            G_TYPE_STRING, stream->url,
+                                            G_TYPE_INVALID,
+                                            G_TYPE_INVALID);
+        if (!result) {
+            g_critical("Call to org.openvrml.Browser.NewStream failed: %s",
+                       error->message);
+            return NPERR_GENERIC_ERROR;
         }
         error_guard.dismiss();
+        return NPERR_NO_ERROR;
+    }
 
-        this->request_channel = g_io_channel_unix_new(standard_output);
-        if (!this->request_channel) { throw std::bad_alloc(); }
-        this->request_channel_watch_id =
-            g_io_add_watch(this->request_channel,
-                           G_IO_IN,
-                           request_data_available,
-                           this);
+    NPError plugin_instance::destroy_stream(NPStream * const stream)
+    {
+        if (!this->browser) { return NPERR_INVALID_INSTANCE_ERROR; }
+
+        dbus_g_proxy_call_no_reply(this->browser,
+                                   "DestroyStream",
+                                   G_TYPE_UINT64, stream,
+                                   G_TYPE_INVALID);
+        return NPERR_NO_ERROR;
+    }
+
+    int32 plugin_instance::write(NPStream * const stream,
+                                 const int32 len,
+                                 void * const buffer)
+    {
+        if (!this->browser) { return 0; }
+
+        GArray array = {};
+        array.data = static_cast<char *>(buffer);
+        array.len = len;
+
+        dbus_g_proxy_call_no_reply(this->browser,
+                                   "Write",
+                                   G_TYPE_UINT64, stream,
+                                   DBUS_TYPE_G_UCHAR_ARRAY, &array,
+                                   G_TYPE_INVALID);
+        return len;
     }
 
     void plugin_instance::HandleEvent(void *) throw ()
     {}
-
-    ssize_t plugin_instance::write_command(const std::string & command)
-    {
-        if (!this->command_channel) { return 0; }
-
-        gsize bytes_written;
-        GError * error = 0;
-        GIOStatus status = g_io_channel_write_chars(this->command_channel,
-                                                    command.data(),
-                                                    command.length(),
-                                                    &bytes_written,
-                                                    &error);
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                printerr(error->message);
-                g_error_free(error);
-            }
-            return -1;
-        }
-
-        do {
-            status = g_io_channel_flush(this->command_channel, &error);
-        } while (status == G_IO_STATUS_AGAIN);
-
-        if (status != G_IO_STATUS_NORMAL) {
-            if (error) {
-                printerr(error->message);
-                g_error_free(error);
-            }
-            return -1;
-        }
-
-        return bytes_written;
-    }
 
     bool plugin_instance::get_name(const NPVariant * const /* args */,
                                    const uint32_t /* argCount */,
@@ -1274,7 +1291,8 @@ namespace {
     {
         static const std::string name = PACKAGE_NAME;
         NPUTF8 * const name_str =
-            static_cast<NPUTF8 *>(NPN_MemAlloc(sizeof (NPUTF8) * name.length()));
+            static_cast<NPUTF8 *>(
+                NPN_MemAlloc(sizeof (NPUTF8) * name.length()));
         std::copy(name.begin(), name.end(), name_str);
         STRINGN_TO_NPVARIANT(name_str, name.length(), *result);
         return true;
@@ -1289,66 +1307,6 @@ namespace {
             static_cast<NPUTF8 *>(NPN_MemAlloc(sizeof (NPUTF8) * ver.length()));
         std::copy(ver.begin(), ver.end(), ver_str);
         STRINGN_TO_NPVARIANT(ver_str, ver.length(), *result);
-        return true;
-    }
-
-    gboolean request_data_available(GIOChannel * const source,
-                                    GIOCondition,
-                                    const gpointer data)
-    {
-        using std::string;
-
-        plugin_instance & pluginInstance =
-            *static_cast<plugin_instance *>(data);
-
-        gchar c;
-        do {
-            gsize bytes_read;
-            GError * error = 0;
-            const GIOStatus status =
-                g_io_channel_read_chars(source, &c, 1, &bytes_read, &error);
-            if (status == G_IO_STATUS_ERROR) {
-                if (error) {
-                    g_warning(error->message);
-                    g_error_free(error);
-                }
-                return false;
-            }
-            if (status == G_IO_STATUS_EOF) { return false; }
-            if (status == G_IO_STATUS_AGAIN) { continue; }
-            g_return_val_if_fail(status == G_IO_STATUS_NORMAL, false);
-
-            g_assert(bytes_read == 1);
-
-            if (c != '\n') { pluginInstance.request_line.put(c); }
-
-        } while (g_io_channel_get_buffer_condition(source) & G_IO_IN
-                 && c != '\n');
-
-        if (c == '\n') {
-            string request_type;
-            pluginInstance.request_line >> request_type;
-            if (request_type == "get-url") {
-                string url, target;
-                pluginInstance.request_line >> url >> target;
-                const NPError result =
-                    NPN_GetURL(pluginInstance.npp,
-                               url.c_str(),
-                               target.empty() ? 0 : target.c_str());
-                std::ostringstream command;
-                command << "get-url-result " << url << ' ' << result << '\n';
-                const ssize_t bytes_written =
-                    pluginInstance.write_command(command.str());
-                if (bytes_written != ssize_t(command.str().length())) {
-                    // XXX
-                    // XXX Do what here? Console message?
-                    // XXX
-                }
-            }
-            pluginInstance.request_line.str(string());
-            pluginInstance.request_line.clear();
-        }
-
         return true;
     }
 } // namespace

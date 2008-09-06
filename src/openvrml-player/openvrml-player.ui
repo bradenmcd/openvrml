@@ -13,7 +13,7 @@
           <object class="GtkAction" id="imagemenuitemopen">
             <property name="stock_id" translatable="yes">gtk-open</property>
             <property name="name">imagemenuitemopen</property>
-            <signal handler="openvrml_player_on_file_open_activated" name="activate" object="filechooserdialog"/>
+            <signal handler="openvrml_player_on_file_open_activated" name="activate"/>
           </object>
         </child>
         <child>
@@ -82,11 +82,15 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSocket" id="socket">
+          <object class="OpenvrmlPlayerCurlBrowserHost" id="browserhost">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="has-focus">True</property>
           </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="position">2</property>
+          </packing>
         </child>
         <child>
           <object class="GtkStatusbar" id="statusbar1">

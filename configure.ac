@@ -10,6 +10,7 @@ AC_CONFIG_FILES([Makefile]
                 [models/textures/Makefile]
                 [lib/Makefile]
                 [src/Makefile]
+                [src/openvrml-xembed/org.openvrml.BrowserControl.service]
                 [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
                 [src/script/Makefile]
@@ -160,6 +161,13 @@ CPPFLAGS=$ov_save_CPPFLAGS
 #
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
+#
+PKG_CHECK_MODULES([DBUS_G], [dbus-glib-1 glib-2.0 >= 2.6], ,
+                  [have_dbus_glib=no])
+AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
+session_bus_servicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`
+AC_SUBST([session_bus_servicesdir])
+
 #
 # openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
 #
