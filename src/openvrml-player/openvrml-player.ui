@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<interface>
+  <object class="GtkUIManager" id="uimanager1">
+    <child>
+      <object class="GtkActionGroup" id="actiongroup1">
+        <child>
+          <object class="GtkAction" id="menuitem1">
+            <property name="name">menuitem1</property>
+            <property name="label" translatable="yes">_File</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkAction" id="imagemenuitemopen">
+            <property name="stock_id" translatable="yes">gtk-open</property>
+            <property name="name">imagemenuitemopen</property>
+            <signal handler="openvrml_player_on_file_open_activated" name="activate" object="filechooserdialog"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkAction" id="imagemenuitem5">
+            <property name="stock_id" translatable="yes">gtk-quit</property>
+            <property name="name">imagemenuitem5</property>
+            <signal handler="openvrml_player_quit" name="activate"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkAction" id="menuitem4">
+            <property name="name">menuitem4</property>
+            <property name="label" translatable="yes">_Help</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkAction" id="imagemenuitem10">
+            <property name="stock_id" translatable="yes">gtk-about</property>
+            <property name="name">imagemenuitem10</property>
+            <signal handler="openvrml_player_on_about_activated" name="activate" object="window"/>
+          </object>
+        </child>
+      </object>
+    </child>
+    <ui>
+      <menubar name="menubar1">
+        <menu action="menuitem1">
+          <menuitem action="imagemenuitemopen"/>
+          <separator/>
+          <menuitem action="imagemenuitem5"/>
+        </menu>
+        <menu action="menuitem4">
+          <menuitem action="imagemenuitem10"/>
+        </menu>
+      </menubar>
+    </ui>
+  </object>
+  <object class="GtkWindow" id="window">
+    <property name="default-width">640</property>
+    <property name="default-height">480</property>
+    <signal handler="openvrml_player_quit" name="delete-event"/>
+    <child>
+      <object class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkMenuBar" constructor="uimanager1" id="menubar1">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkEntry" id="locationentry">
+                <property name="visible">True</property>
+                <signal handler="openvrml_player_on_locationentry_activated" name="activate"/>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSocket" id="socket">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="has-focus">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="statusbar1">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="OpenvrmlPlayerFileChooserDialog" id="filechooserdialog">
+  </object>
+</interface>

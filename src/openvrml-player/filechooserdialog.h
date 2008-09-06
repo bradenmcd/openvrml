@@ -43,7 +43,6 @@ struct OpenvrmlPlayerFileChooserDialog_ {
 };
 
 GType openvrml_player_file_chooser_dialog_get_type() G_GNUC_CONST;
-GtkWidget * openvrml_player_file_chooser_dialog_new(GtkWindow * parent);
 
 G_END_DECLS
 
