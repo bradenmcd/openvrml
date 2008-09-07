@@ -47,7 +47,7 @@
 # include <boost/thread/thread.hpp>
 # include <boost/tokenizer.hpp>
 # include <boost/utility.hpp>
-# include <libxml/parser.h>
+# include <libxml/xmlreader.h>
 # include <private.h>
 # include "browser.h"
 # include "vrml97_grammar.h"
@@ -6375,37 +6375,19 @@ namespace {
     };
 }
 
-extern "C"
-OPENVRML_LOCAL
-void openvrml_component_parser_startElement(void * ctx, 
-                                            const xmlChar * name, 
-                                            const xmlChar ** atts);
-extern "C"
-OPENVRML_LOCAL
-void openvrml_component_parser_endElement(void * ctx, 
-                                          const xmlChar * name);
-
 namespace {
 
     class OPENVRML_LOCAL component {
-        friend void (::openvrml_component_parser_startElement)(
-            void * ctx, 
-            const xmlChar * name, 
-            const xmlChar ** atts);
-        friend void (::openvrml_component_parser_endElement)(
-            void * ctx, 
-            const xmlChar * name);
-
         struct node_type_decl {
             openvrml::node_interface_set interfaces;
             std::string metatype_id;
         };
 
+        class xml_reader;
+
         class level : std::map<std::string, node_type_decl> {
-            friend void (::openvrml_component_parser_startElement)(
-                void * ctx, 
-                const xmlChar * name, 
-                const xmlChar ** atts);
+            friend class xml_reader;
+
         public:
             typedef std::map<std::string, size_t> dependencies_t;
 
@@ -6425,7 +6407,7 @@ namespace {
             const dependencies_t & requires() const;
         };
 
-        struct parser : boost::noncopyable {
+        class xml_reader : boost::noncopyable {
             enum parse_state {
                 none,
                 component,
@@ -6434,16 +6416,22 @@ namespace {
                 node,
                 field
             };
-            xmlSAXHandler handler;
-            parse_state state;
-            std::vector<component::level>::value_type * current_level;
-            level::value_type * current_node;
+
             ::component & component_;
+            parse_state state_;
+            std::vector<component::level>::value_type * current_level_;
+            level::value_type * current_node_;
 
-            explicit parser(::component & c);
+        public:
+            explicit xml_reader(::component & c);
 
-            void parse(const std::string & filename)
+            void read(const std::string & filename)
                 OPENVRML_THROW1(std::runtime_error);
+
+        private:
+            void process_node(xmlTextReader & reader);
+            void start_element(xmlTextReader & reader);
+            void end_element(xmlTextReader & reader);
         };
 
         std::string id_;
@@ -12089,183 +12077,210 @@ do_create_node(const boost::shared_ptr<openvrml::scope> &,
     return node;
 }
 
-extern "C" OPENVRML_LOCAL
-void openvrml_component_parser_startElement(void * ctx, 
-                                            const xmlChar * name,
-                                            const xmlChar ** atts)
-{
-    using std::pair;
-    using std::strcmp;
-    using std::string;
-    ::component::parser & parser = *static_cast< ::component::parser *>(ctx);
-    switch (parser.state) {
-    case component::parser::none:
-        parser.state = component::parser::component;
-        while (*atts) {
-            if (xmlStrcmp(*atts++, BAD_CAST("id")) == 0) {
-                parser.component_.id_.assign(*atts,
-                                             *atts + xmlStrlen(*atts));
-            }
-            ++atts;
-        }
-        break;
-    case component::parser::component:
-        parser.state = ::component::parser::level;
-        parser.component_.levels_.push_back(component::level());
-        parser.current_level = &parser.component_.levels_.back();
-        break;
-    case component::parser::level:
-        if (xmlStrcmp(name, BAD_CAST("requires")) == 0) {
-            parser.state = component::parser::requires;
-            string id;
-            size_t level;
-            while (*atts) {
-                if (xmlStrcmp(*atts, BAD_CAST("id")) == 0) {
-                    ++atts;
-                    id.assign(*atts, *atts + xmlStrlen(*atts));
-                } else if (xmlStrcmp(*atts, BAD_CAST("level")) == 0) {
-                    ++atts;
-                    using boost::lexical_cast;
-                    level = lexical_cast<size_t>(
-                        string(*atts, *atts + xmlStrlen(*atts)));
-                }
-                ++atts;
-            }
-            parser.current_level->dependencies_.insert(make_pair(id, level));
-        } else if (xmlStrcmp(name, BAD_CAST("node")) == 0) {
-            parser.state = component::parser::node;
-            string id;
-            component::node_type_decl node_type;
-            while (*atts) {
-                if (xmlStrcmp(*atts, BAD_CAST("id")) == 0) {
-                    ++atts;
-                    id.assign(*atts, *atts + xmlStrlen(*atts));
-                } else if (xmlStrcmp(*atts, BAD_CAST("metatype-id")) == 0) {
-                    ++atts;
-                    node_type.metatype_id.assign(*atts,
-                                                 *atts + xmlStrlen(*atts));
-                } else {
-                    ++atts;
-                }
-                ++atts;
-            }
-            pair<component::level::iterator, bool> result =
-                parser.current_level->insert(std::make_pair(id, node_type));
-            if (result.second) {
-                parser.current_node = &*result.first;
-            }
-        } else {
-            std::cerr << "unexpected element: " << name << std::endl;
-        }
-        break;
-    case component::parser::requires:
-        break;
-    case component::parser::node:
-        parser.state = component::parser::field;
-        try {
-            using openvrml::node_interface;
-            node_interface interface_;
-            while (*atts) {
-                using boost::lexical_cast;
-                using openvrml::field_value;
-                if (xmlStrcmp(*atts, BAD_CAST("id")) == 0) {
-                    ++atts;
-                    interface_.id.assign(*atts, *atts + xmlStrlen(*atts));
-                } else if (xmlStrcmp(*atts, BAD_CAST("type")) == 0) {
-                    ++atts;
-                    try {
-                        interface_.field_type =
-                            lexical_cast<field_value::type_id>(
-                                string(*atts, *atts + xmlStrlen(*atts)));
-                    } catch (const boost::bad_lexical_cast &) {
-                        std::cerr << "invalid field value type identifier \""
-                                  << *atts << '\"' << std::endl;
-                        throw;
-                    }
-                } else if (xmlStrcmp(*atts, BAD_CAST("access-type")) == 0) {
-                    ++atts;
-                    try {
-                        interface_.type =
-                            lexical_cast<node_interface::type_id>(
-                                string(*atts, *atts + xmlStrlen(*atts)));
-                    } catch (const boost::bad_lexical_cast &) {
-                        std::cerr << "invalid field access type identifier \""
-                                  << *atts << '\"' << std::endl;
-                        throw;
-                    }
-                } else {
-                    ++atts;
-                }
-                ++atts;
-            }
-            parser.current_node->second.interfaces.insert(interface_);
-        } catch (const boost::bad_lexical_cast &) {}
-        break;
-    case component::parser::field: default:
-        assert(false);
-    }
-}
-
-extern "C" OPENVRML_LOCAL
-void openvrml_component_parser_endElement(void * ctx, 
-                                          const xmlChar * /* name */)
-{
-    component::parser & parser = *static_cast<component::parser *>(ctx);
-    switch (parser.state) {
-    case component::parser::none:
-        break;
-    case component::parser::component:
-        break;
-    case component::parser::level:
-        parser.state = component::parser::component;
-        break;
-    case component::parser::requires:
-        parser.state = component::parser::level;
-        break;
-    case component::parser::node:
-        parser.state = component::parser::level;
-        break;
-    case component::parser::field:
-        parser.state = component::parser::node;
-        break;
-    }
-}
-
 namespace {
 
-    component::parser::parser(::component & c):
-        handler(),
-        state(none),
-        current_level(0),
-        current_node(0),
-        component_(c)
-    {
-        this->handler.startElement = openvrml_component_parser_startElement;
-        this->handler.endElement = openvrml_component_parser_endElement;
-    }
+    component::xml_reader::xml_reader(::component & c):
+        component_(c),
+        state_(none),
+        current_level_(0),
+        current_node_(0)
+    {}
 
-    void component::parser::parse(const std::string & filename)
+    void component::xml_reader::read(const std::string & filename)
         OPENVRML_THROW1(std::runtime_error)
     {
-        int result = xmlSAXUserParseFile(&this->handler,
-                                         this,
-                                         filename.c_str());
-        if (result != XML_ERR_OK) {
-            using std::string;
-            using boost::lexical_cast;
-            xmlErrorPtr err = xmlGetLastError();
-            throw std::runtime_error(string(err->file) + ':'
-                                     + lexical_cast<string>(err->line) + ':'
-                                     + lexical_cast<string>(err->int2) + ": "
-                                     + err->message);
+        static const char * const encoding = 0;
+        static const int options = 0;
+        const xmlTextReaderPtr reader =
+            xmlReaderForFile(filename.c_str(), encoding, options);
+        if (!reader) {
+            throw std::runtime_error("could not open \"" + filename
+                                     + "\" for reading");
+        }
+        scope_guard reader_guard = make_guard(xmlFreeTextReader, reader);
+        boost::ignore_unused_variable_warning(reader_guard);
+
+        int result;
+        while ((result = xmlTextReaderRead(reader)) == 1) {
+            this->process_node(*reader);
+        }
+
+        if (result != 0) {
+            throw std::runtime_error('\"' + filename + "\" failed to parse");
+        }
+    }
+
+    void component::xml_reader::process_node(xmlTextReader & reader)
+    {
+        const int node_type = xmlTextReaderNodeType(&reader);
+        switch (node_type) {
+        case XML_READER_TYPE_ELEMENT:
+            this->start_element(reader);
+            break;
+        case XML_READER_TYPE_END_ELEMENT:
+            this->end_element(reader);
+            break;
+        default:
+            break;
+        }
+    }
+
+    void component::xml_reader::start_element(xmlTextReader & reader)
+    {
+        using std::pair;
+        using std::strcmp;
+        using std::string;
+
+        switch (this->state_) {
+        case component::xml_reader::none:
+            this->state_ = component::xml_reader::component;
+            {
+                xmlChar * id = xmlTextReaderGetAttribute(&reader,
+                                                         BAD_CAST("id"));
+                scope_guard id_guard = make_guard(free, id);
+                boost::ignore_unused_variable_warning(id_guard);
+                this->component_.id_.assign(id, id + xmlStrlen(id));
+            }
+            break;
+        case component::xml_reader::component:
+            this->state_ = ::component::xml_reader::level;
+            this->component_.levels_.push_back(component::level());
+            this->current_level_ = &this->component_.levels_.back();
+            break;
+        case component::xml_reader::level:
+            if (xmlStrcmp(xmlTextReaderName(&reader), BAD_CAST("requires"))
+                == 0) {
+                using boost::lexical_cast;
+
+                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
+                                                               BAD_CAST("id"));
+                scope_guard id_chars_guard = make_guard(free, id_chars);
+                boost::ignore_unused_variable_warning(id_chars_guard);
+                const string id(id_chars, id_chars + xmlStrlen(id_chars));
+
+                xmlChar * level_chars =
+                    xmlTextReaderGetAttribute(&reader, BAD_CAST("level"));
+                scope_guard level_chars_guard = make_guard(free, level_chars);
+                boost::ignore_unused_variable_warning(level_chars_guard);
+                const size_t level =
+                    lexical_cast<size_t>(
+                        string(level_chars,
+                               level_chars + xmlStrlen(level_chars)));
+
+                this->current_level_->dependencies_.insert(
+                    make_pair(id, level));
+            } else if (xmlStrcmp(xmlTextReaderName(&reader), BAD_CAST("node"))
+                       == 0) {
+                this->state_ = component::xml_reader::node;
+
+                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
+                                                               BAD_CAST("id"));
+                scope_guard id_chars_guard = make_guard(free, id_chars);
+                boost::ignore_unused_variable_warning(id_chars_guard);
+                const string id(id_chars, id_chars + xmlStrlen(id_chars));
+
+                component::node_type_decl node_type;
+                xmlChar * metatype_id_chars =
+                    xmlTextReaderGetAttribute(&reader, BAD_CAST("metatype-id"));
+                scope_guard metatype_id_chars_guard =
+                    make_guard(free, metatype_id_chars);
+                boost::ignore_unused_variable_warning(metatype_id_chars_guard);
+                node_type.metatype_id.assign(
+                    metatype_id_chars,
+                    metatype_id_chars + xmlStrlen(metatype_id_chars));
+
+                pair<component::level::iterator, bool> result =
+                    this->current_level_->insert(std::make_pair(id, node_type));
+                if (result.second) {
+                    this->current_node_ = &*result.first;
+                }
+            } else {
+                xmlChar * name_chars = xmlTextReaderName(&reader);
+                const std::string name(name_chars,
+                                       name_chars + xmlStrlen(name_chars));;
+                throw std::runtime_error("unexpected element: " + name);
+            }
+            break;
+        case component::xml_reader::requires:
+            break;
+        case component::xml_reader::node:
+            {
+                using boost::lexical_cast;
+                using openvrml::field_value;
+                using openvrml::node_interface;
+
+                node_interface interface_;
+                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
+                                                               BAD_CAST("id"));
+                scope_guard id_chars_guard = make_guard(free, id_chars);
+                boost::ignore_unused_variable_warning(id_chars_guard);
+                interface_.id.assign(id_chars, id_chars + xmlStrlen(id_chars));
+
+                xmlChar * type_chars =
+                    xmlTextReaderGetAttribute(&reader, BAD_CAST("type"));
+                scope_guard type_chars_guard = make_guard(free, type_chars);
+                boost::ignore_unused_variable_warning(type_chars_guard);
+                const string type(type_chars,
+                                  type_chars + xmlStrlen(type_chars));
+                try {
+                    interface_.field_type =
+                        lexical_cast<field_value::type_id>(string(type));
+                } catch (const boost::bad_lexical_cast &) {
+                    throw std::runtime_error(
+                        "invalid field value type identifier \"" + type + '\"');
+                }
+
+                xmlChar * access_type_chars =
+                    xmlTextReaderGetAttribute(&reader, BAD_CAST("access-type"));
+                scope_guard access_type_chars_guard =
+                    make_guard(free, access_type_chars);
+                boost::ignore_unused_variable_warning(access_type_chars_guard);
+                const string access_type(
+                    access_type_chars,
+                    access_type_chars + xmlStrlen(access_type_chars));
+
+                try {
+                    interface_.type =
+                        lexical_cast<node_interface::type_id>(access_type);
+                } catch (const boost::bad_lexical_cast &) {
+                    throw std::runtime_error(
+                        "invalid field access type identifier \"" + access_type
+                        + '\"');
+                }
+
+                this->current_node_->second.interfaces.insert(interface_);
+            }
+            break;
+        case component::xml_reader::field: default:
+            assert(false);
+        }
+    }
+
+    void component::xml_reader::end_element(xmlTextReader & /* reader */)
+    {
+        switch (this->state_) {
+        case component::xml_reader::none:
+            break;
+        case component::xml_reader::component:
+            break;
+        case component::xml_reader::level:
+            this->state_ = component::xml_reader::component;
+            break;
+        case component::xml_reader::requires:
+            break;
+        case component::xml_reader::node:
+            this->state_ = component::xml_reader::level;
+            break;
+        case component::xml_reader::field:
+            break;
         }
     }
 
     component::component(const std::string & filename)
         OPENVRML_THROW1(std::runtime_error)
     {
-        parser p(*this);
-        p.parse(filename);
+        xml_reader reader(*this);
+        reader.read(filename);
     }
 
     const std::string & component::id() const OPENVRML_NOTHROW

@@ -111,7 +111,10 @@ LIBS=$ov_save_LIBS
 AS_IF([test X$ov_cv_boost_thread = Xno],
       [AC_MSG_FAILURE([libboost_thread$BOOST_LIB_SUFFIX not found])])
 
-PKG_CHECK_MODULES([XML], [libxml-2.0])
+#
+# The XmlTextReader interface appears in libxml 2.5.
+#
+PKG_CHECK_MODULES([XML], [libxml-2.0 >= 2.5])
 
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 PKG_CHECK_MODULES([FREETYPE], [$REQUIRE_FREETYPE], , [have_freetype=no])

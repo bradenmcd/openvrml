@@ -1,3 +1,34 @@
+2008-09-07 Braden McDaniel  <braden@endoframe.com>
+
+	Use libxml's XmlTextReader interface rather than its SAX one.  The
+	XmlTextReader interface is a lot closer to Microsoft's XmlLite
+	interface, which should better facilitate using XmlLite when
+	building on Windows.
+
+	* configure.ac: Require at least libxml 2.5.
+	* src/libopenvrml/openvrml/browser.cpp
+	(component::parser): Removed.
+	(component::xml_reader): Added; a parser for OpenVRML's XML
+	component descriptors using libxml's XmlTextReader interface.
+	(openvrml_component_parser_startElement(void *, const xmlChar *,
+	const xmlChar **)): Removed.
+	(openvrml_component_parser_endElement(void *, const xmlChar *)):
+	Removed.
+	(component::xml_reader::xml_reader(::component &)): Added;
+	construct the xml_reader.
+	(component::xml_reader::read(const std::string &)): Added; read an
+	XML component descriptor.
+	(component::xml_reader::process_node(xmlTextReader &)): Added;
+	process a node.
+	(component::xml_reader::start_element(xmlTextReader &)): Process
+	the start of an element.
+	(component::xml_reader::end_element(xmlTextReader &)): Process the
+	end of an element.
+	(component::parser::parser(::component &)): Removed.
+	(component::parser::parse(const std::string &)): Removed.
+	(component::component(const std::string & filename)): Parse the
+	component descriptor using xml_reader.
+
 2008-09-06 Braden McDaniel  <braden@endoframe.com>
 
 	Use D-Bus for communication between openvrml-xembed and its hosts,
