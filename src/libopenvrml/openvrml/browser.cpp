@@ -6386,7 +6386,7 @@ namespace {
             IStream * input;
             IXmlReader * reader;
 # else
-            XmlTextReaderPtr reader;
+            xmlTextReaderPtr reader;
 # endif
         public:
             //
