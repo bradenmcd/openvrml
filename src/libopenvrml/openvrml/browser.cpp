@@ -30,9 +30,12 @@
 #   include <sys/timeb.h>
 #   include <direct.h>
 #   include <time.h>
+#   include <shlwapi.h>
+#   include <XmlLite.h>
 # else
 #   include <sys/time.h>
 #   include <ltdl.h>
+#   include <libxml/xmlreader.h>
 # endif
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/array.hpp>
@@ -47,7 +50,6 @@
 # include <boost/thread/thread.hpp>
 # include <boost/tokenizer.hpp>
 # include <boost/utility.hpp>
-# include <libxml/xmlreader.h>
 # include <private.h>
 # include "browser.h"
 # include "vrml97_grammar.h"
@@ -6377,6 +6379,181 @@ namespace {
 
 namespace {
 
+    namespace openvrml_ {
+
+        class OPENVRML_LOCAL xml_reader {
+# ifdef _WIN32
+            IStream * input;
+            IXmlReader * reader;
+# else
+            XmlTextReaderPtr reader;
+# endif
+        public:
+            //
+            // Conveniently, these values are consistent between libxml and
+            // XmlLite.
+            //
+            enum node_type_id {
+                none_id                   = 0,
+                element_id                = 1,
+                attribute_id              = 2,
+                text_id                   = 3,
+                cdata_id                  = 4,
+                processing_instruction_id = 7,
+                comment_id                = 8,
+                document_type_id          = 10,
+                whitespace_id             = 13,
+                end_element_id            = 15,
+                xml_declaration_id        = 17
+            };
+
+            explicit xml_reader(const std::string & filename);
+            ~xml_reader();
+
+            int read();
+            node_type_id node_type() const;
+            const std::string local_name() const;
+            const std::string value() const;
+            int move_to_first_attribute();
+            int move_to_next_attribute();
+        };
+    }
+
+    openvrml_::xml_reader::xml_reader(const std::string & filename):
+# ifdef _WIN32
+        input(0),
+# endif
+        reader(0)
+    {
+# ifdef _WIN32
+        HRESULT hr;
+
+        hr = SHCreateStreamOnFile(filename.c_str(), STGM_READ, &this->input);
+        if (FAILED(hr)) {
+            throw std::runtime_error("failed to open file \"" + filename
+                                     + '\"');
+        }
+        scope_guard input_guard =
+            make_obj_guard(*this->input, &IStream::Release);
+
+        hr = CreateXmlReader(__uuidof(IXmlReader),
+                             reinterpret_cast<void **>(&this->reader),
+                             0);
+        if (FAILED(hr)) {
+            throw std::runtime_error("failed to create XML reader");
+        }
+        scope_guard reader_guard =
+            make_obj_guard(*this->reader, &IXmlReader::Release);
+
+        hr = this->reader->SetInput(this->input);
+        if (FAILED(hr)) {
+            throw std::runtime_error("failed to set input for XML reader");
+        }
+
+        input_guard.dismiss();
+        reader_guard.dismiss();
+# else
+        static const char * const encoding = 0;
+        static const int options = 0;
+        this->reader = xmlReaderForFile(filename.c_str(), encoding, options);
+# endif
+    }
+
+    openvrml_::xml_reader::~xml_reader()
+    {
+# ifdef _WIN32
+        this->reader->Release();
+        this->input->Release();
+# else
+        xmlFreeTextReader(this->reader);
+# endif
+    }
+
+    int openvrml_::xml_reader::read()
+    {
+# ifdef _WIN32
+        HRESULT hr = this->reader->Read(0);
+        return (hr == S_OK)
+            ? 1
+            : (hr == S_FALSE)
+                ? 0
+                : -1;
+# else
+        return xmlTextReaderRead(this->reader);
+# endif
+    }
+
+    openvrml_::xml_reader::node_type_id
+    openvrml_::xml_reader::node_type() const
+    {
+# ifdef _WIN32
+        XmlNodeType type;
+        this->reader->GetNodeType(&type);
+        return node_type_id(type);
+# else
+        return node_type_id(xmlTextReaderNodeType(this->reader));
+# endif
+    }
+
+    const std::string openvrml_::xml_reader::local_name() const
+    {
+# ifdef _WIN32
+        const WCHAR * name;
+        HRESULT hr = this->reader->GetLocalName(&name, 0);
+        if (FAILED(hr)) {
+            throw std::runtime_error("failed to get element name");
+        }
+        return std::string(name, name + wcslen(name));
+# else
+        const xmlChar * name = xmlTextReaderConstLocalName(this->reader);
+        return std::string(name, name + xmlStrlen(name));
+# endif
+    }
+
+    const std::string openvrml_::xml_reader::value() const
+    {
+# ifdef _WIN32
+        const WCHAR * val;
+        HRESULT hr = this->reader->GetValue(&val, 0);
+        if (FAILED(hr)) {
+            throw std::runtime_error("failed to get a value");
+        }
+        return std::string(val, val + wcslen(val));
+# else
+        const xmlChar * val = xmlTextReaderConstValue(this->reader);
+        return std::string(val, val + xmlStrlen(val));
+# endif
+    }
+
+    int openvrml_::xml_reader::move_to_first_attribute()
+    {
+# ifdef _WIN32
+        HRESULT hr = this->reader->MoveToFirstAttribute();
+        return (hr == S_OK)
+            ? 1
+            : (hr == S_FALSE)
+                ? 0
+                : -1;
+# else
+        return xmlTextReaderMoveToFirstAttribute(this->reader);
+# endif
+    }
+
+    int openvrml_::xml_reader::move_to_next_attribute()
+    {
+# ifdef _WIN32
+        HRESULT hr = this->reader->MoveToNextAttribute();
+        return (hr == S_OK)
+            ? 1
+            : (hr == S_FALSE)
+                ? 0
+                : -1;
+# else
+        return xmlTextReaderMoveToNextAttribute(this->reader);
+# endif
+    }
+
+
     class OPENVRML_LOCAL component {
         struct node_type_decl {
             openvrml::node_interface_set interfaces;
@@ -6429,9 +6606,9 @@ namespace {
                 OPENVRML_THROW1(std::runtime_error);
 
         private:
-            void process_node(xmlTextReader & reader);
-            void start_element(xmlTextReader & reader);
-            void end_element(xmlTextReader & reader);
+            void process_node(openvrml_::xml_reader & reader);
+            void start_element(openvrml_::xml_reader & reader);
+            void end_element(openvrml_::xml_reader & reader);
         };
 
         std::string id_;
@@ -12089,20 +12266,10 @@ namespace {
     void component::xml_reader::read(const std::string & filename)
         OPENVRML_THROW1(std::runtime_error)
     {
-        static const char * const encoding = 0;
-        static const int options = 0;
-        const xmlTextReaderPtr reader =
-            xmlReaderForFile(filename.c_str(), encoding, options);
-        if (!reader) {
-            throw std::runtime_error("could not open \"" + filename
-                                     + "\" for reading");
-        }
-        scope_guard reader_guard = make_guard(xmlFreeTextReader, reader);
-        boost::ignore_unused_variable_warning(reader_guard);
-
+        openvrml_::xml_reader reader(filename);
         int result;
-        while ((result = xmlTextReaderRead(reader)) == 1) {
-            this->process_node(*reader);
+        while ((result = reader.read()) == 1) {
+            this->process_node(reader);
         }
 
         if (result != 0) {
@@ -12110,14 +12277,14 @@ namespace {
         }
     }
 
-    void component::xml_reader::process_node(xmlTextReader & reader)
+    void component::xml_reader::process_node(openvrml_::xml_reader & reader)
     {
-        const int node_type = xmlTextReaderNodeType(&reader);
+        const int node_type = reader.node_type();
         switch (node_type) {
-        case XML_READER_TYPE_ELEMENT:
+        case openvrml_::xml_reader::element_id:
             this->start_element(reader);
             break;
-        case XML_READER_TYPE_END_ELEMENT:
+        case openvrml_::xml_reader::end_element_id:
             this->end_element(reader);
             break;
         default:
@@ -12125,21 +12292,22 @@ namespace {
         }
     }
 
-    void component::xml_reader::start_element(xmlTextReader & reader)
+    void component::xml_reader::start_element(openvrml_::xml_reader & reader)
     {
         using std::pair;
         using std::strcmp;
         using std::string;
+        using openvrml::node_interface;
+
+        int move_to_attr_result;
+        node_interface interface_;
 
         switch (this->state_) {
         case component::xml_reader::none:
             this->state_ = component::xml_reader::component;
-            {
-                xmlChar * id = xmlTextReaderGetAttribute(&reader,
-                                                         BAD_CAST("id"));
-                scope_guard id_guard = make_guard(free, id);
-                boost::ignore_unused_variable_warning(id_guard);
-                this->component_.id_.assign(id, id + xmlStrlen(id));
+            move_to_attr_result = reader.move_to_first_attribute();
+            if (move_to_attr_result > 0) {
+                this->component_.id_ = reader.value();
             }
             break;
         case component::xml_reader::component:
@@ -12148,115 +12316,86 @@ namespace {
             this->current_level_ = &this->component_.levels_.back();
             break;
         case component::xml_reader::level:
-            if (xmlStrcmp(xmlTextReaderName(&reader), BAD_CAST("requires"))
-                == 0) {
-                using boost::lexical_cast;
-
-                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
-                                                               BAD_CAST("id"));
-                scope_guard id_chars_guard = make_guard(free, id_chars);
-                boost::ignore_unused_variable_warning(id_chars_guard);
-                const string id(id_chars, id_chars + xmlStrlen(id_chars));
-
-                xmlChar * level_chars =
-                    xmlTextReaderGetAttribute(&reader, BAD_CAST("level"));
-                scope_guard level_chars_guard = make_guard(free, level_chars);
-                boost::ignore_unused_variable_warning(level_chars_guard);
-                const size_t level =
-                    lexical_cast<size_t>(
-                        string(level_chars,
-                               level_chars + xmlStrlen(level_chars)));
+            if (reader.local_name() == "requires") {
+                string id;
+                size_t level;
+                move_to_attr_result = reader.move_to_first_attribute();
+                while (move_to_attr_result > 0) {
+                    using boost::lexical_cast;
+                    if (reader.local_name() == "id") {
+                        id = reader.value();
+                    } else if (reader.local_name() == "level") {
+                        level = lexical_cast<size_t>(reader.value());
+                    }
+                    move_to_attr_result = reader.move_to_next_attribute();
+                }
 
                 this->current_level_->dependencies_.insert(
                     make_pair(id, level));
-            } else if (xmlStrcmp(xmlTextReaderName(&reader), BAD_CAST("node"))
-                       == 0) {
+            } else if (reader.local_name() == "node") {
                 this->state_ = component::xml_reader::node;
 
-                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
-                                                               BAD_CAST("id"));
-                scope_guard id_chars_guard = make_guard(free, id_chars);
-                boost::ignore_unused_variable_warning(id_chars_guard);
-                const string id(id_chars, id_chars + xmlStrlen(id_chars));
-
+                string id;
                 component::node_type_decl node_type;
-                xmlChar * metatype_id_chars =
-                    xmlTextReaderGetAttribute(&reader, BAD_CAST("metatype-id"));
-                scope_guard metatype_id_chars_guard =
-                    make_guard(free, metatype_id_chars);
-                boost::ignore_unused_variable_warning(metatype_id_chars_guard);
-                node_type.metatype_id.assign(
-                    metatype_id_chars,
-                    metatype_id_chars + xmlStrlen(metatype_id_chars));
-
+                move_to_attr_result = reader.move_to_first_attribute();
+                while (move_to_attr_result > 0) {
+                    if (reader.local_name() == "id") {
+                        id = reader.value();
+                    } else if (reader.local_name() == "metatype-id") {
+                        node_type.metatype_id = reader.value();
+                    }
+                    move_to_attr_result = reader.move_to_next_attribute();
+                }
                 pair<component::level::iterator, bool> result =
                     this->current_level_->insert(std::make_pair(id, node_type));
                 if (result.second) {
                     this->current_node_ = &*result.first;
                 }
             } else {
-                xmlChar * name_chars = xmlTextReaderName(&reader);
-                const std::string name(name_chars,
-                                       name_chars + xmlStrlen(name_chars));;
-                throw std::runtime_error("unexpected element: " + name);
+                throw std::runtime_error("unexpected element: "
+                                         + reader.local_name());
             }
             break;
         case component::xml_reader::requires:
             break;
         case component::xml_reader::node:
-            {
+            move_to_attr_result = reader.move_to_first_attribute();
+            while (move_to_attr_result > 0) {
                 using boost::lexical_cast;
                 using openvrml::field_value;
-                using openvrml::node_interface;
 
-                node_interface interface_;
-                xmlChar * id_chars = xmlTextReaderGetAttribute(&reader,
-                                                               BAD_CAST("id"));
-                scope_guard id_chars_guard = make_guard(free, id_chars);
-                boost::ignore_unused_variable_warning(id_chars_guard);
-                interface_.id.assign(id_chars, id_chars + xmlStrlen(id_chars));
-
-                xmlChar * type_chars =
-                    xmlTextReaderGetAttribute(&reader, BAD_CAST("type"));
-                scope_guard type_chars_guard = make_guard(free, type_chars);
-                boost::ignore_unused_variable_warning(type_chars_guard);
-                const string type(type_chars,
-                                  type_chars + xmlStrlen(type_chars));
-                try {
-                    interface_.field_type =
-                        lexical_cast<field_value::type_id>(string(type));
-                } catch (const boost::bad_lexical_cast &) {
-                    throw std::runtime_error(
-                        "invalid field value type identifier \"" + type + '\"');
+                if (reader.local_name() == "id") {
+                    interface_.id = reader.value();
+                } else if (reader.local_name() == "type") {
+                    try {
+                        interface_.field_type =
+                            lexical_cast<field_value::type_id>(reader.value());
+                    } catch (const boost::bad_lexical_cast &) {
+                        throw std::runtime_error(
+                            "invalid field value type identifier \""
+                            + reader.value() + '\"');
+                    }
+                } else if (reader.local_name() == "access-type") {
+                    try {
+                        interface_.type =
+                            lexical_cast<node_interface::type_id>(
+                                reader.value());
+                    } catch (const boost::bad_lexical_cast &) {
+                        throw std::runtime_error(
+                            "invalid field access type identifier \""
+                            + reader.value() + '\"');
+                    }
                 }
-
-                xmlChar * access_type_chars =
-                    xmlTextReaderGetAttribute(&reader, BAD_CAST("access-type"));
-                scope_guard access_type_chars_guard =
-                    make_guard(free, access_type_chars);
-                boost::ignore_unused_variable_warning(access_type_chars_guard);
-                const string access_type(
-                    access_type_chars,
-                    access_type_chars + xmlStrlen(access_type_chars));
-
-                try {
-                    interface_.type =
-                        lexical_cast<node_interface::type_id>(access_type);
-                } catch (const boost::bad_lexical_cast &) {
-                    throw std::runtime_error(
-                        "invalid field access type identifier \"" + access_type
-                        + '\"');
-                }
-
-                this->current_node_->second.interfaces.insert(interface_);
+                move_to_attr_result = reader.move_to_next_attribute();
             }
+            this->current_node_->second.interfaces.insert(interface_);
             break;
         case component::xml_reader::field: default:
             assert(false);
         }
     }
 
-    void component::xml_reader::end_element(xmlTextReader & /* reader */)
+    void component::xml_reader::end_element(openvrml_::xml_reader & /* reader */)
     {
         switch (this->state_) {
         case component::xml_reader::none:

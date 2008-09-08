@@ -1,3 +1,40 @@
+2008-09-08 Braden McDaniel  <braden@endoframe.com>
+
+	Use XmlLite on Windows rather than libxml.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	Added dependencies shlwapi.lib and XmlLite.lib; removed
+	dependencies libxml2_a_dll.lib, iconv_a.lib, and WS2_32.lib.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml_::xml_reader): Added a wrapper that abstracts XmlLite on
+	Windows and libxml's XmlTextReader interface everywhere else.
+	(openvrml_::xml_reader::xml_reader(const std::string &)):
+	Construct using a file name.  On Windows, create an IStream from a
+	file and an IXmlReader.  Everywhere else, create a libxml
+	XmlTextReader.
+	(openvrml_::xml_reader::~xml_reader()): Clean up.
+	(openvrml_::xml_reader::read()): Delegate to IXmlReader::Read on
+	Windows; xmlTextReaderRead everywhere else.
+	(openvrml_::xml_reader::node_type() const): Get the node type
+	identifier.  Conveniently, these IDs have parity between the
+	XmlLite and XmlTextReader APIs.
+	(openvrml_::xml_reader::local_name() const): The local name of the
+	current node.
+	(openvrml_::xml_reader::value() const): The value, if any, of the
+	current node.
+	(openvrml_::xml_reader::move_to_first_attribute()): Move to the
+	first attribute of the current node.
+	(openvrml_::xml_reader::move_to_next_attribute()): Move to the
+	next attribute of the current node.
+	(component::xml_reader::read(const std::string &)): Use
+	openvrml_::xml_reader.
+	(component::xml_reader::process_node(openvrml_::xml_reader &)):
+	Use openvrml_::xml_reader.
+	(component::xml_reader::start_element(openvrml_::xml_reader &)):
+	Use openvrml_::xml_reader.
+	(component::xml_reader::end_element(openvrml_::xml_reader &)): Use
+	openvrml_::xml_reader.
+
 2008-09-07 Braden McDaniel  <braden@endoframe.com>
 
 	Use libxml's XmlTextReader interface rather than its SAX one.  The

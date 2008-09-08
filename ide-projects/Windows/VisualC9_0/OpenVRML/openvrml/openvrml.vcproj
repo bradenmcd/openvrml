@@ -60,14 +60,14 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="C:\cygwin\home\bmcdaniel\src\openvrml\openvrml\src\openvrml"
+				AdditionalIncludeDirectories=""
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpngd.lib zlibd.lib freetype236MT_D.lib libxml2_a_dll.lib iconv_a.lib WS2_32.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib libpngd.lib zlibd.lib freetype236MT_D.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
 				IgnoreDefaultLibraryNames="libcmtd;msvcrt"
 				GenerateDebugInformation="true"
@@ -126,7 +126,6 @@
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml"
 				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_SPIRIT_THREADSAFE;PACKAGE_VERSION=\&quot;0.17.8\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;BOOST_SPIRIT_CLOSURE_LIMIT=6;PHOENIX_LIMIT=6;OPENVRML_BUILD_DLL;OPENVRML_ENABLE_PNG_TEXTURES;OPENVRML_ENABLE_RENDER_TEXT_NODE;OPENVRML_FT_CONST=&quot;const&quot;;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;;NDEBUG"
 				StringPooling="true"
@@ -145,14 +144,14 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="C:\cygwin\home\bmcdaniel\src\openvrml\openvrml\src\openvrml"
+				AdditionalIncludeDirectories=""
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpng.lib zlib.lib freetype236MT.lib libxml2_a_dll.lib iconv_a.lib WS2_32.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib libpng.lib zlib.lib freetype236MT.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
