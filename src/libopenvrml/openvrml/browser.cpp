@@ -6381,6 +6381,14 @@ namespace {
 
     namespace openvrml_ {
 
+        /**
+         * @brief A wrapper that abstracts commonality between libxml's
+         *        XmlTextReader interface and Microsoft's XmlLite.
+         *
+         * There is a lot in common here between the two underlying APIs; and
+         * that's no coincidence, apparently: both APIs are based on the C#
+         * XmlReader API.
+         */
         class OPENVRML_LOCAL xml_reader {
 # ifdef _WIN32
             IStream * input;
@@ -6407,19 +6415,114 @@ namespace {
                 xml_declaration_id        = 17
             };
 
-            explicit xml_reader(const std::string & filename);
-            ~xml_reader();
+            explicit xml_reader(const std::string & filename)
+                OPENVRML_THROW1(std::runtime_error);
+            ~xml_reader() OPENVRML_NOTHROW;
 
-            int read();
-            node_type_id node_type() const;
-            const std::string local_name() const;
-            const std::string value() const;
-            int move_to_first_attribute();
-            int move_to_next_attribute();
+            int read() OPENVRML_NOTHROW;
+            node_type_id node_type() const OPENVRML_NOTHROW;
+            const std::string local_name() const
+                OPENVRML_THROW2(std::runtime_error, std::bad_alloc);
+            const std::string value() const
+                OPENVRML_THROW2(std::runtime_error, std::bad_alloc);
+            int move_to_first_attribute() OPENVRML_NOTHROW;
+            int move_to_next_attribute() OPENVRML_NOTHROW;
         };
     }
 
-    openvrml_::xml_reader::xml_reader(const std::string & filename):
+    /**
+     * @enum openvrml_::xml_reader::node_type_id
+     *
+     * @brief The node type identifier.
+     *
+     * Due to the common heritage of XmlTextReader and XmlLite, the underlying
+     * APIs report consistent values that can be passed through directly to
+     * the @c openvrml_::xml_reader interface.
+     *
+     * @sa http://xmlsoft.org/html/libxml-xmlreader.html#xmlReaderTypes
+     * @sa http://msdn.microsoft.com/en-us/library/ms753141(VS.85).aspx
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::none_id
+     *
+     * @brief The &ldquo;null&rdquo; type identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::element_id
+     *
+     * @brief Element identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::attribute_id
+     *
+     * @brief Attribute identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::text_id
+     *
+     * @brief Text identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::cdata_id
+     *
+     * @brief CDATA identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::processing_instruction_id
+     *
+     * @brief Processing instruction identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::comment_id
+     *
+     * @brief Comment identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::document_type_id
+     *
+     * @brief Document type identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::whitespace_id
+     *
+     * @brief Whitespace identifier.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::end_element_id
+     *
+     * @brief Element end tag identifier.
+     *
+     * Unlike SAX, where you get an &ldquo;end of element&rdquo; callback at
+     * the logical element boundary, @c #node_type only returns this value
+     * when the current node is a literal end tag.
+     */
+
+    /**
+     * @var openvrml_::xml_reader::node_type_id openvrml_::xml_reader::xml_declaration_id
+     *
+     * @brief XML declaration identifier.
+     */
+
+    /**
+     * @brief Construct from a file name.
+     *
+     * @param[in] filename  the full path to a file.
+     *
+     * @exception std::runtime_error    if opening @p filename or creating the
+     *                                  underlying XML reader fails.
+     */
+    openvrml_::xml_reader::xml_reader(const std::string & filename)
+        OPENVRML_THROW1(std::runtime_error):
 # ifdef _WIN32
         input(0),
 # endif
@@ -6456,10 +6559,16 @@ namespace {
         static const char * const encoding = 0;
         static const int options = 0;
         this->reader = xmlReaderForFile(filename.c_str(), encoding, options);
+        if (!this->reader) {
+            throw std::runtime_error("failed to create XML reader");
+        }
 # endif
     }
 
-    openvrml_::xml_reader::~xml_reader()
+    /**
+     * @brief Destroy.
+     */
+    openvrml_::xml_reader::~xml_reader() OPENVRML_NOTHROW
     {
 # ifdef _WIN32
         this->reader->Release();
@@ -6469,7 +6578,14 @@ namespace {
 # endif
     }
 
-    int openvrml_::xml_reader::read()
+    /**
+     * @brief Advance to the next node in the stream.
+     *
+     * @retval 1 if the node was read successfully
+     * @retval 0 if there are no more nodes to read
+     * @retval -1 if there is an error.
+     */
+    int openvrml_::xml_reader::read() OPENVRML_NOTHROW
     {
 # ifdef _WIN32
         HRESULT hr = this->reader->Read(0);
@@ -6483,8 +6599,13 @@ namespace {
 # endif
     }
 
+    /**
+     * @brief The type of the current node.
+     *
+     * @return the type of the current node.
+     */
     openvrml_::xml_reader::node_type_id
-    openvrml_::xml_reader::node_type() const
+    openvrml_::xml_reader::node_type() const OPENVRML_NOTHROW
     {
 # ifdef _WIN32
         XmlNodeType type;
@@ -6495,7 +6616,16 @@ namespace {
 # endif
     }
 
+    /**
+     * @brief The local (i.e., unqualified) name of the node.
+     *
+     * @return the local name of the node.
+     *
+     * @exception std::runtime_error    if there is an error getting the name.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
     const std::string openvrml_::xml_reader::local_name() const
+        OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
 # ifdef _WIN32
         const WCHAR * name;
@@ -6510,7 +6640,16 @@ namespace {
 # endif
     }
 
+    /**
+     * @brief The text value of the node, if any.
+     *
+     * @return the text value of the node.
+     *
+     * @exception std::runtime_error    if there is an error getting the value.
+     * @exception std::bad_alloc        if memory allocation fails.
+     */
     const std::string openvrml_::xml_reader::value() const
+        OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
 # ifdef _WIN32
         const WCHAR * val;
@@ -6525,7 +6664,14 @@ namespace {
 # endif
     }
 
-    int openvrml_::xml_reader::move_to_first_attribute()
+    /**
+     * @brief Move to the first attribute associated with the current node.
+     *
+     * @retval 1 on success
+     * @retval 0 if the current node has no attributes
+     * @retval -1 if there is an error
+     */
+    int openvrml_::xml_reader::move_to_first_attribute() OPENVRML_NOTHROW
     {
 # ifdef _WIN32
         HRESULT hr = this->reader->MoveToFirstAttribute();
@@ -6539,7 +6685,14 @@ namespace {
 # endif
     }
 
-    int openvrml_::xml_reader::move_to_next_attribute()
+    /**
+     * @brief Move to the next attribute associated with the current node.
+     *
+     * @retval 1 on success
+     * @retval 0 if the current node has no more attributes
+     * @retval -1 if there is an error
+     */
+    int openvrml_::xml_reader::move_to_next_attribute() OPENVRML_NOTHROW
     {
 # ifdef _WIN32
         HRESULT hr = this->reader->MoveToNextAttribute();
