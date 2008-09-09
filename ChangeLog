@@ -1,5 +1,10 @@
 2008-09-09 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
+	Removed unnecessary backslash.
+
+2008-09-09 Braden McDaniel  <braden@endoframe.com>
+
 	Order include directories consistently for Debug and Release
 	configurations.
 
