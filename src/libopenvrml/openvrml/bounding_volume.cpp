@@ -611,8 +611,7 @@ void openvrml::bounding_sphere::do_enclose(const std::vector<vec3f> & points)
     //
     // Pick the two points most distant from one another.
     //
-    vec3f span;
-    span = *max_p[0] - *min_p[0];
+    vec3f span = *max_p[0] - *min_p[0];
     float dx = span.dot(span);
     span = *max_p[1] - *min_p[1];
     float dy = span.dot(span);
