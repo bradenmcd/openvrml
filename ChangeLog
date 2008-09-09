@@ -1,5 +1,12 @@
 2008-09-09 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	(openvrml::bounding_sphere::do_enclose(const
+	std::vector<vec3f>&)): No reason to define span before
+	setting its value.
+
+2008-09-09 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
 	Removed unnecessary backslash.
 
