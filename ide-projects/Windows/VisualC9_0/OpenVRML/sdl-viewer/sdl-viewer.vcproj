@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml;&quot;..\openvrml-gl&quot;;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;"
+				AdditionalIncludeDirectories="&quot;..\openvrml-gl&quot;;..\openvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml"
 				PreprocessorDefinitions="OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -124,7 +124,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\..\..\..\src\libopenvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\openvrml;&quot;..\openvrml-gl&quot;"
+				AdditionalIncludeDirectories="&quot;..\openvrml-gl&quot;;..\openvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml"
 				PreprocessorDefinitions="OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL;NDEBUG"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
