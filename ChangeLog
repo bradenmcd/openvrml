@@ -1,3 +1,8 @@
+2008-09-09 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Changed to CRLF line endings.
+
 2008-09-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp: Added doc-comments and
