@@ -1,3 +1,8 @@
+2008-09-10 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Changed
+	to CRLF line endings.
+
 2008-09-09 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/bounding_volume.cpp
