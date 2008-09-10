@@ -19,6 +19,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "javascript", "javascript\ja
 		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parse-vrml97", "parse-vrml97\parse-vrml97.vcproj", "{B7ACAA17-A1BE-4221-8F9D-503EA2AF0EDF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parse-x3dvrml", "parse-x3dvrml\parse-x3dvrml.vcproj", "{38979260-FBDB-49E6-A0AD-15E3C8C553A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +51,14 @@ Global
 		{FE4F0469-ADE7-4BC3-8501-590F810BF569}.Debug|Win32.Build.0 = Debug|Win32
 		{FE4F0469-ADE7-4BC3-8501-590F810BF569}.Release|Win32.ActiveCfg = Release|Win32
 		{FE4F0469-ADE7-4BC3-8501-590F810BF569}.Release|Win32.Build.0 = Release|Win32
+		{B7ACAA17-A1BE-4221-8F9D-503EA2AF0EDF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B7ACAA17-A1BE-4221-8F9D-503EA2AF0EDF}.Debug|Win32.Build.0 = Debug|Win32
+		{B7ACAA17-A1BE-4221-8F9D-503EA2AF0EDF}.Release|Win32.ActiveCfg = Release|Win32
+		{B7ACAA17-A1BE-4221-8F9D-503EA2AF0EDF}.Release|Win32.Build.0 = Release|Win32
+		{38979260-FBDB-49E6-A0AD-15E3C8C553A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{38979260-FBDB-49E6-A0AD-15E3C8C553A3}.Debug|Win32.Build.0 = Debug|Win32
+		{38979260-FBDB-49E6-A0AD-15E3C8C553A3}.Release|Win32.ActiveCfg = Release|Win32
+		{38979260-FBDB-49E6-A0AD-15E3C8C553A3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
