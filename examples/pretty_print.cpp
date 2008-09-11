@@ -161,11 +161,11 @@ struct actions : openvrml::null_vrml97_parse_actions {
             using std::vector;
             a.out << a.indent_ << "EXTERNPROTO " << node_type_id << " [\n";
             ++a.indent_;
-            for (node_interface_set::const_iterator interface =
+            for (node_interface_set::const_iterator interface_ =
                      interfaces.begin();
-                 interface != interfaces.end();
-                 ++interface) {
-                a.out << a.indent_ << *interface << '\n';
+                 interface_ != interfaces.end();
+                 ++interface_) {
+                a.out << a.indent_ << *interface_ << '\n';
             }
             --a.indent_;
             a.out << a.indent_ << "] [\n";
@@ -205,11 +205,11 @@ struct actions : openvrml::null_vrml97_parse_actions {
             a(a)
         {}
 
-        void operator()(const node_interface & interface) const
+        void operator()(const node_interface & interface_) const
         {
-            a.out << a.indent_ << interface;
-            if (interface.type == node_interface::eventin_id
-                || interface.type == node_interface::eventout_id) {
+            a.out << a.indent_ << interface_;
+            if (interface_.type == node_interface::eventin_id
+                || interface_.type == node_interface::eventout_id) {
                 a.out << '\n';
             }
         }
@@ -284,9 +284,9 @@ struct actions : openvrml::null_vrml97_parse_actions {
             a(a)
         {}
 
-        void operator()(const node_interface & interface) const
+        void operator()(const node_interface & interface_) const
         {
-            a.out << a.indent_ << interface;
+            a.out << a.indent_ << interface_;
         }
 
         actions & a;

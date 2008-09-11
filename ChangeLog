@@ -1,3 +1,15 @@
+2008-09-11 Braden McDaniel  <braden@endoframe.com>
+
+	Added a Visual C++ project file for the pretty-print example.
+
+	* examples/pretty_print.cpp: Removed uses of "interface" as an
+	identifier for Windows friendliness.
+	* ide-projects/Makefile.am: Distribute pretty-print.vcproj.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added the
+	pretty-print project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj:
+	Added.
+
 2008-09-10 Braden McDaniel  <braden@endoframe.com>
 
 	Added projects for the parse-vrml97 and parse-x3dvrml test
