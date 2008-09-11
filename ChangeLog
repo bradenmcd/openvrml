@@ -1,5 +1,15 @@
 2008-09-10 Braden McDaniel  <braden@endoframe.com>
 
+	Added projects for the parse-vrml97 and parse-x3dvrml test
+	programs to the Visual C++ solution.
+
+	* ide-projects/Makefile.am: Distribute the project files.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj
+
+2008-09-10 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Changed
 	to CRLF line endings.
 
