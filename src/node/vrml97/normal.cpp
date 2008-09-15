@@ -175,34 +175,12 @@ do_create_type(const std::string & id,
             normalNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<normal_node>::exposedfield<mfvec3f> >(
-                        &normal_node::vector_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<normal_node>::exposedfield<mfvec3f> >(
-                        &normal_node::vector_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<normal_node>::exposedfield<mfvec3f> >(
-                        &normal_node::vector_)));
+                &normal_node::vector_);
         } else if (*interface_ == *++supported_interface) {
             normalNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<normal_node>::exposedfield<sfnode> >(
-                        &normal_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<normal_node>::exposedfield<sfnode> >(
-                        &normal_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<normal_node>::exposedfield<sfnode> >(
-                        &normal_node::metadata)));
+                &normal_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

@@ -378,123 +378,52 @@ do_create_type(const std::string & id,
             proximitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<proximity_sensor_node>::
-                    exposedfield<sfvec3f> >(
-                        &proximity_sensor_node::center_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &proximity_sensor_node::center_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &proximity_sensor_node::center_)));
+                &proximity_sensor_node::center_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<proximity_sensor_node>::
-                    exposedfield<sfvec3f> >(
-                        &proximity_sensor_node::size_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &proximity_sensor_node::size_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &proximity_sensor_node::size_)));
+                &proximity_sensor_node::size_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<proximity_sensor_node>::
-                    exposedfield<sfbool> >(
-                        &proximity_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &proximity_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<proximity_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &proximity_sensor_node::enabled_)));
+                &proximity_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sfbool_emitter>(
-                        &proximity_sensor_node::is_active_emitter_)));
+                &proximity_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sfvec3f_emitter>(
-                        &proximity_sensor_node::position_changed_emitter_)));
+                &proximity_sensor_node::position_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sfrotation_emitter>(
-                        &proximity_sensor_node::orientation_changed_emitter_)));
+                &proximity_sensor_node::orientation_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sftime_emitter>(
-                        &proximity_sensor_node::enter_time_emitter_)));
+                &proximity_sensor_node::enter_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sftime_emitter>(
-                        &proximity_sensor_node::exit_time_emitter_)));
+                &proximity_sensor_node::exit_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
-                        &proximity_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
-                        &proximity_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::exposedfield<sfnode> >(
-                        &proximity_sensor_node::metadata)));
+                &proximity_sensor_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             proximitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<proximity_sensor_node>::sfvec3f_emitter>(
-                        &proximity_sensor_node::center_of_rotation_changed_emitter_)));
+                &proximity_sensor_node::center_of_rotation_changed_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

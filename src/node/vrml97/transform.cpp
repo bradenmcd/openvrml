@@ -835,144 +835,57 @@ do_create_type(const std::string & id,
             transformNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::add_children_listener>(
-                        &::transform_node::add_children_listener_)));
+                &::transform_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::remove_children_listener>(
-                        &::transform_node::remove_children_listener_)));
+                &::transform_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::center_exposedfield>(
-                        &::transform_node::center_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::center_exposedfield>(
-                        &::transform_node::center_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::center_exposedfield>(
-                        &::transform_node::center_)));
+                &::transform_node::center_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::children_exposedfield>(
-                        &::transform_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::children_exposedfield>(
-                        &::transform_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::children_exposedfield>(
-                        &::transform_node::children_)));
+                &::transform_node::children_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::rotation_exposedfield>(
-                        &::transform_node::rotation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::rotation_exposedfield>(
-                        &::transform_node::rotation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::rotation_exposedfield>(
-                        &::transform_node::rotation_)));
+                &::transform_node::rotation_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::scale_exposedfield>(
-                        &::transform_node::scale_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::scale_exposedfield>(
-                        &::transform_node::scale_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::scale_exposedfield>(
-                        &::transform_node::scale_)));
+                &::transform_node::scale_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::scale_orientation_exposedfield>(
-                        &::transform_node::scale_orientation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::scale_orientation_exposedfield>(
-                        &::transform_node::scale_orientation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::scale_orientation_exposedfield>(
-                        &::transform_node::scale_orientation_)));
+                &::transform_node::scale_orientation_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    ::transform_node::translation_exposedfield>(
-                        &::transform_node::translation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    ::transform_node::translation_exposedfield>(
-                        &::transform_node::translation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    ::transform_node::translation_exposedfield>(
-                        &::transform_node::translation_)));
+                &::transform_node::translation_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &::transform_node::bbox_center_)));
+                &::transform_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &::transform_node::bbox_size_)));
+                &::transform_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             transformNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<transform_node>::exposedfield<sfnode> >(
-                        &transform_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<transform_node>::exposedfield<sfnode> >(
-                        &transform_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<transform_node>::exposedfield<sfnode> >(
-                        &transform_node::metadata)));
+                &transform_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

@@ -529,50 +529,27 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_filter_node>::exposedfield<sfnode> >(
-                            &boolean_filter_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_filter_node>::exposedfield<sfnode> >(
-                            &boolean_filter_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_filter_node>::exposedfield<sfnode> >(
-                            &boolean_filter_node::metadata)));
+                    &boolean_filter_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_filter_node::set_boolean_listener>(
-                            &boolean_filter_node::set_boolean_listener_)));
+                    &boolean_filter_node::set_boolean_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        boolean_filter_node::sfbool_emitter>(
-                            &boolean_filter_node::input_false_emitter_)));
+                    &boolean_filter_node::input_false_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        boolean_filter_node::sfbool_emitter>(
-                            &boolean_filter_node::input_negate_emitter_)));
+                    &boolean_filter_node::input_negate_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        boolean_filter_node::sfbool_emitter>(
-                            &boolean_filter_node::input_true_emitter_)));
+                    &boolean_filter_node::input_true_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -662,82 +639,37 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<sfnode> >(
-                            &boolean_sequencer_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<sfnode> >(
-                            &boolean_sequencer_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<sfnode> >(
-                            &boolean_sequencer_node::metadata)));
+                    &boolean_sequencer_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_sequencer_node::next_listener>(
-                            &boolean_sequencer_node::next_listener_)));
+                    &boolean_sequencer_node::next_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_sequencer_node::previous_listener>(
-                            &boolean_sequencer_node::previous_listener_)));
+                    &boolean_sequencer_node::previous_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_sequencer_node::set_fraction_listener>(
-                            &boolean_sequencer_node::set_fraction_listener_)));
+                    &boolean_sequencer_node::set_fraction_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mffloat> >(
-                            &boolean_sequencer_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mffloat> >(
-                            &boolean_sequencer_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mffloat> >(
-                            &boolean_sequencer_node::key_)));
+                    &boolean_sequencer_node::key_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mfbool> >(
-                            &boolean_sequencer_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mfbool> >(
-                            &boolean_sequencer_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_sequencer_node>::exposedfield<mfbool> >(
-                            &boolean_sequencer_node::key_value_)));
+                    &boolean_sequencer_node::key_value_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        boolean_sequencer_node::sfbool_emitter>(
-                            &boolean_sequencer_node::value_changed_emitter_)));
+                    &boolean_sequencer_node::value_changed_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -815,42 +747,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfnode> >(
-                            &boolean_toggle_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfnode> >(
-                            &boolean_toggle_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfnode> >(
-                            &boolean_toggle_node::metadata)));
+                    &boolean_toggle_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_toggle_node::set_boolean_listener>(
-                            &boolean_toggle_node::set_boolean_listener_)));
+                    &boolean_toggle_node::set_boolean_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfbool> >(
-                            &boolean_toggle_node::toggle_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfbool> >(
-                            &boolean_toggle_node::toggle_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_toggle_node>::exposedfield<sfbool> >(
-                            &boolean_toggle_node::toggle_)));
+                    &boolean_toggle_node::toggle_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -928,34 +835,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<boolean_trigger_node>::exposedfield<sfnode> >(
-                            &boolean_trigger_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<boolean_trigger_node>::exposedfield<sfnode> >(
-                            &boolean_trigger_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<boolean_trigger_node>::exposedfield<sfnode> >(
-                            &boolean_trigger_node::metadata)));
+                    &boolean_trigger_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        boolean_trigger_node::set_trigger_time_listener>(
-                            &boolean_trigger_node::set_trigger_time_listener_)));
+                    &boolean_trigger_node::set_trigger_time_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        boolean_trigger_node::sfbool_emitter>(
-                            &boolean_trigger_node::trigger_true_emitter_)));
+                    &boolean_trigger_node::trigger_true_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1046,82 +936,37 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<sfnode> >(
-                            &integer_sequencer_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<sfnode> >(
-                            &integer_sequencer_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<sfnode> >(
-                            &integer_sequencer_node::metadata)));
+                    &integer_sequencer_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        integer_sequencer_node::next_listener>(
-                            &integer_sequencer_node::next_listener_)));
+                    &integer_sequencer_node::next_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        integer_sequencer_node::previous_listener>(
-                            &integer_sequencer_node::previous_listener_)));
+                    &integer_sequencer_node::previous_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        integer_sequencer_node::set_fraction_listener>(
-                            &integer_sequencer_node::set_fraction_listener_)));
+                    &integer_sequencer_node::set_fraction_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mffloat> >(
-                            &integer_sequencer_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mffloat> >(
-                            &integer_sequencer_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mffloat> >(
-                            &integer_sequencer_node::key_)));
+                    &integer_sequencer_node::key_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mfint32> >(
-                            &integer_sequencer_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mfint32> >(
-                            &integer_sequencer_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<integer_sequencer_node>::exposedfield<mfint32> >(
-                            &integer_sequencer_node::key_value_)));
+                    &integer_sequencer_node::key_value_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        integer_sequencer_node::sfint32_emitter>(
-                            &integer_sequencer_node::value_changed_emitter_)));
+                    &integer_sequencer_node::value_changed_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1202,50 +1047,22 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<sfnode> >(
-                            &integer_trigger_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<sfnode> >(
-                            &integer_trigger_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<sfnode> >(
-                            &integer_trigger_node::metadata)));
+                    &integer_trigger_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        integer_trigger_node::set_boolean_listener>(
-                            &integer_trigger_node::set_boolean_listener_)));
+                    &integer_trigger_node::set_boolean_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<mfint32> >(
-                            &integer_trigger_node::integer_key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<mfint32> >(
-                            &integer_trigger_node::integer_key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<integer_trigger_node>::exposedfield<mfint32> >(
-                            &integer_trigger_node::integer_key_)));
+                    &integer_trigger_node::integer_key_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        integer_trigger_node::sfint32_emitter>(
-                            &integer_trigger_node::trigger_value_emitter_)));
+                    &integer_trigger_node::trigger_value_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1322,34 +1139,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<time_trigger_node>::exposedfield<sfnode> >(
-                            &time_trigger_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<time_trigger_node>::exposedfield<sfnode> >(
-                            &time_trigger_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<time_trigger_node>::exposedfield<sfnode> >(
-                            &time_trigger_node::metadata)));
+                    &time_trigger_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        time_trigger_node::set_boolean_listener>(
-                            &time_trigger_node::set_boolean_listener_)));
+                    &time_trigger_node::set_boolean_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        time_trigger_node::sftime_emitter>(
-                            &time_trigger_node::trigger_time_emitter_)));
+                    &time_trigger_node::trigger_time_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }

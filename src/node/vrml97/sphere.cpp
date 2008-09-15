@@ -204,32 +204,17 @@ do_create_type(const std::string & id,
             spereNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &sphere_node::radius)));
+                &sphere_node::radius);
         } else if (*interface_ == *++supported_interface) {
             spereNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_node>::exposedfield<sfnode> >(
-                        &sphere_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sphere_node>::exposedfield<sfnode> >(
-                        &sphere_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_node>::exposedfield<sfnode> >(
-                        &sphere_node::metadata)));
+                &sphere_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             spereNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &sphere_node::solid_)));
+                &sphere_node::solid_);
         } else {
             throw unsupported_interface(*interface_);
         }

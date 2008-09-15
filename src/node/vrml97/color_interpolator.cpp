@@ -90,7 +90,8 @@ namespace {
     color_interpolator_node::set_fraction_listener::
     set_fraction_listener(color_interpolator_node & node):
         openvrml::node_event_listener(node),
-        openvrml::node_impl_util::event_listener_base<color_interpolator_node>(node),
+        openvrml::node_impl_util::event_listener_base<color_interpolator_node>(
+            node),
         sffloat_listener(node)
     {}
 
@@ -216,7 +217,8 @@ namespace {
                             const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        openvrml::node_impl_util::abstract_node<color_interpolator_node>(type, scope),
+        openvrml::node_impl_util::abstract_node<color_interpolator_node>(
+            type, scope),
         child_node(type, scope),
         set_fraction_listener_(*this),
         key_(*this),
@@ -263,13 +265,13 @@ openvrml_node_vrml97::color_interpolator_metatype::
  * @param id            the name for the new node_type.
  * @param interfaces    the interfaces for the new node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating ColorInterpolator nodes.
+ * @return a @c boost::shared_ptr to a @c node_type capable of creating
+ *         ColorInterpolator nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  color_interpolator_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c color_interpolator_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::color_interpolator_metatype::
@@ -313,72 +315,27 @@ do_create_type(const std::string & id,
             colorInterpolatorNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    color_interpolator_node::set_fraction_listener>(
-                        &color_interpolator_node::set_fraction_listener_)));
+                &color_interpolator_node::set_fraction_listener_);
         } else if (*interface_ == *++supported_interface) {
             colorInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<color_interpolator_node>::
-                    exposedfield<mffloat> >(
-                        &color_interpolator_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<color_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &color_interpolator_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<color_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &color_interpolator_node::key_)));
+                &color_interpolator_node::key_);
         } else if (*interface_ == *++supported_interface) {
             colorInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<color_interpolator_node>::
-                    exposedfield<mfcolor> >(
-                        &color_interpolator_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<color_interpolator_node>::
-                        exposedfield<mfcolor> >(
-                            &color_interpolator_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<color_interpolator_node>::
-                        exposedfield<mfcolor> >(
-                            &color_interpolator_node::key_value_)));
+                &color_interpolator_node::key_value_);
         } else if (*interface_ == *++supported_interface) {
             colorInterpolatorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<color_interpolator_node>::sfcolor_emitter>(
-                        &color_interpolator_node::value_changed_)));
+                &color_interpolator_node::value_changed_);
         } else if (*interface_ == *++supported_interface) {
             colorInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
-                        &color_interpolator_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
-                        &color_interpolator_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<color_interpolator_node>::exposedfield<sfnode> >(
-                        &color_interpolator_node::metadata)));
+                &color_interpolator_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

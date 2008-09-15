@@ -266,146 +266,57 @@ do_create_type(const std::string & id,
             viewpointNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    viewpoint_node::set_bind_listener>(
-                        &viewpoint_node::set_bind_listener_)));
+                &viewpoint_node::set_bind_listener_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sffloat> >(
-                        &viewpoint_node::field_of_view_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sffloat> >(
-                        &viewpoint_node::field_of_view_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sffloat> >(
-                        &viewpoint_node::field_of_view_)));
+                &viewpoint_node::field_of_view_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfbool> >(
-                        &viewpoint_node::jump_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfbool> >(
-                        &viewpoint_node::jump_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfbool> >(
-                        &viewpoint_node::jump_)));
+                &viewpoint_node::jump_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    viewpoint_node::orientation_exposedfield>(
-                        &viewpoint_node::orientation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    viewpoint_node::orientation_exposedfield>(
-                        &viewpoint_node::orientation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    viewpoint_node::orientation_exposedfield>(
-                        &viewpoint_node::orientation_)));
+                &viewpoint_node::orientation_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    viewpoint_node::position_exposedfield>(
-                        &viewpoint_node::position_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    viewpoint_node::position_exposedfield>(
-                        &viewpoint_node::position_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    viewpoint_node::position_exposedfield>(
-                        &viewpoint_node::position_)));
+                &viewpoint_node::position_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfstring> >(
-                        &viewpoint_node::description_)));
+                &viewpoint_node::description_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfstring> >(
-                        &viewpoint_node::description_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfstring> >(
-                        &viewpoint_node::description_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfstring> >(
-                        &viewpoint_node::description_)));
+                &viewpoint_node::description_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::sftime_emitter>(
-                        &viewpoint_node::bind_time_emitter_)));
+                &viewpoint_node::bind_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::sfbool_emitter>(
-                        &viewpoint_node::is_bound_emitter_)));
+                &viewpoint_node::is_bound_emitter_);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfnode> >(
-                        &viewpoint_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfnode> >(
-                        &viewpoint_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfnode> >(
-                        &viewpoint_node::metadata)));
+                &viewpoint_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             viewpointNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
-                        &viewpoint_node::center_of_rotation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
-                        &viewpoint_node::center_of_rotation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<viewpoint_node>::exposedfield<sfvec3f> >(
-                        &viewpoint_node::center_of_rotation_)));
+                &viewpoint_node::center_of_rotation_);
         } else {
             throw unsupported_interface(*interface_);
         }

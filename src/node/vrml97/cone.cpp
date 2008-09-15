@@ -213,53 +213,32 @@ do_create_type(const std::string & id,
             coneNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &cone_node::bottomRadius)));
+                &cone_node::bottomRadius);
         } else if (*interface_ == *++supported_interface) {
             coneNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &cone_node::height)));
+                &cone_node::height);
         } else if (*interface_ == *++supported_interface) {
             coneNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cone_node::side)));
+                &cone_node::side);
         } else if (*interface_ == *++supported_interface) {
             coneNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cone_node::bottom)));
+                &cone_node::bottom);
         } else if (*interface_ == *++supported_interface) {
             coneNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cone_node>::exposedfield<sfnode> >(
-                        &cone_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cone_node>::exposedfield<sfnode> >(
-                        &cone_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cone_node>::exposedfield<sfnode> >(
-                        &cone_node::metadata)));
+                &cone_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             coneNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cone_node::solid_)));
+                &cone_node::solid_);
         } else {
             throw unsupported_interface(*interface_);
         }

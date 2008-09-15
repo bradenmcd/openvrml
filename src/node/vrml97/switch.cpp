@@ -396,96 +396,42 @@ do_create_type(const std::string & id,
             switchNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    switch_node::add_children_listener>(
-                        &switch_node::add_children_listener_)));
+                &switch_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    switch_node::remove_children_listener>(
-                        &switch_node::remove_children_listener_)));
+                &switch_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)));
+                &switch_node::children_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    switch_node::children_exposedfield>(
-                        &switch_node::children_)));
+                &switch_node::children_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &switch_node::bbox_center_)));
+                &switch_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &switch_node::bbox_size_)));
+                &switch_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    switch_node::which_choice_exposedfield>(
-                        &switch_node::which_choice_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    switch_node::which_choice_exposedfield>(
-                        &switch_node::which_choice_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    switch_node::which_choice_exposedfield>(
-                        &switch_node::which_choice_)));
+                &switch_node::which_choice_);
         } else if (*interface_ == *++supported_interface) {
             switchNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<switch_node>::exposedfield<sfnode> >(
-                        &switch_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<switch_node>::exposedfield<sfnode> >(
-                        &switch_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<switch_node>::exposedfield<sfnode> >(
-                        &switch_node::metadata)));
+                &switch_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

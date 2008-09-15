@@ -227,109 +227,47 @@ do_create_type(const std::string & id,
             indexedLineSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_line_set_node::set_color_index_listener>(
-                        &indexed_line_set_node::set_color_index_)));
+                &indexed_line_set_node::set_color_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_line_set_node::set_coord_index_listener>(
-                        &indexed_line_set_node::set_coord_index_)));
+                &indexed_line_set_node::set_coord_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_line_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_line_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_line_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_line_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_line_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_line_set_node::color_)));
+                &indexed_line_set_node::color_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_line_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_line_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_line_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_line_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_line_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_line_set_node::coord_)));
+                &indexed_line_set_node::coord_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_line_set_node::color_index_)));
+                &indexed_line_set_node::color_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_line_set_node::color_per_vertex_)));
+                &indexed_line_set_node::color_per_vertex_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_line_set_node::coord_index_)));
+                &indexed_line_set_node::coord_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
-                        &indexed_line_set_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
-                        &indexed_line_set_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<sfnode> >(
-                        &indexed_line_set_node::metadata)));
+                &indexed_line_set_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             indexedLineSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
-                        &indexed_line_set_node::vertex_count_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
-                        &indexed_line_set_node::vertex_count_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<indexed_line_set_node>::exposedfield<mfint32> >(
-                        &indexed_line_set_node::vertex_count_)));
+                &indexed_line_set_node::vertex_count_);
         } else {
             throw unsupported_interface(*interface_);
         }

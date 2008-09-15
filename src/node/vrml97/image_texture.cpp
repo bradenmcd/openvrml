@@ -345,48 +345,22 @@ do_create_type(const std::string & id,
             imageTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    image_texture_node::url_exposedfield>(
-                        &image_texture_node::url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    image_texture_node::url_exposedfield>(
-                        &image_texture_node::url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    image_texture_node::url_exposedfield>(
-                        &image_texture_node::url_)));
+                &image_texture_node::url_);
         } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &image_texture_node::repeat_s_)));
+                &image_texture_node::repeat_s_);
         } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &image_texture_node::repeat_t_)));
+                &image_texture_node::repeat_t_);
         } else if (*interface_ == *++supported_interface) {
             imageTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<image_texture_node>::exposedfield<sfnode> >(
-                        &image_texture_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<image_texture_node>::exposedfield<sfnode> >(
-                        &image_texture_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<image_texture_node>::exposedfield<sfnode> >(
-                        &image_texture_node::metadata)));
+                &image_texture_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

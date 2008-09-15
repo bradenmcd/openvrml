@@ -950,7 +950,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Concrete pointer-to-member wrapper.
  *
- * @tparam FieldMember  an @c field_value member of Node.
+ * @tparam FieldMember  a @c field_value member of Node.
  */
 
 /**
@@ -960,6 +960,21 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @param[in] ptr_to_mem    a pointer to an @c openvrml::field_value
  *                          member.
+ */
+
+/**
+ * @fn const typename openvrml::node_impl_util::node_type_impl::field_ptr_ptr openvrml::node_impl_util::node_type_impl::make_field_ptr_ptr(FieldMember DeducedNode::* ptr_to_mem)
+ *
+ * @brief Make a @c #field_ptr_ptr to a field member of a node.
+ *
+ * @tparam FieldMember  a @c field_value member of Node.
+ * @tparam DeducedNode  the deduced type of the node may differ from its actual
+ *                      concrete type in the contexts in which this function is
+ *                      used.  We @c static_cast to the actual type.
+ *
+ * @param[in] ptr_to_mem    a pointer to an @c openvrml::field_value member.
+ *
+ * @return a @c #field_ptr_ptr to @p ptr_to_mem.
  */
 
 /**
@@ -977,6 +992,22 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @param[in] ptr_to_mem    a pointer to an
  *                          @c openvrml::event_listener member.
+ */
+
+/**
+ * @fn const typename openvrml::node_impl_util::node_type_impl::event_listener_ptr_ptr openvrml::node_impl_util::node_type_impl::make_event_listener_ptr_ptr(EventListenerMember DeducedNode::* ptr_to_mem)
+ *
+ * @brief Make an @c #event_listener_ptr_ptr to a field member of a node.
+ *
+ * @tparam EventListenerMember  an @c event_listener member of Node.
+ * @tparam DeducedNode          the deduced type of the node may differ from
+ *                              its actual concrete type in the contexts in
+ *                              which this function is used.  We @c static_cast
+ *                              to the actual type.
+ *
+ * @param[in] ptr_to_mem    a pointer to an @c openvrml::event_listener member.
+ *
+ * @return a @c #event_listener_ptr_ptr to @p ptr_to_mem.
  */
 
 /**
@@ -998,6 +1029,22 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @fn const typename openvrml::node_impl_util::node_type_impl::event_emitter_ptr_ptr openvrml::node_impl_util::node_type_impl::make_event_emitter_ptr_ptr(EventEmitterMember DeducedNode::* ptr_to_mem)
+ *
+ * @brief Make an @c #event_emitter_ptr_ptr to a field member of a node.
+ *
+ * @tparam EventEmitterMember   an @c event_emitter member of Node.
+ * @tparam DeducedNode          the deduced type of the node may differ from
+ *                              its actual concrete type in the contexts in
+ *                              which this function is used.  We @c static_cast
+ *                              to the actual type.
+ *
+ * @param[in] ptr_to_mem    a pointer to an @c openvrml::event_emitter member.
+ *
+ * @return a @c #event_emitter_ptr_ptr to @p ptr_to_mem.
+ */
+
+/**
  * @fn openvrml::node_impl_util::node_type_impl::node_type_impl(const openvrml::node_metatype & metatype, const std::string & id)
  *
  * @brief Construct.
@@ -1013,9 +1060,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_eventin(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_eventin(const openvrml::field_value::type_id type, const std::string & id, EventListenerMember DeducedNode::* event_listener)
  *
  * @brief Add an @c eventIn.
+ *
+ * @tparam EventListenerMember  the type of the @p event_listener member.
+ * @tparam DeducedNode          the deduced type of the node of which the
+ *                              event listener is a member.
  *
  * @param[in] type              the field value type.
  * @param[in] id                the @c eventIn identifier.
@@ -1029,9 +1080,13 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_eventout(const openvrml::field_value::type_id type, const std::string & id, const event_emitter_ptr_ptr & event_emitter)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_eventout(const openvrml::field_value::type_id type, const std::string & id, EventEmitterMember DeducedNode::* event_emitter)
  *
  * @brief Add an @c eventOut.
+ *
+ * @tparam EventEmitterMember   the type of the @p event_emitter member.
+ * @tparam DeducedNode          the deduced type of the node of which the
+ *                              event emitter is a member.
  *
  * @param[in] type          the field value type.
  * @param[in] id            the @c eventOut identifier.
@@ -1045,9 +1100,15 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, const event_listener_ptr_ptr & event_listener, const field_ptr_ptr & field, const event_emitter_ptr_ptr & event_emitter)
+ * @fn void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, EventListenerMember DeducedNode::* event_listener, FieldMember DeducedNode::* field, EventEmitterMember DeducedNode::* event_emitter)
  *
  * @brief Add an @c exposedField.
+ *
+ * @tparam EventEmitterMember   the type of the @p event_emitter member.
+ * @tparam FieldMember          the type of the @p field member.
+ * @tparam EventListenerMember  the type of the @p event_listener member.
+ * @tparam DeducedNode          the deduced type of the node of which the
+ *                              event emitter is a member.
  *
  * @param[in] type              the field value type.
  * @param[in] id                the @c exposedField identifier.
@@ -1065,9 +1126,32 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
- * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, const field_ptr_ptr & field)
+ * @overload void openvrml::node_impl_util::node_type_impl::add_exposedfield(const openvrml::field_value::type_id type, const std::string & id, ExposedfieldMember DeducedNode::* exposedfield)
+ *
+ * @brief Add an @c exposedField.
+ *
+ * @tparam ExposedfieldMember   the type of the @p exposedfield member.
+ * @tparam DeducedNode          the deduced type of the node of which the
+ *                              event emitter is a member.
+ *
+ * @param[in] type          the field value type.
+ * @param[in] id            the @c exposedField identifier.
+ * @param[in] exposedfield  the member associated with the @c exposedField.
+ *
+ * @exception std::invalid_argument if an interface with a conflicting
+ *                                  @p id has already been added to the
+ *                                  @c node_type.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+
+/**
+ * @fn void openvrml::node_impl_util::node_type_impl::add_field(const openvrml::field_value::type_id type, const std::string & id, FieldMember DeducedNode::* field)
  *
  * @brief Add a @c field.
+ *
+ * @tparam FieldMember          the type of the @p field member.
+ * @tparam DeducedNode          the deduced type of the node of which the
+ *                              event emitter is a member.
  *
  * @param[in] type  the field value type.
  * @param[in] id    the field identifier.

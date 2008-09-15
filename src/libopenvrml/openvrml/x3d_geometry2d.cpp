@@ -439,39 +439,22 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<arc2d_node>::exposedfield<sfnode> >(
-                            &arc2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<arc2d_node>::exposedfield<sfnode> >(
-                            &arc2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<arc2d_node>::exposedfield<sfnode> >(
-                            &arc2d_node::metadata)));
+                    &arc2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc2d_node::end_angle_)));
+                    &arc2d_node::end_angle_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc2d_node::radius_)));
+                    &arc2d_node::radius_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc2d_node::start_angle_)));
+                    &arc2d_node::start_angle_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -637,53 +620,32 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<arc_close2d_node>::exposedfield<sfnode> >(
-                            &arc_close2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<arc_close2d_node>::exposedfield<sfnode> >(
-                            &arc_close2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<arc_close2d_node>::exposedfield<sfnode> >(
-                            &arc_close2d_node::metadata)));
+                    &arc_close2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfstring>(
-                            &arc_close2d_node::closure_type_)));
+                    &arc_close2d_node::closure_type_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc_close2d_node::end_angle_)));
+                    &arc_close2d_node::end_angle_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc_close2d_node::radius_)));
+                    &arc_close2d_node::radius_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &arc_close2d_node::solid_)));
+                    &arc_close2d_node::solid_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &arc_close2d_node::start_angle_)));
+                    &arc_close2d_node::start_angle_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -850,25 +812,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<circle2d_node>::exposedfield<sfnode> >(
-                            &circle2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<circle2d_node>::exposedfield<sfnode> >(
-                            &circle2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<circle2d_node>::exposedfield<sfnode> >(
-                            &circle2d_node::metadata)));
+                    &circle2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &circle2d_node::radius_)));
+                    &circle2d_node::radius_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1015,39 +964,22 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<disk2d_node>::exposedfield<sfnode> >(
-                            &disk2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<disk2d_node>::exposedfield<sfnode> >(
-                            &disk2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<disk2d_node>::exposedfield<sfnode> >(
-                            &disk2d_node::metadata)));
+                    &disk2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &disk2d_node::inner_radius_)));
+                    &disk2d_node::inner_radius_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sffloat>(
-                            &disk2d_node::outer_radius_)));
+                    &disk2d_node::outer_radius_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &disk2d_node::solid_)));
+                    &disk2d_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1199,25 +1131,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<polyline2d_node>::exposedfield<sfnode> >(
-                            &polyline2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<polyline2d_node>::exposedfield<sfnode> >(
-                            &polyline2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<polyline2d_node>::exposedfield<sfnode> >(
-                            &polyline2d_node::metadata)));
+                    &polyline2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfvec2f>(
-                            &polyline2d_node::line_segments_)));
+                    &polyline2d_node::line_segments_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1288,25 +1207,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<polypoint2d_node>::exposedfield<sfnode> >(
-                            &polypoint2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<polypoint2d_node>::exposedfield<sfnode> >(
-                            &polypoint2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<polypoint2d_node>::exposedfield<sfnode> >(
-                            &polypoint2d_node::metadata)));
+                    &polypoint2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfvec2f>(
-                            &polypoint2d_node::point_)));
+                    &polypoint2d_node::point_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1380,32 +1286,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<rectangle2d_node>::exposedfield<sfnode> >(
-                            &rectangle2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<rectangle2d_node>::exposedfield<sfnode> >(
-                            &rectangle2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<rectangle2d_node>::exposedfield<sfnode> >(
-                            &rectangle2d_node::metadata)));
+                    &rectangle2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfvec2f>(
-                            &rectangle2d_node::size_)));
+                    &rectangle2d_node::size_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &rectangle2d_node::solid_)));
+                    &rectangle2d_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1480,41 +1371,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<sfnode> >(
-                            &triangle_set2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<sfnode> >(
-                            &triangle_set2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<sfnode> >(
-                            &triangle_set2d_node::metadata)));
+                    &triangle_set2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<mfvec2f> >(
-                            &triangle_set2d_node::vertices_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<mfvec2f> >(
-                            &triangle_set2d_node::vertices_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set2d_node>::exposedfield<mfvec2f> >(
-                            &triangle_set2d_node::vertices_)));
+                    &triangle_set2d_node::vertices_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_set2d_node::solid_)));
+                    &triangle_set2d_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }

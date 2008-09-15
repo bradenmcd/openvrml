@@ -50,8 +50,10 @@ namespace {
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
 
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual
+        openvrml::viewer::object_t
+        do_render_geometry(openvrml::viewer & viewer,
+                           openvrml::rendering_context context);
     };
 
 
@@ -169,9 +171,10 @@ openvrml_node_vrml97::box_metatype::~box_metatype() OPENVRML_NOTHROW
  * @return a boost::shared_ptr<node_type> to a node_type capable of
  *         creating Box nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by box_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c box_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::box_metatype::
@@ -205,34 +208,17 @@ do_create_type(const std::string & id,
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
         if (*interface_ == *++supported_interface) {
-            boxNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(&box_node::size)));
+            boxNodeType.add_field(supported_interface->field_type,
+                                  supported_interface->id,
+                                  &box_node::size);
         } else if (*interface_ == *++supported_interface) {
-            boxNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<box_node>::exposedfield<sfnode> >(
-                        &box_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<box_node>::exposedfield<sfnode> >(
-                        &box_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<box_node>::exposedfield<sfnode> >(
-                        &box_node::metadata)));
+            boxNodeType.add_exposedfield(supported_interface->field_type,
+                                         supported_interface->id,
+                                         &box_node::metadata);
         } else if (*interface_ == *++supported_interface) {
-            boxNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &box_node::solid_)));
+            boxNodeType.add_field(supported_interface->field_type,
+                                  supported_interface->id,
+                                  &box_node::solid_);
         } else {
             throw unsupported_interface(*interface_);
         }

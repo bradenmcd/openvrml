@@ -192,48 +192,22 @@ do_create_type(const std::string & id,
             pixelTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfimage> >(
-                        &pixel_texture_node::image_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfimage> >(
-                        &pixel_texture_node::image_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfimage> >(
-                        &pixel_texture_node::image_)));
+                &pixel_texture_node::image_);
         } else if (*interface_ == *++supported_interface) {
             pixelTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &pixel_texture_node::repeat_s_)));
+                &pixel_texture_node::repeat_s_);
         } else if (*interface_ == *++supported_interface) {
             pixelTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &pixel_texture_node::repeat_t_)));
+                &pixel_texture_node::repeat_t_);
         } else if (*interface_ == *++supported_interface) {
             pixelTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
-                        &pixel_texture_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
-                        &pixel_texture_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<pixel_texture_node>::exposedfield<sfnode> >(
-                        &pixel_texture_node::metadata)));
+                &pixel_texture_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

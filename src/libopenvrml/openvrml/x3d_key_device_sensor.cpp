@@ -220,98 +220,52 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfnode> >(
-                            &key_sensor_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfnode> >(
-                            &key_sensor_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfnode> >(
-                            &key_sensor_node::metadata)));
+                    &key_sensor_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfbool> >(
-                            &key_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfbool> >(
-                            &key_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<key_sensor_node>::exposedfield<sfbool> >(
-                            &key_sensor_node::enabled_)));
+                    &key_sensor_node::enabled_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfint32_emitter>(
-                            &key_sensor_node::action_key_press_emitter_)));
+                    &key_sensor_node::action_key_press_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfint32_emitter>(
-                            &key_sensor_node::action_key_release_emitter_)));
+                    &key_sensor_node::action_key_release_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfbool_emitter>(
-                            &key_sensor_node::alt_key_emitter_)));
+                    &key_sensor_node::alt_key_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfbool_emitter>(
-                            &key_sensor_node::control_key_emitter_)));
+                    &key_sensor_node::control_key_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfbool_emitter>(
-                            &key_sensor_node::is_active_emitter_)));
+                    &key_sensor_node::is_active_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfstring_emitter>(
-                            &key_sensor_node::key_press_emitter_)));
+                    &key_sensor_node::key_press_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfstring_emitter>(
-                            &key_sensor_node::key_release_emitter_)));
+                    &key_sensor_node::key_release_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        key_sensor_node::sfbool_emitter>(
-                            &key_sensor_node::shift_key_emitter_)));
+                    &key_sensor_node::shift_key_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -492,74 +446,32 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfnode> >(
-                            &string_sensor_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfnode> >(
-                            &string_sensor_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfnode> >(
-                            &string_sensor_node::metadata)));
+                    &string_sensor_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::deletion_allowed_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::deletion_allowed_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::deletion_allowed_)));
+                    &string_sensor_node::deletion_allowed_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<string_sensor_node>::exposedfield<sfbool> >(
-                            &string_sensor_node::enabled_)));
+                    &string_sensor_node::enabled_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        string_sensor_node::sfstring_emitter>(
-                            &string_sensor_node::entered_text_emitter_)));
+                    &string_sensor_node::entered_text_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        string_sensor_node::sfstring_emitter>(
-                            &string_sensor_node::final_text_emitter_)));
+                    &string_sensor_node::final_text_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        string_sensor_node::sfbool_emitter>(
-                            &string_sensor_node::is_active_emitter_)));
+                    &string_sensor_node::is_active_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }

@@ -440,180 +440,62 @@ do_create_type(const std::string & id,
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sfbool> >(
-                        &cylinder_sensor_node::auto_offset_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &cylinder_sensor_node::auto_offset_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &cylinder_sensor_node::auto_offset_)));
+                &cylinder_sensor_node::auto_offset_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sffloat> >(
-                        &cylinder_sensor_node::disk_angle_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::disk_angle_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::disk_angle_)));
+                &cylinder_sensor_node::disk_angle_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sfbool> >(
-                        &cylinder_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &cylinder_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &cylinder_sensor_node::enabled_)));
+                &cylinder_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sffloat> >(
-                        &cylinder_sensor_node::max_angle_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::max_angle_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::max_angle_)));
+                &cylinder_sensor_node::max_angle_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sffloat> >(
-                        &cylinder_sensor_node::min_angle_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::min_angle_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::min_angle_)));
+                &cylinder_sensor_node::min_angle_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::
-                    exposedfield<sffloat> >(
-                        &cylinder_sensor_node::offset_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::offset_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<cylinder_sensor_node>::
-                        exposedfield<sffloat> >(
-                            &cylinder_sensor_node::offset_)));
+                &cylinder_sensor_node::offset_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::sfbool_emitter>(
-                        &cylinder_sensor_node::is_active_emitter_)));
+                &cylinder_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::sfrotation_emitter>(
-                        &cylinder_sensor_node::rotation_changed_emitter_)));
+                &cylinder_sensor_node::rotation_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::sfvec3f_emitter>(
-                        &cylinder_sensor_node::track_point_changed_emitter_)));
+                &cylinder_sensor_node::track_point_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
-                        &cylinder_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
-                        &cylinder_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfnode> >(
-                        &cylinder_sensor_node::metadata)));
+                &cylinder_sensor_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
-                        &cylinder_sensor_node::description_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
-                        &cylinder_sensor_node::description_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::exposedfield<sfstring> >(
-                        &cylinder_sensor_node::description_)));
+                &cylinder_sensor_node::description_);
         } else if (*interface_ == *++supported_interface) {
             cylinderSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_sensor_node>::sfbool_emitter>(
-                        &cylinder_sensor_node::is_over_emitter_)));
+                &cylinder_sensor_node::is_over_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

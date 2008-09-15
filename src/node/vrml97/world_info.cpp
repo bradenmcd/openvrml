@@ -164,32 +164,17 @@ do_create_type(const std::string & id,
             worldInfoNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfstring>(
-                        &world_info_node::info)));
+                &world_info_node::info);
         } else if (*interface_ == *++supported_interface) {
             worldInfoNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfstring>(
-                        &world_info_node::title)));
+                &world_info_node::title);
         } else if (*interface_ == *++supported_interface) {
             worldInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<world_info_node>::exposedfield<sfnode> >(
-                        &world_info_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<world_info_node>::exposedfield<sfnode> >(
-                        &world_info_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<world_info_node>::exposedfield<sfnode> >(
-                        &world_info_node::metadata)));
+                &world_info_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

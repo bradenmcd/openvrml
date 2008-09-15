@@ -42,8 +42,10 @@ namespace {
         openvrml::viewer::object_t xformObject;
 
     public:
-        static const openvrml::mat4f billboard_to_matrix(const billboard_node & node,
-                                               const openvrml::mat4f & modelview);
+        static
+        const openvrml::mat4f
+        billboard_to_matrix(const billboard_node & node,
+                            const openvrml::mat4f & modelview);
 
         billboard_node(const openvrml::node_type & type,
                        const boost::shared_ptr<openvrml::scope> & scope);
@@ -89,7 +91,8 @@ namespace {
      */
     const openvrml::mat4f
     billboard_node::
-    billboard_to_matrix(const billboard_node & node, const openvrml::mat4f & modelview)
+    billboard_to_matrix(const billboard_node & node,
+                        const openvrml::mat4f & modelview)
     {
         using namespace openvrml;
 
@@ -140,7 +143,8 @@ namespace {
             // axis of rotation will be the y-axis vector
             const vec3f Y(node.axis_of_rotation_.sfvec3f::value());
 
-            // Plane defined by the axisOfRotation and billboard-to-viewer vector
+            // Plane defined by the axisOfRotation and billboard-to-viewer
+            // vector.
             const vec3f X = (Y * position).normalize();
 
             // Get Z axis vector from cross product of X and Y
@@ -150,8 +154,9 @@ namespace {
             // coordinate system.
             float nz[3] = { X[2], Y[2], Z[2] };
 
-            // calculate the angle by which the Z axis vector of current coordinate
-            // system has to be rotated around the Y axis to new coordinate system.
+            // Calculate the angle by which the Z axis vector of current
+            // coordinate system has to be rotated around the Y axis to new
+            // coordinate system.
             float angle = float(acos(nz[2]));
             if(nz[0] > 0) { angle = -angle; }
             result = make_rotation_mat4f(make_rotation(Y, angle));
@@ -193,7 +198,8 @@ namespace {
      */
     void
     billboard_node::
-    do_render_child(openvrml::viewer & viewer, openvrml::rendering_context context)
+    do_render_child(openvrml::viewer & viewer,
+                    openvrml::rendering_context context)
     {
         using openvrml::mat4f;
 
@@ -257,9 +263,10 @@ openvrml_node_vrml97::billboard_metatype::~billboard_metatype()
  * @return a boost::shared_ptr<node_type> to a node_type capable of
  *         creating Billboard nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by billboard_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c billboard_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::billboard_metatype::
@@ -308,80 +315,33 @@ do_create_type(const std::string & id,
             billboardNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    billboard_node::add_children_listener>(
-                        &billboard_node::add_children_listener_)));
+                &billboard_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             billboardNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    billboard_node::remove_children_listener>(
-                        &billboard_node::remove_children_listener_)));
+                &billboard_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             billboardNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfvec3f> >(
-                        &billboard_node::axis_of_rotation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfvec3f> >(
-                        &billboard_node::axis_of_rotation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfvec3f> >(
-                        &billboard_node::axis_of_rotation_)));
+                &billboard_node::axis_of_rotation_);
         } else if (*interface_ == *++supported_interface) {
-            billboardNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    billboard_node::children_exposedfield>(
-                        &billboard_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    billboard_node::children_exposedfield>(
-                        &billboard_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    billboard_node::children_exposedfield>(
-                        &billboard_node::children_)));
+            billboardNodeType.add_exposedfield(supported_interface->field_type,
+                                               supported_interface->id,
+                                               &billboard_node::children_);
         } else if (*interface_ == *++supported_interface) {
-            billboardNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &billboard_node::bbox_center_)));
+            billboardNodeType.add_field(supported_interface->field_type,
+                                        supported_interface->id,
+                                        &billboard_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
-            billboardNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &billboard_node::bbox_size_)));
+            billboardNodeType.add_field(supported_interface->field_type,
+                                        supported_interface->id,
+                                        &billboard_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
-            billboardNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfnode> >(
-                        &billboard_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfnode> >(
-                        &billboard_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<billboard_node>::exposedfield<sfnode> >(
-                        &billboard_node::metadata)));
+            billboardNodeType.add_exposedfield(supported_interface->field_type,
+                                               supported_interface->id,
+                                               &billboard_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

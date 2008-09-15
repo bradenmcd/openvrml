@@ -340,202 +340,72 @@ do_create_type(const std::string & id,
             backgroundNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::set_bind_listener>(
-                        &background_node::set_bind_listener_)));
+                &background_node::set_bind_listener_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::ground_angle_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::ground_angle_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::ground_angle_)));
+                &background_node::ground_angle_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::ground_color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::ground_color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::ground_color_)));
+                &background_node::ground_color_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::back_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::back_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::back_url_)));
+                &background_node::back_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::bottom_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::bottom_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::bottom_url_)));
+                &background_node::bottom_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::front_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::front_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::front_url_)));
+                &background_node::front_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::left_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::left_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::left_url_)));
+                &background_node::left_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::right_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::right_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::right_url_)));
+                &background_node::right_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::top_url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::top_url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    background_node::texture_url_exposedfield>(
-                        &background_node::top_url_)));
+                &background_node::top_url_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::sky_angle_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::sky_angle_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::exposedfield<mffloat> >(
-                        &background_node::sky_angle_)));
+                &background_node::sky_angle_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::sky_color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::sky_color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::exposedfield<mfcolor> >(
-                        &background_node::sky_color_)));
+                &background_node::sky_color_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::sfbool_emitter>(
-                        &background_node::is_bound_emitter_)));
+                &background_node::is_bound_emitter_);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<background_node>::exposedfield<sfnode> >(
-                        &background_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<background_node>::exposedfield<sfnode> >(
-                        &background_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::exposedfield<sfnode> >(
-                        &background_node::metadata)));
+                &background_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             backgroundNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<background_node>::sftime_emitter>(
-                        &background_node::bind_time_emitter_)));
+                &background_node::bind_time_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

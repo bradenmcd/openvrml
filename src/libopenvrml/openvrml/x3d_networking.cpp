@@ -169,98 +169,42 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfnode> >(
-                            &load_sensor_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfnode> >(
-                            &load_sensor_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfnode> >(
-                            &load_sensor_node::metadata)));
+                    &load_sensor_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfbool> >(
-                            &load_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfbool> >(
-                            &load_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sfbool> >(
-                            &load_sensor_node::enabled_)));
+                    &load_sensor_node::enabled_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sftime> >(
-                            &load_sensor_node::timeout_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sftime> >(
-                            &load_sensor_node::timeout_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<sftime> >(
-                            &load_sensor_node::timeout_)));
+                    &load_sensor_node::timeout_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<mfnode> >(
-                            &load_sensor_node::watch_list_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<mfnode> >(
-                            &load_sensor_node::watch_list_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<load_sensor_node>::exposedfield<mfnode> >(
-                            &load_sensor_node::watch_list_)));
+                    &load_sensor_node::watch_list_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        load_sensor_node::sfbool_emitter>(
-                            &load_sensor_node::is_active_emitter_)));
+                    &load_sensor_node::is_active_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        load_sensor_node::sfbool_emitter>(
-                            &load_sensor_node::is_loaded_emitter_)));
+                    &load_sensor_node::is_loaded_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        load_sensor_node::sftime_emitter>(
-                            &load_sensor_node::load_time_emitter_)));
+                    &load_sensor_node::load_time_emitter_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        load_sensor_node::sffloat_emitter>(
-                            &load_sensor_node::progress_emitter_)));
+                    &load_sensor_node::progress_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }

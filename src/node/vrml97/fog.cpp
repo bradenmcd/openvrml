@@ -247,90 +247,37 @@ do_create_type(const std::string & id,
             fogNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    fog_node::set_bind_listener>(
-                        &fog_node::set_bind_listener_)));
+                &fog_node::set_bind_listener_);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<fog_node>::exposedfield<sfcolor> >(
-                        &fog_node::color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<fog_node>::exposedfield<sfcolor> >(
-                        &fog_node::color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::exposedfield<sfcolor> >(
-                        &fog_node::color_)));
+                &fog_node::color_);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<fog_node>::exposedfield<sfstring> >(
-                        &fog_node::fog_type_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<fog_node>::exposedfield<sfstring> >(
-                        &fog_node::fog_type_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::exposedfield<sfstring> >(
-                        &fog_node::fog_type_)));
+                &fog_node::fog_type_);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<fog_node>::exposedfield<sffloat> >(
-                        &fog_node::visibility_range_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<fog_node>::exposedfield<sffloat> >(
-                        &fog_node::visibility_range_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::exposedfield<sffloat> >(
-                        &fog_node::visibility_range_)));
+                &fog_node::visibility_range_);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::sfbool_emitter>(
-                        &fog_node::is_bound_emitter_)));
+                &fog_node::is_bound_emitter_);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<fog_node>::exposedfield<sfnode> >(
-                        &fog_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<fog_node>::exposedfield<sfnode> >(
-                        &fog_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::exposedfield<sfnode> >(
-                        &fog_node::metadata)));
+                &fog_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             fogNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<fog_node>::sftime_emitter>(
-                        &fog_node::bind_time_emitter_)));
+                &fog_node::bind_time_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

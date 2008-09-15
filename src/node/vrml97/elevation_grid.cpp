@@ -461,144 +461,77 @@ do_create_type(const std::string & id,
             elevationGridNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    elevation_grid_node::set_height_listener>(
-                        &elevation_grid_node::set_height_listener_)));
+                &elevation_grid_node::set_height_listener_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::color_)));
+                &elevation_grid_node::color_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::normal_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::normal_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::normal_)));
+                &elevation_grid_node::normal_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::tex_coord_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::tex_coord_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::tex_coord_)));
+                &elevation_grid_node::tex_coord_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mffloat>(
-                        &elevation_grid_node::height_)));
+                &elevation_grid_node::height_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &elevation_grid_node::ccw_)));
+                &elevation_grid_node::ccw_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &elevation_grid_node::color_per_vertex_)));
+                &elevation_grid_node::color_per_vertex_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &elevation_grid_node::crease_angle_)));
+                &elevation_grid_node::crease_angle_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &elevation_grid_node::normal_per_vertex_)));
+                &elevation_grid_node::normal_per_vertex_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &elevation_grid_node::solid_)));
+                &elevation_grid_node::solid_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfint32>(
-                        &elevation_grid_node::x_dimension_)));
+                &elevation_grid_node::x_dimension_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &elevation_grid_node::x_spacing_)));
+                &elevation_grid_node::x_spacing_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfint32>(
-                        &elevation_grid_node::z_dimension_)));
+                &elevation_grid_node::z_dimension_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &elevation_grid_node::z_spacing_)));
+                &elevation_grid_node::z_spacing_);
         } else if (*interface_ == *++supported_interface) {
             elevationGridNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<elevation_grid_node>::exposedfield<sfnode> >(
-                        &elevation_grid_node::metadata)));
+                &elevation_grid_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

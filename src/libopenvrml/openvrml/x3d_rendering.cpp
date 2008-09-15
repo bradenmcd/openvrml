@@ -522,34 +522,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
-                            &color_rgba_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
-                            &color_rgba_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<sfnode> >(
-                            &color_rgba_node::metadata)));
+                    &color_rgba_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
-                            &color_rgba_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
-                            &color_rgba_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<color_rgba_node>::exposedfield<mfcolorrgba> >(
-                            &color_rgba_node::color_)));
+                    &color_rgba_node::color_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -649,125 +627,57 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::metadata)));
+                    &indexed_triangle_fan_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        indexed_triangle_fan_set_node::set_index_listener>(
-                            &indexed_triangle_fan_set_node::set_index_listener_)));
+                    &indexed_triangle_fan_set_node::set_index_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::color_)));
+                    &indexed_triangle_fan_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::coord_)));
+                    &indexed_triangle_fan_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::normal_)));
+                    &indexed_triangle_fan_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_fan_set_node::tex_coord_)));
+                    &indexed_triangle_fan_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_fan_set_node::ccw_)));
+                    &indexed_triangle_fan_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_fan_set_node::color_per_vertex_)));
+                    &indexed_triangle_fan_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_fan_set_node::normal_per_vertex_)));
+                    &indexed_triangle_fan_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_fan_set_node::solid_)));
+                    &indexed_triangle_fan_set_node::solid_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfint32>(
-                            &indexed_triangle_fan_set_node::index_)));
+                    &indexed_triangle_fan_set_node::index_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -866,125 +776,57 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::metadata)));
+                    &indexed_triangle_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        indexed_triangle_set_node::set_index_listener>(
-                            &indexed_triangle_set_node::set_index_listener_)));
+                    &indexed_triangle_set_node::set_index_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::color_)));
+                    &indexed_triangle_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::coord_)));
+                    &indexed_triangle_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::normal_)));
+                    &indexed_triangle_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_set_node::tex_coord_)));
+                    &indexed_triangle_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_set_node::ccw_)));
+                    &indexed_triangle_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_set_node::color_per_vertex_)));
+                    &indexed_triangle_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_set_node::normal_per_vertex_)));
+                    &indexed_triangle_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_set_node::solid_)));
+                    &indexed_triangle_set_node::solid_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfint32>(
-                            &indexed_triangle_set_node::index_)));
+                    &indexed_triangle_set_node::index_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1087,141 +929,62 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::metadata)));
+                    &indexed_triangle_strip_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        indexed_triangle_strip_set_node::set_index_listener>(
-                            &indexed_triangle_strip_set_node::set_index_listener_)));
+                    &indexed_triangle_strip_set_node::set_index_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::color_)));
+                    &indexed_triangle_strip_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::coord_)));
+                    &indexed_triangle_strip_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sffloat> >(
-                            &indexed_triangle_strip_set_node::crease_angle_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sffloat> >(
-                            &indexed_triangle_strip_set_node::crease_angle_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sffloat> >(
-                            &indexed_triangle_strip_set_node::crease_angle_)));
+                    &indexed_triangle_strip_set_node::crease_angle_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::normal_)));
+                    &indexed_triangle_strip_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &indexed_triangle_strip_set_node::tex_coord_)));
+                    &indexed_triangle_strip_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_strip_set_node::ccw_)));
+                    &indexed_triangle_strip_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_strip_set_node::color_per_vertex_)));
+                    &indexed_triangle_strip_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_strip_set_node::normal_per_vertex_)));
+                    &indexed_triangle_strip_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &indexed_triangle_strip_set_node::solid_)));
+                    &indexed_triangle_strip_set_node::solid_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfint32>(
-                            &indexed_triangle_strip_set_node::index_)));
+                    &indexed_triangle_strip_set_node::index_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1317,126 +1080,52 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::metadata)));
+                    &triangle_fan_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::color_)));
+                    &triangle_fan_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::coord_)));
+                    &triangle_fan_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<mfint32> >(
-                            &triangle_fan_set_node::fan_count_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<mfint32> >(
-                            &triangle_fan_set_node::fan_count_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<mfint32> >(
-                            &triangle_fan_set_node::fan_count_)));
+                    &triangle_fan_set_node::fan_count_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::normal_)));
+                    &triangle_fan_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_fan_set_node>::exposedfield<sfnode> >(
-                            &triangle_fan_set_node::tex_coord_)));
+                    &triangle_fan_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_fan_set_node::ccw_)));
+                    &triangle_fan_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_fan_set_node::color_per_vertex_)));
+                    &triangle_fan_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_fan_set_node::normal_per_vertex_)));
+                    &triangle_fan_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_fan_set_node::solid_)));
+                    &triangle_fan_set_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1529,110 +1218,47 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::metadata)));
+                    &triangle_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::color_)));
+                    &triangle_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::coord_)));
+                    &triangle_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::normal_)));
+                    &triangle_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_set_node>::exposedfield<sfnode> >(
-                            &triangle_set_node::tex_coord_)));
+                    &triangle_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_set_node::ccw_)));
+                    &triangle_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_set_node::color_per_vertex_)));
+                    &triangle_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_set_node::normal_per_vertex_)));
+                    &triangle_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_set_node::solid_)));
+                    &triangle_set_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -1727,126 +1353,52 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::metadata)));
+                    &triangle_strip_set_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::color_)));
+                    &triangle_strip_set_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::coord_)));
+                    &triangle_strip_set_node::coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::normal_)));
+                    &triangle_strip_set_node::normal_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<mfint32> >(
-                            &triangle_strip_set_node::strip_count_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<mfint32> >(
-                            &triangle_strip_set_node::strip_count_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<mfint32> >(
-                            &triangle_strip_set_node::strip_count_)));
+                    &triangle_strip_set_node::strip_count_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<triangle_strip_set_node>::exposedfield<sfnode> >(
-                            &triangle_strip_set_node::tex_coord_)));
+                    &triangle_strip_set_node::tex_coord_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_strip_set_node::ccw_)));
+                    &triangle_strip_set_node::ccw_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_strip_set_node::color_per_vertex_)));
+                    &triangle_strip_set_node::color_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_strip_set_node::normal_per_vertex_)));
+                    &triangle_strip_set_node::normal_per_vertex_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfbool>(
-                            &triangle_strip_set_node::solid_)));
+                    &triangle_strip_set_node::solid_);
             } else {
                 throw unsupported_interface(*interface_);
             }

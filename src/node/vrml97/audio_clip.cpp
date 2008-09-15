@@ -313,178 +313,67 @@ do_create_type(const std::string & id,
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfstring> >(
-                        &audio_clip_node::description_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfstring> >(
-                        &audio_clip_node::description_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfstring> >(
-                        &audio_clip_node::description_)));
+                &audio_clip_node::description_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfbool> >(
-                        &audio_clip_node::loop_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfbool> >(
-                        &audio_clip_node::loop_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfbool> >(
-                        &audio_clip_node::loop_)));
+                &audio_clip_node::loop_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sffloat> >(
-                        &audio_clip_node::pitch_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sffloat> >(
-                        &audio_clip_node::pitch_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sffloat> >(
-                        &audio_clip_node::pitch_)));
+                &audio_clip_node::pitch_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::start_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::start_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::start_time_)));
+                &audio_clip_node::start_time_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::stop_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::stop_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::stop_time_)));
+                &audio_clip_node::stop_time_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<mfstring> >(
-                        &audio_clip_node::url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<mfstring> >(
-                        &audio_clip_node::url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<mfstring> >(
-                        &audio_clip_node::url_)));
+                &audio_clip_node::url_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::sftime_emitter>(
-                        &audio_clip_node::duration_changed_emitter_)));
+                &audio_clip_node::duration_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::sfbool_emitter>(
-                        &audio_clip_node::is_active_emitter_)));
+                &audio_clip_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfnode> >(
-                        &audio_clip_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfnode> >(
-                        &audio_clip_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sfnode> >(
-                        &audio_clip_node::metadata)));
+                &audio_clip_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::pause_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::pause_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::pause_time_)));
+                &audio_clip_node::pause_time_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::resume_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::resume_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::exposedfield<sftime> >(
-                        &audio_clip_node::resume_time_)));
+                &audio_clip_node::resume_time_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::sftime_emitter>(
-                        &audio_clip_node::elapsed_time_emitter_)));
+                &audio_clip_node::elapsed_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             audioClipNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<audio_clip_node>::sfbool_emitter>(
-                        &audio_clip_node::is_paused_emitter_)));
+                &audio_clip_node::is_paused_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

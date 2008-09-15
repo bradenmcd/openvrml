@@ -582,196 +582,97 @@ do_create_type(const std::string & id,
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_face_set_node::set_color_index_listener>(
-                        &indexed_face_set_node::set_color_index_)));
+                &indexed_face_set_node::set_color_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_face_set_node::set_coord_index_listener>(
-                        &indexed_face_set_node::set_coord_index_)));
+                &indexed_face_set_node::set_coord_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_face_set_node::set_normal_index_listener>(
-                        &indexed_face_set_node::set_normal_index_listener_)));
+                &indexed_face_set_node::set_normal_index_listener_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    indexed_face_set_node::set_tex_coord_index_listener>(
-                        &indexed_face_set_node::set_tex_coord_index_listener_)));
+                &indexed_face_set_node::set_tex_coord_index_listener_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_face_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_face_set_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::color_)));
+                &indexed_face_set_node::color_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_face_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_face_set_node::coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::coord_)));
+                &indexed_face_set_node::coord_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_face_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_face_set_node::normal_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::normal_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::normal_)));
+                &indexed_face_set_node::normal_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_face_set_node>::
-                    exposedfield<sfnode> >(
-                        &indexed_face_set_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<indexed_face_set_node>::
-                        exposedfield<sfnode> >(
-                            &indexed_face_set_node::tex_coord_)));
+                &indexed_face_set_node::tex_coord_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_face_set_node::ccw_)));
+                &indexed_face_set_node::ccw_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_face_set_node::color_index_)));
+                &indexed_face_set_node::color_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_face_set_node::color_per_vertex_)));
+                &indexed_face_set_node::color_per_vertex_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_face_set_node::convex_)));
+                &indexed_face_set_node::convex_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_face_set_node::coord_index_)));
+                &indexed_face_set_node::coord_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &indexed_face_set_node::crease_angle_)));
+                &indexed_face_set_node::crease_angle_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_face_set_node::normal_index_)));
+                &indexed_face_set_node::normal_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_face_set_node::normal_per_vertex_)));
+                &indexed_face_set_node::normal_per_vertex_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &indexed_face_set_node::solid_)));
+                &indexed_face_set_node::solid_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfint32>(
-                        &indexed_face_set_node::tex_coord_index_)));
+                &indexed_face_set_node::tex_coord_index_);
         } else if (*interface_ == *++supported_interface) {
             indexedFaceSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
-                        &indexed_face_set_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
-                        &indexed_face_set_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<indexed_face_set_node>::exposedfield<sfnode> >(
-                        &indexed_face_set_node::metadata)));
+                &indexed_face_set_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

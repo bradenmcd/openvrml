@@ -288,178 +288,57 @@ do_create_type(const std::string & id,
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::ambient_intensity_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::ambient_intensity_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::ambient_intensity_)));
+                &spot_light_node::ambient_intensity_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::attenuation_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::attenuation_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::attenuation_)));
+                &spot_light_node::attenuation_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::beam_width_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::beam_width_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::beam_width_)));
+                &spot_light_node::beam_width_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfcolor> >(
-                        &spot_light_node::color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfcolor> >(
-                        &spot_light_node::color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfcolor> >(
-                        &spot_light_node::color_)));
+                &spot_light_node::color_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::cut_off_angle_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::cut_off_angle_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::cut_off_angle_)));
+                &spot_light_node::cut_off_angle_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::direction_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::direction_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::direction_)));
+                &spot_light_node::direction_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::intensity_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::intensity_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::intensity_)));
+                &spot_light_node::intensity_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::location_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::location_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfvec3f> >(
-                        &spot_light_node::location_)));
+                &spot_light_node::location_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfbool> >(
-                        &spot_light_node::on_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfbool> >(
-                        &spot_light_node::on_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfbool> >(
-                        &spot_light_node::on_)));
+                &spot_light_node::on_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::radius_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::radius_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sffloat> >(
-                        &spot_light_node::radius_)));
+                &spot_light_node::radius_);
         } else if (*interface_ == *++supported_interface) {
             spotLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfnode> >(
-                        &spot_light_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfnode> >(
-                        &spot_light_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<spot_light_node>::exposedfield<sfnode> >(
-                        &spot_light_node::metadata)));
+                &spot_light_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

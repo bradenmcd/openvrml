@@ -306,98 +306,47 @@ do_create_type(const std::string & id,
             touchSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfbool> >(
-                        &touch_sensor_node::enabled_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfbool> >(
-                        &touch_sensor_node::enabled_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfbool> >(
-                        &touch_sensor_node::enabled_)));
+                &touch_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sfvec3f_emitter>(
-                        &touch_sensor_node::hit_normal_changed_emitter_)));
+                &touch_sensor_node::hit_normal_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sfvec3f_emitter>(
-                        &touch_sensor_node::hit_point_changed_emitter_)));
+                &touch_sensor_node::hit_point_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sfvec2f_emitter>(
-                        &touch_sensor_node::hit_tex_coord_changed_emitter_)));
+                &touch_sensor_node::hit_tex_coord_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sfbool_emitter>(
-                        &touch_sensor_node::is_active_emitter_)));
+                &touch_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sfbool_emitter>(
-                        &touch_sensor_node::is_over_emitter_)));
+                &touch_sensor_node::is_over_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::sftime_emitter>(
-                        &touch_sensor_node::touch_time_emitter_)));
+                &touch_sensor_node::touch_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
-                        &touch_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
-                        &touch_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfnode> >(
-                        &touch_sensor_node::metadata)));
+                &touch_sensor_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             touchSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
-                        &touch_sensor_node::description_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
-                        &touch_sensor_node::description_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<touch_sensor_node>::exposedfield<sfstring> >(
-                        &touch_sensor_node::description_)));
+                &touch_sensor_node::description_);
         } else {
             throw unsupported_interface(*interface_);
         }

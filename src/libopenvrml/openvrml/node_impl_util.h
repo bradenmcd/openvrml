@@ -126,6 +126,10 @@ namespace openvrml {
                 explicit field_ptr(FieldMember Node::* ptr_to_mem);
             };
 
+            template <typename FieldMember, typename DeducedNode>
+            static const field_ptr_ptr
+            make_field_ptr_ptr(FieldMember DeducedNode::* ptr_to_mem);
+
             typedef boost::shared_ptr<
                 ptr_to_polymorphic_mem<openvrml::event_listener, Node> >
             event_listener_ptr_ptr;
@@ -140,6 +144,11 @@ namespace openvrml {
                     EventListenerMember Node::* ptr_to_mem);
             };
 
+            template <typename EventListenerMember, typename DeducedNode>
+            static const event_listener_ptr_ptr
+            make_event_listener_ptr_ptr(
+                EventListenerMember DeducedNode::* ptr_to_mem);
+
             typedef boost::shared_ptr<
                 ptr_to_polymorphic_mem<openvrml::event_emitter, Node> >
             event_emitter_ptr_ptr;
@@ -153,6 +162,11 @@ namespace openvrml {
                 explicit event_emitter_ptr(
                     EventEmitterMember Node::* ptr_to_mem);
             };
+
+            template <typename EventEmitterMember, typename DeducedNode>
+            static const event_emitter_ptr_ptr
+            make_event_emitter_ptr_ptr(
+                EventEmitterMember DeducedNode::* ptr_to_mem);
 
         private:
             openvrml::node_interface_set interfaces_;
@@ -170,23 +184,41 @@ namespace openvrml {
                                   const std::string & id);
             virtual ~node_type_impl() OPENVRML_NOTHROW;
 
+            template <typename EventListenerMember, typename DeducedNode>
             void add_eventin(openvrml::field_value::type_id type,
                              const std::string & id,
-                             const event_listener_ptr_ptr & event_listener)
+                             EventListenerMember DeducedNode::* event_listener)
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+
+            template <typename EventEmitterMember, typename DeducedNode>
             void add_eventout(openvrml::field_value::type_id type,
                               const std::string & id,
-                              const event_emitter_ptr_ptr & event_emitter)
+                              EventEmitterMember DeducedNode::* event_emitter)
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-            void add_exposedfield(openvrml::field_value::type_id type,
-                                  const std::string & id,
-                                  const event_listener_ptr_ptr & event_listener,
-                                  const field_ptr_ptr & field,
-                                  const event_emitter_ptr_ptr & event_emitter)
+
+            template <typename EventListenerMember,
+                      typename FieldMember,
+                      typename EventEmitterMember,
+                      typename DeducedNode>
+            void add_exposedfield(
+                openvrml::field_value::type_id type,
+                const std::string & id,
+                EventListenerMember DeducedNode::* event_listener,
+                FieldMember DeducedNode::* field,
+                EventEmitterMember DeducedNode::* event_emitter)
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+
+            template <typename ExposedfieldMember, typename DeducedNode>
+            void add_exposedfield(
+                openvrml::field_value::type_id type,
+                const std::string & id,
+                ExposedfieldMember DeducedNode::* exposedfield)
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+
+            template <typename FieldMember, typename DeducedNode>
             void add_field(openvrml::field_value::type_id type,
                            const std::string & id,
-                           const field_ptr_ptr & field)
+                           FieldMember DeducedNode::* exposedfield)
                 OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
 
             virtual const openvrml::field_value &
@@ -746,6 +778,17 @@ namespace openvrml {
         {}
 
         template <typename Node>
+        template <typename FieldMember, typename DeducedNode>
+        const typename node_type_impl<Node>::field_ptr_ptr
+        node_type_impl<Node>::
+        make_field_ptr_ptr(FieldMember DeducedNode::* ptr_to_mem)
+        {
+            return field_ptr_ptr(
+                new field_ptr<FieldMember>(
+                    static_cast<FieldMember Node::*>(ptr_to_mem)));
+        }
+
+        template <typename Node>
         template <typename EventListenerMember>
         node_type_impl<Node>::event_listener_ptr<EventListenerMember>::
         event_listener_ptr(EventListenerMember Node::* ptr_to_mem):
@@ -755,6 +798,18 @@ namespace openvrml {
         {}
 
         template <typename Node>
+        template <typename EventListenerMember, typename DeducedNode>
+        const typename node_type_impl<Node>::event_listener_ptr_ptr
+        node_type_impl<Node>::
+        make_event_listener_ptr_ptr(
+            EventListenerMember DeducedNode::* ptr_to_mem)
+        {
+            return event_listener_ptr_ptr(
+                new event_listener_ptr<EventListenerMember>(
+                    static_cast<EventListenerMember Node::*>(ptr_to_mem)));
+        }
+
+        template <typename Node>
         template <typename EventEmitterMember>
         node_type_impl<Node>::event_emitter_ptr<EventEmitterMember>::
         event_emitter_ptr(EventEmitterMember Node::* ptr_to_mem):
@@ -762,6 +817,18 @@ namespace openvrml {
                                         EventEmitterMember,
                                         Node>(ptr_to_mem)
         {}
+
+        template <typename Node>
+        template <typename EventEmitterMember, typename DeducedNode>
+        const typename node_type_impl<Node>::event_emitter_ptr_ptr
+        node_type_impl<Node>::
+        make_event_emitter_ptr_ptr(
+            EventEmitterMember DeducedNode::* ptr_to_mem)
+        {
+            return event_emitter_ptr_ptr(
+                new event_emitter_ptr<EventEmitterMember>(
+                    static_cast<EventEmitterMember Node::*>(ptr_to_mem)));
+        }
 
         template <typename Node>
         node_type_impl<Node>::
@@ -775,17 +842,19 @@ namespace openvrml {
         {}
 
         template <typename Node>
-        void node_type_impl<Node>::
+        template <typename EventListenerMember, typename DeducedNode>
+        void
+        node_type_impl<Node>::
         add_eventin(const openvrml::field_value::type_id type,
                     const std::string & id,
-                    const event_listener_ptr_ptr & event_listener)
-            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+                    EventListenerMember DeducedNode::* event_listener)
+                OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
 
             const node_interface interface_(node_interface::eventin_id,
-                                           type,
-                                           id);
+                                            type,
+                                            id);
             bool succeeded = this->interfaces_.insert(interface_).second;
             if (!succeeded) {
                 throw std::invalid_argument("interface \"" + id + "\" already "
@@ -793,16 +862,17 @@ namespace openvrml {
                                             + " node");
             }
             const typename event_listener_map_t::value_type
-                value(id, event_listener);
+                value(id, make_event_listener_ptr_ptr(event_listener));
             succeeded = this->event_listener_map.insert(value).second;
             assert(succeeded);
         }
 
         template <typename Node>
+        template <typename EventListenerMember, typename DeducedNode>
         void node_type_impl<Node>::
         add_eventout(const openvrml::field_value::type_id type,
                      const std::string & id,
-                     const event_emitter_ptr_ptr & event_emitter)
+                     EventListenerMember DeducedNode::* event_emitter)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
@@ -817,18 +887,22 @@ namespace openvrml {
                                             + " node");
             }
             const typename event_emitter_map_t::value_type
-                value(id, event_emitter);
+                value(id, make_event_emitter_ptr_ptr(event_emitter));
             succeeded = this->event_emitter_map.insert(value).second;
             assert(succeeded);
         }
 
         template <typename Node>
+        template <typename EventListenerMember,
+                  typename FieldMember,
+                  typename EventEmitterMember,
+                  typename DeducedNode>
         void node_type_impl<Node>::add_exposedfield(
-            const openvrml::field_value::type_id type,
+            openvrml::field_value::type_id type,
             const std::string & id,
-            const event_listener_ptr_ptr & event_listener,
-            const field_ptr_ptr & field,
-            const event_emitter_ptr_ptr & event_emitter)
+            EventListenerMember DeducedNode::* event_listener,
+            FieldMember DeducedNode::* field,
+            EventEmitterMember DeducedNode::* event_emitter)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
@@ -844,28 +918,44 @@ namespace openvrml {
             }
             {
                 const typename event_listener_map_t::value_type
-                    value("set_" + id, event_listener);
+                    value("set_" + id,
+                          make_event_listener_ptr_ptr(event_listener));
                 succeeded = this->event_listener_map.insert(value).second;
                 assert(succeeded);
             }
             {
-                const typename field_value_map_t::value_type value(id, field);
+                const typename field_value_map_t::value_type
+                    value(id, make_field_ptr_ptr(field));
                 succeeded = this->field_value_map.insert(value).second;
                 assert(succeeded);
             }
             {
                 const typename event_emitter_map_t::value_type
-                    value(id + "_changed", event_emitter);
+                    value(id + "_changed",
+                          make_event_emitter_ptr_ptr(event_emitter));
                 succeeded = this->event_emitter_map.insert(value).second;
                 assert(succeeded);
             }
         }
 
         template <typename Node>
+        template <typename ExposedfieldMember, typename DeducedNode>
+        void node_type_impl<Node>::add_exposedfield(
+            const openvrml::field_value::type_id type,
+            const std::string & id,
+            ExposedfieldMember DeducedNode::* exposedfield)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+        {
+            this->add_exposedfield(type, id,
+                                   exposedfield, exposedfield, exposedfield);
+        }
+
+        template <typename Node>
+        template <typename FieldMember, typename DeducedNode>
         void node_type_impl<Node>::add_field(
             const openvrml::field_value::type_id type,
             const std::string & id,
-            const field_ptr_ptr & nodeFieldPtrPtr)
+            FieldMember DeducedNode::* field)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;
@@ -878,7 +968,7 @@ namespace openvrml {
                                             + " node");
             }
             const typename field_value_map_t::value_type
-                value(id, nodeFieldPtrPtr);
+                value(id, make_field_ptr_ptr(field));
             succeeded = this->field_value_map.insert(value).second;
             assert(succeeded);
         }

@@ -171,15 +171,16 @@ openvrml_node_vrml97::cylinder_metatype::~cylinder_metatype() OPENVRML_NOTHROW
 /**
  * @brief Create a node_type.
  *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
+ * @param id            the name for the new @c node_type.
+ * @param interfaces    the interfaces for the new @c node_type.
  *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Cylinder nodes.
+ * @return a @c boost::shared_ptr to a @c node_type capable of creating
+ *         Cylinder nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by cylinder_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c cylinder_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::cylinder_metatype::
@@ -228,60 +229,37 @@ do_create_type(const std::string & id,
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cylinder_node::bottom)));
+                &cylinder_node::bottom);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &cylinder_node::height)));
+                &cylinder_node::height);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &cylinder_node::radius)));
+                &cylinder_node::radius);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cylinder_node::side)));
+                &cylinder_node::side);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cylinder_node::top)));
+                &cylinder_node::top);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cylinder_node>::exposedfield<sfnode> >(
-                        &cylinder_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cylinder_node>::exposedfield<sfnode> >(
-                        &cylinder_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cylinder_node>::exposedfield<sfnode> >(
-                        &cylinder_node::metadata)));
+                &cylinder_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             cylinderNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &cylinder_node::solid_)));
+                &cylinder_node::solid_);
         } else {
             throw unsupported_interface(*interface_);
         }

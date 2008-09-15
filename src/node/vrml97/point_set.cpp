@@ -294,50 +294,17 @@ do_create_type(const std::string & id,
             pointSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::color_)));
+                &point_set_node::color_);
         } else if (*interface_ == *++supported_interface) {
             pointSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::coord_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::coord_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::coord_)));
+                &point_set_node::coord_);
         } else if (*interface_ == *++supported_interface) {
             pointSetNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<point_set_node>::exposedfield<sfnode> >(
-                        &point_set_node::metadata)));
+                &point_set_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

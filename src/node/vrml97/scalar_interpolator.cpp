@@ -313,69 +313,27 @@ do_create_type(const std::string & id,
             scalarInterpolatorNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    scalar_interpolator_node::set_fraction_listener>(
-                        &scalar_interpolator_node::set_fraction_listener_)));
+                &scalar_interpolator_node::set_fraction_listener_);
         } else if (*interface_ == *++supported_interface) {
             scalarInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<scalar_interpolator_node>::
-                    exposedfield<mffloat> >(&scalar_interpolator_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<scalar_interpolator_node>::
-                        exposedfield<mffloat> >(&scalar_interpolator_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<scalar_interpolator_node>::
-                        exposedfield<mffloat> >(&scalar_interpolator_node::key_)));
+                &scalar_interpolator_node::key_);
         } else if (*interface_ == *++supported_interface) {
             scalarInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<scalar_interpolator_node>::
-                    exposedfield<mffloat> >(
-                        &scalar_interpolator_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<scalar_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &scalar_interpolator_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<scalar_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &scalar_interpolator_node::key_value_)));
+                &scalar_interpolator_node::key_value_);
         } else if (*interface_ == *++supported_interface) {
             scalarInterpolatorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<scalar_interpolator_node>::sffloat_emitter>(
-                        &scalar_interpolator_node::value_changed_emitter_)));
+                &scalar_interpolator_node::value_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             scalarInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
-                        &scalar_interpolator_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
-                        &scalar_interpolator_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<scalar_interpolator_node>::exposedfield<sfnode> >(
-                        &scalar_interpolator_node::metadata)));
+                &scalar_interpolator_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

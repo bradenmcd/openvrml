@@ -196,110 +196,32 @@ do_create_type(const std::string & id,
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::
-                    exposedfield<sffloat> >(
-                        &directional_light_node::ambient_intensity_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sffloat> >(
-                            &directional_light_node::ambient_intensity_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sffloat> >(
-                            &directional_light_node::ambient_intensity_)));
+                &directional_light_node::ambient_intensity_);
         } else if (*interface_ == *++supported_interface) {
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::
-                    exposedfield<sfcolor> >(
-                        &directional_light_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfcolor> >(
-                            &directional_light_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfcolor> >(
-                            &directional_light_node::color_)));
+                &directional_light_node::color_);
         } else if (*interface_ == *++supported_interface) {
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::
-                    exposedfield<sfvec3f> >(
-                        &directional_light_node::direction_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfvec3f> >(
-                            &directional_light_node::direction_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfvec3f> >(
-                            &directional_light_node::direction_)));
+                &directional_light_node::direction_);
         } else if (*interface_ == *++supported_interface) {
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::
-                    exposedfield<sffloat> >(
-                        &directional_light_node::intensity_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sffloat> >(
-                            &directional_light_node::intensity_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sffloat> >(
-                            &directional_light_node::intensity_)));
+                &directional_light_node::intensity_);
         } else if (*interface_ == *++supported_interface) {
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::
-                    exposedfield<sfbool> >(&directional_light_node::on_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfbool> >(&directional_light_node::on_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<directional_light_node>::
-                        exposedfield<sfbool> >(&directional_light_node::on_)));
+                &directional_light_node::on_);
         } else if (*interface_ == *++supported_interface) {
             directionalLightNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<directional_light_node>::exposedfield<sfnode> >(
-                        &directional_light_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<directional_light_node>::exposedfield<sfnode> >(
-                        &directional_light_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<directional_light_node>::exposedfield<sfnode> >(
-                        &directional_light_node::metadata)));
+                &directional_light_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

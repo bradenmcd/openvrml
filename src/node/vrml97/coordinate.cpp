@@ -126,15 +126,16 @@ openvrml_node_vrml97::coordinate_metatype::~coordinate_metatype()
 /**
  * @brief Create a node_type.
  *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
+ * @param id            the name for the new @c node_type.
+ * @param interfaces    the interfaces for the new @c node_type.
  *
- * @return a @c boost::shared_ptr<node_type> to a @c node_type capable of
- *         creating Coordinate nodes.
+ * @return a @c boost::shared_ptr to a @c node_type capable of creating
+ *         Coordinate nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by coordinate_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c coordinate_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::coordinate_metatype::
@@ -175,34 +176,12 @@ do_create_type(const std::string & id,
             coordinateNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<coordinate_node>::exposedfield<mfvec3f> >(
-                        &coordinate_node::point_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<coordinate_node>::exposedfield<mfvec3f> >(
-                        &coordinate_node::point_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<coordinate_node>::exposedfield<mfvec3f> >(
-                        &coordinate_node::point_)));
+                &coordinate_node::point_);
         } else if (*interface_ == *++supported_interface) {
             coordinateNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<coordinate_node>::exposedfield<sfnode> >(
-                        &coordinate_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<coordinate_node>::exposedfield<sfnode> >(
-                        &coordinate_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<coordinate_node>::exposedfield<sfnode> >(
-                        &coordinate_node::metadata)));
+                &coordinate_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

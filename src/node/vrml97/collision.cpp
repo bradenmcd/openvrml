@@ -222,119 +222,57 @@ do_create_type(const std::string & id,
             collisionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    collision_node::add_children_listener>(
-                        &collision_node::add_children_listener_)));
+                &collision_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    collision_node::remove_children_listener>(
-                        &collision_node::remove_children_listener_)));
+                &collision_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    collision_node::children_exposedfield>(
-                        &collision_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    collision_node::children_exposedfield>(
-                        &collision_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    collision_node::children_exposedfield>(
-                        &collision_node::children_)));
+                &collision_node::children_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)));
+                &collision_node::collide_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &collision_node::bbox_center_)));
+                &collision_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &collision_node::bbox_size_)));
+                &collision_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfnode>(
-                        &collision_node::proxy_)));
+                &collision_node::proxy_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<collision_node>::sftime_emitter>(
-                        &collision_node::collide_time_emitter_)));
+                &collision_node::collide_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<collision_node>::exposedfield<sfnode> >(
-                        &collision_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<collision_node>::exposedfield<sfnode> >(
-                        &collision_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<collision_node>::exposedfield<sfnode> >(
-                        &collision_node::metadata)));
+                &collision_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<collision_node>::exposedfield<sfbool> >(
-                        &collision_node::collide_)));
+                &collision_node::collide_);
         } else if (*interface_ == *++supported_interface) {
             collisionNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<collision_node>::sfbool_emitter>(
-                        &collision_node::is_active_emitter_)));
+                &collision_node::is_active_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

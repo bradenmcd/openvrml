@@ -329,64 +329,27 @@ do_create_type(const std::string & id,
             inlineNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<inline_node>::exposedfield<mfstring> >(
-                        &inline_node::url_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<inline_node>::exposedfield<mfstring> >(
-                        &inline_node::url_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<inline_node>::exposedfield<mfstring> >(
-                        &inline_node::url_)));
+                &inline_node::url_);
         } else if (*interface_ == *++supported_interface) {
             inlineNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &inline_node::bbox_center_)));
+                &inline_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             inlineNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &inline_node::bbox_size_)));
+                &inline_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             inlineNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<inline_node>::exposedfield<sfnode> >(
-                        &inline_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<inline_node>::exposedfield<sfnode> >(
-                        &inline_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<inline_node>::exposedfield<sfnode> >(
-                        &inline_node::metadata)));
+                &inline_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             inlineNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<inline_node>::exposedfield<sfbool> >(
-                        &inline_node::load_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<inline_node>::exposedfield<sfbool> >(
-                        &inline_node::load_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<inline_node>::exposedfield<sfbool> >(
-                        &inline_node::load_)));
+                &inline_node::load_);
         } else {
             throw unsupported_interface(*interface_);
         }

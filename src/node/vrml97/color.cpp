@@ -172,37 +172,13 @@ do_create_type(const std::string & id,
         supported_interfaces_t::const_iterator supported_interface =
             supported_interfaces.begin() - 1;
         if (*interface_ == *++supported_interface) {
-            colorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<color_node>::exposedfield<mfcolor> >(
-                        &color_node::color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<color_node>::exposedfield<mfcolor> >(
-                        &color_node::color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<color_node>::exposedfield<mfcolor> >(
-                        &color_node::color_)));
+            colorNodeType.add_exposedfield(supported_interface->field_type,
+                                           supported_interface->id,
+                                           &color_node::color_);
         } else if (*interface_ == *++supported_interface) {
-            colorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<color_node>::exposedfield<sfnode> >(
-                        &color_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<color_node>::exposedfield<sfnode> >(
-                        &color_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<color_node>::exposedfield<sfnode> >(
-                        &color_node::metadata)));
+            colorNodeType.add_exposedfield(supported_interface->field_type,
+                                           supported_interface->id,
+                                           &color_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

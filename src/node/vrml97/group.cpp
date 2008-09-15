@@ -152,64 +152,32 @@ do_create_type(const std::string & id,
             groupNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    group_node::add_children_listener>(
-                        &group_node::add_children_listener_)));
+                &group_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             groupNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    group_node::remove_children_listener>(
-                        &group_node::remove_children_listener_)));
+                &group_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             groupNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    group_node::children_exposedfield>(
-                        &group_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    group_node::children_exposedfield>(
-                        &group_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    group_node::children_exposedfield>(
-                        &group_node::children_)));
+                &group_node::children_);
         } else if (*interface_ == *++supported_interface) {
             groupNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &group_node::bbox_center_)));
+                &group_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             groupNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &group_node::bbox_size_)));
+                &group_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             groupNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<group_node>::exposedfield<sfnode> >(
-                        &group_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<group_node>::exposedfield<sfnode> >(
-                        &group_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<group_node>::exposedfield<sfnode> >(
-                        &group_node::metadata)));
+                &group_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

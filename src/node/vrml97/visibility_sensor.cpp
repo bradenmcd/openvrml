@@ -317,99 +317,37 @@ do_create_type(const std::string & id,
             visibilitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<visibility_sensor_node>::
-                    exposedfield<sfvec3f> >(
-                        &visibility_sensor_node::center_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &visibility_sensor_node::center_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &visibility_sensor_node::center_)));
+                &visibility_sensor_node::center_);
     } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<visibility_sensor_node>::
-                    exposedfield<sfbool> >(
-                        &visibility_sensor_node::enabled_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &visibility_sensor_node::enabled_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfbool> >(
-                            &visibility_sensor_node::enabled_)));
+                &visibility_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<visibility_sensor_node>::
-                    exposedfield<sfvec3f> >(
-                        &visibility_sensor_node::size_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &visibility_sensor_node::size_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<visibility_sensor_node>::
-                        exposedfield<sfvec3f> >(
-                            &visibility_sensor_node::size_)));
+                &visibility_sensor_node::size_);
         } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<visibility_sensor_node>::sftime_emitter>(
-                        &visibility_sensor_node::enter_time_emitter_)));
+                &visibility_sensor_node::enter_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<visibility_sensor_node>::sftime_emitter>(
-                        &visibility_sensor_node::exit_time_emitter_)));
+                &visibility_sensor_node::exit_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<visibility_sensor_node>::sfbool_emitter>(
-                        &visibility_sensor_node::is_active_emitter_)));
+                &visibility_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             visibilitySensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
-                        &visibility_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
-                        &visibility_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<visibility_sensor_node>::exposedfield<sfnode> >(
-                        &visibility_sensor_node::metadata)));
+                &visibility_sensor_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

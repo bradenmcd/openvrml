@@ -582,179 +582,77 @@ do_create_type(const std::string & id,
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfbool> >(
-                        &movie_texture_node::loop_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfbool> >(
-                        &movie_texture_node::loop_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfbool> >(
-                        &movie_texture_node::loop_)));
+                &movie_texture_node::loop_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    movie_texture_node::set_speed_listener >(
-                        &movie_texture_node::set_speed_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &movie_texture_node::speed_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::sffloat_emitter>(
-                        &movie_texture_node::speed_changed_)));
+                &movie_texture_node::set_speed_,
+                &movie_texture_node::speed_,
+                &movie_texture_node::speed_changed_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::start_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::start_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::start_time_)));
+                &movie_texture_node::start_time_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::stop_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::stop_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::stop_time_)));
+                &movie_texture_node::stop_time_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::
-                    exposedfield<mfstring> >(&movie_texture_node::url_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<movie_texture_node>::
-                        exposedfield<mfstring> >(
-                            &movie_texture_node::url_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<movie_texture_node>::
-                        exposedfield<mfstring> >(&movie_texture_node::url_)));
+                &movie_texture_node::url_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &movie_texture_node::repeat_s_)));
+                &movie_texture_node::repeat_s_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &movie_texture_node::repeat_t_)));
+                &movie_texture_node::repeat_t_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::sftime_emitter>(
-                        &movie_texture_node::duration_changed_)));
+                &movie_texture_node::duration_changed_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::sfbool_emitter>(
-                        &movie_texture_node::is_active_)));
+                &movie_texture_node::is_active_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfnode> >(
-                        &movie_texture_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfnode> >(
-                        &movie_texture_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sfnode> >(
-                        &movie_texture_node::metadata)));
+                &movie_texture_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::pause_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::pause_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::pause_time_)));
+                &movie_texture_node::pause_time_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::resume_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::resume_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::exposedfield<sftime> >(
-                        &movie_texture_node::resume_time_)));
+                &movie_texture_node::resume_time_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::sftime_emitter>(
-                        &movie_texture_node::elapsed_time_emitter_)));
+                &movie_texture_node::elapsed_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             movieTextureNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<movie_texture_node>::sfbool_emitter>(
-                        &movie_texture_node::is_paused_emitter_)));
+                &movie_texture_node::is_paused_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }
-}
+    }
     return type;
 }

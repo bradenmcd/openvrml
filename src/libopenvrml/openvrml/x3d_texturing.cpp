@@ -267,114 +267,37 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfnode> >(
-                            &multi_texture_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfnode> >(
-                            &multi_texture_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfnode> >(
-                            &multi_texture_node::metadata)));
+                    &multi_texture_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sffloat> >(
-                            &multi_texture_node::alpha_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sffloat> >(
-                            &multi_texture_node::alpha_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sffloat> >(
-                            &multi_texture_node::alpha_)));
+                    &multi_texture_node::alpha_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfcolor> >(
-                            &multi_texture_node::color_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfcolor> >(
-                            &multi_texture_node::color_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<sfcolor> >(
-                            &multi_texture_node::color_)));
+                    &multi_texture_node::color_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::function_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::function_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::function_)));
+                    &multi_texture_node::function_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::mode_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::mode_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::mode_)));
+                    &multi_texture_node::mode_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::source_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::source_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfstring> >(
-                            &multi_texture_node::source_)));
+                    &multi_texture_node::source_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfnode> >(
-                            &multi_texture_node::texture_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfnode> >(
-                            &multi_texture_node::texture_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_node>::exposedfield<mfnode> >(
-                            &multi_texture_node::texture_)));
+                    &multi_texture_node::texture_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -447,34 +370,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<sfnode> >(
-                            &multi_texture_coordinate_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<sfnode> >(
-                            &multi_texture_coordinate_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<sfnode> >(
-                            &multi_texture_coordinate_node::metadata)));
+                    &multi_texture_coordinate_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<mfnode> >(
-                            &multi_texture_coordinate_node::tex_coord_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<mfnode> >(
-                            &multi_texture_coordinate_node::tex_coord_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_coordinate_node>::exposedfield<mfnode> >(
-                            &multi_texture_coordinate_node::tex_coord_)));
+                    &multi_texture_coordinate_node::tex_coord_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -547,34 +448,12 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<sfnode> >(
-                            &multi_texture_transform_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<sfnode> >(
-                            &multi_texture_transform_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<sfnode> >(
-                            &multi_texture_transform_node::metadata)));
+                    &multi_texture_transform_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<mfnode> >(
-                            &multi_texture_transform_node::texture_transform_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<mfnode> >(
-                            &multi_texture_transform_node::texture_transform_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<multi_texture_transform_node>::exposedfield<mfnode> >(
-                            &multi_texture_transform_node::texture_transform_)));
+                    &multi_texture_transform_node::texture_transform_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -650,50 +529,17 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfnode> >(
-                            &texture_coordinate_generator_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfnode> >(
-                            &texture_coordinate_generator_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfnode> >(
-                            &texture_coordinate_generator_node::metadata)));
+                    &texture_coordinate_generator_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfstring> >(
-                            &texture_coordinate_generator_node::mode_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfstring> >(
-                            &texture_coordinate_generator_node::mode_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<sfstring> >(
-                            &texture_coordinate_generator_node::mode_)));
+                    &texture_coordinate_generator_node::mode_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<mffloat> >(
-                            &texture_coordinate_generator_node::parameter_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<mffloat> >(
-                            &texture_coordinate_generator_node::parameter_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<texture_coordinate_generator_node>::exposedfield<mffloat> >(
-                            &texture_coordinate_generator_node::parameter_)));
+                    &texture_coordinate_generator_node::parameter_);
             } else {
                 throw unsupported_interface(*interface_);
             }

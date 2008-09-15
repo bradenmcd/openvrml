@@ -290,114 +290,37 @@ do_create_type(const std::string & id,
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::ambient_intensity_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::ambient_intensity_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::ambient_intensity_)));
+                &material_node::ambient_intensity_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::diffuse_color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::diffuse_color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::diffuse_color_)));
+                &material_node::diffuse_color_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::emissive_color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::emissive_color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::emissive_color_)));
+                &material_node::emissive_color_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::shininess_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::shininess_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::shininess_)));
+                &material_node::shininess_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::specular_color_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::specular_color_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sfcolor> >(
-                        &material_node::specular_color_)));
+                &material_node::specular_color_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::transparency_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::transparency_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sffloat> >(
-                        &material_node::transparency_)));
+                &material_node::transparency_);
         } else if (*interface_ == *++supported_interface) {
             materialNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<material_node>::exposedfield<sfnode> >(
-                        &material_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<material_node>::exposedfield<sfnode> >(
-                        &material_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<material_node>::exposedfield<sfnode> >(
-                        &material_node::metadata)));
+                &material_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

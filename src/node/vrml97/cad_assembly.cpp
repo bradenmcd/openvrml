@@ -65,7 +65,8 @@ namespace {
         bounded_volume_node(type, scope),
         child_node(type, scope),
         grouping_node(type, scope),
-        openvrml_node_vrml97::grouping_node_base<cad_assembly_node>(type, scope),
+        openvrml_node_vrml97::grouping_node_base<cad_assembly_node>(type,
+                                                                    scope),
         name_(*this)
     {}
 
@@ -161,80 +162,37 @@ do_create_type(const std::string & id,
             theNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    cad_assembly_node::add_children_listener>(
-                        &cad_assembly_node::add_children_listener_)));
+                &cad_assembly_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    cad_assembly_node::remove_children_listener>(
-                        &cad_assembly_node::remove_children_listener_)));
+                &cad_assembly_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    cad_assembly_node::children_exposedfield>(
-                        &cad_assembly_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    cad_assembly_node::children_exposedfield>(
-                        &cad_assembly_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    cad_assembly_node::children_exposedfield>(
-                        &cad_assembly_node::children_)));
+                &cad_assembly_node::children_);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &cad_assembly_node::bbox_center_)));
+                &cad_assembly_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &cad_assembly_node::bbox_size_)));
+                &cad_assembly_node::bbox_size_);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
-                        &cad_assembly_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
-                        &cad_assembly_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfnode> >(
-                        &cad_assembly_node::metadata)));
+                &cad_assembly_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             theNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfstring> >
-                    (&cad_assembly_node::name_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfstring> >
-                    (&cad_assembly_node::name_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<cad_assembly_node>::exposedfield<sfstring> >
-                    (&cad_assembly_node::name_)));
+                &cad_assembly_node::name_);
         } else {
             throw unsupported_interface(*interface_);
         }

@@ -211,7 +211,8 @@ namespace {
         const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        openvrml::node_impl_util::abstract_node<coordinate_interpolator_node>(type, scope),
+        openvrml::node_impl_util::abstract_node<coordinate_interpolator_node>(
+            type, scope),
         child_node(type, scope),
         set_fraction_listener_(*this),
         key_(*this),
@@ -260,10 +261,10 @@ openvrml_node_vrml97::coordinate_interpolator_metatype::
  * @return a boost::shared_ptr<node_type> to a node_type capable of
  *         creating CoordinateInterpolator nodes.
  *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  coordinate_interpolator_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
+ * @exception openvrml::unsupported_interface   if @p interfaces includes an
+ *                                              interface not supported by
+ *                                              @c coordinate_interpolator_metatype.
+ * @exception std::bad_alloc                    if memory allocation fails.
  */
 const boost::shared_ptr<openvrml::node_type>
 openvrml_node_vrml97::coordinate_interpolator_metatype::
@@ -308,73 +309,27 @@ do_create_type(const std::string & id,
             coordinateInterpolatorNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    coordinate_interpolator_node::set_fraction_listener>(
-                        &coordinate_interpolator_node::set_fraction_listener_)));
+                &coordinate_interpolator_node::set_fraction_listener_);
         } else if (*interface_ == *++supported_interface) {
             coordinateInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<coordinate_interpolator_node>::
-                    exposedfield<mffloat> >(
-                        &coordinate_interpolator_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<coordinate_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &coordinate_interpolator_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<coordinate_interpolator_node>::
-                        exposedfield<mffloat> >(
-                            &coordinate_interpolator_node::key_)));
+                &coordinate_interpolator_node::key_);
         } else if (*interface_ == *++supported_interface) {
             coordinateInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<coordinate_interpolator_node>::
-                    exposedfield<mfvec3f> >(
-                        &coordinate_interpolator_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<coordinate_interpolator_node>::
-                        exposedfield<mfvec3f> >(
-                            &coordinate_interpolator_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<coordinate_interpolator_node>::
-                        exposedfield<mfvec3f> >(
-                            &coordinate_interpolator_node::key_value_)));
+                &coordinate_interpolator_node::key_value_);
         } else if (*interface_ == *++supported_interface) {
             coordinateInterpolatorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<coordinate_interpolator_node>::
-                    mfvec3f_emitter>(
-                        &coordinate_interpolator_node::value_changed_)));
+                &coordinate_interpolator_node::value_changed_);
         } else if (*interface_ == *++supported_interface) {
             coordinateInterpolatorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
-                        &coordinate_interpolator_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
-                        &coordinate_interpolator_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<coordinate_interpolator_node>::exposedfield<sfnode> >(
-                        &coordinate_interpolator_node::metadata)));
+                &coordinate_interpolator_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

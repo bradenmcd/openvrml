@@ -1,3 +1,113 @@
+2008-09-14 Braden McDaniel  <braden@endoframe.com>
+
+	Made openvrml::node_impl_util::node_type_impl's member functions
+	for adding field, eventIn, eventOut, and exposedField handlers
+	templates that take a pointer-to-member.  This reduces the amount
+	of code typically needed when calling these functions.
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comments.
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::make_field_ptr_ptr(FieldMember
+	DeducedNode::*)): Make a field_ptr_ptr from a pointer-to-member.
+	(openvrml::node_impl_util::make_event_listener_ptr_ptr(EventListenerMember
+	DeducedNode::*)): Make an event_listener_ptr_ptr from a
+	pointer-to-member.
+	(openvrml::node_impl_util::make_event_emitter_ptr_ptr(EventEmitterMember
+	DeducedNode::*)): Make an event_emitter_ptr_ptr from a
+	pointer-to-member.
+	(openvrml::node_impl_util::add_eventin(openvrml::field_value::type_id,
+	const std::string &, EventListenerMember DeducedNode::*)): Changed
+	to a function template taking a pointer-to-member for the member
+	of the node that handles the eventIn.
+	(openvrml::node_impl_util::add_eventout(openvrml::field_value::type_id,
+	const std::string &, EventEmitterMember DeducedNode::*)): Changed
+	to a function template taking a pointer-to-member for the member
+	of the node that handles the eventOut.
+	(openvrml::node_impl_util::add_exposedfield(openvrml::field_value::type_id,
+	const std::string &, EventListenerMember DeducedNode::*,
+	FieldMember DeducedNode::*, EventEmitterMember DeducedNode::*)):
+	Changed to a function template taking pointers-to-member for the
+	member(s) of the node that handle the exposedField.
+	(openvrml::node_impl_util::add_exposedfield(openvrml::field_value::type_id,
+	const std::string &, ExposedfieldMember DeducedNode::*)):
+	Convenience function useful for when all three components of an
+	exposedField are handled by a single member.
+	(openvrml::node_impl_util::add_field(openvrml::field_value::type_id,
+	const std::string &, FieldMember DeducedNode::*)): Changed to a
+	function template taking a pointer-to-member for the member of the
+	node that handles the field.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
+	* src/libopenvrml/openvrml/x3d_core.cpp
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/libopenvrml/openvrml/x3d_networking.cpp
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	* src/node/vrml97/anchor.cpp
+	* src/node/vrml97/appearance.cpp
+	* src/node/vrml97/audio_clip.cpp
+	* src/node/vrml97/background.cpp
+	* src/node/vrml97/billboard.cpp
+	* src/node/vrml97/box.cpp
+	* src/node/vrml97/cad_assembly.cpp
+	* src/node/vrml97/cad_layer.cpp
+	* src/node/vrml97/collision.cpp
+	* src/node/vrml97/color.cpp
+	* src/node/vrml97/color_interpolator.cpp
+	* src/node/vrml97/cone.cpp
+	* src/node/vrml97/coordinate.cpp
+	* src/node/vrml97/coordinate_interpolator.cpp
+	* src/node/vrml97/cylinder.cpp
+	* src/node/vrml97/cylinder_sensor.cpp
+	* src/node/vrml97/directional_light.cpp
+	* src/node/vrml97/elevation_grid.cpp
+	* src/node/vrml97/extrusion.cpp
+	* src/node/vrml97/fog.cpp
+	* src/node/vrml97/font_style.cpp
+	* src/node/vrml97/group.cpp
+	* src/node/vrml97/indexed_face_set.cpp
+	* src/node/vrml97/indexed_line_set.cpp
+	* src/node/vrml97/inline.cpp
+	* src/node/vrml97/image_texture.cpp
+	* src/node/vrml97/lod.cpp
+	* src/node/vrml97/material.cpp
+	* src/node/vrml97/movie_texture.cpp
+	* src/node/vrml97/navigation_info.cpp
+	* src/node/vrml97/normal.cpp
+	* src/node/vrml97/normal_interpolator.cpp
+	* src/node/vrml97/orientation_interpolator.cpp
+	* src/node/vrml97/pixel_texture.cpp
+	* src/node/vrml97/plane_sensor.cpp
+	* src/node/vrml97/point_light.cpp
+	* src/node/vrml97/point_set.cpp
+	* src/node/vrml97/position_interpolator.cpp
+	* src/node/vrml97/proximity_sensor.cpp
+	* src/node/vrml97/scalar_interpolator.cpp
+	* src/node/vrml97/shape.cpp
+	* src/node/vrml97/sound.cpp
+	* src/node/vrml97/sphere.cpp
+	* src/node/vrml97/sphere_sensor.cpp
+	* src/node/vrml97/spot_light.cpp
+	* src/node/vrml97/switch.cpp
+	* src/node/vrml97/text.cpp
+	* src/node/vrml97/texture_coordinate.cpp
+	* src/node/vrml97/texture_transform.cpp
+	* src/node/vrml97/time_sensor.cpp
+	* src/node/vrml97/touch_sensor.cpp
+	* src/node/vrml97/transform.cpp
+	* src/node/vrml97/viewpoint.cpp
+	* src/node/vrml97/visibility_sensor.cpp
+	* src/node/vrml97/world_info.cpp
+
 2008-09-11 Braden McDaniel  <braden@endoframe.com>
 
 	Added a Visual C++ project file for the pretty-print example.

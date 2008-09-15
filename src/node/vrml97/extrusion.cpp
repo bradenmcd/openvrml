@@ -610,120 +610,77 @@ do_create_type(const std::string & id,
             extrusionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    extrusion_node::set_cross_section_listener>(
-                        &extrusion_node::set_cross_section_listener_)));
+                &extrusion_node::set_cross_section_listener_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    extrusion_node::set_orientation_listener>(
-                        &extrusion_node::set_orientation_listener_)));
+                &extrusion_node::set_orientation_listener_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    extrusion_node::set_scale_listener>(
-                        &extrusion_node::set_scale_listener_)));
+                &extrusion_node::set_scale_listener_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    extrusion_node::set_spine_listener>(
-                        &extrusion_node::set_spine_listener_)));
+                &extrusion_node::set_spine_listener_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &extrusion_node::begin_cap_)));
+                &extrusion_node::begin_cap_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &extrusion_node::ccw_)));
+                &extrusion_node::ccw_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &extrusion_node::convex_)));
+                &extrusion_node::convex_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sffloat>(
-                        &extrusion_node::crease_angle_)));
+                &extrusion_node::crease_angle_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfvec2f>(
-                        &extrusion_node::cross_section_)));
+                &extrusion_node::cross_section_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &extrusion_node::end_cap_)));
+                &extrusion_node::end_cap_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfrotation>(
-                        &extrusion_node::orientation_)));
+                &extrusion_node::orientation_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfvec2f>(
-                        &extrusion_node::scale_)));
+                &extrusion_node::scale_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &extrusion_node::solid_)));
+                &extrusion_node::solid_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mfvec3f>(
-                        &extrusion_node::spine_)));
+                &extrusion_node::spine_);
         } else if (*interface_ == *++supported_interface) {
             extrusionNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<extrusion_node>::exposedfield<sfnode> >(
-                        &extrusion_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<extrusion_node>::exposedfield<sfnode> >(
-                        &extrusion_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<extrusion_node>::exposedfield<sfnode> >(
-                        &extrusion_node::metadata)));
+                &extrusion_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

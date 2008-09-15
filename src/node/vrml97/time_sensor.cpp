@@ -740,176 +740,76 @@ do_create_type(const std::string & id,
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    time_sensor_node::set_cycle_interval_listener>(
-                        &time_sensor_node::set_cycle_interval_listener_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sftime>(
-                        &time_sensor_node::cycle_interval_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sftime_emitter>(
-                        &time_sensor_node::cycle_interval_changed_emitter_)));
+                &time_sensor_node::set_cycle_interval_listener_,
+                &time_sensor_node::cycle_interval_,
+                &time_sensor_node::cycle_interval_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    time_sensor_node::enabled_exposedfield>(
-                        &time_sensor_node::enabled_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    time_sensor_node::enabled_exposedfield>(
-                        &time_sensor_node::enabled_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    time_sensor_node::enabled_exposedfield>(
-                        &time_sensor_node::enabled_)));
+                &time_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfbool> >(
-                        &time_sensor_node::loop_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfbool> >(
-                        &time_sensor_node::loop_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfbool> >(
-                        &time_sensor_node::loop_)));
+                &time_sensor_node::loop_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    time_sensor_node::set_start_time_listener>(
-                        &time_sensor_node::set_start_time_listener_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sftime>(
-                        &time_sensor_node::start_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sftime_emitter>(
-                        &time_sensor_node::start_time_changed_emitter_)));
+                &time_sensor_node::set_start_time_listener_,
+                &time_sensor_node::start_time_,
+                &time_sensor_node::start_time_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::stop_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::stop_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::stop_time_)));
+                &time_sensor_node::stop_time_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sftime_emitter>(
-                        &time_sensor_node::cycle_time_emitter_)));
+                &time_sensor_node::cycle_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sffloat_emitter>(
-                        &time_sensor_node::fraction_changed_emitter_)));
+                &time_sensor_node::fraction_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sfbool_emitter>(
-                        &time_sensor_node::is_active_emitter_)));
+                &time_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sftime_emitter>(
-                        &time_sensor_node::time_emitter_)));
+                &time_sensor_node::time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfnode> >(
-                        &time_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfnode> >(
-                        &time_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sfnode> >(
-                        &time_sensor_node::metadata)));
+                &time_sensor_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::pause_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::pause_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::pause_time_)));
+                &time_sensor_node::pause_time_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::resume_time_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::resume_time_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::exposedfield<sftime> >(
-                        &time_sensor_node::resume_time_)));
+                &time_sensor_node::resume_time_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sftime_emitter>(
-                        &time_sensor_node::elapsed_time_emitter_)));
+                &time_sensor_node::elapsed_time_emitter_);
         } else if (*interface_ == *++supported_interface) {
             timeSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<time_sensor_node>::sfbool_emitter>(
-                        &time_sensor_node::is_paused_emitter_)));
+                &time_sensor_node::is_paused_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

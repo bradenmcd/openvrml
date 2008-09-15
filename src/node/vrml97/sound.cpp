@@ -274,169 +274,57 @@ do_create_type(const std::string & id,
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::direction_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::direction_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::direction_)));
+                &sound_node::direction_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::intensity_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::intensity_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::intensity_)));
+                &sound_node::intensity_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::location_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::location_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sfvec3f> >(
-                        &sound_node::location_)));
+                &sound_node::location_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_back_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_back_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_back_)));
+                &sound_node::max_back_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_front_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_front_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::max_front_)));
+                &sound_node::max_front_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_back_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_back_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_back_)));
+                &sound_node::min_back_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_front_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_front_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::min_front_)));
+                &sound_node::min_front_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::priority_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::priority_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sffloat> >(
-                        &sound_node::priority_)));
+                &sound_node::priority_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::source_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::source_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::source_)));
+                &sound_node::source_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &sound_node::spatialize_)));
+                &sound_node::spatialize_);
         } else if (*interface_ == *++supported_interface) {
             soundNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sound_node>::exposedfield<sfnode> >(
-                        &sound_node::metadata)));
+                &sound_node::metadata);
         } else {
             throw unsupported_interface(*interface_);
         }

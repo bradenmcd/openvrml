@@ -223,66 +223,27 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<sfnode> >(
-                            &coordinate_interpolator2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<sfnode> >(
-                            &coordinate_interpolator2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<sfnode> >(
-                            &coordinate_interpolator2d_node::metadata)));
+                    &coordinate_interpolator2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        coordinate_interpolator2d_node::set_fraction_listener>(
-                            &coordinate_interpolator2d_node::set_fraction_listener_)));
+                    &coordinate_interpolator2d_node::set_fraction_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mffloat> >(
-                            &coordinate_interpolator2d_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mffloat> >(
-                            &coordinate_interpolator2d_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mffloat> >(
-                            &coordinate_interpolator2d_node::key_)));
+                    &coordinate_interpolator2d_node::key_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &coordinate_interpolator2d_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &coordinate_interpolator2d_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<coordinate_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &coordinate_interpolator2d_node::key_value_)));
+                    &coordinate_interpolator2d_node::key_value_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        coordinate_interpolator2d_node::mfvec2f_emitter>(
-                            &coordinate_interpolator2d_node::value_changed_emitter_)));
+                    &coordinate_interpolator2d_node::value_changed_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }
@@ -365,66 +326,27 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<sfnode> >(
-                            &position_interpolator2d_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<sfnode> >(
-                            &position_interpolator2d_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<sfnode> >(
-                            &position_interpolator2d_node::metadata)));
+                    &position_interpolator2d_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventin(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        position_interpolator2d_node::set_fraction_listener>(
-                            &position_interpolator2d_node::set_fraction_listener_)));
+                    &position_interpolator2d_node::set_fraction_listener_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mffloat> >(
-                            &position_interpolator2d_node::key_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mffloat> >(
-                            &position_interpolator2d_node::key_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mffloat> >(
-                            &position_interpolator2d_node::key_)));
+                    &position_interpolator2d_node::key_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &position_interpolator2d_node::key_value_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &position_interpolator2d_node::key_value_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<position_interpolator2d_node>::exposedfield<mfvec2f> >(
-                            &position_interpolator2d_node::key_value_)));
+                    &position_interpolator2d_node::key_value_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_eventout(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        position_interpolator2d_node::sfvec2f_emitter>(
-                            &position_interpolator2d_node::value_changed_emitter_)));
+                    &position_interpolator2d_node::value_changed_emitter_);
             } else {
                 throw unsupported_interface(*interface_);
             }

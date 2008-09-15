@@ -252,153 +252,52 @@ do_create_type(const std::string & id,
             navigationInfoNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    navigation_info_node::set_bind_listener>(
-                        &navigation_info_node::set_bind_listener_)));
+                &navigation_info_node::set_bind_listener_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::
-                    exposedfield<mffloat> >(
-                        &navigation_info_node::avatar_size_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<mffloat> >(
-                            &navigation_info_node::avatar_size_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<mffloat> >(
-                            &navigation_info_node::avatar_size_)));
+                &navigation_info_node::avatar_size_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::
-                    exposedfield<sfbool> >(
-                        &navigation_info_node::headlight_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sfbool> >(
-                            &navigation_info_node::headlight_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sfbool> >(
-                            &navigation_info_node::headlight_)));
+                &navigation_info_node::headlight_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::
-                    exposedfield<sffloat> >(
-                        &navigation_info_node::speed_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sffloat> >(
-                            &navigation_info_node::speed_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sffloat> >(
-                            &navigation_info_node::speed_)));
+                &navigation_info_node::speed_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::
-                    exposedfield<mfstring> >(
-                        &navigation_info_node::type_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<mfstring> >(
-                            &navigation_info_node::type_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<mfstring> >(
-                            &navigation_info_node::type_)));
+                &navigation_info_node::type_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::
-                    exposedfield<sffloat> >(
-                        &navigation_info_node::visibility_limit_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sffloat> >(
-                            &navigation_info_node::visibility_limit_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<navigation_info_node>::
-                        exposedfield<sffloat> >(
-                            &navigation_info_node::visibility_limit_)));
+                &navigation_info_node::visibility_limit_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<navigation_info_node>::sfbool_emitter>(
-                        &navigation_info_node::is_bound_emitter_)));
+                &navigation_info_node::is_bound_emitter_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<sfnode> >(
-                        &navigation_info_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<sfnode> >(
-                        &navigation_info_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<sfnode> >(
-                        &navigation_info_node::metadata)));
+                &navigation_info_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<mfstring> >(
-                        &navigation_info_node::transition_type_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<mfstring> >(
-                        &navigation_info_node::transition_type_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<navigation_info_node>::exposedfield<mfstring> >(
-                        &navigation_info_node::transition_type_)));
+                &navigation_info_node::transition_type_);
         } else if (*interface_ == *++supported_interface) {
             navigationInfoNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<navigation_info_node>::sftime_emitter>(
-                        &navigation_info_node::bind_time_emitter_)));
+                &navigation_info_node::bind_time_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

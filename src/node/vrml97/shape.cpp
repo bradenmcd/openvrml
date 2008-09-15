@@ -348,64 +348,27 @@ do_create_type(const std::string & id,
             shapeNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::appearance_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::appearance_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::appearance_)));
+                &shape_node::appearance_);
         } else if (*interface_ == *++supported_interface) {
             shapeNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::geometry_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::geometry_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::geometry_)));
+                &shape_node::geometry_);
         } else if (*interface_ == *++supported_interface) {
             shapeNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<shape_node>::exposedfield<sfnode> >(
-                        &shape_node::metadata)));
+                &shape_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             shapeNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &shape_node::bbox_center_)));
+                &shape_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             shapeNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &shape_node::bbox_size_)));
+                &shape_node::bbox_size_);
         } else {
             throw unsupported_interface(*interface_);
         }

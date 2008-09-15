@@ -318,94 +318,47 @@ do_create_type(const std::string & id,
             lodNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)));
+                &lod_node::children_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &lod_node::center_)));
+                &lod_node::center_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<mffloat>(
-                        &lod_node::range_)));
+                &lod_node::range_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<lod_node>::exposedfield<sfnode> >(
-                        &lod_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<lod_node>::exposedfield<sfnode> >(
-                        &lod_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<lod_node>::exposedfield<sfnode> >(
-                        &lod_node::metadata)));
+                &lod_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    lod_node::add_children_listener>(
-                        &lod_node::add_children_listener_)));
+                &lod_node::add_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_eventin(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    lod_node::remove_children_listener>(
-                        &lod_node::remove_children_listener_)));
+                &lod_node::remove_children_listener_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    lod_node::children_exposedfield>(
-                        &lod_node::children_)));
+                &lod_node::children_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &lod_node::bbox_center_)));
+                &lod_node::bbox_center_);
         } else if (*interface_ == *++supported_interface) {
             lodNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfvec3f>(
-                        &lod_node::bbox_size_)));
+                &lod_node::bbox_size_);
         } else {
             throw unsupported_interface(*interface_);
         }

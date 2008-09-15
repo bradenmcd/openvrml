@@ -167,39 +167,22 @@ namespace {
                 the_node_type.add_exposedfield(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::event_listener_ptr_ptr(
-                        new node_type_t::event_listener_ptr<
-                        abstract_node<static_group_node>::exposedfield<sfnode> >(
-                            &static_group_node::metadata)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<static_group_node>::exposedfield<sfnode> >(
-                            &static_group_node::metadata)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<static_group_node>::exposedfield<sfnode> >(
-                            &static_group_node::metadata)));
+                    &static_group_node::metadata);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<mfnode>(
-                            &static_group_node::children_)));
+                    &static_group_node::children_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfvec3f>(
-                            &static_group_node::bbox_center_)));
+                    &static_group_node::bbox_center_);
             } else if (*interface_ == *++supported_interface) {
                 the_node_type.add_field(
                     supported_interface->field_type,
                     supported_interface->id,
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<sfvec3f>(
-                            &static_group_node::bbox_size_)));
+                    &static_group_node::bbox_size_);
             } else {
                 throw unsupported_interface(*interface_);
             }

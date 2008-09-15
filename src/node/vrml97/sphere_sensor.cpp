@@ -398,114 +398,47 @@ do_create_type(const std::string & id,
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::auto_offset_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::auto_offset_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::auto_offset_)));
+                &sphere_sensor_node::auto_offset_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::enabled_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::enabled_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfbool> >(
-                        &sphere_sensor_node::enabled_)));
+                &sphere_sensor_node::enabled_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_sensor_node>::
-                    exposedfield<sfrotation> >(&sphere_sensor_node::offset_)),
-                    node_type_t::field_ptr_ptr(
-                        new node_type_t::field_ptr<
-                        abstract_node<sphere_sensor_node>::
-                        exposedfield<sfrotation> >(&sphere_sensor_node::offset_)),
-                    node_type_t::event_emitter_ptr_ptr(
-                        new node_type_t::event_emitter_ptr<
-                        abstract_node<sphere_sensor_node>::
-                        exposedfield<sfrotation> >(&sphere_sensor_node::offset_)));
+                &sphere_sensor_node::offset_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::sfbool_emitter>(
-                        &sphere_sensor_node::is_active_emitter_)));
+                &sphere_sensor_node::is_active_emitter_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::sfrotation_emitter>(
-                        &sphere_sensor_node::rotation_changed_emitter_)));
+                &sphere_sensor_node::rotation_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::sfvec3f_emitter>(
-                        &sphere_sensor_node::track_point_changed_emitter_)));
+                &sphere_sensor_node::track_point_changed_emitter_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
-                        &sphere_sensor_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
-                        &sphere_sensor_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfnode> >(
-                        &sphere_sensor_node::metadata)));
+                &sphere_sensor_node::metadata);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
-                        &sphere_sensor_node::description_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
-                        &sphere_sensor_node::description_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::exposedfield<sfstring> >(
-                        &sphere_sensor_node::description_)));
+                &sphere_sensor_node::description_);
         } else if (*interface_ == *++supported_interface) {
             sphereSensorNodeType.add_eventout(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<sphere_sensor_node>::sfbool_emitter>(
-                        &sphere_sensor_node::is_over_emitter_)));
+                &sphere_sensor_node::is_over_emitter_);
         } else {
             throw unsupported_interface(*interface_);
         }

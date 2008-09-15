@@ -2357,83 +2357,32 @@ do_create_type(const std::string & id,
             textNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    text_node::string_exposedfield>(&text_node::string_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<text_node::string_exposedfield>(
-                        &text_node::string_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    text_node::string_exposedfield>(&text_node::string_)));
+                &text_node::string_);
         } else if (*interface == *++supported_interface) {
             textNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    text_node::font_style_exposedfield>(
-                        &text_node::font_style_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    text_node::font_style_exposedfield>(
-                        &text_node::font_style_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    text_node::font_style_exposedfield>(
-                        &text_node::font_style_)));
+                &text_node::font_style_);
         } else if (*interface == *++supported_interface) {
             textNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    text_node::length_exposedfield>(&text_node::length_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<text_node::length_exposedfield>(
-                        &text_node::length_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    text_node::length_exposedfield>(&text_node::length_)));
+                &text_node::length_);
         } else if (*interface == *++supported_interface) {
             textNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    text_node::max_extent_exposedfield>(
-                        &text_node::max_extent_)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    text_node::max_extent_exposedfield>(
-                        &text_node::max_extent_)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    text_node::max_extent_exposedfield>(
-                        &text_node::max_extent_)));
+                &text_node::max_extent_);
         } else if (*interface == *++supported_interface) {
             textNodeType.add_exposedfield(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::event_listener_ptr_ptr(
-                    new node_type_t::event_listener_ptr<
-                    abstract_node<text_node>::exposedfield<sfnode> >(
-                        &text_node::metadata)),
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<
-                    abstract_node<text_node>::exposedfield<sfnode> >(
-                        &text_node::metadata)),
-                node_type_t::event_emitter_ptr_ptr(
-                    new node_type_t::event_emitter_ptr<
-                    abstract_node<text_node>::exposedfield<sfnode> >(
-                        &text_node::metadata)));
+                &text_node::metadata);
         } else if (*interface == *++supported_interface) {
             textNodeType.add_field(
                 supported_interface->field_type,
                 supported_interface->id,
-                node_type_t::field_ptr_ptr(
-                    new node_type_t::field_ptr<sfbool>(
-                        &text_node::solid_)));
+                &text_node::solid_);
         } else {
             throw unsupported_interface(*interface);
         }
