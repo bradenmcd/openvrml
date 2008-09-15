@@ -1,5 +1,10 @@
 2008-09-15 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am: Made contents of BUILT_SOURCES conditional
+	based on ENABLE_XEMBED and ENABLE_PLAYER.
+
+2008-09-15 Braden McDaniel  <braden@endoframe.com>
+
 	Put the VRML97 node implementations into a convenience library for
 	now.
 
