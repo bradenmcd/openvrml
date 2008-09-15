@@ -81,6 +81,8 @@
 # include <vrml97/cad_layer.h>
 # include <vrml97/cad_assembly.h>
 
+template void std::vector<boost::intrusive_ptr<openvrml::node> >::pop_back();
+
 void register_vrml97_node_metatypes(openvrml::browser & b)
 {
     using boost::shared_ptr;

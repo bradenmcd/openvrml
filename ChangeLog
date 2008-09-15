@@ -1,5 +1,12 @@
 2008-09-15 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp: Explicitly instantiate
+	std::vector<boost::intrusive_ptr<openvrml::node> >::pop_back.  gcc
+	4.0.1 seems to need this (on Mac OS X 10.5, at least) and it
+	should be benign elsewhere.
+
+2008-09-15 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am: Made contents of BUILT_SOURCES conditional
 	based on ENABLE_XEMBED and ENABLE_PLAYER.
 
