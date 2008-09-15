@@ -1,3 +1,26 @@
+2008-09-15 Braden McDaniel  <braden@endoframe.com>
+
+	Put the VRML97 node implementations into a convenience library for
+	now.
+
+	* src/Makefile.am
+	(noinst_LTLIBRARIES): Added node/vrml97/libvrml97.la as a
+	convenience library.
+	(libopenvrml_libopenvrml_la_CXXFLAGS): Removed flags now only
+	needed by libvrml97.la.
+	(libopenvrml_libopenvrml_la_SOURCES): Removed sources now present
+	in libvrml97.la.
+	(libopenvrml_libopenvrml_la_LDFLAGS): Removed flags now only
+	needed by libvrml97.la.
+	(node_vrml97_libvrml97_la_CPPFLAGS): Preprocessor flags for
+	node/vrml97/libvrml97.la.
+	(node_vrml97_libvrml97_la_CXXFLAGS): Compiler flags for
+	node/vrml97/libvrml97.la.
+	(node_vrml97_libvrml97_la_SOURCES): Sources for
+	node/vrml97/libvrml97.la.
+	(node_vrml97_libvrml97_la_LDFLAGS): Linker flags for
+	node/vrml97/libvrml97.la.
+
 2008-09-14 Braden McDaniel  <braden@endoframe.com>
 
 	Made openvrml::node_impl_util::node_type_impl's member functions

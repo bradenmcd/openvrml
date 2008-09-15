@@ -1,6 +1,7 @@
 SUBDIRS = script
 
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
+noinst_LTLIBRARIES = node/vrml97/libvrml97.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -100,12 +101,103 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
         -DPHOENIX_LIMIT=6
 libopenvrml_libopenvrml_la_CXXFLAGS = \
+        $(FREETYPE_CFLAGS) \
         $(PTHREAD_CFLAGS) \
-        $(XML_CFLAGS) \
-        $(FONTCONFIG_CFLAGS) \
-        $(FREETYPE_CFLAGS)
+        $(XML_CFLAGS)
 
 libopenvrml_libopenvrml_la_SOURCES = \
+        libopenvrml/openvrml/vrml97_grammar.cpp \
+        libopenvrml/openvrml/x3d_vrml_grammar.cpp \
+        libopenvrml/openvrml/read_write_mutex.cpp \
+        libopenvrml/openvrml/basetypes.cpp \
+        libopenvrml/openvrml/field_value.cpp \
+        libopenvrml/openvrml/event.cpp \
+        libopenvrml/openvrml/exposedfield.cpp \
+        libopenvrml/openvrml/scope.cpp \
+        libopenvrml/openvrml/node.cpp \
+        libopenvrml/openvrml/bounding_volume.cpp \
+        libopenvrml/openvrml/browser.cpp \
+        libopenvrml/openvrml/viewer.cpp \
+        libopenvrml/openvrml/rendering_context.cpp \
+        libopenvrml/openvrml/frustum.cpp \
+        libopenvrml/openvrml/node_impl_util.cpp \
+        libopenvrml/openvrml/vrml97node.cpp \
+        libopenvrml/openvrml/x3d_core.cpp \
+        libopenvrml/openvrml/x3d_networking.cpp \
+        libopenvrml/openvrml/x3d_grouping.cpp \
+        libopenvrml/openvrml/x3d_rendering.cpp \
+        libopenvrml/openvrml/x3d_shape.cpp \
+        libopenvrml/openvrml/x3d_geometry2d.cpp \
+        libopenvrml/openvrml/x3d_texturing.cpp \
+        libopenvrml/openvrml/x3d_interpolation.cpp \
+        libopenvrml/openvrml/x3d_key_device_sensor.cpp \
+        libopenvrml/openvrml/x3d_event_utilities.cpp \
+        libopenvrml/openvrml/x3d_dis.cpp \
+        libopenvrml/openvrml/x3d_environmental_effects.cpp \
+        libopenvrml/openvrml/x3d_geospatial.cpp \
+        libopenvrml/openvrml/x3d_hanim.cpp \
+        libopenvrml/openvrml/x3d_nurbs.cpp \
+        libopenvrml/openvrml/x3d_cad_geometry.cpp
+
+libopenvrml_libopenvrml_la_LDFLAGS = \
+        -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
+        $(XML_LIBS) \
+        $(PTHREAD_LIBS)
+
+libopenvrml_libopenvrml_la_LIBADD = \
+        node/vrml97/libvrml97.la \
+        -lboost_thread$(BOOST_LIB_SUFFIX) \
+        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
+	-lltdl
+
+openvrmlscriptdir = $(pkglibdir)/script
+
+openvrmlscript_LTLIBRARIES =
+if ENABLE_SCRIPT_NODE_JAVASCRIPT
+openvrmlscript_LTLIBRARIES += script/javascript.la
+endif
+if ENABLE_SCRIPT_NODE_JAVA
+openvrmlscript_LTLIBRARIES += script/java.la
+endif
+
+script_javascript_la_SOURCES = script/javascript.cpp
+script_javascript_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+script_javascript_la_CXXFLAGS = $(JS_CFLAGS)
+script_javascript_la_LDFLAGS = \
+        -module \
+        -avoid-version \
+        $(OPENVRML_JAVASCRIPT_RPATH) \
+        $(JS_LIBS)
+
+script_java_la_SOURCES = script/java.cpp
+script_java_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -I$(top_builddir)/src/script/java \
+        -DOPENVRML_LIBDIR_=\"$(libdir)\" \
+        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
+        -DJAVA_HOME=\"$(JAVA_HOME)\" \
+        -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+script_java_la_LDFLAGS = \
+        -module \
+        -avoid-version
+
+node_vrml97_libvrml97_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+node_vrml97_libvrml97_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS) \
+        $(FONTCONFIG_CFLAGS) \
+        $(FREETYPE_CFLAGS)
+node_vrml97_libvrml97_la_SOURCES = \
         node/vrml97/image_stream_listener.h \
         node/vrml97/image_stream_listener.cpp \
         node/vrml97/abstract_light.h \
@@ -221,91 +313,14 @@ libopenvrml_libopenvrml_la_SOURCES = \
         node/vrml97/cad_layer.h \
         node/vrml97/cad_layer.cpp \
         node/vrml97/cad_assembly.h \
-        node/vrml97/cad_assembly.cpp \
-        libopenvrml/openvrml/vrml97_grammar.cpp \
-        libopenvrml/openvrml/x3d_vrml_grammar.cpp \
-        libopenvrml/openvrml/read_write_mutex.cpp \
-        libopenvrml/openvrml/basetypes.cpp \
-        libopenvrml/openvrml/field_value.cpp \
-        libopenvrml/openvrml/event.cpp \
-        libopenvrml/openvrml/exposedfield.cpp \
-        libopenvrml/openvrml/scope.cpp \
-        libopenvrml/openvrml/node.cpp \
-        libopenvrml/openvrml/bounding_volume.cpp \
-        libopenvrml/openvrml/browser.cpp \
-        libopenvrml/openvrml/viewer.cpp \
-        libopenvrml/openvrml/rendering_context.cpp \
-        libopenvrml/openvrml/frustum.cpp \
-        libopenvrml/openvrml/node_impl_util.cpp \
-        libopenvrml/openvrml/vrml97node.cpp \
-        libopenvrml/openvrml/x3d_core.cpp \
-        libopenvrml/openvrml/x3d_networking.cpp \
-        libopenvrml/openvrml/x3d_grouping.cpp \
-        libopenvrml/openvrml/x3d_rendering.cpp \
-        libopenvrml/openvrml/x3d_shape.cpp \
-        libopenvrml/openvrml/x3d_geometry2d.cpp \
-        libopenvrml/openvrml/x3d_texturing.cpp \
-        libopenvrml/openvrml/x3d_interpolation.cpp \
-        libopenvrml/openvrml/x3d_key_device_sensor.cpp \
-        libopenvrml/openvrml/x3d_event_utilities.cpp \
-        libopenvrml/openvrml/x3d_dis.cpp \
-        libopenvrml/openvrml/x3d_environmental_effects.cpp \
-        libopenvrml/openvrml/x3d_geospatial.cpp \
-        libopenvrml/openvrml/x3d_hanim.cpp \
-        libopenvrml/openvrml/x3d_nurbs.cpp \
-        libopenvrml/openvrml/x3d_cad_geometry.cpp
-
-libopenvrml_libopenvrml_la_LDFLAGS = \
-        -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
-        $(XML_LIBS) \
+        node/vrml97/cad_assembly.cpp
+node_vrml97_libvrml97_la_LDFLAGS = \
+        -avoid-version \
         $(JPEG_LIBS) \
         $(PNG_LIBS) \
         $(FONTCONFIG_LIBS) \
         $(FREETYPE_LIBS) \
         $(PTHREAD_LIBS)
-
-libopenvrml_libopenvrml_la_LIBADD = \
-        -lboost_thread$(BOOST_LIB_SUFFIX) \
-        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
-	-lltdl
-
-openvrmlscriptdir = $(pkglibdir)/script
-
-openvrmlscript_LTLIBRARIES =
-if ENABLE_SCRIPT_NODE_JAVASCRIPT
-openvrmlscript_LTLIBRARIES += script/javascript.la
-endif
-if ENABLE_SCRIPT_NODE_JAVA
-openvrmlscript_LTLIBRARIES += script/java.la
-endif
-
-script_javascript_la_SOURCES = script/javascript.cpp
-script_javascript_la_CPPFLAGS = \
-        -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml \
-        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-script_javascript_la_CXXFLAGS = $(JS_CFLAGS)
-script_javascript_la_LDFLAGS = \
-        -module \
-        -avoid-version \
-        $(OPENVRML_JAVASCRIPT_RPATH) \
-        $(JS_LIBS)
-
-script_java_la_SOURCES = script/java.cpp
-script_java_la_CPPFLAGS = \
-        -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml \
-        -I$(top_builddir)/src/script/java \
-        -DOPENVRML_LIBDIR_=\"$(libdir)\" \
-        -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DJAVA_HOME=\"$(JAVA_HOME)\" \
-        -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
-        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-script_java_la_LDFLAGS = \
-        -module \
-        -avoid-version
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
