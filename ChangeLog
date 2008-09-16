@@ -1,5 +1,28 @@
 2008-09-16 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Core node implementations into a convenience library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-core static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-core/libx3d-core.la.
+	* src/libopenvrml/openvrml/x3d_core.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-core/metadata_double.cpp
+	* src/node/x3d-core/metadata_double.h
+	* src/node/x3d-core/metadata_float.cpp
+	* src/node/x3d-core/metadata_float.h
+	* src/node/x3d-core/metadata_integer.cpp
+	* src/node/x3d-core/metadata_integer.h
+	* src/node/x3d-core/metadata_set.cpp
+	* src/node/x3d-core/metadata_set.h
+	* src/node/x3d-core/metadata_string.cpp
+	* src/node/x3d-core/metadata_string.h
+
+2008-09-16 Braden McDaniel  <braden@endoframe.com>
+
 	Moved VRML97 node implementations to a static library in the
 	Visual C++ solution.
 

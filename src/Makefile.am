@@ -3,7 +3,9 @@ SUBDIRS = script
 BUILT_SOURCES =
 
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
-noinst_LTLIBRARIES = node/vrml97/libvrml97.la
+noinst_LTLIBRARIES = \
+        node/vrml97/libvrml97.la \
+        node/x3d-core/libx3d-core.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -136,6 +138,7 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
 
 libopenvrml_libopenvrml_la_LIBADD = \
         node/vrml97/libvrml97.la \
+        node/x3d-core/libx3d-core.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -312,13 +315,24 @@ node_vrml97_libvrml97_la_LDFLAGS = \
         $(FREETYPE_LIBS) \
         $(PTHREAD_LIBS)
 
-if ENABLE_XEMBED
-libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
-session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
-BUILT_SOURCES += \
-        openvrml-xembed/browser-server-glue.h \
-        openvrml-xembed/browser-factory-server-glue.h
-endif
+node_x3d_core_libx3d_core_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+node_x3d_core_libx3d_core_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_core_libx3d_core_la_SOURCES = \
+        node/x3d-core/metadata_double.cpp \
+        node/x3d-core/metadata_double.h \
+        node/x3d-core/metadata_float.cpp \
+        node/x3d-core/metadata_float.h \
+        node/x3d-core/metadata_integer.cpp \
+        node/x3d-core/metadata_integer.h \
+        node/x3d-core/metadata_set.cpp \
+        node/x3d-core/metadata_set.h \
+        node/x3d-core/metadata_string.cpp \
+        node/x3d-core/metadata_string.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -333,6 +347,13 @@ libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
         $(GLU_LIBS)
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
+if ENABLE_XEMBED
+libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
+session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
+BUILT_SOURCES += \
+        openvrml-xembed/browser-server-glue.h \
+        openvrml-xembed/browser-factory-server-glue.h
+endif
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
         -I$(top_srcdir)/lib/gtkglext \
