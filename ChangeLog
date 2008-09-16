@@ -1,3 +1,12 @@
+2008-09-16 Braden McDaniel  <braden@endoframe.com>
+
+	Moved VRML97 node implementations to a static library in the
+	Visual C++ solution.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
+
 2008-09-15 Braden McDaniel  <braden@endoframe.com>
 
 	Define BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and

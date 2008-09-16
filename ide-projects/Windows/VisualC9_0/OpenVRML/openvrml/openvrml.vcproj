@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.8\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_ENABLE_PNG_TEXTURES;OPENVRML_ENABLE_RENDER_TEXT_NODE;OPENVRML_FT_CONST=&quot;const&quot;;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;"
+				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.8\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -127,7 +127,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.8\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_ENABLE_PNG_TEXTURES;OPENVRML_ENABLE_RENDER_TEXT_NODE;OPENVRML_FT_CONST=&quot;const&quot;;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;;NDEBUG"
+				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.8\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;;NDEBUG"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -191,22 +191,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\anchor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\appearance.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\audio_clip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\background.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\basetypes.cpp"
 				>
 				<FileConfiguration
@@ -219,15 +203,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\billboard.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\bounding_volume.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\box.cpp"
 				>
 			</File>
 			<File
@@ -244,54 +220,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cad_assembly.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cad_layer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\collision.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\color.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\color_interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cone.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\coordinate.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\coordinate_interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cylinder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cylinder_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\directional_light.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\elevation_grid.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.cpp"
 				>
 			</File>
@@ -300,63 +228,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\extrusion.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field_value.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\fog.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\font_style.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\group.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\image_stream_listener.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\image_texture.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\indexed_face_set.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\indexed_line_set.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\inline.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\lod.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\material.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\movie_texture.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\navigation_info.cpp"
 				>
 			</File>
 			<File
@@ -368,42 +244,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\normal.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\normal_interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\orientation_interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\pixel_texture.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\plane_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\point_light.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\point_set.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\position_interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\proximity_sensor.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\read_write_mutex.cpp"
 				>
 			</File>
@@ -412,71 +252,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\scalar_interpolator.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\shape.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sound.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sphere.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sphere_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\spot_light.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\switch.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\text.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\texture_coordinate.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\texture_transform.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\time_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\touch_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\transform.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\viewer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\viewpoint.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\visibility_sensor.cpp"
 				>
 			</File>
 			<File
@@ -491,7 +271,6 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
 						AdditionalIncludeDirectories="..\..\..\..\..\src\node"
 						MinimalRebuild="false"
 						DebugInformationFormat="1"
@@ -507,10 +286,6 @@
 						EnableFunctionLevelLinking="false"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\world_info.cpp"
-				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_cad_geometry.cpp"
@@ -582,39 +357,7 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\abstract_indexed_set.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\abstract_light.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\abstract_texture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\anchor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\appearance.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\audio_clip.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\background.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\basetypes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\billboard.h"
 				>
 			</File>
 			<File
@@ -622,63 +365,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\box.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\browser.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cad_assembly.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cad_layer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\collision.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\color.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\color_interpolator.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\common.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cone.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\coordinate.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\coordinate_interpolator.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cylinder.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\cylinder_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\directional_light.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\elevation_grid.h"
 				>
 			</File>
 			<File
@@ -690,67 +381,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\extrusion.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\field_value.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\fog.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\font_style.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\frustum.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\group.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\grouping_node_base.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\image_stream_listener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\image_texture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\indexed_face_set.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\indexed_line_set.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\inline.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\lod.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\material.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\movie_texture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\navigation_info.h"
 				>
 			</File>
 			<File
@@ -762,14 +397,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\normal.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\normal_interpolator.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml-common.h"
 				>
 			</File>
@@ -778,35 +405,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\orientation_interpolator.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\pixel_texture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\plane_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\point_light.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\point_set.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\position_interpolator.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\private.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\proximity_sensor.h"
 				>
 			</File>
 			<File
@@ -818,10 +417,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\scalar_interpolator.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.h"
 				>
 			</File>
@@ -830,63 +425,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\shape.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sound.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sphere.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\sphere_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\spot_light.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\switch.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\text.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\texture_coordinate.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\texture_transform.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\time_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\touch_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\transform.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\viewer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\viewpoint.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\visibility_sensor.h"
 				>
 			</File>
 			<File
@@ -895,10 +434,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97node.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\node\vrml97\world_info.h"
 				>
 			</File>
 			<File

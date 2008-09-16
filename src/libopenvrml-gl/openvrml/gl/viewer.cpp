@@ -2564,6 +2564,7 @@ do_insert_extrusion(unsigned int mask,
 
     if (!this->select_mode) {
         glid = glGenLists(1);
+        std::cerr << "do_insert_extrusion: glid = " << glid << std::endl;
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
@@ -2789,9 +2790,10 @@ namespace {
     OPENVRML_GL_LOCAL void insertShellConvex(ShellData * const s)
     {
         using openvrml::vec3f;
+        using openvrml::make_vec3f;
         using openvrml::gl::viewer;
 
-        vec3f N;
+        vec3f N = make_vec3f();
         size_t i, nf = 0;                        // Number of faces
 
         for (i = 0; i < s->coordIndex.size(); ++i) {
@@ -3195,6 +3197,7 @@ openvrml::gl::viewer::do_insert_sphere(const float radius)
 
     if (!this->select_mode) {
         glid = glGenLists(1);
+        std::cerr << "do_insert_sphere: glid = " << glid << std::endl;
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
@@ -3810,7 +3813,7 @@ void openvrml::gl::viewer::do_set_frustum(float field_of_view,
     glMatrixMode(GL_PROJECTION);
     if (!this->select_mode) { glLoadIdentity(); }
 
-    (field_of_view *= 180.0) /= pi;
+    (field_of_view *= 180.0) /= float(pi);
     const float aspect = float(this->win_width) / this->win_height;
     const float znear = (avatar_size > 0.0)
                       ? float(0.5 * avatar_size)
