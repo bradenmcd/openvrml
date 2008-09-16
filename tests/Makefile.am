@@ -1,9 +1,6 @@
 AM_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
-        -DBOOST_SPIRIT_THREADSAFE \
-        -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
-        -DPHOENIX_LIMIT=6 \
         -DBOOST_TEST_DYN_LINK
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(OPENVRML_RPATH)

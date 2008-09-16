@@ -1,5 +1,40 @@
 2008-09-15 Braden McDaniel  <braden@endoframe.com>
 
+	Define BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
+	PHOENIX_LIMIT in openvrml-common.h since we need to ensure these
+	get set for client code.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Removed flags defining
+	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
+	PHOENIX_LIMIT.
+	* src/libopenvrml/openvrml/vrml97_grammar.h: Reordered includes to
+	ensure that openvrml-common.h gets included before Boost headers.
+	* src/libopenvrml/openvrml-common.h: Define
+	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
+	PHOENIX_LIMIT.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed flags defining BOOST_SPIRIT_THREADSAFE,
+	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj:
+	Removed flags defining BOOST_SPIRIT_THREADSAFE,
+	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj:
+	Removed flags defining BOOST_SPIRIT_THREADSAFE,
+	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj:
+	Removed flags defining BOOST_SPIRIT_THREADSAFE,
+	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
+	* tests/Makefile.am
+	(AM_CPPFLAGS): Removed flags defining BOOST_SPIRIT_THREADSAFE,
+	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
+	* examples/Makefile.am
+	(pretty_print_CPPFLAGS): Removed flags defining
+	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
+	PHOENIX_LIMIT.
+
+2008-09-15 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/vrml97node.cpp: Explicitly instantiate
 	std::vector<boost::intrusive_ptr<openvrml::node> >::pop_back.  gcc
 	4.0.1 seems to need this (on Mac OS X 10.5, at least) and it

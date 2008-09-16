@@ -89,10 +89,7 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
         -DOPENVRML_PKGLIBDIR_=\"$(pkglibdir)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
-        -DBOOST_SPIRIT_THREADSAFE \
-        -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
-        -DPHOENIX_LIMIT=6
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(FREETYPE_CFLAGS) \
         $(PTHREAD_CFLAGS) \

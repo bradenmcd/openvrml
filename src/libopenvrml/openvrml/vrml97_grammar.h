@@ -21,13 +21,13 @@
 # ifndef OPENVRML_VRML97_GRAMMAR_H
 #   define OPENVRML_VRML97_GRAMMAR_H
 
-#   include <stack>
+#   include <openvrml/browser.h>
 #   include <boost/spirit.hpp>
 #   include <boost/spirit/actor.hpp>
 #   include <boost/spirit/dynamic.hpp>
 #   include <boost/spirit/phoenix.hpp>
 #   include <boost/test/floating_point_comparison.hpp>
-#   include <openvrml/browser.h>
+#   include <stack>
 
 namespace openvrml {
 

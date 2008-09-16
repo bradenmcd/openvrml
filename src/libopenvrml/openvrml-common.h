@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005, 2006, 2007  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2008  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,18 @@
 #   define OPENVRML_COMMON_H
 
 #   include <openvrml-config.h>
+
+#   ifndef BOOST_SPIRIT_THREADSAFE
+#     define BOOST_SPIRIT_THREADSAFE
+#   endif
+
+#   ifndef BOOST_SPIRIT_CLOSURE_LIMIT
+#     define BOOST_SPIRIT_CLOSURE_LIMIT 6
+#   endif
+
+#   ifndef PHOENIX_LIMIT
+#     define PHOENIX_LIMIT 6
+#   endif
 
 #   if OPENVRML_ENABLE_EXCEPTION_SPECS
 #     define OPENVRML_NOTHROW throw ()

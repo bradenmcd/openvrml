@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_SPIRIT_THREADSAFE;BOOST_SPIRIT_CLOSURE_LIMIT=6;PHOENIX_LIMIT=6;OPENVRML_USE_DLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;OPENVRML_USE_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
