@@ -5,6 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml", "openvrml\openvr
 		{78133A10-3ADF-474C-B32A-74124A976482} = {78133A10-3ADF-474C-B32A-74124A976482}
 		{430B1A48-8E64-43DF-8CC4-AD09C41BA735} = {430B1A48-8E64-43DF-8CC4-AD09C41BA735}
 		{5ED398C0-0529-40D5-AB2C-C7EF0769002B} = {5ED398C0-0529-40D5-AB2C-C7EF0769002B}
+		{1D32E4EB-6613-4270-8295-7113712BC6C5} = {1D32E4EB-6613-4270-8295-7113712BC6C5}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml-gl", "openvrml-gl\openvrml-gl.vcproj", "{141F90C2-6630-4D7A-834F-D5D57C6CFC24}"
@@ -44,6 +45,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-core", "x3d-core\x3d-core.vcproj", "{78133A10-3ADF-474C-B32A-74124A976482}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-networking", "x3d-networking\x3d-networking.vcproj", "{430B1A48-8E64-43DF-8CC4-AD09C41BA735}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-grouping", "x3d-grouping\x3d-grouping.vcproj", "{1D32E4EB-6613-4270-8295-7113712BC6C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +94,10 @@ Global
 		{430B1A48-8E64-43DF-8CC4-AD09C41BA735}.Debug|Win32.Build.0 = Debug|Win32
 		{430B1A48-8E64-43DF-8CC4-AD09C41BA735}.Release|Win32.ActiveCfg = Release|Win32
 		{430B1A48-8E64-43DF-8CC4-AD09C41BA735}.Release|Win32.Build.0 = Release|Win32
+		{1D32E4EB-6613-4270-8295-7113712BC6C5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1D32E4EB-6613-4270-8295-7113712BC6C5}.Debug|Win32.Build.0 = Debug|Win32
+		{1D32E4EB-6613-4270-8295-7113712BC6C5}.Release|Win32.ActiveCfg = Release|Win32
+		{1D32E4EB-6613-4270-8295-7113712BC6C5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
