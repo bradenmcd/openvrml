@@ -1,5 +1,20 @@
 2008-09-16 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Networking node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-networking static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-networking/libx3d-networking.la.
+	* src/libopenvrml/openvrml/x3d_networking.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-networking/load_sensor.cpp
+	* src/node/x3d-networking/load_sensor.h
+
+2008-09-16 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj:
 	Removed flags defining BOOST_SPIRIT_THREADSAFE,
 	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.

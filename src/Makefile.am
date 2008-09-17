@@ -5,7 +5,8 @@ BUILT_SOURCES =
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
 noinst_LTLIBRARIES = \
         node/vrml97/libvrml97.la \
-        node/x3d-core/libx3d-core.la
+        node/x3d-core/libx3d-core.la \
+        node/x3d-networking/libx3d-networking.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -139,6 +140,7 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
 libopenvrml_libopenvrml_la_LIBADD = \
         node/vrml97/libvrml97.la \
         node/x3d-core/libx3d-core.la \
+        node/x3d-networking/libx3d-networking.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -333,6 +335,15 @@ node_x3d_core_libx3d_core_la_SOURCES = \
         node/x3d-core/metadata_set.h \
         node/x3d-core/metadata_string.cpp \
         node/x3d-core/metadata_string.h
+
+node_x3d_networking_libx3d_networking_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_networking_libx3d_networking_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_networking_libx3d_networking_la_SOURCES = \
+        node/x3d-networking/load_sensor.cpp \
+        node/x3d-networking/load_sensor.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
