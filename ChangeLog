@@ -1,3 +1,20 @@
+2008-09-18 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D Shape node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-shape static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-shape/libx3d-shape.la.
+	* src/libopenvrml/openvrml/x3d_shape.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-shape/fill_properties.cpp
+	* src/node/x3d-shape/fill_properties.h
+	* src/node/x3d-shape/line_properties.cpp
+	* src/node/x3d-shape/line_properties.h
+
 2008-09-17 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D Rendering node implementations into a convenience

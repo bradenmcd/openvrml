@@ -8,7 +8,8 @@ noinst_LTLIBRARIES = \
         node/x3d-core/libx3d-core.la \
         node/x3d-networking/libx3d-networking.la \
         node/x3d-grouping/libx3d-grouping.la \
-        node/x3d-rendering/libx3d-rendering.la
+        node/x3d-rendering/libx3d-rendering.la \
+        node/x3d-shape/libx3d-shape.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -145,6 +146,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-networking/libx3d-networking.la \
         node/x3d-grouping/libx3d-grouping.la \
         node/x3d-rendering/libx3d-rendering.la \
+        node/x3d-shape/libx3d-shape.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -378,6 +380,17 @@ node_x3d_rendering_libx3d_rendering_la_SOURCES = \
         node/x3d-rendering/triangle_set.h \
         node/x3d-rendering/triangle_strip_set.cpp \
         node/x3d-rendering/triangle_strip_set.h
+
+node_x3d_shape_libx3d_shape_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_shape_libx3d_shape_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_shape_libx3d_shape_la_SOURCES = \
+        node/x3d-shape/fill_properties.cpp \
+        node/x3d-shape/fill_properties.h \
+        node/x3d-shape/line_properties.cpp \
+        node/x3d-shape/line_properties.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

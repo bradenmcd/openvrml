@@ -51,6 +51,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-grouping", "x3d-groupin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-rendering", "x3d-rendering\x3d-rendering.vcproj", "{7DAC4CA0-9382-4ED0-A26E-A5F84776054C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-shape", "x3d-shape\x3d-shape.vcproj", "{95D646C4-B759-469D-BDBB-A370A5778CA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -105,6 +107,10 @@ Global
 		{7DAC4CA0-9382-4ED0-A26E-A5F84776054C}.Debug|Win32.Build.0 = Debug|Win32
 		{7DAC4CA0-9382-4ED0-A26E-A5F84776054C}.Release|Win32.ActiveCfg = Release|Win32
 		{7DAC4CA0-9382-4ED0-A26E-A5F84776054C}.Release|Win32.Build.0 = Release|Win32
+		{95D646C4-B759-469D-BDBB-A370A5778CA5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95D646C4-B759-469D-BDBB-A370A5778CA5}.Debug|Win32.Build.0 = Debug|Win32
+		{95D646C4-B759-469D-BDBB-A370A5778CA5}.Release|Win32.ActiveCfg = Release|Win32
+		{95D646C4-B759-469D-BDBB-A370A5778CA5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
