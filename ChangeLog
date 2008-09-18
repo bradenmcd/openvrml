@@ -1,3 +1,30 @@
+2008-09-17 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D Rendering node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-rendering static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-rendering/libx3d-rendering.la.
+	* src/libopenvrml/openvrml/x3d_rendering.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-rendering/color_rgba.h
+	* src/node/x3d-rendering/indexed_triangle_set.cpp
+	* src/node/x3d-rendering/triangle_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
+	* src/node/x3d-rendering/triangle_strip_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
+	* src/node/x3d-rendering/triangle_fan_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_set.h
+	* src/node/x3d-rendering/triangle_set.h
+	* src/node/x3d-rendering/indexed_triangle_strip_set.h
+	* src/node/x3d-rendering/triangle_strip_set.h
+	* src/node/x3d-rendering/color_rgba.cpp
+	* src/node/x3d-rendering/indexed_triangle_fan_set.h
+	* src/node/x3d-rendering/triangle_fan_set.h
+
 2008-09-16 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D Grouping node implementations into a convenience

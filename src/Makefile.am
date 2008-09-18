@@ -7,7 +7,8 @@ noinst_LTLIBRARIES = \
         node/vrml97/libvrml97.la \
         node/x3d-core/libx3d-core.la \
         node/x3d-networking/libx3d-networking.la \
-        node/x3d-grouping/libx3d-grouping.la
+        node/x3d-grouping/libx3d-grouping.la \
+        node/x3d-rendering/libx3d-rendering.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -143,6 +144,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-core/libx3d-core.la \
         node/x3d-networking/libx3d-networking.la \
         node/x3d-grouping/libx3d-grouping.la \
+        node/x3d-rendering/libx3d-rendering.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -355,6 +357,27 @@ node_x3d_grouping_libx3d_grouping_la_CXXFLAGS = \
 node_x3d_grouping_libx3d_grouping_la_SOURCES = \
         node/x3d-grouping/static_group.cpp \
         node/x3d-grouping/static_group.h
+
+node_x3d_rendering_libx3d_rendering_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_rendering_libx3d_rendering_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_rendering_libx3d_rendering_la_SOURCES = \
+        node/x3d-rendering/color_rgba.cpp \
+        node/x3d-rendering/color_rgba.h \
+        node/x3d-rendering/indexed_triangle_fan_set.cpp \
+        node/x3d-rendering/indexed_triangle_fan_set.h \
+        node/x3d-rendering/indexed_triangle_set.cpp \
+        node/x3d-rendering/indexed_triangle_set.h \
+        node/x3d-rendering/indexed_triangle_strip_set.cpp \
+        node/x3d-rendering/indexed_triangle_strip_set.h \
+        node/x3d-rendering/triangle_fan_set.cpp \
+        node/x3d-rendering/triangle_fan_set.h \
+        node/x3d-rendering/triangle_set.cpp \
+        node/x3d-rendering/triangle_set.h \
+        node/x3d-rendering/triangle_strip_set.cpp \
+        node/x3d-rendering/triangle_strip_set.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
