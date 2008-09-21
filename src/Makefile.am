@@ -10,7 +10,8 @@ noinst_LTLIBRARIES = \
         node/x3d-grouping/libx3d-grouping.la \
         node/x3d-rendering/libx3d-rendering.la \
         node/x3d-shape/libx3d-shape.la \
-        node/x3d-geometry2d/libx3d-geometry2d.la
+        node/x3d-geometry2d/libx3d-geometry2d.la \
+        node/x3d-texturing/libx3d-texturing.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -149,6 +150,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-rendering/libx3d-rendering.la \
         node/x3d-shape/libx3d-shape.la \
         node/x3d-geometry2d/libx3d-geometry2d.la \
+        node/x3d-texturing/libx3d-texturing.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -416,6 +418,21 @@ node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES = \
         node/x3d-geometry2d/rectangle2d.h \
         node/x3d-geometry2d/triangle_set2d.cpp \
         node/x3d-geometry2d/triangle_set2d.h
+
+node_x3d_texturing_libx3d_texturing_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_texturing_libx3d_texturing_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_texturing_libx3d_texturing_la_SOURCES = \
+        node/x3d-texturing/multi_texture.cpp \
+        node/x3d-texturing/multi_texture.h \
+        node/x3d-texturing/multi_texture_coordinate.cpp \
+        node/x3d-texturing/multi_texture_coordinate.h \
+        node/x3d-texturing/multi_texture_transform.cpp \
+        node/x3d-texturing/multi_texture_transform.h \
+        node/x3d-texturing/texture_coordinate_generator.cpp \
+        node/x3d-texturing/texture_coordinate_generator.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

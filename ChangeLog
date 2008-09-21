@@ -1,3 +1,24 @@
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D Texturing node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-texturing static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-texturing/libx3d-texturing.la.
+	* src/libopenvrml/openvrml/x3d_texturing.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-texturing/multi_texture.h
+	* src/node/x3d-texturing/multi_texture_coordinate.cpp
+	* src/node/x3d-texturing/texture_coordinate_generator.h
+	* src/node/x3d-texturing/multi_texture_transform.cpp
+	* src/node/x3d-texturing/multi_texture_coordinate.h
+	* src/node/x3d-texturing/multi_texture.cpp
+	* src/node/x3d-texturing/multi_texture_transform.h
+	* src/node/x3d-texturing/texture_coordinate_generator.cpp
+
 2008-09-20 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D Geometry2D node implementations into a convenience
@@ -7,7 +28,7 @@
 	x3d-geometry2d static library project.
 	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj
 	* src/Makefile.am: Added convenience library
-	node/x3d-shape/libx3d-geometry2d.la.
+	node/x3d-geometry2d/libx3d-geometry2d.la.
 	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Moved node
 	implementations to separate files.
 	* src/node/x3d-geometry2d/rectangle2d.h
