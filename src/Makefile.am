@@ -13,7 +13,8 @@ noinst_LTLIBRARIES = \
         node/x3d-geometry2d/libx3d-geometry2d.la \
         node/x3d-texturing/libx3d-texturing.la \
         node/x3d-interpolation/libx3d-interpolation.la \
-        node/x3d-key-device-sensor/libx3d-key-device-sensor.la
+        node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
+        node/x3d-event-utilities/libx3d-event-utilities.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -155,6 +156,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-texturing/libx3d-texturing.la \
         node/x3d-interpolation/libx3d-interpolation.la \
         node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
+        node/x3d-event-utilities/libx3d-event-utilities.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -459,6 +461,27 @@ node_x3d_key_device_sensor_libx3d_key_device_sensor_la_SOURCES = \
         node/x3d-key-device-sensor/key_sensor.h \
         node/x3d-key-device-sensor/string_sensor.cpp \
         node/x3d-key-device-sensor/string_sensor.h
+
+node_x3d_event_utilities_libx3d_event_utilities_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_event_utilities_libx3d_event_utilities_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_event_utilities_libx3d_event_utilities_la_SOURCES = \
+        node/x3d-event-utilities/boolean_filter.cpp \
+        node/x3d-event-utilities/boolean_filter.h \
+        node/x3d-event-utilities/boolean_sequencer.cpp \
+        node/x3d-event-utilities/boolean_sequencer.h \
+        node/x3d-event-utilities/boolean_toggle.cpp \
+        node/x3d-event-utilities/boolean_toggle.h \
+        node/x3d-event-utilities/boolean_trigger.cpp \
+        node/x3d-event-utilities/boolean_trigger.h \
+        node/x3d-event-utilities/integer_sequencer.cpp \
+        node/x3d-event-utilities/integer_sequencer.h \
+        node/x3d-event-utilities/integer_trigger.cpp \
+        node/x3d-event-utilities/integer_trigger.h \
+        node/x3d-event-utilities/time_trigger.cpp \
+        node/x3d-event-utilities/time_trigger.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

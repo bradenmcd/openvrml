@@ -1,5 +1,32 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Event Utilities node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-event-utilities static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-event-utilities/libx3d-event-utilities.la.
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-event-utilities/boolean_filter.cpp
+	* src/node/x3d-event-utilities/boolean_filter.h
+	* src/node/x3d-event-utilities/boolean_sequencer.cpp
+	* src/node/x3d-event-utilities/boolean_sequencer.h
+	* src/node/x3d-event-utilities/boolean_toggle.cpp
+	* src/node/x3d-event-utilities/boolean_toggle.h
+	* src/node/x3d-event-utilities/boolean_trigger.cpp
+	* src/node/x3d-event-utilities/boolean_trigger.h
+	* src/node/x3d-event-utilities/integer_sequencer.cpp
+	* src/node/x3d-event-utilities/integer_sequencer.h
+	* src/node/x3d-event-utilities/integer_trigger.cpp
+	* src/node/x3d-event-utilities/integer_trigger.h
+	* src/node/x3d-event-utilities/time_trigger.cpp
+	* src/node/x3d-event-utilities/time_trigger.h
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D Key Device Sensor node implementations into a convenience
 	library.
 
@@ -8,10 +35,11 @@
 	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj
 	* src/Makefile.am: Added convenience library
 	node/x3d-key-device-sensor/libx3d-key-device-sensor.la.
-	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp: Moved node
+	implementations to separate files.
 	* src/node/x3d-key-device-sensor/string_sensor.cpp
-	* src/node/x3d-key-device-sensor/key_sensor.cpp
 	* src/node/x3d-key-device-sensor/string_sensor.h
+	* src/node/x3d-key-device-sensor/key_sensor.cpp
 	* src/node/x3d-key-device-sensor/key_sensor.h
 
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
@@ -27,9 +55,9 @@
 	* src/libopenvrml/openvrml/x3d_interpolation.cpp: Moved node
 	implementations to separate files.
 	* src/node/x3d-interpolation/coordinate_interpolator2d.cpp
-	* src/node/x3d-interpolation/position_interpolator2d.h
 	* src/node/x3d-interpolation/coordinate_interpolator2d.h
 	* src/node/x3d-interpolation/position_interpolator2d.cpp
+	* src/node/x3d-interpolation/position_interpolator2d.h
 
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
@@ -50,14 +78,14 @@
 	node/x3d-texturing/libx3d-texturing.la.
 	* src/libopenvrml/openvrml/x3d_texturing.cpp: Moved node
 	implementations to separate files.
+	* src/node/x3d-texturing/multi_texture.cpp
 	* src/node/x3d-texturing/multi_texture.h
 	* src/node/x3d-texturing/multi_texture_coordinate.cpp
-	* src/node/x3d-texturing/texture_coordinate_generator.h
-	* src/node/x3d-texturing/multi_texture_transform.cpp
 	* src/node/x3d-texturing/multi_texture_coordinate.h
-	* src/node/x3d-texturing/multi_texture.cpp
+	* src/node/x3d-texturing/multi_texture_transform.cpp
 	* src/node/x3d-texturing/multi_texture_transform.h
 	* src/node/x3d-texturing/texture_coordinate_generator.cpp
+	* src/node/x3d-texturing/texture_coordinate_generator.h
 
 2008-09-20 Braden McDaniel  <braden@endoframe.com>
 
@@ -71,22 +99,22 @@
 	node/x3d-geometry2d/libx3d-geometry2d.la.
 	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Moved node
 	implementations to separate files.
-	* src/node/x3d-geometry2d/rectangle2d.h
+	* src/node/x3d-geometry2d/arc2d.cpp
 	* src/node/x3d-geometry2d/arc2d.h
-	* src/node/x3d-geometry2d/triangle_set2d.cpp
-	* src/node/x3d-geometry2d/triangle_set2d.h
 	* src/node/x3d-geometry2d/arc_close2d.cpp
-	* src/node/x3d-geometry2d/disk2d.cpp
-	* src/node/x3d-geometry2d/polyline2d.cpp
-	* src/node/x3d-geometry2d/polypoint2d.cpp
 	* src/node/x3d-geometry2d/arc_close2d.h
-	* src/node/x3d-geometry2d/disk2d.h
-	* src/node/x3d-geometry2d/polyline2d.h
 	* src/node/x3d-geometry2d/circle2d.cpp
+	* src/node/x3d-geometry2d/circle2d.h
+	* src/node/x3d-geometry2d/disk2d.cpp
+	* src/node/x3d-geometry2d/disk2d.h
+	* src/node/x3d-geometry2d/polyline2d.cpp
+	* src/node/x3d-geometry2d/polyline2d.h
+	* src/node/x3d-geometry2d/polypoint2d.cpp
 	* src/node/x3d-geometry2d/polypoint2d.h
 	* src/node/x3d-geometry2d/rectangle2d.cpp
-	* src/node/x3d-geometry2d/arc2d.cpp
-	* src/node/x3d-geometry2d/circle2d.h
+	* src/node/x3d-geometry2d/rectangle2d.h
+	* src/node/x3d-geometry2d/triangle_set2d.cpp
+	* src/node/x3d-geometry2d/triangle_set2d.h
 
 2008-09-18 Braden McDaniel  <braden@endoframe.com>
 
@@ -117,20 +145,20 @@
 	node/x3d-rendering/libx3d-rendering.la.
 	* src/libopenvrml/openvrml/x3d_rendering.cpp: Moved node
 	implementations to separate files.
-	* src/node/x3d-rendering/color_rgba.h
-	* src/node/x3d-rendering/indexed_triangle_set.cpp
-	* src/node/x3d-rendering/triangle_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
-	* src/node/x3d-rendering/triangle_strip_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
-	* src/node/x3d-rendering/triangle_fan_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_set.h
-	* src/node/x3d-rendering/triangle_set.h
-	* src/node/x3d-rendering/indexed_triangle_strip_set.h
-	* src/node/x3d-rendering/triangle_strip_set.h
 	* src/node/x3d-rendering/color_rgba.cpp
+	* src/node/x3d-rendering/color_rgba.h
+	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
 	* src/node/x3d-rendering/indexed_triangle_fan_set.h
+	* src/node/x3d-rendering/indexed_triangle_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_set.h
+	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_strip_set.h
+	* src/node/x3d-rendering/triangle_fan_set.cpp
 	* src/node/x3d-rendering/triangle_fan_set.h
+	* src/node/x3d-rendering/triangle_set.cpp
+	* src/node/x3d-rendering/triangle_set.h
+	* src/node/x3d-rendering/triangle_strip_set.cpp
+	* src/node/x3d-rendering/triangle_strip_set.h
 
 2008-09-16 Braden McDaniel  <braden@endoframe.com>
 

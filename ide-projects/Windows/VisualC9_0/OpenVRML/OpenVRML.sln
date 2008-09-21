@@ -2,6 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml", "openvrml\openvrml.vcproj", "{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}"
 	ProjectSection(ProjectDependencies) = postProject
+		{CE946E0C-4880-4AB0-9170-42D6692791CC} = {CE946E0C-4880-4AB0-9170-42D6692791CC}
 		{78133A10-3ADF-474C-B32A-74124A976482} = {78133A10-3ADF-474C-B32A-74124A976482}
 		{E20E0E24-C0B6-4448-82E0-32CCDBA88957} = {E20E0E24-C0B6-4448-82E0-32CCDBA88957}
 		{430B1A48-8E64-43DF-8CC4-AD09C41BA735} = {430B1A48-8E64-43DF-8CC4-AD09C41BA735}
@@ -65,6 +66,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-interpolation", "x3d-interpolation\x3d-interpolation.vcproj", "{BFF962C6-4CC1-4DD1-965A-163EADE74986}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-key-device-sensor", "x3d-key-device-sensor\x3d-key-device-sensor.vcproj", "{E20E0E24-C0B6-4448-82E0-32CCDBA88957}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-event-utilities", "x3d-event-utilities\x3d-event-utilities.vcproj", "{CE946E0C-4880-4AB0-9170-42D6692791CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,6 +143,10 @@ Global
 		{E20E0E24-C0B6-4448-82E0-32CCDBA88957}.Debug|Win32.Build.0 = Debug|Win32
 		{E20E0E24-C0B6-4448-82E0-32CCDBA88957}.Release|Win32.ActiveCfg = Release|Win32
 		{E20E0E24-C0B6-4448-82E0-32CCDBA88957}.Release|Win32.Build.0 = Release|Win32
+		{CE946E0C-4880-4AB0-9170-42D6692791CC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE946E0C-4880-4AB0-9170-42D6692791CC}.Debug|Win32.Build.0 = Debug|Win32
+		{CE946E0C-4880-4AB0-9170-42D6692791CC}.Release|Win32.ActiveCfg = Release|Win32
+		{CE946E0C-4880-4AB0-9170-42D6692791CC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
