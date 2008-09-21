@@ -1,5 +1,12 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Removed unnecessary includes.
+
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D Texturing node implementations into a convenience
 	library.
 

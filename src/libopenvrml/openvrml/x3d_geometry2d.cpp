@@ -18,15 +18,8 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
-# include <boost/array.hpp>
-# include <private.h>
-# include "browser.h"
-# include "node_impl_util.h"
 # include "x3d_geometry2d.h"
+# include "browser.h"
 # include <x3d-geometry2d/arc2d.h>
 # include <x3d-geometry2d/arc_close2d.h>
 # include <x3d-geometry2d/circle2d.h>
@@ -35,6 +28,10 @@
 # include <x3d-geometry2d/polypoint2d.h>
 # include <x3d-geometry2d/rectangle2d.h>
 # include <x3d-geometry2d/triangle_set2d.h>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 void register_geometry2d_node_metatypes(openvrml::browser & b)
 {

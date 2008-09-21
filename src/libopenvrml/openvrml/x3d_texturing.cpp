@@ -18,16 +18,16 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
-# include "browser.h"
 # include "x3d_texturing.h"
+# include "browser.h"
 # include <x3d-texturing/multi_texture.h>
 # include <x3d-texturing/multi_texture_coordinate.h>
 # include <x3d-texturing/multi_texture_transform.h>
 # include <x3d-texturing/texture_coordinate_generator.h>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 void register_texturing_node_metatypes(openvrml::browser & b)
 {
