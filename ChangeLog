@@ -1,5 +1,22 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Interpolation node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-interpolation static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-interpolation/libx3d-interpolation.la.
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-interpolation/coordinate_interpolator2d.cpp
+	* src/node/x3d-interpolation/position_interpolator2d.h
+	* src/node/x3d-interpolation/coordinate_interpolator2d.h
+	* src/node/x3d-interpolation/position_interpolator2d.cpp
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Removed unnecessary includes.
 
 	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
