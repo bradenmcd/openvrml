@@ -9,7 +9,8 @@ noinst_LTLIBRARIES = \
         node/x3d-networking/libx3d-networking.la \
         node/x3d-grouping/libx3d-grouping.la \
         node/x3d-rendering/libx3d-rendering.la \
-        node/x3d-shape/libx3d-shape.la
+        node/x3d-shape/libx3d-shape.la \
+        node/x3d-geometry2d/libx3d-geometry2d.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -147,6 +148,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-grouping/libx3d-grouping.la \
         node/x3d-rendering/libx3d-rendering.la \
         node/x3d-shape/libx3d-shape.la \
+        node/x3d-geometry2d/libx3d-geometry2d.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -391,6 +393,29 @@ node_x3d_shape_libx3d_shape_la_SOURCES = \
         node/x3d-shape/fill_properties.h \
         node/x3d-shape/line_properties.cpp \
         node/x3d-shape/line_properties.h
+
+node_x3d_geometry2d_libx3d_geometry2d_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_geometry2d_libx3d_geometry2d_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES = \
+        node/x3d-geometry2d/arc2d.cpp \
+        node/x3d-geometry2d/arc2d.h \
+        node/x3d-geometry2d/arc_close2d.cpp \
+        node/x3d-geometry2d/arc_close2d.h \
+        node/x3d-geometry2d/circle2d.cpp \
+        node/x3d-geometry2d/circle2d.h \
+        node/x3d-geometry2d/disk2d.cpp \
+        node/x3d-geometry2d/disk2d.h \
+        node/x3d-geometry2d/polyline2d.cpp \
+        node/x3d-geometry2d/polyline2d.h \
+        node/x3d-geometry2d/polypoint2d.cpp \
+        node/x3d-geometry2d/polypoint2d.h \
+        node/x3d-geometry2d/rectangle2d.cpp \
+        node/x3d-geometry2d/rectangle2d.h \
+        node/x3d-geometry2d/triangle_set2d.cpp \
+        node/x3d-geometry2d/triangle_set2d.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

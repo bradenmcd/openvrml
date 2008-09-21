@@ -1,3 +1,32 @@
+2008-09-20 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D Geometry2D node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-geometry2d static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-shape/libx3d-geometry2d.la.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-geometry2d/rectangle2d.h
+	* src/node/x3d-geometry2d/arc2d.h
+	* src/node/x3d-geometry2d/triangle_set2d.cpp
+	* src/node/x3d-geometry2d/triangle_set2d.h
+	* src/node/x3d-geometry2d/arc_close2d.cpp
+	* src/node/x3d-geometry2d/disk2d.cpp
+	* src/node/x3d-geometry2d/polyline2d.cpp
+	* src/node/x3d-geometry2d/polypoint2d.cpp
+	* src/node/x3d-geometry2d/arc_close2d.h
+	* src/node/x3d-geometry2d/disk2d.h
+	* src/node/x3d-geometry2d/polyline2d.h
+	* src/node/x3d-geometry2d/circle2d.cpp
+	* src/node/x3d-geometry2d/polypoint2d.h
+	* src/node/x3d-geometry2d/rectangle2d.cpp
+	* src/node/x3d-geometry2d/arc2d.cpp
+	* src/node/x3d-geometry2d/circle2d.h
+
 2008-09-18 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D Shape node implementations into a convenience
