@@ -12,7 +12,8 @@ noinst_LTLIBRARIES = \
         node/x3d-shape/libx3d-shape.la \
         node/x3d-geometry2d/libx3d-geometry2d.la \
         node/x3d-texturing/libx3d-texturing.la \
-        node/x3d-interpolation/libx3d-interpolation.la
+        node/x3d-interpolation/libx3d-interpolation.la \
+        node/x3d-key-device-sensor/libx3d-key-device-sensor.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -153,6 +154,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-geometry2d/libx3d-geometry2d.la \
         node/x3d-texturing/libx3d-texturing.la \
         node/x3d-interpolation/libx3d-interpolation.la \
+        node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -446,6 +448,17 @@ node_x3d_interpolation_libx3d_interpolation_la_SOURCES = \
         node/x3d-interpolation/coordinate_interpolator2d.h \
         node/x3d-interpolation/position_interpolator2d.cpp \
         node/x3d-interpolation/position_interpolator2d.h
+
+node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_key_device_sensor_libx3d_key_device_sensor_la_SOURCES = \
+        node/x3d-key-device-sensor/key_sensor.cpp \
+        node/x3d-key-device-sensor/key_sensor.h \
+        node/x3d-key-device-sensor/string_sensor.cpp \
+        node/x3d-key-device-sensor/string_sensor.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
