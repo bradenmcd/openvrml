@@ -1,5 +1,21 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Key Device Sensor node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-key-device-sensor static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-key-device-sensor/libx3d-key-device-sensor.la.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/node/x3d-key-device-sensor/string_sensor.cpp
+	* src/node/x3d-key-device-sensor/key_sensor.cpp
+	* src/node/x3d-key-device-sensor/string_sensor.h
+	* src/node/x3d-key-device-sensor/key_sensor.h
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D Interpolation node implementations into a convenience
 	library.
 
