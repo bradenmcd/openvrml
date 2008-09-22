@@ -16,7 +16,8 @@ noinst_LTLIBRARIES = \
         node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
         node/x3d-event-utilities/libx3d-event-utilities.la \
         node/x3d-dis/libx3d-dis.la \
-        node/x3d-environmental-effects/libx3d-environmental-effects.la
+        node/x3d-environmental-effects/libx3d-environmental-effects.la \
+        node/x3d-geospatial/libx3d-geospatial.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -161,6 +162,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-event-utilities/libx3d-event-utilities.la \
         node/x3d-dis/libx3d-dis.la \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
+        node/x3d-geospatial/libx3d-geospatial.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -510,6 +512,33 @@ node_x3d_environmental_effects_libx3d_environmental_effects_la_CXXFLAGS = \
 node_x3d_environmental_effects_libx3d_environmental_effects_la_SOURCES = \
         node/x3d-environmental-effects/texture_background.cpp \
         node/x3d-environmental-effects/texture_background.h
+
+node_x3d_geospatial_libx3d_geospatial_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_geospatial_libx3d_geospatial_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_geospatial_libx3d_geospatial_la_SOURCES = \
+        node/x3d-geospatial/geospatial-common.h \
+        node/x3d-geospatial/geospatial-common.cpp \
+        node/x3d-geospatial/geo_coordinate.cpp \
+        node/x3d-geospatial/geo_coordinate.h \
+        node/x3d-geospatial/geo_elevation_grid.cpp \
+        node/x3d-geospatial/geo_elevation_grid.h \
+        node/x3d-geospatial/geo_location.cpp \
+        node/x3d-geospatial/geo_location.h \
+        node/x3d-geospatial/geo_lod.cpp \
+        node/x3d-geospatial/geo_lod.h \
+        node/x3d-geospatial/geo_metadata.cpp \
+        node/x3d-geospatial/geo_metadata.h \
+        node/x3d-geospatial/geo_origin.cpp \
+        node/x3d-geospatial/geo_origin.h \
+        node/x3d-geospatial/geo_position_interpolator.cpp \
+        node/x3d-geospatial/geo_position_interpolator.h \
+        node/x3d-geospatial/geo_touch_sensor.cpp \
+        node/x3d-geospatial/geo_touch_sensor.h \
+        node/x3d-geospatial/geo_viewpoint.cpp \
+        node/x3d-geospatial/geo_viewpoint.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

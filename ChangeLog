@@ -1,3 +1,36 @@
+2008-09-22 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D Geospatial node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-environmental-effects static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-geospatial/libx3d-geospatial.la.
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-geospatial/geo_coordinate.cpp
+	* src/node/x3d-geospatial/geo_coordinate.h
+	* src/node/x3d-geospatial/geo_elevation_grid.cpp
+	* src/node/x3d-geospatial/geo_elevation_grid.h
+	* src/node/x3d-geospatial/geo_location.cpp
+	* src/node/x3d-geospatial/geo_location.h
+	* src/node/x3d-geospatial/geo_lod.cpp
+	* src/node/x3d-geospatial/geo_lod.h
+	* src/node/x3d-geospatial/geo_metadata.cpp
+	* src/node/x3d-geospatial/geo_metadata.h
+	* src/node/x3d-geospatial/geo_origin.cpp
+	* src/node/x3d-geospatial/geo_origin.h
+	* src/node/x3d-geospatial/geo_position_interpolator.cpp
+	* src/node/x3d-geospatial/geo_position_interpolator.h
+	* src/node/x3d-geospatial/geo_touch_sensor.cpp
+	* src/node/x3d-geospatial/geo_touch_sensor.h
+	* src/node/x3d-geospatial/geo_viewpoint.cpp
+	* src/node/x3d-geospatial/geo_viewpoint.h
+	* src/node/x3d-geospatial/geospatial-common.cpp
+	* src/node/x3d-geospatial/geospatial-common.h
+
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D Environmental Effects node implementations into a convenience
