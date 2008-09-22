@@ -1,5 +1,20 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D Environmental Effects node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-environmental-effects static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-environmental-effectx/libx3d-environmental-effects.la.
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp: Moved
+	node implementations to separate files.
+	* src/node/x3d-environmental-effects/texture_background.cpp
+	* src/node/x3d-environmental-effects/texture_background.h
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D DIS node implementations into a convenience
 	library.
 

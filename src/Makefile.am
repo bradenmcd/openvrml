@@ -15,7 +15,8 @@ noinst_LTLIBRARIES = \
         node/x3d-interpolation/libx3d-interpolation.la \
         node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
         node/x3d-event-utilities/libx3d-event-utilities.la \
-        node/x3d-dis/libx3d-dis.la
+        node/x3d-dis/libx3d-dis.la \
+        node/x3d-environmental-effects/libx3d-environmental-effects.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -159,6 +160,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
         node/x3d-event-utilities/libx3d-event-utilities.la \
         node/x3d-dis/libx3d-dis.la \
+        node/x3d-environmental-effects/libx3d-environmental-effects.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -499,6 +501,15 @@ node_x3d_dis_libx3d_dis_la_SOURCES = \
         node/x3d-dis/signal_pdu.h \
         node/x3d-dis/transmitter_pdu.cpp \
         node/x3d-dis/transmitter_pdu.h
+
+node_x3d_environmental_effects_libx3d_environmental_effects_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_environmental_effects_libx3d_environmental_effects_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_environmental_effects_libx3d_environmental_effects_la_SOURCES = \
+        node/x3d-environmental-effects/texture_background.cpp \
+        node/x3d-environmental-effects/texture_background.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
