@@ -1,5 +1,26 @@
 2008-09-21 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D DIS node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-dis static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-dis/libx3d-dis.la.
+	* src/libopenvrml/openvrml/x3d_dis.cpp: Moved node implementations
+	to separate files.
+	* src/node/x3d-dis/espdu_transform.cpp
+	* src/node/x3d-dis/espdu_transform.h
+	* src/node/x3d-dis/receiver_pdu.cpp
+	* src/node/x3d-dis/receiver_pdu.h
+	* src/node/x3d-dis/signal_pdu.cpp
+	* src/node/x3d-dis/signal_pdu.h
+	* src/node/x3d-dis/transmitter_pdu.cpp
+	* src/node/x3d-dis/transmitter_pdu.h
+
+2008-09-21 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D Event Utilities node implementations into a convenience
 	library.
 
