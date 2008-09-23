@@ -7027,8 +7027,6 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
             using std::vector;
             using boost::shared_ptr;
 
-            std::cout << node_type_id << std::endl;
-
             //
             // If we are parsing an "anonymous" stream--that is, one passed to
             // browser::create_vrml_from_stream--we cannot use the URI

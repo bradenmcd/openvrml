@@ -1,3 +1,11 @@
+2008-09-23 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::vrml97_parse_actions::on_externproto_t::operator()(const
+	std::string &, const node_interface_set &, const
+	std::vector<std::string> &) const): Removed stray debugging
+	output.
+
 2008-09-22 Braden McDaniel  <braden@endoframe.com>
 
 	Moved X3D H-Anim node implementations into a convenience
