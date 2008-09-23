@@ -17,7 +17,8 @@ noinst_LTLIBRARIES = \
         node/x3d-event-utilities/libx3d-event-utilities.la \
         node/x3d-dis/libx3d-dis.la \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
-        node/x3d-geospatial/libx3d-geospatial.la
+        node/x3d-geospatial/libx3d-geospatial.la \
+        node/x3d-h-anim/libx3d-h-anim.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -163,6 +164,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-dis/libx3d-dis.la \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
         node/x3d-geospatial/libx3d-geospatial.la \
+        node/x3d-h-anim/libx3d-h-anim.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -539,6 +541,23 @@ node_x3d_geospatial_libx3d_geospatial_la_SOURCES = \
         node/x3d-geospatial/geo_touch_sensor.h \
         node/x3d-geospatial/geo_viewpoint.cpp \
         node/x3d-geospatial/geo_viewpoint.h
+
+node_x3d_h_anim_libx3d_h_anim_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_h_anim_libx3d_h_anim_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_h_anim_libx3d_h_anim_la_SOURCES = \
+        node/x3d-h-anim/h_anim_displacer.cpp \
+        node/x3d-h-anim/h_anim_displacer.h \
+        node/x3d-h-anim/h_anim_humanoid.cpp \
+        node/x3d-h-anim/h_anim_humanoid.h \
+        node/x3d-h-anim/h_anim_joint.cpp \
+        node/x3d-h-anim/h_anim_joint.h \
+        node/x3d-h-anim/h_anim_segment.cpp \
+        node/x3d-h-anim/h_anim_segment.h \
+        node/x3d-h-anim/h_anim_site.cpp \
+        node/x3d-h-anim/h_anim_site.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

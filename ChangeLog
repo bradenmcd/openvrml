@@ -1,10 +1,33 @@
 2008-09-22 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D H-Anim node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-h-anim static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-h-anim/libx3d-h-anim.la.
+	* src/libopenvrml/openvrml/x3d_hanim.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-h-anim/h_anim_joint.cpp
+	* src/node/x3d-h-anim/h_anim_humanoid.cpp
+	* src/node/x3d-h-anim/h_anim_site.cpp
+	* src/node/x3d-h-anim/h_anim_displacer.cpp
+	* src/node/x3d-h-anim/h_anim_segment.h
+	* src/node/x3d-h-anim/h_anim_joint.h
+	* src/node/x3d-h-anim/h_anim_humanoid.h
+	* src/node/x3d-h-anim/h_anim_site.h
+	* src/node/x3d-h-anim/h_anim_displacer.h
+	* src/node/x3d-h-anim/h_anim_segment.cpp
+
+2008-09-22 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D Geospatial node implementations into a convenience
 	library.
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-environmental-effects static library project.
+	x3d-geospatial static library project.
 	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj
 	* src/Makefile.am: Added convenience library
 	node/x3d-geospatial/libx3d-geospatial.la.
