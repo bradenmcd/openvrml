@@ -20,14 +20,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "audio_clip.h"
+# include <openvrml/browser.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/scene.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include "audio_clip.h"
 
 namespace {
 

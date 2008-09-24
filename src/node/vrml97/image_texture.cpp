@@ -20,15 +20,16 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
-# include <boost/array.hpp>
-# include <private.h>
 # include "image_texture.h"
 # include "abstract_texture.h"
 # include "image_stream_listener.h"
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 namespace {
 

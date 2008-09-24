@@ -22,14 +22,14 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
+#   include <openvrml/field_value.h>
+#   include <openvrml/rendering_context.h>
+#   include <openvrml/viewer.h>
+#   include <boost/bind.hpp>
 #   include <deque>
+#   include <map>
 #   include <set>
 #   include <utility>
-#   include <boost/bind.hpp>
-#   include <openvrml/field_value.h>
-#   include <openvrml/viewer.h>
-#   include <openvrml/rendering_context.h>
-#   include <openvrml/scope.h>
 
 namespace openvrml {
 
@@ -238,6 +238,7 @@ namespace openvrml {
     class viewpoint_node;
     class node_type;
     class proto_node;
+    class viewer;
 
     class OPENVRML_API node_metatype : boost::noncopyable {
         const node_metatype_id id_;
@@ -277,6 +278,7 @@ namespace openvrml {
     typedef std::map<std::string, boost::shared_ptr<field_value> >
         initial_value_map;
 
+    class scope;
 
     class OPENVRML_API node_type : boost::noncopyable {
         const node_metatype & metatype_;

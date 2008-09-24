@@ -19,16 +19,16 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include <openvrml/browser.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <jsapi.h>
+# include <boost/array.hpp>
 # include <algorithm>
 # include <iostream>
 # include <memory>
 # include <sstream>
 # include <vector>
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <jsapi.h>
-
-# include <private.h>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -40,16 +40,19 @@ namespace {
     class MFNode;
 
     namespace Browser {
-        OPENVRML_JAVASCRIPT_LOCAL JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
-                                                uintN argc, jsval * argv,
-                                                jsval * rval)
+        OPENVRML_JAVASCRIPT_LOCAL
+        JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
+                                 uintN argc, jsval * argv,
+                                 jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool addRoute(JSContext * cx, JSObject * obj,
-                                       uintN argc, jsval * argv, jsval * rval)
+        OPENVRML_JAVASCRIPT_LOCAL
+        JSBool addRoute(JSContext * cx, JSObject * obj,
+                        uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool deleteRoute(JSContext * cx, JSObject * obj,
-                                          uintN argc, jsval * argv,
-                                          jsval * rval)
+        OPENVRML_JAVASCRIPT_LOCAL
+        JSBool deleteRoute(JSContext * cx, JSObject * obj,
+                           uintN argc, jsval * argv,
+                           jsval * rval)
             OPENVRML_NOTHROW;
     }
 

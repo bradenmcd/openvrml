@@ -19,15 +19,16 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "spot_light.h"
+# include "abstract_light.h"
+# include <openvrml/browser.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <private.h>
-# include "spot_light.h"
-# include "abstract_light.h"
 
 namespace {
 

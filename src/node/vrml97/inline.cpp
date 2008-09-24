@@ -23,12 +23,12 @@
 #   include <config.h>
 # endif
 
-# include <boost/array.hpp>
-# include <boost/thread.hpp>
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include <private.h>
 # include "inline.h"
+# include <openvrml/browser.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
 
 namespace {
 

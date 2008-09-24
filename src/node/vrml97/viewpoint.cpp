@@ -24,10 +24,11 @@
 #   include <config.h>
 # endif
 
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <private.h>
 # include "viewpoint.h"
+# include <openvrml/browser.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
 
 /**
  * @var openvrml_node_vrml97::viewpoint_node * openvrml_node_vrml97::viewpoint_metatype::first

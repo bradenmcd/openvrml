@@ -37,6 +37,7 @@ endif
 
 openvrml_includedir = $(pkgincludedir)/openvrml
 openvrml_include_HEADERS = \
+        libopenvrml/openvrml/bad_url.h \
         libopenvrml/openvrml/basetypes.h \
         libopenvrml/openvrml/vrml97_grammar.h \
         libopenvrml/openvrml/x3d_vrml_grammar.h \
@@ -48,6 +49,7 @@ openvrml_include_HEADERS = \
         libopenvrml/openvrml/node.h \
         libopenvrml/openvrml/bounding_volume.h \
         libopenvrml/openvrml/script.h \
+        libopenvrml/openvrml/scene.h \
         libopenvrml/openvrml/browser.h \
         libopenvrml/openvrml/viewer.h \
         libopenvrml/openvrml/rendering_context.h \
@@ -113,6 +115,7 @@ libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(XML_CFLAGS)
 
 libopenvrml_libopenvrml_la_SOURCES = \
+        libopenvrml/openvrml/bad_url.cpp \
         libopenvrml/openvrml/vrml97_grammar.cpp \
         libopenvrml/openvrml/x3d_vrml_grammar.cpp \
         libopenvrml/openvrml/read_write_mutex.cpp \
@@ -122,7 +125,9 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/exposedfield.cpp \
         libopenvrml/openvrml/scope.cpp \
         libopenvrml/openvrml/node.cpp \
+        libopenvrml/openvrml/script.cpp \
         libopenvrml/openvrml/bounding_volume.cpp \
+        libopenvrml/openvrml/scene.cpp \
         libopenvrml/openvrml/browser.cpp \
         libopenvrml/openvrml/viewer.cpp \
         libopenvrml/openvrml/rendering_context.cpp \
@@ -144,7 +149,13 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/x3d_geospatial.cpp \
         libopenvrml/openvrml/x3d_hanim.cpp \
         libopenvrml/openvrml/x3d_nurbs.cpp \
-        libopenvrml/openvrml/x3d_cad_geometry.cpp
+        libopenvrml/openvrml/x3d_cad_geometry.cpp \
+        libopenvrml/openvrml/local/dl.cpp \
+        libopenvrml/openvrml/local/dl.h \
+        libopenvrml/openvrml/local/uri.cpp \
+        libopenvrml/openvrml/local/uri.h \
+        libopenvrml/openvrml/local/xml_reader.cpp \
+        libopenvrml/openvrml/local/xml_reader.h
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \

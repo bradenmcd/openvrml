@@ -22,16 +22,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
-# include <algorithm>
-# include <cstdio>
-# include <cstring>
-# include <sstream>
-# include <boost/array.hpp>
-# include <boost/filesystem/path.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
-# include <boost/scoped_array.hpp>
-# include <ltdl.h>
-
 # include <vrml_Browser.h>
 # include <vrml_Field.h>
 # include <vrml_ConstField.h>
@@ -89,8 +79,18 @@
 # include <vrml_node_Node.h>
 # include <vrml_node_Script.h>
 
-# include <private.h>
 # include <openvrml/browser.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <ltdl.h>
+# include <boost/array.hpp>
+# include <boost/filesystem/path.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scoped_array.hpp>
+# include <algorithm>
+# include <cstdio>
+# include <cstring>
+# include <sstream>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>

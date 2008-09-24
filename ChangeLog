@@ -1,5 +1,79 @@
 2008-09-24 Braden McDaniel  <braden@endoframe.com>
 
+	Moved dlopen/LoadLibrary wrapper functions, the XML parser
+	wrapper, and the uri class to the openvrml::local namespace.  This
+	facilitates breaking up browser.cpp a bit.  openvrml::scene has
+	been moved to its own header and implementation file and the
+	openvrml::script implementation has been moved back to its own
+	file.
+
+	* src/Makefile.am
+	(openvrml_include_HEADERS): Added libopenvrml/openvrml/bad_url.h
+	and libopenvrml/openvrml/scene.h.
+	(libopenvrml_libopenvrml_la_SOURCES): Added
+	libopenvrml/openvrml/bad_url.cpp, libopenvrml/openvrml/script.cpp,
+	libopenvrml/openvrml/scene.cpp,
+	libopenvrml/openvrml/local/dl.{cpp,h},
+	libopenvrml/openvrml/uri.{cpp,h}, and
+	libopenvrml/openvrml/local/xml_reader.{cpp,h}.
+	* src/libopenvrml/private.h: Moved URI grammar to
+	libopenvrml/openvrml/local/uri.h.
+	* src/libopenvrml/openvrml/bad_url.cpp: Implementation of
+	openvrml::bad_url and derived exceptions; moved from browser.cpp.
+	* src/libopenvrml/openvrml/bad_url.h: openvrml::bad_url and
+	derived exceptions; moved from browser.h.
+	* src/libopenvrml/openvrml/browser.cpp: Moved dlopen/LoadLibrary
+	wrapper functions to libopenvrml/openvrml/local/dl.cpp; moved uri
+	class implementation to libopenvrml/openvrml/local/uri.cpp; moved
+	xml_reader class implementation to
+	libopenvrml/openvrml/local/xml_reader.cpp; moved script_node
+	implementation to libopenvrml/openvrml/script.cpp.
+	* src/libopenvrml/openvrml/browser.h: Moved openvrml::script_node
+	definition to libopenvrml/openvrml/script.h; moved definition of
+	openvrml::bad_url and derived exceptions to
+	libopenvrml/openvrml/bad_url.h.
+	* src/libopenvrml/openvrml/local/dl.cpp: Added; dlopen/LoadLibrary
+	wrapper function definitions.
+	* src/libopenvrml/openvrml/local/dl.h: Added; dlopen/LoadLibrary
+	wrapper function declarations (moved from
+	libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/local/uri.cpp: Added; uri class
+	implementation (moved from libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/local/uri.h: Added; uri class
+	definition and grammar definitions (moved from
+	libopenvrml/openvrml/browser.cpp and libopenvrml/private.h).
+	* src/libopenvrml/openvrml/local/xml_reader.cpp: Added; xml_reader
+	implementation (moved from libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/local/xml_reader.h: Added; xml_reader
+	class definition (moved from libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/node.cpp: Include scope.h here rather
+	than in node.h.
+	* src/libopenvrml/openvrml/node.h: Declare openvrml::scope rather
+	than include scope.h here.
+	* src/libopenvrml/openvrml/scene.cpp: Added; openvrml::scene
+	implementation (moved from libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/scene.h: Added; openvrml::scene
+	definition (moved from libopenvrml/openvrml/browser.h).
+	* src/libopenvrml/openvrml/script.cpp: Added; openvrml::script and
+	openvrml::script_node implementations (moved from
+	libopenvrml/openvrml/browser.cpp).
+	* src/libopenvrml/openvrml/script.h: Moved openvrml::script_node
+	definition here (from libopenvrml/openvrml/browser.h).
+	* src/node/vrml97/movie_texture.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/audio_clip.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/anchor.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/inline.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/time_sensor.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/image_texture.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/spot_light.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/background.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/point_light.cpp: Include <openvrml/scene.h>.
+	* src/node/vrml97/viewpoint.cpp: Include <openvrml/scene.h>.
+	* src/script/java.cpp: Include <openvrml/scene.h>.
+	* src/script/javascript.cpp: Include <openvrml/scene.h>.
+
+2008-09-24 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D CAD Geometry node implementations into a convenience
 	library.
 

@@ -20,15 +20,16 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "background.h"
+# include "image_stream_listener.h"
+# include <openvrml/browser.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <private.h>
-# include "background.h"
-# include "image_stream_listener.h"
 
 /**
  * @var openvrml_node_vrml97::background_node * openvrml_node_vrml97::background_metatype::first

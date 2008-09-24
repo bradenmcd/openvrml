@@ -24,7 +24,7 @@
 # endif
 
 # include <boost/array.hpp>
-# include <openvrml/browser.h>
+# include <openvrml/scene.h>
 # include "anchor.h"
 # include "grouping_node_base.h"
 

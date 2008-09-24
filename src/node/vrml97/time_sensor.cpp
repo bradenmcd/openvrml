@@ -23,11 +23,12 @@
 #   include <config.h>
 # endif
 
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include <private.h>
 # include "time_sensor.h"
+# include <openvrml/browser.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/scene.h>
+# include <private.h>
+# include <boost/array.hpp>
 
 namespace {
 
@@ -38,22 +39,25 @@ namespace {
 
         friend class openvrml_node_vrml97::time_sensor_metatype;
 
-        class set_cycle_interval_listener : public openvrml::node_impl_util::event_listener_base<self_t>,
-                                            public sftime_listener {
+        class set_cycle_interval_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sftime_listener {
         public:
             explicit set_cycle_interval_listener(time_sensor_node & node);
             virtual ~set_cycle_interval_listener() OPENVRML_NOTHROW;
 
         private:
-            virtual void do_process_event(const openvrml::sftime & cycle_interval,
-                                          double timestamp)
+            virtual
+            void do_process_event(const openvrml::sftime & cycle_interval,
+                                  double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
         class enabled_exposedfield : public exposedfield<openvrml::sfbool> {
         public:
             explicit enabled_exposedfield(time_sensor_node & node);
-            enabled_exposedfield(const enabled_exposedfield & obj) OPENVRML_NOTHROW;
+            enabled_exposedfield(const enabled_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~enabled_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -64,8 +68,9 @@ namespace {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class set_start_time_listener : public openvrml::node_impl_util::event_listener_base<self_t>,
-                                        public sftime_listener {
+        class set_start_time_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sftime_listener {
         public:
             explicit set_start_time_listener(time_sensor_node & node);
             virtual ~set_start_time_listener() OPENVRML_NOTHROW;

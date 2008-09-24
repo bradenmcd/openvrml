@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2002, 2003, 2004, 2005, 2006, 2007, 2008  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -19,17 +19,19 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
-# include <algorithm>
-# include <sstream>
+# include "browser.h"
+# include "scope.h"
+# include <openvrml/local/uri.h>
+# include <private.h>
 # include <boost/array.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/mpl/for_each.hpp>
-# include "private.h"
-# include "browser.h"
+# include <algorithm>
+# include <sstream>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 /**
  * @file openvrml/node.h
@@ -590,8 +592,8 @@ namespace {
             typedef boost::spirit::rule<ScannerT> rule_type;
 
             rule_type node_metatype_id;
-            openvrml_::absolute_uri_grammar<> absolute_uri;
-            openvrml_::uric_grammar uric;
+            openvrml::local::absolute_uri_grammar<> absolute_uri;
+            openvrml::local::uric_grammar uric;
 
             definition(const node_metatype_id_grammar & self);
 
