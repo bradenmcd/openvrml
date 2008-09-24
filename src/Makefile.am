@@ -19,7 +19,8 @@ noinst_LTLIBRARIES = \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
         node/x3d-geospatial/libx3d-geospatial.la \
         node/x3d-h-anim/libx3d-h-anim.la \
-        node/x3d-nurbs/libx3d-nurbs.la
+        node/x3d-nurbs/libx3d-nurbs.la \
+        node/x3d-cad-geometry/libx3d-cad-geometry.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -167,6 +168,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-geospatial/libx3d-geospatial.la \
         node/x3d-h-anim/libx3d-h-anim.la \
         node/x3d-nurbs/libx3d-nurbs.la \
+        node/x3d-cad-geometry/libx3d-cad-geometry.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -595,6 +597,17 @@ node_x3d_nurbs_libx3d_nurbs_la_SOURCES = \
         node/x3d-nurbs/nurbs_texture_coordinate.h \
         node/x3d-nurbs/nurbs_trimmed_surface.cpp \
         node/x3d-nurbs/nurbs_trimmed_surface.h
+
+node_x3d_cad_geometry_libx3d_cad_geometry_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_cad_geometry_libx3d_cad_geometry_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_cad_geometry_libx3d_cad_geometry_la_SOURCES = \
+        node/x3d-cad-geometry/cad_face.cpp \
+        node/x3d-cad-geometry/cad_face.h \
+        node/x3d-cad-geometry/indexed_quad_set.cpp \
+        node/x3d-cad-geometry/indexed_quad_set.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

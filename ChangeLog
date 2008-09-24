@@ -1,5 +1,22 @@
 2008-09-24 Braden McDaniel  <braden@endoframe.com>
 
+	Moved X3D CAD Geometry node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-cad-geometry static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.
+	* src/Makefile.am: Added convenience library
+	node/x3d-cad-geometry/libx3d-cad-geometry.la.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-cad-geometry/cad_face.cpp
+	* src/node/x3d-cad-geometry/cad_face.h
+	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
+	* src/node/x3d-cad-geometry/indexed_quad_set.h
+
+2008-09-24 Braden McDaniel  <braden@endoframe.com>
+
 	Moved X3D NURBS node implementations into a convenience
 	library.
 
