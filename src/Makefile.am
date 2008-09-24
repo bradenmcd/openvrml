@@ -18,7 +18,8 @@ noinst_LTLIBRARIES = \
         node/x3d-dis/libx3d-dis.la \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
         node/x3d-geospatial/libx3d-geospatial.la \
-        node/x3d-h-anim/libx3d-h-anim.la
+        node/x3d-h-anim/libx3d-h-anim.la \
+        node/x3d-nurbs/libx3d-nurbs.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -165,6 +166,7 @@ libopenvrml_libopenvrml_la_LIBADD = \
         node/x3d-environmental-effects/libx3d-environmental-effects.la \
         node/x3d-geospatial/libx3d-geospatial.la \
         node/x3d-h-anim/libx3d-h-anim.la \
+        node/x3d-nurbs/libx3d-nurbs.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -558,6 +560,41 @@ node_x3d_h_anim_libx3d_h_anim_la_SOURCES = \
         node/x3d-h-anim/h_anim_segment.h \
         node/x3d-h-anim/h_anim_site.cpp \
         node/x3d-h-anim/h_anim_site.h
+
+node_x3d_nurbs_libx3d_nurbs_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+node_x3d_nurbs_libx3d_nurbs_la_CXXFLAGS = \
+        $(PTHREAD_CFLAGS)
+node_x3d_nurbs_libx3d_nurbs_la_SOURCES = \
+        node/x3d-nurbs/contour2d.cpp \
+        node/x3d-nurbs/contour2d.h \
+        node/x3d-nurbs/contour_polyline2d.cpp \
+        node/x3d-nurbs/contour_polyline2d.h \
+        node/x3d-nurbs/coordinate_double.cpp \
+        node/x3d-nurbs/coordinate_double.h \
+        node/x3d-nurbs/nurbs_curve.cpp \
+        node/x3d-nurbs/nurbs_curve.h \
+        node/x3d-nurbs/nurbs_curve2d.cpp \
+        node/x3d-nurbs/nurbs_curve2d.h \
+        node/x3d-nurbs/nurbs_orientation_interpolator.cpp \
+        node/x3d-nurbs/nurbs_orientation_interpolator.h \
+        node/x3d-nurbs/nurbs_patch_surface.cpp \
+        node/x3d-nurbs/nurbs_patch_surface.h \
+        node/x3d-nurbs/nurbs_position_interpolator.cpp \
+        node/x3d-nurbs/nurbs_position_interpolator.h \
+        node/x3d-nurbs/nurbs_set.cpp \
+        node/x3d-nurbs/nurbs_set.h \
+        node/x3d-nurbs/nurbs_surface_interpolator.cpp \
+        node/x3d-nurbs/nurbs_surface_interpolator.h \
+        node/x3d-nurbs/nurbs_swept_surface.cpp \
+        node/x3d-nurbs/nurbs_swept_surface.h \
+        node/x3d-nurbs/nurbs_swung_surface.cpp \
+        node/x3d-nurbs/nurbs_swung_surface.h \
+        node/x3d-nurbs/nurbs_texture_coordinate.cpp \
+        node/x3d-nurbs/nurbs_texture_coordinate.h \
+        node/x3d-nurbs/nurbs_trimmed_surface.cpp \
+        node/x3d-nurbs/nurbs_trimmed_surface.h
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

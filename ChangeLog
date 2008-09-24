@@ -1,3 +1,44 @@
+2008-09-24 Braden McDaniel  <braden@endoframe.com>
+
+	Moved X3D NURBS node implementations into a convenience
+	library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
+	x3d-nurbs static library project.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj
+	* src/Makefile.am: Added convenience library
+	node/x3d-nurbs/libx3d-nurbs.la.
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp: Moved node
+	implementations to separate files.
+	* src/node/x3d-nurbs/contour2d.cpp
+	* src/node/x3d-nurbs/contour2d.h
+	* src/node/x3d-nurbs/contour_polyline2d.cpp
+	* src/node/x3d-nurbs/contour_polyline2d.h
+	* src/node/x3d-nurbs/coordinate_double.cpp
+	* src/node/x3d-nurbs/coordinate_double.h
+	* src/node/x3d-nurbs/nurbs_curve.cpp
+	* src/node/x3d-nurbs/nurbs_curve.h
+	* src/node/x3d-nurbs/nurbs_curve2d.cpp
+	* src/node/x3d-nurbs/nurbs_curve2d.h
+	* src/node/x3d-nurbs/nurbs_orientation_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_orientation_interpolator.h
+	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
+	* src/node/x3d-nurbs/nurbs_patch_surface.h
+	* src/node/x3d-nurbs/nurbs_position_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_position_interpolator.h
+	* src/node/x3d-nurbs/nurbs_set.cpp
+	* src/node/x3d-nurbs/nurbs_set.h
+	* src/node/x3d-nurbs/nurbs_surface_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_surface_interpolator.h
+	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
+	* src/node/x3d-nurbs/nurbs_swept_surface.h
+	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
+	* src/node/x3d-nurbs/nurbs_swung_surface.h
+	* src/node/x3d-nurbs/nurbs_texture_coordinate.cpp
+	* src/node/x3d-nurbs/nurbs_texture_coordinate.h
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.h
+
 2008-09-23 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp
@@ -18,16 +59,16 @@
 	node/x3d-h-anim/libx3d-h-anim.la.
 	* src/libopenvrml/openvrml/x3d_hanim.cpp: Moved node
 	implementations to separate files.
-	* src/node/x3d-h-anim/h_anim_joint.cpp
-	* src/node/x3d-h-anim/h_anim_humanoid.cpp
-	* src/node/x3d-h-anim/h_anim_site.cpp
 	* src/node/x3d-h-anim/h_anim_displacer.cpp
-	* src/node/x3d-h-anim/h_anim_segment.h
-	* src/node/x3d-h-anim/h_anim_joint.h
-	* src/node/x3d-h-anim/h_anim_humanoid.h
-	* src/node/x3d-h-anim/h_anim_site.h
 	* src/node/x3d-h-anim/h_anim_displacer.h
+	* src/node/x3d-h-anim/h_anim_humanoid.cpp
+	* src/node/x3d-h-anim/h_anim_humanoid.h
+	* src/node/x3d-h-anim/h_anim_joint.cpp
+	* src/node/x3d-h-anim/h_anim_joint.h
 	* src/node/x3d-h-anim/h_anim_segment.cpp
+	* src/node/x3d-h-anim/h_anim_segment.h
+	* src/node/x3d-h-anim/h_anim_site.cpp
+	* src/node/x3d-h-anim/h_anim_site.h
 
 2008-09-22 Braden McDaniel  <braden@endoframe.com>
 

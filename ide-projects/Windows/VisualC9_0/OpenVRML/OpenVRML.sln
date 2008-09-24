@@ -17,6 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml", "openvrml\openvr
 		{3C7DA0E4-D769-4C8A-9911-BE5C2651ED30} = {3C7DA0E4-D769-4C8A-9911-BE5C2651ED30}
 		{20B850E9-E417-49A2-A66C-38827401597B} = {20B850E9-E417-49A2-A66C-38827401597B}
 		{1D32E4EB-6613-4270-8295-7113712BC6C5} = {1D32E4EB-6613-4270-8295-7113712BC6C5}
+		{D884D3FB-79C4-497A-AD7C-7D7877F9768E} = {D884D3FB-79C4-497A-AD7C-7D7877F9768E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml-gl", "openvrml-gl\openvrml-gl.vcproj", "{141F90C2-6630-4D7A-834F-D5D57C6CFC24}"
@@ -80,6 +81,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-geospatial", "x3d-geospatial\x3d-geospatial.vcproj", "{3C7DA0E4-D769-4C8A-9911-BE5C2651ED30}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-h-anim", "x3d-h-anim\x3d-h-anim.vcproj", "{3DA77516-5D3A-42AA-8D99-BF87643A75A2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-nurbs", "x3d-nurbs\x3d-nurbs.vcproj", "{D884D3FB-79C4-497A-AD7C-7D7877F9768E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -175,6 +178,10 @@ Global
 		{3DA77516-5D3A-42AA-8D99-BF87643A75A2}.Debug|Win32.Build.0 = Debug|Win32
 		{3DA77516-5D3A-42AA-8D99-BF87643A75A2}.Release|Win32.ActiveCfg = Release|Win32
 		{3DA77516-5D3A-42AA-8D99-BF87643A75A2}.Release|Win32.Build.0 = Release|Win32
+		{D884D3FB-79C4-497A-AD7C-7D7877F9768E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D884D3FB-79C4-497A-AD7C-7D7877F9768E}.Debug|Win32.Build.0 = Debug|Win32
+		{D884D3FB-79C4-497A-AD7C-7D7877F9768E}.Release|Win32.ActiveCfg = Release|Win32
+		{D884D3FB-79C4-497A-AD7C-7D7877F9768E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
