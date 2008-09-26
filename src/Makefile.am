@@ -155,7 +155,9 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/local/uri.cpp \
         libopenvrml/openvrml/local/uri.h \
         libopenvrml/openvrml/local/xml_reader.cpp \
-        libopenvrml/openvrml/local/xml_reader.h
+        libopenvrml/openvrml/local/xml_reader.h \
+        libopenvrml/openvrml/local/proto.cpp \
+        libopenvrml/openvrml/local/proto.h
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \

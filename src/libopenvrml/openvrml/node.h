@@ -237,8 +237,6 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
-    class proto_node;
-    class viewer;
 
     class OPENVRML_API node_metatype : boost::noncopyable {
         const node_metatype_id id_;
@@ -365,8 +363,12 @@ namespace openvrml {
     template <typename FieldValue> class field_value_emitter;
     template <typename FieldValue> class exposedfield;
 
+    namespace local {
+        class proto_node_metatype;
+    };
+
     class OPENVRML_API node : boost::noncopyable {
-        friend class proto_node;
+        friend class local::proto_node_metatype;
         friend class externproto_node;
 
         friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
