@@ -55,141 +55,159 @@ private:
         OPENVRML_THROW1(std::bad_alloc);
 };
 
+namespace openvrml {
 
-/**
- * @internal
- *
- * @brief A @c PROTO instance node.
- *
- * Like a typical node implementation, @c proto_node%s have a many-to-one
- * relationship with the @c proto_node_type instance that creates them.
- * And @c proto_node_type has, in turn, a many-to-one relationship with
- * the @c proto_node_metatype instance that creates them.  Unlike a
- * typical node implementation, there will very likely be more than one
- * @c proto_node_metatype instance known to the @c browser instance; there
- * will be one for each @c PROTO known to the @c browser.
- *
- * As the @c proto_node_metatype encodes the data in a @c PROTO, the
- * @c proto_node_type can be seen as modeling @c EXTERNPROTO. Each
- * @c EXTERNPROTO will spawn a new @c proto_node_type from the
- * @c proto_node_metatype that corresponds to the @c PROTO to which the
- * @c EXTERNPROTO refers.  Recall that an @c EXTERNPROTO provides a subset
- * of the interfaces defined for a @c PROTO; thus, for a @c PROTO with
- * <var>n</var> interfaces, there are <var>n</var>! possible unique
- * @c EXTERNPROTO%s (and thus unique @c proto_node_type instances).
- *
- * Structurally, the implementation of @c proto_node is very similar to
- * that of @c proto_node_metatype. The difference is that event pathways
- * for @c ROUTE%s and @c IS mappings are actually created in the
- * @c proto_node.  The @c proto_node_metatype, on the other hand, includes
- * metadata about how these event pathways @e should be created.
- */
-class OPENVRML_LOCAL openvrml::local::proto_node_metatype::proto_node :
-    public openvrml::local::abstract_proto_node {
+    namespace local {
 
-    template <typename FieldValue>
-        class proto_exposedfield : public proto_eventin<FieldValue>,
-                                   public proto_eventout<FieldValue> {
-    public:
-        proto_exposedfield(abstract_proto_node & node,
-                           const FieldValue & initial_value);
-        virtual ~proto_exposedfield() OPENVRML_NOTHROW;
+        /**
+         * @internal
+         *
+         * @brief A @c PROTO instance node.
+         *
+         * Like a typical node implementation, @c proto_node%s have a
+         * many-to-one relationship with the @c proto_node_type instance that
+         * creates them.  And @c proto_node_type has, in turn, a many-to-one
+         * relationship with the @c proto_node_metatype instance that creates
+         * them.  Unlike a typical node implementation, there will very likely
+         * be more than one @c proto_node_metatype instance known to the
+         * @c browser instance; there will be one for each @c PROTO known to
+         * the @c browser.
+         *
+         * As the @c proto_node_metatype encodes the data in a @c PROTO, the
+         * @c proto_node_type can be seen as modeling @c EXTERNPROTO. Each
+         * @c EXTERNPROTO will spawn a new @c proto_node_type from the
+         * @c proto_node_metatype that corresponds to the @c PROTO to which the
+         * @c EXTERNPROTO refers.  Recall that an @c EXTERNPROTO provides a
+         * subset of the interfaces defined for a @c PROTO; thus, for a
+         * @c PROTO with <var>n</var> interfaces, there are <var>n</var>!
+         * possible unique @c EXTERNPROTO%s (and thus unique
+         * @c proto_node_type instances).
+         *
+         * Structurally, the implementation of @c proto_node is very similar
+         * to that of @c proto_node_metatype. The difference is that event
+         * pathways for @c ROUTE%s and @c IS mappings are actually created in
+         * the @c proto_node.  The @c proto_node_metatype, on the other hand,
+         * includes metadata about how these event pathways @e should be
+         * created.
+         */
+        class OPENVRML_LOCAL proto_node : public abstract_proto_node {
 
-    private:
-        virtual void do_process_event(const FieldValue & value,
-                                      double timestamp)
-            OPENVRML_THROW1(std::bad_alloc);
-    };
+            template <typename FieldValue>
+                class proto_exposedfield : public proto_eventin<FieldValue>,
+                                           public proto_eventout<FieldValue> {
+            public:
+                proto_exposedfield(abstract_proto_node & node,
+                                   const FieldValue & initial_value);
+                virtual ~proto_exposedfield() OPENVRML_NOTHROW;
 
-    struct proto_exposedfield_creator {
-        proto_exposedfield_creator(
-            const openvrml::field_value & initial_value,
-            proto_node & node,
-            boost::shared_ptr<openvrml::event_listener> & exposedfield):
-            initial_value_(&initial_value),
-            node_(&node),
-            exposedfield_(&exposedfield)
-            {}
+            private:
+                virtual void do_process_event(const FieldValue & value,
+                                              double timestamp)
+                    OPENVRML_THROW1(std::bad_alloc);
+            };
 
-        template <typename T>
-        void operator()(T) const
-            {
-                if (T::field_value_type_id == this->initial_value_->type()) {
-                    using boost::polymorphic_downcast;
-                    this->exposedfield_->reset(
-                        new proto_exposedfield<T>(
-                            *this->node_,
-                            *polymorphic_downcast<const T *>(
-                                this->initial_value_)));
+            struct proto_exposedfield_creator {
+                proto_exposedfield_creator(
+                    const openvrml::field_value & initial_value,
+                    proto_node & node,
+                    boost::shared_ptr<openvrml::event_listener> & exposedfield):
+                    initial_value_(&initial_value),
+                    node_(&node),
+                    exposedfield_(&exposedfield)
+                {}
+
+                template <typename T>
+                void operator()(T) const
+                {
+                    if (T::field_value_type_id == this->initial_value_->type())
+                        {
+                        using boost::polymorphic_downcast;
+                        this->exposedfield_->reset(
+                            new proto_exposedfield<T>(
+                                *this->node_,
+                                *polymorphic_downcast<const T *>(
+                                    this->initial_value_)));
+                    }
                 }
-            }
 
-    private:
-        const openvrml::field_value * initial_value_;
-        proto_node * node_;
-        boost::shared_ptr<openvrml::event_listener> * exposedfield_;
-    };
+            private:
+                const openvrml::field_value * initial_value_;
+                proto_node * node_;
+                boost::shared_ptr<openvrml::event_listener> * exposedfield_;
+            };
 
-    static boost::shared_ptr<openvrml::event_listener>
-        create_exposedfield(const openvrml::field_value & initial_value,
-                            proto_node & node)
-        OPENVRML_THROW1(std::bad_alloc);
+            static boost::shared_ptr<openvrml::event_listener>
+                create_exposedfield(const openvrml::field_value & initial_value,
+                                    proto_node & node)
+                OPENVRML_THROW1(std::bad_alloc);
 
-    boost::shared_ptr<openvrml::scope> proto_scope;
-    std::vector<boost::intrusive_ptr<node> > impl_nodes;
+            boost::shared_ptr<openvrml::scope> proto_scope;
+            std::vector<boost::intrusive_ptr<node> > impl_nodes;
 
-public:
-    proto_node(const openvrml::node_type & type,
-               const boost::shared_ptr<openvrml::scope> & scope,
-               const openvrml::initial_value_map & initial_values)
-        OPENVRML_THROW1(std::bad_alloc);
-    virtual ~proto_node() OPENVRML_NOTHROW;
+        public:
+            proto_node(const openvrml::node_type & type,
+                       const boost::shared_ptr<openvrml::scope> & scope,
+                       const openvrml::initial_value_map & initial_values)
+                OPENVRML_THROW1(std::bad_alloc);
+            virtual ~proto_node() OPENVRML_NOTHROW;
 
-    virtual bool modified() const;
+            virtual bool modified() const;
 
-private:
-    virtual void do_initialize(double timestamp)
-        OPENVRML_THROW1(std::bad_alloc);
+        private:
+            virtual void do_initialize(double timestamp)
+                OPENVRML_THROW1(std::bad_alloc);
 
-    virtual
-        const openvrml::field_value & do_field(const std::string & id) const
-        OPENVRML_THROW1(openvrml::unsupported_interface);
-    virtual openvrml::event_listener &
-        do_event_listener(const std::string & id)
-        OPENVRML_THROW1(openvrml::unsupported_interface);
-    virtual openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-        OPENVRML_THROW1(openvrml::unsupported_interface);
+            virtual
+            const openvrml::field_value & do_field(const std::string & id) const
+                OPENVRML_THROW1(openvrml::unsupported_interface);
+            virtual openvrml::event_listener &
+                do_event_listener(const std::string & id)
+                OPENVRML_THROW1(openvrml::unsupported_interface);
+            virtual openvrml::event_emitter &
+                do_event_emitter(const std::string & id)
+                OPENVRML_THROW1(openvrml::unsupported_interface);
 
-    virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+            virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
-    virtual openvrml::script_node * to_script() OPENVRML_NOTHROW;
-    virtual openvrml::appearance_node * to_appearance() OPENVRML_NOTHROW;
-    virtual openvrml::bounded_volume_node * to_bounded_volume() OPENVRML_NOTHROW;
-    virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
-    virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
-    virtual openvrml::color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
-    virtual openvrml::coordinate_node * to_coordinate() OPENVRML_NOTHROW;
-    virtual openvrml::font_style_node * to_font_style() OPENVRML_NOTHROW ;
-    virtual openvrml::geometry_node * to_geometry() OPENVRML_NOTHROW;
-    virtual openvrml::grouping_node * to_grouping() OPENVRML_NOTHROW;
-    virtual openvrml::light_node * to_light() OPENVRML_NOTHROW;
-    virtual openvrml::material_node * to_material() OPENVRML_NOTHROW;
-    virtual openvrml::navigation_info_node * to_navigation_info() OPENVRML_NOTHROW;
-    virtual openvrml::normal_node * to_normal() OPENVRML_NOTHROW;
-    virtual openvrml::pointing_device_sensor_node * to_pointing_device_sensor()
-        OPENVRML_NOTHROW;
-    virtual openvrml::scoped_light_node * to_scoped_light() OPENVRML_NOTHROW;
-    virtual openvrml::sound_source_node * to_sound_source() OPENVRML_NOTHROW;
-    virtual openvrml::texture_node * to_texture() OPENVRML_NOTHROW;
-    virtual openvrml::texture_coordinate_node * to_texture_coordinate()
-        OPENVRML_NOTHROW;
-    virtual openvrml::texture_transform_node * to_texture_transform()
-        OPENVRML_NOTHROW;
-    virtual openvrml::time_dependent_node * to_time_dependent() OPENVRML_NOTHROW;
-    virtual openvrml::transform_node * to_transform() OPENVRML_NOTHROW;
-    virtual openvrml::viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
-};
+            virtual openvrml::script_node * to_script() OPENVRML_NOTHROW;
+            virtual openvrml::appearance_node * to_appearance()
+                OPENVRML_NOTHROW;
+            virtual openvrml::bounded_volume_node * to_bounded_volume()
+                OPENVRML_NOTHROW;
+            virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
+            virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
+            virtual openvrml::color_rgba_node * to_color_rgba()
+                OPENVRML_NOTHROW;
+            virtual openvrml::coordinate_node * to_coordinate()
+                OPENVRML_NOTHROW;
+            virtual openvrml::font_style_node * to_font_style()
+                OPENVRML_NOTHROW ;
+            virtual openvrml::geometry_node * to_geometry() OPENVRML_NOTHROW;
+            virtual openvrml::grouping_node * to_grouping() OPENVRML_NOTHROW;
+            virtual openvrml::light_node * to_light() OPENVRML_NOTHROW;
+            virtual openvrml::material_node * to_material() OPENVRML_NOTHROW;
+            virtual openvrml::navigation_info_node * to_navigation_info()
+                OPENVRML_NOTHROW;
+            virtual openvrml::normal_node * to_normal() OPENVRML_NOTHROW;
+            virtual
+            openvrml::pointing_device_sensor_node * to_pointing_device_sensor()
+                OPENVRML_NOTHROW;
+            virtual openvrml::scoped_light_node * to_scoped_light()
+                OPENVRML_NOTHROW;
+            virtual openvrml::sound_source_node * to_sound_source()
+                OPENVRML_NOTHROW;
+            virtual openvrml::texture_node * to_texture() OPENVRML_NOTHROW;
+            virtual openvrml::texture_coordinate_node * to_texture_coordinate()
+                OPENVRML_NOTHROW;
+            virtual openvrml::texture_transform_node * to_texture_transform()
+                OPENVRML_NOTHROW;
+            virtual openvrml::time_dependent_node * to_time_dependent()
+                OPENVRML_NOTHROW;
+            virtual openvrml::transform_node * to_transform() OPENVRML_NOTHROW;
+            virtual openvrml::viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
+        };
+    }
+}
 
 namespace {
 
@@ -952,7 +970,7 @@ openvrml::local::abstract_proto_node::~abstract_proto_node() OPENVRML_NOTHROW
  * @param[in] initial_value initial value.
  */
 template <typename FieldValue>
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 proto_exposedfield<FieldValue>::
 proto_exposedfield(abstract_proto_node & node,
                    const FieldValue & initial_value):
@@ -966,7 +984,7 @@ proto_exposedfield(abstract_proto_node & node,
  * @brief Destroy.
  */
 template <typename FieldValue>
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 proto_exposedfield<FieldValue>::~proto_exposedfield()
     OPENVRML_NOTHROW
 {}
@@ -981,7 +999,7 @@ proto_exposedfield<FieldValue>::~proto_exposedfield()
  */
 template <typename FieldValue>
 void
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 proto_exposedfield<FieldValue>::
 do_process_event(const FieldValue & value, const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
@@ -1003,7 +1021,7 @@ do_process_event(const FieldValue & value, const double timestamp)
  * @exception std::bad_alloc    if memory allocation fails.
  */
 boost::shared_ptr<openvrml::event_listener>
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 create_exposedfield(const openvrml::field_value & initial_value,
                     proto_node & node)
     OPENVRML_THROW1(std::bad_alloc)
@@ -1027,7 +1045,7 @@ create_exposedfield(const openvrml::field_value & initial_value,
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 proto_node(const openvrml::node_type & type,
            const boost::shared_ptr<openvrml::scope> & scope,
            const openvrml::initial_value_map & initial_values)
@@ -1038,9 +1056,10 @@ proto_node(const openvrml::node_type & type,
     const proto_node_metatype & node_metatype =
         static_cast<const proto_node_metatype &>(type.metatype());
 
-    this->impl_nodes = proto_impl_cloner(node_metatype,
-                                         initial_values,
-                                         this->proto_scope).clone();
+    this->impl_nodes =
+        proto_node_metatype::proto_impl_cloner(node_metatype,
+                                               initial_values,
+                                               this->proto_scope).clone();
 
     //
     // Establish routes.
@@ -1236,7 +1255,7 @@ proto_node(const openvrml::node_type & type,
 /**
  * @brief Destroy.
  */
-openvrml::local::proto_node_metatype::proto_node::~proto_node() OPENVRML_NOTHROW
+openvrml::local::proto_node::~proto_node() OPENVRML_NOTHROW
 {}
 
 /**
@@ -1245,7 +1264,7 @@ openvrml::local::proto_node_metatype::proto_node::~proto_node() OPENVRML_NOTHROW
  * @return @c true if the node has changed and needs to be rerendered;
  *         @c false otherwise.
  */
-bool openvrml::local::proto_node_metatype::proto_node::modified() const
+bool openvrml::local::proto_node::modified() const
 {
     return !this->impl_nodes.empty()
         ? this->impl_nodes.front()->modified()
@@ -1259,7 +1278,7 @@ bool openvrml::local::proto_node_metatype::proto_node::modified() const
  *
  * @exception std::bad_alloc    if memory allocation fails.
  */
-void openvrml::local::proto_node_metatype::proto_node::
+void openvrml::local::proto_node::
 do_initialize(const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
@@ -1285,7 +1304,7 @@ do_initialize(const double timestamp)
  * @todo Make this function handle @c exposedFields.
  */
 const openvrml::field_value &
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 do_field(const std::string & id) const
     OPENVRML_THROW1(unsupported_interface)
 {
@@ -1340,7 +1359,7 @@ do_field(const std::string & id) const
  * @exception unsupported_interface if the node has no @c eventIn @p id.
  */
 openvrml::event_listener &
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 do_event_listener(const std::string & id)
     OPENVRML_THROW1(unsupported_interface)
 {
@@ -1366,7 +1385,7 @@ do_event_listener(const std::string & id)
  * @exception unsupported_interface if the node has no @c eventOut @p id.
  */
 openvrml::event_emitter &
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 do_event_emitter(const std::string & id)
     OPENVRML_THROW1(unsupported_interface)
 {
@@ -1388,7 +1407,7 @@ do_event_emitter(const std::string & id)
  * @param[in] timestamp the current time.
  */
 void
-openvrml::local::proto_node_metatype::proto_node::
+openvrml::local::proto_node::
 do_shutdown(const double timestamp)
     OPENVRML_NOTHROW
 {
@@ -1408,7 +1427,7 @@ do_shutdown(const double timestamp)
  *         is a @c script_node, or 0 otherwise.
  */
 openvrml::script_node *
-openvrml::local::proto_node_metatype::proto_node::to_script() OPENVRML_NOTHROW
+openvrml::local::proto_node::to_script() OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
     assert(this->impl_nodes[0]);
@@ -1422,7 +1441,7 @@ openvrml::local::proto_node_metatype::proto_node::to_script() OPENVRML_NOTHROW
  *         is an @c appearance_node, or 0 otherwise.
  */
 openvrml::appearance_node *
-openvrml::local::proto_node_metatype::proto_node::to_appearance()
+openvrml::local::proto_node::to_appearance()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1437,7 +1456,7 @@ openvrml::local::proto_node_metatype::proto_node::to_appearance()
  *         is a @c bounded_volume_node, or 0 otherwise.
  */
 openvrml::bounded_volume_node *
-openvrml::local::proto_node_metatype::proto_node::to_bounded_volume()
+openvrml::local::proto_node::to_bounded_volume()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1452,7 +1471,7 @@ openvrml::local::proto_node_metatype::proto_node::to_bounded_volume()
  *         is a @c child_node, or 0 otherwise.
  */
 openvrml::child_node *
-openvrml::local::proto_node_metatype::proto_node::to_child()
+openvrml::local::proto_node::to_child()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1467,7 +1486,7 @@ openvrml::local::proto_node_metatype::proto_node::to_child()
  *         is a @c color_node, or 0 otherwise.
  */
 openvrml::color_node *
-openvrml::local::proto_node_metatype::proto_node::to_color()
+openvrml::local::proto_node::to_color()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1482,7 +1501,7 @@ openvrml::local::proto_node_metatype::proto_node::to_color()
  *         is a @c color_rgba_node, or 0 otherwise.
  */
 openvrml::color_rgba_node *
-openvrml::local::proto_node_metatype::proto_node::to_color_rgba()
+openvrml::local::proto_node::to_color_rgba()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1497,7 +1516,7 @@ openvrml::local::proto_node_metatype::proto_node::to_color_rgba()
  *         is a @c coordinate_node, or 0 otherwise.
  */
 openvrml::coordinate_node *
-openvrml::local::proto_node_metatype::proto_node::to_coordinate()
+openvrml::local::proto_node::to_coordinate()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1512,7 +1531,7 @@ openvrml::local::proto_node_metatype::proto_node::to_coordinate()
  *         is a @c font_style_node, or 0 otherwise.
  */
 openvrml::font_style_node *
-openvrml::local::proto_node_metatype::proto_node::to_font_style()
+openvrml::local::proto_node::to_font_style()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1527,7 +1546,7 @@ openvrml::local::proto_node_metatype::proto_node::to_font_style()
  *         is a @c geometry_node, or 0 otherwise.
  */
 openvrml::geometry_node *
-openvrml::local::proto_node_metatype::proto_node::to_geometry()
+openvrml::local::proto_node::to_geometry()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1542,7 +1561,7 @@ openvrml::local::proto_node_metatype::proto_node::to_geometry()
  *         is a @c grouping_node, or 0 otherwise.
  */
 openvrml::grouping_node *
-openvrml::local::proto_node_metatype::proto_node::to_grouping()
+openvrml::local::proto_node::to_grouping()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1557,7 +1576,7 @@ openvrml::local::proto_node_metatype::proto_node::to_grouping()
  *         is a @c light_node, or 0 otherwise.
  */
 openvrml::light_node *
-openvrml::local::proto_node_metatype::proto_node::to_light()
+openvrml::local::proto_node::to_light()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1572,7 +1591,7 @@ openvrml::local::proto_node_metatype::proto_node::to_light()
  *         is a @c material_node, or 0 otherwise.
  */
 openvrml::material_node *
-openvrml::local::proto_node_metatype::proto_node::to_material()
+openvrml::local::proto_node::to_material()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1587,7 +1606,7 @@ openvrml::local::proto_node_metatype::proto_node::to_material()
  *         is a @c navigation_info_node, or 0 otherwise.
  */
 openvrml::navigation_info_node *
-openvrml::local::proto_node_metatype::proto_node::to_navigation_info()
+openvrml::local::proto_node::to_navigation_info()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1602,7 +1621,7 @@ openvrml::local::proto_node_metatype::proto_node::to_navigation_info()
  *         is a @c normal_node, or 0 otherwise.
  */
 openvrml::normal_node *
-openvrml::local::proto_node_metatype::proto_node::to_normal()
+openvrml::local::proto_node::to_normal()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1617,7 +1636,7 @@ openvrml::local::proto_node_metatype::proto_node::to_normal()
  *         is a @c pointing_device_sensor_node, or 0 otherwise.
  */
 openvrml::pointing_device_sensor_node *
-openvrml::local::proto_node_metatype::proto_node::to_pointing_device_sensor()
+openvrml::local::proto_node::to_pointing_device_sensor()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1633,7 +1652,7 @@ openvrml::local::proto_node_metatype::proto_node::to_pointing_device_sensor()
  *         is a @c scoped_light_node, or 0 otherwise.
  */
 openvrml::scoped_light_node *
-openvrml::local::proto_node_metatype::proto_node::to_scoped_light()
+openvrml::local::proto_node::to_scoped_light()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1648,7 +1667,7 @@ openvrml::local::proto_node_metatype::proto_node::to_scoped_light()
  *         is a @c sound_source_node, or 0 otherwise.
  */
 openvrml::sound_source_node *
-openvrml::local::proto_node_metatype::proto_node::to_sound_source()
+openvrml::local::proto_node::to_sound_source()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1663,7 +1682,7 @@ openvrml::local::proto_node_metatype::proto_node::to_sound_source()
  *         is a @c texture_node, or 0 otherwise.
  */
 openvrml::texture_node *
-openvrml::local::proto_node_metatype::proto_node::to_texture()
+openvrml::local::proto_node::to_texture()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1678,7 +1697,7 @@ openvrml::local::proto_node_metatype::proto_node::to_texture()
  *         is a @c texture_coordinate_node, or 0 otherwise.
  */
 openvrml::texture_coordinate_node *
-openvrml::local::proto_node_metatype::proto_node::to_texture_coordinate()
+openvrml::local::proto_node::to_texture_coordinate()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1693,7 +1712,7 @@ openvrml::local::proto_node_metatype::proto_node::to_texture_coordinate()
  *         is a @c texture_transform_node, or 0 otherwise.
  */
 openvrml::texture_transform_node *
-openvrml::local::proto_node_metatype::proto_node::to_texture_transform()
+openvrml::local::proto_node::to_texture_transform()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1708,7 +1727,7 @@ openvrml::local::proto_node_metatype::proto_node::to_texture_transform()
  *         is a @c time_dependent_node, or 0 otherwise.
  */
 openvrml::time_dependent_node *
-openvrml::local::proto_node_metatype::proto_node::to_time_dependent()
+openvrml::local::proto_node::to_time_dependent()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1723,7 +1742,7 @@ openvrml::local::proto_node_metatype::proto_node::to_time_dependent()
  *         is a @c transform_node, or 0 otherwise.
  */
 openvrml::transform_node *
-openvrml::local::proto_node_metatype::proto_node::to_transform()
+openvrml::local::proto_node::to_transform()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());
@@ -1738,7 +1757,7 @@ openvrml::local::proto_node_metatype::proto_node::to_transform()
  *         is a @c viewpoint_node, or 0 otherwise.
  */
 openvrml::viewpoint_node *
-openvrml::local::proto_node_metatype::proto_node::to_viewpoint()
+openvrml::local::proto_node::to_viewpoint()
     OPENVRML_NOTHROW
 {
     assert(!this->impl_nodes.empty());

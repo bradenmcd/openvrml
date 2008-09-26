@@ -29,6 +29,8 @@ namespace openvrml {
 
     namespace local {
 
+        class proto_node;
+
         /**
          * @internal
          *
@@ -40,7 +42,8 @@ namespace openvrml {
          * of @c proto_node instances.
          */
         class OPENVRML_LOCAL proto_node_metatype : public node_metatype {
-            class proto_node;
+            friend class proto_node;
+
             class proto_node_type;
             class proto_impl_cloner;
 

@@ -1,5 +1,21 @@
 2008-09-26 Braden McDaniel  <braden@endoframe.com>
 
+	Moved proto_node class from an inner class of
+	openvrml::local::proto_node_metatype to the openvrml::local
+	namespace.  proto_node needs access to the private parts of
+	openvrml::node; and gcc 4.0 requires us to grant friendship to
+	proto_node specifically (rather than granting friendship to
+	proto_node_metatype when proto_node is an inner class of it).  We
+	need to be able to forward-declare proto_node (the public header
+	node.h cannot include the private proto.h); and to accommodate
+	that, proto_node cannot be an inner class.
+
+	* src/libopenvrml/openvrml/local/proto.cpp
+	* src/libopenvrml/openvrml/local/proto.h
+	* src/libopenvrml/openvrml/node.h
+
+2008-09-26 Braden McDaniel  <braden@endoframe.com>
+
 	Moved PROTO implementation classes to the openvrml::local
 	namespace and out of browser.cpp.
 

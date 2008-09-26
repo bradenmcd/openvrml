@@ -364,11 +364,11 @@ namespace openvrml {
     template <typename FieldValue> class exposedfield;
 
     namespace local {
-        class proto_node_metatype;
+        class proto_node;
     };
 
     class OPENVRML_API node : boost::noncopyable {
-        friend class local::proto_node_metatype;
+        friend class local::proto_node;
         friend class externproto_node;
 
         friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
