@@ -21,6 +21,8 @@
 # include "xml_reader.h"
 # ifdef _WIN32
 #   include <shlwapi.h>
+#   include <boost/multi_index/detail/scope_guard.hpp>
+using namespace boost::multi_index::detail;  // for scope_guard
 # endif
 
 /**

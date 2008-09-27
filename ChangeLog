@@ -1,3 +1,12 @@
+2008-09-27 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for the Visual C++ build.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* src/libopenvrml/openvrml/local/dl.cpp
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/xml_reader.cpp
+
 2008-09-26 Braden McDaniel  <braden@endoframe.com>
 
 	Moved proto_node class from an inner class of

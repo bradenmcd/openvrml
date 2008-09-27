@@ -21,6 +21,10 @@
 # include "uri.h"
 # include <list>
 # include <cerrno>
+# ifdef _WIN32
+#   include <boost/multi_index/detail/scope_guard.hpp>
+using namespace boost::multi_index::detail;  // for scope_guard
+# endif
 
 openvrml::local::uri::uri() OPENVRML_THROW1(std::bad_alloc):
 scheme_begin(this->str_.begin()),

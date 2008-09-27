@@ -191,6 +191,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\bad_url.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\basetypes.cpp"
 				>
 				<FileConfiguration
@@ -220,6 +224,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.cpp"
 				>
 			</File>
@@ -244,6 +252,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\proto.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\read_write_mutex.cpp"
 				>
 			</File>
@@ -252,7 +264,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scene.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\script.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\uri.cpp"
 				>
 			</File>
 			<File
@@ -351,11 +375,19 @@
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_texturing.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\xml_reader.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\bad_url.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\basetypes.h"
 				>
@@ -370,6 +402,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\common.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.h"
 				>
 			</File>
 			<File
@@ -409,6 +445,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\proto.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\read_write_mutex.h"
 				>
 			</File>
@@ -417,11 +457,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scene.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\scope.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\script.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\uri.h"
 				>
 			</File>
 			<File
@@ -502,6 +550,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_vrml_grammar.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\xml_reader.h"
 				>
 			</File>
 		</Filter>

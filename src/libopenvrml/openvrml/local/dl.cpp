@@ -20,9 +20,8 @@
 
 # include "dl.h"
 # include <string>
-
-namespace {
-}
+# include <boost/filesystem.hpp>
+# include <boost/tokenizer.hpp>
 
 int openvrml::local::dl::init()
 {
