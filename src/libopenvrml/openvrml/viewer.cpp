@@ -35,7 +35,7 @@
 /**
  * @class openvrml::viewer openvrml/viewer.h
  *
- * @brief Map the scene graph to the underlying graphics library.
+ * @brief Map the %scene graph to the underlying graphics library.
  */
 
 /**

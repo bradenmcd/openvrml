@@ -1,3 +1,11 @@
+2008-09-28 Braden McDaniel  <braden@endoframe.com>
+
+	More documentation improvements.
+
+	* src/libopenvrml/openvrml/viewer.cpp
+	* doc/Makefile.am
+	(CUSTOMIZED_IMAGES): Added x3d-white-on-black.png.
+
 2008-09-27 Braden McDaniel  <braden@endoframe.com>
 
 	Documentation improvements.  No longer use the Doxygen default

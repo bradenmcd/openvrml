@@ -72,6 +72,7 @@ DOXYGEN_OUTPUT_FILES = \
 
 CUSTOMIZED_IMAGES = \
         $(srcdir)/manual/OGL_sm_wht.png \
+        $(srcdir)/manual/x3d-white-on-black.png \
         $(srcdir)/manual/tab_b-openvrml.png \
         $(srcdir)/manual/tab_l-openvrml.png \
         $(srcdir)/manual/tab_r-openvrml.png
