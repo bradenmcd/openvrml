@@ -1,5 +1,16 @@
 2008-09-28 Braden McDaniel  <braden@endoframe.com>
 
+	Updated version to 0.17.99.
+
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* mozilla-plugin/configure.ac
+
+2008-09-28 Braden McDaniel  <braden@endoframe.com>
+
 	More documentation improvements.
 
 	* src/libopenvrml/openvrml/viewer.cpp
