@@ -543,6 +543,14 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
+ * @typedef openvrml::node_type_decls
+ *
+ * @brief A map of node type identifiers to their corresponding
+ *        @c node_interface_set%s.
+ */
+
+
+/**
  * @class openvrml::node_metatype_id openvrml/node.h
  *
  * @brief Identifier for @c node_metatype%s.
@@ -844,12 +852,12 @@ void openvrml::node_metatype::do_render(viewer &) const OPENVRML_NOTHROW
 /**
  * @brief Create a new @c node_type.
  *
- * @c node_type%s can be said to subset the master type provided by the @c
- * node_metatype.  Each @c node_metatype instance can support certain @c node
- * interfaces; the @c node_interface_set passed to @c
- * node_metatype::create_type must be a subset of those supported interfaces.
+ * @c node_type%s can be said to subset the master type provided by the
+ * @c node_metatype.  Each @c node_metatype instance can support certain
+ * @c node interfaces; the @c node_interface_set passed to @c #create_type
+ * must be a subset of those supported interfaces.
  *
- * This function delegates to @c node_metatype::do_create_type.
+ * This function delegates to @c #do_create_type.
  *
  * @param[in] id            the name for the new @c node_type.
  * @param[in] interfaces    a @c node_interface_set containing the
@@ -888,7 +896,7 @@ openvrml::node_metatype::create_type(const std::string & id,
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa node_metatype::create_type
+ * @sa #create_type
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -1281,7 +1289,9 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @var class openvrml::node::proto_node
+ * @internal
+ *
+ * @var class openvrml::node::local::proto_node
  *
  * @brief A @c PROTO instance.
  */

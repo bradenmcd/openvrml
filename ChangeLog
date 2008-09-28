@@ -1,5 +1,20 @@
 2008-09-27 Braden McDaniel  <braden@endoframe.com>
 
+	Documentation improvements.  No longer use the Doxygen default
+	style sheet at all.  Also, added X3D link to the page footer.
+
+	* doc/Doxyfile
+	* doc/doxygen-footer
+	* doc/doxygen-header
+	* doc/manual/x3d-white-on-black.png
+	* src/libopenvrml/openvrml/local/proto.cpp
+	* src/libopenvrml/openvrml/local/proto.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/script.cpp
+
+2008-09-27 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for the Visual C++ build.
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj

@@ -347,32 +347,32 @@ namespace openvrml {
 /**
  * @internal
  *
- * @class abstract_proto_node::proto_eventin
+ * @class openvrml::local::abstract_proto_node::proto_eventin
  *
  * @brief @c PROTO @c eventIn handler class template.
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventin::listeners
+ * @typedef openvrml::local::abstract_proto_node::proto_eventin::listeners
  *
  * @brief Set of event listeners.
  */
 
 /**
- * @var abstract_proto_node::proto_eventin::listeners abstract_proto_node::proto_eventin::listeners_
+ * @var openvrml::local::abstract_proto_node::proto_eventin::listeners openvrml::local::abstract_proto_node::proto_eventin::listeners_
  *
  * @brief Set of event listeners to which events are delegated for
  *        processing.
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventin::field_value_type
+ * @typedef openvrml::local::abstract_proto_node::proto_eventin::field_value_type
  *
  * @brief Field value type.
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventin::event_listener_type
+ * @typedef openvrml::local::abstract_proto_node::proto_eventin::event_listener_type
  *
  * @brief Type of event listeners to which the instance delegates.
  */
@@ -463,7 +463,7 @@ is(event_listener_type & listener)
 /**
  * @internal
  *
- * @class abstract_proto_node::proto_eventout
+ * @class openvrml::local::abstract_proto_node::proto_eventout
  *
  * @brief @c PROTO @c eventOut handler class template.
  */
@@ -471,7 +471,7 @@ is(event_listener_type & listener)
 /**
  * @internal
  *
- * @class abstract_proto_node::proto_eventout::listener_t
+ * @class openvrml::local::abstract_proto_node::proto_eventout::listener_t
  *
  * @brief Listens for events emitted from @c node%s in the @c PROTO
  *        implementation in order to propagate them out of the @c PROTO
@@ -479,7 +479,7 @@ is(event_listener_type & listener)
  */
 
 /**
- * @var abstract_proto_node::proto_eventout & abstract_proto_node::proto_eventout::listener_t::emitter
+ * @var openvrml::local::abstract_proto_node::proto_eventout & abstract_proto_node::proto_eventout::listener_t::emitter
  *
  * @brief Reference to the outer @c proto_eventout class.
  *
@@ -490,13 +490,13 @@ is(event_listener_type & listener)
  */
 
 /**
- * @var abstract_proto_node & abstract_proto_node::proto_eventout::listener_t::node
+ * @var openvrml::local::abstract_proto_node & openvrml::local::abstract_proto_node::proto_eventout::listener_t::node
  *
  * @brief Reference to the @c abstract_proto_node instance.
  */
 
 /**
- * @var FieldValue abstract_proto_node::proto_eventout::listener_t::value
+ * @var FieldValue openvrml::local::abstract_proto_node::proto_eventout::listener_t::value
  *
  * @brief The value of the most recently emitted event.
  */
@@ -562,7 +562,7 @@ do_process_event(const FieldValue & value, const double timestamp)
 }
 
 /**
- * @var abstract_proto_node::proto_eventout::listener_t abstract_proto_node::proto_eventout::listener
+ * @var openvrml::local::abstract_proto_node::proto_eventout::listener_t abstract_proto_node::proto_eventout::listener
  *
  * @brief Listens for events emitted from nodes in the @c PROTO
  *        implementation in order to propagate them out of the @c PROTO
@@ -570,19 +570,19 @@ do_process_event(const FieldValue & value, const double timestamp)
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventout<FieldValue>::field_value_type
+ * @typedef openvrml::local::abstract_proto_node::proto_eventout<FieldValue>::field_value_type
  *
  * @brief Field value type.
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventout<FieldValue>::event_emitter_type
+ * @typedef openvrml::local::abstract_proto_node::proto_eventout<FieldValue>::event_emitter_type
  *
  * @brief Event emitter type.
  */
 
 /**
- * @typedef abstract_proto_node::proto_eventout<FieldValue>::event_listener_type
+ * @typedef openvrml::local::abstract_proto_node::proto_eventout<FieldValue>::event_listener_type
  *
  * @brief Event listener type.
  */

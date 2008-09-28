@@ -12,16 +12,11 @@
 <link rel="index" href="functions" title="OpenVRML Compound Members">
 <link rel="appendix" href="conformance" title="Conformance Test Results">
 <style type="text/css">
-@import url("doxygen.css");
 @import url("tabs.css");
 @import url("http://openvrml.org/openvrml.css");
 
-body, td {
-  font-size: 100%;
-}
-
-p, center, td, th, ul, dl, div {
-  font-family: inherit;
+table {
+  width: 100%;
 }
 
 h2 {
@@ -47,22 +42,22 @@ div.navpath {
   padding-bottom: 0.5em;
 }
 
-div.nav a.el:link, div.nav a.el:visited,
-div.navpath a.el:link, div.navpath a.el:visited {
+div.nav :link, div.nav :visited,
+div.navpath :link, div.navpath :visited {
   border-width: 1px;
   border-style: solid;
   border-color: silver;
   padding: 2px;
 }
 
-div.nav a.el:link:hover, div.nav a.el:visited:hover,
-div.navpath a.el:link:hover, div.navpath a.el:visited:hover {
+div.nav :link:hover, div.nav :visited:hover,
+div.navpath :link:hover, div.navpath :visited:hover {
   border-style: outset;
   border-color: gray;
 }
 
-div.nav a.el:active,
-div.navpath a.el:active {
+div.nav :active,
+div.navpath :active {
   border-style: inset;
   border-color: gray;
 }
@@ -71,70 +66,26 @@ div.navpath a.el:active {
   background-color: transparent;
 }
 
-div.qindex {
-  background-color: transparent;
-  border: none;
-}
-a {
-  color: inherit;
-}
-a.qindex {
-  text-decoration: inherit;
-  color: inherit;
-  padding: 0;
-}
-a.qindex:visited {
-  text-decoration: inherit;
-  font-weight: inherit;
-  color: inherit;
-  padding: 0;
-}
-a.qindex:hover {
-  text-decoration: inherit;
-  background-color: transparent;
-  padding: 0;
-}
-a.qindexHL {
-  text-decoration: inherit;
-  font-weight: inherit;
-  background-color: transparent;
-  color: inherit;
-  padding: 0;
-}
-a.qindexHL:hover {
-  text-decoration: inherit;
-  background-color: transparent;
-  color: inherit;
-  padding: 0;
-}
-a.qindexHL:visited {
-  text-decoration: inherit;
-  background-color: transparent;
-  color: inherit;
-}
-a.el {
+.el {
   text-decoration: inherit;
   font-weight: inherit
 }
-a.elRef {
+.elRef {
   font-weight: inherit
 }
-a.code:link, a.code:visited {
+.code:link, .code:visited {
   text-decoration: inherit;
   font-weight: inherit;
   color: inherit;
 }
-a.codeRef:link {
+.codeRef:link {
   font-weight: normal;
   color: inherit;
 }
-a {
-  color: inherit;
-}
-a:visited {
+:visited {
   color: silver;
 }
-a:hover {
+:link:hover {
   color: inherit;
   text-decoration: inherit;
   background-color: transparent;
@@ -142,18 +93,6 @@ a:hover {
 
 h1 {
   line-height: 1.2em;
-}
-
-div.qindex {
-  font-size: smaller;
-}
-
-div.qindex .qindex:link, div.qindex .qindex:visited {
-  font-weight: inherit;
-}
-
-div.qindex .qindexHL:link, div.qindex .qindexHL:visited {
-  font-weight: bold;
 }
 
 td.memItemLeft, td.memItemRight,
@@ -164,6 +103,28 @@ td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight,
 
 td.memItemLeft, td.memItemRight, td.mdescLeft, td.mdescRight {
   background-color: rgb(95%, 95%, 95%);
+  border-color: rgb(65%, 65%, 65%);
+  border-width: 1px;
+  font-size: smaller;
+}
+
+.memItemLeft {
+  margin-top: 0.5em;
+  border-top-style: solid;
+}
+.mdescLeft {
+  border-bottom-style: solid;
+}
+.memItemRight {
+  border-top-style: solid;
+  margin-top: 0.5em;
+}
+.mdescRight {
+  border-bottom-style: solid;
+}
+
+.mdescRight {
+  font-style: italic;
 }
 
 .mdTable {
@@ -188,14 +149,39 @@ td.invalid {
 }
 
 .memitem {
-  background-color: rgb(95%, 95%, 95%);
-  border-color: rgb(80%, 80%, 80%);
+  padding: 0;
+}
+
+.memitem table {
+  width: auto;
+}
+
+.memproto, .memdoc {
+  border-width: 1px;
+  border-color: rgb(65%, 65%, 65%);
 }
 
 .memproto {
   background-color: rgb(90%, 90%, 90%);
-  border-color: rgb(65%, 65%, 65%);
   font-weight: inherit;
+  font-size: smaller;
+  border-top-style: solid;
+  border-left-style: solid;
+  border-right-style: solid;
+  -webkit-border-top-left-radius: 0.6em;
+  -webkit-border-top-right-radius: 0.6em;
+  -moz-border-radius-topleft: 0.6em;
+  -moz-border-radius-topright: 0.6em;
+}
+
+.memdoc {
+  background-color: rgb(95%, 95%, 95%);
+  padding: 2px 5px;
+  border-style: solid;
+  -webkit-border-bottom-left-radius: 0.6em;
+  -webkit-border-bottom-right-radius: 0.6em;
+  -moz-border-radius-bottomleft: 0.6em;
+  -moz-border-radius-bottomright: 0.6em;
 }
 
 .memname {

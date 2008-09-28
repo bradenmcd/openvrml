@@ -54,7 +54,6 @@
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ptr_container/ptr_map.hpp>
 # include <boost/thread/thread.hpp>
-# include <boost/utility.hpp>
 # include <algorithm>
 # include <functional>
 # include <cerrno>

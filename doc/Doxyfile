@@ -93,7 +93,7 @@ INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.cpp \
                          *.h
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                = ../src/libopenvrml/openvrml/local
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_SYMBOLS        = 
 EXAMPLE_PATH           = ../examples

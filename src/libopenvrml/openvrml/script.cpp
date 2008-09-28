@@ -53,7 +53,7 @@ using namespace boost::multi_index::detail;  // for scope_guard
  * @brief Abstract class implemented by scripting language bindings.
  *
  * The runtime instantiates subclasses of script for each VRML97 Script node;
- * and calls its methods appropriately to execute script code.
+ * and calls its methods appropriately to execute %script code.
  */
 
 /**
@@ -75,13 +75,14 @@ using namespace boost::multi_index::detail;  // for scope_guard
 /**
  * @var openvrml::script_node & openvrml::script::node
  *
- * @brief A reference to the script_node that uses this script object.
+ * @brief A reference to the @c script_node that uses this @c script object.
  */
 
 /**
  * @brief Construct.
  *
- * @param[in] node  a reference to the script_node that uses this script object.
+ * @param[in] node  a reference to the @c script_node that uses this @c script
+ *                  object.
  */
 openvrml::script::script(script_node & node):
     node(node)
@@ -96,7 +97,7 @@ openvrml::script::~script()
 /**
  * @brief Initialize the Script node.
  *
- * Delegates to @c script::do_initialize.
+ * Delegates to @c #do_initialize.
  *
  * @param[in] timestamp the current time.
  */
@@ -117,7 +118,7 @@ void openvrml::script::initialize(double timestamp)
 /**
  * @brief Process an event.
  *
- * Delegates to @c script::do_process_event.
+ * Delegates to @c #do_process_event.
  *
  * @param[in] id        eventIn identifier.
  * @param[in] value     event value.
@@ -142,9 +143,9 @@ void openvrml::script::process_event(const std::string & id,
  */
 
 /**
- * @brief Execute script code after processing events.
+ * @brief Execute %script code after processing events.
  *
- * Delegates to @c script::do_events_processed.
+ * Delegates to @c #do_events_processed.
  *
  * @param[in] timestamp the current time.
  */
@@ -156,7 +157,7 @@ void openvrml::script::events_processed(double timestamp)
 /**
  * @fn void openvrml::script::do_events_processed(double timestamp)
  *
- * @brief Execute script code after processing events.
+ * @brief Execute %script code after processing events.
  *
  * @param[in] timestamp the current time.
  */
@@ -164,7 +165,7 @@ void openvrml::script::events_processed(double timestamp)
 /**
  * @brief Shut down the Script node.
  *
- * Delegates to <code>script::do_shutdown</code>.
+ * Delegates to @c #do_shutdown.
  *
  * @param[in] timestamp the current time.
  */
@@ -194,11 +195,12 @@ bool openvrml::script::direct_output() const OPENVRML_NOTHROW
 }
 
 /**
- * @brief Whether the browser may delay sending input events to the script
- *        until its outputs are needed by the browser.
+ * @brief Whether the @c browser may delay sending input events to the
+ *        @c script until its outputs are needed by the browser.
  *
- * @return @c true if the browser may delay sending input events to the script
- *         until its outputs are needed by the browser; @c false otherwise.
+ * @return @c true if the @c browser may delay sending input events to the
+ *         @c script until its outputs are needed by the @c browser; @c false
+ *         otherwise.
  */
 bool openvrml::script::must_evaluate() const OPENVRML_NOTHROW
 {
@@ -284,12 +286,12 @@ namespace {
 /**
  * @internal
  *
- * @brief Process direct outputs in @a script::direct_output_map_.
+ * @brief Process direct outputs in @a #direct_output_map_.
  *
  * This function is called at the end of initialization and processing normal
  * events.
  *
- * @post <code>script::direct_output_map_.empty()</code> is @c true.
+ * @post @c script::direct_output_map_.empty() is @c true.
  */
 void openvrml::script::process_direct_output(double timestamp)
 {
@@ -326,7 +328,7 @@ openvrml::script_factory::~script_factory() OPENVRML_NOTHROW
 {}
 
 /**
- * @fn std::auto_ptr<openvrml::script> openvrml::script_factory::create_script(script_node & node, const boost::shared_ptr<std::istream> & source)
+ * @fn std::auto_ptr<openvrml::script> openvrml::script_factory::create_script(script_node & node, const boost::shared_ptr<resource_istream> & source)
  *
  * @brief Create a @c script.
  *
@@ -351,7 +353,7 @@ openvrml::script_factory::~script_factory() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @var class script_factory_registry::script_node
+ * @var class openvrml::script_factory_registry::script_node
  *
  * @brief @c script_node is the only class that should ever need to
  *        instantiate @c script_factory_registry.
@@ -630,7 +632,7 @@ register_factory(const std::set<std::string> & media_types,
  *
  * @brief Class object for @c script_node%s.
  *
- * There is one @c script_node_metatype per browser instance.
+ * There is one @c script_node_metatype per @c browser instance.
  *
  * @see browser::scriptNodeClass
  */
@@ -679,7 +681,7 @@ openvrml::script_node_metatype::do_create_type(const std::string &,
  *
  * @var class openvrml::script_node::script
  *
- * @brief Abstract base class for script runtimes.
+ * @brief Abstract base class for %script runtimes.
  */
 
 /**
@@ -1836,7 +1838,7 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
 /**
  * @internal
  *
- * @var openvrml::script_node::event_listener_map_t openvrml::script_node::event_listener_map
+ * @var openvrml::script_node::event_listener_map_t openvrml::script_node::event_listener_map_
  *
  * @brief Map of event listeners.
  */

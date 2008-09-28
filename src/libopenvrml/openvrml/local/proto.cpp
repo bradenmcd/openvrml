@@ -958,7 +958,7 @@ openvrml::local::abstract_proto_node::~abstract_proto_node() OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @class proto_node::proto_exposedfield
+ * @class openvrml::local::proto_node::proto_exposedfield
  *
  * @brief @c PROTO @c exposedField handler class template.
  */
