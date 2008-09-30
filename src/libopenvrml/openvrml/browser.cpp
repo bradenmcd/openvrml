@@ -1099,7 +1099,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
                  resource_id != uri_list.end();
                  ++resource_id) {
                 const uri absolute_uri = relative(uri(*resource_id))
-                    ? uri(*resource_id).resolve_against(base_uri)
+                    ? resolve_against(uri(*resource_id), base_uri)
                     : uri(*resource_id);
                 const shared_ptr<openvrml::node_metatype> node_metatype =
                     this->actions_.scene_.browser().node_metatype(
@@ -1132,7 +1132,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
                      resource_id != uri_list.end();
                      ++resource_id) {
                     const uri absolute_uri = relative(uri(*resource_id))
-                        ? uri(*resource_id).resolve_against(base_uri)
+                        ? resolve_against(uri(*resource_id), base_uri)
                         : uri(*resource_id);
                     this->actions_.scene_.browser()
                         .add_node_metatype(node_metatype_id(absolute_uri),
@@ -2478,7 +2478,8 @@ struct OPENVRML_LOCAL openvrml::browser::externproto_node_metatype::load_proto {
                 scope_guard guard =
                     make_obj_guard(
                         *this->externproto_node_metatype_,
-                        &externproto_node_metatype::clear_externproto_node_types);
+                        &externproto_node_metatype::
+                            clear_externproto_node_types);
                 boost::ignore_unused_variable_warning(guard);
 
                 auto_ptr<resource_istream> in =
@@ -2506,16 +2507,17 @@ struct OPENVRML_LOCAL openvrml::browser::externproto_node_metatype::load_proto {
                         ? uri(*alt_uri)
                         : this->scene_->url().empty()
                             ? create_file_url(uri(*alt_uri))
-                            : uri(*alt_uri).resolve_against(
-                                uri(this->scene_->url()));
+                            : resolve_against(uri(*alt_uri), 
+                                              uri(this->scene_->url()));
 
                     const shared_ptr<openvrml::node_metatype> node_metatype =
                         this->scene_->browser().node_metatype(
                             node_metatype_id(absolute_uri));
 
                     proto_node_metatype =
-                        dynamic_pointer_cast<openvrml::local::proto_node_metatype>(
-                            node_metatype);
+                        dynamic_pointer_cast<
+                            openvrml::local::proto_node_metatype>(
+                                node_metatype);
                 }
 
                 if (!proto_node_metatype) {

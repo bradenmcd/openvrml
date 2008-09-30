@@ -45,7 +45,7 @@ namespace openvrml {
                 actor_(actor),
                 begin_(begin),
                 end_(end)
-                {}
+            {}
 
             template <typename T>
             struct result {
@@ -55,9 +55,9 @@ namespace openvrml {
             template <typename Tuple>
             typename phoenix::actor_result<this_type, Tuple>::type
             eval(Tuple) const
-                {
+            {
                     this->actor_(this->begin_(), this->end_());
-                }
+            }
         };
 
         template <typename SpiritActor, typename Iterator1, typename Iterator2>
@@ -79,7 +79,7 @@ namespace openvrml {
             struct null_action {
                 template <typename Iterator>
                 void operator()(const Iterator &, const Iterator &) const
-                    {}
+                {}
             };
 
             null_action scheme, scheme_specific_part, userinfo, host, port,
@@ -838,10 +838,11 @@ namespace openvrml {
             const std::string path() const OPENVRML_THROW1(std::bad_alloc);
             const std::string query() const OPENVRML_THROW1(std::bad_alloc);
             const std::string fragment() const OPENVRML_THROW1(std::bad_alloc);
-
-            const uri resolve_against(const uri & absolute_uri) const
-                OPENVRML_THROW1(std::bad_alloc);
         };
+
+        OPENVRML_LOCAL const uri resolve_against(const uri & relative_uri,
+                                                 const uri & absolute_uri)
+            OPENVRML_THROW1(std::bad_alloc);
 
         OPENVRML_LOCAL inline bool relative(const uri & id)
         {

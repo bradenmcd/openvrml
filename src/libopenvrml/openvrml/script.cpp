@@ -2503,7 +2503,8 @@ std::auto_ptr<openvrml::script> openvrml::script_node::create_script()
                          : (!this->scene()->parent()
                             && this->scene()->url().empty())
                              ? create_file_url(test_uri)
-                             : test_uri.resolve_against(uri(this->scene()->url()));
+                             : resolve_against(test_uri,
+                                               uri(this->scene()->url()));
             in = this->scene()->browser().fetcher_.get_resource(absolute_uri);
         } catch (invalid_url &) {
             std::ostringstream msg;

@@ -27,7 +27,7 @@ using namespace boost::multi_index::detail;  // for scope_guard
 # endif
 
 openvrml::local::uri::uri() OPENVRML_THROW1(std::bad_alloc):
-scheme_begin(this->str_.begin()),
+    scheme_begin(this->str_.begin()),
     scheme_end(this->str_.begin()),
     scheme_specific_part_begin(this->str_.begin()),
     scheme_specific_part_end(this->str_.begin()),
@@ -339,22 +339,23 @@ const std::string openvrml::local::uri::fragment() const
 }
 
 const openvrml::local::uri
-openvrml::local::uri::resolve_against(const uri & absolute_uri) const
+openvrml::local::resolve_against(const uri & relative_uri,
+                                 const uri & absolute_uri)
     OPENVRML_THROW1(std::bad_alloc)
 {
     using std::list;
     using std::string;
     using std::ostringstream;
 
-    assert(relative(*this));
+    assert(relative(relative_uri));
     assert(!relative(absolute_uri));
 
     ostringstream result;
     result.unsetf(ostringstream::skipws);
     result << absolute_uri.scheme() << ':';
 
-    if (!this->authority().empty()) {
-        result << this->scheme_specific_part();
+    if (!relative_uri.authority().empty()) {
+        result << relative_uri.scheme_specific_part();
         return uri(result.str());
     } else {
         result << "//" << absolute_uri.authority();
@@ -376,7 +377,7 @@ openvrml::local::uri::resolve_against(const uri & absolute_uri) const
     //
     // Append the relative path.
     //
-    path << this->path();
+    path << relative_uri.path();
 
     //
     // Put the path segments in a list to process them.
@@ -431,14 +432,14 @@ openvrml::local::uri::resolve_against(const uri & absolute_uri) const
     //
     // End in a slash?
     //
-    if (*(this->path().end() - 1) == '/') { path << '/'; }
+    if (*(relative_uri.path().end() - 1) == '/') { path << '/'; }
 
     result << path.str();
 
-    const string query = this->query();
+    const string query = relative_uri.query();
     if (!query.empty()) { result << '?' << query; }
 
-    const string fragment = this->fragment();
+    const string fragment = relative_uri.fragment();
     if (!fragment.empty()) { result << '#' << fragment; }
 
     uri result_uri;
@@ -514,7 +515,7 @@ openvrml::local::create_file_url(const uri & relative_uri)
         base_uri << '/';
     }
 
-    const uri result = relative_uri.resolve_against(uri(base_uri.str()));
+    const uri result = resolve_against(relative_uri, uri(base_uri.str()));
     return result;
 }
 

@@ -1,3 +1,15 @@
+2008-09-30 Braden McDaniel  <braden@endoframe.com>
+
+	Moved openvrml::local::uri::resolve_against to
+	openvrml::local::resolve_against (i.e., made it a nonmember
+	function).
+
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/uri.h
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/script.cpp
+
 2008-09-28 Braden McDaniel  <braden@endoframe.com>
 
 	Updated version to 0.17.99.

@@ -349,7 +349,7 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
     using std::string;
     using local::uri;
     return (this->parent_ && !this->url_.empty() && relative(uri(this->url_)))
-        ? string(uri(this->url_).resolve_against(uri(this->parent_->url())))
+        ? string(resolve_against(uri(this->url_), uri(this->parent_->url())))
         : this->url_;
 }
 
@@ -553,7 +553,7 @@ void openvrml::scene::load_url(const std::vector<std::string> & url,
                     const uri urlElement(url[i]);
                     const string value =
                         relative(urlElement)
-                            ? urlElement.resolve_against(uri(this->url()))
+                            ? resolve_against(urlElement, uri(this->url()))
                             : urlElement;
                     absoluteURIs[i] = value;
                 } catch (invalid_url & ex) {
@@ -607,7 +607,7 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
                          ? test_uri
                          : (!this->parent() && this->url().empty())
                              ? create_file_url(test_uri)
-                             : test_uri.resolve_against(uri(this->url()));
+                             : resolve_against(test_uri, uri(this->url()));
             in = this->browser().fetcher_.get_resource(absolute_uri);
         } catch (invalid_url &) {
             std::ostringstream msg;
