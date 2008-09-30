@@ -824,7 +824,7 @@ namespace openvrml {
 
             uri & operator=(const uri & id) OPENVRML_THROW1(std::bad_alloc);
 
-            operator std::string() const OPENVRML_THROW1(std::bad_alloc);
+            operator const std::string() const OPENVRML_THROW1(std::bad_alloc);
 
             void swap(uri & id) OPENVRML_NOTHROW;
 

@@ -1,5 +1,14 @@
 2008-09-30 Braden McDaniel  <braden@endoframe.com>
 
+	In the spirit of not returning mutable instances by value, change
+	uri's std::string conversion operator to convert to a const
+	std::string.
+
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/uri.h
+
+2008-09-30 Braden McDaniel  <braden@endoframe.com>
+
 	Moved openvrml::local::uri::resolve_against to
 	openvrml::local::resolve_against (i.e., made it a nonmember
 	function).

@@ -133,7 +133,7 @@ openvrml::local::uri & openvrml::local::uri::operator=(const uri & id)
     return *this;
 }
 
-openvrml::local::uri::operator std::string() const
+openvrml::local::uri::operator const std::string() const
     OPENVRML_THROW1(std::bad_alloc)
 {
     return this->str_;
