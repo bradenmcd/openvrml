@@ -3,6 +3,7 @@
 <node name="/org/openvrml/BrowserFactory">
   <interface name="org.openvrml.BrowserFactory">
     <method name="CreateControl">
+      <annotation name="org.freedesktop.DBus.GLib.Async" value="true" />
       <arg type="s" name="host_name" direction="in" />
       <arg type="o" name="host_object_path" direction="in" />
       <arg type="t" name="host_id" direction="in" />

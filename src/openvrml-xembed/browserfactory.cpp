@@ -19,9 +19,15 @@
 //
 
 # include <boost/concept_check.hpp>
+# include <boost/intrusive_ptr.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
+# include <gtk/gtk.h>
 # include <dbus/dbus-glib-bindings.h>
+# include <dbus/dbus-glib-lowlevel.h>
+# include <map>
+# include <memory>
+# include <cstring>
 # include <cstdlib>
 
 # include "browserfactory.h"
@@ -30,33 +36,132 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
+# define OPENVRML_XEMBED_ERROR openvrml_xembed_error_quark()
+GQuark openvrml_xembed_error_quark()
+{
+    return g_quark_from_static_string("openvrml-xembed-error-quark");
+}
+
+enum OpenvrmlXembedError {
+    OPENVRML_XEMBED_ERROR_FAILED,
+    OPENVRML_XEMBED_ERROR_NO_MEMORY
+};
+
 G_DEFINE_TYPE(OpenvrmlXembedBrowserFactory,
               openvrml_xembed_browser_factory,
               G_TYPE_OBJECT);
 
+namespace {
+    G_GNUC_INTERNAL void intrusive_ptr_add_ref(GObject * const obj)
+    {
+        g_object_ref(obj);
+    }
+
+    G_GNUC_INTERNAL void intrusive_ptr_release(GObject * const obj)
+    {
+        g_object_unref(obj);
+    }
+}
+
+//
+// hosts maps the unique bus identifiers of hosts to a controls_map_t; a
+// controls_map_t maps an object path to an OpenvrmlXembedBrowser instance.
+//
+
+typedef std::map<std::string, boost::intrusive_ptr<GObject> > controls_map_t;
+typedef std::map<std::string, controls_map_t > hosts_map_t;
+
+struct OpenvrmlXembedBrowserFactoryPrivate_ {
+    DBusGProxy * driver_proxy;
+    hosts_map_t * hosts;
+};
+
+# define OPENVRML_XEMBED_BROWSER_FACTORY_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENVRML_XEMBED_TYPE_BROWSER_FACTORY, OpenvrmlXembedBrowserFactoryPrivate))
+
+extern "C"
+G_GNUC_INTERNAL
+GObject *
+openvrml_xembed_browser_factory_constructor(
+    const GType type,
+    const guint n_construct_properties,
+    GObjectConstructParam * const construct_properties)
+{
+    GObject * obj;
+    {
+        OpenvrmlXembedBrowserFactoryClass * const klass =
+            OPENVRML_XEMBED_BROWSER_FACTORY_CLASS(
+                g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER_FACTORY));
+        GObjectClass * const parent_class =
+            G_OBJECT_CLASS(g_type_class_peek_parent(klass));
+        obj = parent_class->constructor(type,
+                                        n_construct_properties,
+                                        construct_properties);
+    }
+
+    try {
+        using std::auto_ptr;
+        OpenvrmlXembedBrowserFactory * const browser_factory =
+            OPENVRML_XEMBED_BROWSER_FACTORY(obj);
+        auto_ptr<hosts_map_t> hosts(new hosts_map_t);
+        browser_factory->priv->hosts = hosts.release();
+    } catch (std::bad_alloc &) {
+        return 0;
+    }
+
+    return obj;
+}
+
+extern "C"
+G_GNUC_INTERNAL
+void
+openvrml_xembed_browser_factory_finalize(GObject * const obj)
+{
+    OpenvrmlXembedBrowserFactory * browser_factory =
+        OPENVRML_XEMBED_BROWSER_FACTORY(obj);
+    delete browser_factory->priv->hosts;
+    g_object_unref(browser_factory->priv->driver_proxy);
+
+    OpenvrmlXembedBrowserFactoryClass * const klass =
+        OPENVRML_XEMBED_BROWSER_FACTORY_CLASS(
+            g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER_FACTORY));
+    GObjectClass * const parent_class =
+        G_OBJECT_CLASS(g_type_class_peek_parent(klass));
+    parent_class->finalize(obj);
+}
+
+
+extern "C"
+G_GNUC_INTERNAL
+gboolean
+openvrml_xembed_browser_factory_name_owner_changed(DBusGProxy * proxy,
+                                                   const gchar * name,
+                                                   const gchar * old_owner,
+                                                   const gchar * new_owner,
+                                                   gpointer user_data);
 void
 openvrml_xembed_browser_factory_init(
-    OpenvrmlXembedBrowserFactory * control_factory)
+    OpenvrmlXembedBrowserFactory * const browser_factory)
 {
+    browser_factory->priv =
+        OPENVRML_XEMBED_BROWSER_FACTORY_GET_PRIVATE(browser_factory);
+
     GError * error = 0;
     scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
-    OpenvrmlXembedBrowserFactoryClass * control_factory_class =
-        OPENVRML_XEMBED_BROWSER_FACTORY_GET_CLASS(control_factory);
+    OpenvrmlXembedBrowserFactoryClass * browser_factory_class =
+        OPENVRML_XEMBED_BROWSER_FACTORY_GET_CLASS(browser_factory);
 
-    dbus_g_connection_register_g_object(control_factory_class->connection,
+    dbus_g_connection_register_g_object(browser_factory_class->connection,
                                         "/org/openvrml/BrowserFactory",
-                                        G_OBJECT(control_factory));
+                                        G_OBJECT(browser_factory));
 
-    DBusGProxy * driver_proxy =
-        dbus_g_proxy_new_for_name(control_factory_class->connection,
+    browser_factory->priv->driver_proxy =
+        dbus_g_proxy_new_for_name(browser_factory_class->connection,
                                   DBUS_SERVICE_DBUS,
                                   DBUS_PATH_DBUS,
                                   DBUS_INTERFACE_DBUS);
-    scope_guard driver_proxy_guard = make_guard(g_object_unref, driver_proxy);
-    boost::ignore_unused_variable_warning(driver_proxy_guard);
 
     guint request_ret;
-    if (!org_freedesktop_DBus_request_name(driver_proxy,
+    if (!org_freedesktop_DBus_request_name(browser_factory->priv->driver_proxy,
                                            "org.openvrml.BrowserControl",
                                            0, &request_ret,
                                            &error)) {
@@ -65,8 +170,17 @@ openvrml_xembed_browser_factory_init(
         return;
     }
 
-    control_factory->controls =
-        g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+    dbus_g_proxy_add_signal(browser_factory->priv->driver_proxy,
+                            "NameOwnerChanged",
+                            G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+                            G_TYPE_INVALID);
+
+    dbus_g_proxy_connect_signal(
+        browser_factory->priv->driver_proxy,
+        "NameOwnerChanged",
+        G_CALLBACK(openvrml_xembed_browser_factory_name_owner_changed),
+        browser_factory,
+        0);
 
     error_guard.dismiss();
 }
@@ -75,6 +189,11 @@ void
 openvrml_xembed_browser_factory_class_init(
     OpenvrmlXembedBrowserFactoryClass * klass)
 {
+    G_OBJECT_CLASS(klass)->constructor =
+        openvrml_xembed_browser_factory_constructor;
+    G_OBJECT_CLASS(klass)->finalize =
+        openvrml_xembed_browser_factory_finalize;
+
     GError * error = 0;
     scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
 
@@ -83,6 +202,10 @@ openvrml_xembed_browser_factory_class_init(
         g_critical("Failed to get session bus: %s", error->message);
         return;
     }
+
+
+    g_type_class_add_private(G_OBJECT_CLASS(klass),
+                             sizeof (OpenvrmlXembedBrowserFactoryPrivate));
 
     dbus_g_object_type_install_info(
         OPENVRML_XEMBED_TYPE_BROWSER_FACTORY,
@@ -100,6 +223,7 @@ openvrml_xembed_browser_factory_on_host_shutdown_event(DBusGProxy * proxy,
 namespace {
     struct on_host_shutdown_data {
         OpenvrmlXembedBrowserFactory * factory;
+        gchar * host_name;
         gchar * control_obj_path;
     };
 }
@@ -108,18 +232,25 @@ extern "C"
 G_GNUC_INTERNAL
 void delete_on_host_shutdown_data(gpointer data, GClosure * /* closure */)
 {
-    delete static_cast<on_host_shutdown_data *>(data);
+    on_host_shutdown_data * const d =
+        static_cast<on_host_shutdown_data *>(data);
+    g_free(d->control_obj_path);
+    g_free(d->host_name);
+    delete d;
 }
 
-char *
+gboolean
 openvrml_xembed_browser_factory_create_control(
     OpenvrmlXembedBrowserFactory * const control_factory,
     const char * const host_name,
     const char * const host_obj_path,
     const guint host_id,
     const gboolean expect_initial_stream,
-    GError ** const error)
+    DBusGMethodInvocation * const context)
 {
+    GError * error = 0;
+    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+
     DBusGProxy * host =
         dbus_g_proxy_new_for_name_owner(
             OPENVRML_XEMBED_BROWSER_FACTORY_GET_CLASS(
@@ -127,15 +258,24 @@ openvrml_xembed_browser_factory_create_control(
             host_name,
             host_obj_path,
             "org.openvrml.BrowserHost",
-            error);
-    if (!host) { return 0; }
+            &error);
+    if (!host) {
+        dbus_g_method_return_error(context, error);
+        return false;
+    }
 
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(
             openvrml_xembed_browser_new(host,
                                         host_id,
                                         expect_initial_stream));
-    g_return_val_if_fail(browser, 0);
+    if (!browser) {
+        error = g_error_new(OPENVRML_XEMBED_ERROR,
+                            OPENVRML_XEMBED_ERROR_NO_MEMORY,
+                            "out of memory");
+        dbus_g_method_return_error(context, error);
+        return false;
+    }
 
     static size_t control_count = 0;
     char * control_obj_path = g_strdup_printf("/org/openvrml/Browser/%lu",
@@ -145,12 +285,35 @@ openvrml_xembed_browser_factory_create_control(
         control_obj_path,
         G_OBJECT(browser));
 
+    char * const sender = dbus_g_method_get_sender(context);
+    scope_guard sender_guard = make_guard(g_free, sender);
+    boost::ignore_unused_variable_warning(sender_guard);
+    bool succeeded;
+    try {
+        using std::make_pair;
+        succeeded =
+            (*control_factory->priv->hosts)[sender].insert(
+                make_pair(control_obj_path,
+                          boost::intrusive_ptr<GObject>(G_OBJECT(browser))))
+            .second;
+        g_debug("inserted reference to %s", sender);
+    } catch (std::bad_alloc & ex) {
+        error = g_error_new(OPENVRML_XEMBED_ERROR,
+                            OPENVRML_XEMBED_ERROR_NO_MEMORY,
+                            "out of memory");
+        dbus_g_method_return_error(context, error);
+        return false;
+    }
+
+    g_return_val_if_fail(succeeded, false);
+
     on_host_shutdown_data * const data = new on_host_shutdown_data;
     data->factory = control_factory;
     //
-    // Note that D-Bus frees the return value; so we need to strdup the one
-    // in the hash map.
+    // Note that D-Bus frees the return value; so we need to strdup one to
+    // keep.
     //
+    data->host_name        = g_strdup(sender);
     data->control_obj_path = g_strdup(control_obj_path);
 
     dbus_g_proxy_add_signal(host, "Shutdown", G_TYPE_INVALID);
@@ -162,10 +325,6 @@ openvrml_xembed_browser_factory_create_control(
         data,
         delete_on_host_shutdown_data);
 
-    g_hash_table_insert(control_factory->controls,
-                        data->control_obj_path, // was strdup'd above
-                        g_object_ref(browser));
-
     //
     // The plug needs to be realized before it gets shown.  Explicitly
     // realizing here seems like the most convenient way to ensure this
@@ -174,7 +333,11 @@ openvrml_xembed_browser_factory_create_control(
     gtk_widget_realize(GTK_WIDGET(browser));
     gtk_widget_show_all(GTK_WIDGET(browser));
 
-    return control_obj_path;
+    dbus_g_method_return(context, control_obj_path);
+
+    error_guard.dismiss();
+
+    return true;
 }
 
 gboolean
@@ -184,9 +347,41 @@ openvrml_xembed_browser_factory_on_host_shutdown_event(DBusGProxy * /* proxy */,
     on_host_shutdown_data * const data =
         static_cast<on_host_shutdown_data *>(user_data);
 
-    gboolean removed = g_hash_table_remove(data->factory->controls,
-                                           data->control_obj_path);
-    g_assert(removed);
+    const hosts_map_t::iterator pos =
+        data->factory->priv->hosts->find(data->host_name);
+    g_return_val_if_fail(pos != data->factory->priv->hosts->end(), false);
+
+    const size_t erased = pos->second.erase(data->control_obj_path);
+    g_return_val_if_fail(erased > 0, false);
+
+    return false;
+}
+
+gboolean
+openvrml_xembed_browser_factory_name_owner_changed(
+    DBusGProxy * /* proxy */,
+    const gchar * /* name */,
+    const gchar * const old_owner,
+    const gchar * const new_owner,
+    const gpointer user_data)
+{
+    OpenvrmlXembedBrowserFactory * const browser_factory =
+        OPENVRML_XEMBED_BROWSER_FACTORY(user_data);
+
+    //
+    // If there's no new owner, the existing owner is simply leaving (i.e.,
+    // terminating.  Clean up resources associated with that host.  If that
+    // was the last host, quit.
+    //
+    size_t erased = 0;
+    if (strlen(new_owner) == 0) {
+        erased = browser_factory->priv->hosts->erase(old_owner);
+        g_debug("erased references to %s", old_owner);
+    }
+
+    if (erased > 0 && browser_factory->priv->hosts->empty()) {
+        gtk_main_quit();
+    }
 
     return false;
 }
