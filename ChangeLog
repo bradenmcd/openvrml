@@ -1,3 +1,65 @@
+2008-10-02 Braden McDaniel  <braden@endoframe.com>
+
+	Keep track of host instances in openvrml-xembed and shut down when
+	the last one terminates.
+
+	* src/openvrml-xembed/browser-factory.xml: Added
+	"org.freedesktop.DBus.GLib.Async" annotation to CreateControl
+	method.  This allows us to use DBusGMethodInvocation in the method
+	implementation.
+	* src/openvrml-xembed/browserfactory.cpp
+	(openvrml_xembed_error_quark()): GQuark for the GErrors we
+	generate.
+	(OpenvrmlXembedError): GError codes.
+	(intrusive_ptr_add_ref(GObject *)): Added so that
+	boost::intrusive_ptr can be used with GObject.
+	(intrusive_ptr_release(GObject *)): Added so that
+	boost::intrusive_ptr can be used with GObject.
+	(OpenvrmlXembedBrowserFactoryPrivate_): Moved
+	OpenvrmlXembedBrowserFactory data members to a private struct.
+	hosts is a map of the unique bus identifiers of hosts to a map of
+	the controls instantiated by the host.
+	(openvrml_xembed_browser_factory_constructor(GType, guint,
+	GObjectConstructParam *)): Instantiate the hosts map in the
+	constructor function.
+	(openvrml_xembed_browser_factory_finalize(GObject *)): Destroy the
+	hosts map and unref the DBus proxy.
+	(openvrml_xembed_browser_factory_init(OpenvrmlXembedBrowserFactory *)):
+	Use the DBus proxy associated with the
+	OpenvrmlXembedBrowserFactory instance; connect to the
+	org.freedesktop.DBus.NameOwnerChanged signal.
+	(openvrml_xembed_browser_factory_class_init(OpenvrmlXembedBrowserFactoryClass *)):
+	Set constructor and finalize functions; set up private data.
+	(on_host_shutdown_data): Added host_name to hold the unique bus
+	identifier of the host.
+	(delete_on_host_shutdown_data): on_host_shutdown_data now owns the
+	control_obj_path and host_name strings; free them.
+	(openvrml_xembed_browser_factory_create_control(OpenvrmlXembedBrowserFactory *,
+	const char *, const char *, guint, gboolean,
+	DBusGMethodInvocation *)): Get the host's unique bus identifier
+	and track it in the hosts map.
+	(openvrml_xembed_browser_factory_on_host_shutdown_event(DBusGProxy *,
+	gpointer)): Erase the shut down control from the hosts map.  The
+	intrusive_ptr will unref it.
+	(openvrml_xembed_browser_factory_name_owner_changed(DBusGProxy *,
+	const gchar *, const gchar *, const gchar *, gpointer)): Erase the
+	host leaving the bus from the hosts map; this cleans up resources
+	associated with the host.  Quit when the last host leaves.
+	* src/openvrml-xembed/browserfactory.h
+	(OPENVRML_XEMBED_BROWSER_FACTORY_CLASS): Fixed missing third
+	parameter to G_TYPE_CHECK_CLASS_CAST.
+	(OpenvrmlXembedBrowserFactory_): Moved data members to private
+	struct.
+	(openvrml_xembed_browser_factory_create_control(OpenvrmlXembedBrowserFactory *,
+	const char *, const char *, guint, gboolean,
+	DBusGMethodInvocation *)): Changed signature per
+	"org.freedesktop.DBus.GLib.Async" annotation.
+	* src/openvrml-xembed/main.cpp
+	(main(int, char *[])): Removed redundant name request; this is
+	taken care of in the OpenvrmlXembedBrowserFactory implementation.
+	Don't unref the browser_factory; this seems not to play well with
+	dbus_g_connection_register_g_object.
+
 2008-09-30 Braden McDaniel  <braden@endoframe.com>
 
 	In the spirit of not returning mutable instances by value, change

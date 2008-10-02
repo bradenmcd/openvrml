@@ -95,32 +95,16 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    DBusGProxy * bus_proxy = dbus_g_proxy_new_for_name(bus,
-                                                       "org.freedesktop.DBus",
-                                                       "/org/freedesktop/DBus",
-                                                       "org.freedesktop.DBus");
-
-    guint request_name_result;
-    if (!dbus_g_proxy_call(bus_proxy, "RequestName", &error,
-                           G_TYPE_STRING, "org.openvrml.VrmlControlFactory",
-                           G_TYPE_UINT, 0,
-                           G_TYPE_INVALID,
-                           G_TYPE_UINT, &request_name_result,
-                           G_TYPE_INVALID)) {
-        g_printerr(error->message);
-        return EXIT_FAILURE;
-    }
-
-    OpenvrmlXembedBrowserFactory * control_factory =
+    OpenvrmlXembedBrowserFactory * browser_factory =
         OPENVRML_XEMBED_BROWSER_FACTORY(
             g_object_new(OPENVRML_XEMBED_TYPE_BROWSER_FACTORY, 0));
-    scope_guard control_factory_guard =
-        make_guard(g_object_unref, G_OBJECT(control_factory));
-    boost::ignore_unused_variable_warning(control_factory_guard);
+//    scope_guard browser_factory_guard =
+//        make_guard(g_object_unref, G_OBJECT(browser_factory));
+//    boost::ignore_unused_variable_warning(browser_factory_guard);
 
     dbus_g_connection_register_g_object(bus,
                                         "/BrowserFactory",
-                                        G_OBJECT(control_factory));
+                                        G_OBJECT(browser_factory));
 
     gdk_threads_enter();
     gtk_main();
