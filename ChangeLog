@@ -1,5 +1,11 @@
 2008-10-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CPPFLAGS): Can't safely use
+	builddir for relative paths; and we don't need it anyway.
+
+2008-10-03 Braden McDaniel  <braden@endoframe.com>
+
 	Revert to using libglade rather than GtkBuilder in openvrml-player.
 
 	* configure.ac: Don't require Gtk+ 2.12; check for libglade.
