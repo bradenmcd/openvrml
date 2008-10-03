@@ -1,3 +1,9 @@
+2008-10-03 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CPPFLAGS): Can't safely use
+	builddir for relative paths; and we don't need it anyway.
+
 2008-10-02 Braden McDaniel  <braden@endoframe.com>
 
 	Use jlong in JNI function signatures to ensure consistency with

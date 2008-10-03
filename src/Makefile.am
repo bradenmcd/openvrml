@@ -709,8 +709,8 @@ openvrml_player_openvrml_player_CPPFLAGS = \
         -DGNOME_DISABLE_DEPRECATED \
         -DOPENVRML_PLAYER_PKGDATADIR_=\"$(datadir)/openvrml-player\" \
         -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
-        -I$(builddir)/openvrml-player \
-        -I$(builddir)/libopenvrml \
+        -Iopenvrml-player \
+        -Ilibopenvrml \
         -I$(srcdir)/libopenvrml
 openvrml_player_openvrml_player_CXXFLAGS = \
         $(DBUS_G_CFLAGS) \
