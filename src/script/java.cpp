@@ -3236,9 +3236,9 @@ jstring JNICALL Java_vrml_field_ConstSFString_getValue(JNIEnv * const env,
     return 0;
 }
 
-long JNICALL Java_vrml_field_SFString_createPeer(JNIEnv * const env,
-                                                 jclass,
-                                                 const jstring jstr)
+jlong JNICALL Java_vrml_field_SFString_createPeer(JNIEnv * const env,
+                                                  jclass,
+                                                  const jstring jstr)
 {
     std::auto_ptr<openvrml::field_value> peer;
     try {
@@ -3317,9 +3317,9 @@ jdouble JNICALL Java_vrml_field_ConstSFTime_getValue(JNIEnv * const env,
     return 0.0;
 }
 
-long JNICALL Java_vrml_field_SFTime_createPeer(JNIEnv * const env,
-                                               jclass,
-                                               const jdouble time)
+jlong JNICALL Java_vrml_field_SFTime_createPeer(JNIEnv * const env,
+                                                jclass,
+                                                const jdouble time)
 {
     std::auto_ptr<openvrml::sftime> peer;;
     try {

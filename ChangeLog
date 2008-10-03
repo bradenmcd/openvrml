@@ -1,5 +1,16 @@
 2008-10-02 Braden McDaniel  <braden@endoframe.com>
 
+	Use jlong in JNI function signatures to ensure consistency with
+	javah output.
+
+	* src/script/java.cpp
+	(Java_vrml_field_SFString_createPeer(JNIEnv *, jclass, jstring)):
+	Use jlong for the return type.
+	(Java_vrml_field_SFTime_createPeer(JNIEnv *, jclass, jdouble)):
+	Use jlong for the return type.
+
+2008-10-02 Braden McDaniel  <braden@endoframe.com>
+
 	Keep track of host instances in openvrml-xembed and shut down when
 	the last one terminates.
 
