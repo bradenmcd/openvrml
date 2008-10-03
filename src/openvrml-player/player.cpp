@@ -26,7 +26,8 @@
 # include <dbus/dbus-glib.h>
 # include <libgnomevfs/gnome-vfs.h>
 # include <libgnomeui/libgnomeui.h>
-# include <gtk/gtkbuilder.h>
+# include <glade/glade.h>
+# include <glade/glade-build.h>
 # include <openvrml-config.h>
 
 # include "curlbrowserhost.h"
@@ -40,7 +41,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
     //
-    // GTK+ signal handlers; GtkBuilder needs them to have external linkage in
+    // GTK+ signal handlers; libglade needs them to have external linkage in
     // order to connect them.
     //
     OPENVRML_API void openvrml_player_on_about_activated(GtkWindow * window);
@@ -57,8 +58,28 @@ extern "C" {
     OPENVRML_API void openvrml_player_quit();
 
     G_GNUC_INTERNAL
+    void
+    openvrml_player_connect_func(const gchar * handler_name,
+                                 GObject * object,
+                                 const gchar * signal_name,
+                                 const gchar * signal_data,
+                                 GObject * connect_object,
+                                 gboolean after,
+                                 gpointer user_data);
+
+    G_GNUC_INTERNAL
     void openvrml_player_on_browserhost_realize(GtkWidget * widget,
                                                 gpointer user_data);
+    G_GNUC_INTERNAL
+    GtkWidget *
+    openvrml_player_build_file_chooser_dialog(GladeXML * xml,
+                                              GType widget_type,
+                                              GladeWidgetInfo * info);
+    G_GNUC_INTERNAL
+    GtkWidget *
+    openvrml_player_build_curl_browser_host(GladeXML * xml,
+                                            GType widget_type,
+                                            GladeWidgetInfo * info);
 }
 
 namespace {
@@ -71,8 +92,7 @@ namespace {
         OpenvrmlPlayerFileChooserDialog * file_chooser;
     };
 
-    G_GNUC_INTERNAL GtkBuilder * builder_new(GnomeProgram & program,
-                                             GError ** error);
+    G_GNUC_INTERNAL GladeXML * xml_new(GnomeProgram & program);
 }
 
 int main(int argc, char * argv[])
@@ -128,35 +148,38 @@ int main(int argc, char * argv[])
             GNOME_PARAM_APP_DATADIR, OPENVRML_PLAYER_PKGDATADIR_,
             GNOME_PARAM_NONE);
 
-    GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, ref(error));
-    GtkBuilder * const builder = builder_new(*program, &error);
-    if (!builder) {
-        g_critical("Failed to create UI builder: %s", error->message);
-        return EXIT_FAILURE;
-    }
+    glade_init();
+    glade_register_widget(OPENVRML_PLAYER_TYPE_FILE_CHOOSER_DIALOG,
+                          openvrml_player_build_file_chooser_dialog,
+                          0,
+                          0);
+    glade_register_widget(OPENVRML_PLAYER_TYPE_CURL_BROWSER_HOST,
+                          openvrml_player_build_curl_browser_host,
+                          0,
+                          0);
 
-    GtkWidget * const app_window =
-        GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+    GladeXML * const xml = xml_new(*program);
+
+    GtkWidget * const app_window = glade_xml_get_widget(xml, "window");
 
     GtkWidget * const file_chooser_dialog =
-        GTK_WIDGET(gtk_builder_get_object(builder, "filechooserdialog"));
+        glade_xml_get_widget(xml, "filechooserdialog");
 
     signal_data data = {};
     data.browser_host =
         OPENVRML_PLAYER_CURL_BROWSER_HOST(
-            gtk_builder_get_object(builder, "browserhost"));
+            glade_xml_get_widget(xml, "browserhost"));
     g_assert(OPENVRML_PLAYER_IS_CURL_BROWSER_HOST(data.browser_host));
     data.location_entry =
-        GTK_WIDGET(gtk_builder_get_object(builder, "locationentry"));
+        GTK_WIDGET(glade_xml_get_widget(xml, "locationentry"));
     data.file_chooser =
         OPENVRML_PLAYER_FILE_CHOOSER_DIALOG(
-            gtk_builder_get_object(builder, "filechooserdialog"));
+            glade_xml_get_widget(xml, "filechooserdialog"));
+
+    glade_xml_signal_autoconnect_full(xml, openvrml_player_connect_func, &data);
 
     gtk_window_set_transient_for(GTK_WINDOW(data.file_chooser),
                                  GTK_WINDOW(app_window));
-
-    gtk_builder_connect_signals(builder, &data);
 
     g_signal_connect(file_chooser_dialog,
                      "response",
@@ -173,42 +196,35 @@ int main(int argc, char * argv[])
     gtk_widget_show_all(app_window);
 
     gtk_main();
-
-    error_guard.dismiss();
 }
 
 namespace {
 
-    GtkBuilder * builder_new(GnomeProgram & program, GError ** error)
+    GladeXML * xml_new(GnomeProgram & program)
     {
         using std::string;
 
-        const gchar * const uidir = g_getenv("OPENVRML_PLAYER_UIDIR");
-        string ui_file_str;
-        const gchar * ui_file = 0;
-        if (uidir) {
-            ui_file_str = string(uidir) + "/openvrml-player.ui";
-            ui_file = ui_file_str.c_str();
+        const gchar * const gladedir = g_getenv("OPENVRML_PLAYER_GLADEDIR");
+        string glade_file_str;
+        const gchar * glade_file = 0;
+        if (gladedir) {
+            glade_file_str = string(gladedir) + "/openvrml-player.glade";
+            glade_file = glade_file_str.c_str();
         }
 
-        if (!ui_file) {
+        if (!glade_file) {
             static const gboolean only_if_exists = true;
-            ui_file =
+            glade_file =
                 gnome_program_locate_file(&program,
                                           GNOME_FILE_DOMAIN_APP_DATADIR,
-                                          "/ui/openvrml-player.ui",
+                                          "/glade/openvrml-player.glade",
                                           only_if_exists,
                                           0);
         }
 
-        g_return_val_if_fail(ui_file, 0);
+        g_return_val_if_fail(glade_file, 0);
 
-        GtkBuilder * builder = gtk_builder_new();
-        if (!gtk_builder_add_from_file(builder, ui_file, error)) {
-            return 0;
-        }
-
-        return builder;
+        return glade_xml_new(glade_file, 0, 0);
     }
 }
 
@@ -300,4 +316,58 @@ void openvrml_player_on_browserhost_realize(GtkWidget * const widget,
     openvrml_player_curl_browser_host_load_url(
         OPENVRML_PLAYER_CURL_BROWSER_HOST(widget),
         static_cast<const char *>(user_data));
+}
+
+GtkWidget *
+openvrml_player_build_file_chooser_dialog(GladeXML * /* xml */,
+                                          GType /* widget_type */,
+                                          GladeWidgetInfo * /* info */)
+{
+    GtkWidget * widget =
+        GTK_WIDGET(g_object_new(OPENVRML_PLAYER_TYPE_FILE_CHOOSER_DIALOG, 0));
+    return widget;
+}
+
+GtkWidget *
+openvrml_player_build_curl_browser_host(GladeXML * /* xml */,
+                                        GType /* widget_type */,
+                                        GladeWidgetInfo * /* info */)
+{
+    GtkWidget * widget =
+        GTK_WIDGET(g_object_new(OPENVRML_PLAYER_TYPE_CURL_BROWSER_HOST, 0));
+    return widget;
+}
+
+void
+openvrml_player_connect_func(const gchar * const handler_name,
+                             GObject * const object,
+                             const gchar * const signal_name,
+                             const gchar * const signal_data,
+                             GObject * const connect_object,
+                             const gboolean after,
+                             const gpointer user_data)
+{
+    static GModule * const this_module = g_module_open(0, GModuleFlags(0));
+    gpointer handler;
+    if (g_module_symbol(this_module, handler_name, &handler)) {
+        if (connect_object) {
+            g_signal_connect_object(
+                object,
+                signal_name,
+                G_CALLBACK(handler),
+                connect_object,
+                GConnectFlags((after ? G_CONNECT_AFTER : 0)
+                              | G_CONNECT_SWAPPED));
+        } else {
+            if (after) {
+                g_signal_connect_after(object, signal_name, G_CALLBACK(handler),
+                                       user_data);
+            } else {
+                g_signal_connect(object, signal_name, G_CALLBACK(handler),
+                                 user_data);
+            }
+        }
+    } else {
+        g_warning("signal handler \"%s\" not found", handler_name);
+    }
 }

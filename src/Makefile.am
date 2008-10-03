@@ -237,15 +237,17 @@ openvrml_player_openvrml_player_CPPFLAGS = \
 openvrml_player_openvrml_player_CXXFLAGS = \
         $(DBUS_G_CFLAGS) \
         $(GNOMEUI_CFLAGS) \
+        $(GLADE_CFLAGS) \
         $(CURL_CFLAGS)
 openvrml_player_openvrml_player_LDFLAGS = \
         -export-dynamic \
         $(GNOMEUI_LIBS) \
         $(DBUS_G_LIBS) \
+        $(GLADE_LIBS) \
         $(CURL_LIBS)
 
-openvrml_player_uidir = $(datadir)/openvrml-player/ui
-dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
+openvrml_player_gladedir = $(datadir)/openvrml-player/glade
+dist_openvrml_player_glade_DATA = openvrml-player/openvrml-player.glade
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \

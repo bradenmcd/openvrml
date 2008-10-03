@@ -147,11 +147,9 @@ AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 session_bus_servicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`
 AC_SUBST([session_bus_servicesdir])
 
-#
-# openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
-#
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
                   [have_gtk=no])
+PKG_CHECK_MODULES([GLADE], [libglade-2.0], , [have_libglade=no])
 #
 # openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
 # introduced in libgnome 2.14.
