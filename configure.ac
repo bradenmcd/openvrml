@@ -144,8 +144,6 @@ CPPFLAGS=$ov_save_CPPFLAGS
 PKG_CHECK_MODULES([DBUS_G], [dbus-glib-1 glib-2.0 >= 2.6], ,
                   [have_dbus_glib=no])
 AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
-session_bus_servicesdir=`$PKG_CONFIG --variable=session_bus_services_dir dbus-1`
-AC_SUBST([session_bus_servicesdir])
 
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 gthread-2.0 glib-2.0 >= 2.6], ,
                   [have_gtk=no])

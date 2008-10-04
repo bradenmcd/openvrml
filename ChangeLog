@@ -1,3 +1,14 @@
+2008-10-04 Braden McDaniel  <braden@endoframe.com>
+
+	If we set the absolute path of session_bus_servicesdir, the
+	resulting Automake code is not DESTDIR-aware.  While we could take
+	care of this in install-local, it's probably safe to hard-code a
+	relative path for this.
+
+	* configure.ac: Don't AC_SUBST session_bus_servicesdir.
+	* src/Makefile.am: Hard code the relative path of
+	session_bus_servicesdir.
+
 2008-10-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/Makefile.am
