@@ -1,3 +1,17 @@
+2008-10-05 Braden McDaniel  <braden@endoframe.com>
+
+	Need to use dbus_g_proxy_new_for_name rather than
+	_new_for_name_owner in order for activation to work.
+
+	* mozilla-plugin/src/openvrml.cpp
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Use dbus_g_proxy_new_for_name to get the
+	org.openvrml.BrowserFactory proxy.
+	* src/openvrml-player/curlbrowserhost.cpp
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Use dbus_g_proxy_new_for_name to get the
+	org.openvrml.BrowserFactory proxy.
+
 2008-10-04 Braden McDaniel  <braden@endoframe.com>
 
 	If we set the absolute path of session_bus_servicesdir, the

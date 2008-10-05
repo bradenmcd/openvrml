@@ -853,11 +853,10 @@ namespace {
         throw ()
     {
         DBusGProxy * browser_factory =
-            dbus_g_proxy_new_for_name_owner(connection,
-                                            "org.openvrml.BrowserControl",
-                                            "/BrowserFactory",
-                                            "org.openvrml.BrowserFactory",
-                                            error);
+            dbus_g_proxy_new_for_name(connection,
+                                      "org.openvrml.BrowserControl",
+                                      "/BrowserFactory",
+                                      "org.openvrml.BrowserFactory");
         g_return_val_if_fail(browser_factory, 0);
         scope_guard browser_factory_guard =
             make_guard(g_object_unref, G_OBJECT(browser_factory));
