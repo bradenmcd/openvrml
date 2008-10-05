@@ -1,16 +1,8 @@
+BUILT_SOURCES =
+
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
-endif
-
-if ENABLE_XEMBED
-libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
-session_bus_servicesdir = $(datadir)/dbus-1/services
-session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
-endif
-
-if ENABLE_PLAYER
-bin_PROGRAMS = openvrml-player/openvrml-player
 endif
 
 pkginclude_HEADERS = \
@@ -165,6 +157,14 @@ libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
         $(GLU_LIBS)
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
+if ENABLE_XEMBED
+libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
+session_bus_servicesdir = $(datadir)/dbus-1/services
+session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
+BUILT_SOURCES += \
+        openvrml-xembed/browser-server-glue.h \
+        openvrml-xembed/browser-factory-server-glue.h
+endif
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
         -I$(top_srcdir)/lib/gtkglext \
@@ -207,11 +207,6 @@ dist_openvrml_xembed_dbus_DATA = \
         openvrml-xembed/browser-factory.xml \
         openvrml-xembed/browser-host.xml
 
-BUILT_SOURCES = \
-        openvrml-xembed/browser-server-glue.h \
-        openvrml-xembed/browser-factory-server-glue.h \
-        openvrml-player/browser-host-server-glue.h
-
 openvrml-xembed/browser-server-glue.h: $(srcdir)/openvrml-xembed/browser.xml
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
                    --prefix=openvrml_xembed_browser    \
@@ -225,6 +220,12 @@ openvrml-xembed/browser-factory-server-glue.h: $(srcdir)/openvrml-xembed/browser
                    --mode=glib-server                       \
                    --output=$@                              \
                    $?
+
+if ENABLE_PLAYER
+bin_PROGRAMS = openvrml-player/openvrml-player
+BUILT_SOURCES += \
+        openvrml-player/browser-host-server-glue.h
+endif
 
 openvrml_player_openvrml_player_CPPFLAGS = \
         -DG_DISABLE_DEPRECATED \

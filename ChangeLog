@@ -1,3 +1,8 @@
+2008-10-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am: Made contents of BUILT_SOURCES conditional
+	based on ENABLE_XEMBED and ENABLE_PLAYER.
+
 2008-10-04 Braden McDaniel  <braden@endoframe.com>
 
 	If we set the absolute path of session_bus_servicesdir, the
