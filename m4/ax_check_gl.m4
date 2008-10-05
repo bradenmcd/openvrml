@@ -10,7 +10,7 @@ dnl If the header "GL/gl.h" is found, "HAVE_GL_GL_H" is defined.  If the header
 dnl "OpenGL/gl.h" is found, HAVE_OPENGL_GL_H is defined.  These preprocessor
 dnl definitions may not be mutually exclusive.
 dnl
-dnl version: 2.0
+dnl version: 2.1
 dnl author: Braden McDaniel <braden@endoframe.com>
 dnl
 dnl This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,8 @@ dnl the Macro.  You need not follow the terms of the GNU General Public
 dnl License when using or distributing such scripts.
 dnl
 AC_DEFUN([AX_CHECK_GL],
-[AC_REQUIRE([AC_PATH_X])dnl
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([ACX_PTHREAD])dnl
 
 AC_LANG_PUSH([C])
@@ -75,6 +76,10 @@ m4_define([AX_CHECK_GL_PROGRAM],
 
 AC_CACHE_CHECK([for OpenGL library], [ax_cv_check_gl_libgl],
 [ax_cv_check_gl_libgl="no"
+case $host_cpu in
+  x86_64) ax_check_gl_libdir=lib64 ;;
+  *)      ax_check_gl_libdir=lib ;;
+esac
 ax_save_CPPFLAGS="${CPPFLAGS}"
 CPPFLAGS="${GL_CFLAGS} ${CPPFLAGS}"
 ax_save_LIBS="${LIBS}"
@@ -85,13 +90,14 @@ for ax_lib in ${ax_check_libs}; do
         [ax_try_lib=`echo $ax_lib | sed -e 's/^-l//' -e 's/$/.lib/'`],
         [ax_try_lib="${ax_lib}"])
   LIBS="${ax_try_lib} ${GL_LIBS} ${ax_save_LIBS}"
-  AC_LINK_IFELSE(
-[AX_CHECK_GL_PROGRAM],
-[ax_cv_check_gl_libgl="${ax_try_lib}"; break],
-[ax_check_gl_dylib_flag='-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib'
-LIBS="${ax_try_lib} ${ax_check_gl_dylib_flag} ${GL_LIBS} ${ax_save_LIBS}"
 AC_LINK_IFELSE([AX_CHECK_GL_PROGRAM],
-               [ax_cv_check_gl_libgl="${ax_try_lib} ${ax_check_gl_dylib_flag}"; break])])
+               [ax_cv_check_gl_libgl="${ax_try_lib}"; break],
+               [ax_check_gl_nvidia_flags="-L/usr/${ax_check_gl_libdir}/nvidia -lGLcore" LIBS="${ax_try_lib} ${ax_check_gl_nvidia_flags} ${GL_LIBS} ${ax_save_LIBS}"
+AC_LINK_IFELSE([AX_CHECK_GL_PROGRAM],
+               [ax_cv_check_gl_libgl="${ax_try_lib} ${ax_check_gl_nvidia_flags}"; break],
+               [ax_check_gl_dylib_flag='-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib' LIBS="${ax_try_lib} ${ax_check_gl_dylib_flag} ${GL_LIBS} ${ax_save_LIBS}"
+AC_LINK_IFELSE([AX_CHECK_GL_PROGRAM],
+               [ax_cv_check_gl_libgl="${ax_try_lib} ${ax_check_gl_dylib_flag}"; break])])])
 done
 
 AS_IF([test "X$ax_cv_check_gl_libgl" = Xno -a "X$no_x" = Xyes],

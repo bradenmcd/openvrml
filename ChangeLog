@@ -1,5 +1,12 @@
 2008-10-05 Braden McDaniel  <braden@endoframe.com>
 
+	Updated to 20081005 release of Autoconf GL Macros.
+
+	* m4/acx_pthread.m4
+	* m4/ax_check_gl.m4
+
+2008-10-05 Braden McDaniel  <braden@endoframe.com>
+
 	Need to use dbus_g_proxy_new_for_name rather than
 	_new_for_name_owner in order for activation to work.
 
