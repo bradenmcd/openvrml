@@ -637,6 +637,7 @@ libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
 if ENABLE_XEMBED
 libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
+session_bus_servicesdir = $(datadir)/dbus-1/services
 session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
 BUILT_SOURCES += \
         openvrml-xembed/browser-server-glue.h \
