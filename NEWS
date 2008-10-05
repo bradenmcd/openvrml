@@ -1,9 +1,3 @@
-Changes new in version 0.17.9, ?? October, 2008
-========================================================================
-
-- Use D-Bus for communication with the OpenVRML XEmbed control.
-
-
 Changes new in version 0.17.8, 13 August, 2008
 ========================================================================
 
