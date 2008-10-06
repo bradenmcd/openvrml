@@ -1,3 +1,9 @@
+2008-10-06 Braden McDaniel  <braden@endoframe.com>
+
+	Updated to 20081006 release of Autoconf GL Macros.
+
+	* m4/ax_check_gl.m4
+
 2008-10-05 Braden McDaniel  <braden@endoframe.com>
 
 	Updated to 20081005 release of Autoconf GL Macros.
