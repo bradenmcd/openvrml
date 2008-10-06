@@ -1,5 +1,10 @@
 2008-10-06 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/Makefile.am: install/distcheck fixes for javadoc
+	documentation.
+
+2008-10-06 Braden McDaniel  <braden@endoframe.com>
+
 	Updated to 20081006 release of Autoconf GL Macros.
 
 	* m4/ax_check_gl.m4

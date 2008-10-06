@@ -77,7 +77,35 @@ CUSTOMIZED_IMAGES = \
         $(srcdir)/manual/tab_l-openvrml.png \
         $(srcdir)/manual/tab_r-openvrml.png
 
-EXTRA_DIST = $(DOCUMENTATION_FILES) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) javadoc
+JAVADOC_FILES = \
+        $(srcdir)/javadoc/*.html \
+        $(srcdir)/javadoc/package-list \
+        $(srcdir)/javadoc/stylesheet.css
+
+JAVADOC_RESOURCES_FILES = \
+        $(srcdir)/javadoc/resources/inherit.gif
+
+JAVADOC_VRML_FILES = \
+        $(srcdir)/javadoc/vrml/*.html
+
+JAVADOC_VRML_FIELD_FILES = \
+        $(srcdir)/javadoc/vrml/field/*.html
+
+JAVADOC_VRML_NODE_FILES = \
+        $(srcdir)/javadoc/vrml/node/*.html
+
+JAVADOC_OUTPUT_FILES = \
+        $(JAVADOC_FILES) \
+        $(JAVADOC_RESOURCES_FILES) \
+        $(JAVADOC_VRML_FILES) \
+        $(JAVADOC_VRML_FIELD_FILES) \
+        $(JAVADOC_VRML_NODE_FILES)
+
+EXTRA_DIST = \
+        $(DOCUMENTATION_FILES) \
+        $(DOXYGEN_OUTPUT_FILES) \
+        $(CUSTOMIZED_IMAGES) \
+        $(JAVADOC_OUTPUT_FILES)
 
 MAINTAINERCLEANFILES = $(DOXYGEN_OUTPUT_FILES)
 
@@ -89,16 +117,33 @@ doxygen-html:
 
 javadoc-html:
 	rm -rf $(srcdir)/javadoc
-	cd $(srcdir) && javadoc -sourcepath ../src/script/java -link $(datadir)/javadoc/java -d javadoc vrml vrml.field vrml.node
+	cd $(srcdir) \
+                && javadoc -sourcepath ../src/script/java \
+                           -link $(javadocdir)/java \
+                           -d javadoc \
+                           vrml vrml.field vrml.node
 
 html-local: doxygen-html javadoc-html
 
 installdirs-local:
-	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual $(DESTDIR)$(javadocdir)/vrml/node $(DESTDIR)$(javadocdir)/vrml/field
+	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual \
+                         $(DESTDIR)$(javadocdir)/resources \
+                         $(DESTDIR)$(javadocdir)/vrml/node \
+                         $(DESTDIR)$(javadocdir)/vrml/field
 
 install-data-local: installdirs-local
-	$(INSTALL_DATA) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) $(DESTDIR)$(docdir)/manual
-	$(INSTALL_DATA) $(srcdir)/javadoc/* $(DESTDIR)$(javadocdir)
+	$(INSTALL_DATA) $(DOXYGEN_OUTPUT_FILES) $(CUSTOMIZED_IMAGES) \
+                        $(DESTDIR)$(docdir)/manual
+	$(INSTALL_DATA) $(JAVADOC_FILES) \
+                        $(DESTDIR)$(javadocdir)
+	$(INSTALL_DATA) $(JAVADOC_RESOURCES_FILES) \
+                        $(DESTDIR)$(javadocdir)/resources
+	$(INSTALL_DATA) $(JAVADOC_VRML_FILES) \
+                        $(DESTDIR)$(javadocdir)/vrml
+	$(INSTALL_DATA) $(JAVADOC_VRML_FIELD_FILES) \
+                        $(DESTDIR)$(javadocdir)/vrml/field
+	$(INSTALL_DATA) $(JAVADOC_VRML_NODE_FILES) \
+                        $(DESTDIR)$(javadocdir)/vrml/node
 
 uninstall-local:
-	rm -rf $(DESTDIR)$(docdir)/manual
+	rm -rf $(DESTDIR)$(docdir)/manual $(DESTDIR)$(javadocdir)
