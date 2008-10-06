@@ -1,5 +1,18 @@
 2008-10-06 Braden McDaniel  <braden@endoframe.com>
 
+	Process org.openvrml.BrowserControl.service.in with sed (rather
+	than config.status) so that substitutions that expand to make
+	macros get fully resolved.
+
+	* configure.ac: Removed
+	src/openvrml-xembed/org.openvrml.BrowserControl.service from
+	AC_CONFIG_FILES.
+	* src/Makefile.am: Added rules to create
+	org.openvrml.BrowserControl.service from
+	org.openvrml.BrowserControl.service.in.
+
+2008-10-06 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/Makefile.am: install/distcheck fixes for javadoc
 	documentation.
 

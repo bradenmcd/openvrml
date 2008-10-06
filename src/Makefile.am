@@ -698,6 +698,16 @@ openvrml-xembed/browser-factory-server-glue.h: $(srcdir)/openvrml-xembed/browser
                    --output=$@                              \
                    $?
 
+edit = sed -e 's|@libexecdir[@]|$(libexecdir)|g'
+
+openvrml-xembed/org.openvrml.BrowserControl.service: Makefile
+	rm -f $@ $@.tmp
+	$(edit) '$(srcdir)/$@.in' > $@.tmp
+	chmod a-w $@.tmp
+	mv $@.tmp $@
+
+openvrml-xembed/org.openvrml.BrowserControl.service: $(srcdir)/openvrml-xembed/org.openvrml.BrowserControl.service.in
+
 if ENABLE_PLAYER
 bin_PROGRAMS = openvrml-player/openvrml-player
 BUILT_SOURCES += \
