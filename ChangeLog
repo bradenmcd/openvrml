@@ -1,4 +1,8 @@
-2008-10-06 Braden McDaniel  <braden@endoframe.com>
+2008-10-08 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fail if dbus-glib isn't found.
+
+2008-10-07 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Removed redundant AC_ARG_VAR for JAVA_HOME.
 

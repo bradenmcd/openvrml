@@ -166,6 +166,7 @@ CPPFLAGS=$ov_save_CPPFLAGS
 #
 PKG_CHECK_MODULES([DBUS_G], [dbus-glib-1 glib-2.0 >= 2.6], ,
                   [have_dbus_glib=no])
+AC_ARG_VAR([DBUS_BINDING_TOOL], [Generate stub code for dbus-glib])
 AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 
 #
@@ -373,7 +374,9 @@ AC_ARG_ENABLE([xembed],
               [AC_HELP_STRING([--disable-xembed],
                               [do not build the XEmbed control])])
 AS_IF([test X$enable_xembed != Xno],
-      [AS_IF([test X$have_gtk = Xno],
+      [AS_IF([test X$have_dbus_glib = Xno],
+             [AC_MSG_FAILURE([D-Bus GLib bindings are required to build the XEmbed control])])
+       AS_IF([test X$have_gtk = Xno],
              [AC_MSG_FAILURE([GTK+ is required to build the XEmbed control])])
        AS_IF([test X$enable_gl_renderer = Xno],
              [AC_MSG_FAILURE([the XEmbed control cannot be built without the GL renderer])])])
