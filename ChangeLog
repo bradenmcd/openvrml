@@ -1,3 +1,7 @@
+2008-10-08 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fail if dbus-glib isn't found.
+
 2008-10-06 Braden McDaniel  <braden@endoframe.com>
 
 	Process org.openvrml.BrowserControl.service.in with sed (rather
