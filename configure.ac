@@ -325,7 +325,6 @@ AC_ARG_VAR([JAVA_HOME], [Java Runtime Environment (JRE) location])
 AC_ARG_ENABLE([script-node-java],
               [AC_HELP_STRING([--disable-script-node-java],
                               [disable Script node Java support])])
-AC_ARG_VAR([JAVA_HOME], [Java Runtime Environment (JRE) location])
 case $target_cpu in
      x86_64) OPENVRML_JVM_ARCH=amd64 ;;
      i?86)   OPENVRML_JVM_ARCH=i386 ;;
