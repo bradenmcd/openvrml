@@ -1,6 +1,3 @@
-info_TEXINFOS = openvrml-xembed.texi
-openvrml_xembed_TEXINFOS = fdl.texi
-
 docdir = $(datadir)/doc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 javadocdir = $(datadir)/javadoc/@PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
