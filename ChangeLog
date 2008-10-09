@@ -1,3 +1,11 @@
+2008-10-09 Braden McDaniel  <braden@endoframe.com>
+
+	Removed obsolete texinfo documentation for openvrml-xembed.
+
+	* doc/Makefile.am
+	* doc/openvrml-xembed.texi: Removed.
+	* doc/fdl.texi: Removed.
+
 2008-10-08 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fail if dbus-glib isn't found.
