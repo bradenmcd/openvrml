@@ -28,7 +28,6 @@
 #   include <boost/cast.hpp>
 #   include <boost/concept_check.hpp>
 #   include <boost/intrusive_ptr.hpp>
-#   include <boost/scoped_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
 #   include <openvrml/basetypes.h>
@@ -80,7 +79,7 @@ namespace openvrml {
         };
 
     private:
-        boost::scoped_ptr<counted_impl_base> counted_impl_;
+        std::auto_ptr<counted_impl_base> counted_impl_;
 
     public:
         enum type_id {
@@ -226,7 +225,7 @@ namespace openvrml {
         OPENVRML_THROW1(std::bad_alloc)
     {
         if (this != &fv) {
-            counted_impl_.reset(fv.counted_impl_->clone().release());
+            counted_impl_ = fv.counted_impl_->clone();
         }
         return *boost::polymorphic_downcast<FieldValue *>(this);
     }
@@ -254,7 +253,9 @@ namespace openvrml {
     template <typename FieldValue>
     void field_value::swap(FieldValue & val) OPENVRML_NOTHROW
     {
-        this->counted_impl_.swap(val.counted_impl_);
+        std::auto_ptr<counted_impl_base> temp = this->counted_impl_;
+        this->counted_impl_ = val.counted_impl_;
+        val.counted_impl_ = temp;
     }
 
     OPENVRML_API std::ostream & operator<<(std::ostream & out,

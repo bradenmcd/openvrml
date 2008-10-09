@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004, 2005, 2006, 2007, 2008  Braden McDaniel
+// Copyright 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -19,19 +19,17 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include "browser.h"
-# include "scope.h"
-# include <openvrml/local/uri.h>
-# include <private.h>
-# include <boost/array.hpp>
-# include <boost/lexical_cast.hpp>
-# include <boost/mpl/for_each.hpp>
-# include <algorithm>
-# include <sstream>
-
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+# include <algorithm>
+# include <sstream>
+# include <boost/array.hpp>
+# include <boost/lexical_cast.hpp>
+# include <boost/mpl/for_each.hpp>
+# include "private.h"
+# include "browser.h"
 
 /**
  * @file openvrml/node.h
@@ -543,14 +541,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @typedef openvrml::node_type_decls
- *
- * @brief A map of node type identifiers to their corresponding
- *        @c node_interface_set%s.
- */
-
-
-/**
  * @class openvrml::node_metatype_id openvrml/node.h
  *
  * @brief Identifier for @c node_metatype%s.
@@ -600,8 +590,8 @@ namespace {
             typedef boost::spirit::rule<ScannerT> rule_type;
 
             rule_type node_metatype_id;
-            openvrml::local::absolute_uri_grammar<> absolute_uri;
-            openvrml::local::uric_grammar uric;
+            openvrml_::absolute_uri_grammar<> absolute_uri;
+            openvrml_::uric_grammar uric;
 
             definition(const node_metatype_id_grammar & self);
 
@@ -852,12 +842,12 @@ void openvrml::node_metatype::do_render(viewer &) const OPENVRML_NOTHROW
 /**
  * @brief Create a new @c node_type.
  *
- * @c node_type%s can be said to subset the master type provided by the
- * @c node_metatype.  Each @c node_metatype instance can support certain
- * @c node interfaces; the @c node_interface_set passed to @c #create_type
- * must be a subset of those supported interfaces.
+ * @c node_type%s can be said to subset the master type provided by the @c
+ * node_metatype.  Each @c node_metatype instance can support certain @c node
+ * interfaces; the @c node_interface_set passed to @c
+ * node_metatype::create_type must be a subset of those supported interfaces.
  *
- * This function delegates to @c #do_create_type.
+ * This function delegates to @c node_metatype::do_create_type.
  *
  * @param[in] id            the name for the new @c node_type.
  * @param[in] interfaces    a @c node_interface_set containing the
@@ -896,7 +886,7 @@ openvrml::node_metatype::create_type(const std::string & id,
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa #create_type
+ * @sa node_metatype::create_type
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -1289,9 +1279,7 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @internal
- *
- * @var class openvrml::node::local::proto_node
+ * @var class openvrml::node::proto_node
  *
  * @brief A @c PROTO instance.
  */
@@ -1883,15 +1871,12 @@ openvrml::node::~node() OPENVRML_NOTHROW
 }
 
 /**
+ * @fn void openvrml::node::add_ref() const
+ *
  * @brief Increment the reference count.
  *
  * Add an owning reference.
  */
-void openvrml::node::add_ref() const OPENVRML_NOTHROW
-{
-    boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-    ++this->ref_count_;
-}
 
 /**
  * @fn void openvrml::intrusive_ptr_add_ref(const node * n)
@@ -1919,18 +1904,11 @@ void openvrml::node::add_ref() const OPENVRML_NOTHROW
  */
 
 /**
+ * @fn void openvrml::node::release() const
+ *
  * @brief Decrement the reference count; destroy the instance if the count
  *        drops to zero.
  */
-void openvrml::node::release() const OPENVRML_NOTHROW
-{
-    bool delete_me;
-    {
-        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-        delete_me = (--this->ref_count_ == 0);
-    }
-    if (delete_me) { delete this; }
-}
 
 /**
  * @fn void openvrml::intrusive_ptr_release(const node * n)
