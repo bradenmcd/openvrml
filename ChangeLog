@@ -1,5 +1,17 @@
 2008-10-09 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.17.9 release.
+
+	* NEWS
+	* README
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am: Updated libopenvrml libtool library version to
+	8:7:0; updated libopenvrml-gl libtool library version to 7:3:0.
+
+2008-10-09 Braden McDaniel  <braden@endoframe.com>
+
 	Removed obsolete texinfo documentation for openvrml-xembed.
 
 	* doc/Makefile.am

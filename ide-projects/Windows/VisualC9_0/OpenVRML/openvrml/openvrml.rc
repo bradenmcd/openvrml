@@ -11,7 +11,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 8,6,0,0
+ FILEVERSION 8,7,0,0
  PRODUCTVERSION 0,17,99,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
@@ -28,7 +28,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenVRML Library"
-            VALUE "FileVersion", "8, 6, 0, 0"
+            VALUE "FileVersion", "8, 7, 0, 0"
             VALUE "InternalName", "openvrml"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "OriginalFilename", "openvrml.dll"

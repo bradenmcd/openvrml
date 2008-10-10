@@ -84,8 +84,8 @@ noinst_HEADERS = \
         openvrml-xembed/plugin_streambuf.h \
         openvrml-player/filechooserdialog.h
 
-LIBOPENVRML_LIBRARY_VERSION =    8:6:0
-LIBOPENVRML_GL_LIBRARY_VERSION = 7:2:0
+LIBOPENVRML_LIBRARY_VERSION =    8:7:0
+LIBOPENVRML_GL_LIBRARY_VERSION = 7:3:0
 #                                | | |
 #                         +------+ | +---+
 #                         |        |     |
