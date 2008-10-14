@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./$(dirname $0)/configure -C --prefix=$HOME --disable-static --enable-gecko-rpath --enable-gtk-doc CXX='g++ -pipe' CPPFLAGS="-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -DG_ERRORCHECK_MUTEXES -I$HOME/include" CXXFLAGS='-g3 -O0 -Wall -Wextra -Wno-missing-braces -Wno-missing-field-initializers' LDFLAGS="-L$HOME/lib64 -L$HOME/lib" BOOST_LIB_SUFFIX='-mt' JAVA_HOME=/usr/lib/jvm/jre "$*"
+./$(dirname $0)/configure -C --prefix=$HOME --disable-static --enable-gtk-doc CXX='g++ -pipe' CPPFLAGS="-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -DG_ERRORCHECK_MUTEXES -I$HOME/include" CXXFLAGS='-g3 -O0 -Wall -Wextra -Wno-missing-braces -Wno-missing-field-initializers' LDFLAGS="-L$HOME/lib64 -L$HOME/lib" BOOST_LIB_SUFFIX='-mt' JAVA_HOME=/usr/lib/jvm/jre "$*"
