@@ -42,6 +42,7 @@
 # include "x3d_cad_geometry.h"
 # include <openvrml/local/uri.h>
 # include <openvrml/local/xml_reader.h>
+# include <openvrml/local/field_value_types.h>
 # include <openvrml/local/proto.h>
 # include <private.h>
 # include <boost/algorithm/string/predicate.hpp>
@@ -2807,7 +2808,7 @@ create_exposedfield(externproto_node & node, field_value::type_id type)
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
 
     boost::shared_ptr<field_value> result;
     for_each<field_value_types>(externproto_exposedfield_creator(node,
@@ -2949,7 +2950,7 @@ set_proto_node(node_type & type)
          map_entry != this->eventin_map.end();
          ++map_entry) {
         using boost::mpl::for_each;
-        using openvrml_::field_value_types;
+        using openvrml::local::field_value_types;
 
         openvrml::event_listener & eventin =
             this->proto_node_->event_listener(map_entry->first);
@@ -2963,7 +2964,7 @@ set_proto_node(node_type & type)
          map_entry != this->eventout_map.end();
          ++map_entry) {
         using boost::mpl::for_each;
-        using openvrml_::field_value_types;
+        using openvrml::local::field_value_types;
 
         openvrml::event_emitter & eventout =
             this->proto_node_->event_emitter(map_entry->first);

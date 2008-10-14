@@ -1,3 +1,26 @@
+2008-10-14 Braden McDaniel  <braden@endoframe.com>
+
+	Moved the boost::mpl::vector of field value types to the
+	openvrml::local namespace.
+
+	* src/libopenvrml/private.h: Moved field_value_types to the
+	openvrml::local namespace;
+	* src/libopenvrml/openvrml/local/proto.cpp: Use
+	openvrml::local::field_value_types.
+	* src/libopenvrml/openvrml/local/field_value_types.h: Added file;
+	contains the declaration of openvrml::local::field_value_types.
+	* src/libopenvrml/openvrml/node.cpp: Use
+	openvrml::local::field_value_types.
+	* src/libopenvrml/openvrml/browser.cpp: Use
+	openvrml::local::field_value_types.
+	* src/libopenvrml/openvrml/script.cpp: Use
+	openvrml::local::field_value_types.
+	* src/libopenvrml/openvrml/field_value.cpp: Use
+	openvrml::local::field_value_types.
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_SOURCES): Added
+	libopenvrml/openvrml/local/field_value_types.h.
+
 2008-10-13 Braden McDaniel  <braden@endoframe.com>
 
 	Use the implementation of ScopeGuard buried in Boost.MultiIndex

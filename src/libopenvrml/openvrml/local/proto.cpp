@@ -20,6 +20,7 @@
 //
 
 # include "proto.h"
+# include "field_value_types.h"
 # include <private.h>
 # include <openvrml/scope.h>
 # include <boost/mpl/for_each.hpp>
@@ -912,7 +913,7 @@ create_eventin(const field_value::type_id type, abstract_proto_node & node)
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
 
     boost::shared_ptr<openvrml::event_listener> result;
     for_each<field_value_types>(proto_eventin_creator(type, node, result));
@@ -936,7 +937,7 @@ create_eventout(const field_value::type_id type, abstract_proto_node & node)
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
 
     boost::shared_ptr<openvrml::event_emitter> result;
     for_each<field_value_types>(proto_eventout_creator(type, node, result));
@@ -1027,7 +1028,7 @@ create_exposedfield(const openvrml::field_value & initial_value,
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
 
     boost::shared_ptr<openvrml::event_listener> result;
     for_each<field_value_types>(proto_exposedfield_creator(initial_value,
@@ -1135,7 +1136,7 @@ proto_node(const openvrml::node_type & type,
                     is_mapping->second.impl_node_interface;
                 try {
                     using boost::mpl::for_each;
-                    using openvrml_::field_value_types;
+                    using openvrml::local::field_value_types;
 
                     openvrml::event_listener & impl_eventin =
                         impl_node->event_listener(impl_node_interface);
@@ -1171,7 +1172,7 @@ proto_node(const openvrml::node_type & type,
                     is_mapping->second.impl_node_interface;
                 try {
                     using boost::mpl::for_each;
-                    using openvrml_::field_value_types;
+                    using openvrml::local::field_value_types;
 
                     openvrml::event_emitter & impl_eventout =
                         impl_node->event_emitter(impl_node_interface);
@@ -1217,7 +1218,7 @@ proto_node(const openvrml::node_type & type,
                     is_mapping->second.impl_node_interface;
                 try {
                     using boost::mpl::for_each;
-                    using openvrml_::field_value_types;
+                    using openvrml::local::field_value_types;
 
                     openvrml::event_listener & impl_eventin =
                         impl_node->event_listener(impl_node_interface);

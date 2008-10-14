@@ -63,40 +63,6 @@
 #   include <functional>
 #   include <limits>
 #   include <boost/concept_check.hpp>
-#   include <boost/mpl/vector.hpp>
-
-namespace openvrml {
-    class sfbool;
-    class sfcolor;
-    class sfcolorrgba;
-    class sfdouble;
-    class sffloat;
-    class sfimage;
-    class sfint32;
-    class sfnode;
-    class sfrotation;
-    class sfstring;
-    class sftime;
-    class sfvec2d;
-    class sfvec2f;
-    class sfvec3d;
-    class sfvec3f;
-    class mfbool;
-    class mfcolor;
-    class mfcolorrgba;
-    class mfdouble;
-    class mffloat;
-    class mfimage;
-    class mfint32;
-    class mfnode;
-    class mfrotation;
-    class mfstring;
-    class mftime;
-    class mfvec2d;
-    class mfvec2f;
-    class mfvec3d;
-    class mfvec3f;
-}
 
 namespace {
     namespace openvrml_ {
@@ -147,41 +113,6 @@ namespace {
         };
 
         const fgreater_equal_t fgreater_equal = fgreater_equal_t();
-
-
-        typedef boost::mpl::vector<openvrml::sfbool,
-                                   openvrml::sfcolor,
-                                   openvrml::sfcolorrgba,
-                                   openvrml::sfdouble,
-                                   openvrml::sffloat,
-                                   openvrml::sfimage,
-                                   openvrml::sfint32,
-                                   openvrml::sfnode,
-                                   openvrml::sfrotation,
-                                   openvrml::sfstring,
-                                   openvrml::sftime,
-                                   openvrml::sfvec2d,
-                                   openvrml::sfvec2f,
-                                   openvrml::sfvec3d,
-                                   openvrml::sfvec3f,
-                                   openvrml::mfbool,
-                                   openvrml::mfcolor,
-                                   openvrml::mfcolorrgba,
-                                   openvrml::mfdouble,
-                                   openvrml::mffloat,
-                                   openvrml::mfimage,
-                                   openvrml::mfint32,
-                                   openvrml::mfnode,
-                                   openvrml::mfrotation,
-                                   openvrml::mfstring,
-                                   openvrml::mftime,
-                                   openvrml::mfvec2d,
-                                   openvrml::mfvec2f,
-                                   openvrml::mfvec3d,
-                                   openvrml::mfvec3f>
-        field_value_types;
-
-
     }
 }
 

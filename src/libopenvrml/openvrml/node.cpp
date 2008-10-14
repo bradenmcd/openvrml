@@ -22,7 +22,7 @@
 # include "browser.h"
 # include "scope.h"
 # include <openvrml/local/uri.h>
-# include <private.h>
+# include <openvrml/local/field_value_types.h>
 # include <boost/array.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/mpl/for_each.hpp>
@@ -2633,7 +2633,7 @@ namespace {
         {
             using namespace openvrml;
             using boost::mpl::for_each;
-            using openvrml_::field_value_types;
+            using openvrml::local::field_value_types;
             if (interface_.type == node_interface::exposedfield_id
                     || interface_.type == node_interface::field_id) {
                 this->out << std::string(this->indent + indent_increment_, ' ')
@@ -2812,7 +2812,7 @@ bool openvrml::add_route(node & from,
     bool added_route = false;
     try {
         using boost::mpl::for_each;
-        using openvrml_::field_value_types;
+        using openvrml::local::field_value_types;
         for_each<field_value_types>(add_listener(emitter,
                                                  listener,
                                                  added_route));
@@ -2878,7 +2878,7 @@ bool openvrml::delete_route(node & from,
     bool deleted_route = false;
     try {
         using boost::mpl::for_each;
-        using openvrml_::field_value_types;
+        using openvrml::local::field_value_types;
         for_each<field_value_types>(remove_listener(emitter,
                                                     listener,
                                                     deleted_route));

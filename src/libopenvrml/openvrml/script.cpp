@@ -24,6 +24,7 @@
 # include "scene.h"
 # include <openvrml/local/dl.h>
 # include <openvrml/local/uri.h>
+# include <openvrml/local/field_value_types.h>
 # include <private.h>
 # include <boost/array.hpp>
 # include <boost/functional.hpp>
@@ -300,7 +301,7 @@ void openvrml::script::process_direct_output(double timestamp)
          output != this->direct_output_map_.end();
          ++output) {
         using boost::mpl::for_each;
-        using openvrml_::field_value_types;
+        using openvrml::local::field_value_types;
         for_each<field_value_types>(direct_output_processor(*output->first,
                                                             *output->second,
                                                             timestamp));
@@ -1385,7 +1386,7 @@ openvrml::script_node::create_listener(const field_value::type_id type,
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
     boost::shared_ptr<openvrml::event_listener> listener;
     for_each<field_value_types>(
         script_event_listener_creator(type, id, node, listener));
@@ -1530,7 +1531,7 @@ openvrml::script_node::create_emitter(script_node & node,
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
     std::auto_ptr<openvrml::event_emitter> emitter;
     for_each<field_value_types>(
         script_event_emitter_creator(node, value, emitter));

@@ -19,17 +19,17 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "field_value.h"
+# include "node.h"
+# include <openvrml/local/field_value_types.h>
+# include <boost/array.hpp>
+# include <boost/mpl/for_each.hpp>
+# include <algorithm>
+# include <numeric>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <algorithm>
-# include <numeric>
-# include <boost/array.hpp>
-# include <private.h>
-# include <boost/mpl/for_each.hpp>
-# include "field_value.h"
-# include "node.h"
 
 /**
  * @file openvrml/field_value.h
@@ -442,7 +442,7 @@ openvrml::field_value::create(const type_id type)
     OPENVRML_THROW1(std::bad_alloc)
 {
     using boost::mpl::for_each;
-    using openvrml_::field_value_types;
+    using openvrml::local::field_value_types;
 
     std::auto_ptr<field_value> result;
     for_each<field_value_types>(create_field_value(type, result));
