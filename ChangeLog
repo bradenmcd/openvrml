@@ -1,3 +1,24 @@
+2008-10-13 Braden McDaniel  <braden@endoframe.com>
+
+	Use the implementation of ScopeGuard buried in Boost.MultiIndex
+	instead of providing our own.  (Yes, it's in a "detail" namespace;
+	but since Boost doesn't guarantee any API stability from one
+	release to the next, that has little practical meaning.)
+
+	* src/libopenvrml/private.h: Removed ScopeGuard implementation.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::externproto_node_metatype::load_proto::operator()()
+	const): Use boost::multi_index::detail::scope_guard.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_node::script_node(script_node_metatype &, const
+	boost::shared_ptr<openvrml::scope> &, const node_interface_set &,
+	const initial_value_map &)): Use
+	boost::multi_index::detail::scope_guard.
+	* src/script/javascript.cpp
+	(script::activate(double, const std::string &, size_t, const
+	openvrml::field_value * const[])): Use
+	boost::multi_index::detail::scope_guard.
+
 2008-10-09 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.9 release.

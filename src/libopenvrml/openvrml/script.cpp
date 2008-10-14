@@ -1934,8 +1934,7 @@ script_node(script_node_metatype & class_,
     // nodes.
     //
     this->add_ref();
-    openvrml_::scope_guard guard =
-        openvrml_::make_obj_guard(*this, &script_node::remove_ref);
+    scope_guard guard = make_obj_guard(*this, &script_node::remove_ref);
     boost::ignore_unused_variable_warning(guard);
 
     for (node_interface_set::const_iterator interface_ = interfaces.begin();

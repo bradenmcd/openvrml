@@ -24,6 +24,7 @@
 # include <private.h>
 # include <jsapi.h>
 # include <boost/array.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <algorithm>
 # include <iostream>
 # include <memory>
@@ -33,6 +34,8 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
@@ -1191,8 +1194,8 @@ namespace {
 
 # ifdef JS_THREADSAFE
         JS_SetContextThread(this->cx);
-        openvrml_::scope_guard context_thread_guard =
-            openvrml_::make_guard(&JS_ClearContextThread, this->cx);
+        scope_guard context_thread_guard =
+            make_guard(&JS_ClearContextThread, this->cx);
         boost::ignore_unused_variable_warning(context_thread_guard);
 # endif
 

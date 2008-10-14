@@ -2471,8 +2471,6 @@ struct OPENVRML_LOCAL openvrml::browser::externproto_node_metatype::load_proto {
                 using std::vector;
                 using boost::dynamic_pointer_cast;
                 using boost::shared_ptr;
-                using openvrml_::scope_guard;
-                using openvrml_::make_obj_guard;
                 using local::uri;
 
                 scope_guard guard =
