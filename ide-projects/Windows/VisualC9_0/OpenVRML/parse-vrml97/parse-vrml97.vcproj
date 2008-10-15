@@ -119,7 +119,7 @@
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_SPIRIT_THREADSAFE;BOOST_SPIRIT_CLOSURE_LIMIT=6;PHOENIX_LIMIT=6;OPENVRML_USE_DLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_SECURE_SCL=0;_CONSOLE;BOOST_SPIRIT_THREADSAFE;BOOST_SPIRIT_CLOSURE_LIMIT=6;PHOENIX_LIMIT=6;OPENVRML_USE_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"

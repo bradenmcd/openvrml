@@ -125,7 +125,7 @@
 				Optimization="3"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;..\openvrml-gl&quot;;..\openvrml;&quot;..\..\..\..\..\src\libopenvrml-gl&quot;;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL;NDEBUG"
+				PreprocessorDefinitions="_SECURE_SCL=0;OPENVRML_USE_DLL;OPENVRML_GL_USE_DLL;NDEBUG"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="true"

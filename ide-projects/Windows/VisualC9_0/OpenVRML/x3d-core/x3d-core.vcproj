@@ -108,7 +108,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;OPENVRML_BUILD_DLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_SECURE_SCL=0;OPENVRML_BUILD_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
