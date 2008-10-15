@@ -1,3 +1,9 @@
+2008-10-15 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Makefile.am
+	(VISUALC9_0_FILES): Add project files for node component libraries
+	to the distribution.
+
 2008-10-14 Braden McDaniel  <braden@endoframe.com>
 
 	Define _SECURE_SCL=0 for Release configurations.
