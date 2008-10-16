@@ -20,14 +20,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "orientation_interpolator.h"
+# include <openvrml/node_impl_util.h>
+# include <openvrml/local/float.h>
+# include <private.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "orientation_interpolator.h"
 
 namespace {
 
@@ -137,7 +138,7 @@ namespace {
                 for (size_t i = 0; i < n; ++i) {
                     if (key[i] <= fraction.value()
                         && fraction.value() <= key[i + 1]) {
-                        using openvrml_::pi;
+                        using openvrml::local::pi;
 
                         const rotation & v1 = key_value[i];
                         const rotation & v2 = key_value[i + 1];

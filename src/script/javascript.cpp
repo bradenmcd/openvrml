@@ -19,6 +19,7 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include <openvrml/local/float.h>
 # include <openvrml/browser.h>
 # include <openvrml/scene.h>
 # include <private.h>
@@ -3628,7 +3629,7 @@ namespace {
 
     OPENVRML_JAVASCRIPT_LOCAL bool normalized(const openvrml::vec3f & v)
     {
-        return openvrml_::fequal(v.length(), 1.0f);
+        return openvrml::local::fequal(v.length(), 1.0f);
     }
 
     JSBool SFRotation::initObject(JSContext * const cx,

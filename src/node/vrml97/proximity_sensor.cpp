@@ -20,15 +20,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "proximity_sensor.h"
+# include <openvrml/local/float.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/browser.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include <private.h>
-# include "proximity_sensor.h"
 
 namespace {
 
@@ -223,8 +223,8 @@ namespace {
             && this->size_.sfvec3f::value().y() > 0.0
             && this->size_.sfvec3f::value().z() > 0.0
             && viewer.mode() == viewer::draw_mode) {
-            using openvrml_::fabs;
-            using openvrml_::fless_equal;
+            using openvrml::local::fabs;
+            using openvrml::local::fless_equal;
 
             sftime timeNow(browser::current_time());
             float x, y, z;

@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "normal_interpolator.h"
+# include <openvrml/node_impl_util.h>
+# include <openvrml/local/float.h>
+# include <private.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "normal_interpolator.h"
 
 namespace {
 
@@ -152,7 +153,7 @@ namespace {
 
                         // Interpolate on the surface of unit sphere.
                         for (size_t j = 0; j < nNormals; ++j) {
-                            using openvrml_::fequal;
+                            using openvrml::local::fequal;
 
                             float alpha, beta;
                             const float dot_product = v1->dot(*v2);

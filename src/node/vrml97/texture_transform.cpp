@@ -31,8 +31,6 @@
 
 namespace {
 
-    using namespace openvrml_;
-
     class OPENVRML_LOCAL texture_transform_node :
         public openvrml::node_impl_util::abstract_node<texture_transform_node>,
         public openvrml::texture_transform_node {

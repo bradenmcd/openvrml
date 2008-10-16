@@ -19,16 +19,17 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
 # include "time_sensor.h"
+# include <openvrml/local/float.h>
+# include <private.h>
 # include <openvrml/browser.h>
 # include <openvrml/node_impl_util.h>
 # include <openvrml/scene.h>
-# include <private.h>
 # include <boost/array.hpp>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 namespace {
 
@@ -264,7 +265,7 @@ namespace {
 
             if (enabled.value() != node.is_active_.value()) {
                 if (node.is_active_.value()) {
-                    using openvrml_::fequal;
+                    using openvrml::local::fequal;
 
                     //
                     // Was active; shutdown.
@@ -545,8 +546,8 @@ namespace {
 
             // Running (active and enabled)
             else if (this->is_active_.value()) {
-                using openvrml_::fequal;
-                using openvrml_::fless_equal;
+                using openvrml::local::fequal;
+                using openvrml::local::fless_equal;
 
                 double f, cycleInt = this->cycle_interval_.value();
                 bool deactivate = false;

@@ -158,7 +158,8 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/local/xml_reader.h \
         libopenvrml/openvrml/local/proto.cpp \
         libopenvrml/openvrml/local/proto.h \
-        libopenvrml/openvrml/local/field_value_types.h
+        libopenvrml/openvrml/local/field_value_types.h \
+        libopenvrml/openvrml/local/float.h
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \

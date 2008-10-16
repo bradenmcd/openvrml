@@ -20,14 +20,14 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "cylinder_sensor.h"
+# include <openvrml/node_impl_util.h>
+# include <openvrml/local/float.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "cylinder_sensor.h"
 
 namespace {
 
@@ -249,8 +249,8 @@ namespace {
                                       bool active,
                                       const double (&p)[3])
     {
-        using openvrml_::pi;
-        using openvrml_::pi_2;
+        using openvrml::local::pi;
+        using openvrml::local::pi_2;
         using openvrml::vec3f;
         using openvrml::make_vec3f;
 
@@ -293,7 +293,7 @@ namespace {
 
             // Tracking
             else if (active) {
-                using openvrml_::fequal;
+                using openvrml::local::fequal;
 
                 // get local coord for touch point
                 vec3f Vec = make_vec3f(static_cast<float>(p[0]),

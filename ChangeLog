@@ -1,5 +1,29 @@
 2008-10-16 Braden McDaniel  <braden@endoframe.com>
 
+	Moved floating point comparison functions from private.h to
+	openvrml/local/float.h.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_SOURCES): Added
+	libopenvrml/openvrml/local/float.h.
+	* src/libopenvrml/private.h: Moved floating point comparison
+	functions to openvrml/local/float.h.
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/bounding_volume.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/local/float.h: Added file; moved
+	floating point comparison functions here.
+	* src/node/vrml97/cylinder_sensor.cpp
+	* src/node/vrml97/normal_interpolator.cpp
+	* src/node/vrml97/orientation_interpolator.cpp
+	* src/node/vrml97/proximity_sensor.cpp
+	* src/node/vrml97/texture_transform.cpp
+	* src/node/vrml97/time_sensor.cpp
+	* src/node/vrml97/visibility_sensor.cpp
+	* src/script/javascript.cpp
+
+2008-10-16 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Removed redundant AC_ARG_VAR for JAVA_HOME.
 
 2008-10-15 Braden McDaniel  <braden@endoframe.com>

@@ -19,15 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "visibility_sensor.h"
+# include <openvrml/local/float.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/browser.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include <private.h>
-# include "visibility_sensor.h"
 
 namespace {
 
@@ -190,7 +190,7 @@ namespace {
             // Is the sphere visible? ...
             bool inside = xyz[0].z() < 0.0; // && z > - scene->visLimit()
             if (inside) {
-                using openvrml_::fequal;
+                using openvrml::local::fequal;
 
                 openvrml::navigation_info_node & nav_info =
                     this->type().metatype().browser()
