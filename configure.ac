@@ -322,7 +322,6 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVASCRIPT],
 #
 # Script node Java support
 #
-AC_ARG_VAR([JAVA_HOME], [Java Runtime Environment (JRE) location])
 AC_ARG_ENABLE([script-node-java],
               [AC_HELP_STRING([--disable-script-node-java],
                               [disable Script node Java support])])

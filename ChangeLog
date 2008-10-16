@@ -1,3 +1,7 @@
+2008-10-16 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Removed redundant AC_ARG_VAR for JAVA_HOME.
+
 2008-10-15 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Makefile.am
