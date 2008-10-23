@@ -1,3 +1,20 @@
+2008-10-23 Braden McDaniel  <braden@endoframe.com>
+
+	Removed redundant registration of the OpenvrmlXembedBrowserFactory
+	instance.
+
+	* src/openvrml-xembed/main.cpp
+	(main(int, char *[])): Removed redundant registration of the
+	OpenvrmlXembedBrowserFactory instance.
+	* src/openvrml-player/curlbrowserhost.cpp
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Proper factory object path is
+	"org/openvrml/BrowserFactory".
+	* mozilla-plugin/src/openvrml.cpp
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Proper factory object path is
+	"org/openvrml/BrowserFactory".
+
 2008-10-09 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.9 release.

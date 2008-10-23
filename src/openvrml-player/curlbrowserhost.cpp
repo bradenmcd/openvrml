@@ -855,7 +855,7 @@ namespace {
         DBusGProxy * browser_factory =
             dbus_g_proxy_new_for_name(connection,
                                       "org.openvrml.BrowserControl",
-                                      "/BrowserFactory",
+                                      "/org/openvrml/BrowserFactory",
                                       "org.openvrml.BrowserFactory");
         g_return_val_if_fail(browser_factory, 0);
         scope_guard browser_factory_guard =
