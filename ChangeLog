@@ -1,3 +1,11 @@
+2008-10-23 Braden McDaniel  <braden@endoframe.com>
+
+	Require Automake 1.10.1.
+
+	* configure.ac: Require Automake 1.10.1.
+	* src/Makefile.am: Removed hack to make distcheck work with
+	Automake 1.10.
+
 2008-10-16 Braden McDaniel  <braden@endoframe.com>
 
 	Moved floating point comparison functions from private.h to

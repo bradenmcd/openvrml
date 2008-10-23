@@ -756,12 +756,7 @@ EXTRA_DIST = \
         libopenvrml-gl/openvrml-gl-config.h.in \
         openvrml-xembed/org.openvrml.BrowserControl.service.in
 
-#
-# Automake 1.10 seems to need this for distcheck to work.
-#
-CLEANFILES = \
-        $(BUILT_SOURCES) \
-        openvrml-xembed/.libs/openvrml-xembed
+CLEANFILES = $(BUILT_SOURCES)
 
 DISTCLEANFILES = \
         libopenvrml/openvrml-config.h \
