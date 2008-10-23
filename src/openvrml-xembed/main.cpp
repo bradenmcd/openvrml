@@ -102,10 +102,6 @@ int main(int argc, char * argv[])
 //        make_guard(g_object_unref, G_OBJECT(browser_factory));
 //    boost::ignore_unused_variable_warning(browser_factory_guard);
 
-    dbus_g_connection_register_g_object(bus,
-                                        "/BrowserFactory",
-                                        G_OBJECT(browser_factory));
-
     gdk_threads_enter();
     gtk_main();
     gdk_threads_leave();
