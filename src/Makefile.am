@@ -713,7 +713,9 @@ openvrml-xembed/org.openvrml.BrowserControl.service: $(srcdir)/openvrml-xembed/o
 if ENABLE_PLAYER
 bin_PROGRAMS = openvrml-player/openvrml-player
 BUILT_SOURCES += \
-        openvrml-player/browser-host-server-glue.h
+        openvrml-player/browser-host-server-glue.h \
+        openvrml-player/browser-factory-client-glue.h \
+        openvrml-player/browser-client-glue.h
 endif
 
 openvrml_player_openvrml_player_CPPFLAGS = \
@@ -749,6 +751,18 @@ openvrml-player/browser-host-server-glue.h: $(srcdir)/openvrml-xembed/browser-ho
                    --prefix=openvrml_player_curl_browser_host   \
                    --mode=glib-server                  \
                    --output=$@                         \
+                   $?
+
+openvrml-player/browser-factory-client-glue.h: $(srcdir)/openvrml-xembed/browser-factory.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL)   \
+                   --mode=glib-client                    \
+                   --output=$@                           \
+                   $?
+
+openvrml-player/browser-client-glue.h: $(srcdir)/openvrml-xembed/browser.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL)   \
+                   --mode=glib-client                    \
+                   --output=$@                           \
                    $?
 
 EXTRA_DIST = \

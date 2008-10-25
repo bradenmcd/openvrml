@@ -70,6 +70,8 @@ void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * host,
 G_END_DECLS
 
 # include "browser-host-server-glue.h"
+# include "browser-factory-client-glue.h"
+# include "browser-client-glue.h"
 
 using namespace boost::multi_index::detail;  // for scope_guard
 
@@ -135,7 +137,7 @@ G_DEFINE_TYPE(OpenvrmlNpBrowserHost, openvrml_np_browser_host, G_TYPE_OBJECT)
 
 void openvrml_np_browser_host_init(OpenvrmlNpBrowserHost * const host)
 {
-    static size_t count = 0;
+    static unsigned long count = 0;
     host->path = g_strdup_printf("/org/openvrml/BrowserHost/%u/%lu",
                                  getpid(), count++);
     dbus_g_connection_register_g_object(
@@ -1170,16 +1172,13 @@ namespace {
         boost::ignore_unused_variable_warning(browser_factory_guard);
 
         char * browser_path = 0;
-        if (!dbus_g_proxy_call(browser_factory,
-                               "CreateControl",
-                               error,
-                               G_TYPE_STRING, host_name,
-                               DBUS_TYPE_G_OBJECT_PATH, host_path,
-                               G_TYPE_UINT64, host_id,
-                               G_TYPE_BOOLEAN, true,
-                               G_TYPE_INVALID,
-                               DBUS_TYPE_G_OBJECT_PATH, &browser_path,
-                               G_TYPE_INVALID)) {
+        if (!org_openvrml_BrowserFactory_create_control(browser_factory,
+                                                        host_name,
+                                                        host_path,
+                                                        host_id,
+                                                        true,
+                                                        &browser_path,
+                                                        error)) {
             return 0;
         }
 
@@ -1235,14 +1234,11 @@ namespace {
 
         GError * error = 0;
         scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
-        gboolean result = dbus_g_proxy_call(this->browser,
-                                            "NewStream",
-                                            &error,
-                                            G_TYPE_UINT64, stream,
-                                            G_TYPE_STRING, type,
-                                            G_TYPE_STRING, stream->url,
-                                            G_TYPE_INVALID,
-                                            G_TYPE_INVALID);
+        gboolean result = org_openvrml_Browser_new_stream(this->browser,
+                                                          guint64(stream),
+                                                          type,
+                                                          stream->url,
+                                                          &error);
         if (!result) {
             g_critical("Call to org.openvrml.Browser.NewStream failed: %s",
                        error->message);
@@ -1258,7 +1254,7 @@ namespace {
 
         dbus_g_proxy_call_no_reply(this->browser,
                                    "DestroyStream",
-                                   G_TYPE_UINT64, stream,
+                                   G_TYPE_UINT64, guint64(stream),
                                    G_TYPE_INVALID);
         return NPERR_NO_ERROR;
     }
@@ -1275,7 +1271,7 @@ namespace {
 
         dbus_g_proxy_call_no_reply(this->browser,
                                    "Write",
-                                   G_TYPE_UINT64, stream,
+                                   G_TYPE_UINT64, guint64(stream),
                                    DBUS_TYPE_G_UCHAR_ARRAY, &array,
                                    G_TYPE_INVALID);
         return len;

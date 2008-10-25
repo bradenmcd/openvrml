@@ -7,7 +7,10 @@ mozpluginsdir = $(libdir)/mozilla/plugins
 
 if ENABLE_MOZILLA_PLUGIN
 mozplugins_LTLIBRARIES = openvrml.la
-BUILT_SOURCES = browser-host-server-glue.h
+BUILT_SOURCES = \
+        browser-host-server-glue.h \
+        browser-factory-client-glue.h \
+        browser-client-glue.h
 endif
 
 openvrml_la_SOURCES = openvrml.cpp
@@ -20,6 +23,18 @@ browser-host-server-glue.h: $(top_srcdir)/../src/openvrml-xembed/browser-host.xm
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
                    --prefix=openvrml_np_browser_host   \
                    --mode=glib-server                  \
+                   --output=$@                         \
+                   $?
+
+browser-factory-client-glue.h: $(top_srcdir)/../src/openvrml-xembed/browser-factory.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --mode=glib-client                  \
+                   --output=$@                         \
+                   $?
+
+browser-client-glue.h: $(top_srcdir)/../src/openvrml-xembed/browser.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --mode=glib-client                  \
                    --output=$@                         \
                    $?
 

@@ -1,5 +1,37 @@
 2008-10-25 Braden McDaniel  <braden@endoframe.com>
 
+	Ensure the XEmbed control host identifier is consistently treated
+	as a 64-bit type.
+
+	* mozilla-plugin/src/Makefile.am: Generate client code for
+	org.openvrml.Browser and org.openvrml.BrowserFactory.
+	* mozilla-plugin/src/openvrml.cpp
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Use the generated function
+	org_openvrml_BrowserFactory_create_control.
+	(plugin_instance::new_stream(NPMIMEType, NPStream *)): Use the
+	generated function org_openvrml_Browser_new_stream.
+	(plugin_instance::destroy_stream(NPStream *)): Cast the stream
+	identifier to guint64.
+	(plugin_instance::write(NPStream *, int32, void *)): Cast the
+	stream identifier to guint64.
+	* src/Makefile.am: Generate client code for org.openvrml.Browser
+	and org.openvrml.BrowserFactory.
+	* src/openvrml-player/curlbrowserhost.cpp
+	(openvrml_player_curl_browser_host_realize(GtkWidget *)): Use the
+	generated function org_openvrml_Browser_get_id.
+	(openvrml_player_curl_browser_host_curl_source_callback(gpointer)):
+	Cast the stream identifier to guint64.
+	(openvrml_player_curl_browser_host_curl_write(void *, size_t,
+	size_t, void *)): Use the generated function
+	org_openvrml_Browser_new_stream; cast the stream identifier to
+	guint64.
+	(get_browser(DBusGConnection *, const char *, const char *,
+	guint64, GError **)): Use the generated function
+	org_openvrml_BrowserFactory_create_control.
+
+2008-10-25 Braden McDaniel  <braden@endoframe.com>
+
 	Fixed signature of openvrml_xembed_browser_factory_create_control
 	to use guint64 for the host_id.
 
