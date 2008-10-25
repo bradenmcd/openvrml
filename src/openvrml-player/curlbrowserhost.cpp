@@ -21,6 +21,8 @@
 # include <curl/curl.h>
 # include <libgnomevfs/gnome-vfs.h>
 # include <browser-host-server-glue.h>
+# include <browser-factory-client-glue.h>
+# include <browser-client-glue.h>
 # include <dbus/dbus-glib-bindings.h>
 # include <dbus/dbus-protocol.h>
 # include <boost/concept_check.hpp>
@@ -90,7 +92,7 @@ openvrml_player_curl_browser_host_init(
     browser_host->priv =
         OPENVRML_PLAYER_CURL_BROWSER_HOST_GET_PRIVATE(browser_host);
 
-    static size_t count = 0;
+    static unsigned long count = 0;
     browser_host->priv->path =
         g_strdup_printf("/org/openvrml/BrowserHost/%u/%lu",
                         getpid(), count++);
@@ -255,12 +257,8 @@ void openvrml_player_curl_browser_host_realize(GtkWidget * const widget)
     }
 
     guint64 plug_id = 0;
-    if (!dbus_g_proxy_call(browser_host->priv->browser,
-                           "GetId",
-                           &error,
-                           G_TYPE_INVALID,
-                           G_TYPE_UINT64, &plug_id,
-                           G_TYPE_INVALID)) {
+    if (!org_openvrml_Browser_get_id(browser_host->priv->browser, &plug_id,
+                                     &error)) {
         g_critical("Call to org.openvrml.Browser.GetId failed: %s",
                    error->message);
         return;
@@ -726,7 +724,7 @@ openvrml_player_curl_browser_host_curl_source_callback(const gpointer data)
                 dbus_g_proxy_call_no_reply(
                     browser_host->priv->browser,
                     "DestroyStream",
-                    G_TYPE_UINT64, msg->easy_handle,
+                    G_TYPE_UINT64, guint64(msg->easy_handle),
                     G_TYPE_INVALID);
             }
 
@@ -795,15 +793,12 @@ size_t openvrml_player_curl_browser_host_curl_write(void * ptr,
         GError * error = 0;
         scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
         gboolean new_stream_result =
-            dbus_g_proxy_call(
+            org_openvrml_Browser_new_stream(
                 stream_data.browser(),
-                "NewStream",
-                &error,
-                G_TYPE_UINT64, stream_data.handle(),
-                G_TYPE_STRING, (type ? type : "application/octet-stream"),
-                G_TYPE_STRING, stream_data.url(),
-                G_TYPE_INVALID,
-                G_TYPE_INVALID);
+                guint64(stream_data.handle()),
+                (type ? type : "application/octet-stream"),
+                stream_data.url(),
+                &error);
         if (!new_stream_result) {
             g_critical("Call to org.openvrml.Browser.NewStream failed: %s",
                        error->message);
@@ -832,7 +827,7 @@ size_t openvrml_player_curl_browser_host_curl_write(void * ptr,
 
         dbus_g_proxy_call_no_reply(stream_data.browser(),
                                    "Write",
-                                   G_TYPE_UINT64, stream_data.handle(),
+                                   G_TYPE_UINT64, guint64(stream_data.handle()),
                                    DBUS_TYPE_G_UCHAR_ARRAY, &array,
                                    G_TYPE_INVALID);
         g_assert(size == 1);
@@ -863,16 +858,14 @@ namespace {
         boost::ignore_unused_variable_warning(browser_factory_guard);
 
         char * browser_path = 0;
-        if (!dbus_g_proxy_call(browser_factory,
-                               "CreateControl",
-                               error,
-                               G_TYPE_STRING, host_name,
-                               DBUS_TYPE_G_OBJECT_PATH, host_path,
-                               G_TYPE_UINT64, host_id,
-                               G_TYPE_BOOLEAN, false,
-                               G_TYPE_INVALID,
-                               DBUS_TYPE_G_OBJECT_PATH, &browser_path,
-                               G_TYPE_INVALID)) {
+        if (!org_openvrml_BrowserFactory_create_control(
+                browser_factory,
+                host_name,
+                host_path,
+                host_id,
+                false,
+                &browser_path,
+                error)) {
             return 0;
         }
 
