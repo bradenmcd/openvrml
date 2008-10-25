@@ -244,7 +244,7 @@ openvrml_xembed_browser_factory_create_control(
     OpenvrmlXembedBrowserFactory * const control_factory,
     const char * const host_name,
     const char * const host_obj_path,
-    const guint host_id,
+    const guint64 host_id,
     const gboolean expect_initial_stream,
     DBusGMethodInvocation * const context)
 {

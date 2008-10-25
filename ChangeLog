@@ -1,3 +1,11 @@
+2008-10-25 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed signature of openvrml_xembed_browser_factory_create_control
+	to use guint64 for the host_id.
+
+	* src/openvrml-xembed/browserfactory.cpp
+	* src/openvrml-xembed/browserfactory.h
+
 2008-10-23 Braden McDaniel  <braden@endoframe.com>
 
 	Removed redundant registration of the OpenvrmlXembedBrowserFactory
