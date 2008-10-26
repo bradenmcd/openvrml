@@ -1,5 +1,18 @@
 2008-10-26 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.17.10 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+
+2008-10-26 Braden McDaniel  <braden@endoframe.com>
+
 	"got_initial_stream" flag needs to be per-XEmbed browser instance.
 
 	* src/openvrml-xembed/browser.cpp
