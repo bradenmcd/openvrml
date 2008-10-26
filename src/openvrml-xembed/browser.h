@@ -27,6 +27,16 @@
 
 G_BEGIN_DECLS
 
+#   define OPENVRML_XEMBED_ERROR openvrml_xembed_error_quark()
+
+GQuark openvrml_xembed_error_quark(void);
+
+typedef enum {
+    OPENVRML_XEMBED_ERROR_FAILED,
+    OPENVRML_XEMBED_ERROR_NO_MEMORY,
+    OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM
+} OpenvrmlXembedError;
+
 #   define OPENVRML_XEMBED_TYPE_BROWSER            (openvrml_xembed_browser_get_type ())
 #   define OPENVRML_XEMBED_BROWSER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), OPENVRML_XEMBED_TYPE_BROWSER, OpenvrmlXembedBrowser))
 #   define OPENVRML_XEMBED_BROWSER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), OPENVRML_XEMBED_TYPE_BROWSER, OpenvrmlXembedBrowserClass))

@@ -1,3 +1,28 @@
+2008-10-26 Braden McDaniel  <braden@endoframe.com>
+
+	Set GErrors on failure of the XEmbed browser control's stream
+	handling functions.
+
+	* src/openvrml-xembed/browser.cpp
+	(openvrml_xembed_error_quark()): Moved from browserfactory.cpp.
+	(openvrml_xembed_browser_new_stream(OpenvrmlXembedStreamClient *,
+	guint64, const char *, const char *, GError **)): Set an
+	OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM GError if the new stream URI
+	is not recognized.
+	(openvrml_xembed_browser_destroy_stream(OpenvrmlXembedStreamClient *,
+	guint64, GError **)): Set an OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM
+	GError if the stream id is not recognized.
+	(openvrml_xembed_browser_write(OpenvrmlXembedStreamClient *,
+	guint64, const GArray *, GError **)): Set an
+	OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM GError if the stream id is
+	not recognized.
+	* src/openvrml-xembed/browser.h
+	(OpenvrmlXembedError): Moved from browserfactory.cpp; added
+	OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM.
+	* src/openvrml-xembed/browserfactory.cpp
+	(openvrml_xembed_error_quark()): Moved to browser.cpp.
+	(OpenvrmlXembedError): Moved to browser.h.
+
 2008-10-25 Braden McDaniel  <braden@endoframe.com>
 
 	Ensure the XEmbed control host identifier is consistently treated

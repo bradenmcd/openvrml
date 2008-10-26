@@ -36,17 +36,6 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
-# define OPENVRML_XEMBED_ERROR openvrml_xembed_error_quark()
-GQuark openvrml_xembed_error_quark()
-{
-    return g_quark_from_static_string("openvrml-xembed-error-quark");
-}
-
-enum OpenvrmlXembedError {
-    OPENVRML_XEMBED_ERROR_FAILED,
-    OPENVRML_XEMBED_ERROR_NO_MEMORY
-};
-
 G_DEFINE_TYPE(OpenvrmlXembedBrowserFactory,
               openvrml_xembed_browser_factory,
               G_TYPE_OBJECT);
