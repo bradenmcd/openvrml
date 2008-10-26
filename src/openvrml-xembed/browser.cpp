@@ -209,6 +209,7 @@ struct OpenvrmlXembedBrowserPrivate_ {
     openvrml_xembed::plugin_streambuf_map * streambuf_map;
     boost::thread * initial_stream_reader_thread;
     bool expect_initial_stream;
+    bool got_initial_stream;
 };
 
 #   define OPENVRML_XEMBED_BROWSER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENVRML_XEMBED_TYPE_BROWSER, OpenvrmlXembedBrowserPrivate))
@@ -216,7 +217,6 @@ struct OpenvrmlXembedBrowserPrivate_ {
 void openvrml_xembed_browser_init(OpenvrmlXembedBrowser * const vrml_browser)
 {
     vrml_browser->priv = OPENVRML_XEMBED_BROWSER_GET_PRIVATE(vrml_browser);
-
 }
 
 namespace {
@@ -580,14 +580,13 @@ openvrml_xembed_browser_new_stream(
     shared_ptr<plugin_streambuf> streambuf =
         browser->priv->uninitialized_streambuf_map->find(url);
 
-    static bool got_initial_stream = false;
     if (!streambuf) {
-        if (!got_initial_stream) {
+        if (!browser->priv->got_initial_stream) {
             g_assert(
                 browser->priv->uninitialized_streambuf_map->size() == 1);
             streambuf =
                 browser->priv->uninitialized_streambuf_map->front();
-            got_initial_stream = true;
+            browser->priv->got_initial_stream = true;
         } else {
             g_set_error(
                 error,

@@ -1,5 +1,15 @@
 2008-10-26 Braden McDaniel  <braden@endoframe.com>
 
+	"got_initial_stream" flag needs to be per-XEmbed browser instance.
+
+	* src/openvrml-xembed/browser.cpp
+	(OpenvrmlXembedBrowserPrivate_): Added member got_initial_stream.
+	(openvrml_xembed_browser_new_stream(OpenvrmlXembedStreamClient *,
+	guint64, const char *, const char *, GError **)): Use the
+	got_initial_stream private member instead of a static variable.
+
+2008-10-26 Braden McDaniel  <braden@endoframe.com>
+
 	Set GErrors on failure of the XEmbed browser control's stream
 	handling functions.
 
