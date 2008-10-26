@@ -37,6 +37,11 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
+GQuark openvrml_xembed_error_quark()
+{
+    return g_quark_from_static_string("openvrml-xembed-error-quark");
+}
+
 extern "C" {
     //
     // GObject overrides
@@ -558,16 +563,13 @@ GtkWidget * openvrml_xembed_browser_new_for_display(DBusGProxy * const host_prox
     return browser;
 }
 
-/**
- * @todo We need to do something with the GError here.
- */
 gboolean
 openvrml_xembed_browser_new_stream(
     OpenvrmlXembedStreamClient * const stream_client,
     const guint64 stream_id,
-    const char * type,
+    const char * const type,
     const char * const url,
-    GError ** /* error */)
+    GError ** const error)
 {
     using namespace openvrml_xembed;
     using boost::shared_ptr;
@@ -587,7 +589,12 @@ openvrml_xembed_browser_new_stream(
                 browser->priv->uninitialized_streambuf_map->front();
             got_initial_stream = true;
         } else {
-            g_warning("Attempt to create an unrequested stream");
+            g_set_error(
+                error,
+                OPENVRML_XEMBED_ERROR,
+                OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+                "Attempt to create a stream that has not been requested: %s",
+                url);
             return false;
         }
     }
@@ -596,14 +603,11 @@ openvrml_xembed_browser_new_stream(
     return true;
 }
 
-/**
- * @todo We need to do something with the GError here.
- */
 gboolean
 openvrml_xembed_browser_destroy_stream(
     OpenvrmlXembedStreamClient * const stream_client,
     const guint64 stream_id,
-    GError ** /* error */)
+    GError ** const error)
 {
     using namespace openvrml_xembed;
     using boost::shared_ptr;
@@ -614,8 +618,12 @@ openvrml_xembed_browser_destroy_stream(
     const shared_ptr<plugin_streambuf> streambuf =
         browser->priv->streambuf_map->find(stream_id);
     if (!streambuf) {
-        g_warning("Attempt to destroy a nonexistent stream (with stream ID "
-                  "%lu)", stream_id);
+        g_set_error(
+            error,
+            OPENVRML_XEMBED_ERROR,
+            OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+            "Attempt to destroy a nonexistent stream: %lu",
+            stream_id);
         return false;
     }
     streambuf->buf_.set_eof();
@@ -623,14 +631,11 @@ openvrml_xembed_browser_destroy_stream(
     return true;
 }
 
-/**
- * @todo We need to do something with the GError here.
- */
 gboolean
 openvrml_xembed_browser_write(OpenvrmlXembedStreamClient * const stream_client,
                               const guint64 stream_id,
                               const GArray * const data,
-                              GError ** /* error */)
+                              GError ** const error)
 {
     using namespace openvrml_xembed;
     using boost::shared_ptr;
@@ -641,7 +646,12 @@ openvrml_xembed_browser_write(OpenvrmlXembedStreamClient * const stream_client,
     const shared_ptr<plugin_streambuf> streambuf =
         browser->priv->streambuf_map->find(stream_id);
     if (!streambuf) {
-        g_warning("Attempt to write to a nonexistent stream");
+        g_set_error(
+            error,
+            OPENVRML_XEMBED_ERROR,
+            OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+            "Attempt to write to a nonexistent stream: %lu",
+            stream_id);
         return false;
     }
     for (size_t i = 0; i < data->len; ++i) {
