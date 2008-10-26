@@ -1,3 +1,9 @@
+Changes new in version 0.17.10, 26 October, 2008
+========================================================================
+
+- Fixed 32-/64-bit parity and stream handling bugs in openvrml-xembed.
+
+
 Changes new in version 0.17.9, 9 October, 2008
 ========================================================================
 
