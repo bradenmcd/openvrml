@@ -22,14 +22,14 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
-#   include <openvrml/field_value.h>
-#   include <openvrml/rendering_context.h>
-#   include <openvrml/viewer.h>
-#   include <boost/bind.hpp>
 #   include <deque>
-#   include <map>
 #   include <set>
 #   include <utility>
+#   include <boost/bind.hpp>
+#   include <openvrml/field_value.h>
+#   include <openvrml/viewer.h>
+#   include <openvrml/rendering_context.h>
+#   include <openvrml/scope.h>
 
 namespace openvrml {
 
@@ -237,6 +237,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
+    class proto_node;
 
     class OPENVRML_API node_metatype : boost::noncopyable {
         const node_metatype_id id_;
@@ -276,7 +277,6 @@ namespace openvrml {
     typedef std::map<std::string, boost::shared_ptr<field_value> >
         initial_value_map;
 
-    class scope;
 
     class OPENVRML_API node_type : boost::noncopyable {
         const node_metatype & metatype_;
@@ -363,12 +363,8 @@ namespace openvrml {
     template <typename FieldValue> class field_value_emitter;
     template <typename FieldValue> class exposedfield;
 
-    namespace local {
-        class proto_node;
-    };
-
     class OPENVRML_API node : boost::noncopyable {
-        friend class local::proto_node;
+        friend class proto_node;
         friend class externproto_node;
 
         friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
@@ -593,6 +589,12 @@ namespace openvrml {
         virtual viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
     };
 
+    inline void node::add_ref() const OPENVRML_NOTHROW
+    {
+        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+        ++this->ref_count_;
+    }
+
     inline void intrusive_ptr_add_ref(const node * n) OPENVRML_NOTHROW
     {
         assert(n);
@@ -604,6 +606,16 @@ namespace openvrml {
         boost::mutex::scoped_lock lock(this->ref_count_mutex_);
         assert(this->ref_count_ > 0);
         --this->ref_count_;
+    }
+
+    inline void node::release() const OPENVRML_NOTHROW
+    {
+        bool delete_me;
+        {
+            boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+            delete_me = (--this->ref_count_ == 0);
+        }
+        if (delete_me) { delete this; }
     }
 
     inline void intrusive_ptr_release(const node * n) OPENVRML_NOTHROW
