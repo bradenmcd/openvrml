@@ -1403,7 +1403,7 @@ do_event_emitter(const std::string & id)
 }
 
 /**
- * @brief Initialize.
+ * @brief Shutdown.
  *
  * @param[in] timestamp the current time.
  */

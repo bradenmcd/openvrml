@@ -1,3 +1,8 @@
+2008-11-03 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/local/proto.cpp
+	(proto_node::do_shutdown(double)): Doc-comment fix.
+
 2008-10-26 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.10 release.
