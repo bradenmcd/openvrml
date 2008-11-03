@@ -3113,8 +3113,10 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
 {
-    this->do_render_appearance(v, context);
-    this->modified(false);
+    if (this->scene()) {
+        this->do_render_appearance(v, context);
+        this->modified(false);
+    }
 }
 
 /**
@@ -3378,8 +3380,10 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 void openvrml::child_node::render_child(viewer & v,
                                         const rendering_context context)
 {
-    this->do_render_child(v, context);
-    this->modified(false);
+    if (this->scene()) {
+        this->do_render_child(v, context);
+        this->modified(false);
+    }
 }
 
 /**
@@ -3738,20 +3742,23 @@ openvrml::viewer::object_t
 openvrml::geometry_node::render_geometry(viewer & v,
                                          rendering_context context)
 {
-    boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
+    if (this->scene()) {
+        boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
 
-    if (this->geometry_reference != 0 && this->modified()) {
-        v.remove_object(this->geometry_reference);
-        this->geometry_reference = 0;
-    }
+        if (this->geometry_reference != 0 && this->modified()) {
+            v.remove_object(this->geometry_reference);
+            this->geometry_reference = 0;
+        }
 
-    if (this->geometry_reference != 0) {
-        v.insert_reference(this->geometry_reference);
-    } else {
-        this->geometry_reference = this->do_render_geometry(v, context);
-        this->modified(false);
+        if (this->geometry_reference != 0) {
+            v.insert_reference(this->geometry_reference);
+        } else {
+            this->geometry_reference = this->do_render_geometry(v, context);
+            this->modified(false);
+        }
+        return this->geometry_reference;
     }
-    return this->geometry_reference;
+    return 0;
 }
 
 /**
@@ -4345,7 +4352,9 @@ openvrml::scoped_light_node::~scoped_light_node() OPENVRML_NOTHROW
  */
 void openvrml::scoped_light_node::render_scoped_light(viewer & v)
 {
-    this->do_render_scoped_light(v);
+    if (this->scene()) {
+        this->do_render_scoped_light(v);
+    }
 }
 
 /**
@@ -4461,21 +4470,24 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 openvrml::viewer::texture_object_t
 openvrml::texture_node::render_texture(viewer & v)
 {
-    boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
+    if (this->scene()) {
+        boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
 
-    if (this->texture_reference != 0 && this->modified()) {
-        v.remove_texture_object(this->texture_reference);
-        this->texture_reference = 0;
-    }
+        if (this->texture_reference != 0 && this->modified()) {
+            v.remove_texture_object(this->texture_reference);
+            this->texture_reference = 0;
+        }
 
-    if (this->texture_reference != 0) {
-        v.insert_texture_reference(this->texture_reference,
-                                   this->image().comp());
-    } else {
-        this->texture_reference = this->do_render_texture(v);
-        this->modified(false);
+        if (this->texture_reference != 0) {
+            v.insert_texture_reference(this->texture_reference,
+                                       this->image().comp());
+        } else {
+            this->texture_reference = this->do_render_texture(v);
+            this->modified(false);
+        }
+        return this->texture_reference;
     }
-    return this->texture_reference;
+    return 0;
 }
 
 /**
@@ -4608,8 +4620,10 @@ openvrml::texture_transform_node::~texture_transform_node() OPENVRML_NOTHROW
  */
 void openvrml::texture_transform_node::render_texture_transform(viewer & v)
 {
-    this->do_render_texture_transform(v);
-    this->modified(false);
+    if (this->scene()) {
+        this->do_render_texture_transform(v);
+        this->modified(false);
+    }
 }
 
 /**

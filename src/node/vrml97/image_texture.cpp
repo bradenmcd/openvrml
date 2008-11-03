@@ -243,10 +243,7 @@ namespace {
      */
     void image_texture_node::update_texture()
     {
-        //
-        // If the node hasn't been initialized yet, bail.
-        //
-        if (!this->scene()) { return; }
+        assert(this->scene());
 
         if (this->texture_needs_update) {
             using openvrml_node_vrml97::image_stream_listener;
