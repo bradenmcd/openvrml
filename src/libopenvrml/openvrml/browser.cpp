@@ -1959,7 +1959,7 @@ namespace openvrml {
     }
 
     /**
-     * @brief Initialize.
+     * @brief Shutdown.
      *
      * @param[in] timestamp the current time.
      */
