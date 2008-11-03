@@ -1,5 +1,11 @@
 2008-11-03 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(image_texture_node::update_texture()): Assert that the scene
+	pointer is nonnull (i.e., the node has been initialized).
+
+2008-11-03 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(proto_node::do_shutdown(double)): Doc-comment fix.
 

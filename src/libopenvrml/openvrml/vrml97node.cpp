@@ -12615,6 +12615,7 @@ namespace {
      */
     void image_texture_node::update_texture()
     {
+        assert(this->scene());
         if (this->texture_needs_update) {
             try {
                 if (!this->url_.mfstring::value().empty()) {
