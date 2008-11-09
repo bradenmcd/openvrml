@@ -1,5 +1,15 @@
 2008-11-09 Braden McDaniel  <braden@endoframe.com>
 
+	Updated to 20081109 release of Autoconf GL Macros.  This addresses
+	issues with the test for the varargs GLU tesselator callback
+	signature on Mac OS X 10.4.
+
+	* m4/ax_check_gl.m4
+	* m4/ax_check_glu.m4
+	* m4/ax_lang_compiler_ms.m4
+
+2008-11-09 Braden McDaniel  <braden@endoframe.com>
+
 	Acquire a read lock on the scene pointer mutex when rendering a
 	node.
 
