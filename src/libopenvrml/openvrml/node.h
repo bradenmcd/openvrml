@@ -552,6 +552,8 @@ namespace openvrml {
              const boost::shared_ptr<openvrml::scope> & scope)
             OPENVRML_NOTHROW;
 
+        read_write_mutex & scene_mutex();
+
     private:
         virtual void do_initialize(double timestamp)
             OPENVRML_THROW1(std::bad_alloc);

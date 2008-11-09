@@ -1,3 +1,27 @@
+2008-11-09 Braden McDaniel  <braden@endoframe.com>
+
+	Acquire a read lock on the scene pointer mutex when rendering a
+	node.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::scene_mutex()): Get the scene pointer mutex.
+	(openvrml::appearance_node::render_appearance(viewer &,
+	rendering_context)): Acquire a read lock on the scene pointer
+	mutex.
+	(openvrml::child_node::render_child(viewer &, rendering_context)):
+	Acquire a read lock on the scene pointer mutex.
+	(openvrml::geometry_node::render_geometry(viewer &,
+	rendering_context)): Acquire a read lock on the scene pointer
+	mutex.
+	(openvrml::scoped_light_node::render_scoped_light(viewer &)):
+	Acquire a read lock on the scene pointer mutex.
+	(openvrml::texture_node::render_texture(viewer &)): Acquire a read
+	lock on the scene pointer mutex.
+	(openvrml::texture_transform_node::render_texture_transform(viewer&)):
+	Acquire a read lock on the scene pointer mutex.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Added protected accessor for the scene mutex.
+
 2008-11-03 Braden McDaniel  <braden@endoframe.com>
 
 	Only render a node if the scene pointer is nonnull (i.e., the node

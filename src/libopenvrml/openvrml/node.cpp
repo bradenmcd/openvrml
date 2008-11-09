@@ -2589,6 +2589,16 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
     emitter.emit_event(timestamp);
 }
 
+/**
+ * @brief The @c scene mutex.
+ *
+ * @return the @c scene mutex.
+ */
+openvrml::read_write_mutex & openvrml::node::scene_mutex()
+{
+    return this->scene_mutex_;
+}
+
 namespace {
     struct OPENVRML_LOCAL field_printer_ {
         field_printer_(const openvrml::node & node,
@@ -3113,6 +3123,7 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_appearance(v, context);
         this->modified(false);
@@ -3380,6 +3391,7 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 void openvrml::child_node::render_child(viewer & v,
                                         const rendering_context context)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_child(v, context);
         this->modified(false);
@@ -3742,6 +3754,7 @@ openvrml::viewer::object_t
 openvrml::geometry_node::render_geometry(viewer & v,
                                          rendering_context context)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
 
@@ -4352,6 +4365,7 @@ openvrml::scoped_light_node::~scoped_light_node() OPENVRML_NOTHROW
  */
 void openvrml::scoped_light_node::render_scoped_light(viewer & v)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_scoped_light(v);
     }
@@ -4470,6 +4484,7 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 openvrml::viewer::texture_object_t
 openvrml::texture_node::render_texture(viewer & v)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
 
@@ -4620,6 +4635,7 @@ openvrml::texture_transform_node::~texture_transform_node() OPENVRML_NOTHROW
  */
 void openvrml::texture_transform_node::render_texture_transform(viewer & v)
 {
+    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_texture_transform(v);
         this->modified(false);
