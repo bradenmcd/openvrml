@@ -11,7 +11,7 @@
 # "OpenGL/gl.h" is found, HAVE_OPENGL_GL_H is defined.  These preprocessor
 # definitions may not be mutually exclusive.
 #
-# version: 2.3
+# version: 2.4
 # author: Braden McDaniel <braden@endoframe.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -50,9 +50,9 @@ AS_IF([test X$ax_compiler_ms = Xno],
 # AC_PATH_X).
 #
 AS_IF([test X$no_x != Xyes],
-      [AS_IF([test -n $x_includes],
+      [AS_IF([test -n "$x_includes"],
              [GL_CFLAGS="-I$x_includes $GL_CFLAGS"])]
-       AS_IF([test -n $x_libraries],
+       AS_IF([test -n "$x_libraries"],
              [GL_LIBS="-L$x_libraries -lX11 $GL_LIBS"]))
 
 ax_save_CPPFLAGS=$CPPFLAGS
@@ -87,7 +87,7 @@ CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
 ax_save_LIBS=$LIBS
 LIBS=""
 ax_check_libs="-lopengl32 -lGL"
-for ax_lib in ${ax_check_libs}; do
+for ax_lib in $ax_check_libs; do
   AS_IF([test X$ax_compiler_ms = Xyes],
         [ax_try_lib=`echo $ax_lib | $SED -e 's/^-l//' -e 's/$/.lib/'`],
         [ax_try_lib=$ax_lib])
