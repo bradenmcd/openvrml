@@ -1,3 +1,15 @@
+2008-11-22 Braden McDaniel  <braden@endoframe.com>
+
+	Made openvrml::node_traverser::halted and
+	openvrml::node_traverser::traversed const.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_traverser::halted() const): Made const.
+	(openvrml::node_traverser::traversed(node &) const): Made const.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node_traverser): Made the halted and traversed member
+	functions const.
+
 2008-11-21 Braden McDaniel  <braden@endoframe.com>
 
 	Moved node implementations to dynamically loaded libraries.

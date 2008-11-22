@@ -1330,8 +1330,8 @@ namespace openvrml {
 
     protected:
         void halt_traversal() OPENVRML_NOTHROW;
-        bool halted() OPENVRML_NOTHROW;
-        bool traversed(node & n) OPENVRML_NOTHROW;
+        bool halted() const OPENVRML_NOTHROW;
+        bool traversed(node & n) const OPENVRML_NOTHROW;
 
     private:
         virtual void on_entering(node & n);

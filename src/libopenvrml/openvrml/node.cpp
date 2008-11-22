@@ -5019,7 +5019,7 @@ void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
  *
  * @return @c true if the traversal has been halted; @c false otherwise.
  */
-bool openvrml::node_traverser::halted() OPENVRML_NOTHROW
+bool openvrml::node_traverser::halted() const OPENVRML_NOTHROW
 {
     return this->halt;
 }
@@ -5031,7 +5031,7 @@ bool openvrml::node_traverser::halted() OPENVRML_NOTHROW
  *
  * @return @c true if @p n has been traversed; @c false otherwise.
  */
-bool openvrml::node_traverser::traversed(node & n) OPENVRML_NOTHROW
+bool openvrml::node_traverser::traversed(node & n) const OPENVRML_NOTHROW
 {
     return this->traversed_nodes.find(&n) != this->traversed_nodes.end();
 }
