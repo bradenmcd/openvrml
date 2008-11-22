@@ -23,27 +23,12 @@
 # include "scene.h"
 # include "scope.h"
 # include "x3d_vrml_grammar.h"
-# include "vrml97node.h"
-# include "x3d_core.h"
-# include "x3d_networking.h"
-# include "x3d_grouping.h"
-# include "x3d_rendering.h"
-# include "x3d_shape.h"
-# include "x3d_geometry2d.h"
-# include "x3d_texturing.h"
-# include "x3d_interpolation.h"
-# include "x3d_key_device_sensor.h"
-# include "x3d_event_utilities.h"
-# include "x3d_dis.h"
-# include "x3d_environmental_effects.h"
-# include "x3d_geospatial.h"
-# include "x3d_hanim.h"
-# include "x3d_nurbs.h"
-# include "x3d_cad_geometry.h"
+# include <openvrml/local/dl.h>
 # include <openvrml/local/uri.h>
 # include <openvrml/local/xml_reader.h>
 # include <openvrml/local/field_value_types.h>
 # include <openvrml/local/proto.h>
+# include <openvrml/local/node_metatype_registry_impl.h>
 # include <private.h>
 # include <boost/algorithm/string/predicate.hpp>
 # include <boost/bind.hpp>
@@ -1377,7 +1362,7 @@ struct OPENVRML_LOCAL openvrml::browser::vrml97_parse_actions {
 
             //
             // Add the new node_metatype (prototype definition) to the
-            // browser's node_metatype_map.
+            // browser's node_metatype_registry.
             //
             this->actions_.scene_.browser()
                 .add_node_metatype(node_metatype->id(), node_metatype);
@@ -3882,6 +3867,76 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
 
 
 /**
+ * @class openvrml::node_metatype_registry openvrml/browser.h
+ *
+ * @brief Registry for @c node_metatype%s.
+ */
+
+/**
+ * @var boost::scoped_ptr<openvrml::local::node_metatype_registry_impl> openvrml::node_metatype_registry::impl_
+ *
+ * @brief A pointer to the implementation object.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] b a @c browser.
+ */
+openvrml::node_metatype_registry::node_metatype_registry(openvrml::browser & b):
+    impl_(new local::node_metatype_registry_impl(b))
+{
+    this->impl_->register_node_metatypes(*this);
+}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::node_metatype_registry::~node_metatype_registry() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief The @c browser.
+ *
+ * @return the @c browser.
+ */
+openvrml::browser & openvrml::node_metatype_registry::browser() const
+    OPENVRML_NOTHROW
+{
+    return this->impl_->browser();
+}
+
+/**
+ * @brief Register a @c node_metatype.
+ *
+ * This operation is destructive; that is, if a @c node_metatype is already
+ * registered under @p id, @p metatype will replace it in the registry.
+ *
+ * @param[in] id        the string identifier associated with @p metatype.
+ * @param[in] metatype  a @c node_metatype.
+ *
+ * @exception std::invalid_argument if @p metatype is null.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+void
+openvrml::node_metatype_registry::register_node_metatype(
+    const std::string & id,
+    const boost::shared_ptr<node_metatype> & metatype)
+    OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
+{
+    this->impl_->register_node_metatype(id, metatype);
+}
+
+/**
+ * @typedef void (*openvrml::register_node_metatypes_func)(openvrml::node_metatype_registry &)
+ *
+ * @brief The signature of the node module entry point.
+ *
+ * A node module should have a function with this signature named
+ * @c openvrml_register_node_metatypes.
+ */
+
+/**
  * @class openvrml::browser openvrml/browser.h
  *
  * @brief Encapsulates a VRML browser.
@@ -3910,284 +3965,6 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  *
  * @brief The scene.
  */
-
-/**
- * @internal
- *
- * @class openvrml::browser::node_metatype_map openvrml/browser.h
- *
- * @brief The map of @c node_metatype%s.
- */
-
-/**
- * @var openvrml::read_write_mutex openvrml::browser::node_metatype_map::mutex_
- *
- * @brief Object mutex.
- */
-
-/**
- * @typedef openvrml::browser::node_metatype_map::map_t
- *
- * @brief Map type.
- */
-
-/**
- * @var openvrml::browser::node_metatype_map::map_t openvrml::browser::node_metatype_map::map_
- *
- * @brief Map.
- */
-
-/**
- * @brief Construct.
- */
-openvrml::browser::node_metatype_map::node_metatype_map()
-{}
-
-# ifndef NDEBUG
-namespace {
-    struct OPENVRML_LOCAL node_metatype_equals_ :
-        public std::unary_function<std::pair<std::string,
-                                             boost::shared_ptr<openvrml::node_metatype> >,
-                                   bool> {
-        explicit node_metatype_equals_(
-            const boost::shared_ptr<openvrml::node_metatype> & node_metatype):
-            node_metatype_(node_metatype)
-        {}
-
-        bool operator()(const argument_type & arg) const
-        {
-            return arg.second == this->node_metatype_;
-        }
-
-    private:
-        boost::shared_ptr<openvrml::node_metatype> node_metatype_;
-    };
-}
-# endif
-
-/**
- * @brief Destroy.
- */
-openvrml::browser::node_metatype_map::~node_metatype_map() OPENVRML_NOTHROW
-{
-# ifndef NDEBUG
-    for (map_t::const_iterator entry = this->map_.begin();
-         entry != this->map_.end();
-         ++entry) {
-        typedef std::iterator_traits<map_t::iterator>::difference_type
-            difference_type;
-        const difference_type count =
-            std::count_if(this->map_.begin(),
-                          this->map_.end(),
-                          node_metatype_equals_(entry->second));
-        assert(entry->second.use_count() == count
-               && "shared_ptr<node_metatype> use_count does not match the "
-               "number of entries in the browser's node_metatype_map");
-    }
-# endif
-}
-
-/**
- * @fn openvrml::browser::node_metatype_map::node_metatype_map(const node_metatype_map &)
- *
- * @brief Not implemented.
- */
-
-/**
- * @brief Assign.
- *
- * @param[in] ncm   the value to assign.
- */
-openvrml::browser::node_metatype_map &
-openvrml::browser::node_metatype_map::operator=(const node_metatype_map & ncm)
-{
-    read_write_mutex::scoped_write_lock my_lock(this->mutex_);
-    read_write_mutex::scoped_read_lock map_lock(ncm.mutex_);
-    map_t temp(ncm.map_);
-    swap(this->map_, temp);
-    return *this;
-}
-
-namespace {
-    typedef std::map<std::string, boost::shared_ptr<openvrml::node_metatype> >
-        node_metatype_map_t;
-
-    struct OPENVRML_LOCAL init_node_metatype :
-        std::unary_function<void, node_metatype_map_t::value_type>
-    {
-        init_node_metatype(openvrml::viewpoint_node * initial_viewpoint,
-                        const double time)
-            OPENVRML_NOTHROW:
-            initial_viewpoint_(initial_viewpoint),
-            time_(time)
-        {}
-
-        void operator()(const node_metatype_map_t::value_type & value) const
-            OPENVRML_NOTHROW
-        {
-            assert(value.second);
-            value.second->initialize(this->initial_viewpoint_, this->time_);
-        }
-
-    private:
-        openvrml::viewpoint_node * initial_viewpoint_;
-        double time_;
-    };
-}
-
-/**
- * @brief Initialize the @c node_metatype%s.
- *
- * @param[in] initial_viewpoint the @c viewpoint_node that should be initially
- *                              active.
- * @param[in] timestamp         the current time.
- */
-void
-openvrml::browser::node_metatype_map::init(viewpoint_node * initial_viewpoint,
-                                           const double timestamp)
-{
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
-    std::for_each(this->map_.begin(), this->map_.end(),
-                  init_node_metatype(initial_viewpoint, timestamp));
-}
-
-/**
- * @brief Insert a @c node_metatype.
- *
- * This operation will &ldquo;fail&rdquo; silently.  That is, if a
- * @c node_metatype corresponding to @p id already exists in the map, the
- * existing element will simply be returned.
- *
- * @param[in] id            the implementation identifier.
- * @param[in] node_metatype a @c node_metatype.
- *
- * @return the element in the node_metatype_map corresponding to @p id.
- */
-const boost::shared_ptr<openvrml::node_metatype>
-openvrml::browser::node_metatype_map::
-insert(const std::string & id,
-       const boost::shared_ptr<openvrml::node_metatype> & node_metatype)
-{
-    read_write_mutex::scoped_write_lock lock(this->mutex_);
-    return this->map_.insert(make_pair(id, node_metatype)).first->second;
-}
-
-/**
- * @brief Remove a @c node_metatype.
- *
- * @param[in] id    the implementation identifier.
- *
- * @return @c true if a @c node_metatype is removed; @c false otherwise.
- */
-bool openvrml::browser::node_metatype_map::remove(const std::string & id)
-{
-    read_write_mutex::scoped_write_lock lock(this->mutex_);
-    return this->map_.erase(id) > 0;
-}
-
-/**
- * @brief Find a @c node_metatype.
- *
- * @param[in] id    an implementation identifier.
- *
- * @return the @c node_metatype corresponding to @p id, or a null
- *         pointer if no such @c node_metatype exists in the map.
- */
-const boost::shared_ptr<openvrml::node_metatype>
-openvrml::browser::node_metatype_map::find(const std::string & id) const
-{
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
-    const map_t::const_iterator pos = this->map_.find(id);
-    return (pos != this->map_.end())
-        ? pos->second
-        : boost::shared_ptr<openvrml::node_metatype>();
-}
-
-/**
- * @brief The @c node_metatype identifiers associated with @p node_metatype.
- *
- * @param[in] node_metatype    a @c node_metatype.
- *
- * @return the @c node_metatype identifiers associated with @p node_metatype.
- */
-const std::vector<openvrml::node_metatype_id>
-openvrml::browser::node_metatype_map::
-node_metatype_ids(const openvrml::node_metatype & node_metatype) const
-    OPENVRML_THROW1(std::bad_alloc)
-{
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
-    std::vector<node_metatype_id> ids;
-    for (map_t::const_iterator entry = this->map_.begin();
-         entry != this->map_.end();
-         ++entry) {
-        if (entry->second.get() == &node_metatype) {
-            ids.push_back(entry->first);
-        }
-    }
-    return ids;
-}
-
-namespace {
-
-    struct OPENVRML_LOCAL render_node_metatype :
-            std::unary_function<void, node_metatype_map_t::value_type> {
-        explicit render_node_metatype(openvrml::viewer & viewer):
-            viewer(&viewer)
-        {}
-
-        void operator()(const node_metatype_map_t::value_type & value) const
-        {
-            value.second->render(*this->viewer);
-        }
-
-    private:
-        openvrml::viewer * viewer;
-    };
-}
-
-/**
- * @brief Render the @c node_metatype%s.
- *
- * @param[in,out] v a @c viewer.
- */
-void openvrml::browser::node_metatype_map::render(openvrml::viewer & v)
-{
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
-    std::for_each(this->map_.begin(), this->map_.end(),
-                  render_node_metatype(v));
-}
-
-namespace {
-
-    struct OPENVRML_LOCAL shutdown_node_metatype :
-            std::unary_function<void, node_metatype_map_t::value_type> {
-        explicit shutdown_node_metatype(const double timestamp):
-            timestamp_(timestamp)
-        {}
-
-        void operator()(const node_metatype_map_t::value_type & value) const
-        {
-            value.second->shutdown(this->timestamp_);
-        }
-
-    private:
-        double timestamp_;
-    };
-}
-
-/**
- * @brief Shut down the @c node_metatype%s.
- *
- * @param[in] timestamp the current time.
- */
-void
-openvrml::browser::node_metatype_map::shutdown(const double timestamp)
-    OPENVRML_NOTHROW
-{
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
-    std::for_each(this->map_.begin(), this->map_.end(),
-                  shutdown_node_metatype(timestamp));
-}
 
 /**
  * @internal
@@ -4234,14 +4011,6 @@ openvrml::browser::node_metatype_map::shutdown(const double timestamp)
  * @brief The threads that load @c EXTERNPROTO implementations.
  *
  * These threads @b must be joined by the @c browser before it is destroyed.
- */
-
-/**
- * @internal
- *
- * @var openvrml::browser::node_metatype_map openvrml::browser::node_metatype_map_
- *
- * @brief A map of URIs to node implementations.
  */
 
 /**
@@ -4529,36 +4298,13 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 /**
  * @var bool openvrml::browser::flags_need_updating
  *
- * @brief Set by @c node::bounding_volume_dirty on any node in this browser graph,
- *        cleared by @c #update_flags.
+ * @brief Set by @c node::bounding_volume_dirty on any node in this browser
+ *        graph, cleared by @c #update_flags.
  *
  * @c true if the bvolume dirty flag has been set on a @c node in the
  * @c browser graph, but has not yet been propagated to that
  * <code>node</code>'s ancestors.
  */
-
-namespace {
-    void OPENVRML_LOCAL register_node_metatypes(openvrml::browser & b)
-    {
-        register_core_node_metatypes(b);
-        register_vrml97_node_metatypes(b);
-        register_networking_node_metatypes(b);
-        register_grouping_node_metatypes(b);
-        register_rendering_node_metatypes(b);
-        register_shape_node_metatypes(b);
-        register_geometry2d_node_metatypes(b);
-        register_texturing_node_metatypes(b);
-        register_interpolation_node_metatypes(b);
-        register_key_device_sensor_node_metatypes(b);
-        register_event_utilities_node_metatypes(b);
-        register_dis_node_metatypes(b);
-        register_environmental_effects_node_metatypes(b);
-        register_geospatial_node_metatypes(b);
-        register_hanim_node_metatypes(b);
-        register_nurbs_node_metatypes(b);
-        register_cad_geometry_node_metatypes(b);
-    }
-}
 
 /**
  * @brief Constructor.
@@ -4573,6 +4319,7 @@ openvrml::browser::browser(resource_fetcher & fetcher,
                            std::ostream & out,
                            std::ostream & err)
     OPENVRML_THROW1(std::bad_alloc):
+    node_metatype_registry_(new node_metatype_registry(*this)),
     null_node_metatype_(new null_node_metatype(*this)),
     null_node_type_(new null_node_type(*null_node_metatype_)),
     script_node_metatype_(*this),
@@ -4594,7 +4341,6 @@ openvrml::browser::browser(resource_fetcher & fetcher,
 {
     assert(this->active_viewpoint_);
     assert(this->active_navigation_info_);
-    register_node_metatypes(*this);
 }
 
 /**
@@ -4615,7 +4361,7 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
     read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
     if (this->scene_) { this->scene_->shutdown(now); }
 
-    this->node_metatype_map_.shutdown(now);
+    this->node_metatype_registry_->impl_->shutdown(now);
     assert(this->viewpoint_list_.empty());
     assert(this->scoped_lights_.empty());
     assert(this->scripts_.empty());
@@ -4642,14 +4388,10 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
 void
 openvrml::browser::
 add_node_metatype(const node_metatype_id & id,
-               const boost::shared_ptr<openvrml::node_metatype> & nc)
+                  const boost::shared_ptr<openvrml::node_metatype> & metatype)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
-    if (!nc) {
-        throw std::invalid_argument("cannot add null node_metatype pointer");
-    }
-    this->node_metatype_map_.remove(id); // Remove any existing entry.
-    this->node_metatype_map_.insert(id, nc);
+    this->node_metatype_registry_->impl_->register_node_metatype(id, metatype);
 }
 
 /**
@@ -4661,9 +4403,10 @@ add_node_metatype(const node_metatype_id & id,
  *         no such @c node_metatype exists.
  */
 const boost::shared_ptr<openvrml::node_metatype>
-openvrml::browser::node_metatype(const node_metatype_id & id) const OPENVRML_NOTHROW
+openvrml::browser::node_metatype(const node_metatype_id & id) const
+    OPENVRML_NOTHROW
 {
-    return this->node_metatype_map_.find(id);
+    return this->node_metatype_registry_->impl_->find(id);
 }
 
 /**
@@ -4987,7 +4730,7 @@ void openvrml::browser::set_world(resource_istream & in)
         this->load_proto_thread_group_.join_all();
         double now = browser::current_time();
         if (this->scene_) { this->scene_->shutdown(now); }
-        this->node_metatype_map_.shutdown(now);
+        this->node_metatype_registry_->impl_->shutdown(now);
         read_write_mutex::scoped_read_lock
             listeners_lock(this->listeners_mutex_);
         for_each(this->listeners_.begin(), this->listeners_.end(),
@@ -5006,9 +4749,7 @@ void openvrml::browser::set_world(resource_istream & in)
         //
         // Create the new scene.
         //
-        node_metatype_map new_map;
-        this->node_metatype_map_ = new_map;
-        register_node_metatypes(*this);
+        this->node_metatype_registry_.reset(new node_metatype_registry(*this));
         this->scene_.reset(new scene(*this));
 
         scene_lock.demote();
@@ -5040,7 +4781,7 @@ void openvrml::browser::set_world(resource_istream & in)
         //
         // Initialize the node_metatypes.
         //
-        this->node_metatype_map_.init(initial_viewpoint, now);
+        this->node_metatype_registry_->impl_->init(initial_viewpoint, now);
 
         if (!this->active_viewpoint_) {
             read_write_mutex::scoped_write_lock
@@ -5076,7 +4817,7 @@ openvrml::browser::replace_world(
     // Initialize the node_metatypes.
     //
     static viewpoint_node * const initial_viewpoint = 0;
-    this->node_metatype_map_.init(initial_viewpoint, now);
+    this->node_metatype_registry_->impl_->init(initial_viewpoint, now);
     this->modified(true);
     this->new_view = true; // Force resetUserNav
 }
@@ -5418,11 +5159,11 @@ void openvrml::browser::render()
                                visibilityLimit);
 
     //
-    // Per-node_metatype rendering happens before viewer::set_viewpoint is called
-    // This is important for things like background rendering, since
+    // Per-node_metatype rendering happens before viewer::set_viewpoint is
+    // called.  This is important for things like background rendering, since
     // viewer::insert_background must be called before viewer::set_viewpoint.
     //
-    this->node_metatype_map_.render(*this->viewer_);
+    this->node_metatype_registry_->impl_->render(*this->viewer_);
 
     // Activate the headlight.
     // ambient is supposed to be 0 according to the spec...

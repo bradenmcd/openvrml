@@ -18,44 +18,53 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "boolean_filter.h"
+# include "boolean_sequencer.h"
+# include "boolean_toggle.h"
+# include "boolean_trigger.h"
+# include "integer_sequencer.h"
+# include "integer_trigger.h"
+# include "time_trigger.h"
 # include <openvrml/browser.h>
-# include "x3d_event_utilities.h"
-# include <x3d-event-utilities/boolean_filter.h>
-# include <x3d-event-utilities/boolean_sequencer.h>
-# include <x3d-event-utilities/boolean_toggle.h>
-# include <x3d-event-utilities/boolean_trigger.h>
-# include <x3d-event-utilities/integer_sequencer.h>
-# include <x3d-event-utilities/integer_trigger.h>
-# include <x3d-event-utilities/time_trigger.h>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-void register_event_utilities_node_metatypes(openvrml::browser & b)
+extern "C"
+# ifdef _WIN32
+__declspec(dllexport)
+# else
+OPENVRML_API
+# endif
+void
+openvrml_register_node_metatypes(openvrml::node_metatype_registry & registry)
 {
     using boost::shared_ptr;
     using openvrml::node_metatype;
     using namespace openvrml_node_x3d_event_utilities;
-    b.add_node_metatype(
+
+    openvrml::browser & b = registry.browser();
+
+    registry.register_node_metatype(
         boolean_filter_metatype::id,
         shared_ptr<node_metatype>(new boolean_filter_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         boolean_sequencer_metatype::id,
         shared_ptr<node_metatype>(new boolean_sequencer_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         boolean_toggle_metatype::id,
         shared_ptr<node_metatype>(new boolean_toggle_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         boolean_trigger_metatype::id,
         shared_ptr<node_metatype>(new boolean_trigger_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         integer_sequencer_metatype::id,
         shared_ptr<node_metatype>(new integer_sequencer_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         integer_trigger_metatype::id,
         shared_ptr<node_metatype>(new integer_trigger_metatype(b)));
-    b.add_node_metatype(
+    registry.register_node_metatype(
         time_trigger_metatype::id,
         shared_ptr<node_metatype>(new time_trigger_metatype(b)));
 }

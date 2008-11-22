@@ -145,6 +145,35 @@ namespace openvrml {
     };
 
 
+    namespace local {
+        class node_metatype_registry_impl;
+    }
+
+    class OPENVRML_API node_metatype_registry : boost::noncopyable {
+        friend class browser;
+        friend bool OPENVRML_API operator==(const node_type &,
+                                            const node_type &)
+            OPENVRML_NOTHROW;
+
+    private:
+        boost::scoped_ptr<local::node_metatype_registry_impl> impl_;
+
+        explicit node_metatype_registry(openvrml::browser & b);
+
+    public:
+        ~node_metatype_registry() OPENVRML_NOTHROW;
+
+        openvrml::browser & browser() const OPENVRML_NOTHROW;
+
+        void register_node_metatype(
+            const std::string & id,
+            const boost::shared_ptr<node_metatype> & metatype)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+    };
+
+    typedef void (*register_node_metatypes_func)(node_metatype_registry &);
+
+
     class viewer;
     class scene;
     class null_node_metatype;
@@ -155,7 +184,8 @@ namespace openvrml {
         friend class scene;
         friend class script_node;
         friend class externproto_node;
-        friend bool OPENVRML_API operator==(const node_type &, const node_type &)
+        friend bool OPENVRML_API operator==(const node_type &,
+                                            const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
@@ -164,53 +194,15 @@ namespace openvrml {
         struct vrml97_parse_actions;
         struct x3d_vrml_parse_actions;
 
-        class OPENVRML_LOCAL node_metatype_map {
-            mutable read_write_mutex mutex_;
-            typedef std::map<std::string, boost::shared_ptr<node_metatype> >
-                map_t;
-            map_t map_;
-
-        public:
-            node_metatype_map();
-            ~node_metatype_map() OPENVRML_NOTHROW;
-
-            node_metatype_map & operator=(const node_metatype_map & ncm);
-
-            void init(viewpoint_node * initial_viewpoint, double timestamp);
-
-            const boost::shared_ptr<openvrml::node_metatype>
-                insert(const std::string & id,
-                       const boost::shared_ptr<openvrml::node_metatype> & metatype);
-
-            bool remove(const std::string & id);
-
-            const boost::shared_ptr<node_metatype>
-                find(const std::string & id) const;
-
-            const std::vector<node_metatype_id>
-                node_metatype_ids(const openvrml::node_metatype & metatype) const
-                OPENVRML_THROW1(std::bad_alloc);
-
-            void render(viewer & v);
-
-            void shutdown(double timestamp) OPENVRML_NOTHROW;
-
-        private:
-            //
-            // No convenient way to make copy-construction thread-safe, and we
-            // don't really need it.
-            //
-            node_metatype_map(const node_metatype_map & map);
-        };
-
         OPENVRML_LOCAL static void
-            parse_vrml(
-                std::istream & in,
-                const std::string & uri,
-                const std::string & type,
-                const openvrml::scene & scene,
-                std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
-                std::map<std::string, std::string> & meta);
+        parse_vrml(std::istream & in,
+                   const std::string & uri,
+                   const std::string & type,
+                   const openvrml::scene & scene,
+                   std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+                   std::map<std::string, std::string> & meta);
+
+        boost::scoped_ptr<node_metatype_registry> node_metatype_registry_;
 
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
         const boost::scoped_ptr<null_node_type> null_node_type_;
@@ -219,7 +211,6 @@ namespace openvrml {
         boost::scoped_ptr<boost::thread> load_root_scene_thread_;
 
         boost::thread_group load_proto_thread_group_;
-        node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;
         resource_fetcher & fetcher_;
 

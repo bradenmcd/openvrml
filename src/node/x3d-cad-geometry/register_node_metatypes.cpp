@@ -18,21 +18,33 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include "browser.h"
-# include "x3d_networking.h"
-# include <x3d-networking/load_sensor.h>
-# include <boost/array.hpp>
+# include "cad_face.h"
+# include "indexed_quad_set.h"
+# include <openvrml/browser.h>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-void register_networking_node_metatypes(openvrml::browser & b)
+extern "C"
+# ifdef _WIN32
+__declspec(dllexport)
+# else
+OPENVRML_API
+# endif
+void
+openvrml_register_node_metatypes(openvrml::node_metatype_registry & registry)
 {
-    using boost::shared_ptr;
     using openvrml::node_metatype;
-    using namespace openvrml_node_x3d_networking;
-    b.add_node_metatype(load_sensor_metatype::id,
-                        shared_ptr<node_metatype>(
-                            new load_sensor_metatype(b)));
+    using boost::shared_ptr;
+    using namespace openvrml_node_x3d_cad_geometry;
+
+    openvrml::browser & b = registry.browser();
+
+    registry.register_node_metatype(
+        cad_face_metatype::id,
+        shared_ptr<node_metatype>(new cad_face_metatype(b)));
+    registry.register_node_metatype(
+        indexed_quad_set_metatype::id,
+        shared_ptr<node_metatype>(new indexed_quad_set_metatype(b)));
 }

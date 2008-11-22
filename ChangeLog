@@ -1,3 +1,400 @@
+2008-11-20 Braden McDaniel  <braden@endoframe.com>
+
+	Moved node implementations to dynamically loaded libraries.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed dependencies libpng, zlib, and FreeType; added
+	libopenvrml/openvrml/local/node_metatype_registry_impl.{cpp,h};
+	removed libopenvrml/openvrml/vrml97node.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_cad_geometry.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_core.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_dis.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_environmental_effects.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_event_utilities.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_geometry2d.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_geospatial.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_grouping.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_hanim.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_interpolation.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_key_device_sensor.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_networking.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_nurbs.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_rendering.{cpp,h}, removed
+	libopenvrml/openvrml/x3d_shape.{cpp,h} removed
+	libopenvrml/openvrml/x3d_texturing.{cpp,h}.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
+	Build as a DLL; added dependencies libpng, zlib, and FreeType;
+	added node/vrml97/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.vcproj:
+	Build as a DLL; added
+	node/x3d-cad-geometry/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj:
+	Build as a DLL; added node/x3d-core/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj:
+	Build as a DLL; added node/x3d-dis/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj:
+	Build as a DLL; added
+	node/x3d-environmental-effects/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj:
+	Build as a DLL; added
+	node/x3d-event-utilities/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj:
+	Build as a DLL; added
+	node/x3d-geometry2d/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj:
+	Build as a DLL; added
+	node/x3d-geospatial/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj:
+	Build as a DLL; added
+	node/x3d-grouping/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj:
+	Build as a DLL; added node/x3d-h-anim/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj:
+	Build as a DLL; added
+	node/x3d-interpolation/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj:
+	Build as a DLL; added
+	node/x3d-key-device-sensor/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj:
+	Build as a DLL; added
+	node/x3d-networking/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj:
+	Build as a DLL; added node/x3d-nurbs/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj:
+	Build as a DLL; added
+	node/x3d-rendering/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj:
+	Build as a DLL; added node/x3d-shape/register_node_metatypes.cpp.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj:
+	Build as a DLL; added
+	node/x3d-texturing/register_node_metatypes.cpp.
+	* src/Makefile.am
+	(noinst_LTLIBRARIES): Removed.
+	(openvrml_include_HEADERS): Removed
+	libopenvrml/openvrml/vrml97node.h,
+	libopenvrml/openvrml/x3d_core.h,
+	libopenvrml/openvrml/x3d_networking.h,
+	libopenvrml/openvrml/x3d_grouping.h,
+	libopenvrml/openvrml/x3d_rendering.h,
+	libopenvrml/openvrml/x3d_shape.h,
+	libopenvrml/openvrml/x3d_geometry2d.h,
+	libopenvrml/openvrml/x3d_texturing.h,
+	libopenvrml/openvrml/x3d_interpolation.h,
+	libopenvrml/openvrml/x3d_key_device_sensor.h,
+	libopenvrml/openvrml/x3d_event_utilities.h,
+	libopenvrml/openvrml/x3d_dis.h,
+	libopenvrml/openvrml/x3d_environmental_effects.h,
+	libopenvrml/openvrml/x3d_geospatial.h,
+	libopenvrml/openvrml/x3d_hanim.h,
+	libopenvrml/openvrml/x3d_nurbs.h,
+	libopenvrml/openvrml/x3d_cad_geometry.h
+	(libopenvrml_libopenvrml_la_SOURCES): Removed
+	libopenvrml/openvrml/vrml97node.cpp,
+	libopenvrml/openvrml/x3d_core.cpp,
+	libopenvrml/openvrml/x3d_networking.cpp,
+	libopenvrml/openvrml/x3d_grouping.cpp,
+	libopenvrml/openvrml/x3d_rendering.cpp,
+	libopenvrml/openvrml/x3d_shape.cpp,
+	libopenvrml/openvrml/x3d_geometry2d.cpp,
+	libopenvrml/openvrml/x3d_texturing.cpp,
+	libopenvrml/openvrml/x3d_interpolation.cpp,
+	libopenvrml/openvrml/x3d_key_device_sensor.cpp,
+	libopenvrml/openvrml/x3d_event_utilities.cpp,
+	libopenvrml/openvrml/x3d_dis.cpp,
+	libopenvrml/openvrml/x3d_environmental_effects.cpp,
+	libopenvrml/openvrml/x3d_geospatial.cpp,
+	libopenvrml/openvrml/x3d_hanim.cpp,
+	libopenvrml/openvrml/x3d_nurbs.cpp,
+	libopenvrml/openvrml/x3d_cad_geometry.cpp; added
+	libopenvrml/openvrml/local/node_metatype_registry_impl.{cpp,h}.
+	(libopenvrml_libopenvrml_la_LIBADD): Removed
+	node/vrml97/libvrml97.la, node/x3d-core/libx3d-core.la,
+	node/x3d-networking/libx3d-networking.la,
+	node/x3d-grouping/libx3d-grouping.la,
+	node/x3d-rendering/libx3d-rendering.la,
+	node/x3d-shape/libx3d-shape.la,
+	node/x3d-geometry2d/libx3d-geometry2d.la,
+	node/x3d-texturing/libx3d-texturing.la,
+	node/x3d-interpolation/libx3d-interpolation.la,
+	node/x3d-key-device-sensor/libx3d-key-device-sensor.la,
+	node/x3d-event-utilities/libx3d-event-utilities.la,
+	node/x3d-dis/libx3d-dis.la,
+	node/x3d-environmental-effects/libx3d-environmental-effects.la,
+	node/x3d-geospatial/libx3d-geospatial.la,
+	node/x3d-h-anim/libx3d-h-anim.la, node/x3d-nurbs/libx3d-nurbs.la,
+	node/x3d-cad-geometry/libx3d-cad-geometry.la.
+	(openvrmlnode_LTLIBRARIES): Added node/vrml97.la,
+	node/x3d-core.la, node/x3d-networking.la, node/x3d-grouping.la,
+	node/x3d-rendering.la, node/x3d-shape.la, node/x3d-geometry2d.la,
+	node/x3d-texturing.la, node/x3d-interpolation.la,
+	node/x3d-key-device-sensor.la, node/x3d-event-utilities.la,
+	node/x3d-dis.la, node/x3d-environmental-effects.la,
+	node/x3d-geospatial.la, node/x3d-h-anim.la, node/x3d-nurbs.la,
+	node/x3d-cad-geometry.la.
+	(node_vrml97_la_CPPFLAGS): Replaced
+	node_vrml97_libvrml97_la_CPPFLAGS.
+	(node_vrml97_la_CXXFLAGS): Replaced
+	node_vrml97_libvrml97_la_CXXFLAGS.
+	(node_vrml97_la_SOURCES): Replaced
+	node_vrml97_libvrml97_la_SOURCES; added
+	node/vrml97/register_node_metatypes.cpp.
+	(node_vrml97_la_LDFLAGS): Replaced
+	node_vrml97_libvrml97_la_LDFLAGS; added -module.
+	(node_x3d_core_la_CPPFLAGS): Replaced
+	node_x3d_core_libx3d_core_la_CPPFLAGS.
+	(node_x3d_core_la_CXXFLAGS): Replaced
+	node_x3d_core_libx3d_core_la_CXXFLAGS.
+	(node_x3d_core_la_SOURCES): Replaced
+	node_x3d_core_libx3d_core_la_SOURCES; added
+	node/x3d-core/register_node_metatypes.cpp.
+	(node_x3d_core_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_networking_la_CPPFLAGS): Replaced
+	node_x3d_networking_libx3d_networking_la_CPPFLAGS.
+	(node_x3d_networking_la_CXXFLAGS): Replaced
+	node_x3d_networking_libx3d_networking_la_CXXFLAGS.
+	(node_x3d_networking_la_SOURCES): Replaced
+	node_x3d_networking_libx3d_networking_la_SOURCES; added
+	node/x3d-networking/register_node_metatypes.cpp.
+	(node_x3d_networking_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_grouping_la_CPPFLAGS): Replaced
+	node_x3d_grouping_libx3d_grouping_la_CPPFLAGS.
+	(node_x3d_grouping_la_CXXFLAGS): Replaced
+	node_x3d_grouping_libx3d_grouping_la_CXXFLAGS.
+	(node_x3d_grouping_la_SOURCES): Replaced
+	node_x3d_grouping_libx3d_grouping_la_SOURCES; added
+	node/x3d-grouping/register_node_metatypes.cpp.
+	(node_x3d_grouping_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_rendering_la_CPPFLAGS): Replaced
+	node_x3d_rendering_libx3d_rendering_la_CPPFLAGS.
+	(node_x3d_rendering_la_CXXFLAGS): Replaced
+	node_x3d_rendering_libx3d_rendering_la_CXXFLAGS.
+	(node_x3d_rendering_la_SOURCES): Replaced
+	node_x3d_rendering_libx3d_rendering_la_SOURCES; added
+	node/x3d-rendering/register_node_metatypes.cpp.
+	(node_x3d_rendering_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_shape_la_CPPFLAGS): Replaced
+	node_x3d_shape_libx3d_shape_la_CPPFLAGS.
+	(node_x3d_shape_la_CXXFLAGS): Replaced
+	node_x3d_shape_libx3d_shape_la_CXXFLAGS.
+	(node_x3d_shape_la_SOURCES): Replaced
+	node_x3d_shape_libx3d_shape_la_SOURCES; added
+	node/x3d-shape/register_node_metatypes.cpp.
+	(node_x3d_shape_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_geometry2d_la_CPPFLAGS): Replaced
+	node_x3d_geometry2d_libx3d_geometry2d_la_CPPFLAGS.
+	(node_x3d_geometry2d_la_CXXFLAGS): Replaced
+	node_x3d_geometry2d_libx3d_geometry2d_la_CXXFLAGS.
+	(node_x3d_geometry2d_la_SOURCES): Replaced
+	node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES; added
+	node/x3d-geometry2d/register_node_metatypes.cpp.
+	(node_x3d_geometry2d_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_texturing_la_CPPFLAGS): Replaced
+	node_x3d_texturing_libx3d_texturing_la_CPPFLAGS.
+	(node_x3d_texturing_la_CXXFLAGS): Replaced
+	node_x3d_texturing_libx3d_texturing_la_CXXFLAGS.
+	(node_x3d_texturing_la_SOURCES): Replaced
+	node_x3d_texturing_libx3d_texturing_la_SOURCES; added
+	node/x3d-texturing/register_node_metatypes.cpp.
+	(node_x3d_texturing_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_interpolation_la_CPPFLAGS): Replaced
+	node_x3d_interpolation_libx3d_interpolation_la_CPPFLAGS.
+	(node_x3d_interpolation_la_CXXFLAGS): Replaced
+	node_x3d_interpolation_libx3d_interpolation_la_CXXFLAGS.
+	(node_x3d_interpolation_la_SOURCES): Replaced
+	node_x3d_interpolation_libx3d_interpolation_la_SOURCES; added
+	node/x3d-interpolation/register_node_metatypes.cpp.
+	(node_x3d_interpolation_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_key_device_sensor_la_CPPFLAGS): Replaced
+	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CPPFLAGS.
+	(node_x3d_key_device_sensor_la_CXXFLAGS): Replaced
+	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CXXFLAGS.
+	(node_x3d_key_device_sensor_la_SOURCES): Replaced
+	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_SOURCES;
+	added node/x3d-key-device-sensor/register_node_metatypes.cpp.
+	(node_x3d_key_device_sensor_la_LDFLAGS): Added -module
+	-avoid-version.
+	(node_x3d_event_utilities_la_CPPFLAGS): Replaced
+	node_x3d_event_utilities_libx3d_event_utilities_la_CPPFLAGS.
+	(node_x3d_event_utilities_la_CXXFLAGS): Replaced
+	node_x3d_event_utilities_libx3d_event_utilities_la_CXXFLAGS.
+	(node_x3d_event_utilities_la_SOURCES): Replaced
+	node_x3d_event_utilities_libx3d_event_utilities_la_SOURCES; added
+	node/x3d-event-utilities/register_node_metatypes.cpp.
+	(node_x3d_event_utilities_la_LDFLAGS): Added -module
+	-avoid-version.
+	(node_x3d_dis_la_CPPFLAGS): Replaced
+	node_x3d_dis_libx3d_dis_la_CPPFLAGS.
+	(node_x3d_dis_la_CXXFLAGS): Replaced
+	node_x3d_dis_libx3d_dis_la_CXXFLAGS.
+	(node_x3d_dis_la_SOURCES): Replaced
+	node_x3d_dis_libx3d_dis_la_SOURCES; added
+	node/x3d-dis/register_node_metatypes.cpp.
+	(node_x3d_dis_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_environmental_effects_la_CPPFLAGS): Replaced
+	node_x3d_environmental_effects_libx3d_environmental_effects_la_CPPFLAGS.
+	(node_x3d_environmental_effects_la_CXXFLAGS): Replaced
+	node_x3d_environmental_effects_libx3d_environmental_effects_la_CXXFLAGS.
+	(node_x3d_environmental_effects_la_SOURCES): Replaced
+	node_x3d_environmental_effects_libx3d_environmental_effects_la_SOURCES;
+	added node/x3d-environmental-effects/register_node_metatypes.cpp.
+	(node_x3d_environmental_effects_la_LDFLAGS): Added -module
+	-avoid-version.
+	(node_x3d_geospatial_la_CPPFLAGS): Replaced
+	node_x3d_geospatial_libx3d_geospatial_la_CPPFLAGS.
+	(node_x3d_geospatial_la_CXXFLAGS): Replaced
+	node_x3d_geospatial_libx3d_geospatial_la_CXXFLAGS.
+	(node_x3d_geospatial_la_SOURCES): Replaced
+	node_x3d_geospatial_libx3d_geospatial_la_SOURCES; added
+	node/x3d-geospatial/register_node_metatypes.cpp.
+	(node_x3d_geospatial_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_h_anim_la_CPPFLAGS): Replaced
+	node_x3d_h_anim_libx3d_h_anim_la_CPPFLAGS.
+	(node_x3d_h_anim_la_CXXFLAGS): Replaced
+	node_x3d_h_anim_libx3d_h_anim_la_CXXFLAGS.
+	(node_x3d_h_anim_la_SOURCES): Replaced
+	node_x3d_h_anim_libx3d_h_anim_la_SOURCES; added
+	node/x3d-h-anim/register_node_metatypes.cpp.
+	(node_x3d_h_anim_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_nurbs_la_CPPFLAGS): Replaced
+	node_x3d_nurbs_libx3d_nurbs_la_CPPFLAGS.
+	(node_x3d_nurbs_la_CXXFLAGS): Replaced
+	node_x3d_nurbs_libx3d_nurbs_la_CXXFLAGS.
+	(node_x3d_nurbs_la_SOURCES): Replaced
+	node_x3d_nurbs_libx3d_nurbs_la_SOURCES; added
+	node/x3d-nurbs/register_node_metatypes.cpp.
+	(node_x3d_nurbs_la_LDFLAGS): Added -module -avoid-version.
+	(node_x3d_cad_geometry_la_CPPFLAGS): Replaced
+	node_x3d_cad_geometry_libx3d_cad_geometry_la_CPPFLAGS.
+	(node_x3d_cad_geometry_la_CXXFLAGS): Replaced
+	node_x3d_cad_geometry_libx3d_cad_geometry_la_CXXFLAGS.
+	(node_x3d_cad_geometry_la_SOURCES): Replaced
+	node_x3d_cad_geometry_libx3d_cad_geometry_la_SOURCES; added
+	node/x3d-cad-geometry/register_node_metatypes.cpp.
+	(node_x3d_cad_geometry_la_LDFLAGS): Added -module -avoid-version.
+	* src/node/vrml97/register_node_metatypes.cpp: Moved from
+	libopenvrml/openvrml/vrml97node.cpp.
+	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
+	Replaced register_vrml97_node_metatypes.
+
+A  +   src/node/x3d-cad-geometry/register_node_metatypes.cpp
+A  +   src/node/x3d-core/register_node_metatypes.cpp
+A  +   src/node/x3d-dis/register_node_metatypes.cpp
+A  +   src/node/x3d-environmental-effects/register_node_metatypes.cpp
+A  +   src/node/x3d-event-utilities/register_node_metatypes.cpp
+A  +   src/node/x3d-geometry2d/register_node_metatypes.cpp
+A  +   src/node/x3d-geospatial/register_node_metatypes.cpp
+A  +   src/node/x3d-grouping/register_node_metatypes.cpp
+A  +   src/node/x3d-h-anim/register_node_metatypes.cpp
+A  +   src/node/x3d-interpolation/register_node_metatypes.cpp
+A  +   src/node/x3d-key-device-sensor/register_node_metatypes.cpp
+A  +   src/node/x3d-networking/register_node_metatypes.cpp
+A  +   src/node/x3d-nurbs/register_node_metatypes.cpp
+A  +   src/node/x3d-rendering/register_node_metatypes.cpp
+A  +   src/node/x3d-shape/register_node_metatypes.cpp
+A  +   src/node/x3d-texturing/register_node_metatypes.cpp
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::node_metatype_map::node_metatype_map()):
+	Removed.
+	(openvrml::browser::node_metatype_map::~node_metatype_map()):
+	Removed.
+	(openvrml::browser::node_metatype_map::operator=(const
+	node_metatype_map &)): Removed.
+	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
+	double)): Removed; logic moved to
+	openvrml::local::node_metatype_registry_impl::init.
+	(openvrml::browser::node_metatype_map::insert(const std::string &,
+	const boost::shared_ptr<openvrml::node_metatype> &)): Removed;
+	replaced with
+	openvrml::node_metatype_registry::register_node_metatype.
+	(openvrml::browser::node_metatype_map::remove(const
+	std::string&)): Removed.
+	(openvrml::browser::node_metatype_map::find(const std::string &)):
+	Removed; logic moved to
+	openvrml::local::node_metatype_registry_impl::find.
+	(openvrml::browser::node_metatype_map::node_metatype_ids(const
+	node_metatype &)): Removed; logic moved to
+	openvrml::local::node_metatype_registry_impl::node_metatype_ids.
+	(openvrml::browser::node_metatype_map::render(viewer &)): Removed;
+	logic moved to
+	openvrml::local::node_metatype_registry_impl::render.
+	(openvrml::browser::node_metatype_map::shutdown(double)): Removed;
+	logic moved to
+	openvrml::local::node_metatype_registry_impl::shutdown.
+	(register_node_metatypes(openvrml::browser &)): Removed.
+	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
+	std::ostream &)): Initialize node_metatype_registry_; removed call
+	to register_node_metatypes.
+	(openvrml::browser::~browser()): Shutdown node_metatype_registry_
+	instead of node_metatype_map_.
+	(openvrml::browser::add_node_metatype(const node_metatype_id &,
+	const boost::shared_ptr<node_metatype> &)): Delegate to
+	openvrml::local::node_metatype_registry_impl::register_node_metatype.
+	(openvrml::browser::node_metatype(const node_metatype_id &)
+	const): Delegate to
+	openvrml::local::node_metatype_registry_impl::find.
+	(openvrml::browser::set_world(resource_istream &)): Teardown/setup
+	node_metatype_registry_ instead of node_metatype_map_.
+	* src/libopenvrml/openvrml/browser.h
+	(openvrml::node_metatype_registry): Added class definition.
+	(openvrml::browser): Removed node_metatype_map; this logic moved
+	to openvrml::node_metatype_registry and
+	openvrml::local::node_metatype_registry_impl.  Added
+	node_metatype_registry_ member.
+	* src/libopenvrml/openvrml/exposedfield.h
+	(openvrml::exposedfield): Removed OPENVRML_API; templates don't
+	need it.
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.h
+	(openvrml::local::node_metatype_registry_impl): Added; loads and
+	maintains the node_metatypes used by an openvrml::browser
+	instance.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::operator==(const node_type &, const node_type &)): Use
+	the node_metatype_registry_impl instead of the node_metatype_map.
+	* src/libopenvrml/openvrml/read_write_mutex.h
+	(openvrml::read_write_mutex::scoped_read_lock): Applied
+	OPENVRML_API.
+	(openvrml::read_write_mutex::scoped_write_lock): Applied
+	OPENVRML_API.
+	(openvrml::read_write_mutex::scoped_read_write_lock): Applied
+	OPENVRML_API.
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	* src/libopenvrml/openvrml/vrml97node.h: Removed.
+	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
+	* src/libopenvrml/openvrml/x3d_cad_geometry.h: Removed.
+	* src/libopenvrml/openvrml/x3d_core.cpp
+	* src/libopenvrml/openvrml/x3d_core.h: Removed.
+	* src/libopenvrml/openvrml/x3d_dis.cpp
+	* src/libopenvrml/openvrml/x3d_dis.h: Removed.
+	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
+	* src/libopenvrml/openvrml/x3d_environmental_effects.h: Removed.
+	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
+	* src/libopenvrml/openvrml/x3d_event_utilities.h: Removed.
+	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
+	* src/libopenvrml/openvrml/x3d_geometry2d.h: Removed.
+	* src/libopenvrml/openvrml/x3d_geospatial.cpp
+	* src/libopenvrml/openvrml/x3d_geospatial.h: Removed.
+	* src/libopenvrml/openvrml/x3d_grouping.cpp
+	* src/libopenvrml/openvrml/x3d_grouping.h: Removed.
+	* src/libopenvrml/openvrml/x3d_hanim.cpp
+	* src/libopenvrml/openvrml/x3d_hanim.h: Removed.
+	* src/libopenvrml/openvrml/x3d_interpolation.cpp
+	* src/libopenvrml/openvrml/x3d_interpolation.h: Removed.
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
+	* src/libopenvrml/openvrml/x3d_key_device_sensor.h: Removed.
+	* src/libopenvrml/openvrml/x3d_networking.cpp
+	* src/libopenvrml/openvrml/x3d_networking.h: Removed.
+	* src/libopenvrml/openvrml/x3d_nurbs.cpp
+	* src/libopenvrml/openvrml/x3d_nurbs.h: Removed.
+	* src/libopenvrml/openvrml/x3d_rendering.cpp
+	* src/libopenvrml/openvrml/x3d_rendering.h: Removed.
+	* src/libopenvrml/openvrml/x3d_shape.cpp
+	* src/libopenvrml/openvrml/x3d_shape.h: Removed.
+	* src/libopenvrml/openvrml/x3d_texturing.cpp
+	* src/libopenvrml/openvrml/x3d_texturing.h: Removed.
+
 2008-11-10 Braden McDaniel  <braden@endoframe.com>
 
 	Updated to 20081110 release of Autoconf GL Macros.  This addresses

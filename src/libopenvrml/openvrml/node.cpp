@@ -21,6 +21,7 @@
 
 # include "browser.h"
 # include "scope.h"
+# include <openvrml/local/node_metatype_registry_impl.h>
 # include <openvrml/local/uri.h>
 # include <openvrml/local/field_value_types.h>
 # include <boost/array.hpp>
@@ -1102,7 +1103,7 @@ bool openvrml::operator==(const node_type & lhs, const node_type & rhs)
 
     const std::vector<node_metatype_id> ids =
         rhs.metatype().browser()
-        .node_metatype_map_.node_metatype_ids(rhs.metatype());
+        .node_metatype_registry_->impl_->node_metatype_ids(rhs.metatype());
     const std::vector<node_metatype_id>::const_iterator pos =
         std::find(ids.begin(), ids.end(), lhs.metatype().id());
     return pos != ids.end();

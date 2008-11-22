@@ -1,4 +1,4 @@
-// -*- mode: c++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
+// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML
 //
@@ -18,20 +18,29 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include "x3d_grouping.h"
-# include "browser.h"
-# include <x3d-grouping/static_group.h>
+# include "texture_background.h"
+# include <openvrml/browser.h>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-void register_grouping_node_metatypes(openvrml::browser & b)
+extern "C"
+# ifdef _WIN32
+__declspec(dllexport)
+# else
+OPENVRML_API
+# endif
+void
+openvrml_register_node_metatypes(openvrml::node_metatype_registry & registry)
 {
     using boost::shared_ptr;
     using openvrml::node_metatype;
-    using namespace openvrml_node_x3d_grouping;
-    b.add_node_metatype(static_group_metatype::id,
-                        shared_ptr<node_metatype>(
-                            new static_group_metatype(b)));
+    using namespace openvrml_node_x3d_environmental_effects;
+
+    openvrml::browser & b = registry.browser();
+
+    registry.register_node_metatype(
+        texture_background_metatype::id,
+        shared_ptr<node_metatype>(new texture_background_metatype(b)));
 }

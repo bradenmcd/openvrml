@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\..\..\src\libopenvrml;..\..\..\..\..\src\node"
-				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.99\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;;OPENVRML_ENABLE_RENDER_TEXT_NODE"
+				PreprocessorDefinitions="NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;PACKAGE_VERSION=\&quot;0.17.99\&quot;;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_BUILD_DLL;OPENVRML_PKGDATADIR_=\&quot;\&quot;;OPENVRML_PKGLIBDIR_=\&quot;\&quot;"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib libpngd.lib zlibd.lib freetype236MT_D.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
 				IgnoreDefaultLibraryNames="libcmtd;msvcrt"
 				GenerateDebugInformation="true"
@@ -151,7 +151,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib libpng.lib zlib.lib freetype236MT.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
@@ -252,6 +252,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\node_metatype_registry_impl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\proto.cpp"
 				>
 			</File>
@@ -285,94 +289,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97_grammar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97node.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\..\..\..\..\src\node"
-						MinimalRebuild="false"
-						DebugInformationFormat="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories="..\..\..\..\..\src\node"
-						EnableFunctionLevelLinking="false"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_cad_geometry.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_core.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_dis.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_environmental_effects.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_event_utilities.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geometry2d.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geospatial.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_grouping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_hanim.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_interpolation.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_key_device_sensor.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_networking.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_nurbs.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_rendering.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_shape.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_texturing.cpp"
 				>
 			</File>
 			<File
@@ -433,6 +349,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\node_metatype_registry_impl.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml-common.h"
 				>
 			</File>
@@ -478,74 +398,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97_grammar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\vrml97node.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_cad_geometry.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_core.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_dis.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_environmental_effects.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_event_utilities.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geometry2d.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_geospatial.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_grouping.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_hanim.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_interpolation.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_key_device_sensor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_networking.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_nurbs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_rendering.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_shape.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\x3d_texturing.h"
 				>
 			</File>
 			<File

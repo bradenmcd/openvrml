@@ -18,24 +18,33 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include "browser.h"
-# include "x3d_shape.h"
-# include <x3d-shape/fill_properties.h>
-# include <x3d-shape/line_properties.h>
+# include "fill_properties.h"
+# include "line_properties.h"
+# include <openvrml/browser.h>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
 
-void register_shape_node_metatypes(openvrml::browser & b)
+extern "C"
+# ifdef _WIN32
+__declspec(dllexport)
+# else
+OPENVRML_API
+# endif
+void
+openvrml_register_node_metatypes(openvrml::node_metatype_registry & registry)
 {
     using boost::shared_ptr;
     using openvrml::node_metatype;
     using namespace openvrml_node_x3d_shape;
-    b.add_node_metatype(fill_properties_metatype::id,
-                        shared_ptr<node_metatype>(
-                            new fill_properties_metatype(b)));
-    b.add_node_metatype(line_properties_metatype::id,
-                        shared_ptr<node_metatype>(
-                            new line_properties_metatype(b)));
+
+    openvrml::browser & b = registry.browser();
+
+    registry.register_node_metatype(fill_properties_metatype::id,
+                                    shared_ptr<node_metatype>(
+                                        new fill_properties_metatype(b)));
+    registry.register_node_metatype(line_properties_metatype::id,
+                                    shared_ptr<node_metatype>(
+                                        new line_properties_metatype(b)));
 }

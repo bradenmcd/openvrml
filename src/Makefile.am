@@ -3,24 +3,6 @@ SUBDIRS = script
 BUILT_SOURCES =
 
 lib_LTLIBRARIES = libopenvrml/libopenvrml.la
-noinst_LTLIBRARIES = \
-        node/vrml97/libvrml97.la \
-        node/x3d-core/libx3d-core.la \
-        node/x3d-networking/libx3d-networking.la \
-        node/x3d-grouping/libx3d-grouping.la \
-        node/x3d-rendering/libx3d-rendering.la \
-        node/x3d-shape/libx3d-shape.la \
-        node/x3d-geometry2d/libx3d-geometry2d.la \
-        node/x3d-texturing/libx3d-texturing.la \
-        node/x3d-interpolation/libx3d-interpolation.la \
-        node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
-        node/x3d-event-utilities/libx3d-event-utilities.la \
-        node/x3d-dis/libx3d-dis.la \
-        node/x3d-environmental-effects/libx3d-environmental-effects.la \
-        node/x3d-geospatial/libx3d-geospatial.la \
-        node/x3d-h-anim/libx3d-h-anim.la \
-        node/x3d-nurbs/libx3d-nurbs.la \
-        node/x3d-cad-geometry/libx3d-cad-geometry.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
@@ -54,24 +36,7 @@ openvrml_include_HEADERS = \
         libopenvrml/openvrml/viewer.h \
         libopenvrml/openvrml/rendering_context.h \
         libopenvrml/openvrml/frustum.h \
-        libopenvrml/openvrml/node_impl_util.h \
-        libopenvrml/openvrml/vrml97node.h \
-        libopenvrml/openvrml/x3d_core.h \
-        libopenvrml/openvrml/x3d_networking.h \
-        libopenvrml/openvrml/x3d_grouping.h \
-        libopenvrml/openvrml/x3d_rendering.h \
-        libopenvrml/openvrml/x3d_shape.h \
-        libopenvrml/openvrml/x3d_geometry2d.h \
-        libopenvrml/openvrml/x3d_texturing.h \
-        libopenvrml/openvrml/x3d_interpolation.h \
-        libopenvrml/openvrml/x3d_key_device_sensor.h \
-        libopenvrml/openvrml/x3d_event_utilities.h \
-        libopenvrml/openvrml/x3d_dis.h \
-        libopenvrml/openvrml/x3d_environmental_effects.h \
-        libopenvrml/openvrml/x3d_geospatial.h \
-        libopenvrml/openvrml/x3d_hanim.h \
-        libopenvrml/openvrml/x3d_nurbs.h \
-        libopenvrml/openvrml/x3d_cad_geometry.h
+        libopenvrml/openvrml/node_impl_util.h
 
 if ENABLE_GL_RENDERER
 openvrml_gl_includedir = $(pkgincludedir)/openvrml/gl
@@ -133,23 +98,6 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/rendering_context.cpp \
         libopenvrml/openvrml/frustum.cpp \
         libopenvrml/openvrml/node_impl_util.cpp \
-        libopenvrml/openvrml/vrml97node.cpp \
-        libopenvrml/openvrml/x3d_core.cpp \
-        libopenvrml/openvrml/x3d_networking.cpp \
-        libopenvrml/openvrml/x3d_grouping.cpp \
-        libopenvrml/openvrml/x3d_rendering.cpp \
-        libopenvrml/openvrml/x3d_shape.cpp \
-        libopenvrml/openvrml/x3d_geometry2d.cpp \
-        libopenvrml/openvrml/x3d_texturing.cpp \
-        libopenvrml/openvrml/x3d_interpolation.cpp \
-        libopenvrml/openvrml/x3d_key_device_sensor.cpp \
-        libopenvrml/openvrml/x3d_event_utilities.cpp \
-        libopenvrml/openvrml/x3d_dis.cpp \
-        libopenvrml/openvrml/x3d_environmental_effects.cpp \
-        libopenvrml/openvrml/x3d_geospatial.cpp \
-        libopenvrml/openvrml/x3d_hanim.cpp \
-        libopenvrml/openvrml/x3d_nurbs.cpp \
-        libopenvrml/openvrml/x3d_cad_geometry.cpp \
         libopenvrml/openvrml/local/dl.cpp \
         libopenvrml/openvrml/local/dl.h \
         libopenvrml/openvrml/local/uri.cpp \
@@ -159,7 +107,9 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/local/proto.cpp \
         libopenvrml/openvrml/local/proto.h \
         libopenvrml/openvrml/local/field_value_types.h \
-        libopenvrml/openvrml/local/float.h
+        libopenvrml/openvrml/local/float.h \
+        libopenvrml/openvrml/local/node_metatype_registry_impl.cpp \
+        libopenvrml/openvrml/local/node_metatype_registry_impl.h
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
@@ -167,23 +117,6 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
         $(PTHREAD_LIBS)
 
 libopenvrml_libopenvrml_la_LIBADD = \
-        node/vrml97/libvrml97.la \
-        node/x3d-core/libx3d-core.la \
-        node/x3d-networking/libx3d-networking.la \
-        node/x3d-grouping/libx3d-grouping.la \
-        node/x3d-rendering/libx3d-rendering.la \
-        node/x3d-shape/libx3d-shape.la \
-        node/x3d-geometry2d/libx3d-geometry2d.la \
-        node/x3d-texturing/libx3d-texturing.la \
-        node/x3d-interpolation/libx3d-interpolation.la \
-        node/x3d-key-device-sensor/libx3d-key-device-sensor.la \
-        node/x3d-event-utilities/libx3d-event-utilities.la \
-        node/x3d-dis/libx3d-dis.la \
-        node/x3d-environmental-effects/libx3d-environmental-effects.la \
-        node/x3d-geospatial/libx3d-geospatial.la \
-        node/x3d-h-anim/libx3d-h-anim.la \
-        node/x3d-nurbs/libx3d-nurbs.la \
-        node/x3d-cad-geometry/libx3d-cad-geometry.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
 	-lltdl
@@ -226,16 +159,37 @@ script_java_la_LDFLAGS = \
         -module \
         -avoid-version
 
-node_vrml97_libvrml97_la_CPPFLAGS = \
+openvrmlnodedir = $(pkglibdir)/node
+openvrmlnode_LTLIBRARIES = \
+        node/vrml97.la \
+        node/x3d-core.la \
+        node/x3d-networking.la \
+        node/x3d-grouping.la \
+        node/x3d-rendering.la \
+        node/x3d-shape.la \
+        node/x3d-geometry2d.la \
+        node/x3d-texturing.la \
+        node/x3d-interpolation.la \
+        node/x3d-key-device-sensor.la \
+        node/x3d-event-utilities.la \
+        node/x3d-dis.la \
+        node/x3d-environmental-effects.la \
+        node/x3d-geospatial.la \
+        node/x3d-h-anim.la \
+        node/x3d-nurbs.la \
+        node/x3d-cad-geometry.la
+
+node_vrml97_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-node_vrml97_libvrml97_la_CXXFLAGS = \
+node_vrml97_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
         $(FONTCONFIG_CFLAGS) \
         $(FREETYPE_CFLAGS)
-node_vrml97_libvrml97_la_SOURCES = \
+node_vrml97_la_SOURCES = \
+        node/vrml97/register_node_metatypes.cpp \
         node/vrml97/image_stream_listener.h \
         node/vrml97/image_stream_listener.cpp \
         node/vrml97/abstract_light.h \
@@ -352,7 +306,8 @@ node_vrml97_libvrml97_la_SOURCES = \
         node/vrml97/cad_layer.cpp \
         node/vrml97/cad_assembly.h \
         node/vrml97/cad_assembly.cpp
-node_vrml97_libvrml97_la_LDFLAGS = \
+node_vrml97_la_LDFLAGS = \
+        -module \
         -avoid-version \
         $(JPEG_LIBS) \
         $(PNG_LIBS) \
@@ -360,14 +315,15 @@ node_vrml97_libvrml97_la_LDFLAGS = \
         $(FREETYPE_LIBS) \
         $(PTHREAD_LIBS)
 
-node_x3d_core_libx3d_core_la_CPPFLAGS = \
+node_x3d_core_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
-node_x3d_core_libx3d_core_la_CXXFLAGS = \
+node_x3d_core_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_core_libx3d_core_la_SOURCES = \
+node_x3d_core_la_SOURCES = \
+        node/x3d-core/register_node_metatypes.cpp \
         node/x3d-core/metadata_double.cpp \
         node/x3d-core/metadata_double.h \
         node/x3d-core/metadata_float.cpp \
@@ -378,31 +334,43 @@ node_x3d_core_libx3d_core_la_SOURCES = \
         node/x3d-core/metadata_set.h \
         node/x3d-core/metadata_string.cpp \
         node/x3d-core/metadata_string.h
+node_x3d_core_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_networking_libx3d_networking_la_CPPFLAGS = \
+node_x3d_networking_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_networking_libx3d_networking_la_CXXFLAGS = \
+node_x3d_networking_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_networking_libx3d_networking_la_SOURCES = \
+node_x3d_networking_la_SOURCES = \
+        node/x3d-networking/register_node_metatypes.cpp \
         node/x3d-networking/load_sensor.cpp \
         node/x3d-networking/load_sensor.h
+node_x3d_networking_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_grouping_libx3d_grouping_la_CPPFLAGS = \
+node_x3d_grouping_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_grouping_libx3d_grouping_la_CXXFLAGS = \
+node_x3d_grouping_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_grouping_libx3d_grouping_la_SOURCES = \
+node_x3d_grouping_la_SOURCES = \
+        node/x3d-grouping/register_node_metatypes.cpp \
         node/x3d-grouping/static_group.cpp \
         node/x3d-grouping/static_group.h
+node_x3d_grouping_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_rendering_libx3d_rendering_la_CPPFLAGS = \
+node_x3d_rendering_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_rendering_libx3d_rendering_la_CXXFLAGS = \
+node_x3d_rendering_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_rendering_libx3d_rendering_la_SOURCES = \
+node_x3d_rendering_la_SOURCES = \
+        node/x3d-rendering/register_node_metatypes.cpp \
         node/x3d-rendering/color_rgba.cpp \
         node/x3d-rendering/color_rgba.h \
         node/x3d-rendering/indexed_triangle_fan_set.cpp \
@@ -417,24 +385,32 @@ node_x3d_rendering_libx3d_rendering_la_SOURCES = \
         node/x3d-rendering/triangle_set.h \
         node/x3d-rendering/triangle_strip_set.cpp \
         node/x3d-rendering/triangle_strip_set.h
+node_x3d_rendering_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_shape_libx3d_shape_la_CPPFLAGS = \
+node_x3d_shape_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_shape_libx3d_shape_la_CXXFLAGS = \
+node_x3d_shape_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_shape_libx3d_shape_la_SOURCES = \
+node_x3d_shape_la_SOURCES = \
+        node/x3d-shape/register_node_metatypes.cpp \
         node/x3d-shape/fill_properties.cpp \
         node/x3d-shape/fill_properties.h \
         node/x3d-shape/line_properties.cpp \
         node/x3d-shape/line_properties.h
+node_x3d_shape_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_geometry2d_libx3d_geometry2d_la_CPPFLAGS = \
+node_x3d_geometry2d_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_geometry2d_libx3d_geometry2d_la_CXXFLAGS = \
+node_x3d_geometry2d_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES = \
+node_x3d_geometry2d_la_SOURCES = \
+        node/x3d-geometry2d/register_node_metatypes.cpp \
         node/x3d-geometry2d/arc2d.cpp \
         node/x3d-geometry2d/arc2d.h \
         node/x3d-geometry2d/arc_close2d.cpp \
@@ -451,13 +427,17 @@ node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES = \
         node/x3d-geometry2d/rectangle2d.h \
         node/x3d-geometry2d/triangle_set2d.cpp \
         node/x3d-geometry2d/triangle_set2d.h
+node_x3d_geometry2d_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_texturing_libx3d_texturing_la_CPPFLAGS = \
+node_x3d_texturing_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_texturing_libx3d_texturing_la_CXXFLAGS = \
+node_x3d_texturing_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_texturing_libx3d_texturing_la_SOURCES = \
+node_x3d_texturing_la_SOURCES = \
+        node/x3d-texturing/register_node_metatypes.cpp \
         node/x3d-texturing/multi_texture.cpp \
         node/x3d-texturing/multi_texture.h \
         node/x3d-texturing/multi_texture_coordinate.cpp \
@@ -466,35 +446,47 @@ node_x3d_texturing_libx3d_texturing_la_SOURCES = \
         node/x3d-texturing/multi_texture_transform.h \
         node/x3d-texturing/texture_coordinate_generator.cpp \
         node/x3d-texturing/texture_coordinate_generator.h
+node_x3d_texturing_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_interpolation_libx3d_interpolation_la_CPPFLAGS = \
+node_x3d_interpolation_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_interpolation_libx3d_interpolation_la_CXXFLAGS = \
+node_x3d_interpolation_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_interpolation_libx3d_interpolation_la_SOURCES = \
+node_x3d_interpolation_la_SOURCES = \
+        node/x3d-interpolation/register_node_metatypes.cpp \
         node/x3d-interpolation/coordinate_interpolator2d.cpp \
         node/x3d-interpolation/coordinate_interpolator2d.h \
         node/x3d-interpolation/position_interpolator2d.cpp \
         node/x3d-interpolation/position_interpolator2d.h
+node_x3d_interpolation_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CPPFLAGS = \
+node_x3d_key_device_sensor_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CXXFLAGS = \
+node_x3d_key_device_sensor_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_key_device_sensor_libx3d_key_device_sensor_la_SOURCES = \
+node_x3d_key_device_sensor_la_SOURCES = \
+        node/x3d-key-device-sensor/register_node_metatypes.cpp \
         node/x3d-key-device-sensor/key_sensor.cpp \
         node/x3d-key-device-sensor/key_sensor.h \
         node/x3d-key-device-sensor/string_sensor.cpp \
         node/x3d-key-device-sensor/string_sensor.h
+node_x3d_key_device_sensor_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_event_utilities_libx3d_event_utilities_la_CPPFLAGS = \
+node_x3d_event_utilities_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_event_utilities_libx3d_event_utilities_la_CXXFLAGS = \
+node_x3d_event_utilities_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_event_utilities_libx3d_event_utilities_la_SOURCES = \
+node_x3d_event_utilities_la_SOURCES = \
+        node/x3d-event-utilities/register_node_metatypes.cpp \
         node/x3d-event-utilities/boolean_filter.cpp \
         node/x3d-event-utilities/boolean_filter.h \
         node/x3d-event-utilities/boolean_sequencer.cpp \
@@ -509,13 +501,17 @@ node_x3d_event_utilities_libx3d_event_utilities_la_SOURCES = \
         node/x3d-event-utilities/integer_trigger.h \
         node/x3d-event-utilities/time_trigger.cpp \
         node/x3d-event-utilities/time_trigger.h
+node_x3d_event_utilities_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_dis_libx3d_dis_la_CPPFLAGS = \
+node_x3d_dis_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_dis_libx3d_dis_la_CXXFLAGS = \
+node_x3d_dis_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_dis_libx3d_dis_la_SOURCES = \
+node_x3d_dis_la_SOURCES = \
+        node/x3d-dis/register_node_metatypes.cpp \
         node/x3d-dis/espdu_transform.cpp \
         node/x3d-dis/espdu_transform.h \
         node/x3d-dis/receiver_pdu.cpp \
@@ -524,22 +520,30 @@ node_x3d_dis_libx3d_dis_la_SOURCES = \
         node/x3d-dis/signal_pdu.h \
         node/x3d-dis/transmitter_pdu.cpp \
         node/x3d-dis/transmitter_pdu.h
+node_x3d_dis_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_environmental_effects_libx3d_environmental_effects_la_CPPFLAGS = \
+node_x3d_environmental_effects_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_environmental_effects_libx3d_environmental_effects_la_CXXFLAGS = \
+node_x3d_environmental_effects_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_environmental_effects_libx3d_environmental_effects_la_SOURCES = \
+node_x3d_environmental_effects_la_SOURCES = \
+        node/x3d-environmental-effects/register_node_metatypes.cpp \
         node/x3d-environmental-effects/texture_background.cpp \
         node/x3d-environmental-effects/texture_background.h
+node_x3d_environmental_effects_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_geospatial_libx3d_geospatial_la_CPPFLAGS = \
+node_x3d_geospatial_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_geospatial_libx3d_geospatial_la_CXXFLAGS = \
+node_x3d_geospatial_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_geospatial_libx3d_geospatial_la_SOURCES = \
+node_x3d_geospatial_la_SOURCES = \
+        node/x3d-geospatial/register_node_metatypes.cpp \
         node/x3d-geospatial/geospatial-common.h \
         node/x3d-geospatial/geospatial-common.cpp \
         node/x3d-geospatial/geo_coordinate.cpp \
@@ -560,13 +564,17 @@ node_x3d_geospatial_libx3d_geospatial_la_SOURCES = \
         node/x3d-geospatial/geo_touch_sensor.h \
         node/x3d-geospatial/geo_viewpoint.cpp \
         node/x3d-geospatial/geo_viewpoint.h
+node_x3d_geospatial_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_h_anim_libx3d_h_anim_la_CPPFLAGS = \
+node_x3d_h_anim_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_h_anim_libx3d_h_anim_la_CXXFLAGS = \
+node_x3d_h_anim_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_h_anim_libx3d_h_anim_la_SOURCES = \
+node_x3d_h_anim_la_SOURCES = \
+        node/x3d-h-anim/register_node_metatypes.cpp \
         node/x3d-h-anim/h_anim_displacer.cpp \
         node/x3d-h-anim/h_anim_displacer.h \
         node/x3d-h-anim/h_anim_humanoid.cpp \
@@ -577,13 +585,17 @@ node_x3d_h_anim_libx3d_h_anim_la_SOURCES = \
         node/x3d-h-anim/h_anim_segment.h \
         node/x3d-h-anim/h_anim_site.cpp \
         node/x3d-h-anim/h_anim_site.h
+node_x3d_h_anim_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_nurbs_libx3d_nurbs_la_CPPFLAGS = \
+node_x3d_nurbs_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_nurbs_libx3d_nurbs_la_CXXFLAGS = \
+node_x3d_nurbs_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_nurbs_libx3d_nurbs_la_SOURCES = \
+node_x3d_nurbs_la_SOURCES = \
+        node/x3d-nurbs/register_node_metatypes.cpp \
         node/x3d-nurbs/contour2d.cpp \
         node/x3d-nurbs/contour2d.h \
         node/x3d-nurbs/contour_polyline2d.cpp \
@@ -612,17 +624,23 @@ node_x3d_nurbs_libx3d_nurbs_la_SOURCES = \
         node/x3d-nurbs/nurbs_texture_coordinate.h \
         node/x3d-nurbs/nurbs_trimmed_surface.cpp \
         node/x3d-nurbs/nurbs_trimmed_surface.h
+node_x3d_nurbs_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
-node_x3d_cad_geometry_libx3d_cad_geometry_la_CPPFLAGS = \
+node_x3d_cad_geometry_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-node_x3d_cad_geometry_libx3d_cad_geometry_la_CXXFLAGS = \
+node_x3d_cad_geometry_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
-node_x3d_cad_geometry_libx3d_cad_geometry_la_SOURCES = \
+node_x3d_cad_geometry_la_SOURCES = \
         node/x3d-cad-geometry/cad_face.cpp \
         node/x3d-cad-geometry/cad_face.h \
         node/x3d-cad-geometry/indexed_quad_set.cpp \
         node/x3d-cad-geometry/indexed_quad_set.h
+node_x3d_cad_geometry_la_LDFLAGS = \
+        -module \
+        -avoid-version
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
