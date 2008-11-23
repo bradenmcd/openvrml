@@ -142,8 +142,8 @@ namespace openvrml {
                                     proto_node & node)
                 OPENVRML_THROW1(std::bad_alloc);
 
-            boost::shared_ptr<openvrml::scope> proto_scope;
-            std::vector<boost::intrusive_ptr<node> > impl_nodes;
+            boost::shared_ptr<openvrml::scope> proto_scope_;
+            std::vector<boost::intrusive_ptr<node> > impl_nodes_;
 
         public:
             proto_node(const openvrml::node_type & type,
@@ -1052,15 +1052,15 @@ proto_node(const openvrml::node_type & type,
            const openvrml::initial_value_map & initial_values)
     OPENVRML_THROW1(std::bad_alloc):
     abstract_proto_node(type, scope),
-    proto_scope(scope)
+    proto_scope_(scope)
 {
     const proto_node_metatype & node_metatype =
         static_cast<const proto_node_metatype &>(type.metatype());
 
-    this->impl_nodes =
+    this->impl_nodes_ =
         proto_node_metatype::proto_impl_cloner(node_metatype,
                                                initial_values,
-                                               this->proto_scope).clone();
+                                               this->proto_scope_).clone();
 
     //
     // Establish routes.
@@ -1080,14 +1080,14 @@ proto_node(const openvrml::node_type & type,
             .get_path_from(node_metatype.impl_nodes_);
         assert(!path_to_from.empty());
         node * const from_node = resolve_node_path(path_to_from,
-                                                   this->impl_nodes);
+                                                   this->impl_nodes_);
         assert(from_node);
 
         node_path_t path_to_to;
         path_getter(*route->to, path_to_to)
             .get_path_from(node_metatype.impl_nodes_);
         node * const to_node = resolve_node_path(path_to_to,
-                                                 this->impl_nodes);
+                                                 this->impl_nodes_);
         assert(to_node);
 
         try {
@@ -1130,7 +1130,7 @@ proto_node(const openvrml::node_type & type,
                             path_to_impl_node)
                     .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
+                                                     this->impl_nodes_);
                 assert(impl_node);
                 const std::string & impl_node_interface =
                     is_mapping->second.impl_node_interface;
@@ -1166,7 +1166,7 @@ proto_node(const openvrml::node_type & type,
                             path_to_impl_node)
                     .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
+                                                     this->impl_nodes_);
                 assert(impl_node);
                 const std::string & impl_node_interface =
                     is_mapping->second.impl_node_interface;
@@ -1211,7 +1211,7 @@ proto_node(const openvrml::node_type & type,
                             path_to_impl_node)
                     .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
-                                                     this->impl_nodes);
+                                                     this->impl_nodes_);
                 assert(impl_node);
                 const std::string & impl_node_interface =
                     is_mapping->second.impl_node_interface;
@@ -1266,8 +1266,8 @@ openvrml::local::proto_node::~proto_node() OPENVRML_NOTHROW
  */
 bool openvrml::local::proto_node::modified() const
 {
-    return !this->impl_nodes.empty()
-        ? this->impl_nodes.front()->modified()
+    return !this->impl_nodes_.empty()
+        ? this->impl_nodes_.front()->modified()
         : false;
 }
 
@@ -1284,13 +1284,13 @@ do_initialize(const double timestamp)
 {
     using std::vector;
     for (vector<boost::intrusive_ptr<node> >::const_iterator node =
-             this->impl_nodes.begin();
-         node != impl_nodes.end();
+             this->impl_nodes_.begin();
+         node != impl_nodes_.end();
          ++node) {
         (*node)->initialize(*this->scene(), timestamp);
     }
-    if (!this->impl_nodes.empty()) {
-        this->impl_nodes.front()->modified(true);
+    if (!this->impl_nodes_.empty()) {
+        this->impl_nodes_.front()->modified(true);
     }
 }
 
@@ -1329,7 +1329,7 @@ do_field(const std::string & id) const
         //
         // Resolve the path against this instance's implementation nodes.
         //
-        node * const impl_node = resolve_node_path(path, this->impl_nodes);
+        node * const impl_node = resolve_node_path(path, this->impl_nodes_);
 
         //
         // Get the field value for the implementation node.
@@ -1413,8 +1413,8 @@ do_shutdown(const double timestamp)
 {
     using std::vector;
     for (vector<boost::intrusive_ptr<node> >::const_iterator node =
-             this->impl_nodes.begin();
-         node != impl_nodes.end();
+             this->impl_nodes_.begin();
+         node != impl_nodes_.end();
          ++node) {
         (*node)->shutdown(timestamp);
     }
@@ -1429,9 +1429,9 @@ do_shutdown(const double timestamp)
 openvrml::script_node *
 openvrml::local::proto_node::to_script() OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<script_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<script_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1444,9 +1444,9 @@ openvrml::appearance_node *
 openvrml::local::proto_node::to_appearance()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<appearance_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<appearance_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1459,9 +1459,9 @@ openvrml::bounded_volume_node *
 openvrml::local::proto_node::to_bounded_volume()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<bounded_volume_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<bounded_volume_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1474,9 +1474,9 @@ openvrml::child_node *
 openvrml::local::proto_node::to_child()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<child_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<child_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1489,9 +1489,9 @@ openvrml::color_node *
 openvrml::local::proto_node::to_color()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<color_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<color_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1504,9 +1504,9 @@ openvrml::color_rgba_node *
 openvrml::local::proto_node::to_color_rgba()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<color_rgba_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<color_rgba_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1519,9 +1519,9 @@ openvrml::coordinate_node *
 openvrml::local::proto_node::to_coordinate()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<coordinate_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<coordinate_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1534,9 +1534,9 @@ openvrml::font_style_node *
 openvrml::local::proto_node::to_font_style()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<font_style_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<font_style_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1549,9 +1549,9 @@ openvrml::geometry_node *
 openvrml::local::proto_node::to_geometry()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<geometry_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<geometry_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1564,9 +1564,9 @@ openvrml::grouping_node *
 openvrml::local::proto_node::to_grouping()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<grouping_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<grouping_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1579,9 +1579,9 @@ openvrml::light_node *
 openvrml::local::proto_node::to_light()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<light_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<light_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1594,9 +1594,9 @@ openvrml::material_node *
 openvrml::local::proto_node::to_material()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<material_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<material_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1609,9 +1609,9 @@ openvrml::navigation_info_node *
 openvrml::local::proto_node::to_navigation_info()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<navigation_info_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<navigation_info_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1624,9 +1624,9 @@ openvrml::normal_node *
 openvrml::local::proto_node::to_normal()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<normal_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<normal_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1639,10 +1639,10 @@ openvrml::pointing_device_sensor_node *
 openvrml::local::proto_node::to_pointing_device_sensor()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
     return node_cast<pointing_device_sensor_node *>(
-        this->impl_nodes[0].get());
+        this->impl_nodes_[0].get());
 }
 
 /**
@@ -1655,9 +1655,9 @@ openvrml::scoped_light_node *
 openvrml::local::proto_node::to_scoped_light()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<scoped_light_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<scoped_light_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1670,9 +1670,9 @@ openvrml::sound_source_node *
 openvrml::local::proto_node::to_sound_source()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<sound_source_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<sound_source_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1685,9 +1685,9 @@ openvrml::texture_node *
 openvrml::local::proto_node::to_texture()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<texture_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1700,9 +1700,9 @@ openvrml::texture_coordinate_node *
 openvrml::local::proto_node::to_texture_coordinate()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_coordinate_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<texture_coordinate_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1715,9 +1715,9 @@ openvrml::texture_transform_node *
 openvrml::local::proto_node::to_texture_transform()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<texture_transform_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<texture_transform_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1730,9 +1730,9 @@ openvrml::time_dependent_node *
 openvrml::local::proto_node::to_time_dependent()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<time_dependent_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<time_dependent_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1745,9 +1745,9 @@ openvrml::transform_node *
 openvrml::local::proto_node::to_transform()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<transform_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<transform_node *>(this->impl_nodes_[0].get());
 }
 
 /**
@@ -1760,7 +1760,7 @@ openvrml::viewpoint_node *
 openvrml::local::proto_node::to_viewpoint()
     OPENVRML_NOTHROW
 {
-    assert(!this->impl_nodes.empty());
-    assert(this->impl_nodes[0]);
-    return node_cast<viewpoint_node *>(this->impl_nodes[0].get());
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<viewpoint_node *>(this->impl_nodes_[0].get());
 }
