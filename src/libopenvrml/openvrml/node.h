@@ -198,11 +198,11 @@ namespace openvrml {
                     bind(node_interface_matches_field(), _1, id));
         if (pos == interfaces.end()) {
             using std::logical_or;
-
-            pos = find_if(interfaces.begin(), interfaces.end(),
-                          bind(logical_or<bool>(),
-                               bind(node_interface_matches_eventin(), _1, id),
-                               bind(node_interface_matches_eventout(), _1, id)));
+            pos =
+                find_if(interfaces.begin(), interfaces.end(),
+                        bind(logical_or<bool>(),
+                             bind(node_interface_matches_eventin(), _1, id),
+                             bind(node_interface_matches_eventout(), _1, id)));
         }
         return pos;
     }
@@ -257,7 +257,8 @@ namespace openvrml {
         void shutdown(double time) OPENVRML_NOTHROW;
 
     protected:
-        explicit node_metatype(const node_metatype_id & id, openvrml::browser & b)
+        explicit node_metatype(const node_metatype_id & id,
+                               openvrml::browser & b)
             OPENVRML_NOTHROW;
 
     private:
