@@ -76,11 +76,11 @@ namespace openvrml {
                 default_value_map_t;
 
         private:
-            openvrml::node_interface_set interfaces;
-            default_value_map_t default_value_map;
-            std::vector<boost::intrusive_ptr<openvrml::node> > impl_nodes;
-            routes_t routes;
-            is_map_t is_map;
+            openvrml::node_interface_set interfaces_;
+            default_value_map_t default_value_map_;
+            std::vector<boost::intrusive_ptr<openvrml::node> > impl_nodes_;
+            routes_t routes_;
+            is_map_t is_map_;
 
         public:
             proto_node_metatype(

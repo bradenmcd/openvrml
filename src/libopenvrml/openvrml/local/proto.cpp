@@ -563,12 +563,12 @@ public:
         using openvrml::node;
 
         vector<boost::intrusive_ptr<node> > result(
-            this->node_metatype.impl_nodes.size());
+            this->node_metatype.impl_nodes_.size());
 
         for (vector<boost::intrusive_ptr<node> >::size_type i = 0;
-             i < this->node_metatype.impl_nodes.size();
+             i < this->node_metatype.impl_nodes_.size();
              ++i) {
-            result[i] = this->clone_node(this->node_metatype.impl_nodes[i]);
+            result[i] = this->clone_node(this->node_metatype.impl_nodes_[i]);
             assert(result[i]);
         }
         return result;
@@ -653,11 +653,11 @@ private:
                         default_value_map;
 
                     is_map::const_iterator is_mapping =
-                        find_if(this->node_metatype.is_map.begin(),
-                                this->node_metatype.is_map.end(),
+                        find_if(this->node_metatype.is_map_.begin(),
+                                this->node_metatype.is_map_.end(),
                                 matches_is_target(
                                     is_target(*n, interface_->id)));
-                    if (is_mapping != this->node_metatype.is_map.end()) {
+                    if (is_mapping != this->node_metatype.is_map_.end()) {
                         using boost::bind;
                         using std::logical_or;
                         //
@@ -670,8 +670,8 @@ private:
                         //
                         node_interface_set::const_iterator
                             proto_interface =
-                            find_if(this->node_metatype.interfaces.begin(),
-                                    this->node_metatype.interfaces.end(),
+                            find_if(this->node_metatype.interfaces_.begin(),
+                                    this->node_metatype.interfaces_.end(),
                                     bind(logical_or<bool>(),
                                          bind(node_interface_matches_exposedfield(),
                                               _1,
@@ -681,7 +681,7 @@ private:
                                               is_mapping->first)));
 
                         if (proto_interface
-                            != this->node_metatype.interfaces.end()) {
+                            != this->node_metatype.interfaces_.end()) {
                             initial_value_map::const_iterator
                                 initial_value =
                                 this->initial_values_.find(
@@ -692,11 +692,11 @@ private:
                             } else {
                                 default_value_map::const_iterator
                                     default_value =
-                                    this->node_metatype.default_value_map
+                                    this->node_metatype.default_value_map_
                                     .find(is_mapping->first);
                                 assert(default_value
                                        != this->node_metatype
-                                       .default_value_map.end());
+                                       .default_value_map_.end());
                                 src_val = default_value->second->clone();
                             }
                         } else {
@@ -784,10 +784,10 @@ node_type(node_metatype, id)
          interface_ != interfaces.end();
          ++interface_) {
         node_interface_set::const_iterator pos =
-            find(node_metatype.interfaces.begin(),
-                 node_metatype.interfaces.end(),
+            find(node_metatype.interfaces_.begin(),
+                 node_metatype.interfaces_.end(),
                  *interface_);
-        if (pos == node_metatype.interfaces.end()) {
+        if (pos == node_metatype.interfaces_.end()) {
             throw openvrml::unsupported_interface(*interface_);
         }
         const bool succeeded = this->interfaces_.insert(*interface_).second;
@@ -875,11 +875,11 @@ proto_node_metatype(
     const is_map_t & is_map,
     const routes_t & routes):
     node_metatype(id, browser),
-    interfaces(interfaces),
-    default_value_map(default_value_map),
-    impl_nodes(impl_nodes),
-    routes(routes),
-    is_map(is_map)
+    interfaces_(interfaces),
+    default_value_map_(default_value_map),
+    impl_nodes_(impl_nodes),
+    routes_(routes),
+    is_map_(is_map)
 {}
 
 openvrml::local::proto_node_metatype::~proto_node_metatype() OPENVRML_NOTHROW
@@ -1066,8 +1066,8 @@ proto_node(const openvrml::node_type & type,
     // Establish routes.
     //
     typedef proto_node_metatype::routes_t routes_t;
-    for (routes_t::const_iterator route = node_metatype.routes.begin();
-         route != node_metatype.routes.end();
+    for (routes_t::const_iterator route = node_metatype.routes_.begin();
+         route != node_metatype.routes_.end();
          ++route) {
         // XXX
         // XXX It would be better to store the node_paths along with the
@@ -1075,9 +1075,9 @@ proto_node(const openvrml::node_type & type,
         // XXX the PROTO.
         // XXX
         node_path_t path_to_from;
-        assert(!node_metatype.impl_nodes.empty());
+        assert(!node_metatype.impl_nodes_.empty());
         path_getter(*route->from, path_to_from)
-            .get_path_from(node_metatype.impl_nodes);
+            .get_path_from(node_metatype.impl_nodes_);
         assert(!path_to_from.empty());
         node * const from_node = resolve_node_path(path_to_from,
                                                    this->impl_nodes);
@@ -1085,7 +1085,7 @@ proto_node(const openvrml::node_type & type,
 
         node_path_t path_to_to;
         path_getter(*route->to, path_to_to)
-            .get_path_from(node_metatype.impl_nodes);
+            .get_path_from(node_metatype.impl_nodes_);
         node * const to_node = resolve_node_path(path_to_to,
                                                  this->impl_nodes);
         assert(to_node);
@@ -1104,8 +1104,8 @@ proto_node(const openvrml::node_type & type,
     // Add eventIns, eventOuts, exposedFields.
     //
     for (node_interface_set::const_iterator interface_ =
-             node_metatype.interfaces.begin();
-         interface_ != node_metatype.interfaces.end();
+             node_metatype.interfaces_.begin();
+         interface_ != node_metatype.interfaces_.end();
          ++interface_) {
         using boost::shared_ptr;
         using boost::dynamic_pointer_cast;
@@ -1120,7 +1120,7 @@ proto_node(const openvrml::node_type & type,
         case node_interface::eventin_id:
             interface_eventin = create_eventin(interface_->field_type,
                                                *this);
-            is_range = node_metatype.is_map.equal_range(interface_->id);
+            is_range = node_metatype.is_map_.equal_range(interface_->id);
             for (is_map_t::const_iterator is_mapping = is_range.first;
                  is_mapping != is_range.second;
                  ++is_mapping) {
@@ -1128,7 +1128,7 @@ proto_node(const openvrml::node_type & type,
                 node_path_t path_to_impl_node;
                 path_getter(*is_mapping->second.impl_node,
                             path_to_impl_node)
-                    .get_path_from(node_metatype.impl_nodes);
+                    .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
                                                      this->impl_nodes);
                 assert(impl_node);
@@ -1156,7 +1156,7 @@ proto_node(const openvrml::node_type & type,
         case node_interface::eventout_id:
             interface_eventout = create_eventout(interface_->field_type,
                                                  *this);
-            is_range = node_metatype.is_map.equal_range(interface_->id);
+            is_range = node_metatype.is_map_.equal_range(interface_->id);
             for (is_map_t::const_iterator is_mapping = is_range.first;
                  is_mapping != is_range.second;
                  ++is_mapping) {
@@ -1164,7 +1164,7 @@ proto_node(const openvrml::node_type & type,
                 node_path_t path_to_impl_node;
                 path_getter(*is_mapping->second.impl_node,
                             path_to_impl_node)
-                    .get_path_from(node_metatype.impl_nodes);
+                    .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
                                                      this->impl_nodes);
                 assert(impl_node);
@@ -1193,16 +1193,15 @@ proto_node(const openvrml::node_type & type,
             initial_value = initial_values.find(interface_->id);
             if (initial_value == initial_values.end()) {
                 initial_value =
-                    node_metatype.default_value_map.find(interface_->id);
-                assert(initial_value
-                       != node_metatype.default_value_map.end());
+                    node_metatype.default_value_map_.find(interface_->id);
+                assert(initial_value != node_metatype.default_value_map_.end());
             }
             interface_eventin = create_exposedfield(*initial_value->second,
                                                     *this);
             interface_eventout =
                 dynamic_pointer_cast<openvrml::event_emitter>(
                     interface_eventin);
-            is_range = node_metatype.is_map.equal_range(interface_->id);
+            is_range = node_metatype.is_map_.equal_range(interface_->id);
             for (is_map_t::const_iterator is_mapping = is_range.first;
                  is_mapping != is_range.second;
                  ++is_mapping) {
@@ -1210,7 +1209,7 @@ proto_node(const openvrml::node_type & type,
                 node_path_t path_to_impl_node;
                 path_getter(*is_mapping->second.impl_node,
                             path_to_impl_node)
-                    .get_path_from(node_metatype.impl_nodes);
+                    .get_path_from(node_metatype.impl_nodes_);
                 node * impl_node = resolve_node_path(path_to_impl_node,
                                                      this->impl_nodes);
                 assert(impl_node);
@@ -1316,8 +1315,8 @@ do_field(const std::string & id) const
     const proto_node_metatype & node_metatype =
         static_cast<const proto_node_metatype &>(this->type().metatype());
     proto_node_metatype::is_map_t::const_iterator is_mapping =
-        node_metatype.is_map.find(id);
-    if (is_mapping != node_metatype.is_map.end()) {
+        node_metatype.is_map_.find(id);
+    if (is_mapping != node_metatype.is_map_.end()) {
         //
         // Get the path to the implementation node.
         //
@@ -1325,7 +1324,7 @@ do_field(const std::string & id) const
         assert(!is_mapping->second.impl_node_interface.empty());
         node_path_t path;
         path_getter(*is_mapping->second.impl_node, path)
-            .get_path_from(node_metatype.impl_nodes);
+            .get_path_from(node_metatype.impl_nodes_);
 
         //
         // Resolve the path against this instance's implementation nodes.
@@ -1342,8 +1341,8 @@ do_field(const std::string & id) const
         // default value.
         //
         proto_node_metatype::default_value_map_t::const_iterator
-            default_value = node_metatype.default_value_map.find(id);
-        if (default_value == node_metatype.default_value_map.end()) {
+            default_value = node_metatype.default_value_map_.find(id);
+        if (default_value == node_metatype.default_value_map_.end()) {
             throw unsupported_interface(this->type(), id);
         }
         return *default_value->second;

@@ -1,3 +1,11 @@
+2008-11-23 Braden McDaniel  <braden@endoframe.com>
+
+	Use trailing underscore convention for private variables in
+	openvrml::local::proto_node_metatype.
+
+	* src/libopenvrml/openvrml/local/proto.cpp
+	* src/libopenvrml/openvrml/local/proto.h
+
 2008-11-22 Braden McDaniel  <braden@endoframe.com>
 
 	Made openvrml::node_traverser::halted and
