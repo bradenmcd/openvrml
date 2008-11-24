@@ -2019,6 +2019,34 @@ openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
     return this->scene_;
 }
 
+/**
+ * @brief Get the implementation nodes of a @c PROTO instance.
+ *
+ * If the @c node is not a @c PROTO instance, the returned @c vector is empty.
+ *
+ * This function delegates to @c #do_impl_nodes.
+ *
+ * @return the implementation nodes.
+ */
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::node::impl_nodes() const OPENVRML_NOTHROW
+{
+    return this->do_impl_nodes();
+}
+
+/**
+ * @brief Get the implementation nodes of a @c PROTO instance.
+ *
+ * This default implementation returns an empty @c vector.
+ *
+ * @return an empty @c vector.
+ */
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::node::do_impl_nodes() const OPENVRML_NOTHROW
+{
+    static const std::vector<boost::intrusive_ptr<openvrml::node> > empty_vec;
+    return empty_vec;
+}
 
 /**
  * @brief Initialize the node.
@@ -2757,6 +2785,20 @@ void openvrml::node::do_initialize(double)
  */
 void openvrml::node::do_shutdown(double) OPENVRML_NOTHROW
 {}
+
+/**
+ * @relatesalso openvrml::node
+ *
+ * @brief Check whether a @c node is a @c PROTO instance.
+ *
+ * @param[in] n a @c node.
+ *
+ * @return @c true if @p n is a @c PROTO instance; @c false otherwise.
+ */
+bool openvrml::is_proto_instance(const node & n)
+{
+    return !n.impl_nodes().empty();
+}
 
 namespace {
     struct OPENVRML_LOCAL add_listener {

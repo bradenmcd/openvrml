@@ -513,6 +513,9 @@ namespace openvrml {
 
         openvrml::scene * scene() const OPENVRML_NOTHROW;
 
+        const std::vector<boost::intrusive_ptr<node> > & impl_nodes() const
+            OPENVRML_NOTHROW;
+
         std::ostream & print(std::ostream & out, size_t indent) const;
 
         void initialize(openvrml::scene & scene, double timestamp)
@@ -556,6 +559,10 @@ namespace openvrml {
         read_write_mutex & scene_mutex();
 
     private:
+        virtual
+        const std::vector<boost::intrusive_ptr<node> > & do_impl_nodes() const
+            OPENVRML_NOTHROW;
+
         virtual void do_initialize(double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
@@ -656,6 +663,8 @@ namespace openvrml {
         return dynamic_cast<field_value_emitter<FieldValue> &>(
             this->do_event_emitter(id));
     }
+
+    OPENVRML_API bool is_proto_instance(const node & n);
 
     OPENVRML_API bool add_route(node & from, const std::string & eventout,
                                 node & to, const std::string & eventin)

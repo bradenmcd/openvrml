@@ -277,6 +277,10 @@ public:
         OPENVRML_THROW1(std::bad_alloc);
 
 private:
+    virtual
+    const std::vector<boost::intrusive_ptr<node> > & do_impl_nodes() const
+        OPENVRML_NOTHROW;
+
     virtual void do_initialize(double timestamp)
         OPENVRML_THROW1(std::bad_alloc);
 
@@ -2963,6 +2967,15 @@ set_proto_node(node_type & type)
         this->proto_node_->initialize(*this->scene(),
                                       browser::current_time());
     }
+}
+
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::externproto_node::do_impl_nodes() const OPENVRML_NOTHROW
+{
+    static const std::vector<boost::intrusive_ptr<node> > empty_vec;
+    return this->proto_node_
+        ? this->proto_node_->impl_nodes()
+        : empty_vec;
 }
 
 void openvrml::externproto_node::do_initialize(const double timestamp)

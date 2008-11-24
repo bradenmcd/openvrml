@@ -155,6 +155,10 @@ namespace openvrml {
             virtual bool modified() const;
 
         private:
+            virtual
+            const std::vector<boost::intrusive_ptr<node> > &
+            do_impl_nodes() const OPENVRML_NOTHROW;
+
             virtual void do_initialize(double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
 
@@ -1269,6 +1273,17 @@ bool openvrml::local::proto_node::modified() const
     return !this->impl_nodes_.empty()
         ? this->impl_nodes_.front()->modified()
         : false;
+}
+
+/**
+ * @brief Get the implementation nodes.
+ *
+ * @return the implementation nodes.
+ */
+const std::vector<boost::intrusive_ptr<openvrml::node> > &
+openvrml::local::proto_node::do_impl_nodes() const OPENVRML_NOTHROW
+{
+    return this->impl_nodes_;
 }
 
 /**

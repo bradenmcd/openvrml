@@ -1,3 +1,30 @@
+2008-11-24 Braden McDaniel  <braden@endoframe.com>
+
+	Provide access to a PROTO instance's implementation nodes.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::externproto_node): Override
+	openvrml::node::do_impl_nodes.
+	(openvrml::externproto_node::do_impl_nodes() const): If there is
+	an implementation, return the implementation's nodes.
+	* src/libopenvrml/openvrml/local/proto.cpp
+	(openvrml::local::proto_node): Override
+	openvrml::node::do_impl_nodes.
+	(openvrml::local::proto_node::do_impl_nodes() const): Return the
+	implementation nodes.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::impl_nodes() const): Delegate to
+	node::do_impl_nodes.
+	(openvrml::node::do_impl_nodes() const): Default implementation
+	returns an empty vector.
+	(openvrml::is_proto_instance(const node &)): Return true if a node
+	is a PROTO instance; false otherwise.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Added member functions impl_nodes and
+	do_impl_nodes.
+	(openvrml::is_proto_instance(const node &)): Added; detects if a
+	node instance is a PROTO instance.
+
 2008-11-23 Braden McDaniel  <braden@endoframe.com>
 
 	Use trailing underscore convention for private variables in
