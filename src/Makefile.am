@@ -113,6 +113,7 @@ libopenvrml_libopenvrml_la_SOURCES = \
 
 libopenvrml_libopenvrml_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_LIBRARY_VERSION) \
+        -no-undefined \
         $(XML_LIBS) \
         $(PTHREAD_LIBS)
 
@@ -140,9 +141,12 @@ script_javascript_la_CPPFLAGS = \
 script_javascript_la_CXXFLAGS = $(JS_CFLAGS)
 script_javascript_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version \
         $(OPENVRML_JAVASCRIPT_RPATH) \
         $(JS_LIBS)
+script_javascript_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 script_java_la_SOURCES = script/java.cpp
 script_java_la_CPPFLAGS = \
@@ -157,7 +161,10 @@ script_java_la_CPPFLAGS = \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
 script_java_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+script_java_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 openvrmlnodedir = $(pkglibdir)/node
 openvrmlnode_LTLIBRARIES = \
@@ -308,12 +315,15 @@ node_vrml97_la_SOURCES = \
         node/vrml97/cad_assembly.cpp
 node_vrml97_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version \
         $(JPEG_LIBS) \
         $(PNG_LIBS) \
         $(FONTCONFIG_LIBS) \
         $(FREETYPE_LIBS) \
         $(PTHREAD_LIBS)
+node_vrml97_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_core_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -336,7 +346,10 @@ node_x3d_core_la_SOURCES = \
         node/x3d-core/metadata_string.h
 node_x3d_core_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_core_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_networking_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -349,7 +362,10 @@ node_x3d_networking_la_SOURCES = \
         node/x3d-networking/load_sensor.h
 node_x3d_networking_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_networking_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_grouping_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -362,7 +378,10 @@ node_x3d_grouping_la_SOURCES = \
         node/x3d-grouping/static_group.h
 node_x3d_grouping_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_grouping_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_rendering_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -387,7 +406,10 @@ node_x3d_rendering_la_SOURCES = \
         node/x3d-rendering/triangle_strip_set.h
 node_x3d_rendering_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_rendering_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_shape_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -402,7 +424,10 @@ node_x3d_shape_la_SOURCES = \
         node/x3d-shape/line_properties.h
 node_x3d_shape_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_shape_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_geometry2d_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -429,7 +454,10 @@ node_x3d_geometry2d_la_SOURCES = \
         node/x3d-geometry2d/triangle_set2d.h
 node_x3d_geometry2d_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_geometry2d_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_texturing_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -448,7 +476,10 @@ node_x3d_texturing_la_SOURCES = \
         node/x3d-texturing/texture_coordinate_generator.h
 node_x3d_texturing_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_texturing_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_interpolation_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -463,7 +494,10 @@ node_x3d_interpolation_la_SOURCES = \
         node/x3d-interpolation/position_interpolator2d.h
 node_x3d_interpolation_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_interpolation_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_key_device_sensor_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -478,7 +512,10 @@ node_x3d_key_device_sensor_la_SOURCES = \
         node/x3d-key-device-sensor/string_sensor.h
 node_x3d_key_device_sensor_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_key_device_sensor_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_event_utilities_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -503,7 +540,10 @@ node_x3d_event_utilities_la_SOURCES = \
         node/x3d-event-utilities/time_trigger.h
 node_x3d_event_utilities_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_event_utilities_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_dis_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -522,7 +562,10 @@ node_x3d_dis_la_SOURCES = \
         node/x3d-dis/transmitter_pdu.h
 node_x3d_dis_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_dis_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_environmental_effects_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -535,7 +578,10 @@ node_x3d_environmental_effects_la_SOURCES = \
         node/x3d-environmental-effects/texture_background.h
 node_x3d_environmental_effects_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_environmental_effects_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_geospatial_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -566,7 +612,10 @@ node_x3d_geospatial_la_SOURCES = \
         node/x3d-geospatial/geo_viewpoint.h
 node_x3d_geospatial_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_geospatial_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_h_anim_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -587,7 +636,10 @@ node_x3d_h_anim_la_SOURCES = \
         node/x3d-h-anim/h_anim_site.h
 node_x3d_h_anim_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_h_anim_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_nurbs_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -626,7 +678,10 @@ node_x3d_nurbs_la_SOURCES = \
         node/x3d-nurbs/nurbs_trimmed_surface.h
 node_x3d_nurbs_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_nurbs_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 node_x3d_cad_geometry_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -640,7 +695,10 @@ node_x3d_cad_geometry_la_SOURCES = \
         node/x3d-cad-geometry/indexed_quad_set.h
 node_x3d_cad_geometry_la_LDFLAGS = \
         -module \
+        -no-undefined \
         -avoid-version
+node_x3d_cad_geometry_la_LIBADD = \
+        libopenvrml/libopenvrml.la
 
 libopenvrml_gl_libopenvrml_gl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
@@ -652,6 +710,7 @@ libopenvrml_gl_libopenvrml_gl_la_SOURCES = \
         libopenvrml-gl/openvrml/gl/viewer.cpp
 libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_GL_LIBRARY_VERSION) \
+        -no-undefined \
         $(GLU_LIBS)
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 

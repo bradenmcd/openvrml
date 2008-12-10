@@ -1,3 +1,7 @@
+2008-12-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am: Build libraries with -no-undefined.
+
 2008-11-24 Braden McDaniel  <braden@endoframe.com>
 
 	Provide access to a PROTO instance's implementation nodes.
