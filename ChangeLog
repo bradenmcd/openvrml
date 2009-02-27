@@ -1,3 +1,10 @@
+2009-02-27 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_factory_registry::impl::~impl()): Clear the maps
+	before unloading the modules so that we don't reference code
+	that's just been unloaded.
+
 2008-12-10 Braden McDaniel  <braden@endoframe.com>
 
 	* src/Makefile.am: Build libraries with -no-undefined.

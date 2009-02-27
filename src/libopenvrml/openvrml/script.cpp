@@ -471,6 +471,14 @@ openvrml::script_factory_registry::impl::impl()
 openvrml::script_factory_registry::impl::~impl() OPENVRML_NOTHROW
 {
     using namespace openvrml::local;
+
+    //
+    // Clear the maps before unloading the modules so that we don't reference
+    // code that's just been unloaded.
+    //
+    this->uri_scheme_map_.clear();
+    this->media_type_map_.clear();
+
     std::for_each(this->module_handles_.begin(), this->module_handles_.end(),
                   dl::close);
     dl::exit(); // Don't care if this fails.  What would we do?
