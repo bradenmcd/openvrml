@@ -27,7 +27,6 @@ plugin_streambuf(const std::string & requested_url,
                  plugin_streambuf_map & map):
     state_(requested),
     get_url_result_(-1),
-    initialized_(false),
     url_(requested_url),
     i_(0),
     c_('\0'),
@@ -57,21 +56,25 @@ void openvrml_xembed::plugin_streambuf::set_get_url_result(const int result)
     boost::mutex::scoped_lock lock(this->mutex_);
     g_assert(this->get_url_result_ == -1);
     this->get_url_result_ = result;
+
+    //
+    // If result is nonzero, the resource fetch failed early (i.e., before
+    // actually getting the stream.  In that case, nothing else should be
+    // playing with this.  Removing this streambuf from uninitialized_map_
+    // below may (and probably will) result in destruction of this instance.
+    //
+    // So, anyone waiting on received_get_url_result_ should be doing so
+    // because the fetching code is trying to do something with this streambuf
+    // because the fetch is in-progress (i.e., succeeding).  If you're waiting
+    // on this condition and result could possibly indicate failure, you're
+    // doing it wrong.
+    //
     if (result == 0) {
-        this->state_ = uninitialized;
+        this->state_ = plugin_streambuf::uninitialized;
+        this->received_get_url_result_.notify_all();
     } else {
         this->uninitialized_map_.erase(*this);
     }
-    this->received_get_url_result_.notify_all();
-}
-
-int openvrml_xembed::plugin_streambuf::get_url_result() const
-{
-    boost::mutex::scoped_lock lock(this->mutex_);
-    while (this->get_url_result_ == -1) {
-        this->received_get_url_result_.wait(lock);
-    }
-    return this->get_url_result_;
 }
 
 void openvrml_xembed::plugin_streambuf::init(const size_t stream_id,
@@ -82,15 +85,18 @@ void openvrml_xembed::plugin_streambuf::init(const size_t stream_id,
     g_assert(!received_url.empty());
     g_assert(!type.empty());
 
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->state_ != plugin_streambuf::uninitialized) {
+        this->received_get_url_result_.wait(lock);
+    }
+
     g_assert(this->state_ == uninitialized);
 
-    boost::mutex::scoped_lock lock(this->mutex_);
     bool succeeded = this->uninitialized_map_.erase(*this);
     g_assert(succeeded);
     this->url_ = received_url;
     this->type_ = type;
-    this->state_ = initialized;
-    this->initialized_ = true;
+    this->state_ = plugin_streambuf::initialized;
     const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
     succeeded = this->map_.insert(stream_id, this_);
     g_assert(succeeded);
@@ -109,7 +115,7 @@ void openvrml_xembed::plugin_streambuf::fail()
 const std::string & openvrml_xembed::plugin_streambuf::url() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    while (!this->initialized_) {
+    while (this->state_ != plugin_streambuf::initialized) {
         this->streambuf_initialized_or_failed_.wait(lock);
     }
     return this->url_;
@@ -118,7 +124,7 @@ const std::string & openvrml_xembed::plugin_streambuf::url() const
 const std::string & openvrml_xembed::plugin_streambuf::type() const
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    while (!this->initialized_) {
+    while (this->state_ != plugin_streambuf::initialized) {
         this->streambuf_initialized_or_failed_.wait(lock);
     }
     return this->type_;
@@ -138,7 +144,7 @@ openvrml_xembed::plugin_streambuf::int_type
 openvrml_xembed::plugin_streambuf::underflow()
 {
     boost::mutex::scoped_lock lock(this->mutex_);
-    while (!this->initialized_) {
+    while (this->state_ != plugin_streambuf::initialized) {
         this->streambuf_initialized_or_failed_.wait(lock);
     }
 

@@ -1,22 +1,22 @@
-// -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
-//
-// OpenVRML XEmbed Control
-//
-// Copyright 2008  Braden McDaniel
-//
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by the Free
-// Software Foundation; either version 3 of the License, or (at your option)
-// any later version.
-//
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-// more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this library; if not, see <http://www.gnu.org/licenses/>.
-//
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
+ *
+ * OpenVRML XEmbed Control
+ *
+ * Copyright 2004, 2005, 2006, 2007, 2008  Braden N. McDaniel
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this library; if not, see <http://www.gnu.org/licenses/>.
+ */
 
 # ifndef OPENVRML_XEMBED_BROWSER_FACTORY_H
 #   define OPENVRML_XEMBED_BROWSER_FACTORY_H
@@ -45,7 +45,6 @@ struct OpenvrmlXembedBrowserFactory_ {
 
 struct OpenvrmlXembedBrowserFactoryClass_ {
     GObjectClass parent;
-    DBusGConnection * connection;
 };
 
 gboolean
@@ -56,6 +55,15 @@ openvrml_xembed_browser_factory_create_control(
     guint64 host_id,
     gboolean expect_initial_stream,
     DBusGMethodInvocation * context);
+
+guint
+openvrml_xembed_browser_factory_remove_hosts_for_owner(
+    OpenvrmlXembedBrowserFactory * browser_factory,
+    const gchar * id);
+
+gboolean
+openvrml_xembed_browser_factory_has_hosts(
+    OpenvrmlXembedBrowserFactory * browser_factory);
 
 G_END_DECLS
 
