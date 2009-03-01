@@ -720,7 +720,8 @@ session_bus_servicesdir = $(datadir)/dbus-1/services
 session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
 BUILT_SOURCES += \
         openvrml-xembed/browser-server-glue.h \
-        openvrml-xembed/browser-factory-server-glue.h
+        openvrml-xembed/browser-factory-server-glue.h \
+        openvrml-xembed/browser-host-client-glue.h
 endif
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
@@ -775,6 +776,13 @@ openvrml-xembed/browser-factory-server-glue.h: $(srcdir)/openvrml-xembed/browser
                    --prefix=openvrml_xembed_browser_factory \
                    --mode=glib-server                       \
                    --output=$@                              \
+                   $?
+
+openvrml-xembed/browser-host-client-glue.h: $(srcdir)/openvrml-xembed/browser-host.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL)   \
+                   --prefix=openvrml_xembed_browser_host \
+                   --mode=glib-client                    \
+                   --output=$@                           \
                    $?
 
 edit = sed -e 's|@libexecdir[@]|$(libexecdir)|g'
