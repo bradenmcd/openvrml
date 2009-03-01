@@ -86,7 +86,12 @@ namespace openvrml_xembed {
         public boost::enable_shared_from_this<plugin_streambuf>,
         public std::streambuf {
 
-        friend void (::openvrml_xembed_browser_realize)(GtkWidget *);
+        friend
+        GObject *
+        (::openvrml_xembed_browser_constructor)(
+            GType type,
+            guint n_construct_properties,
+            GObjectConstructParam * construct_properties);
         friend
         gboolean
         (::openvrml_xembed_browser_destroy_stream)(OpenvrmlXembedStreamClient *,
@@ -108,7 +113,6 @@ namespace openvrml_xembed {
         mutable boost::mutex mutex_;
         int get_url_result_;
         mutable boost::condition received_get_url_result_;
-        bool initialized_;
         mutable boost::condition streambuf_initialized_or_failed_;
         std::string url_;
         std::string type_;
@@ -127,7 +131,6 @@ namespace openvrml_xembed {
                          plugin_streambuf_map & map);
         state_id state() const;
         void set_get_url_result(int result);
-        int get_url_result() const;
         void init(size_t stream_id,
                   const std::string & received_url,
                   const std::string & type);
@@ -150,7 +153,7 @@ namespace openvrml_xembed {
         find(const std::string & url) const;
         void insert(const std::string & url,
                     const boost::shared_ptr<plugin_streambuf> & streambuf);
-        bool erase(const plugin_streambuf & url);
+        bool erase(const plugin_streambuf & streambuf);
         size_t size() const;
         bool empty() const;
         const boost::shared_ptr<plugin_streambuf> front() const;

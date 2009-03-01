@@ -1,3 +1,224 @@
+2009-03-01 Braden McDaniel  <braden@endoframe.com>
+
+	Moved D-Bus interaction out of the main (GTK+) thread and into its
+	own background thread.  This avoids a deadlock when a resource
+	fetch comes from the rendering thread and waits on feedback that
+	will happen via D-Bus.
+
+	openvrml-xembed's "browser" now exists in two parts:
+	OpenvrmlXembedBrowser is primarily responsible for interaction
+	with the host (via D-Bus) and OpenvrmlXembedBrowserPlug is a GTK+
+	widget that is responsible for rendering and interaction with
+	GTK+.
+
+	* src/openvrml-xembed/browser.cpp
+	(browser_listener): Contain a reference to the
+	OpenvrmlXembedBrowser (instead of the GtkGLViewer).
+	(OpenvrmlXembedBrowserPrivate_): Removed drawing_area and viewer
+	members; those have moved to OpenvrmlXembedBrowserPlugPrivate_.
+	Added listener, browser_plug, browser_plug_mutex,
+	browser_plug_set_cond, browser_initialized_mutex, and
+	browser_initialized.
+	(openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass *)):
+	Set constructor and finalize function pointers; use
+	g_param_spec_object to define the control-host-proxy property.
+	(openvrml_xembed_browser_constructor(GType, guint,
+	GObjectConstructParam *)): Since OpenvrmlXembedBrowser isn't a
+	widget anymore, moved the initialization code that was in _realize
+	here.
+	(openvrml_xembed_browser_finalize(GObject *)): Destroy the stuff
+	that was created in _constructor.
+	(openvrml_xembed_browser_set_property(GObject *, guint, const
+	GValue *, GParamSpec *)): Use g_value_get_object to get the value
+	for control-host-property
+	(openvrml_xembed_browser_get_property(GObject *, guint, GValue *,
+	GParamSpec *)): Use g_value_set_object to set the value for
+	control-host-proxy property.
+	(openvrml_xembed_browser_new(DBusGProxy *, gboolean,
+	GMainContext *, GdkNativeWindow)): Create an OpenvrmlXembedBrowser
+	and send an event to the GTK+ thread to create an
+	OpenvrmlXembedBrowserPlug.
+	(openvrml_xembed_browser_new_for_display(DBusGProxy *,
+	GdkDisplay *, GdkNativeWindow, gboolean)): Removed.
+	(load_url): Moved out of GtkGLViewer; lock the
+	OpenvrmlXembedBrowser's browser_initialized_mutex.
+	(openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser *, const
+	gchar **, const gchar **, GError **)): Handle exceptions by
+	setting the GError.
+	(openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser *)): We
+	don't have the plug's ID until the OpenvrmlXembedBrowserPlug has
+	been created; wait for browser_plug_set_cond.
+	(openvrml_xembed_browser_initialized(OpenvrmlXembedBrowser *)):
+	Indicate whether the underlying openvrml::browser has emitted an
+	"initialized" event.
+	(GtkGLViewer): Removed friendship declarations for
+	openvrml_xembed_browser_load_url,
+	openvrml_xembed_browser_get_world_url,
+	openvrml_xembed_browser_timeout_callback, and
+	openvrml_xembed_browser_motion_notify_event.  Changed friendship
+	declaration for openvrml_xembed_browser_expose_event to
+	openvrml_xembed_browser_plug_expose_event.  Grant friendship to
+	openvrml_xembed_browser_plug_realize and browser_initialized.
+	Removed browser_listener_, browser_initialized_, and
+	browser_initialized_mutex_ members; these were moved to
+	OpenvrmlXembedBrowser.
+	(OpenvrmlXembedBrowserPlugPrivate_): Private data for
+	OpenvrmlXembedBrowserPlug.
+	(openvrml_xembed_browser_plug_init(OpenvrmlXembedBrowserPlug *)):
+	Initialize the OpenvrmlXembedBrowserPlug instance.
+	(openvrml_xembed_browser_plug_class_init(OpenvrmlXembedBrowserPlugClass *)):
+	Initialized the OpenvrmlXembedBrowserPlug class object.
+	(openvrml_xembed_browser_plug_set_property(GObject *, gint, const
+	GValue *, GParamSpec *)): OpenvrmlXembedBrowserPlug property
+	mutator.
+	(openvrml_xembed_browser_plug_get_property(GObject *, gint,
+	GValue *, GParamSpec *)): OpenvrmlXembedBrowserPlug property
+	accessor.
+	(openvrml_xembed_browser_plug_new(OpenvrmlXembedBrowser *,
+	GdkNativeWindow)): Create an OpenvrmlXembedBrowserPlug.
+	(browser_initialized(OpenvrmlXembedBrowser *,
+	OpenvrmlXembedBrowserPlug *)): Callback called once the underlying
+	openvrml::browser emits an "initialized" event.
+	(openvrml_xembed_browser_plug_realize(GtkWidget *)): Instantiate
+	the GtkGLViewer, set up the GtkDrawingArea, and attach the various
+	signal handlers.
+	(openvrml_xembed_browser_plug_unrealize(GtkWidget *)): Destroy the
+	GtkGLViewer and the GtkDrawingArea.
+	(openvrml_xembed_drawing_area_expose_event(GtkWidget *,
+	GdkEventExpose *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_expose_event.
+	(openvrml_xembed_drawing_area_configure_event(GtkWidget *,
+	GdkEventConfigure *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_configure_event.
+	(openvrml_xembed_drawing_area_key_press_event(GtkWidget *,
+	GdkEventKey *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_key_press_event.
+	(openvrml_xembed_drawing_area_button_press_event(GtkWidget *,
+	GdkEventButton *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_button_press_event.
+	(openvrml_xembed_drawing_area_button_release_event(GtkWidget *,
+	GdkEventButton *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_button_release_event.
+	(openvrml_xembed_drawing_area_motion_notify_event(GtkWidget *,
+	GdkEventMotion *, OpenvrmlXembedBrowserPlug *)): Moved from
+	openvrml_xembed_browser_motion_notify_event.
+	(openvrml_xembed_browser_plug_timeout_callback(gpointer)): Moved
+	from openvrml_xembed_browser_timeout_callback.
+	(browser_listener::browser_listener(OpenvrmlXembedBrowser &)):
+	Hold a reference to the OpenvrmlXembedBrowser instead of the
+	GtkGLViewer.
+	(browser_listener::do_browser_changed(const
+	openvrml::browser_event &)): For "initialized", just emit the
+	signal and set browser_initialized on the OpenvrmlXembedBrowser.
+	Anything we need to do in the OpenvrmlXembedBrowserPlug can be
+	handled with a GObject signal handler.
+	(GtkGLViewer::GtkGLViewer(OpenvrmlXembedBrowserPlug &)): Take a
+	reference to the OpenvrmlXembedBrowserPlug instead of the
+	OpenvrmlXembedBrowser.  We no longer handle the listener here.
+	(GtkGLViewer::~GtkGLViewer()): We no longer handle the listener
+	here.
+	(OpenvrmlXembedBrowserReadySource): The event source used to
+	trigger creation of the OpenvrmlXembedBrowserPlug in the GTK+ main
+	thread.
+	(openvrml_xembed_browser_ready_source_new(OpenvrmlXembedBrowser *,
+	guint64)): Create an OpenvrmlXembedBrowserReadySource.
+	(openvrml_xembed_browser_ready_prepare(GSource *, gint *)): Set
+	timeout to 0 and return true;
+	(openvrml_xembed_browser_ready_check(GSource *)): Return true.
+	(openvrml_xembed_browser_ready_dispatch(GSource *, GSourceFunc,
+	gpointer)): Create, realize, and show the
+	OpenvrmlXembedBrowserPlug.
+	(openvrml_xembed_browser_ready_finalize(GSource *)): Do nothing.
+	* src/openvrml-xembed/browser.h
+	(OpenvrmlXembedBrowser_): Inherit GObject instead of GtkPlug.
+	(OpenvrmlXembedBrowserClass_): Inherit GObjectClass instead of
+	GtkPlugClass.
+	(openvrml_xembed_browser_new(DBusGProxy *, gboolean,
+	GMainContext *, GdkNativeWindow)): Take the GMainContext
+	associated with the GTK+ main thread as an argument.
+	(openvrml_xembed_browser_constructor(GType, guint,
+	GObjectConstructParam *)): plugin_streambuf needs to grant
+	friendship to this.
+	(OpenvrmlXembedBrowserPlug): A GTK+ widget to handle rendering.
+	(OpenvrmlXembedBrowserPlugClass): Class object for
+	OpenvrmlXembedBrowserPlug.
+	(openvrml_xembed_browser_plug_new(OpenvrmlXembedBrowser *,
+	GtkNativeWindow)): Create a new OpenvrmlXembedBrowserPlug.
+	(openvrml_xembed_browser_plug_get_type(void)): Get the GType for
+	OpenvrmlXembedBrowserPlug.
+	* src/openvrml-xembed/browserfactory.cpp
+	(OpenvrmlXembedBrowserFactoryPrivate_): Removed driver_proxy
+	member; added connection and main_thread_context members.
+	(openvrml_xembed_browser_factory_constructor(GType, guint,
+	GObjectConstructParam *)): Register the D-Bus object
+	"/org/openvrml/BrowserFactory" and request the
+	"org.openvrml.BrowserControl" name.
+	(openvrml_xembed_browser_factory_class_init(OpenvrmlXembedBrowserFactory *)):
+	Set the property accessor and mutator functions; add the
+	"connection" and "main-thread-context" properties.
+	(openvrml_xembed_browser_factory_set_property(GObject *, guint,
+	const GValue *, GParamSpec *)): Property mutator.
+	(openvrml_xembed_browser_factory_get_property(GObject *, guint,
+	GValue *, GParamSpec *)): Property accessor.
+	(openvrml_xembed_browser_factory_create_control(OpenvrmlXembedBrowserFactory *,
+	const char *, const char *, guint64, gboolean,
+	DBusGMethodInvocation *)): Don't realize/show the widget here;
+	that's now taken care of by
+	openvrml_xembed_browser_ready_dispatch.
+	(openvrml_xembed_browser_factory_remove_hosts_for_owner(OpenvrmlXembedBrowserFactory *,
+	const char *)): Remove references to hosts for the named owner.
+	(openvrml_xembed_browser_factory_has_hosts(OpenvrmlXembedBrowserFactory *)):
+	Indicate whether any hosts are associated with the factory.
+	(openvrml_xembed_browser_factory_name_owner_changed(DBusGProxy *,
+	const gchar *, const gchar *, const gchar *, gpointer)): Moved to
+	main.cpp.
+	* src/openvrml-xembed/browserfactory.h
+	(OpenvrmlXembedBrowserFactoryClass_): Removed connection member.
+	Establishing the bus connection is no longer the responsibility of
+	OpenvrmlXembedBrowserFactory.
+	(openvrml_xembed_browser_factory_remove_hosts_for_owner(OpenvrmlXembedBrowserFactory *,
+	const gchar *)): Added public function.
+	(openvrml_xembed_browser_factory_has_hosts(OpenvrmlXembedBrowserFactory *)):
+	Added public function.
+	* src/openvrml-xembed/main.cpp
+	(bus_get(GMainContext *, DBusBusType, GError **)): Get a
+	DBusGConnection using a particular GMainContext.
+	(name_owner_changed_callback_data): Data propagated to
+	openvrml_xembed_name_owner_changed.
+	(dbus_thread_loop): Function object for the D-Bus thread main
+	loop.
+	(main(int, char *[])): Start, and ultimately join, a thread for
+	D-Bus interactions.
+	(openvrml_xembed_name_owner_changed(DBusGProxy *, const gchar *,
+	const gchar *, const gchar *, gpointer)): Callback to clean up the
+	browser(s) associated with a host (and exit if there are no more
+	hosts).
+	* src/openvrml-xembed/plugin_streambuf.cpp
+	(openvrml_xembed::plugin_streambuf::plugin_streambuf(const
+	std::string &, uninitialized_plugin_streambuf_map &,
+	plugin_streambuf_map &)): Removed initialization of member
+	"initialized_".
+	(openvrml_xembed::plugin_streambuf::set_get_url_result(int)): Only
+	notify waiting threads if the "GetUrl" result indicates success;
+	the only reason anyone should be waiting on this is if the fetch
+	operation has (at least partially) succeeded.
+	(openvrml_xembed::plugin_streambuf::get_url_result() const):
+	Removed.
+	(openvrml_xembed::plugin_streambuf::init(size_t, const
+	std::string&, const std::string &)): Wait for set_get_url_result
+	to be called.
+	(openvrml_xembed::plugin_streambuf::url() const): Check state_
+	instead of initialized_.
+	(openvrml_xembed::plugin_streambuf::type() const): Check state_
+	instead of initialized_.
+	(openvrml_xembed::plugin_streambuf::underflow()): Check state_
+	instead of initialized_.
+	* src/openvrml-xembed/plugin_streambuf.h
+	(openvrml_xembed::plugin_streambuf): Removed friend declaration
+	for openvrml_xembed_browser_realize; grant friendship to
+	openvrml_xembed_browser_constructor.  Removed member
+	"initialized_".  Removed "get_url_result" member function.
+
 2009-02-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/script.cpp

@@ -21,8 +21,8 @@
 # ifndef OPENVRML_XEMBED_BROWSER_H
 #   define OPENVRML_XEMBED_BROWSER_H
 
-#   include <dbus/dbus-glib.h>
 #   include <gtk/gtkplug.h>
+#   include <dbus/dbus-glib.h>
 #   include "streamclient.h"
 
 G_BEGIN_DECLS
@@ -49,22 +49,20 @@ typedef struct OpenvrmlXembedBrowserPrivate_ OpenvrmlXembedBrowserPrivate;
 typedef struct OpenvrmlXembedBrowserClass_ OpenvrmlXembedBrowserClass;
 
 struct OpenvrmlXembedBrowser_ {
-    GtkPlug parent;
+    GObject parent;
     OpenvrmlXembedBrowserPrivate * priv;
 };
 
 struct OpenvrmlXembedBrowserClass_ {
-    GtkPlugClass parent;
+    GObjectClass parent;
 };
 
-GtkWidget * openvrml_xembed_browser_new(DBusGProxy * host_proxy,
-                                        GdkNativeWindow socket_id,
-                                        gboolean expect_initial_stream);
-GtkWidget *
-openvrml_xembed_browser_new_for_display(DBusGProxy * host_proxy,
-                                        GdkDisplay * display,
-                                        GdkNativeWindow socket_id,
-                                        gboolean expect_initial_stream);
+OpenvrmlXembedBrowser *
+openvrml_xembed_browser_new(DBusGProxy * host_proxy,
+                            gboolean expect_initial_stream,
+                            GMainContext * gtk_thread_context,
+                            GdkNativeWindow socket_id);
+
 GType openvrml_xembed_browser_get_type(void) G_GNUC_CONST;
 
 guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * browser);
@@ -89,8 +87,37 @@ gboolean openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser * browser,
 gchar * openvrml_xembed_browser_get_world_url(OpenvrmlXembedBrowser * browser,
                                               GError ** error);
 
+G_GNUC_INTERNAL
+GObject *
+openvrml_xembed_browser_constructor(
+    GType type,
+    guint n_construct_properties,
+    GObjectConstructParam * construct_properties);
 
-G_GNUC_INTERNAL void openvrml_xembed_browser_realize(GtkWidget *);
+
+#   define OPENVRML_XEMBED_TYPE_BROWSER_PLUG            (openvrml_xembed_browser_plug_get_type ())
+#   define OPENVRML_XEMBED_BROWSER_PLUG(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), OPENVRML_XEMBED_TYPE_BROWSER_PLUG, OpenvrmlXembedBrowserPlug))
+#   define OPENVRML_XEMBED_BROWSER_PLUG_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), OPENVRML_XEMBED_TYPE_BROWSER_PLUG, OpenvrmlXembedBrowserPlugClass))
+#   define OPENVRML_XEMBED_IS_BROWSER_PLUG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OPENVRML_XEMBED_TYPE_BROWSER_PLUG))
+#   define OPENVRML_XEMBED_IS_BROWSER_PLUG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), OPENVRML_XEMBED_TYPE_BROWSER_PLUG))
+#   define OPENVRML_XEMBED_BROWSER_PLUG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), OPENVRML_XEMBED_TYPE_BROWSER_PLUG, OpenvrmlXembedBrowserPlugClass))
+
+typedef struct OpenvrmlXembedBrowserPlug_ OpenvrmlXembedBrowserPlug;
+typedef struct OpenvrmlXembedBrowserPlugPrivate_ OpenvrmlXembedBrowserPlugPrivate;
+typedef struct OpenvrmlXembedBrowserPlugClass_ OpenvrmlXembedBrowserPlugClass;
+
+struct OpenvrmlXembedBrowserPlug_ {
+    GtkPlug parent;
+    OpenvrmlXembedBrowserPlugPrivate * priv;
+};
+
+struct OpenvrmlXembedBrowserPlugClass_ {
+    GtkPlugClass parent;
+};
+
+GtkWidget * openvrml_xembed_browser_plug_new(OpenvrmlXembedBrowser * browser,
+                                             GdkNativeWindow socket_id);
+GType openvrml_xembed_browser_plug_get_type(void) G_GNUC_CONST;
 
 G_END_DECLS
 

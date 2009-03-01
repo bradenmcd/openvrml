@@ -31,6 +31,7 @@
 # include <openvrml/gl/viewer.h>
 # include "browser.h"
 # include "browser-server-glue.h"
+# include "browser-host-client-glue.h"
 # include "plugin_streambuf.h"
 # include <gtk/gtkgl.h>
 # include <gtk/gtkdrawingarea.h>
@@ -56,60 +57,22 @@ extern "C" {
                                               GParamSpec * pspec);
 
     //
-    // GtkWidget overrides
-    //
-    G_GNUC_INTERNAL void openvrml_xembed_browser_realize(GtkWidget * widget);
-    G_GNUC_INTERNAL void openvrml_xembed_browser_unrealize(GtkWidget * widget);
-
-    //
     // OpenvrmlXembedStreamClient implementation
     //
     G_GNUC_INTERNAL
     void
     openvrml_xembed_browser_stream_client_interface_init(gpointer g_iface,
                                                          gpointer iface_data);
-
-    //
-    // Signal handlers
-    //
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_expose_event(GtkWidget * widget,
-                                           GdkEventExpose * event,
-                                           gpointer data);
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_configure_event(GtkWidget * widget,
-                                              GdkEventConfigure * event,
-                                              gpointer data);
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_key_press_event(GtkWidget * widget,
-                                              GdkEventKey * event,
-                                              gpointer data);
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_button_press_event(GtkWidget * widget,
-                                                 GdkEventButton * event,
-                                                 gpointer data);
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_button_release_event(GtkWidget * widget,
-                                                   GdkEventButton * event,
-                                                   gpointer data);
-    G_GNUC_INTERNAL
-    gboolean openvrml_xembed_browser_motion_notify_event(GtkWidget * widget,
-                                                  GdkEventMotion * event,
-                                                  gpointer data);
-
-    G_GNUC_INTERNAL gint openvrml_xembed_browser_timeout_callback(gpointer ptr);
 }
 
 G_DEFINE_TYPE_WITH_CODE(OpenvrmlXembedBrowser,
                         openvrml_xembed_browser,
-                        GTK_TYPE_PLUG,
+                        G_TYPE_OBJECT,
                         G_IMPLEMENT_INTERFACE(
                             OPENVRML_XEMBED_TYPE_STREAM_CLIENT,
                             openvrml_xembed_browser_stream_client_interface_init))
 
 namespace {
-    G_GNUC_INTERNAL GdkGLConfig * gl_config;
-
     class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
         DBusGProxy & control_host_;
         openvrml_xembed::uninitialized_plugin_streambuf_map &
@@ -132,70 +95,14 @@ namespace {
         do_get_resource(const std::string & uri);
     };
 
-
-    class GtkGLViewer;
-
-    class G_GNUC_INTERNAL browser_listener :
-        public openvrml::browser_listener {
-
-        GtkGLViewer & viewer_;
+    class G_GNUC_INTERNAL browser_listener : public openvrml::browser_listener {
+        OpenvrmlXembedBrowser & browser_;
 
     public:
-        explicit browser_listener(GtkGLViewer & viewer);
+        explicit browser_listener(OpenvrmlXembedBrowser & browser);
 
     private:
         virtual void do_browser_changed(const openvrml::browser_event & event);
-    };
-
-
-    class G_GNUC_INTERNAL GtkGLViewer : public openvrml::gl::viewer {
-        friend class browser_listener;
-
-        friend gboolean
-        (::openvrml_xembed_browser_load_url)(OpenvrmlXembedBrowser * browser,
-                                             const gchar ** url,
-                                             const gchar ** parameter,
-                                             GError **);
-
-        friend gchar *
-        (::openvrml_xembed_browser_get_world_url)(
-            OpenvrmlXembedBrowser * vrml_browser,
-            GError ** error);
-
-        friend gint (::openvrml_xembed_browser_timeout_callback)(gpointer ptr);
-        friend gboolean (::openvrml_xembed_browser_expose_event)(
-            GtkWidget *,
-            GdkEventExpose *,
-            gpointer);
-        friend gboolean
-            (::openvrml_xembed_browser_motion_notify_event)(GtkWidget *,
-                                                            GdkEventMotion *,
-                                                            gpointer);
-
-        struct load_url;
-
-        ::browser_listener browser_listener_;
-        bool browser_initialized_;
-        openvrml::read_write_mutex browser_initialized_mutex_;
-        OpenvrmlXembedBrowser & vrml_browser_;
-        guint timer;
-
-    public:
-        bool redrawNeeded;
-
-        explicit GtkGLViewer(OpenvrmlXembedBrowser & vrml_browser);
-        virtual ~GtkGLViewer() throw ();
-
-        void timer_update();
-
-    protected:
-        //
-        // Implement pure virtual methods from openvrml::gl::viewer.
-        //
-        virtual void post_redraw();
-        virtual void set_cursor(openvrml::gl::viewer::cursor_style);
-        virtual void swap_buffers();
-        virtual void set_timer(double);
     };
 }
 
@@ -203,13 +110,17 @@ struct OpenvrmlXembedBrowserPrivate_ {
     DBusGProxy * control_host;
     ::resource_fetcher * resource_fetcher;
     openvrml::browser * browser;
-    GtkDrawingArea * drawing_area;
-    GtkGLViewer * viewer;
+    browser_listener * listener;
+    OpenvrmlXembedBrowserPlug * browser_plug;
+    GMutex * browser_plug_mutex;
+    GCond * browser_plug_set_cond;
+    GMutex * browser_initialized_mutex;
     openvrml_xembed::uninitialized_plugin_streambuf_map * uninitialized_streambuf_map;
     openvrml_xembed::plugin_streambuf_map * streambuf_map;
     boost::thread * initial_stream_reader_thread;
     bool expect_initial_stream;
     bool got_initial_stream;
+    bool browser_initialized;
 };
 
 #   define OPENVRML_XEMBED_BROWSER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENVRML_XEMBED_TYPE_BROWSER, OpenvrmlXembedBrowserPrivate))
@@ -234,13 +145,19 @@ namespace {
     G_GNUC_INTERNAL guint signals[last_signal_id];
 }
 
+extern "C" {
+    G_GNUC_INTERNAL void openvrml_xembed_browser_finalize(GObject * obj);
+}
+
 void
 openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass * const klass)
 {
-    G_OBJECT_CLASS(klass)->set_property = openvrml_xembed_browser_set_property;
-    G_OBJECT_CLASS(klass)->get_property = openvrml_xembed_browser_get_property;
-    GTK_WIDGET_CLASS(klass)->realize    = openvrml_xembed_browser_realize;
-    GTK_WIDGET_CLASS(klass)->unrealize  = openvrml_xembed_browser_unrealize;
+    GObjectClass * const g_object_class = G_OBJECT_CLASS(klass);
+
+    g_object_class->constructor  = openvrml_xembed_browser_constructor;
+    g_object_class->finalize     = openvrml_xembed_browser_finalize;
+    g_object_class->set_property = openvrml_xembed_browser_set_property;
+    g_object_class->get_property = openvrml_xembed_browser_get_property;
 
     signals[initialized_id] =
         g_signal_new("initialized",
@@ -261,12 +178,13 @@ openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass * const klass)
                      G_TYPE_NONE, 0);
 
     GParamSpec * pspec =
-        g_param_spec_pointer(
+        g_param_spec_object(
             "control-host-proxy",
             "BrowserHost proxy",
             "DBusGProxy for a BrowserHost",
+            DBUS_TYPE_G_PROXY,
             GParamFlags(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
-    g_object_class_install_property(G_OBJECT_CLASS(klass),
+    g_object_class_install_property(g_object_class,
                                     control_host_proxy_id,
                                     pspec);
 
@@ -281,45 +199,12 @@ openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass * const klass)
                                     expect_initial_stream_id,
                                     pspec);
 
-    g_type_class_add_private(G_OBJECT_CLASS(klass),
+    g_type_class_add_private(g_object_class,
                              sizeof (OpenvrmlXembedBrowserPrivate));
 
-    dbus_g_object_type_install_info(OPENVRML_XEMBED_TYPE_BROWSER,
-                                    &dbus_glib_openvrml_xembed_browser_object_info);
-}
-
-void openvrml_xembed_browser_set_property(GObject * const obj,
-                                          const guint property_id,
-                                          const GValue * const value,
-                                          GParamSpec * const pspec)
-{
-    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
-    switch (property_id) {
-    case control_host_proxy_id:
-        browser->priv->control_host =
-            static_cast<DBusGProxy *>(g_value_get_pointer(value));
-        break;
-    case expect_initial_stream_id:
-        browser->priv->expect_initial_stream = g_value_get_boolean(value);
-        break;
-    default:
-        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
-    }
-}
-
-void openvrml_xembed_browser_get_property(GObject * const obj,
-                                          const guint property_id,
-                                          GValue * const value,
-                                          GParamSpec * const pspec)
-{
-    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
-    switch (property_id) {
-    case control_host_proxy_id:
-        g_value_set_pointer(value, browser->priv->control_host);
-        break;
-    default:
-        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
-    }
+    dbus_g_object_type_install_info(
+        OPENVRML_XEMBED_TYPE_BROWSER,
+        &dbus_glib_openvrml_xembed_browser_object_info);
 }
 
 namespace {
@@ -384,17 +269,26 @@ namespace {
     };
 }
 
-void openvrml_xembed_browser_realize(GtkWidget * const widget)
+GObject *
+openvrml_xembed_browser_constructor(
+    GType type,
+    guint n_construct_properties,
+    GObjectConstructParam * construct_properties)
 {
-    GtkWidgetClass * klass =
-        GTK_WIDGET_CLASS(g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER));
-    GtkWidgetClass * parent_class =
-        GTK_WIDGET_CLASS(g_type_class_peek_parent(klass));
-    parent_class->realize(widget);
-
-    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(widget);
+    GObject * obj;
+    {
+        OpenvrmlXembedBrowserClass * const klass =
+            OPENVRML_XEMBED_BROWSER_CLASS(
+                g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER));
+        GObjectClass * const parent_class =
+            G_OBJECT_CLASS(g_type_class_peek_parent(klass));
+        obj = parent_class->constructor(type,
+                                        n_construct_properties,
+                                        construct_properties);
+    }
 
     try {
+        OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
         browser->priv->uninitialized_streambuf_map =
             new openvrml_xembed::uninitialized_plugin_streambuf_map;
         browser->priv->streambuf_map =
@@ -407,9 +301,15 @@ void openvrml_xembed_browser_realize(GtkWidget * const widget)
             new openvrml::browser(*browser->priv->resource_fetcher,
                                   std::cout,
                                   std::cerr);
-        browser->priv->drawing_area =
-            GTK_DRAWING_AREA(g_object_new(GTK_TYPE_DRAWING_AREA, 0));
-        browser->priv->viewer = new GtkGLViewer(*browser);
+        browser->priv->listener = new browser_listener(*browser);
+        browser->priv->browser->add_listener(*browser->priv->listener);
+
+        browser->priv->browser_plug          = 0;
+        browser->priv->browser_plug_mutex    = g_mutex_new();
+        browser->priv->browser_plug_set_cond = g_cond_new();
+
+        browser->priv->browser_initialized       = false;
+        browser->priv->browser_initialized_mutex = g_mutex_new();
 
         //
         // If necessary, create the initial stream.
@@ -439,90 +339,62 @@ void openvrml_xembed_browser_realize(GtkWidget * const widget)
         // ex is most likely std::bad_alloc or boost::thread_resource_error.
         //
         g_critical("%s", ex.what());
-        return;
+        return 0;
     }
-
-    if (!::gl_config) {
-        static const int attrib_list[] = {
-            // GDK_GL_ALPHA_SIZE, 1,
-            GDK_GL_DOUBLEBUFFER,
-            GDK_GL_DEPTH_SIZE, 1,
-            GDK_GL_RGBA,
-            GDK_GL_RED_SIZE, 1,
-            GDK_GL_ATTRIB_LIST_NONE
-        };
-        ::gl_config = gdk_gl_config_new(attrib_list);
-    }
-
-    static GdkGLContext * const share_list = 0;
-    static const gboolean direct = false;
-    static const int render_type = GDK_GL_RGBA_TYPE;
-    gtk_widget_set_gl_capability(GTK_WIDGET(browser->priv->drawing_area),
-                                 ::gl_config,
-                                 share_list,
-                                 direct,
-                                 render_type);
-
-    gtk_widget_add_events(GTK_WIDGET(browser->priv->drawing_area),
-                          GDK_EXPOSURE_MASK
-                          | GDK_POINTER_MOTION_MASK
-                          | GDK_BUTTON_PRESS_MASK
-                          | GDK_BUTTON_RELEASE_MASK
-                          | GDK_KEY_PRESS_MASK
-                          | GDK_FOCUS_CHANGE_MASK);
-
-    g_object_set(G_OBJECT(browser->priv->drawing_area),
-                 "can-focus", true,
-                 NULL);
-
-    g_object_connect(
-        G_OBJECT(browser->priv->drawing_area),
-
-        "signal::expose_event",
-        G_CALLBACK(openvrml_xembed_browser_expose_event),
-        browser->priv->viewer,
-
-        "signal::configure_event",
-        G_CALLBACK(openvrml_xembed_browser_configure_event),
-        browser->priv->viewer,
-
-        "signal::key_press_event",
-        G_CALLBACK(openvrml_xembed_browser_key_press_event),
-        browser->priv->viewer,
-
-        "signal::button_press_event",
-        G_CALLBACK(openvrml_xembed_browser_button_press_event),
-        browser->priv->viewer,
-
-        "signal::button_release_event",
-        G_CALLBACK(openvrml_xembed_browser_button_release_event),
-        browser->priv->viewer,
-
-        "signal::motion_notify_event",
-        G_CALLBACK(openvrml_xembed_browser_motion_notify_event),
-        browser->priv->viewer,
-        NULL);
-
-    gtk_container_add(GTK_CONTAINER(widget),
-                      GTK_WIDGET(browser->priv->drawing_area));
+    return obj;
 }
 
-void openvrml_xembed_browser_unrealize(GtkWidget * const widget)
+void openvrml_xembed_browser_finalize(GObject * const obj)
 {
-    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(widget);
+    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
 
     if (browser->priv->expect_initial_stream) {
         browser->priv->initial_stream_reader_thread->join();
         delete browser->priv->initial_stream_reader_thread;
     }
 
-    delete browser->priv->viewer;
+    g_mutex_free(browser->priv->browser_initialized_mutex);
+    g_cond_free(browser->priv->browser_plug_set_cond);
+    g_mutex_free(browser->priv->browser_plug_mutex);
+    browser->priv->browser->remove_listener(*browser->priv->listener);
+    delete browser->priv->listener;
+    delete browser->priv->browser;
+    delete browser->priv->resource_fetcher;
+    delete browser->priv->streambuf_map;
+    delete browser->priv->uninitialized_streambuf_map;
+}
 
-    GtkWidgetClass * klass =
-        GTK_WIDGET_CLASS(g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER));
-    GtkWidgetClass * parent_class =
-        GTK_WIDGET_CLASS(g_type_class_peek_parent(klass));
-    parent_class->unrealize(widget);
+void openvrml_xembed_browser_set_property(GObject * const obj,
+                                          const guint property_id,
+                                          const GValue * const value,
+                                          GParamSpec * const pspec)
+{
+    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
+    switch (property_id) {
+    case control_host_proxy_id:
+        browser->priv->control_host = DBUS_G_PROXY(g_value_get_object(value));
+        break;
+    case expect_initial_stream_id:
+        browser->priv->expect_initial_stream = g_value_get_boolean(value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
+    }
+}
+
+void openvrml_xembed_browser_get_property(GObject * const obj,
+                                          const guint property_id,
+                                          GValue * const value,
+                                          GParamSpec * const pspec)
+{
+    OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
+    switch (property_id) {
+    case control_host_proxy_id:
+        g_value_set_object(value, browser->priv->control_host);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
+    }
 }
 
 void
@@ -536,30 +408,39 @@ openvrml_xembed_browser_stream_client_interface_init(const gpointer g_iface,
     iface->write          = openvrml_xembed_browser_write;
 }
 
-GtkWidget * openvrml_xembed_browser_new(DBusGProxy * const host_proxy,
-                                        const GdkNativeWindow socket_id,
-                                        const gboolean expect_initial_stream)
-{
-    GtkWidget * browser =
-        GTK_WIDGET(g_object_new(OPENVRML_XEMBED_TYPE_BROWSER,
-                                "control-host-proxy", host_proxy,
-                                "expect-initial-stream", expect_initial_stream,
-                                0));
-    gtk_plug_construct(GTK_PLUG(browser), socket_id);
-    return browser;
-}
+G_GNUC_INTERNAL
+GSource *
+openvrml_xembed_browser_ready_source_new(OpenvrmlXembedBrowser * browser,
+                                         guint64 host_id);
 
-GtkWidget * openvrml_xembed_browser_new_for_display(DBusGProxy * const host_proxy,
-                                         GdkDisplay * const display,
-                                         const GdkNativeWindow socket_id,
-                                         const gboolean expect_initial_stream)
+OpenvrmlXembedBrowser *
+openvrml_xembed_browser_new(DBusGProxy * const host_proxy,
+                            const gboolean expect_initial_stream,
+                            GMainContext * const gtk_thread_context,
+                            const GdkNativeWindow socket_id)
 {
-    GtkWidget * browser =
-        GTK_WIDGET(g_object_new(OPENVRML_XEMBED_TYPE_BROWSER,
-                                "control-host-proxy", host_proxy,
-                                "expect-initial-stream", expect_initial_stream,
-                                0));
-    gtk_plug_construct_for_display(GTK_PLUG(browser), display, socket_id);
+    OpenvrmlXembedBrowser * const browser =
+        OPENVRML_XEMBED_BROWSER(
+            g_object_new(OPENVRML_XEMBED_TYPE_BROWSER,
+                         "control-host-proxy", host_proxy,
+                         "expect-initial-stream", expect_initial_stream,
+                         0));
+    if (!browser) { return 0; }
+    scope_guard browser_guard = make_guard(g_object_unref, browser);
+
+    GSource * const browser_ready_source =
+        openvrml_xembed_browser_ready_source_new(browser, socket_id);
+    if (!browser_ready_source) { return 0; }
+    scope_guard browser_ready_source_guard =
+        make_guard(g_object_unref, browser_ready_source);
+
+    gdk_threads_enter();
+    g_source_attach(browser_ready_source, gtk_thread_context);
+    gdk_threads_leave();
+
+    browser_ready_source_guard.dismiss();
+    browser_guard.dismiss();
+
     return browser;
 }
 
@@ -597,7 +478,7 @@ openvrml_xembed_browser_new_stream(
             return false;
         }
     }
-    g_assert(streambuf->state() == plugin_streambuf::uninitialized);
+    g_assert(streambuf->state() != plugin_streambuf::initialized);
     streambuf->init(stream_id, url, type);
     return true;
 }
@@ -659,52 +540,542 @@ openvrml_xembed_browser_write(OpenvrmlXembedStreamClient * const stream_client,
     return true;
 }
 
-gboolean openvrml_xembed_browser_expose_event(GtkWidget * const widget,
-                                              GdkEventExpose * const event,
-                                              const gpointer user_data)
+namespace {
+    struct G_GNUC_INTERNAL load_url {
+        load_url(OpenvrmlXembedBrowser & browser,
+                 const std::vector<std::string> & url,
+                 const std::vector<std::string> & parameter):
+            browser_(browser),
+            url_(url),
+            parameter_(parameter)
+        {}
+
+        void operator()() const OPENVRML_NOTHROW
+        {
+            try {
+                g_mutex_lock(this->browser_.priv->browser_initialized_mutex);
+                this->browser_.priv->browser_initialized = false;
+                g_mutex_unlock(this->browser_.priv->browser_initialized_mutex);
+                this->browser_.priv->browser->load_url(this->url_,
+                                                       this->parameter_);
+            } catch (std::exception & ex) {
+                this->browser_.priv->browser->err(ex.what());
+            }
+        }
+
+    private:
+        OpenvrmlXembedBrowser & browser_;
+        const std::vector<std::string> url_, parameter_;
+    };
+}
+
+gboolean
+openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser * const vrml_browser,
+                                 const gchar ** url,
+                                 const gchar ** parameter,
+                                 GError ** error)
+{
+    using std::string;
+    using std::vector;
+
+    try {
+        vector<string> url_vec, param_vec;
+        while (url && *url) { url_vec.push_back(*(url++)); }
+        while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
+
+        vrml_browser->priv->resource_fetcher
+            ->create_thread(load_url(*vrml_browser, url_vec, param_vec));
+    } catch (const std::bad_alloc & ex) {
+        *error = g_error_new(OPENVRML_XEMBED_ERROR,
+                             OPENVRML_XEMBED_ERROR_NO_MEMORY,
+                             "out of memory");
+        return false;
+    } catch (const std::exception & ex) {
+        *error = g_error_new(OPENVRML_XEMBED_ERROR,
+                             OPENVRML_XEMBED_ERROR_FAILED,
+                             ex.what());
+        return false;
+    }
+    return true;
+}
+
+guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * const browser)
+{
+    g_assert(browser);
+    g_mutex_lock(browser->priv->browser_plug_mutex);
+    while (!browser->priv->browser_plug) {
+        g_cond_wait(browser->priv->browser_plug_set_cond,
+                    browser->priv->browser_plug_mutex);
+    }
+    g_assert(browser->priv->browser_plug);
+    const guint64 id = gtk_plug_get_id(GTK_PLUG(browser->priv->browser_plug));
+    g_mutex_unlock(browser->priv->browser_plug_mutex);
+    return id;
+}
+
+gboolean
+openvrml_xembed_browser_new_stream(OpenvrmlXembedBrowser * const browser,
+                                   const guint64 stream_id,
+                                   const char * const type,
+                                   const char * const url,
+                                   GError ** const error)
+{
+    return openvrml_xembed_stream_client_new_stream(
+        OPENVRML_XEMBED_STREAM_CLIENT(browser),
+        stream_id,
+        type,
+        url,
+        error);
+}
+
+gboolean
+openvrml_xembed_browser_destroy_stream(OpenvrmlXembedBrowser * const browser,
+                                       const guint64 stream_id,
+                                       GError ** const error)
+{
+    return openvrml_xembed_stream_client_destroy_stream(
+        OPENVRML_XEMBED_STREAM_CLIENT(browser),
+        stream_id,
+        error);
+}
+
+gboolean openvrml_xembed_browser_write(OpenvrmlXembedBrowser * const browser,
+                                       const guint64 stream_id,
+                                       const GArray * const data,
+                                       GError ** const error)
+{
+    return openvrml_xembed_stream_client_write(
+        OPENVRML_XEMBED_STREAM_CLIENT(browser),
+        stream_id,
+        data,
+        error);
+}
+
+gchar *
+openvrml_xembed_browser_get_world_url(
+    OpenvrmlXembedBrowser * const vrml_browser,
+    GError ** /* error */)
+{
+    return g_strdup(vrml_browser->priv->browser->world_url().c_str());
+}
+
+gboolean
+openvrml_xembed_browser_initialized(OpenvrmlXembedBrowser * const browser)
+{
+    g_mutex_lock(browser->priv->browser_initialized_mutex);
+    const bool browser_initialized = browser->priv->browser_initialized;
+    g_mutex_unlock(browser->priv->browser_initialized_mutex);
+    return browser_initialized;
+}
+
+
+G_DEFINE_TYPE(OpenvrmlXembedBrowserPlug,
+              openvrml_xembed_browser_plug,
+              GTK_TYPE_PLUG);
+
+extern "C" {
+    G_GNUC_INTERNAL
+    void openvrml_xembed_browser_plug_set_property(GObject * obj,
+                                                   guint property_id,
+                                                   const GValue * value,
+                                                   GParamSpec * pspec);
+
+    G_GNUC_INTERNAL
+    void openvrml_xembed_browser_plug_get_property(GObject * obj,
+                                                   guint property_id,
+                                                   GValue * value,
+                                                   GParamSpec * pspec);
+
+    G_GNUC_INTERNAL
+    void openvrml_xembed_browser_plug_realize(GtkWidget * widget);
+
+    G_GNUC_INTERNAL
+    void openvrml_xembed_browser_plug_unrealize(GtkWidget * widget);
+
+    //
+    // Signal handlers
+    //
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_expose_event(
+        GtkWidget * widget,
+        GdkEventExpose * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_configure_event(
+        GtkWidget * widget,
+        GdkEventConfigure * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_key_press_event(
+        GtkWidget * widget,
+        GdkEventKey * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_button_press_event(
+        GtkWidget * widget,
+        GdkEventButton * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_button_release_event(
+        GtkWidget * widget,
+        GdkEventButton * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gboolean
+    openvrml_xembed_drawing_area_motion_notify_event(
+        GtkWidget * widget,
+        GdkEventMotion * event,
+        OpenvrmlXembedBrowserPlug * browser_plug);
+
+    G_GNUC_INTERNAL
+    gint openvrml_xembed_browser_plug_timeout_callback(gpointer ptr);
+
+    G_GNUC_INTERNAL
+    void browser_initialized(OpenvrmlXembedBrowser *,
+                             OpenvrmlXembedBrowserPlug *);
+}
+
+namespace {
+
+    G_GNUC_INTERNAL GdkGLConfig * gl_config;
+
+
+    class G_GNUC_INTERNAL GtkGLViewer : public openvrml::gl::viewer {
+        friend
+        void (::openvrml_xembed_browser_plug_realize)(GtkWidget * widget);
+
+        friend gboolean
+        (::openvrml_xembed_drawing_area_expose_event)(
+            GtkWidget *,
+            GdkEventExpose *,
+            OpenvrmlXembedBrowserPlug *);
+
+        friend void (::browser_initialized)(OpenvrmlXembedBrowser *,
+                                            OpenvrmlXembedBrowserPlug *);
+
+        OpenvrmlXembedBrowserPlug & browser_plug_;
+        guint timer;
+
+    public:
+        explicit GtkGLViewer(OpenvrmlXembedBrowserPlug & browser_plug);
+        virtual ~GtkGLViewer() throw ();
+
+        void timer_update();
+
+    protected:
+        //
+        // Implement pure virtual methods from openvrml::gl::viewer.
+        //
+        virtual void post_redraw();
+        virtual void set_cursor(openvrml::gl::viewer::cursor_style);
+        virtual void swap_buffers();
+        virtual void set_timer(double);
+    };
+}
+
+struct OpenvrmlXembedBrowserPlugPrivate_ {
+    OpenvrmlXembedBrowser * browser;
+    GtkDrawingArea * drawing_area;
+    GtkGLViewer * viewer;
+    bool redraw_needed;
+};
+
+#   define OPENVRML_XEMBED_BROWSER_PLUG_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENVRML_XEMBED_TYPE_BROWSER_PLUG, OpenvrmlXembedBrowserPlugPrivate))
+
+void
+openvrml_xembed_browser_plug_init(
+    OpenvrmlXembedBrowserPlug * const browser_plug)
+{
+    browser_plug->priv = OPENVRML_XEMBED_BROWSER_PLUG_GET_PRIVATE(browser_plug);
+}
+
+namespace {
+    enum browser_plug_property_id {
+        browser_id = 1
+    };
+}
+
+void
+openvrml_xembed_browser_plug_class_init(
+    OpenvrmlXembedBrowserPlugClass * const klass)
+{
+    GObjectClass * const g_object_class = G_OBJECT_CLASS(klass);
+    g_object_class->set_property = openvrml_xembed_browser_plug_set_property;
+    g_object_class->get_property = openvrml_xembed_browser_plug_get_property;
+
+    GtkWidgetClass * const gtk_widget_class = GTK_WIDGET_CLASS(klass);
+    gtk_widget_class->realize   = openvrml_xembed_browser_plug_realize;
+    gtk_widget_class->unrealize = openvrml_xembed_browser_plug_unrealize;
+
+    GParamSpec * pspec =
+        g_param_spec_object(
+            "browser",
+            "OpenvrmlXembedBrowser",
+            "The OpenvrmlXembedBrowser associated with the plug",
+            OPENVRML_XEMBED_TYPE_BROWSER,
+            GParamFlags(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
+    g_object_class_install_property(g_object_class, browser_id, pspec);
+
+    g_type_class_add_private(g_object_class,
+                             sizeof (OpenvrmlXembedBrowserPrivate));
+}
+
+void openvrml_xembed_browser_plug_set_property(GObject * const obj,
+                                               const guint property_id,
+                                               const GValue * const value,
+                                               GParamSpec * const pspec)
+{
+    OpenvrmlXembedBrowserPlug * const browser_plug =
+        OPENVRML_XEMBED_BROWSER_PLUG(obj);
+    switch (property_id) {
+    case browser_id:
+        g_assert(browser_plug->priv->browser == 0);
+        browser_plug->priv->browser =
+            OPENVRML_XEMBED_BROWSER(g_value_get_object(value));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
+    }
+}
+
+void openvrml_xembed_browser_plug_get_property(GObject * const obj,
+                                               const guint property_id,
+                                               GValue * const value,
+                                               GParamSpec * const pspec)
+{
+    OpenvrmlXembedBrowserPlug * const browser_plug =
+        OPENVRML_XEMBED_BROWSER_PLUG(obj);
+    switch (property_id) {
+    case browser_id:
+        g_value_set_object(value, browser_plug->priv->browser);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
+    }
+}
+
+GtkWidget *
+openvrml_xembed_browser_plug_new(OpenvrmlXembedBrowser * browser,
+                                 GdkNativeWindow socket_id)
+{
+    GtkWidget * browser_plug =
+        GTK_WIDGET(g_object_new(OPENVRML_XEMBED_TYPE_BROWSER_PLUG,
+                                "browser", browser,
+                                0));
+    gtk_plug_construct(GTK_PLUG(browser_plug), socket_id);
+
+    g_signal_connect_data(browser,
+                          "initialized",
+                          G_CALLBACK(browser_initialized),
+                          browser_plug,
+                          0,
+                          GConnectFlags(0));
+
+    return browser_plug;
+}
+
+void browser_initialized(OpenvrmlXembedBrowser * /* browser */,
+                         OpenvrmlXembedBrowserPlug * const browser_plug)
+{
+    g_assert(OPENVRML_XEMBED_IS_BROWSER_PLUG(browser_plug));
+    //
+    // Set redraw_needed to false to ensure that the following call to
+    // post_redraw results in a redraw.
+    //
+    browser_plug->priv->redraw_needed = false;
+
+    //
+    // viewer will be nonnull if the plug has been realized.
+    //
+    if (browser_plug->priv->viewer) {
+        browser_plug->priv->viewer->post_redraw();
+    }
+}
+
+void openvrml_xembed_browser_plug_realize(GtkWidget * const widget)
+{
+    GtkWidgetClass * klass =
+        GTK_WIDGET_CLASS(
+            g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER_PLUG));
+    GtkWidgetClass * parent_class =
+        GTK_WIDGET_CLASS(g_type_class_peek_parent(klass));
+    parent_class->realize(widget);
+
+    OpenvrmlXembedBrowserPlug * const browser_plug =
+        OPENVRML_XEMBED_BROWSER_PLUG(widget);
+
+    {
+        OpenvrmlXembedBrowser * browser = 0;
+        g_object_get(browser_plug,
+                     "browser", &browser,
+                     NULL);
+
+        g_assert(browser);
+        scope_guard browser_guard = make_guard(g_object_unref, browser);
+        boost::ignore_unused_variable_warning(browser_guard);
+
+        browser_plug->priv->drawing_area =
+            GTK_DRAWING_AREA(g_object_new(GTK_TYPE_DRAWING_AREA, 0));
+
+        try {
+            browser_plug->priv->viewer = new GtkGLViewer(*browser_plug);
+        } catch (const std::exception & ex) {
+            //
+            // ex is most likely std::bad_alloc.
+            //
+            g_critical("%s", ex.what());
+            return;
+        }
+    } // unref the OpenvrmlXembedBrowser.
+
+    if (!::gl_config) {
+        static const int attrib_list[] = {
+            // GDK_GL_ALPHA_SIZE, 1,
+            GDK_GL_DOUBLEBUFFER,
+            GDK_GL_DEPTH_SIZE, 1,
+            GDK_GL_RGBA,
+            GDK_GL_RED_SIZE, 1,
+            GDK_GL_ATTRIB_LIST_NONE
+        };
+        ::gl_config = gdk_gl_config_new(attrib_list);
+    }
+
+    static GdkGLContext * const share_list = 0;
+    static const gboolean direct = false;
+    static const int render_type = GDK_GL_RGBA_TYPE;
+    gtk_widget_set_gl_capability(GTK_WIDGET(browser_plug->priv->drawing_area),
+                                 ::gl_config,
+                                 share_list,
+                                 direct,
+                                 render_type);
+
+    gtk_widget_add_events(GTK_WIDGET(browser_plug->priv->drawing_area),
+                          GDK_EXPOSURE_MASK
+                          | GDK_POINTER_MOTION_MASK
+                          | GDK_BUTTON_PRESS_MASK
+                          | GDK_BUTTON_RELEASE_MASK
+                          | GDK_KEY_PRESS_MASK
+                          | GDK_FOCUS_CHANGE_MASK);
+
+    g_object_set(G_OBJECT(browser_plug->priv->drawing_area),
+                 "can-focus", true,
+                 NULL);
+
+    g_object_connect(
+        G_OBJECT(browser_plug->priv->drawing_area),
+
+        "signal::expose_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_expose_event),
+        browser_plug,
+
+        "signal::configure_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_configure_event),
+        browser_plug,
+
+        "signal::key_press_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_key_press_event),
+        browser_plug,
+
+        "signal::button_press_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_button_press_event),
+        browser_plug,
+
+        "signal::button_release_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_button_release_event),
+        browser_plug,
+
+        "signal::motion_notify_event",
+        G_CALLBACK(openvrml_xembed_drawing_area_motion_notify_event),
+        browser_plug,
+        NULL);
+
+    gtk_container_add(GTK_CONTAINER(widget),
+                      GTK_WIDGET(browser_plug->priv->drawing_area));
+
+    //
+    // If the browser has already been initialized, get things moving.
+    //
+    if (openvrml_xembed_browser_initialized(browser_plug->priv->browser)) {
+        browser_plug->priv->viewer->post_redraw();
+    }
+}
+
+void openvrml_xembed_browser_plug_unrealize(GtkWidget * const widget)
+{
+    OpenvrmlXembedBrowserPlug * const browser_plug =
+        OPENVRML_XEMBED_BROWSER_PLUG(widget);
+
+    delete browser_plug->priv->viewer;
+    browser_plug->priv->viewer = 0;
+    gtk_widget_destroy(GTK_WIDGET(browser_plug->priv->drawing_area));
+    browser_plug->priv->drawing_area = 0;
+
+    GtkWidgetClass * klass =
+        GTK_WIDGET_CLASS(g_type_class_peek(OPENVRML_XEMBED_TYPE_BROWSER_PLUG));
+    GtkWidgetClass * parent_class =
+        GTK_WIDGET_CLASS(g_type_class_peek_parent(klass));
+    parent_class->unrealize(widget);
+}
+
+gboolean
+openvrml_xembed_drawing_area_expose_event(
+    GtkWidget * const widget,
+    GdkEventExpose * const event,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
     g_assert(gl_drawable);
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
-    GtkGLViewer * viewer = static_cast<GtkGLViewer *>(user_data);
-    g_return_val_if_fail(viewer, true);
-    {
-        openvrml::read_write_mutex::scoped_read_lock
-            lock(viewer->browser_initialized_mutex_);
-        if (!viewer->browser_initialized_) { return true; }
+
+    if (!openvrml_xembed_browser_initialized(browser_plug->priv->browser)) {
+        return true;
     }
 
     if (event->count == 0
         && gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        viewer->redraw();
+        browser_plug->priv->viewer->redraw();
     }
-    viewer->redrawNeeded = false;
-    if (viewer->timer == 0) { viewer->timer_update(); }
+    browser_plug->priv->redraw_needed = false;
+    if (browser_plug->priv->viewer->timer == 0) {
+        browser_plug->priv->viewer->timer_update();
+    }
     return true;
 }
 
-gboolean openvrml_xembed_browser_configure_event(GtkWidget * const widget,
-                                                 GdkEventConfigure *,
-                                                 const gpointer user_data)
+gboolean
+openvrml_xembed_drawing_area_configure_event(
+    GtkWidget * const widget,
+    GdkEventConfigure *,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     GdkGLDrawable * const gl_drawable = gtk_widget_get_gl_drawable(widget);
     g_assert(gl_drawable);
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
 
-    GtkGLViewer * const viewer = static_cast<GtkGLViewer *>(user_data);
-    g_return_val_if_fail(viewer, true);
-
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        viewer->resize(widget->allocation.width, widget->allocation.height);
+        browser_plug->priv->viewer->resize(widget->allocation.width,
+                                           widget->allocation.height);
     }
     return true;
 }
 
-gboolean openvrml_xembed_browser_key_press_event(GtkWidget * const widget,
-                                                 GdkEventKey * const event,
-                                                 const gpointer user_data)
+gboolean
+openvrml_xembed_drawing_area_key_press_event(
+    GtkWidget * const widget,
+    GdkEventKey * const event,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     using openvrml::gl::viewer;
 
@@ -749,16 +1120,16 @@ gboolean openvrml_xembed_browser_key_press_event(GtkWidget * const widget,
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        GtkGLViewer * const viewer = static_cast<GtkGLViewer *>(user_data);
-        viewer->input(&info);
+        browser_plug->priv->viewer->input(&info);
     }
     return true;
 }
 
 gboolean
-openvrml_xembed_browser_button_press_event(GtkWidget * const widget,
-                                           GdkEventButton * const event,
-                                           const gpointer user_data)
+openvrml_xembed_drawing_area_button_press_event(
+    GtkWidget * const widget,
+    GdkEventButton * const event,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     using openvrml::gl::viewer;
 
@@ -788,16 +1159,16 @@ openvrml_xembed_browser_button_press_event(GtkWidget * const widget,
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        GtkGLViewer * const viewer = static_cast<GtkGLViewer *>(user_data);
-        viewer->input(&info);
+        browser_plug->priv->viewer->input(&info);
     }
     return true;
 }
 
 gboolean
-openvrml_xembed_browser_button_release_event(GtkWidget * const widget,
-                                             GdkEventButton * const event,
-                                             const gpointer user_data)
+openvrml_xembed_drawing_area_button_release_event(
+    GtkWidget * const widget,
+    GdkEventButton * const event,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     using openvrml::gl::viewer;
 
@@ -825,16 +1196,16 @@ openvrml_xembed_browser_button_release_event(GtkWidget * const widget,
     GdkGLContext * const gl_context = gtk_widget_get_gl_context(widget);
     g_assert(gl_context);
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        GtkGLViewer * const viewer = static_cast<GtkGLViewer *>(user_data);
-        viewer->input(&info);
+        browser_plug->priv->viewer->input(&info);
     }
     return true;
 }
 
 gboolean
-openvrml_xembed_browser_motion_notify_event(GtkWidget * const widget,
-                                            GdkEventMotion * const event,
-                                            const gpointer user_data)
+openvrml_xembed_drawing_area_motion_notify_event(
+    GtkWidget * const widget,
+    GdkEventMotion * const event,
+    OpenvrmlXembedBrowserPlug * const browser_plug)
 {
     using openvrml::gl::viewer;
 
@@ -859,156 +1230,21 @@ openvrml_xembed_browser_motion_notify_event(GtkWidget * const widget,
     g_assert(gl_context);
 
     if (gdk_gl_drawable_make_current(gl_drawable, gl_context)) {
-        GtkGLViewer * const viewer = static_cast<GtkGLViewer *>(user_data);
-        openvrml::read_write_mutex::scoped_read_lock
-            lock(viewer->browser_initialized_mutex_);
-        if (!viewer->browser_initialized_) { return true; }
-        viewer->input(&info);
+        if (!openvrml_xembed_browser_initialized(browser_plug->priv->browser)) {
+            return true;
+        }
+        browser_plug->priv->viewer->input(&info);
     }
     return true;
 }
 
-gint openvrml_xembed_browser_timeout_callback(const gpointer ptr)
+gint openvrml_xembed_browser_plug_timeout_callback(const gpointer ptr)
 {
     g_assert(ptr);
 
     GtkGLViewer & viewer = *static_cast<GtkGLViewer *>(ptr);
     viewer.timer_update();
     return false;
-}
-
-namespace {
-    struct GtkGLViewer::load_url {
-        load_url(GtkGLViewer & viewer,
-                 const std::vector<std::string> & url,
-                 const std::vector<std::string> & parameter):
-            viewer_(&viewer),
-            url_(url),
-            parameter_(parameter)
-        {}
-
-        void operator()() const OPENVRML_NOTHROW
-        {
-            try {
-                {
-                    openvrml::read_write_mutex::scoped_write_lock
-                        lock(this->viewer_->browser_initialized_mutex_);
-                    this->viewer_->browser_initialized_ = false;
-                }
-                this->viewer_->vrml_browser_.priv->browser
-                    ->load_url(this->url_, this->parameter_);
-            } catch (std::exception & ex) {
-                this->viewer_->vrml_browser_.priv->browser->err(ex.what());
-            }
-        }
-
-    private:
-        GtkGLViewer * const viewer_;
-        const std::vector<std::string> url_, parameter_;
-    };
-}
-
-gboolean
-openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser * const vrml_browser,
-                                 const gchar ** url,
-                                 const gchar ** parameter,
-                                 GError ** /* error */)
-{
-    using std::string;
-    using std::vector;
-
-    vector<string> url_vec, param_vec;
-    while (url && *url) { url_vec.push_back(*(url++)); }
-    while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
-
-    vrml_browser->priv->resource_fetcher
-        ->create_thread(GtkGLViewer::load_url(*vrml_browser->priv->viewer,
-                                              url_vec, param_vec));
-    return true;
-}
-
-guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * const browser)
-{
-    g_assert(browser);
-//    gdk_threads_enter();
-//    scope_guard gdk_threads_guard = make_guard(gdk_threads_leave);
-    return gtk_plug_get_id(&browser->parent);
-}
-
-gboolean openvrml_xembed_browser_new_stream(OpenvrmlXembedBrowser * const browser,
-                                 const guint64 stream_id,
-                                 const char * const type,
-                                 const char * const url,
-                                 GError ** const error)
-{
-    return openvrml_xembed_stream_client_new_stream(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        type,
-        url,
-        error);
-}
-
-gboolean
-openvrml_xembed_browser_destroy_stream(OpenvrmlXembedBrowser * const browser,
-                                       const guint64 stream_id,
-                                       GError ** const error)
-{
-    return openvrml_xembed_stream_client_destroy_stream(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        error);
-}
-
-gboolean openvrml_xembed_browser_write(OpenvrmlXembedBrowser * const browser,
-                                       const guint64 stream_id,
-                                       const GArray * const data,
-                                       GError ** const error)
-{
-    return openvrml_xembed_stream_client_write(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        data,
-        error);
-}
-
-gchar *
-openvrml_xembed_browser_get_world_url(
-    OpenvrmlXembedBrowser * const vrml_browser,
-    GError ** /* error */)
-{
-    return g_strdup(vrml_browser->priv->browser->world_url().c_str());
-}
-
-extern "C"
-OPENVRML_LOCAL
-void openvrml_xembed_get_url_notify(DBusGProxy * const proxy,
-                                    DBusGProxyCall * const call_id,
-                                    void * const user_data)
-{
-    using openvrml_xembed::plugin_streambuf;
-
-    gint get_url_result;
-
-    GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
-    const gboolean result =
-        dbus_g_proxy_end_call(proxy, call_id, &error,
-                              G_TYPE_INT, &get_url_result,
-                              G_TYPE_INVALID);
-
-    if (!result) {
-        g_critical("Call to org.openvrml.BrowserHost.GetUrl failed: %s",
-                   error->message);
-        return;
-    }
-
-    plugin_streambuf * const streambuf =
-        static_cast<plugin_streambuf *>(user_data);
-
-    streambuf->set_get_url_result(get_url_result);
-
-    error_guard.dismiss();
 }
 
 namespace {
@@ -1071,28 +1307,22 @@ namespace {
                 GError * error = 0;
                 scope_guard error_guard = make_guard(g_error_free,
                                                      boost::ref(error));
-                DBusGProxyCall * get_url_call =
-                    dbus_g_proxy_begin_call(&fetcher.control_host_,
-                                            "GetUrl",
-                                            openvrml_xembed_get_url_notify,
-                                            this->streambuf_.get(),
-                                            0,
-                                            G_TYPE_STRING, uri.c_str(),
-                                            G_TYPE_INVALID);
-                if (!get_url_call) {
-                    g_critical("Call to org.openvrml.BrowserHost.GetUrl "
-                               "failed");
+                gint get_url_result = -1;
+                gboolean succeeded =
+                    org_openvrml_BrowserHost_get_url(&fetcher.control_host_,
+                                                     uri.c_str(),
+                                                     &get_url_result,
+                                                     &error);
+                if (!succeeded) {
+                    g_critical(error->message);
                     this->setstate(ios_base::badbit);
                     return;
                 }
 
-                //
-                // This blocks until the call to GetUrl returns.
-                //
-                const int get_url_result = this->streambuf_->get_url_result();
                 if (get_url_result != 0) {
                     this->setstate(ios_base::badbit);
                 }
+                this->streambuf_->set_get_url_result(get_url_result);
 
                 error_guard.dismiss();
             }
@@ -1117,8 +1347,8 @@ namespace {
             new plugin_resource_istream(uri, *this));
     }
 
-    browser_listener::browser_listener(GtkGLViewer & viewer):
-        viewer_(viewer)
+    browser_listener::browser_listener(OpenvrmlXembedBrowser & browser):
+        browser_(browser)
     {}
 
     void
@@ -1126,57 +1356,38 @@ namespace {
     {
         switch (event.id()) {
         case openvrml::browser_event::initialized:
-            g_signal_emit(&viewer_.vrml_browser_, signals[initialized_id], 0);
+            g_signal_emit(&this->browser_, signals[initialized_id], 0);
 
-            {
-                openvrml::read_write_mutex::scoped_write_lock
-                    lock(this->viewer_.browser_initialized_mutex_);
-                this->viewer_.browser_initialized_ = true;
-            }
-//            gdk_threads_enter();
-//            scope_guard gdk_threads_guard = make_guard(gdk_threads_leave);
-//            boost::ignore_unused_variable_warning(gdk_threads_guard);
-            //
-            // Set redrawNeeded to false to ensure that this particular call to
-            // post_redraw results in a redraw.
-            //
-            this->viewer_.redrawNeeded = false;
-            this->viewer_.post_redraw();
+            g_mutex_lock(this->browser_.priv->browser_initialized_mutex);
+            this->browser_.priv->browser_initialized = true;
+            g_mutex_unlock(this->browser_.priv->browser_initialized_mutex);
             break;
         case openvrml::browser_event::shutdown:
-            g_signal_emit(&viewer_.vrml_browser_, signals[shutdown_id], 0);
+            g_signal_emit(&this->browser_, signals[shutdown_id], 0);
             break;
         default:
             break;
         }
     }
 
-    GtkGLViewer::GtkGLViewer(OpenvrmlXembedBrowser & vrml_browser):
-        browser_listener_(*this),
-        browser_initialized_(true),
-        vrml_browser_(vrml_browser),
-        timer(0),
-        redrawNeeded(false)
+    GtkGLViewer::GtkGLViewer(OpenvrmlXembedBrowserPlug & browser_plug):
+        browser_plug_(browser_plug),
+        timer(0)
     {
-        g_assert(vrml_browser.priv->control_host);
-        this->vrml_browser_.priv->browser
-            ->add_listener(this->browser_listener_);
-        this->vrml_browser_.priv->browser->viewer(this);
+        this->browser_plug_.priv->browser->priv->browser->viewer(this);
     }
 
     GtkGLViewer::~GtkGLViewer() throw ()
     {
         if (this->timer) { g_source_remove(timer); }
-        this->vrml_browser_.priv->browser
-            ->remove_listener(this->browser_listener_);
     }
 
     void GtkGLViewer::post_redraw()
     {
-        if (!this->redrawNeeded) {
-            this->redrawNeeded = true;
+        if (!this->browser_plug_.priv->redraw_needed) {
+            this->browser_plug_.priv->redraw_needed = true;
             gtk_widget_queue_draw(
-                GTK_WIDGET(this->vrml_browser_.priv->drawing_area));
+                GTK_WIDGET(this->browser_plug_.priv->drawing_area));
         }
     }
 
@@ -1188,9 +1399,9 @@ namespace {
         case cursor_inherit:
             XDefineCursor(
                 GDK_WINDOW_XDISPLAY(
-                    GTK_WIDGET(this->vrml_browser_.priv->drawing_area)->window),
+                    GTK_WIDGET(this->browser_plug_.priv->drawing_area)->window),
                 GDK_WINDOW_XWINDOW(
-                    GTK_WIDGET(this->vrml_browser_.priv->drawing_area)->window),
+                    GTK_WIDGET(this->browser_plug_.priv->drawing_area)->window),
                 None);
             return;
 
@@ -1215,7 +1426,7 @@ namespace {
         }
 
         gdk_window_set_cursor(
-            GTK_WIDGET(this->vrml_browser_.priv->drawing_area)->window,
+            GTK_WIDGET(this->browser_plug_.priv->drawing_area)->window,
             cursor);
         gdk_cursor_destroy(cursor);
     }
@@ -1224,7 +1435,7 @@ namespace {
     {
         GdkGLDrawable * const gl_drawable =
             gtk_widget_get_gl_drawable(
-                GTK_WIDGET(this->vrml_browser_.priv->drawing_area));
+                GTK_WIDGET(this->browser_plug_.priv->drawing_area));
         gdk_gl_drawable_swap_buffers(gl_drawable);
     }
 
@@ -1234,7 +1445,7 @@ namespace {
             this->timer =
                 g_timeout_add(
                     guint(10.0 * (t + 1)),
-                    GtkFunction(openvrml_xembed_browser_timeout_callback),
+                    GtkFunction(openvrml_xembed_browser_plug_timeout_callback),
                     this);
         }
     }
@@ -1244,4 +1455,93 @@ namespace {
         this->timer = 0;
         this->viewer::update();
     }
+}
+
+extern "C" {
+    G_GNUC_INTERNAL
+    gboolean openvrml_xembed_browser_ready_prepare(GSource * source,
+                                                   gint * timeout);
+    G_GNUC_INTERNAL
+    gboolean openvrml_xembed_browser_ready_check(GSource * source);
+    G_GNUC_INTERNAL
+    gboolean openvrml_xembed_browser_ready_dispatch(GSource * source,
+                                                    GSourceFunc callback,
+                                                    gpointer user_data);
+    G_GNUC_INTERNAL
+    void openvrml_xembed_browser_ready_finalize(GSource * source);
+}
+
+struct OpenvrmlXembedBrowserReadySource {
+    GSource source;
+    OpenvrmlXembedBrowser * ready_browser;
+    guint64 host_id;
+};
+
+GSource *
+openvrml_xembed_browser_ready_source_new(OpenvrmlXembedBrowser * const browser,
+                                         const guint64 host_id)
+{
+    static GSourceFuncs source_funcs = {
+        openvrml_xembed_browser_ready_prepare,
+        openvrml_xembed_browser_ready_check,
+        openvrml_xembed_browser_ready_dispatch,
+        openvrml_xembed_browser_ready_finalize,
+        GSourceFunc(0),
+        GSourceDummyMarshal(0)
+    };
+
+    OpenvrmlXembedBrowserReadySource * const source =
+        static_cast<OpenvrmlXembedBrowserReadySource *>(
+            static_cast<void *>(
+                g_source_new(&source_funcs,
+                             sizeof (OpenvrmlXembedBrowserReadySource))));
+    if (!source) { return 0; }
+
+    source->ready_browser = browser;
+    source->host_id       = host_id;
+
+    return static_cast<GSource *>(static_cast<void *>(source));
+}
+
+gboolean openvrml_xembed_browser_ready_prepare(GSource * /* source */,
+                                               gint * const timeout)
+{
+    *timeout = 0;
+    return true;
+}
+
+gboolean openvrml_xembed_browser_ready_check(GSource * /* source */)
+{
+    return true;
+}
+
+gboolean openvrml_xembed_browser_ready_dispatch(GSource * const source,
+                                                GSourceFunc /* callback */,
+                                                gpointer /* user_data */)
+{
+    OpenvrmlXembedBrowserReadySource * const browser_ready_source =
+        static_cast<OpenvrmlXembedBrowserReadySource *>(
+            static_cast<void *>(source));
+
+    GtkWidget * const browser_plug =
+        openvrml_xembed_browser_plug_new(browser_ready_source->ready_browser,
+                                         browser_ready_source->host_id);
+
+    g_mutex_lock(browser_ready_source->ready_browser->priv->browser_plug_mutex);
+    browser_ready_source->ready_browser->priv->browser_plug =
+        OPENVRML_XEMBED_BROWSER_PLUG(browser_plug);
+    g_cond_signal(
+        browser_ready_source->ready_browser->priv->browser_plug_set_cond);
+    g_mutex_unlock(
+        browser_ready_source->ready_browser->priv->browser_plug_mutex);
+
+    gtk_widget_realize(browser_plug);
+    gtk_widget_show_all(browser_plug);
+
+    g_source_destroy(source);
+    return true;
+}
+
+void openvrml_xembed_browser_ready_finalize(GSource * /* source */)
+{
 }
