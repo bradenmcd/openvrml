@@ -1,5 +1,10 @@
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am: Generate
+	openvrml-xembed/browser-host-client-glue.h.
+
+2009-03-01 Braden McDaniel  <braden@endoframe.com>
+
 	Moved D-Bus interaction out of the main (GTK+) thread and into its
 	own background thread.  This avoids a deadlock when a resource
 	fetch comes from the rendering thread and waits on feedback that
