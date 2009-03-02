@@ -1,5 +1,15 @@
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
 
+	Changed "model/x3d+vrml" to "model/x3d-vrml" in accordance with
+	the pending media type registration.
+
+	* README
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/openvrml-player/filechooserdialog.cpp
+
+2009-03-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am: Generate
 	openvrml-xembed/browser-host-client-glue.h.
 
