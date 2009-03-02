@@ -30,7 +30,7 @@ BEGIN
             VALUE "FileDescription", "OpenVRML OpenGL Renderer Library"
             VALUE "FileVersion", "7, 3, 0, 0"
             VALUE "InternalName", "openvrml-gl"
-            VALUE "LegalCopyright", "Copyright (C) 2008"
+            VALUE "LegalCopyright", "Copyright (C) 2009"
             VALUE "OriginalFilename", "openvrml-gl.dll"
             VALUE "ProductName", "OpenVRML Library"
             VALUE "ProductVersion", "0.17.99"
