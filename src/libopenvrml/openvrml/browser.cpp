@@ -3357,7 +3357,7 @@ const char openvrml::x_vrml_media_type[15] = "x-world/x-vrml";
 /**
  * @brief X3D VRML MIME media type.
  */
-const char openvrml::x3d_vrml_media_type[15] = "model/x3d+vrml";
+const char openvrml::x3d_vrml_media_type[15] = "model/x3d-vrml";
 
 /**
  * @class openvrml::resource_istream openvrml/browser.h
@@ -4725,7 +4725,7 @@ const std::string openvrml::browser::world_url() const
  * @param[in,out] in    an input stream.
  *
  * @exception bad_media_type    if @p in.type() is not @c model/vrml,
- *                              @c x-world/x-vrml, or @c model/x3d+vrml.
+ *                              @c x-world/x-vrml, or @c model/x3d-vrml.
  * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::browser::set_world(resource_istream & in)

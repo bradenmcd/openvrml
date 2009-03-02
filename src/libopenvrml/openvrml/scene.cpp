@@ -164,7 +164,7 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
  * @exception bad_media_type    if @p in.type() is not
  *                              &ldquo;model/vrml&rdquo;,
  *                              &ldquo;x-world/x-vrml&rdquo;, or
- *                              &ldquo;model/x3d+vrml&rdquo;.
+ *                              &ldquo;model/x3d-vrml&rdquo;.
  * @exception invalid_vrml      if @p in has invalid syntax.
  */
 void openvrml::scene::load(resource_istream & in)

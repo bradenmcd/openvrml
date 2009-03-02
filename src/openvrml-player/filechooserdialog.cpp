@@ -73,7 +73,7 @@ namespace {
         gtk_file_filter_set_name(world_filter, "VRML/X3D worlds");
         gtk_file_filter_add_mime_type(world_filter, "x-world/x-vrml");
         gtk_file_filter_add_mime_type(world_filter, "model/vrml");
-        gtk_file_filter_add_mime_type(world_filter, "model/x3d+vrml");
+        gtk_file_filter_add_mime_type(world_filter, "model/x3d-vrml");
 
         gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(obj), world_filter);
         world_filter_guard.dismiss();
