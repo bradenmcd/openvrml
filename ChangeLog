@@ -5,7 +5,6 @@
 
 	* README
 	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/scene.cpp
 	* src/openvrml-player/filechooserdialog.cpp
 
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
