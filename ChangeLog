@@ -1,3 +1,18 @@
+2009-03-02 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.17.11 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Updated to 8:8:0.
+
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
 
 	Changed "model/x3d+vrml" to "model/x3d-vrml" in accordance with
